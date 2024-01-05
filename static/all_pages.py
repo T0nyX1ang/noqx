@@ -1,3 +1,5 @@
+"""Index for all pages."""
+
 PAGES = [
     {
     	'app': 'noq',
