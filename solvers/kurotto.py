@@ -29,10 +29,10 @@ def solve(E):
                         if (r1,c1) == anchor:
                             flows[r][c].prove_if(shading_solver.grid[r][c])
                         else:
-                            flows[r][c].prove_if(shading_solver.grid[r][c] & 
+                            flows[r][c].prove_if(shading_solver.grid[r][c] &
                                 shading_solver.grid[r1][c1] & flows[r1][c1])
 
-        require(sum_bools(E.clues[anchor]+1, 
+        require(sum_bools(E.clues[anchor]+1,
             [flows[r][c] for r in range(E.R) for c in range(E.C)]))
         # add 1 because the clue cell is proven but not black
 

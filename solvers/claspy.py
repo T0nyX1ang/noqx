@@ -294,7 +294,7 @@ def optimize_basic_rule(head, literals):
 def parse_atoms(line):
     # type: (str) -> list[str]
     """Grab the indices from a line of clasp output
-    
+
     >>> parse_atoms("v2  v3")
     [2, 3]
 

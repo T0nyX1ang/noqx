@@ -18,7 +18,7 @@ def parse_shading(shading):
     '''
     if all(shading): # shading is all True
         return [8]
-    
+
     # rotate so that the first spot is False
     idx = shading.index(False)
     shading = shading[idx:] + shading[:idx]
@@ -37,7 +37,7 @@ def parse_shading(shading):
         clue.append(curr_num)
 
     if clue == []:
-        clue = [0]        
+        clue = [0]
     return sorted(clue)
 
 def pattern_matches(q_pattern, pattern):

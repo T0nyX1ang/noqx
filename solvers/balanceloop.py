@@ -73,6 +73,6 @@ def solve(E):
             apply(lambda x, y: x + y == int_num)
 
     return ls.solutions()
-   
+
 def decode(solutions):
     return utils.decode(solutions)

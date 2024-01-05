@@ -49,7 +49,7 @@ def solve(E):
         # Don't need to check clued cells.
         if room not in clue_coord_to_room.values():
             require(at_least(1, [s.grid[r][c] for (r, c) in room]))
-        
+
     # Calculate # shaded in each region (needed for next step).
     for room in rooms:
         num_shaded = IntVar(0)
@@ -72,7 +72,7 @@ def solve(E):
                     require(num_shaded_in_region[r][c] != num_shaded_in_region[r][c+1])
                     # Cells orthogonally adjacent across region boundaries - >= 1 unshaded.
                     require(at_most(1, [s.grid[r][c], s.grid[r][c+1]]))
-    
+
     return s.solutions(shaded_color = 'darkgray')
 
 def decode(solutions):

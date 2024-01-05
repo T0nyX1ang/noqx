@@ -5,7 +5,7 @@ from .utils.shading import *
 
 def encode(string):
     return utils.encode(string, has_borders = True)
-    
+
 def solve(E):
     rooms = full_bfs(E.R, E.C, E.edges)
 
@@ -23,12 +23,12 @@ def solve(E):
 
     max_room_size = max(len(room) for room in rooms)
     max_clue = max(E.clues.values()) if E.clues else max_room_size
-    
+
     # set the maximum IntVar value to the max count of shaded cells
     set_max_val(max_clue if all_rooms_have_clues else max_room_size)
 
     s = RectangularGridShadingSolver(E.R, E.C)
-    
+
     # Numbers indicate how many shaded cells are in a region.
     for room in rooms:
         if room in room_to_clue:
@@ -40,7 +40,7 @@ def solve(E):
     # < represents the rest of the top row of a rectangle.
     # ^ represents the rest of the left column of a rectangle.
     # r represents the rest of the rectangle.
-    
+
     # so a rectangle might look like this:
     #   .<<<<
     #   ^rrrr
@@ -70,6 +70,6 @@ def solve(E):
                 require((parent[r][c] == 'r') == (s.grid[r-1][c] & s.grid[r][c-1] & s.grid[r-1][c-1]))
 
     return s.solutions(shaded_color = 'darkgray')
-   
+
 def decode(solutions):
     return utils.decode(solutions)

@@ -35,7 +35,7 @@ def solve(E):
             for r in range(b1-1,b2+1):
                 x |= shading_solver.grid[r][c]
             require(x)
-    
+
     return shading_solver.solutions(shaded_color = 'darkgray')
 
 def decode(solutions):

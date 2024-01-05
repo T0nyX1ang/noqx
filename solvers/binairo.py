@@ -9,14 +9,14 @@ def solve(E):
         raise ValueError('# rows and # columns must both be even!')
 
     set_max_val(max(E.R//2, E.C//2, 3))
-    
+
     # Use True (black) to represent 1
     s = utils.RectangularGridShadingSolver(E.R, E.C)
     black_row_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
     black_col_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
     white_row_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
     white_col_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
-    
+
     for r in range(E.R):
         # Half of the items in a row must be 1s; the other half must be 0s
         require(sum_bools(E.C//2, [s.grid[r][c] for c in range(E.C)]))
@@ -47,7 +47,7 @@ def solve(E):
     for c1 in range(E.C):
         for c2 in range(c1+1, E.C):
             require(~sum_bools(E.R, [s.grid[r][c1] == s.grid[r][c2] for r in range(E.R)]))
-            
+
     # Populate given clues.
     for (r, c) in E.clues:
         if E.clues[(r, c)] == 1:
@@ -58,6 +58,6 @@ def solve(E):
             raise ValueError('Please only enter 0s or 1s')
 
     return s.solutions()
-    
+
 def decode(solutions):
     return utils.decode(solutions)

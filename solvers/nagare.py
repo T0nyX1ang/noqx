@@ -4,7 +4,7 @@ from .utils import loops
 
 def encode(string):
     return utils.encode(string, clue_encoder = lambda s : s)
-    
+
 def solve(E):
     path_clues = {}
     wind_clues = {}
@@ -20,7 +20,7 @@ def solve(E):
             raise RuntimeError('Clue not one of \'black\' or [URDLurdl]')
     loop_solver = utils.RectangularGridLoopSolver(E.R, E.C, directed = True, shading = True)
     loop_solver.loop(wind_clues)
-    
+
     for (r, c) in path_clues:
         clue = path_clues[(r, c)]
         if clue == 'L':
@@ -59,7 +59,7 @@ def solve(E):
                 require(var_in(loop_solver.grid[y][c],
                     loops.TOP_IN + loops.BOTTOM_OUT + ['']))
 
-    
+
     for r in range(E.R):
         for c in range(E.C):
             require((loop_solver.grid[r][c] == '.') ==
@@ -74,7 +74,7 @@ def solve(E):
         else:
             uni = loops.DIRECTIONAL_PAIR_TO_UNICODE[direction_pair] + '.png'
             return uni
-        
+
     return loop_solver.solutions(format_function = format_function)
 
 def decode(solutions):

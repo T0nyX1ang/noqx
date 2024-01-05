@@ -4,7 +4,7 @@ from .utils.solutions import *
 
 def encode(string):
     return utils.encode(string, has_params=True)
-    
+
 def solve(E):
     def require_1_thru_n(arr):
         for i in range(1,n+1):

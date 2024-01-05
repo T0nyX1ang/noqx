@@ -6,7 +6,7 @@ def encode(string):
 
 def solve(E):
     set_max_val(E.R*E.C)
-    
+
     s = utils.RectangularGridShadingSolver(E.R,E.C)
     arbitrary_white_clue = None # Use this later
 
@@ -32,7 +32,7 @@ def solve(E):
                 require((num_seen_cells == n) == cond_n)
             dirs[(u,v)] = num_seen_cells
         require(dirs[(1,0)]+dirs[(-1,0)]+dirs[(0,1)]+dirs[(0,-1)] == E.clues[(r,c)]-1)
-    
+
     # Simple rules
     s.white_connectivity(arbitrary_white_clue)
     s.no_adjacent()

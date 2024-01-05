@@ -7,7 +7,7 @@ BATTLESHIPS = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1] # standard fleet
 
 def encode(string):
     return utils.encode(string, clue_encoder = lambda s : s, outside_clues = '1001')
-    
+
 def solve(E):
     # IDs for which battleship something belongs to; if ID = len(BATTLESHIPS), not part of any
     max_id = len(BATTLESHIPS)
@@ -62,7 +62,7 @@ def solve(E):
                 raise ValueError('A ship is pointing off the top of the grid.')
             else:
                 require(grid[r][c] != max_id)
-                require(grid[r-1][c] == grid[r][c])    
+                require(grid[r-1][c] == grid[r][c])
                 if is_valid_coord(E.R, E.C, r+1, c):
                     require(grid[r+1][c] == max_id)
         elif value == 'm':
@@ -76,7 +76,7 @@ def solve(E):
         # Water
         elif value == 'w':
             require(grid[r][c] == max_id)
-    
+
     # Clue satisfaction for row / column counts
     for r in range(E.R):
         try:
@@ -88,7 +88,7 @@ def solve(E):
             require(sum_bools(value, [grid[r][c] != max_id for c in range(E.C)]))
         except KeyError:
             pass
-        except TypeError: 
+        except TypeError:
             raise ValueError('Outside clues must be numbers.')
     for c in range(E.C):
         try:
@@ -124,7 +124,7 @@ def solve(E):
                                 (r == y and c <= x < c+length))
                     possible_configs |= ship_horiz_starting_at_rc
         require(possible_configs)
-    
+
     # Ships don't touch
     for r in range(E.R):
         for c in range(E.C):
@@ -161,9 +161,9 @@ def solve(E):
         # right part
         elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
             return 'battleship_right_end.png'
-        
-    return get_all_grid_solutions(grid, 
-        equality_function = equality_function, 
+
+    return get_all_grid_solutions(grid,
+        equality_function = equality_function,
         format_function = format_function)
 
 def decode(solutions):

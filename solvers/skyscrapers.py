@@ -11,7 +11,7 @@ def solve(E):
     n = E.R
 
     set_max_val(n)
-    
+
     numbers_solver = utils.RectangularGridNumbersSolver(n, n, 1, n)
     numbers_solver.rows_and_cols()
     grid = numbers_solver.grid
@@ -67,6 +67,6 @@ def solve(E):
         require(sum_vars([left_visible[i][j] for j in range(n)]) == E.left[i])
 
     return numbers_solver.solutions()
-        
+
 def decode(solutions):
     return utils.decode(solutions)

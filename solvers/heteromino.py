@@ -61,7 +61,7 @@ def solve(E):
                             # If (y, x) is one of the required neighbors for this shape,
                             # assign its shape and parent values.
                             if (dy, dx) in NEIGHBORS[possible_shape]:
-                                neighbor_conds &= ((shape[y][x] == possible_shape) & 
+                                neighbor_conds &= ((shape[y][x] == possible_shape) &
                                     (parent[y][x] == OFFSET_PARENT_PAIRS[(dy,dx)]))
                             # Otherwise, insist that (y, x) has some other parent (not (r, c)).
                             else:
@@ -86,7 +86,7 @@ def solve(E):
                     else:
                         # Trying to use a cell that's off the grid.
                         require(parent[r][c] != possible_parent)
-                
+
                     # Ensure that identical shapes are not adjacent
                     # (the only cell adjacent to (r, c) with the same shape pattern is its parent)
                     for (cell_r, cell_c) in get_neighbors(E.R, E.C, r, c):

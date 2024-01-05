@@ -48,7 +48,7 @@ def acc_patterns(acc, initial=''):
 
 def calculate_lengths(pattern):
     '''
-    Return a sorted tuple of (length, frequency) tuples for the lengths 
+    Return a sorted tuple of (length, frequency) tuples for the lengths
     of loop segments used by a pattern, in the output format used by `acc_patterns`.
     '''
     if pattern[0] in '-e':
@@ -62,7 +62,7 @@ def calculate_lengths(pattern):
 
 def calculate_lengths_rotated(pattern):
     '''
-    Return a sorted tuple of (length, frequency) tuples for the lengths 
+    Return a sorted tuple of (length, frequency) tuples for the lengths
     of loop segments used by a pattern, in the output format used by `acc_patterns`,
 
     WITH THE PRECONDITION THAT segment ends always follow segment starts
@@ -94,7 +94,7 @@ def get_lookup():
             lookup[pattern_lengths].add(pattern)
         else:
             lookup[pattern_lengths] = {pattern}
-    
+
     return lookup
 
 # Map of 'se- c' patterns to strings based on position (tuple's 0 index is NW corner)

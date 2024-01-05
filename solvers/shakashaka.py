@@ -6,7 +6,7 @@ def encode(string):
 
 def solve(E):
     set_max_val(4)
-    
+
     tl = 'top-left.png'
     tr = 'top-right.png'
     bl = 'bottom-left.png'
@@ -48,7 +48,7 @@ def solve(E):
                     # The cell immediately below is lower-left triangle.
                     (grid[r+1][c] == bl)
                 )
-            # Cells in the bottom row and rightmost column cannot have upper-left triangle shading. 
+            # Cells in the bottom row and rightmost column cannot have upper-left triangle shading.
             if r == E.R-1 or c == E.C-1:
                 require(grid[r][c] != tl)
 
@@ -67,12 +67,12 @@ def solve(E):
                     (grid[r][c-1] == tl)
                 )
             if utils.grids.is_valid_coord(E.R, E.C, r+1, c+1):
-                require((grid[r][c] != tr) | 
+                require((grid[r][c] != tr) |
                     ((grid[r][c] == tr) & (grid[r+1][c] == ' ')) |
                     (grid[r+1][c] == br)
                 )
             elif utils.grids.is_valid_coord(E.R, E.C, r+1, c):
-                require((grid[r][c] != tr) | 
+                require((grid[r][c] != tr) |
                     (grid[r+1][c] == br)
                 )
             if r == E.R-1 or c == 0:
@@ -100,7 +100,7 @@ def solve(E):
                 )
             if r == 0 or c == E.C-1:
                 require(grid[r][c] != bl)
-            
+
             # ---- Lower-right triangle shading ----
             if utils.grids.is_valid_coord(E.R, E.C, r+1, c-1):
                 require((grid[r][c] != br) |

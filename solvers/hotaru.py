@@ -24,7 +24,7 @@ def solve(E):
             if (direction == 'l' and c == 0) or (direction == 'r' and c == E.C-1) or \
                     (direction == 'u' and r == 0) or (direction == 'd' and r == E.R-1):
                 raise ValueError('Beams cannot point off the grid.')
-            
+
             # if one of the clues is blank, we could have a lot of turns
             if num_string == '':
                 max_possible_turns = E.R * E.C - len(E.clues)
@@ -68,7 +68,7 @@ def solve(E):
             if 0 < r:
                 # Cover cases where this cell has flow in from the top.
                 # Cases where top cell has flow in from the bottom will be covered in the r < E.R - 1 section.
-                
+
                 # Basic rules (no dangling edges)
                 require(var_in(conn_patterns[r][c], TOP_IN+['.']) |
                     ~var_in(conn_patterns[r-1][c], BOTTOM_OUT)
@@ -77,7 +77,7 @@ def solve(E):
                 # Flow & connectivity rules
 
                 # we're calculating *upstream* counts, so if flow looks like
-                # 1 > 2 > 3 
+                # 1 > 2 > 3
                 # then 1 is upstream from 2, which is upstream from 3
                 # (follow the arrows backwards)
                 # Roots *contribute* 0 to upstream counts (they are the "ends" of each path/stream)
@@ -90,7 +90,7 @@ def solve(E):
                 clue_conn_atoms[r][c].prove_if(clue_conn_atoms[r-1][c] & flow_from_top)
                 # overall connectivity
                 overall_conn_atoms[r][c].prove_if(
-                    overall_conn_atoms[r-1][c] & 
+                    overall_conn_atoms[r-1][c] &
                     # any connection to the top is fine
                     # we need both conditions because one side could be root
                     (var_in(conn_patterns[r][c], TOP_IN+TOP_OUT) |
@@ -114,7 +114,7 @@ def solve(E):
                 clue_conn_atoms[r][c].prove_if(clue_conn_atoms[r+1][c] & flow_from_bottom)
                 # overall connectivity
                 overall_conn_atoms[r][c].prove_if(
-                    overall_conn_atoms[r+1][c] & 
+                    overall_conn_atoms[r+1][c] &
                     # any connection to the bottom is fine
                     # we need both conditions because one side could be root
                     (var_in(conn_patterns[r][c], BOTTOM_IN+BOTTOM_OUT) |
@@ -138,7 +138,7 @@ def solve(E):
                 clue_conn_atoms[r][c].prove_if(clue_conn_atoms[r][c-1] & flow_from_left)
                 # overall connectivity
                 overall_conn_atoms[r][c].prove_if(
-                    overall_conn_atoms[r][c-1] & 
+                    overall_conn_atoms[r][c-1] &
                     # any connection to the left is fine
                     # we need both conditions because one side could be root
                     (var_in(conn_patterns[r][c], LEFT_IN+LEFT_OUT) |
@@ -162,7 +162,7 @@ def solve(E):
                 clue_conn_atoms[r][c].prove_if(clue_conn_atoms[r][c+1] & flow_from_right)
                 # overall connectivity
                 overall_conn_atoms[r][c].prove_if(
-                    overall_conn_atoms[r][c+1] & 
+                    overall_conn_atoms[r][c+1] &
                     # any connection to the right is fine
                     # we need both conditions because one side could be root
                     (var_in(conn_patterns[r][c], RIGHT_IN+RIGHT_OUT) |
@@ -180,7 +180,7 @@ def solve(E):
             # root iff clue
             require((conn_patterns[r][c] == '.') == is_clue)
             clue_conn_atoms[r][c].prove_if(is_clue)
-    
+
     for (r, c) in E.clues:
         num_string = ''
         value = E.clues[(r,c)]

@@ -69,7 +69,7 @@ def solve(E):
 
     region_id = utils.RectangularGrid(E.R, E.C, lambda r,c: IntVar(0, E.C*r+c))
     # this forces each root to be the topleft-most cell (i.e., first in row-major order) of its region
-    
+
     # refine possibilities for region_id for each clue cell
     for (r,c) in E.clues:
         region_id_poss = []
@@ -84,7 +84,7 @@ def solve(E):
                 require(region_id[r][c] >= c0)
 
     bfs_max_region_sizes = unclued_areas_bfs(E.clues, E.R, E.C)
-    region_size = utils.RectangularGrid(E.R, E.C, 
+    region_size = utils.RectangularGrid(E.R, E.C,
         lambda r,c:
             IntVar(E.clues[(r,c)]) if (r,c) in E.clues else \
             IntVar(1, min(bfs_max_region_sizes[(r,c)],max_region_size))
@@ -137,7 +137,7 @@ def solve(E):
                 upstream_count += cond(parent[r][c-1] == '>', upstream[r][c-1], 0)
             if c < E.C-1:
                 upstream_count += cond(parent[r][c+1] == '<', upstream[r][c+1], 0)
-                
+
             # all cells must obey upstream counting rule
             require(upstream[r][c] == upstream_count)
             require((parent[r][c] != '.') | (upstream[r][c] == region_size[r][c]))
@@ -153,6 +153,6 @@ def solve(E):
 
     sols = utils.get_all_grid_solutions(region_size)
     return sols
-    
+
 def decode(solutions):
     return utils.decode(solutions)

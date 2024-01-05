@@ -35,16 +35,16 @@ def solve(E):
         # Numbers and directions.
         if num != '':
             if d == 'u':
-                require(sum_bools(int(num), [var_in(loop_solver.grid[y][c], 
+                require(sum_bools(int(num), [var_in(loop_solver.grid[y][c],
                     DOWN_CONNECTING) for y in range(r-1)]))
             elif d == 'r':
-                require(sum_bools(int(num), [var_in(loop_solver.grid[r][x], 
+                require(sum_bools(int(num), [var_in(loop_solver.grid[r][x],
                     RIGHT_CONNECTING) for x in range(c+1, E.C-1)]))
             elif d == 'd':
-                require(sum_bools(int(num), [var_in(loop_solver.grid[y][c], 
+                require(sum_bools(int(num), [var_in(loop_solver.grid[y][c],
                     DOWN_CONNECTING) for y in range(r+1, E.R-1)]))
             elif d == 'l':
-                require(sum_bools(int(num), [var_in(loop_solver.grid[r][x], 
+                require(sum_bools(int(num), [var_in(loop_solver.grid[r][x],
                     RIGHT_CONNECTING) for x in range(c-1)]))
         # Colors.
         if color == 'w':
@@ -53,8 +53,8 @@ def solve(E):
             black_clues.add((r, c))
     loop_solver.inside(white_clues)
     loop_solver.outside(black_clues)
-    
+
     return loop_solver.solutions()
-    
+
 def decode(solutions):
     return utils.decode(solutions)

@@ -4,7 +4,7 @@ from .utils.solutions import *
 
 def encode(string):
     return utils.encode(string, clue_encoder = lambda s: s)
-    
+
 def solve(E):
     use_all_cells = E.params['Use all cells']
 
@@ -21,9 +21,9 @@ def solve(E):
     sinks = set(locs[1] for locs in locations.values())
 
     grid = utils.RectangularGrid(E.R, E.C,
-        lambda r, c: 
+        lambda r, c:
             MultiVar('') if (r,c) in sinks else (
-                MultiVar('U','R','D','L') if use_all_cells else 
+                MultiVar('U','R','D','L') if use_all_cells else
                 MultiVar('U','R','D','L','')
             ))
 
@@ -39,9 +39,9 @@ def solve(E):
                     atoms[r][c].prove_if(atoms[r-1][c] & (grid[r-1][c]=='D'))
                 if c>0:
                     atoms[r][c].prove_if(atoms[r][c-1] & (grid[r][c-1]=='R'))
-                if r<E.R-1: 
+                if r<E.R-1:
                     atoms[r][c].prove_if(atoms[r+1][c] & (grid[r+1][c]=='U'))
-                if c<E.C-1: 
+                if c<E.C-1:
                     atoms[r][c].prove_if(atoms[r][c+1] & (grid[r][c+1]=='L'))
 
         atoms[source].prove_if(True) # prove source for free

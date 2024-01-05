@@ -20,7 +20,7 @@ def solve(E):
             rc_to_room[(r,c)] = room
             if (r, c) in E.clues:
                 room_to_clue[room] = int(E.clues[(r,c)])
-                
+
     s = RectangularGridShadingSolver(E.R, E.C)
     # Count number of black cells at a certain position and below in the same column.
     grid = [[IntVar(0, max_stone_id) for c in range(E.C)] for r in range(E.R)]
@@ -34,7 +34,7 @@ def solve(E):
                 conns[r][c].prove_if((s.grid[y][x] & conns[y][x]) | chosen[(r,c)])
             require(conns[r][c] | ~s.grid[r][c])
         require(sum_bools(1, chosen.values()))
-    
+
     # Cell with a number indicates number of black cells in region.
     # Or, if no number is present, >= 1 must be black.
     for room in rooms:

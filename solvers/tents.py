@@ -7,7 +7,7 @@ neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
 def encode(string):
     return utils.encode(string, clue_encoder = lambda s: s)
-    
+
 def solve(E):
     # --- Validation ---
     for x in set(E.top.values()).union(E.left.values()):
@@ -19,7 +19,7 @@ def solve(E):
 
     grid = [[MultiVar('n', 'e', '') for c in range(E.C)] for r in range(E.R)]
 
-    # For each coordinate of a tree, maintain a list of BoolVars for 
+    # For each coordinate of a tree, maintain a list of BoolVars for
     # whether it is "connected to" its top, right, bottom, left.
     tree_clues = {}
 
@@ -46,7 +46,7 @@ def solve(E):
             else:
                 # If there's nothing in a certain direction, tree cannot be connected to it
                 require(~conns[i])
-    
+
     for conns in tree_clues.values():
         # Each tree is connected to exactly 1 tent
         require(sum_bools(1, conns))
@@ -55,7 +55,7 @@ def solve(E):
         for c in range(E.C):
             # If (r, c) has tent, none of surroundings can be tent.
             require(
-                at_most(0, [grid[y][x] == 'n' for (y, x) in get_surroundings(E.R, E.C, r, c)]) | 
+                at_most(0, [grid[y][x] == 'n' for (y, x) in get_surroundings(E.R, E.C, r, c)]) |
                 (grid[r][c] != 'n')
             )
             # If (r, c) has tent, there must be exactly one tree connected to it.
@@ -65,7 +65,7 @@ def solve(E):
                 if (y, x) in tree_clues:
                     possible_tree_conns.append(tree_clues[(y,x)][(i+2)%4])
             require(sum_bools(1, possible_tree_conns) | (grid[r][c] != 'n'))
-    
+
     # Number of tents in cols / rows are correct.
     for c, value in E.top.items():
         if value != '':

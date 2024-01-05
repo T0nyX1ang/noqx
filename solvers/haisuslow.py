@@ -3,7 +3,7 @@ from . import utils
 
 def encode(string):
     return utils.encode(string, has_borders = True, clue_encoder = lambda x : int(x) if x.isnumeric() else x)
-    
+
 def solve(E):
     if not ('s' in E.clues.values() and 'g' in E.clues.values()):
         raise ValueError('S and G squares must be provided.')
@@ -44,12 +44,12 @@ def solve(E):
             visit_count = IntVar(0)
             for ((y, x), (y2, x2)) in room_spanners[cell_to_room[(r, c)]]:
                 visit_count += (grid[y][x] == grid[y2][x2] + 1) & (grid[y][x] <= grid[r][c])
-            
+
             if cell_to_room[(r,c)] == room_start:
                 require(visit_count + 1 == value)
             else:
                 require(visit_count == value)
-    
+
     def format_function(r, c):
         if E.clues.get((r,c)) == 's':
             if 0 < r and grid[r][c].value() == grid[r-1][c].value() - 1:
@@ -60,7 +60,7 @@ def solve(E):
                 return 's←.png'
             if c < E.C-1 and grid[r][c].value() == grid[r][c+1].value() - 1:
                 return 's→.png'
-        
+
         elif E.clues.get((r,c)) == 'g':
             if 0 < r and grid[r][c].value() == grid[r-1][c].value() + 1:
                 return 'g↓.png'

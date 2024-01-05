@@ -17,7 +17,7 @@ def solve(E):
     '''
     if len(E.top) + len(E.left) == 0:
         raise ValueError('No clues provided.')
-    
+
     top_clues = {}
     for c in E.top:
         top_clues[c] = [int(clue) if clue != '?' else '?' for clue in E.top[c].split()]
@@ -25,7 +25,7 @@ def solve(E):
     left_clues = {}
     for r in E.left:
         left_clues[r] = [int(clue) if clue != '?' else '?' for clue in E.left[r].split()]
-    
+
     # reset clasp, & set max IntVar value to max row / col coordinate
     reset()
 
@@ -48,7 +48,7 @@ def solve(E):
                 require(start_points[clue_idx] <= end_point)
             # if we have a known run length,
             else:
-                end_point = start_points[clue_idx] + left_clues[r][clue_idx] - 1 
+                end_point = start_points[clue_idx] + left_clues[r][clue_idx] - 1
             # the run can't leave the grid
             if clue_idx == len(start_points)-1:
                 require(end_point < E.C)
@@ -90,7 +90,7 @@ def solve(E):
                     is_in_some_run |= ((start_points[clue_idx] <= r) & \
                                            (r <= end_points[clue_idx]))
                 require(shading_solver.grid[r][c] == is_in_some_run)
-                
+
     return shading_solver.solutions()
 
 def decode(solutions):

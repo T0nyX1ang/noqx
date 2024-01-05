@@ -16,7 +16,7 @@ def solve(E):
 
     if len(regions) == 1:
         raise ValueError('Are you sure you drew all of the borders?')
-    
+
     # make a list of lists, where each internal list represents a row of the puzzle.
     # each cell has value:
     # - 'L': if the cell is part of an L shape
@@ -25,13 +25,13 @@ def solve(E):
     # - 'S': if the cell is part of an S shape
     # - ' ': if the cell is empty
     grid = [[MultiVar('L', 'I', 'T', 'S', ' ') for c in range(E.C)] for r in range(E.R)]
-    
+
     # make a dictionary which maps each character in 'LITS' to a tuple of tuples,
     # where each internal tuple is a canonical representation of a shape variant
     variants = {}
     for name, shape in (('L', L), ('I', I), ('T', T), ('S', S)):
         variants[name] = get_variants(shape, True, True)
-        
+
     for region in regions:
         # keep track of a list of "shape conditions", where each "shape condition" requires:
         #  - that a shape is at located at a particular coordinate
@@ -66,12 +66,12 @@ def solve(E):
                                         ~shape_cond)
         # of the possible shapes, exactly 1 of them is actually correct
         require(sum_bools(1, possible_shape_conditions))
-    
+
     # add black-connectivity and no-2x2 rules
     shading_solver = utils.RectangularGridShadingSolver(E.R, E.C, grid, ['L', 'I', 'T', 'S'])
     shading_solver.black_connectivity()
     shading_solver.no_black_2x2()
-    
+
     return shading_solver.solutions(shaded_color = 'darkgray')
 
 def decode(solutions):

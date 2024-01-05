@@ -12,7 +12,7 @@ def solve(E):
     rooms = full_bfs(E.R, E.C, E.edges)
     region_type = [[MultiVar('m', 's') for r in range(E.R)] for c in range(E.C)]
 
-    # In each room, either: 
+    # In each room, either:
     # - hit all moons + no suns
     # - hit all suns + no moons
     for room in rooms:
@@ -41,12 +41,12 @@ def solve(E):
     for r in range(1, E.R):
         for c in range(E.C):
             require((region_type[r-1][c] == region_type[r][c]) | ((r, c, Direction.TOP) in E.edges))
-            require((region_type[r-1][c] != region_type[r][c]) | 
+            require((region_type[r-1][c] != region_type[r][c]) |
                     ~(var_in(loop_solver.grid[r][c], UP_CONNECTING) & ((r, c, Direction.TOP) in E.edges)))
     for r in range(E.R):
         for c in range(1, E.C):
             require((region_type[r][c-1] == region_type[r][c]) | ((r, c, Direction.LEFT) in E.edges))
-            require((region_type[r][c-1] != region_type[r][c]) | 
+            require((region_type[r][c-1] != region_type[r][c]) |
                     ~(var_in(loop_solver.grid[r][c], LEFT_CONNECTING) & ((r, c, Direction.LEFT) in E.edges)))
 
     # Basic rules
@@ -55,6 +55,6 @@ def solve(E):
     loop_solver.hit_every_region(rooms)
 
     return loop_solver.solutions()
-    
+
 def decode(solutions):
     return utils.decode(solutions)

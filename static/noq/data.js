@@ -201,8 +201,8 @@ const puzzle_types = {
 		properties: { outside: '0000', border: true }
 		},
 	statuepark: {
-		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10}, 
-				  shapeset: {name: 'Shape set', value:'Tetrominoes', options:['Tetrominoes', 'Pentominoes', 'Double Tetrominoes']} 
+		params: { r: {name: 'Rows', value: 10}, c: {name: 'Columns', value: 10},
+				  shapeset: {name: 'Shape set', value:'Tetrominoes', options:['Tetrominoes', 'Pentominoes', 'Double Tetrominoes']}
 				},
 		properties: { outside: '0000', border: false }
 		},

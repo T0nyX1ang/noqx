@@ -9,13 +9,13 @@ def solve(E):
     set_max_val(num_stars)
 
     rooms = utils.regions.full_bfs(E.R,E.C, E.edges)
-    
+
     shading_solver = utils.RectangularGridShadingSolver(E.R,E.C)
     shading_solver.no_surrounding()
-    
+
     for room in rooms:
         require(sum_bools(num_stars, [shading_solver.grid[r][c] for (r, c) in room]))
-    
+
     for r in range(E.R):
         require(sum_bools(num_stars, [shading_solver.grid[r][c] for c in range(E.C)]))
 

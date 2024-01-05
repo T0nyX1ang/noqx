@@ -27,9 +27,9 @@ def solve(E):
 
     shape_id_bound = len(shape_id_to_variants)
     grid = [[IntVar(0, shape_id_bound) for c in range(E.C)] for r in range(E.R)]
-    s = utils.RectangularGridShadingSolver(E.R, E.C, grid, 
+    s = utils.RectangularGridShadingSolver(E.R, E.C, grid,
         shading_symbols = [shape_id for shape_id in range(shape_id_bound)])
-    
+
     # keep track of a list of "shape conditions", where each "shape condition" requires
     # that all cells involved in the shape have the correct shape ID
     # and that no other cell anywhere else does
@@ -41,13 +41,13 @@ def solve(E):
                     occupied_cells = place_shape_in_grid(E.R, E.C, variant, r, c)
                     if occupied_cells != None:
                         possible_shape_conditions.append(
-                            sum_bools(E.R*E.C, 
+                            sum_bools(E.R*E.C,
                                 [(grid[y][x] == shape_id) == ((y,x) in occupied_cells) \
                                     for y in range(E.R) for x in range(E.C)])
                         )
         # exactly 1 of the possible placements is actually correct
         require(sum_bools(1, possible_shape_conditions))
-        
+
     # no touchy rule
     for r in range(E.R):
         for c in range(E.C):
@@ -55,18 +55,18 @@ def solve(E):
             # or at least one is not part of any shape
             for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c):
                 require(
-                    (grid[r][c] == grid[y][x]) | 
+                    (grid[r][c] == grid[y][x]) |
                     (grid[r][c] == shape_id_bound) |
                     (grid[y][x] == shape_id_bound)
                 )
 
     # unshaded connectivity
     s.white_connectivity()
-    
+
     # require clue correctness
     for (r, c) in E.clues:
         require((E.clues[(r,c)] == 'w') == (grid[r][c] == shape_id_bound))
-            
+
     return s.solutions()
 
 def decode(solutions):

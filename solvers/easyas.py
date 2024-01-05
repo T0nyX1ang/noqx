@@ -4,7 +4,7 @@ from .utils.solutions import *
 
 def encode(string):
     return utils.encode(string, has_params = True, clue_encoder = lambda s: s)
-    
+
 def solve(E):
     letters = list(E.params['letters'])
     grid = [[MultiVar(*letters, '') for c in range(E.C)] for r in range(E.R)]
@@ -26,7 +26,7 @@ def solve(E):
             for j in range(E.C) if side in 'UL' else range(E.C-1,-1,-1): # iteration direction
                 i1, i2 = (i,j) if side in 'LR' else (j,i) # row/col indices in some order
 
-                # False = seen no letters yet, True = seen l first; 
+                # False = seen no letters yet, True = seen l first;
                 # and implicitly require that no other possibilities exist
                 new_view = BoolVar()
                 require(~new_view == (~view & (grid[i1][i2] == '')))

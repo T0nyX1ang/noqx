@@ -10,7 +10,7 @@ def solve(E):
 
     # Enforce that clue cells can't be shaded, and that their numbers are correct
     shading_solver.white_clues(E.clues)
-    
+
     for (cell, num) in E.clues.items():
         if num != '?':
             require(sum_bools(num, [

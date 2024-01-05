@@ -40,7 +40,7 @@ def solve(E):
         # check the clue for validity
         if not num_string.isnumeric() or direction not in 'lrud':
             raise ValueError('Please ensure that each clue has both a number and a direction.')
-        
+
         # build a list of coordinates that are "seen" by this clue
         seen_cells = []
         if direction == 'l':
@@ -73,6 +73,6 @@ def solve(E):
         require(~x)
 
     return sols
-    
+
 def decode(solutions):
     return utils.decode(solutions)

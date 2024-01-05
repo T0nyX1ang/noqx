@@ -6,7 +6,7 @@ def encode(string):
 
 def solve(E):
     set_max_val(E.R*E.C)
-    
+
     shading_solver = utils.RectangularGridShadingSolver(E.R,E.C)
     shading_solver.black_connectivity()
     grid = shading_solver.grid

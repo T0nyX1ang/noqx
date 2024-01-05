@@ -5,7 +5,7 @@ from .utils import grids
 
 def encode(string):
     return utils.encode(string, has_borders = True, clue_encoder = lambda x : int(x) if x.isnumeric() else x)
-    
+
 def solve(E):
     if not ('S' in E.clues.values() and 'G' in E.clues.values()):
         raise ValueError('S and G squares must be provided.')
@@ -120,7 +120,7 @@ def solve(E):
             if 0 < r:
                 # Cover cases where this cell has flow in from the top.
                 # Cases where top cell has flow in from the bottom will be covered in the r < E.R - 1 section.
-                
+
                 # Basic rules (no dangling edges)
                 require(var_in(conn_patterns[r][c], TOP_IN+['G']) |
                     ~var_in(conn_patterns[r-1][c], BOTTOM_OUT)
@@ -153,7 +153,7 @@ def solve(E):
                 flow_from_left = (var_in(conn_patterns[r][c-1], RIGHT_OUT) |
                     ((conn_patterns[r][c-1] == 'S') & var_in(conn_patterns[r][c], LEFT_IN)))
                 require(flow_from_left == (parent[r][c] == '<'))
-                
+
             if c < E.C - 1:
                 # Cases where this cell has flow in from the right.
 

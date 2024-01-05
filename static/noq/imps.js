@@ -22,7 +22,7 @@ class TextImp
 		this.inp = make_elt('INPUT', 'param_input', this.elt);
 		this.inp.setAttribute('id', `param_input_${this.key}`);
 		if (key == 'r' || key == 'c' || key == 'n')
-			this.inp.setAttribute('onchange', 
+			this.inp.setAttribute('onchange',
 				`display_grid();
 				this.style.width = get_text_width(this.value);`
 			);
@@ -104,7 +104,7 @@ function builder(key, params)
 	if (params.options) {
 		return new DropdownImp(key, name, val, options);
 	} else if (val === true || val === false) {
-		return new CheckboxImp(key, name, val); 
+		return new CheckboxImp(key, name, val);
 	} else {
 		return new TextImp(key, name, val);
 	}

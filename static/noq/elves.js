@@ -13,7 +13,7 @@ const CLIPBOARD_SYMBOLS = {
 
 	'||': '║',
 	'=': '=',
-	
+
 	'bulb': 'O',
 
 	'1w': '⌽',
@@ -180,7 +180,7 @@ class Elf
 		this.puzzle_elt.i = this.i; this.puzzle_elt.j = this.j; this.puzzle_elt.parent = this; // embed this data for convenience
 		this.default_image_url = default_image_url;
 		this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
-		
+
 		this.solution_elt = elt.querySelector('.solution_cell');
 		this.solution_elt.i = this.i; this.solution_elt.j = this.j;
 
@@ -381,7 +381,7 @@ function DirectSum(Elf1, Elf2, priority='compress', default_image_url='')
 			{
 				let is_nonempty = false;
 				let encoding1 = {};
-				if (out1 == null) 
+				if (out1 == null)
 					encoding1[this.elf1.elt.id] = '';
 				else if (out1.constructor === ({}).constructor) { // JSON
 					encoding1 = out1;
@@ -478,7 +478,7 @@ class BorderElf extends Elf
        			if (key == 'ArrowDown') down=true;
        			if (key == 'ArrowLeft') left=true;
        			if (key == 'ArrowRight') right=true;
-       			
+
    				for (let j=rg[2]; j<=rg[3]; j+=2)
    				{
    					if (up) ELVES[`${rg[0]},${j}`].toggle_border('ArrowUp');
@@ -536,7 +536,7 @@ function ImageElf(dict, controls_dict, styles={})
 			if (styles[key] !== undefined) {
 				for (const [attribute, value] of Object.entries(styles[key])) {
 					this.puzzle_elt.style[attribute] = value;
-				}			
+				}
 			}
 			return true;
 		}
@@ -897,7 +897,7 @@ class KakuroElf extends Elf
         {
         	if (this.is_black)
         		this.is_black = false;
-        	
+
         	if (this.across_is_active)
         	{
         		if (this.across_clue == 0) // switch to down clue
@@ -1096,7 +1096,7 @@ class NonogramElf extends Elf
     {
         super(elt);
         this.clue_type = /^\-1.*$/.test(elt.id) ? 'top' : 'left';
-        
+
         this.puzzle_elt.style.display = 'flex';
         this.puzzle_elt.style.flexDirection =
             {'top':'column','left':'row'}[this.clue_type];
@@ -1531,7 +1531,7 @@ class CustomElf extends Elf {
        			if (key == 'ArrowDown') down=true;
        			if (key == 'ArrowLeft') left=true;
        			if (key == 'ArrowRight') right=true;
-       			
+
    				for (let j=rg[2]; j<=rg[3]; j+=2)
    				{
    					if (up) ELVES[`${rg[0]},${j}`].toggle_border('ArrowUp');

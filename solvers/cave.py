@@ -7,7 +7,7 @@ def encode(string):
 def solve(E):
 #    max_val = max(E.clues.values(), default=E.R*E.C)
     set_max_val(E.R*E.C)
-    
+
     shading_solver = utils.RectangularGridShadingSolver(E.R,E.C)
     shading_solver.white_connectivity()
     shading_solver.black_edge_connectivity()
@@ -45,7 +45,7 @@ def solve(E):
             require(cond_product)
         else: # use normal rule
             require(dirs[(1,0)]+dirs[(-1,0)]+dirs[(0,1)]+dirs[(0,-1)] == E.clues[(r,c)]-1)
-      
+
     return shading_solver.solutions()
 
 def decode(solutions):

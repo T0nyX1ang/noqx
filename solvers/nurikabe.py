@@ -20,7 +20,7 @@ def solve(E):
                     number_clues[(r,c)] = value
     max_clue = (E.R*E.C - sum(number_clues.values())) if has_nonnumber_clue else \
         (max(number_clues.values()) if number_clues else 0)
-    
+
     if len(clue_cell_id) == 0:
         raise ValueError('Error: No clues')
 
@@ -30,13 +30,13 @@ def solve(E):
     shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
     shading_solver.black_connectivity()
     shading_solver.no_black_2x2()
-    
+
     region_solver = utils.RectangularGridRegionSolver(E.R, E.C, shading_solver.grid,
                         max_num_regions = len(clue_cell_id), region_symbol_sets = [[False,]])
     region_solver.region_roots(clue_cell_id, exact = True)
     region_solver.set_region_size(max_clue, number_clues, clue_region_bijection = not has_nonnumber_clue)
 
     return shading_solver.solutions()
-    
+
 def decode(solutions):
     return utils.decode(solutions)

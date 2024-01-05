@@ -4,7 +4,7 @@ from .utils.shading import *
 
 def encode(string):
     return utils.encode(string)
-    
+
 def solve(E):
     set_max_val(E.R*E.C)
 

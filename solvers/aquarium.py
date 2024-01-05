@@ -12,13 +12,13 @@ def solve(E):
     set_max_val(max(max_left_clue, max_top_clue, 1))
 
     s = utils.RectangularGridShadingSolver(E.R, E.C)
-    
+
     # Ensure that counts of shaded cells in columns and rows are satisfied.
     for c in E.top:
         require(sum_bools(E.top[c], [s.grid[r][c] for r in range(E.R)]))
     for r in E.left:
         require(sum_bools(E.left[r], [s.grid[r][c] for c in range(E.C)]))
-    
+
     # Water-falling constraints.
     for r in range(1, E.R):
         for c in range(E.C):

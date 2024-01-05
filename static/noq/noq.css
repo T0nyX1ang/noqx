@@ -1,8 +1,8 @@
 :root /* variables */
 {
 	--dimension: 40px;
-	--border: 3px; 
-} 	
+	--border: 3px;
+}
 
 /* https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting */
 .noselect {
@@ -13,7 +13,7 @@
 				-ms-user-select: none; /* Internet Explorer/Edge */
 						user-select: none; /* Non-prefixed version, currently
 																	supported by Chrome, Edge, Opera and Firefox */
-}		
+}
 
 .copy_cell {
 	width: 12px;

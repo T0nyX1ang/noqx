@@ -16,7 +16,7 @@ def solve(E):
                 require(s.grid[r][c] | s.grid[r1][c1])
     s.no_adjacent()
     s.white_connectivity()
-    
+
     return s.solutions()
 
 

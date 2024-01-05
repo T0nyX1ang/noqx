@@ -148,7 +148,7 @@ function get_selected_cells()
 		for (let j=rg[2]; j<=rg[3]; j+=2)
 			arr.push(get(`shift_click_${i},${j}`));
 	return arr;
-}	
+}
 
 function update_shift_click_css()
 {
@@ -211,7 +211,7 @@ $(document).keydown(function (event) {
 		}
 	}
 
-	else 
+	else
 	{
 		event.preventDefault();
 		ELVES[active_element.id].handle_input(event.key,
@@ -354,7 +354,7 @@ function get_captured_elt_id()
 	let sample_hori_border = get('0,1');
 	let border_width = sample_hori_border.getBoundingClientRect().height;
 
-	// translate to grid coordinates, where we dictate that 
+	// translate to grid coordinates, where we dictate that
 	// each cell is 1 unit x 1 unit
 	let grid_mouse_x = (mouse_x - grid_l) / (cell_width+border_width),
 		grid_mouse_y = (mouse_y - grid_t) / (cell_width+border_width);
@@ -473,7 +473,7 @@ function display_grid(param_dict) // sets the value of grid_div to the default a
 		if (r > ROW_LIMIT || c > COL_LIMIT) return;
 	}
 	catch { return; }
-	
+
 	// set global vars
 	ROWS = r;
 	COLS = c;
@@ -706,7 +706,7 @@ function display_next_solution()
 {
 	solution_num = (solution_num % num_solutions) + 1; // solutions are 1-indexed so this works correctly
 	get('solution_num').innerHTML = solution_num;
-	
+
 	for (let elf of Object.values(ELVES))
 		elf.reset_solution();
 

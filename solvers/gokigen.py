@@ -6,7 +6,7 @@ from enum import Enum
 
 # --- A literal army of helper functions ---
 Direction = Enum('Direction', 'TL TR BR BL SELF NONE')
-directions = [Direction.TL, Direction.TR, Direction.BR, Direction.BL, 
+directions = [Direction.TL, Direction.TR, Direction.BR, Direction.BL,
     Direction.SELF, Direction.NONE]
 
 def tuple_sum(t1, t2):
@@ -38,7 +38,7 @@ def inverse(t):
         res.append(t[i] * -1)
     return tuple(res)
 
-# "Grid offsets" for the 4 commonly-used directions. 
+# "Grid offsets" for the 4 commonly-used directions.
 # Notice that these are fractional.
 dir_to_offset = {
     Direction.TL: (-.5, -.5),
@@ -141,7 +141,7 @@ def solve(E):
                 needed, incompatible = neighbors(r, c, direction, E.R, E.C)
                 require(every([grid[y][x][d] for (y, x, d) in needed]) |
                     ~grid[r][c][direction])
-                require(none([grid[y][x][d] for (y, x, d) in incompatible]) | 
+                require(none([grid[y][x][d] for (y, x, d) in incompatible]) |
                     ~grid[r][c][direction])
 
                 # If there is some compatible edge
@@ -176,7 +176,7 @@ def solve(E):
 
             # NO LOOPS.
             require(~((parent[r][c] == Direction.SELF) & loop_detector))
-    
+
     # Make sure that every box has a diagonal line in it.
     for r in range(E.R-1):
         for c in range(E.C-1):

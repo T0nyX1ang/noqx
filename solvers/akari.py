@@ -4,11 +4,11 @@ from .utils.solutions import *
 
 def encode(string):
     return utils.encode(string, clue_encoder = lambda s : s)
-    
+
 def solve(E):
     # BoolVar that is True iff (r,c) has a lightbulb
     bools = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
-    
+
     # ENFORCE THAT BLACK CELLS CAN'T HAVE LIGHTBULBS
     for (r,c) in E.clues:
         require(~bools[r][c])
@@ -44,6 +44,6 @@ def solve(E):
 
     return get_all_grid_solutions(bools,
         format_function = lambda r, c: 'bulb.png' if bools[r][c].value() else '')
-   
+
 def decode(solutions):
     return utils.decode(solutions)

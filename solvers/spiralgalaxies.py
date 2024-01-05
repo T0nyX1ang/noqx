@@ -7,10 +7,10 @@ def encode(string):
     json_obj = json.loads(string)
     json_grid = json_obj['grid']
     json_params = json_obj['param_values']
-    
+
     rows, cols = int(json_params['r']), int(json_params['c'])
     clues = {}
-        
+
     for i in range(2*(rows+1)):
         for j in range(2*(cols+1)):
             if f'{i},{j}' in json_grid:
@@ -91,6 +91,6 @@ def solve(E):
         border_sols.append(solution)
 
     return border_sols
-    
+
 def decode(solutions):
     return utils.decode(solutions)
