@@ -1,5 +1,6 @@
 """The view for the Noq(x) website."""
 
+import importlib
 import json
 import traceback
 from typing import Any, Mapping
@@ -9,7 +10,6 @@ from django.shortcuts import render
 from django.urls import URLPattern, path
 from django.views.generic.base import RedirectView
 
-from solvers import *
 from solvers.claspy import reset
 from static.consts import cats as CATS
 from static.consts import types as PUZZLE_TYPES
@@ -67,7 +67,7 @@ def solver(request):
     """Solver view."""
     try:
         reset()
-        module = globals()[request.GET["puzzle_type"]]
+        module = importlib.import_module(f"solvers.{request.GET['puzzle_type']}")
         puzzle_encoding = module.encode(request.GET["puzzle"])
         solutions_encoded = module.solve(puzzle_encoding)
         solutions_decoded = module.decode(solutions_encoded)
@@ -76,7 +76,7 @@ def solver(request):
     except ValueError as err:
         print(traceback.print_exc(), flush=True)
         return HttpResponseBadRequest(json.dumps({"message": str(err)}))
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-except
         print(traceback.print_exc(), flush=True)
         return HttpResponseServerError(json.dumps({"message": str(exc)}))
 
