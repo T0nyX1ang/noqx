@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Noq{% endblock %}
+
+{% block content %}
+	<div style='margin-left: 15%; margin-right: 15%;'>
+		<center>
+			<b style='font-size: 28px;'>Noq - logic puzzle solver</b><br>
+			<span style='font-size: 14px'>
+				by
+					<a href='https://github.com/jenna-h/'>Jenna</a>
+				and
+					<a href='https://mstang.xyz'>Michael</a>
+				using
+					<a href='https://github.com/danyq/claspy'>claspy</a> <br>
+			</span>
+		</center>
+
+		<div id='typegroups'>
+			{% for cat, cat_name in cats.items %}
+				<div class='typegroup'>
+					<b>{{ cat_name }}</b>
+					<ul>
+					{% for cat0, cat0_types in types.items %}
+						{% if cat0 == cat %} <!-- this Django code sorta sucks -->
+							{% for pt_dict in cat0_types %}
+								<li><a href='{{ pt_dict.value }}'>{{ pt_dict.name }}</a></li>
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+					</ul>
+				</div>
+			{% endfor %}
+		</div>
+		
+		<br>
+
+		<center style='font-size: 12px';>
+			&copy; 2023; 
+			general layout of this page borrowed from <a href='https://puzz.link/list.html'>puzz.link</a>
+		</center>
+	</div>
+{% endblock %}

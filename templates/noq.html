@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block head %}
+	{{ block.super }}
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'noq/noq.css' %}"></link>
+{% endblock %}
+{% block title %}{{ name }} solver - Noq{% endblock %}
+{% block content %}
+	<div id='noq'>
+		<center>
+			<b>{{ name }} solver</b>
+		</center>
+
+		<div id='top_pane'>
+			<div id='buttons_div'>
+				<button id='solve_button' onclick='solve_puzzle()'>Solve!</button>
+				<button id='reset_button' onclick='reset_button_callback()'>Reset</button>
+				<button id='controls_button' onclick='toggle_controls()'>Show controls</button>
+				<button id='copy_button' onclick='copy_to_clipboard()'>Copy to clipboard</button>
+			</div>
+		</div>
+
+		<div id='controls_div'></div>
+
+		<div id='puzzle_div' style='display:flex; justify-content: center; margin: 10px;'>
+			<div id='puzzle_interface'>
+				<div id='header_div'></div>
+				<div id='grid_div'></div>
+			</div>
+			<div id='helper_div'>
+				<div id='params_div'></div>
+				<div id='examples_div'></div>
+			</div>
+		</div>
+
+		<div id='copy_div' style='display:none'></div>
+	</div>
+	<script>
+		pt = '{{ value }}';
+	</script>
+	<script src="{% static 'noq/noq.js' %}"></script>
+
+	<br>
+	<center><a href='/'>Back</a></center>
+{% endblock %}
