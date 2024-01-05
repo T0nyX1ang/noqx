@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -42,6 +41,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "noq.views"
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = "Thisisnotasecretkey.Pleasereplaceitwithsomethingelse."
 
 TEMPLATES = [
     {
