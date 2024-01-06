@@ -66,7 +66,7 @@ from functools import reduce
 import subprocess
 from time import time, strftime
 
-CLASP_COMMAND = 'py -3 -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic'
+CLASP_COMMAND = 'python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic'
 
 
 ################################################################################
