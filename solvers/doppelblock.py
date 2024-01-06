@@ -1,30 +1,40 @@
-from .claspy import *
-from . import utils
-from .utils.encoding import *
+"""The Doppelblock solver."""
 
-def encode(string):
-    return utils.encode(string, outside_clues = '1001')
+from typing import List
 
-def solve(E):
+from . import claspy, utils
+from .claspy import BoolVar, IntVar, cond, require, reset, set_max_val, var_in
+from .utils.encoding import Encoding
+from .utils.encoding import rc_to_grid
 
-    assert E.R == E.C, 'Doppelblock puzzles must be square'
+
+def encode(string: str) -> Encoding:
+    return utils.encode(string, outside_clues="1001")
+
+
+def solve(E: Encoding) -> List:
+    assert E.R == E.C, "Doppelblock puzzles must be square"
     n = E.R
 
     reset()
-    set_max_val((n-2)*(n-1)//2) # the maximum sum of numbers in a row / col
+    set_max_val((n - 2) * (n - 1) // 2)  # the maximum sum of numbers in a row / col
 
     # make a nxn Latin square
     numbers_solver = utils.RectangularGridNumbersSolver(n, n, 1, n)
     numbers_solver.rows_and_cols()
 
     # the "numbers" n-1 and n represent shaded blocks
-    shading_symbols = [n-1, n]
+    shading_symbols = [n - 1, n]
 
     for r in E.left:
         has_seen_first_shaded, has_seen_second_shaded = False, False
         s = IntVar(0)
         for c in range(n):
-            s += cond(~var_in(numbers_solver.grid[r][c], shading_symbols) & has_seen_first_shaded & ~has_seen_second_shaded, numbers_solver.grid[r][c], 0)
+            s += cond(
+                ~var_in(numbers_solver.grid[r][c], shading_symbols) & has_seen_first_shaded & ~has_seen_second_shaded,
+                numbers_solver.grid[r][c],
+                0,
+            )
             has_seen_second_shaded |= has_seen_first_shaded & var_in(numbers_solver.grid[r][c], shading_symbols)
             has_seen_first_shaded |= var_in(numbers_solver.grid[r][c], shading_symbols)
         require(s == int(E.left[r]))
@@ -33,22 +43,26 @@ def solve(E):
         has_seen_first_shaded, has_seen_second_shaded = False, False
         s = IntVar(0)
         for r in range(n):
-            s += cond(~var_in(numbers_solver.grid[r][c], shading_symbols) & has_seen_first_shaded & ~has_seen_second_shaded, numbers_solver.grid[r][c], 0)
+            s += cond(
+                ~var_in(numbers_solver.grid[r][c], shading_symbols) & has_seen_first_shaded & ~has_seen_second_shaded,
+                numbers_solver.grid[r][c],
+                0,
+            )
             has_seen_second_shaded |= has_seen_first_shaded & var_in(numbers_solver.grid[r][c], shading_symbols)
             has_seen_first_shaded |= var_in(numbers_solver.grid[r][c], shading_symbols)
         require(s == int(E.top[c]))
 
-    for (r,c) in E.clues:
-        require(numbers_solver.grid[r][c] == E.clues[(r,c)])
+    for r, c in E.clues:
+        require(numbers_solver.grid[r][c] == E.clues[(r, c)])
 
     solutions = []
-    while len(solutions) < utils.MAX_SOLUTIONS_TO_FIND and claspy_solve():
+    while len(solutions) < utils.MAX_SOLUTIONS_TO_FIND and claspy.solve():
         solution = {}
         for r in range(n):
             for c in range(n):
-                key = rc_to_grid(r,c)
+                key = rc_to_grid(r, c)
                 if numbers_solver.grid[r][c].value() in shading_symbols:
-                    solution[key] = 'black'
+                    solution[key] = "black"
                 else:
                     solution[key] = numbers_solver.grid[r][c].value()
         solutions.append(solution)
@@ -64,5 +78,6 @@ def solve(E):
 
     return solutions
 
-def decode(solutions):
+
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

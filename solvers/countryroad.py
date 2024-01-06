@@ -1,10 +1,17 @@
-from .claspy import *
+"""The Country Road solver."""
+
+from typing import List
+
 from . import utils
+from .claspy import require, reset, set_max_val, sum_bools, var_in
+from .utils.encoding import Encoding
 
-def encode(string):
-    return utils.encode(string, has_borders = True)
 
-def solve(E):
+def encode(string: str) -> Encoding:
+    return utils.encode(string, has_borders=True)
+
+
+def solve(E: Encoding) -> List:
     rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
 
     # get the size of the largest room
@@ -15,28 +22,27 @@ def solve(E):
     set_max_val(max_room_size)
 
     loop_solver = utils.RectangularGridLoopSolver(E.R, E.C)
-    loop_solver.loop(E.clues, includes_clues = True)
+    loop_solver.loop(E.clues, includes_clues=True)
     loop_solver.no_reentrance(rooms)
     loop_solver.hit_every_region(rooms)
 
-    region_solver = utils.RectangularGridRegionSolver(
-        E.R, E.C, loop_solver.grid, given_regions = rooms
-    )
+    region_solver = utils.RectangularGridRegionSolver(E.R, E.C, loop_solver.grid, given_regions=rooms)
 
-    for (r, c) in E.clues:
+    for r, c in E.clues:
         for room in rooms:
             if (r, c) in room:
                 clued_room = room
-        require(sum_bools(E.clues[(r,c)],
-            [~var_in(loop_solver.grid[y][x], utils.ISOLATED) for (y, x) in clued_room]))
+        require(sum_bools(E.clues[(r, c)], [~var_in(loop_solver.grid[y][x], utils.ISOLATED) for (y, x) in clued_room]))
 
     for r in range(E.R):
         for c in range(E.C):
-            for (y, x) in region_solver.get_neighbors_in_other_regions(r, c):
-                require(~(var_in(loop_solver.grid[r][c], utils.ISOLATED) &
-                    var_in(loop_solver.grid[y][x], utils.ISOLATED)))
+            for y, x in region_solver.get_neighbors_in_other_regions(r, c):
+                require(
+                    ~(var_in(loop_solver.grid[r][c], utils.ISOLATED) & var_in(loop_solver.grid[y][x], utils.ISOLATED))
+                )
 
     return loop_solver.solutions()
 
-def decode(solutions):
+
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

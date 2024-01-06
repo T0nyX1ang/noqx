@@ -1,13 +1,17 @@
-from .claspy import *
-from . import utils
-from .utils.borders import *
-from .utils.loops import *
-from .utils.regions import *
+"""The Moon-or-Sun solver."""
 
-def encode(string):
+from typing import List
+
+from .claspy import BoolVar, MultiVar, require, sum_bools, var_in
+from . import utils
+from .utils.encoding import Encoding
+from .utils.loops import UP_CONNECTING, LEFT_CONNECTING, Direction
+from .utils.regions import full_bfs
+
+def encode(string: str) -> Encoding:
     return utils.encode(string, clue_encoder = lambda s : s, has_borders = True)
 
-def solve(E):
+def solve(E: Encoding) -> List:
     loop_solver = utils.RectangularGridLoopSolver(E.R, E.C)
     rooms = full_bfs(E.R, E.C, E.edges)
     region_type = [[MultiVar('m', 's') for r in range(E.R)] for c in range(E.C)]
@@ -56,5 +60,5 @@ def solve(E):
 
     return loop_solver.solutions()
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

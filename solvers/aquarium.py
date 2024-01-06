@@ -1,12 +1,18 @@
-from .claspy import *
+"""The Aquarium solver."""
+
+from typing import List
+
 from . import utils
-from .utils import borders
+from .claspy import require, set_max_val, sum_bools
+from .utils.encoding import Encoding
 from .utils.borders import Direction
 
-def encode(string):
-    return utils.encode(string, has_borders = True, outside_clues = '1001')
 
-def solve(E):
+def encode(string: str) -> Encoding:
+    return utils.encode(string, has_borders=True, outside_clues="1001")
+
+
+def solve(E: Encoding):
     max_left_clue = max(E.left.values(), default=0)
     max_top_clue = max(E.top.values(), default=0)
     set_max_val(max(max_left_clue, max_top_clue, 1))
@@ -25,16 +31,16 @@ def solve(E):
             # If there is no top border on a cell,
             if (r, c, Direction.TOP) not in E.edges:
                 # When the cell above it is shaded, the cell itself is also shaded.
-                require(s.grid[r][c] | ~s.grid[r-1][c])
+                require(s.grid[r][c] | ~s.grid[r - 1][c])
     for c in range(1, E.C):
         for r in range(E.R):
             # If there is no vertical border between cells,
             if (r, c, Direction.LEFT) not in E.edges:
                 # The two cells' shadedness must match.
-                require(s.grid[r][c] == s.grid[r][c-1])
+                require(s.grid[r][c] == s.grid[r][c - 1])
 
-    return s.solutions(shaded_color = 'lightblue')
+    return s.solutions(shaded_color="lightblue")
 
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

@@ -1,12 +1,19 @@
-from .claspy import *
+"""The Chocona solver."""
+
+from typing import List
+
 from . import utils
-from .utils.regions import *
-from .utils.shading import *
+from .claspy import BoolVar, MultiVar, require, set_max_val, sum_bools, var_in
+from .utils.encoding import Encoding
+from .utils.regions import full_bfs
+from .utils.shading import RectangularGridShadingSolver
 
-def encode(string):
-    return utils.encode(string, has_borders = True)
 
-def solve(E):
+def encode(string: str) -> Encoding:
+    return utils.encode(string, has_borders=True)
+
+
+def solve(E: Encoding) -> List:
     rooms = full_bfs(E.R, E.C, E.edges)
 
     room_to_clue = {}
@@ -14,10 +21,10 @@ def solve(E):
     all_rooms_have_clues = True
     for room in rooms:
         has_clue = False
-        for (r, c) in room:
+        for r, c in room:
             if (r, c) in E.clues:
                 has_clue = True
-                room_to_clue[room] = int(E.clues[(r,c)])
+                room_to_clue[room] = int(E.clues[(r, c)])
         if not has_clue:
             all_rooms_have_clues = False
 
@@ -47,29 +54,37 @@ def solve(E):
     #   ^rrrr
 
     # space represents empty space.
-    parent = [[MultiVar('.', '<', '^', 'r', ' ') for c in range(E.C)] for r in range(E.R)]
+    parent = [[MultiVar(".", "<", "^", "r", " ") for c in range(E.C)] for r in range(E.R)]
     for r in range(E.R):
         for c in range(E.C):
-            require((parent[r][c] == ' ') == (~s.grid[r][c]))
+            require((parent[r][c] == " ") == (~s.grid[r][c]))
             if r == 0:
-                require(parent[r][c] != '^')
-                require(parent[r][c] != 'r')
+                require(parent[r][c] != "^")
+                require(parent[r][c] != "r")
             else:
-                require(~s.grid[r-1][c] | (parent[r][c] != '.'))
-                is_space_left_empty = BoolVar(True) if c == 0 else ~s.grid[r][c-1]
-                require((parent[r][c] == '^') == (s.grid[r][c] & var_in(parent[r-1][c], ('^', '.')) & is_space_left_empty))
+                require(~s.grid[r - 1][c] | (parent[r][c] != "."))
+                is_space_left_empty = BoolVar(True) if c == 0 else ~s.grid[r][c - 1]
+                require(
+                    (parent[r][c] == "^") == (s.grid[r][c] & var_in(parent[r - 1][c], ("^", ".")) & is_space_left_empty)
+                )
             if c == 0:
-                require(parent[r][c] != '<')
-                require(parent[r][c] != 'r')
+                require(parent[r][c] != "<")
+                require(parent[r][c] != "r")
             else:
-                require(~s.grid[r][c-1] | (parent[r][c] != '.'))
-                is_space_above_empty = BoolVar(True) if r == 0 else ~s.grid[r-1][c] # Don't do this with grid indexing b/c it wraps on negatives :(
-                require((parent[r][c] == '<') == (s.grid[r][c] & var_in(parent[r][c-1], ('<', '.')) & is_space_above_empty))
+                require(~s.grid[r][c - 1] | (parent[r][c] != "."))
+                is_space_above_empty = (
+                    BoolVar(True) if r == 0 else ~s.grid[r - 1][c]
+                )  # Don't do this with grid indexing b/c it wraps on negatives :(
+                require(
+                    (parent[r][c] == "<")
+                    == (s.grid[r][c] & var_in(parent[r][c - 1], ("<", ".")) & is_space_above_empty)
+                )
             if 0 < r and 0 < c:
                 # Don't have an & s.grid[r][c] condition on RHS. We need to enforce rectangularness.
-                require((parent[r][c] == 'r') == (s.grid[r-1][c] & s.grid[r][c-1] & s.grid[r-1][c-1]))
+                require((parent[r][c] == "r") == (s.grid[r - 1][c] & s.grid[r][c - 1] & s.grid[r - 1][c - 1]))
 
-    return s.solutions(shaded_color = 'darkgray')
+    return s.solutions(shaded_color="darkgray")
 
-def decode(solutions):
+
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

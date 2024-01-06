@@ -1,10 +1,16 @@
-from .claspy import *
-from . import utils
+"""Solves Haisu puzzles (Slow version)."""
 
-def encode(string):
+from typing import List
+
+from . import utils
+from .claspy import IntVar, require, require_all_diff
+from .utils.encoding import Encoding
+
+
+def encode(string: str) -> Encoding:
     return utils.encode(string, has_borders = True, clue_encoder = lambda x : int(x) if x.isnumeric() else x)
 
-def solve(E):
+def solve(E: Encoding) -> List:
     if not ('s' in E.clues.values() and 'g' in E.clues.values()):
         raise ValueError('S and G squares must be provided.')
 
@@ -22,12 +28,9 @@ def solve(E):
     grid = [[IntVar(0, E.R*E.C-1) for c in range(E.C)] for r in range(E.R)]
     require_all_diff([grid[r][c] for c in range(E.C) for r in range(E.R)])
 
-    r_start, c_start = None, None
     for r in range(E.R):
         for c in range(E.C):
             if E.clues.get((r,c)) == 's':
-                r_start = r
-                c_start = c
                 room_start = cell_to_room[(r,c)]
                 require(grid[r][c] == 0)
 
@@ -40,7 +43,7 @@ def solve(E):
                 require(cond)
 
     for (r, c), value in E.clues.items():
-        if type(value) == int:
+        if isinstance(value, int):
             visit_count = IntVar(0)
             for ((y, x), (y2, x2)) in room_spanners[cell_to_room[(r, c)]]:
                 visit_count += (grid[y][x] == grid[y2][x2] + 1) & (grid[y][x] <= grid[r][c])
@@ -50,7 +53,7 @@ def solve(E):
             else:
                 require(visit_count == value)
 
-    def format_function(r, c):
+    def format_function(r: int, c: int) -> str:
         if E.clues.get((r,c)) == 's':
             if 0 < r and grid[r][c].value() == grid[r-1][c].value() - 1:
                 return 's↑.png'
@@ -126,5 +129,5 @@ def solve(E):
 
     return utils.solutions.get_all_grid_solutions(grid, format_function=format_function)
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

@@ -1,12 +1,16 @@
-from .claspy import *
-from . import utils
-from .utils.shapes import *
-from .utils.encoding import *
+"""The Statue Park solver."""
 
-def encode(string):
+from typing import List
+
+from .claspy import IntVar, require, sum_bools
+from . import utils
+from .utils.shapes import OMINOES, get_variants, place_shape_in_grid
+from .utils.encoding import Encoding
+
+def encode(string: str) -> Encoding:
     return utils.encode(string, clue_encoder = lambda s: s)
 
-def solve(E):
+def solve(E: Encoding) -> List:
     shapeset = E.params['shapeset']
 
     shape_id_to_variants = {}
@@ -39,7 +43,7 @@ def solve(E):
             for c in range(E.C):
                 for variant in variants:
                     occupied_cells = place_shape_in_grid(E.R, E.C, variant, r, c)
-                    if occupied_cells != None:
+                    if occupied_cells is not None:
                         possible_shape_conditions.append(
                             sum_bools(E.R*E.C,
                                 [(grid[y][x] == shape_id) == ((y,x) in occupied_cells) \
@@ -69,5 +73,5 @@ def solve(E):
 
     return s.solutions()
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

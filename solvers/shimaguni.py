@@ -1,14 +1,18 @@
-from .claspy import *
-from . import utils
-from .utils import borders
-from .utils.borders import Direction
-from .utils.shading import *
-from .utils.grids import *
+"""The Shimaguni solver."""
 
-def encode(string):
+from typing import List
+
+from .claspy import Atom, BoolVar, IntVar, cond, require, set_max_val, sum_bools, at_least, at_most
+from . import utils
+from .utils.borders import Direction
+from .utils.shading import RectangularGridShadingSolver
+from .utils.grids import get_neighbors
+from .utils.encoding import Encoding
+
+def encode(string: str) -> Encoding:
     return utils.encode(string, has_borders = True)
 
-def solve(E):
+def solve(E: Encoding) -> List:
     rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
     # Map clue numbers to their rooms.
     clue_coord_to_room = {}
@@ -75,5 +79,5 @@ def solve(E):
 
     return s.solutions(shaded_color = 'darkgray')
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

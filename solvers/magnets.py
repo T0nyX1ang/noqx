@@ -1,11 +1,16 @@
-from .claspy import *
-from . import utils
-from .utils import borders
+"""The Magnets solver."""
 
-def encode(string):
+from typing import List
+
+from . import utils
+from .claspy import MultiVar, require, set_max_val, sum_bools, sum_vars
+from .utils.encoding import Encoding
+
+
+def encode(string: str) -> Encoding:
     return utils.encode(string, has_borders = True, outside_clues = '1111')
 
-def solve(E):
+def solve(E: Encoding) -> List:
     rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
 
     for room in rooms:
@@ -45,5 +50,5 @@ def solve(E):
 
     return utils.solutions.get_all_grid_solutions(grid)
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

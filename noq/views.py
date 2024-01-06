@@ -42,9 +42,7 @@ for cat in types_by_cat:
 urlpatterns.append(
     path(
         route="",
-        view=lambda request: render(
-            request, "./index.html", {"types": types_by_cat, "cats": CATS}
-        ),
+        view=lambda request: render(request, "./index.html", {"types": types_by_cat, "cats": CATS}),
     )
 )
 

@@ -1,23 +1,30 @@
-from .claspy import *
+"""The Nuribou solver."""
+
+from typing import List, Tuple
+
 from . import utils
+from .claspy import BoolVar, cond, require, set_max_val
+from .utils.encoding import Encoding
 
 HORIZONTAL_OFFSETS = ((0, 1), (0, -1))
 VERTICAL_OFFSETS = ((1, 0), (-1, 0))
 
-def encode(string):
+
+def encode(string: str) -> Encoding:
     return utils.encode(string)
 
-def solve(E):
+
+def solve(E: Encoding) -> List:
     if len(E.clues) == 0:
-        raise ValueError('The grid is empty.')
+        raise ValueError("The grid is empty.")
     elif len(E.clues) == 1:
-        raise ValueError('Are you sure you put in all the clues?')
+        raise ValueError("Are you sure you put in all the clues?")
 
     # Map each clue cell to its clue number
     # (starts at 0, increases left-to-right, top-to-bottom)
     clue_cell_id = {}
-    for (r, c) in E.clues:
-        clue_cell_id[(r,c)] = r*E.C + c
+    for r, c in E.clues:
+        clue_cell_id[(r, c)] = r * E.C + c
 
     num_cells = E.R * E.C
 
@@ -25,13 +32,14 @@ def solve(E):
     set_max_val(num_cells)
 
     shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
-    region_solver = utils.RectangularGridRegionSolver(E.R, E.C, shading_solver.grid,
-                        max_num_regions = num_cells, region_symbol_sets = [[True], [False]])
+    region_solver = utils.RectangularGridRegionSolver(
+        E.R, E.C, shading_solver.grid, max_num_regions=num_cells, region_symbol_sets=[[True], [False]]
+    )
 
-    region_solver.region_roots(clue_cell_id, region_symbol_set = [False], exact = True)
+    region_solver.region_roots(clue_cell_id, region_symbol_set=[False], exact=True)
     region_solver.set_region_size(num_cells, E.clues)
 
-    def get_neighbors_with_offsets(r, c, offset_tuples):
+    def get_neighbors_with_offsets(r: int, c: int, offset_tuples: Tuple[int, int]) -> List[Tuple[int, int]]:
         neighbors = []
         for dy, dx in offset_tuples:
             y, x = r + dy, c + dx
@@ -53,8 +61,7 @@ def solve(E):
                 has_vertical_neighbor |= shading_solver.grid[y][x]
 
             # the cell can't be shaded and have both a horizontal and a vertical neighbor
-            require(~(shading_solver.grid[r][c] &
-                        has_horizontal_neighbor & has_vertical_neighbor))
+            require(~(shading_solver.grid[r][c] & has_horizontal_neighbor & has_vertical_neighbor))
 
     for r in range(E.R):
         for c in range(E.C):
@@ -63,28 +70,29 @@ def solve(E):
             #   (A size is "invalid" if it's not actually shaded or if it's off the grid.)
             shaded_sizes = []
             # neighbors in a clockwise order
-            for (y, x) in ((r-1, c), (r, c+1), (r+1, c), (r, c-1)):
+            for y, x in ((r - 1, c), (r, c + 1), (r + 1, c), (r, c - 1)):
                 if utils.is_valid_coord(E.R, E.C, y, x):
-                    shaded_sizes.append(
-                        cond(shading_solver.grid[y][x], region_solver.region_size[y][x], 0))
+                    shaded_sizes.append(cond(shading_solver.grid[y][x], region_solver.region_size[y][x], 0))
                 else:
                     shaded_sizes.append(0)
 
             # For regions that touch diagonally, make sure they're not the same length.
             for i in range(len(shaded_sizes)):
-                counterclockwise_index = (i-1) % len(shaded_sizes)
-                clockwise_index = (i+1) % len(shaded_sizes)
+                counterclockwise_index = (i - 1) % len(shaded_sizes)
+                clockwise_index = (i + 1) % len(shaded_sizes)
 
                 # require that...
                 require(
                     # the current cell is not shaded,
-                    shading_solver.grid[r][c] |
+                    shading_solver.grid[r][c]
+                    |
                     # the neighbor we have chosen is not shaded or invalid,
-                    (shaded_sizes[i] == 0) |
+                    (shaded_sizes[i] == 0)
+                    |
                     # or the sizes are different.
                     (
-                        (shaded_sizes[i] != shaded_sizes[counterclockwise_index]) &
-                        (shaded_sizes[i] != shaded_sizes[clockwise_index])
+                        (shaded_sizes[i] != shaded_sizes[counterclockwise_index])
+                        & (shaded_sizes[i] != shaded_sizes[clockwise_index])
                     )
                 )
 
@@ -92,5 +100,6 @@ def solve(E):
 
     return solutions
 
-def decode(solutions):
+
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

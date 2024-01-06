@@ -1,10 +1,17 @@
-from .claspy import *
-from . import utils
+"""The Nurikabe solver."""
 
-def encode(string):
+from typing import List
+
+from . import utils
+from .claspy import set_max_val
+from .utils.encoding import Encoding
+
+
+def encode(string: str) -> Encoding:
     return utils.encode(string)
 
-def solve(E):
+
+def solve(E: Encoding) -> List:
     # Reduce IntVar size by counting clue cells and assigning each one an id.
     clue_cell_id = {}
     number_clues = {}
@@ -12,17 +19,20 @@ def solve(E):
     for r in range(E.R):
         for c in range(E.C):
             if (r, c) in E.clues:
-                clue_cell_id[(r,c)] = len(clue_cell_id)
-                value = E.clues[(r,c)]
-                if value == '?':
+                clue_cell_id[(r, c)] = len(clue_cell_id)
+                value = E.clues[(r, c)]
+                if value == "?":
                     has_nonnumber_clue = True
                 else:
-                    number_clues[(r,c)] = value
-    max_clue = (E.R*E.C - sum(number_clues.values())) if has_nonnumber_clue else \
-        (max(number_clues.values()) if number_clues else 0)
+                    number_clues[(r, c)] = value
+    max_clue = (
+        (E.R * E.C - sum(number_clues.values()))
+        if has_nonnumber_clue
+        else (max(number_clues.values()) if number_clues else 0)
+    )
 
     if len(clue_cell_id) == 0:
-        raise ValueError('Error: No clues')
+        raise ValueError("Error: No clues")
 
     # Restrict the number of bits used for IntVar.
     set_max_val(max(len(clue_cell_id), max_clue))
@@ -31,12 +41,22 @@ def solve(E):
     shading_solver.black_connectivity()
     shading_solver.no_black_2x2()
 
-    region_solver = utils.RectangularGridRegionSolver(E.R, E.C, shading_solver.grid,
-                        max_num_regions = len(clue_cell_id), region_symbol_sets = [[False,]])
-    region_solver.region_roots(clue_cell_id, exact = True)
-    region_solver.set_region_size(max_clue, number_clues, clue_region_bijection = not has_nonnumber_clue)
+    region_solver = utils.RectangularGridRegionSolver(
+        E.R,
+        E.C,
+        shading_solver.grid,
+        max_num_regions=len(clue_cell_id),
+        region_symbol_sets=[
+            [
+                False,
+            ]
+        ],
+    )
+    region_solver.region_roots(clue_cell_id, exact=True)
+    region_solver.set_region_size(max_clue, number_clues, clue_region_bijection=not has_nonnumber_clue)
 
     return shading_solver.solutions()
 
-def decode(solutions):
+
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

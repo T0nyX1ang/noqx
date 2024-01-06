@@ -1,8 +1,13 @@
-from .claspy import *
+"""The Heteromino solver."""
+
+from typing import List, Tuple, Dict
+
+from .claspy import BoolVar, MultiVar, require
 from . import utils
-from .utils.borders import *
-from .utils.grids import *
-from .utils.solutions import *
+from .utils.encoding import Encoding
+from .utils.borders import is_valid_coord, get_border_coord_from_edge_id, Direction
+from .utils.grids import get_neighbors
+from .utils.solutions import get_all_solutions
 
 # --- Shape definitions ---
 shapeI = 'I' # Vertical segment, size 3
@@ -31,15 +36,15 @@ NEIGHBORS = {
     shaper: ((0, 1), (1, 0))
 }
 
-def inverse(t):
+def inverse(t: Tuple[int]) -> Tuple[int]:
     return tuple(-1*t[x] for x in range(len(t)))
 
 # For ths sake of this solver, the middle cell in a region must always be root.
 
-def encode(string):
+def encode(string: str) -> Encoding:
     return utils.encode(string)
 
-def solve(E):
+def solve(E: Encoding) -> List:
     shape = [[MultiVar(*SHAPES+('x',)) for c in range(E.C)] for r in range(E.R)]
     parent = [[MultiVar('^','v','>','<','.','x') for c in range(E.C)] for r in range(E.R)]
 
@@ -94,7 +99,7 @@ def solve(E):
                             require((shape[cell_r][cell_c] != shape[r][c]) | (parent[r][c] != possible_parent))
 
     # --- Compile the solution ---
-    def generate_solution():
+    def generate_solution() -> Dict[str, str]:
         solution = {}
         for r in range(E.R):
             for c in range(E.C):
@@ -129,5 +134,5 @@ def solve(E):
 
     return get_all_solutions(generate_solution, avoid_duplicate_solution)
 
-def decode(solutions):
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

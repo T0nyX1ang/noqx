@@ -1,11 +1,18 @@
-from .claspy import *
-from . import utils
-from .utils.encoding import *
+"""The Yajilin-Kazusan solver."""
 
-def encode(string):
-    return utils.encode(string, clue_encoder = lambda s : s)
+from typing import List
 
-def solve(E):
+from . import claspy, utils
+from .claspy import Atom, BoolVar, at_most, require, sum_bools
+from .utils.encoding import Encoding
+from .utils.encoding import MAX_SOLUTIONS_TO_FIND, rc_to_grid
+
+
+def encode(string: str) -> Encoding:
+    return utils.encode(string, clue_encoder=lambda s: s)
+
+
+def solve(E: Encoding) -> List:
     # Restrict the number of bits used for IntVar.
     # The highest number that we need is the highest clue number.
 
@@ -16,10 +23,10 @@ def solve(E):
     # no two adjacent cells are shaded
     for r in range(E.R):
         for c in range(E.C):
-            if r < E.R-1:
-                require(~(grid[r][c] & grid[r+1][c]))
-            if c < E.C-1:
-                require(~(grid[r][c] & grid[r][c+1]))
+            if r < E.R - 1:
+                require(~(grid[r][c] & grid[r + 1][c]))
+            if c < E.C - 1:
+                require(~(grid[r][c] & grid[r][c + 1]))
 
     # connectivity:
     # (i) at most one cell is free-proved
@@ -28,51 +35,50 @@ def solve(E):
     for r in range(E.R):
         for c in range(E.C):
             atoms[r][c].prove_if(free_prove[r][c])
-            for (i,j) in [(1,0),(-1,0),(0,1),(0,-1)]:
-                if 0<=r+i<E.R and 0<=c+j<E.C:
-                    atoms[r][c].prove_if((~grid[r+i][c+j]) & atoms[r+i][c+j])
-            require(atoms[r][c] | grid[r][c]) # everything is proved or shaded
+            for i, j in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                if 0 <= r + i < E.R and 0 <= c + j < E.C:
+                    atoms[r][c].prove_if((~grid[r + i][c + j]) & atoms[r + i][c + j])
+            require(atoms[r][c] | grid[r][c])  # everything is proved or shaded
 
     # clues are correct (or shaded over)
-    for (r,c) in E.clues:
-        num_string = E.clues[(r,c)][0]
-        direction = E.clues[(r,c)][1]
+    for r, c in E.clues:
+        num_string = E.clues[(r, c)][0]
+        direction = E.clues[(r, c)][1]
         # check the clue for validity
-        if not num_string.isnumeric() or direction not in 'lrud':
-            raise ValueError('Please ensure that each clue has both a number and a direction.')
+        if not num_string.isnumeric() or direction not in "lrud":
+            raise ValueError("Please ensure that each clue has both a number and a direction.")
 
         # build a list of coordinates that are "seen" by this clue
         seen_cells = []
-        if direction == 'l':
-            seen_cells = [(r,y) for y in range(0, c)]
-        elif direction == 'r':
-            seen_cells = [(r,y) for y in range(c+1, E.C)]
-        elif direction == 'u':
-            seen_cells = [(x,c) for x in range(0, r)]
-        elif direction == 'd':
-            seen_cells = [(x,c) for x in range(r+1, E.R)]
+        if direction == "l":
+            seen_cells = [(r, y) for y in range(0, c)]
+        elif direction == "r":
+            seen_cells = [(r, y) for y in range(c + 1, E.C)]
+        elif direction == "u":
+            seen_cells = [(x, c) for x in range(0, r)]
+        elif direction == "d":
+            seen_cells = [(x, c) for x in range(r + 1, E.R)]
         # get a list of boolean variables that tell you whether the cells are shaded
-        require(
-            sum_bools(int(num_string), [grid[x][y] for (x,y) in seen_cells]) | grid[r][c]
-        )
+        require(sum_bools(int(num_string), [grid[x][y] for (x, y) in seen_cells]) | grid[r][c])
 
     sols = []
-    while len(sols) < MAX_SOLUTIONS_TO_FIND and claspy_solve():
+    while len(sols) < MAX_SOLUTIONS_TO_FIND and claspy.solve():
         # append found solution
         sol = {}
         for r in range(E.R):
             for c in range(E.C):
-                sol[rc_to_grid(r,c)] = 'darkgray' if grid[r][c].value() else ''
+                sol[rc_to_grid(r, c)] = "darkgray" if grid[r][c].value() else ""
         sols.append(sol)
 
         # prevent duplicate solution before re-solving
         x = BoolVar(True)
         for r in range(E.R):
             for c in range(E.C):
-                x &= (grid[r][c] == grid[r][c].value())
+                x &= grid[r][c] == grid[r][c].value()
         require(~x)
 
     return sols
 
-def decode(solutions):
+
+def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

@@ -64,7 +64,7 @@ from __future__ import absolute_import, division, generator_stop, print_function
 
 from functools import reduce
 import subprocess
-from time import time, strftime
+from time import time
 
 CLASP_COMMAND = 'python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic'
 
