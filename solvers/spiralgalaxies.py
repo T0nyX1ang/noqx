@@ -5,7 +5,8 @@ from typing import List
 
 from . import claspy, utils
 from .claspy import Atom, BoolVar, IntVar, require, set_max_val
-from .utils.encoding import MAX_SOLUTIONS_TO_FIND, Encoding
+from .utils.encoding import Encoding
+from .utils.solutions import MAX_SOLUTIONS_TO_FIND
 
 
 def encode(string: str) -> Encoding:

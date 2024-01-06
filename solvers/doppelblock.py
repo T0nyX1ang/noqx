@@ -4,8 +4,9 @@ from typing import List
 
 from . import claspy, utils
 from .claspy import BoolVar, IntVar, cond, require, reset, set_max_val, var_in
-from .utils.encoding import Encoding, rc_to_grid
+from .utils.encoding import Encoding
 from .utils.numbers import RectangularGridNumbersSolver
+from .utils.solutions import MAX_SOLUTIONS_TO_FIND, rc_to_grid
 
 
 def encode(string: str) -> Encoding:
@@ -56,7 +57,7 @@ def solve(E: Encoding) -> List:
         require(numbers_solver.grid[r][c] == E.clues[(r, c)])
 
     solutions = []
-    while len(solutions) < utils.MAX_SOLUTIONS_TO_FIND and claspy.solve():
+    while len(solutions) < MAX_SOLUTIONS_TO_FIND and claspy.solve():
         solution = {}
         for r in range(n):
             for c in range(n):

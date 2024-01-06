@@ -4,11 +4,11 @@ from typing import List
 
 from . import utils
 from .claspy import BoolVar, MultiVar, require, sum_bools, var_in
+from .utils.borders import Direction
 from .utils.encoding import Encoding
 from .utils.loops import (
     LEFT_CONNECTING,
     UP_CONNECTING,
-    Direction,
     RectangularGridLoopSolver,
 )
 from .utils.regions import full_bfs

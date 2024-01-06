@@ -1,5 +1,6 @@
-from ..claspy import *
-from datetime import datetime
+"""Utilities for finding all solutions to a problem."""
+
+from ..claspy import BoolVar, require, solve
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -8,7 +9,7 @@ def rc_to_grid(r, c):
 
 def default_equality_function(x, y):
     return x == y
-    
+
 def get_all_solutions(generate_solution, avoid_duplicate_solution):
     solutions = []
     #print(f'starting search - it\'s {datetime.now()}', flush=True)
@@ -23,10 +24,10 @@ def get_all_solutions(generate_solution, avoid_duplicate_solution):
     return solutions
 
 def get_grid_solution(grid, format_function = None):
-        
+
     if not format_function:
         format_function = lambda r, c: grid[r][c].value()
-        
+
     solution = {}
     for r in range(len(grid)):
         for c in range(len(grid[r])):
@@ -34,7 +35,7 @@ def get_grid_solution(grid, format_function = None):
             if cell_output != '':
                 solution[rc_to_grid(r,c)] = cell_output
     return solution
-    
+
 def avoid_duplicate_grid_solution(grid, equality_function = default_equality_function):
     x = BoolVar(True)
     for r in range(len(grid)):
@@ -45,10 +46,10 @@ def avoid_duplicate_grid_solution(grid, equality_function = default_equality_fun
 def get_all_grid_solutions(grid,
         equality_function = default_equality_function,
         format_function = None):
-        
+
     def generate_solution():
         return get_grid_solution(grid, format_function)
-    
+
     def avoid_duplicate_solution():
         return avoid_duplicate_grid_solution(grid, equality_function)
 

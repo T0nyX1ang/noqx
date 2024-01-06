@@ -1,10 +1,12 @@
 """Solve Fillomino puzzles."""
 
-from typing import List, Tuple, Set, Callable
+from typing import Callable, List, Set, Tuple
 
 from . import utils
 from .claspy import Atom, IntVar, MultiVar, cond, require, set_max_val
 from .utils.encoding import Encoding
+from .utils.grids import RectangularGrid
+from .utils.solutions import get_all_grid_solutions
 
 
 def encode(string: str) -> Encoding:
@@ -72,7 +74,7 @@ def solve(E: Encoding) -> List:
 
     print(indep_bound)
 
-    region_id = utils.RectangularGrid(E.R, E.C, lambda r, c: IntVar(0, E.C * r + c))
+    region_id = RectangularGrid(E.R, E.C, lambda r, c: IntVar(0, E.C * r + c))
     # this forces each root to be the topleft-most cell (i.e., first in row-major order) of its region
 
     # refine possibilities for region_id for each clue cell
@@ -88,7 +90,7 @@ def solve(E: Encoding) -> List:
                 require(region_id[r][c] >= c0)
 
     bfs_max_region_sizes = unclued_areas_bfs(E.clues, E.R, E.C)
-    region_size = utils.RectangularGrid(
+    region_size = RectangularGrid(
         E.R,
         E.C,
         lambda r, c: IntVar(E.clues[(r, c)])
@@ -159,7 +161,7 @@ def solve(E: Encoding) -> List:
             if c > 0:
                 require((region_id[r][c - 1] == region_id[r][c]) | (region_size[r][c - 1] != region_size[r][c]))
 
-    sols = utils.get_all_grid_solutions(region_size)
+    sols = get_all_grid_solutions(region_size)
     return sols
 
 

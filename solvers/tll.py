@@ -5,7 +5,8 @@ from typing import Dict, List, Set, Tuple, Union
 from . import utils
 from .claspy import require, set_max_val, var_in
 from .utils.encoding import Encoding
-from .utils.loops import RectangularGridLoopSolver, is_valid_coord
+from .utils.grids import is_valid_coord
+from .utils.loops import RectangularGridLoopSolver
 
 
 def encode(string: str) -> Encoding:
@@ -162,7 +163,7 @@ def solve(E: Encoding) -> List:
 
     lookup = get_lookup()
 
-    def does_key_match_surroundings(key: Set[str], adj_indices: Dict[Tuple[int, int]]):
+    def does_key_match_surroundings(key: Set[str], adj_indices: List[Tuple[int, int]]):
         """
         Return BoolVar that tells us whether a key (a sorted tuple of (length, frequency) pairs)
         matches the surroundings.

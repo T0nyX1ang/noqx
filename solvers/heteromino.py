@@ -4,9 +4,9 @@ from typing import Dict, List, Tuple
 
 from . import utils
 from .claspy import BoolVar, MultiVar, require
-from .utils.borders import Direction, get_border_coord_from_edge_id, is_valid_coord
+from .utils.borders import Direction, get_border_coord_from_edge_id
 from .utils.encoding import Encoding
-from .utils.grids import get_neighbors
+from .utils.grids import get_neighbors, is_valid_coord
 from .utils.solutions import get_all_solutions
 
 # --- Shape definitions ---

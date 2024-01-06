@@ -7,6 +7,7 @@ from .claspy import MultiVar, require, sum_bools
 from .utils.encoding import Encoding
 from .utils.shading import RectangularGridShadingSolver
 from .utils.shapes import OMINOES, get_adjacent, get_variants, place_shape_in_region
+from .utils.regions import full_bfs
 
 L = OMINOES[4]["L"]  # L shape
 I = OMINOES[4]["I"]  # I shape  # noqa: E741
@@ -19,7 +20,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    regions = utils.full_bfs(E.R, E.C, E.edges)
+    regions = full_bfs(E.R, E.C, E.edges)
 
     if len(regions) == 1:
         raise ValueError("Are you sure you drew all of the borders?")
