@@ -4,8 +4,9 @@ from typing import List
 
 from . import utils
 from .claspy import require, set_max_val, sum_bools
-from .utils.encoding import Encoding
 from .utils.borders import Direction
+from .utils.encoding import Encoding
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -17,7 +18,7 @@ def solve(E: Encoding):
     max_top_clue = max(E.top.values(), default=0)
     set_max_val(max(max_left_clue, max_top_clue, 1))
 
-    s = utils.RectangularGridShadingSolver(E.R, E.C)
+    s = RectangularGridShadingSolver(E.R, E.C)
 
     # Ensure that counts of shaded cells in columns and rows are satisfied.
     for c in E.top:

@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import BoolVar, require, set_max_val, sum_vars
 from .utils.encoding import Encoding
+from .utils.numbers import RectangularGridNumbersSolver
 
 
 def encode(string: str) -> Encoding:
@@ -18,7 +19,7 @@ def solve(E: Encoding) -> List:
 
     set_max_val(n)
 
-    numbers_solver = utils.RectangularGridNumbersSolver(n, n, 1, n)
+    numbers_solver = RectangularGridNumbersSolver(n, n, 1, n)
     numbers_solver.rows_and_cols()
     grid = numbers_solver.grid
 

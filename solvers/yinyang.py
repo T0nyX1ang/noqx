@@ -6,6 +6,7 @@ from . import utils
 from .claspy import require, set_max_val
 from .utils.encoding import Encoding
 from .utils.solutions import get_all_grid_solutions
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -15,7 +16,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     set_max_val(2)
 
-    s = utils.shading.RectangularGridShadingSolver(E.R, E.C)
+    s = RectangularGridShadingSolver(E.R, E.C)
 
     # Optimize solving by providing known roots for white and black parts
     white_root, black_root = None, None

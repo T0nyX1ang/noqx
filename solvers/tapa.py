@@ -6,7 +6,8 @@ from typing import List
 from . import utils
 from .claspy import require
 from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver, is_valid_coord
+from .utils.grids import is_valid_coord
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:

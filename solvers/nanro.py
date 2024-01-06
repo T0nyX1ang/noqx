@@ -4,13 +4,15 @@ from typing import List
 
 from . import utils
 from .claspy import at_least, require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-
+from .utils.encoding import Encoding, default_clue_encoder
+from .utils.shading import RectangularGridShadingSolver
+from .utils.regions import RectangularGridRegionSolver
+from .utils.solutions import get_all_grid_solutions
 
 def encode(string: str) -> Encoding:
     def clue_encoder(s):
         try:
-            return utils.default_clue_encoder(s)
+            return default_clue_encoder(s)
         except RuntimeError as exc:
             if s[0] == "s" and s[1:].isnumeric():  # signpost clue
                 return s
@@ -39,8 +41,8 @@ def solve(E: Encoding) -> List:
     # so a big region could require more unshaded cells than the largest clue.
     set_max_val(max(len(room) for room in rooms))
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
-    region_solver = utils.RectangularGridRegionSolver(E.R, E.C, shading_solver.grid, rooms)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
+    region_solver = RectangularGridRegionSolver(E.R, E.C, shading_solver.grid, rooms)
 
     shading_solver.white_clues(E.clues)
     shading_solver.white_connectivity()
@@ -82,7 +84,7 @@ def solve(E: Encoding) -> List:
         unshaded_count = region_solver.get_unshaded_cells_in_region(r, c, [True])
         return "darkgray" if shading_solver.grid[r][c].value() else unshaded_count.value()
 
-    return utils.get_all_grid_solutions(shading_solver.grid, format_function=format_function)
+    return get_all_grid_solutions(shading_solver.grid, format_function=format_function)
 
 
 def decode(solutions: List[Encoding]) -> str:

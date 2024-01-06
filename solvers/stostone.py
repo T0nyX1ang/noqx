@@ -3,7 +3,17 @@
 from typing import List
 
 from . import utils
-from .claspy import Atom, BoolVar, IntVar, at_least, at_most, cond, require, set_max_val, sum_bools
+from .claspy import (
+    Atom,
+    BoolVar,
+    IntVar,
+    at_least,
+    at_most,
+    cond,
+    require,
+    set_max_val,
+    sum_bools,
+)
 from .utils.encoding import Encoding
 from .utils.regions import full_bfs, get_neighbors
 from .utils.shading import RectangularGridShadingSolver

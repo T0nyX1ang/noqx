@@ -5,7 +5,8 @@ from typing import List
 from . import utils
 from .claspy import Atom, MultiVar, require, sum_bools
 from .utils.encoding import Encoding
-from .utils.solutions import rc_to_grid
+from .utils.grids import RectangularGrid
+from .utils.solutions import get_all_grid_solutions, rc_to_grid
 
 
 def encode(string: str) -> Encoding:
@@ -27,7 +28,7 @@ def solve(E: Encoding) -> List:
 
     sinks = set(locs[1] for locs in locations.values())
 
-    grid = utils.RectangularGrid(
+    grid = RectangularGrid(
         E.R,
         E.C,
         lambda r, c: MultiVar("")
@@ -37,7 +38,7 @@ def solve(E: Encoding) -> List:
 
     atom_grids = {}
     for n, (source, sink) in locations.items():
-        atoms = utils.RectangularGrid(E.R, E.C, Atom)
+        atoms = RectangularGrid(E.R, E.C, Atom)
         atom_grids[n] = atoms
 
         # implement path connectivity conditions
@@ -68,7 +69,7 @@ def solve(E: Encoding) -> List:
                     condition |= unused
                 require(condition)
 
-    sols = utils.get_all_grid_solutions(grid)
+    sols = get_all_grid_solutions(grid)
 
     # now convert to loop format
     lsols = []

@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import require, set_max_val, sum_vars
 from .utils.encoding import Encoding
+from .utils.loops import RectangularGridLoopSolver
+from .utils.regions import full_bfs
 
 
 def encode(string: str) -> Encoding:
@@ -12,7 +14,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
+    rooms = full_bfs(E.R, E.C, E.edges)
 
     if len(E.clues) == 0:
         raise ValueError("There are no clues!")
@@ -37,7 +39,7 @@ def solve(E: Encoding) -> List:
     # - number of clue cells (determines number of loop IDs)
     set_max_val(max(len(E.clues), max_clue))
 
-    loop_solver = utils.RectangularGridLoopSolver(E.R, E.C, min_num_loops=len(E.clues), max_num_loops=len(E.clues))
+    loop_solver = RectangularGridLoopSolver(E.R, E.C, min_num_loops=len(E.clues), max_num_loops=len(E.clues))
     loop_solver.loop(E.clues, includes_clues=True)
     loop_solver.no_reentrance(rooms)
     loop_solver.hit_every_region(rooms)

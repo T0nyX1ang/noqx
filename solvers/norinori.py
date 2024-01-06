@@ -5,6 +5,9 @@ from typing import List
 from . import utils
 from .claspy import require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.grids import get_neighbors
+from .utils.regions import full_bfs
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -14,8 +17,8 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     set_max_val(2)
 
-    s = utils.shading.RectangularGridShadingSolver(E.R, E.C)
-    regions = utils.regions.full_bfs(E.R, E.C, E.edges)
+    s = RectangularGridShadingSolver(E.R, E.C)
+    regions = full_bfs(E.R, E.C, E.edges)
 
     # Nori rules
     for r in range(E.R):
@@ -23,7 +26,7 @@ def solve(E: Encoding) -> List:
             # If shaded, then
             require(
                 # Exactly 1 neighbor is shaded
-                sum_bools(1, [s.grid[y][x] for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c)])
+                sum_bools(1, [s.grid[y][x] for (y, x) in get_neighbors(E.R, E.C, r, c)])
                 | ~s.grid[r][c]
             )
 

@@ -4,6 +4,7 @@ from typing import List
 
 from . import utils
 from .claspy import set_max_val
+from .utils.borders import RectangularGridBorderSolver
 from .utils.encoding import Encoding
 
 
@@ -25,7 +26,7 @@ def solve(E: Encoding) -> List:
 
     set_max_val(max(number_clues.values()) if number_clues else 0)
 
-    bs = utils.RectangularGridBorderSolver(E.R, E.C)
+    bs = RectangularGridBorderSolver(E.R, E.C)
     bs.loop()
     bs.clues(number_clues)
     bs.inside_loop(inside_clues)

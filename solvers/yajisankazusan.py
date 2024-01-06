@@ -4,8 +4,7 @@ from typing import List
 
 from . import claspy, utils
 from .claspy import Atom, BoolVar, at_most, require, sum_bools
-from .utils.encoding import Encoding
-from .utils.encoding import MAX_SOLUTIONS_TO_FIND, rc_to_grid
+from .utils.encoding import MAX_SOLUTIONS_TO_FIND, Encoding, rc_to_grid
 
 
 def encode(string: str) -> Encoding:

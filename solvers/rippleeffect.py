@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import IntVar, require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.regions import full_bfs
+from .utils.solutions import get_all_grid_solutions
 
 
 def encode(string: str) -> Encoding:
@@ -12,7 +14,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
+    rooms = full_bfs(E.R, E.C, E.edges)
 
     # set the maximum IntVar value to be the max room size
     max_room_size = max(len(room) for room in rooms)
@@ -48,7 +50,7 @@ def solve(E: Encoding) -> List:
     for r, c in E.clues:
         require(grid[r][c] == E.clues[(r, c)])
 
-    return utils.get_all_grid_solutions(grid)
+    return get_all_grid_solutions(grid)
 
 
 def decode(solutions: List[Encoding]) -> str:

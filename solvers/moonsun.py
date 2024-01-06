@@ -2,17 +2,23 @@
 
 from typing import List
 
-from .claspy import BoolVar, MultiVar, require, sum_bools, var_in
 from . import utils
+from .claspy import BoolVar, MultiVar, require, sum_bools, var_in
 from .utils.encoding import Encoding
-from .utils.loops import UP_CONNECTING, LEFT_CONNECTING, Direction
+from .utils.loops import (
+    LEFT_CONNECTING,
+    UP_CONNECTING,
+    Direction,
+    RectangularGridLoopSolver,
+)
 from .utils.regions import full_bfs
+
 
 def encode(string: str) -> Encoding:
     return utils.encode(string, clue_encoder = lambda s : s, has_borders = True)
 
 def solve(E: Encoding) -> List:
-    loop_solver = utils.RectangularGridLoopSolver(E.R, E.C)
+    loop_solver = RectangularGridLoopSolver(E.R, E.C)
     rooms = full_bfs(E.R, E.C, E.edges)
     region_type = [[MultiVar('m', 's') for r in range(E.R)] for c in range(E.C)]
 

@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import BoolVar, IntVar, require
 from .utils.encoding import Encoding
+from .utils.numbers import factor_pairs
+from .utils.regions import RectangularGridRegionSolver
 
 
 def encode(string: str) -> Encoding:
@@ -28,7 +30,7 @@ def solve(E: Encoding) -> List:
     if len(E.clues) == 0:
         raise ValueError("Please provide at least one clue.")
 
-    rs = utils.RectangularGridRegionSolver(E.R, E.C, max_num_regions=len(E.clues))
+    rs = RectangularGridRegionSolver(E.R, E.C, max_num_regions=len(E.clues))
 
     # Assign each clue to an ID (bijection, by puzzle rules)
     clue_to_id = {}
@@ -44,7 +46,7 @@ def solve(E: Encoding) -> List:
         # Rectangle size constraints from clues
         # Factor pairs are "ordered" (i.e. (a, b) and (b, a) will both be present if a != b)
         if E.clues[(r, c)] != "?":
-            possible_dims = utils.numbers.factor_pairs(E.clues[(r, c)])
+            possible_dims = factor_pairs(E.clues[(r, c)])
             dim_constraint = BoolVar(False)
             for a, b in possible_dims:
                 # Add, don't subtract, just to be safe

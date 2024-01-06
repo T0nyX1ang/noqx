@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import MultiVar, require, sum_bools
 from .utils.encoding import Encoding
+from .utils.shading import RectangularGridShadingSolver
 from .utils.shapes import OMINOES, get_adjacent, get_variants, place_shape_in_region
 
 L = OMINOES[4]["L"]  # L shape
@@ -75,7 +76,7 @@ def solve(E: Encoding) -> List:
         require(sum_bools(1, possible_shape_conditions))
 
     # add black-connectivity and no-2x2 rules
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C, grid, ["L", "I", "T", "S"])
+    shading_solver = RectangularGridShadingSolver(E.R, E.C, grid, ["L", "I", "T", "S"])
     shading_solver.black_connectivity()
     shading_solver.no_black_2x2()
 

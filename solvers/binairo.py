@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import IntVar, cond, require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -18,7 +19,7 @@ def solve(E: Encoding) -> List:
     set_max_val(max(E.R // 2, E.C // 2, 3))
 
     # Use True (black) to represent 1
-    s = utils.RectangularGridShadingSolver(E.R, E.C)
+    s = RectangularGridShadingSolver(E.R, E.C)
     black_row_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
     black_col_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
     white_row_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]

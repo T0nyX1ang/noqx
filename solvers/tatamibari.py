@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import BoolVar, IntVar, require
 from .utils.encoding import Encoding
+from .utils.regions import RectangularGridRegionSolver
 
 
 def encode(string: str) -> Encoding:
@@ -37,7 +38,7 @@ def solve(E: Encoding) -> List:
     if len(clue_to_id) == 0:
         raise ValueError("Please provide at least one clue.")
 
-    rs = utils.RectangularGridRegionSolver(E.R, E.C, max_num_regions=len(clue_to_id))
+    rs = RectangularGridRegionSolver(E.R, E.C, max_num_regions=len(clue_to_id))
 
     # Assign each clue to a Box
     clue_to_box = {}

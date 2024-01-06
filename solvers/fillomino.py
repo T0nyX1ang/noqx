@@ -1,6 +1,6 @@
 """Solve Fillomino puzzles."""
 
-from typing import List
+from typing import List, Tuple, Set, Callable
 
 from . import utils
 from .claspy import Atom, IntVar, MultiVar, cond, require, set_max_val
@@ -12,7 +12,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    def unclued_areas_bfs(clues, R, C):
+    def unclued_areas_bfs(clues: Tuple[int, int], R: int, C: int):
         region_id = {}
         id_to_pts = {}
         num = 0
@@ -50,7 +50,7 @@ def solve(E: Encoding) -> List:
                 max_region_sizes[pt] = max_size
         return max_region_sizes
 
-    def find_independent_set(S, adj):
+    def find_independent_set(S: Set[int], adj: Callable[..., bool]):
         indep = []
         for x in S:
             if all(not adj(x, y) for y in indep):

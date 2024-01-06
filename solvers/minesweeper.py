@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -13,7 +14,7 @@ def encode(string: str) -> Encoding:
 
 def solve(E: Encoding) -> List:
     set_max_val(8)
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
 
     # Enforce that clue cells can't be shaded, and that their numbers are correct
     shading_solver.white_clues(E.clues)

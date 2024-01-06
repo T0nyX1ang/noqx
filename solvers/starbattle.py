@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.regions import full_bfs
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -15,9 +17,9 @@ def solve(E: Encoding) -> List:
     num_stars = int(E.params["stars"])
     set_max_val(num_stars)
 
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
+    rooms = full_bfs(E.R, E.C, E.edges)
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
     shading_solver.no_surrounding()
 
     for room in rooms:

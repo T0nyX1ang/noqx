@@ -5,6 +5,9 @@ from typing import List, Tuple
 from . import utils
 from .claspy import BoolVar, cond, require, set_max_val
 from .utils.encoding import Encoding
+from .utils.grids import is_valid_coord
+from .utils.regions import RectangularGridRegionSolver
+from .utils.shading import RectangularGridShadingSolver
 
 HORIZONTAL_OFFSETS = ((0, 1), (0, -1))
 VERTICAL_OFFSETS = ((1, 0), (-1, 0))
@@ -31,8 +34,8 @@ def solve(E: Encoding) -> List:
     # Restrict the number of bits used for IntVar.
     set_max_val(num_cells)
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
-    region_solver = utils.RectangularGridRegionSolver(
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
+    region_solver = RectangularGridRegionSolver(
         E.R, E.C, shading_solver.grid, max_num_regions=num_cells, region_symbol_sets=[[True], [False]]
     )
 
@@ -43,7 +46,7 @@ def solve(E: Encoding) -> List:
         neighbors = []
         for dy, dx in offset_tuples:
             y, x = r + dy, c + dx
-            if utils.grids.is_valid_coord(E.R, E.C, y, x):
+            if is_valid_coord(E.R, E.C, y, x):
                 neighbors.append((y, x))
         return neighbors
 
@@ -71,7 +74,7 @@ def solve(E: Encoding) -> List:
             shaded_sizes = []
             # neighbors in a clockwise order
             for y, x in ((r - 1, c), (r, c + 1), (r + 1, c), (r, c - 1)):
-                if utils.is_valid_coord(E.R, E.C, y, x):
+                if is_valid_coord(E.R, E.C, y, x):
                     shaded_sizes.append(cond(shading_solver.grid[y][x], region_solver.region_size[y][x], 0))
                 else:
                     shaded_sizes.append(0)

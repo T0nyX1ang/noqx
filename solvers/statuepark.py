@@ -2,10 +2,13 @@
 
 from typing import List
 
-from .claspy import IntVar, require, sum_bools
 from . import utils
-from .utils.shapes import OMINOES, get_variants, place_shape_in_grid
+from .claspy import IntVar, require, sum_bools
 from .utils.encoding import Encoding
+from .utils.grids import get_neighbors
+from .utils.shading import RectangularGridShadingSolver
+from .utils.shapes import OMINOES, get_variants, place_shape_in_grid
+
 
 def encode(string: str) -> Encoding:
     return utils.encode(string, clue_encoder = lambda s: s)
@@ -31,7 +34,7 @@ def solve(E: Encoding) -> List:
 
     shape_id_bound = len(shape_id_to_variants)
     grid = [[IntVar(0, shape_id_bound) for c in range(E.C)] for r in range(E.R)]
-    s = utils.RectangularGridShadingSolver(E.R, E.C, grid,
+    s = RectangularGridShadingSolver(E.R, E.C, grid,
         shading_symbols = [shape_id for shape_id in range(shape_id_bound)])
 
     # keep track of a list of "shape conditions", where each "shape condition" requires
@@ -57,7 +60,7 @@ def solve(E: Encoding) -> List:
         for c in range(E.C):
             # for each pair of neighbors, they are either part of the same shape
             # or at least one is not part of any shape
-            for (y, x) in utils.grids.get_neighbors(E.R, E.C, r, c):
+            for (y, x) in get_neighbors(E.R, E.C, r, c):
                 require(
                     (grid[r][c] == grid[y][x]) |
                     (grid[r][c] == shape_id_bound) |

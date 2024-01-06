@@ -4,8 +4,10 @@ from typing import List
 
 from . import utils
 from .claspy import BoolVar, require
-from .utils.encoding import Encoding
 from .utils.borders import Direction
+from .utils.encoding import Encoding
+from .utils.regions import RectangularGridRegionSolver, full_bfs
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -13,12 +15,12 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges, E.clues)
+    rooms = full_bfs(E.R, E.C, E.edges, E.clues)
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
     shading_solver.no_adjacent()
     shading_solver.white_connectivity()
-    region_solver = utils.RectangularGridRegionSolver(E.R, E.C, shading_solver.grid, given_regions=rooms)
+    region_solver = RectangularGridRegionSolver(E.R, E.C, shading_solver.grid, given_regions=rooms)
     region_solver.set_shaded_cells_in_region(E.clues, [True])
 
     for r in range(E.R):

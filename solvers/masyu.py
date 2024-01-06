@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import require, var_in
 from .utils.encoding import Encoding
+from .utils.loops import RectangularGridLoopSolver
 
 
 def encode(string: str) -> Encoding:
@@ -17,7 +18,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    loop_solver = utils.RectangularGridLoopSolver(E.R, E.C)
+    loop_solver = RectangularGridLoopSolver(E.R, E.C)
     loop_solver.loop(E.clues, includes_clues=True)
 
     # ----- CLUE ATTRIBUTES -----

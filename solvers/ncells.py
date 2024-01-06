@@ -4,7 +4,9 @@ from typing import List
 
 from . import utils
 from .claspy import set_max_val
+from .utils.borders import RectangularGridBorderSolver
 from .utils.encoding import Encoding
+from .utils.regions import RectangularGridRegionSolver
 
 
 def encode(string: str) -> Encoding:
@@ -19,8 +21,8 @@ def solve(E: Encoding) -> List:
     # set the maximum IntVar value to the number of cells
     set_max_val(E.R * E.C)
 
-    region_solver = utils.RectangularGridRegionSolver(E.R, E.C, max_num_regions=E.R * E.C)
-    border_solver = utils.RectangularGridBorderSolver(E.R, E.C, region_solver)
+    region_solver = RectangularGridRegionSolver(E.R, E.C, max_num_regions=E.R * E.C)
+    border_solver = RectangularGridBorderSolver(E.R, E.C, region_solver)
 
     region_solver.set_region_size(region_size, [], min_region_size=region_size)
     region_solver.region_roots({})

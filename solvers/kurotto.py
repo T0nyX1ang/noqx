@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import Atom, require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.grids import RectangularGrid
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -14,7 +16,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     set_max_val(E.R * E.C)
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
 
     for r, c in E.clues:
         require(~shading_solver.grid[(r, c)])
@@ -23,7 +25,7 @@ def solve(E: Encoding) -> List:
     # 'black' means an empty circle in this case; sorry, I'm being lazy with the encoding
 
     for anchor in anchors:
-        flows = utils.RectangularGrid(E.R, E.C, Atom)
+        flows = RectangularGrid(E.R, E.C, Atom)
         flows[anchor].prove_if(True)  # prove the anchor for free
 
         for r in range(E.R):

@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .claspy import BoolVar, IntVar, require, set_max_val
 from .utils.encoding import Encoding
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -15,7 +16,7 @@ def solve(E: Encoding) -> List:
     #    max_val = max(E.clues.values(), default=E.R*E.C)
     set_max_val(E.R * E.C)
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
     shading_solver.white_connectivity()
     shading_solver.black_edge_connectivity()
     shading_solver.white_clues(E.clues)

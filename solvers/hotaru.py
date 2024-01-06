@@ -6,18 +6,18 @@ from . import utils
 from .claspy import Atom, IntVar, MultiVar, cond, require, set_max_val, var_in
 from .utils.encoding import Encoding
 from .utils.loops import (
+    BOTTOM_IN,
+    BOTTOM_OUT,
     DIRECTED,
     DIRECTED_BENDS,
     DIRECTIONAL_PAIR_TO_UNICODE,
+    ISOLATED,
     LEFT_IN,
     LEFT_OUT,
     RIGHT_IN,
     RIGHT_OUT,
     TOP_IN,
     TOP_OUT,
-    BOTTOM_IN,
-    BOTTOM_OUT,
-    ISOLATED,
 )
 from .utils.solutions import get_all_grid_solutions
 

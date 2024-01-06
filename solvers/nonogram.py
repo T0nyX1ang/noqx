@@ -4,7 +4,8 @@ from typing import List
 
 from . import utils
 from .claspy import IntVar, require, reset
-from .utils.encoding import Encoding, RectangularGridShadingSolver
+from .utils.encoding import Encoding
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:

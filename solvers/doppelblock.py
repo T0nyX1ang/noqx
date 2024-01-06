@@ -4,8 +4,8 @@ from typing import List
 
 from . import claspy, utils
 from .claspy import BoolVar, IntVar, cond, require, reset, set_max_val, var_in
-from .utils.encoding import Encoding
-from .utils.encoding import rc_to_grid
+from .utils.encoding import Encoding, rc_to_grid
+from .utils.numbers import RectangularGridNumbersSolver
 
 
 def encode(string: str) -> Encoding:
@@ -20,7 +20,7 @@ def solve(E: Encoding) -> List:
     set_max_val((n - 2) * (n - 1) // 2)  # the maximum sum of numbers in a row / col
 
     # make a nxn Latin square
-    numbers_solver = utils.RectangularGridNumbersSolver(n, n, 1, n)
+    numbers_solver = RectangularGridNumbersSolver(n, n, 1, n)
     numbers_solver.rows_and_cols()
 
     # the "numbers" n-1 and n represent shaded blocks

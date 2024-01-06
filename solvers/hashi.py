@@ -1,6 +1,6 @@
 """The Hashi solver."""
 
-from typing import List, Dict
+from typing import Dict, List
 
 from . import utils
 from .claspy import Atom, BoolVar, IntVar, MultiVar, cond, require, set_max_val, var_in

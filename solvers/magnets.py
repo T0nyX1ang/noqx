@@ -5,20 +5,22 @@ from typing import List
 from . import utils
 from .claspy import MultiVar, require, set_max_val, sum_bools, sum_vars
 from .utils.encoding import Encoding
+from .utils.grids import RectangularGrid
+from .utils.regions import full_bfs
 
 
 def encode(string: str) -> Encoding:
     return utils.encode(string, has_borders = True, outside_clues = '1111')
 
 def solve(E: Encoding) -> List:
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
+    rooms = full_bfs(E.R, E.C, E.edges)
 
     for room in rooms:
         if len(room) != 2:
             raise ValueError('All regions must be of size 2.')
 
     set_max_val(3)
-    grid = utils.RectangularGrid(E.R, E.C, lambda : MultiVar('+', '-', ' '))
+    grid = RectangularGrid(E.R, E.C, lambda : MultiVar('+', '-', ' '))
 
     # Require that the number of +s is equal to the number of -s; so either there's one of each or none
     for room in rooms:

@@ -1,31 +1,26 @@
 """The Heteromino solver."""
 
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
 
-from .claspy import BoolVar, MultiVar, require
 from . import utils
+from .claspy import BoolVar, MultiVar, require
+from .utils.borders import Direction, get_border_coord_from_edge_id, is_valid_coord
 from .utils.encoding import Encoding
-from .utils.borders import is_valid_coord, get_border_coord_from_edge_id, Direction
 from .utils.grids import get_neighbors
 from .utils.solutions import get_all_solutions
 
 # --- Shape definitions ---
-shapeI = 'I' # Vertical segment, size 3
-shape_ = '-' # Horizontal segment, size 3
-shape7 = '7' # 7-shaped segment, size 3
-shapeJ = 'J' # J-shaped segment, size 3
-shapeL = 'L' # L-shaped segment, size 3
-shaper = 'r' # r-shaped segment, size 3
+shapeI = "I"  # Vertical segment, size 3
+shape_ = "-"  # Horizontal segment, size 3
+shape7 = "7"  # 7-shaped segment, size 3
+shapeJ = "J"  # J-shaped segment, size 3
+shapeL = "L"  # L-shaped segment, size 3
+shaper = "r"  # r-shaped segment, size 3
 
 SHAPES = (shapeI, shape_, shape7, shapeJ, shapeL, shaper)
 
 # --- Maps the offset from x to y to the direction from y to x ---
-OFFSET_PARENT_PAIRS = {
-    (-1, 0): 'v',
-    (0, 1): '<',
-    (1, 0): '^',
-    (0, -1): '>'
-}
+OFFSET_PARENT_PAIRS = {(-1, 0): "v", (0, 1): "<", (1, 0): "^", (0, -1): ">"}
 
 NEIGHBORS = {
     shapeI: ((-1, 0), (1, 0)),
@@ -33,44 +28,49 @@ NEIGHBORS = {
     shape7: ((0, -1), (1, 0)),
     shapeJ: ((-1, 0), (0, -1)),
     shapeL: ((-1, 0), (0, 1)),
-    shaper: ((0, 1), (1, 0))
+    shaper: ((0, 1), (1, 0)),
 }
 
+
 def inverse(t: Tuple[int]) -> Tuple[int]:
-    return tuple(-1*t[x] for x in range(len(t)))
+    return tuple(-1 * t[x] for x in range(len(t)))
+
 
 # For ths sake of this solver, the middle cell in a region must always be root.
+
 
 def encode(string: str) -> Encoding:
     return utils.encode(string)
 
+
 def solve(E: Encoding) -> List:
-    shape = [[MultiVar(*SHAPES+('x',)) for c in range(E.C)] for r in range(E.R)]
-    parent = [[MultiVar('^','v','>','<','.','x') for c in range(E.C)] for r in range(E.R)]
+    shape = [[MultiVar(*SHAPES + ("x",)) for c in range(E.C)] for r in range(E.R)]
+    parent = [[MultiVar("^", "v", ">", "<", ".", "x") for c in range(E.C)] for r in range(E.R)]
 
     for r in range(E.R):
         for c in range(E.C):
             # parent and shape == 'x' iff shaded
             if (r, c) in E.clues:
-                require(shape[r][c] == 'x')
-                require(parent[r][c] == 'x')
+                require(shape[r][c] == "x")
+                require(parent[r][c] == "x")
             else:
-                require(shape[r][c] != 'x')
-                require(parent[r][c] != 'x')
+                require(shape[r][c] != "x")
+                require(parent[r][c] != "x")
                 # Ensure that every root's neighbors have appropriate shapes + parents.
                 for possible_shape in SHAPES:
                     neighbor_conds = True
-                    for (dy, dx) in OFFSET_PARENT_PAIRS:
-                        y, x = r+dy, c+dx
+                    for dy, dx in OFFSET_PARENT_PAIRS:
+                        y, x = r + dy, c + dx
                         if is_valid_coord(E.R, E.C, y, x):
                             # If (y, x) is one of the required neighbors for this shape,
                             # assign its shape and parent values.
                             if (dy, dx) in NEIGHBORS[possible_shape]:
-                                neighbor_conds &= ((shape[y][x] == possible_shape) &
-                                    (parent[y][x] == OFFSET_PARENT_PAIRS[(dy,dx)]))
+                                neighbor_conds &= (shape[y][x] == possible_shape) & (
+                                    parent[y][x] == OFFSET_PARENT_PAIRS[(dy, dx)]
+                                )
                             # Otherwise, insist that (y, x) has some other parent (not (r, c)).
                             else:
-                                neighbor_conds &= (parent[y][x] != OFFSET_PARENT_PAIRS[(dy,dx)])
+                                neighbor_conds &= parent[y][x] != OFFSET_PARENT_PAIRS[(dy, dx)]
                         else:
                             # Cell doesn't exist so it can't have the right parent.
                             # It can't have the wrong parent either, though, so no condition needed there.
@@ -78,23 +78,24 @@ def solve(E: Encoding) -> List:
                                 # Trying to use a cell that's off the grid.
                                 neighbor_conds = False
                                 break
-                    require(neighbor_conds | ~((shape[r][c] == possible_shape) & (parent[r][c] == '.')))
+                    require(neighbor_conds | ~((shape[r][c] == possible_shape) & (parent[r][c] == ".")))
 
                 for (dy, dx), possible_parent in OFFSET_PARENT_PAIRS.items():
                     parent_dy, parent_dx = inverse((dy, dx))
-                    y, x = r+parent_dy, c+parent_dx # Coordinate of the supposed parent of (r,c)
+                    y, x = r + parent_dy, c + parent_dx  # Coordinate of the supposed parent of (r,c)
 
                     if is_valid_coord(E.R, E.C, y, x):
                         # Ensure that every arrow points directly at a root of the same shape type.
-                        require(((parent[y][x] == '.') & (shape[y][x] == shape[r][c]))
-                             | (parent[r][c] != possible_parent))
+                        require(
+                            ((parent[y][x] == ".") & (shape[y][x] == shape[r][c])) | (parent[r][c] != possible_parent)
+                        )
                     else:
                         # Trying to use a cell that's off the grid.
                         require(parent[r][c] != possible_parent)
 
                     # Ensure that identical shapes are not adjacent
                     # (the only cell adjacent to (r, c) with the same shape pattern is its parent)
-                    for (cell_r, cell_c) in get_neighbors(E.R, E.C, r, c):
+                    for cell_r, cell_c in get_neighbors(E.R, E.C, r, c):
                         if (cell_r, cell_c) != (y, x):
                             require((shape[cell_r][cell_c] != shape[r][c]) | (parent[r][c] != possible_parent))
 
@@ -105,24 +106,24 @@ def solve(E: Encoding) -> List:
             for c in range(E.C):
                 # Top
                 edge = (r, c, Direction.TOP)
-                if is_valid_coord(E.R, E.C, r-1, c):
-                    if shape[r-1][c].value() != shape[r][c].value():
-                        solution[get_border_coord_from_edge_id(*edge)] = 'black'
+                if is_valid_coord(E.R, E.C, r - 1, c):
+                    if shape[r - 1][c].value() != shape[r][c].value():
+                        solution[get_border_coord_from_edge_id(*edge)] = "black"
                 else:
-                    solution[get_border_coord_from_edge_id(*edge)] = 'black'
+                    solution[get_border_coord_from_edge_id(*edge)] = "black"
                 # Left
                 edge = (r, c, Direction.LEFT)
-                if is_valid_coord(E.R, E.C, r, c-1):
-                    if shape[r][c-1].value() != shape[r][c].value():
-                        solution[get_border_coord_from_edge_id(*edge)] = 'black'
+                if is_valid_coord(E.R, E.C, r, c - 1):
+                    if shape[r][c - 1].value() != shape[r][c].value():
+                        solution[get_border_coord_from_edge_id(*edge)] = "black"
                 else:
-                    solution[get_border_coord_from_edge_id(*edge)] = 'black'
+                    solution[get_border_coord_from_edge_id(*edge)] = "black"
                 # Bottom
-                if r == E.R-1:
-                    solution[get_border_coord_from_edge_id(r, c, Direction.BOTTOM)] = 'black'
+                if r == E.R - 1:
+                    solution[get_border_coord_from_edge_id(r, c, Direction.BOTTOM)] = "black"
                 # Right
-                if c == E.C-1:
-                    solution[get_border_coord_from_edge_id(r, c, Direction.RIGHT)] = 'black'
+                if c == E.C - 1:
+                    solution[get_border_coord_from_edge_id(r, c, Direction.RIGHT)] = "black"
         return solution
 
     def avoid_duplicate_solution():
@@ -133,6 +134,7 @@ def solve(E: Encoding) -> List:
         require(~x)
 
     return get_all_solutions(generate_solution, avoid_duplicate_solution)
+
 
 def decode(solutions: List[Encoding]) -> str:
     return utils.decode(solutions)

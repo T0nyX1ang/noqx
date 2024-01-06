@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import BoolVar, require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.loops import RectangularGridLoopSolver
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -16,8 +18,8 @@ def solve(E: Encoding) -> List:
     # The highest number that we need is the highest clue number.
     set_max_val(max([int(clue[0][0]) for clue in E.clues.values() if clue != "gray"], default=1))
 
-    loop_solver = utils.RectangularGridLoopSolver(E.R, E.C, shading=True)
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C, grid=loop_solver.grid, shading_symbols=["."])
+    loop_solver = RectangularGridLoopSolver(E.R, E.C, shading=True)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C, grid=loop_solver.grid, shading_symbols=["."])
     loop_solver.loop(E.clues, allow_blanks=False)
     shading_solver.no_adjacent()
 

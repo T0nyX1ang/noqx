@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import require, set_max_val, sum_bools
 from .utils.encoding import Encoding
+from .utils.regions import full_bfs
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -14,13 +16,13 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     set_max_val(E.R * E.C)
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
     shading_solver.black_connectivity()
     grid = shading_solver.grid
 
     # GIVEN NUMBERS ARE SATISFIED
     if E.clues:
-        for coord in (clue_regions := utils.full_bfs(E.R, E.C, E.edge_ids, clues=E.clues)):
+        for coord in (clue_regions := full_bfs(E.R, E.C, E.edge_ids, clues=E.clues)):
             require(sum_bools(E.clues[coord], [grid[other] for other in clue_regions[coord]]))
 
     # NO FOUR IN A ROW

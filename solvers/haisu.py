@@ -4,7 +4,8 @@ from typing import List
 
 from . import utils
 from .claspy import Atom, MultiVar, require, sum_bools, var_in
-from .utils.encoding import Encoding, grids
+from .utils.encoding import Encoding
+from .utils.grids import RectangularGrid, get_neighbors
 from .utils.loops import (
     BOTTOM_IN,
     BOTTOM_OUT,
@@ -16,6 +17,7 @@ from .utils.loops import (
     TOP_IN,
     TOP_OUT,
 )
+from .utils.regions import full_bfs
 
 
 def encode(string: str) -> Encoding:
@@ -26,7 +28,7 @@ def solve(E: Encoding) -> List:
     if not ("S" in E.clues.values() and "G" in E.clues.values()):
         raise ValueError("S and G squares must be provided.")
 
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
+    rooms = full_bfs(E.R, E.C, E.edges)
 
     room_has_start = {room: False for room in rooms}
     start = None
@@ -44,13 +46,13 @@ def solve(E: Encoding) -> List:
     for room in rooms:
         for r, c in room:
             cell_to_room[(r, c)] = room
-            for y, x in utils.grids.get_neighbors(E.R, E.C, r, c):
+            for y, x in get_neighbors(E.R, E.C, r, c):
                 if (y, x) not in room:
                     if room not in room_spanners:
                         room_spanners[room] = set()
                     room_spanners[room].add(((r, c), (y, x)))
 
-    parent = grids.RectangularGrid(E.R, E.C, lambda r, c: MultiVar("^", "v", "<", ">", "."))
+    parent = RectangularGrid(E.R, E.C, lambda r, c: MultiVar("^", "v", "<", ">", "."))
     require(parent[start] == ".")
 
     # before[u][v] is true iff u comes (weakly) before v in the path

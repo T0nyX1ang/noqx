@@ -5,6 +5,8 @@ from typing import List
 from . import utils
 from .claspy import set_max_val
 from .utils.encoding import Encoding
+from .utils.regions import RectangularGridRegionSolver
+from .utils.shading import RectangularGridShadingSolver
 
 
 def encode(string: str) -> Encoding:
@@ -37,11 +39,11 @@ def solve(E: Encoding) -> List:
     # Restrict the number of bits used for IntVar.
     set_max_val(max(len(clue_cell_id), max_clue))
 
-    shading_solver = utils.RectangularGridShadingSolver(E.R, E.C)
+    shading_solver = RectangularGridShadingSolver(E.R, E.C)
     shading_solver.black_connectivity()
     shading_solver.no_black_2x2()
 
-    region_solver = utils.RectangularGridRegionSolver(
+    region_solver = RectangularGridRegionSolver(
         E.R,
         E.C,
         shading_solver.grid,

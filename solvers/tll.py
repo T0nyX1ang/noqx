@@ -1,11 +1,11 @@
 """The Tapa-Like Loop solver."""
 
-from typing import List, Set, Tuple, Dict, Union
+from typing import Dict, List, Set, Tuple, Union
 
-from .claspy import require, var_in, set_max_val
 from . import utils
-from .utils.loops import is_valid_coord
+from .claspy import require, set_max_val, var_in
 from .utils.encoding import Encoding
+from .utils.loops import RectangularGridLoopSolver, is_valid_coord
 
 
 def encode(string: str) -> Encoding:
@@ -157,7 +157,7 @@ def calculate_clue_counts(clue_list: List[str]) -> Dict[str, int]:
 def solve(E: Encoding) -> List:
     set_max_val(8)
 
-    ls = utils.loops.RectangularGridLoopSolver(E.R, E.C)
+    ls = RectangularGridLoopSolver(E.R, E.C)
     ls.loop(E.clues)
 
     lookup = get_lookup()

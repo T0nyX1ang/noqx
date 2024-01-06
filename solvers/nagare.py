@@ -4,7 +4,19 @@ from typing import List
 
 from . import utils
 from .claspy import require, var_in
-from .utils.encoding import Encoding, loops
+from .utils.encoding import Encoding
+from .utils.loops import (
+    BOTTOM_IN,
+    BOTTOM_OUT,
+    DIRECTIONAL_PAIR_TO_UNICODE,
+    LEFT_IN,
+    LEFT_OUT,
+    RIGHT_IN,
+    RIGHT_OUT,
+    TOP_IN,
+    TOP_OUT,
+    RectangularGridLoopSolver,
+)
 
 
 def encode(string: str) -> Encoding:
@@ -24,7 +36,7 @@ def solve(E: Encoding) -> List:
             path_clues[coord] = E.clues[coord].upper()
         else:
             raise RuntimeError("Clue not one of 'black' or [URDLurdl]")
-    loop_solver = utils.RectangularGridLoopSolver(E.R, E.C, directed=True, shading=True)
+    loop_solver = RectangularGridLoopSolver(E.R, E.C, directed=True, shading=True)
     loop_solver.loop(wind_clues)
 
     for r, c in path_clues:
@@ -44,22 +56,22 @@ def solve(E: Encoding) -> List:
             for x in range(c - 1, -1, -1):
                 if (r, x) in wind_clues or (r, x) in shaded_cells:
                     break
-                require(var_in(loop_solver.grid[r][x], loops.RIGHT_IN + loops.LEFT_OUT + [""]))
+                require(var_in(loop_solver.grid[r][x], RIGHT_IN + LEFT_OUT + [""]))
         elif clue == "R":
             for x in range(c + 1, E.C):
                 if (r, x) in wind_clues or (r, x) in shaded_cells:
                     break
-                require(var_in(loop_solver.grid[r][x], loops.LEFT_IN + loops.RIGHT_OUT + [""]))
+                require(var_in(loop_solver.grid[r][x], LEFT_IN + RIGHT_OUT + [""]))
         elif clue == "U":
             for y in range(r - 1, -1, -1):
                 if (y, c) in wind_clues or (y, c) in shaded_cells:
                     break
-                require(var_in(loop_solver.grid[y][c], loops.BOTTOM_IN + loops.TOP_OUT + [""]))
+                require(var_in(loop_solver.grid[y][c], BOTTOM_IN + TOP_OUT + [""]))
         elif clue == "D":
             for y in range(r + 1, E.R):
                 if (y, c) in wind_clues or (y, c) in shaded_cells:
                     break
-                require(var_in(loop_solver.grid[y][c], loops.TOP_IN + loops.BOTTOM_OUT + [""]))
+                require(var_in(loop_solver.grid[y][c], TOP_IN + BOTTOM_OUT + [""]))
 
     for r in range(E.R):
         for c in range(E.C):
@@ -72,7 +84,7 @@ def solve(E: Encoding) -> List:
         elif direction_pair == ".":
             return "black"
         else:
-            uni = loops.DIRECTIONAL_PAIR_TO_UNICODE[direction_pair] + ".png"
+            uni = DIRECTIONAL_PAIR_TO_UNICODE[direction_pair] + ".png"
             return uni
 
     return loop_solver.solutions(format_function=format_function)
