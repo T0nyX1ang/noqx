@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import Atom, IntVar, MultiVar, cond, require, set_max_val, var_in
+from .utils.claspy import Atom, IntVar, MultiVar, cond, require, set_max_val, var_in
 from .utils.encoding import Encoding
 from .utils.loops import (
     BOTTOM_IN,

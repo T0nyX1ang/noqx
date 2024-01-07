@@ -2,8 +2,10 @@
 
 from typing import List
 
-from . import claspy, utils
-from .claspy import Atom, BoolVar, at_most, require, sum_bools
+from .utils import claspy
+
+from . import utils
+from .utils.claspy import Atom, BoolVar, at_most, require, sum_bools, clasp_solve
 from .utils.encoding import Encoding
 from .utils.solutions import MAX_SOLUTIONS_TO_FIND, rc_to_grid
 
@@ -62,7 +64,7 @@ def solve(E: Encoding) -> List:
         require(sum_bools(int(num_string), [grid[x][y] for (x, y) in seen_cells]) | grid[r][c])
 
     sols = []
-    while len(sols) < MAX_SOLUTIONS_TO_FIND and claspy.solve():
+    while len(sols) < MAX_SOLUTIONS_TO_FIND and clasp_solve():
         # append found solution
         sol = {}
         for r in range(E.R):

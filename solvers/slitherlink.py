@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import set_max_val
+from .utils.claspy import set_max_val
 from .utils.borders import RectangularGridBorderSolver
 from .utils.encoding import Encoding
 

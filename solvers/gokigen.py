@@ -4,7 +4,7 @@ from enum import Enum
 from typing import List, Tuple
 
 from . import utils
-from .claspy import Atom, BoolVar, IntVar, MultiVar, at_least, at_most, cond, require, set_max_val, sum_bools
+from .utils.claspy import Atom, BoolVar, IntVar, MultiVar, at_least, at_most, cond, require, set_max_val, sum_bools
 from .utils.encoding import Encoding
 from .utils.grids import is_valid_coord
 from .utils.solutions import get_all_solutions, rc_to_grid

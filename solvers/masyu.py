@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import require, var_in
+from .utils.claspy import require, var_in
 from .utils.encoding import Encoding
 from .utils.loops import RectangularGridLoopSolver
 

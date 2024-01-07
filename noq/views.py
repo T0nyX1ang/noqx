@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.urls import URLPattern, path
 from django.views.generic.base import RedirectView
 
-from solvers.claspy import reset
+from solvers.utils.claspy import reset
 from static.consts import cats as CATS
 from static.consts import types as PUZZLE_TYPES
 

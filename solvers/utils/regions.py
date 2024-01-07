@@ -1,6 +1,6 @@
 """Utility for regions."""
 
-from ..claspy import (
+from .claspy import (
     Atom,
     BoolVar,
     IntVar,

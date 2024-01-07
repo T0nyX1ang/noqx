@@ -4,7 +4,7 @@ import itertools
 from typing import List
 
 from . import utils
-from .claspy import require
+from .utils.claspy import require
 from .utils.encoding import Encoding
 from .utils.grids import is_valid_coord
 from .utils.shading import RectangularGridShadingSolver

@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import Atom, MultiVar, require, sum_bools, var_in
+from .utils.claspy import Atom, MultiVar, require, sum_bools, var_in
 from .utils.encoding import Encoding
 from .utils.grids import RectangularGrid, get_neighbors
 from .utils.loops import (

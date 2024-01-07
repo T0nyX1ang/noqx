@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from . import utils
-from .claspy import BoolVar, cond, require, set_max_val
+from .utils.claspy import BoolVar, cond, require, set_max_val
 from .utils.encoding import Encoding
 from .utils.grids import is_valid_coord
 from .utils.regions import RectangularGridRegionSolver

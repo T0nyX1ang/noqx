@@ -2,7 +2,7 @@
 
 from typing import List
 
-from .claspy import MultiVar, BoolVar, require, sum_bools
+from .utils.claspy import MultiVar, BoolVar, require, sum_bools
 from . import utils
 from .utils.encoding import Encoding
 from .utils.solutions import get_all_grid_solutions

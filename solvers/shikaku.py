@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import BoolVar, IntVar, require
+from .utils.claspy import BoolVar, IntVar, require
 from .utils.encoding import Encoding
 from .utils.numbers import factor_pairs
 from .utils.regions import RectangularGridRegionSolver

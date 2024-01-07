@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import BoolVar, require, set_max_val, sum_vars
+from .utils.claspy import BoolVar, require, set_max_val, sum_vars
 from .utils.encoding import Encoding
 from .utils.numbers import RectangularGridNumbersSolver
 

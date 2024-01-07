@@ -3,7 +3,7 @@
 from typing import Callable, List, Set, Tuple
 
 from . import utils
-from .claspy import Atom, IntVar, MultiVar, cond, require, set_max_val
+from .utils.claspy import Atom, IntVar, MultiVar, cond, require, set_max_val
 from .utils.encoding import Encoding
 from .utils.grids import RectangularGrid
 from .utils.solutions import get_all_grid_solutions

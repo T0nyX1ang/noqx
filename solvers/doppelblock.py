@@ -2,8 +2,8 @@
 
 from typing import List
 
-from . import claspy, utils
-from .claspy import BoolVar, IntVar, cond, require, reset, set_max_val, var_in
+from . import utils
+from .utils.claspy import BoolVar, IntVar, cond, require, reset, set_max_val, var_in, clasp_solve
 from .utils.encoding import Encoding
 from .utils.numbers import RectangularGridNumbersSolver
 from .utils.solutions import MAX_SOLUTIONS_TO_FIND, rc_to_grid
@@ -57,7 +57,7 @@ def solve(E: Encoding) -> List:
         require(numbers_solver.grid[r][c] == E.clues[(r, c)])
 
     solutions = []
-    while len(solutions) < MAX_SOLUTIONS_TO_FIND and claspy.solve():
+    while len(solutions) < MAX_SOLUTIONS_TO_FIND and clasp_solve():
         solution = {}
         for r in range(n):
             for c in range(n):

@@ -1,6 +1,6 @@
 """Utilities for finding all solutions to a problem."""
 
-from ..claspy import BoolVar, require, solve
+from .claspy import BoolVar, require, clasp_solve
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -14,7 +14,7 @@ def get_all_solutions(generate_solution, avoid_duplicate_solution):
     solutions = []
     #print(f'starting search - it\'s {datetime.now()}', flush=True)
     for i in range(MAX_SOLUTIONS_TO_FIND):
-        if solve():
+        if clasp_solve():
     #        print(f'solution {i+1} found at {datetime.now()}', flush=True)
             solutions.append(generate_solution())
             avoid_duplicate_solution()

@@ -3,8 +3,8 @@
 import json
 from typing import List
 
-from . import claspy, utils
-from .claspy import Atom, BoolVar, IntVar, require, set_max_val
+from . import utils
+from .utils.claspy import Atom, BoolVar, IntVar, require, set_max_val, clasp_solve
 from .utils.encoding import Encoding
 from .utils.solutions import MAX_SOLUTIONS_TO_FIND
 
@@ -72,7 +72,7 @@ def solve(E: Encoding) -> List:
 
     # solve
     sols = []
-    while len(sols) < MAX_SOLUTIONS_TO_FIND and claspy.solve():
+    while len(sols) < MAX_SOLUTIONS_TO_FIND and clasp_solve():
         # append found solution
         sol = {}
         for r, c in grid:

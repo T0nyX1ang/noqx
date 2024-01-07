@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import MultiVar, require, sum_bools
+from .utils.claspy import MultiVar, require, sum_bools
 from .utils.encoding import Encoding
 from .utils.shading import RectangularGridShadingSolver
 from .utils.shapes import OMINOES, get_adjacent, get_variants, place_shape_in_region

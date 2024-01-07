@@ -1,6 +1,6 @@
 """Utility for numbers."""
 
-from ..claspy import IntVar, require_all_diff
+from .claspy import IntVar, require_all_diff
 from .grids import RectangularGrid
 from .solutions import get_all_grid_solutions
 

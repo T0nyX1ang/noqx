@@ -1,6 +1,6 @@
 """Utility for shading."""
 
-from ..claspy import Atom, BoolVar, require, sum_bools, var_in
+from .claspy import Atom, BoolVar, require, sum_bools, var_in
 from .grids import RectangularGrid
 from .solutions import get_all_grid_solutions
 

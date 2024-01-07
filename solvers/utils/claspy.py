@@ -354,7 +354,7 @@ start_time = time()  # time when the library is loaded
 solution = None  # set containing indices of true variables
 
 
-def solve():
+def clasp_solve():
     """Solves for all defined variables.  If satisfiable, returns True
     and stores the solution so that variables can print out their
     values."""

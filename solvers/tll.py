@@ -3,7 +3,7 @@
 from typing import Dict, List, Set, Tuple, Union
 
 from . import utils
-from .claspy import require, set_max_val, var_in
+from .utils.claspy import require, set_max_val, var_in
 from .utils.encoding import Encoding
 from .utils.grids import is_valid_coord
 from .utils.loops import RectangularGridLoopSolver

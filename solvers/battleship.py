@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import BoolVar, IntVar, require, set_max_val, sum_bools
+from .utils.claspy import BoolVar, IntVar, require, set_max_val, sum_bools
 from .utils.encoding import Encoding
 from .utils.grids import get_surroundings, is_valid_coord
 from .utils.solutions import get_all_grid_solutions

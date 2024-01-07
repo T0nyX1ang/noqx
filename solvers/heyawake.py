@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import BoolVar, require
+from .utils.claspy import BoolVar, require
 from .utils.borders import Direction
 from .utils.encoding import Encoding
 from .utils.regions import RectangularGridRegionSolver, full_bfs

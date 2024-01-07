@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import require, set_max_val, sum_bools
+from .utils.claspy import require, set_max_val, sum_bools
 from .utils.encoding import Encoding
 from .utils.grids import get_neighbors
 from .utils.regions import full_bfs

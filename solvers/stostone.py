@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import (
+from .utils.claspy import (
     Atom,
     BoolVar,
     IntVar,

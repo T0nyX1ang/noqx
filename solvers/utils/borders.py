@@ -2,7 +2,7 @@
 
 from enum import Enum
 
-from ..claspy import BoolVar, Atom, require, at_least, at_most, sum_bools
+from .claspy import BoolVar, Atom, require, at_least, at_most, sum_bools
 from .solutions import get_all_solutions
 
 Direction = Enum("Direction", "LEFT TOP RIGHT BOTTOM")

@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import IntVar, require, require_all_diff
+from .utils.claspy import IntVar, require, require_all_diff
 from .utils.encoding import Encoding
 from .utils.solutions import get_all_grid_solutions
 

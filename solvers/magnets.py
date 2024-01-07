@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import MultiVar, require, set_max_val, sum_bools, sum_vars
+from .utils.claspy import MultiVar, require, set_max_val, sum_bools, sum_vars
 from .utils.encoding import Encoding
 from .utils.grids import RectangularGrid
 from .utils.regions import full_bfs

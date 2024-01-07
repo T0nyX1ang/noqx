@@ -1,6 +1,6 @@
 """Utility for loops."""
 
-from ..claspy import (
+from .claspy import (
     Atom,
     BoolVar,
     IntVar,

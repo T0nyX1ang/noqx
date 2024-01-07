@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utils
-from .claspy import BoolVar, MultiVar, require, sum_bools, var_in
+from .utils.claspy import BoolVar, MultiVar, require, sum_bools, var_in
 from .utils.borders import Direction
 from .utils.encoding import Encoding
 from .utils.loops import (
