@@ -67,7 +67,9 @@ def solve(E: Encoding) -> List:
 
     indep_bound = n  # calculate a bound on the maximum size of a hidden region
     for clue_num in distinct_clues:
-        clues = list(filter(lambda clue: E.clues[clue] == clue_num, E.clues))
+        # clues = list(filter(lambda clue: E.clues[clue] == clue_num, E.clues))
+        # the above line has for-loop variables in closure, not recommended. Use the next line instead.
+        clues = [clue for clue in E.clues if clue == clue_num]
         indep = find_independent_set(clues, lambda x, y: abs(x[0] - y[0]) + abs(x[1] - y[1]) < clue_num)
         indep_bound -= len(indep) * clue_num
     max_region_size = max(indep_bound, max_clue)

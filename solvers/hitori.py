@@ -18,6 +18,13 @@ def solve(E: Encoding) -> List:
 
     K = list(E.clues.keys())
     for i, (r, c) in enumerate(K):
+        if isinstance(E.clues[(r, c)], list):
+            num, color = E.clues[(r, c)]
+            assert color == 'gray'
+            require(s.grid[r][c])
+            E.clues[(r, c)] = int(num) if '0' <= num <= '9' else num
+
+    for i, (r, c) in enumerate(K):
         for r1, c1 in K[i + 1 :]:
             if E.clues[(r, c)] == E.clues[(r1, c1)] and (r == r1 or c == c1):
                 require(s.grid[r][c] | s.grid[r1][c1])

@@ -835,8 +835,9 @@ class EasyAsElf extends Elf
 }
 
 let s = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-class HitoriElf extends LetterElf(s)
-{
+class HitoriElf extends DirectSum(
+	LetterElf(s), BgColorElf({'#': ['gray', 'gray']}, false)
+) {
 	static controls()
 		{
 			let controls = super.controls();
