@@ -5,6 +5,7 @@ from typing import List
 from . import utils
 from .utils.claspy import BoolVar, IntVar, require, set_max_val
 from .utils.encoding import Encoding
+from .utils.numbers import factor_pairs
 from .utils.shading import RectangularGridShadingSolver
 
 
@@ -45,7 +46,7 @@ def solve(E: Encoding) -> List:
         # use product rule
         if E.params["Product"]:
             cond_product = BoolVar(False)  # unwind the product (so claspy works correctly)
-            for a, b in utils.numbers.factor_pairs(E.clues[(r, c)]):
+            for a, b in factor_pairs(E.clues[(r, c)]):
                 cond_product |= (dirs[(1, 0)] + dirs[(-1, 0)] == a - 1) & (dirs[(0, 1)] + dirs[(0, -1)] == b - 1)
             require(cond_product)
         else:  # use normal rule
