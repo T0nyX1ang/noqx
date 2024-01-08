@@ -13,113 +13,129 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Claspy
-#
-# A python constraint solver based on the answer set solver 'clasp'.
-# Compiles constraints to an ASP problem in lparse's internal format.
-#
-## Main interface ##
-#
-# BoolVar() : Create a boolean variable.
-# IntVar() : Create a non-negative integer variable.
-# IntVar(1,9) : Integer variable in range 1-9, inclusive.
-# IntVar([1,2,3]) : Integer variable with one of the given values.
-# MultiVar('a','b') : Generalized variable with one of the given values.
-# Atom() : An atom is only true if it is proven, with Atom.prove_if(<b>).
-# cond(<pred>, <cons>, <alt>) : Create an "if" statement.
-# require(<expr>) : Constrain a variable or expression to be true.
-# clasp_solve() : Runs clasp and returns True if satisfiable.
-#
-# After running solve, print the variables or call var.value() to get
-# the result.
-#
-## Additional functions ##
-#
-# reset() : Resets the system.  Do not use any old variables after reset.
-# set_bits(8) : Set the number of bits for integer variables.
-#               Must be called before any variables are created.
-# set_max_val(100) : Set the max number of bits as necessary for the given value.
-#                    Must be called before any variables are created.
-# require_all_diff(lst) : Constrain all vars in a list to be different.
-# sum_vars(lst) : Convenience function to sum a list of variables.
-# at_least(n, bools) : Whether at least n of the booleans are true.
-# at_most(n, bools) : Whether at most n of the booleans are true.
-# sum_bools(n, bools) : Whether exactly n of the booleans are true.
-# required(<expr>, <str>) : Print the debug string if the expression
-#   is false.  You can change a 'require' statement to 'required' for debugging.
-# var_in(v, lst) : Whether var v is equal to some element in lst.
-#
-## Variable methods ##
-#
-# v.value() : The solution value.
-# v.info() : Return detailed information about a variable.
-#
-## Gotchas ##
-#
-# Do not use and/or/not with variables. Only use &, |, ~.
-# Subtracting from an IntVar requires that the result is positive,
-# so you usually want to add to the other side of the equation instead.
 
-# from __future__ import absolute_import, division, generator_stop, print_function, unicode_literals
+"""Claspy
 
+A python constraint solver based on the answer set solver 'clasp'.
+Compiles constraints to an ASP problem in lparse's internal format.
+
+# Main interface ##
+
+BoolVar() : Create a boolean variable.
+IntVar() : Create a non-negative integer variable.
+IntVar(1,9) : Integer variable in range 1-9, inclusive.
+IntVar([1,2,3]) : Integer variable with one of the given values.
+MultiVar('a','b') : Generalized variable with one of the given values.
+Atom() : An atom is only true if it is proven, with Atom.prove_if(<b>).
+cond(<pred>, <cons>, <alt>) : Create an "if" statement.
+require(<expr>) : Constrain a variable or expression to be true.
+clasp_solve() : Runs clasp and returns True if satisfiable.
+
+After running solve, print the variables or call var.value() to get
+the result.
+
+# Additional functions ##
+
+reset() : Resets the system.  Do not use any old variables after reset.
+set_bits(8) : Set the number of bits for integer variables.
+              Must be called before any variables are created.
+set_max_val(100) : Set the max number of bits as necessary for the given value.
+                   Must be called before any variables are created.
+require_all_diff(lst) : Constrain all vars in a list to be different.
+sum_vars(lst) : Convenience function to sum a list of variables.
+at_least(n, bools) : Whether at least n of the booleans are true.
+at_most(n, bools) : Whether at most n of the booleans are true.
+sum_bools(n, bools) : Whether exactly n of the booleans are true.
+required(<expr>, <str>) : Print the debug string if the expression
+  is false.  You can change a 'require' statement to 'required' for debugging.
+var_in(v, lst) : Whether var v is equal to some element in lst.
+
+# Variable methods ##
+
+v.value() : The solution value.
+
+# Gotchas ##
+
+Do not use and/or/not with variables. Only use &, |, ~.
+Subtracting from an IntVar requires that the result is positive,
+so you usually want to add to the other side of the equation instead."""
+
+import abc
+import itertools
 import subprocess
 from functools import reduce
-from time import time
-from typing import Any, List, Tuple, Union
+from typing import Any, Callable, List, Union
+
 
 CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic"
+
+
+class SolverStorage:
+    """Storage for all global variables."""
+
+    def __init__(self):
+        self.NUM_BITS = 16
+        self.BITS = range(self.NUM_BITS)
+
+        self.clasp_rules = []
+        self.single_vars = set()
+        self.last_bool = 1  # reserved in clasp
+
+        self.memo_caches = []  # list of caches to clear on reset
+        self.TRUE_BOOL = True  # should convert to BoolVar
+        self.FALSE_BOOL = False  # should convert to BoolVar
+        self.solution = set()
+
+    def reset(self):
+        """Reset the solver storage."""
+        self.NUM_BITS = 16
+        self.BITS = range(self.NUM_BITS)
+
+        self.clasp_rules = []
+        self.single_vars = set()
+        self.last_bool = 1  # reserved in clasp
+
+        self.TRUE_BOOL = BoolVar()
+        self.solution = set([self.TRUE_BOOL.index])
+        require(self.TRUE_BOOL)
+        self.FALSE_BOOL = ~self.TRUE_BOOL
+
+        for cache in self.memo_caches:
+            cache.clear()
+
+    def new_literal(self) -> int:
+        """Returns the number of a new literal."""
+        self.last_bool += 1
+        return self.last_bool
+
+    def set_bits(self, n: int):
+        """Sets the number of bits used for IntVars."""
+        if self.last_bool > 2:  # true/false already defined
+            raise RuntimeError("Can't change number of bits after defining variables")
+        print("Setting integers to", n, "bits")
+        self.NUM_BITS = n
+        self.BITS = range(self.NUM_BITS)
+
+
+gs = SolverStorage()  # initialize global storage
 
 
 ################################################################################
 ###############################  Infrastructure  ###############################
 ################################################################################
 
-verbose = False
-
-
-def set_verbose(b=True):
-    """Set verbose to show rules as they are created."""
-    global verbose
-    verbose = b
-
-
-last_update = time()
-
-
-def need_update() -> bool:
-    """Returns True once every two seconds."""
-    global last_update
-    if time() - last_update > 2:
-        last_update = time()
-        return True
-    return False
-
-
-def hash_object(x):
-    """Given a variable or object x, returns an object suitable for
-    hashing.  Equivalent variables should return equivalent objects."""
-    if hasattr(x, "hash_object"):
-        return x.hash_object()
-    else:
-        return x
-
-
-memo_caches = []  # a reference to all memoization dictionaries, to allow reset
-
 
 class memoized:
-    """Decorator that caches a function's return value.  Based on:
-    http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize"""
+    """Decorator that caches a function's return value."""
 
-    def __init__(self, func):
-        global memo_caches
+    def __init__(self, func: Callable[..., Any]):
         self.func = func
         self.cache = {}
-        memo_caches.append(self.cache)
+        gs.memo_caches.append(self.cache)
 
     def __call__(self, *args):
         try:
-            key = tuple(map(hash_object, args))
+            key = tuple(map(hash, args))
             return self.cache[key]
         except KeyError:
             value = self.func(*args)
@@ -127,10 +143,6 @@ class memoized:
             return value
         except TypeError:  # uncacheable
             return self.func(*args)
-
-    def __repr__(self):
-        """Return the function's docstring."""
-        return self.func.__doc__
 
     def __get__(self, obj, objtype):
         """Support instance methods."""
@@ -142,12 +154,11 @@ class memoized:
 
 
 class memoized_symmetric(memoized):
-    """Decorator that memoizes a function where the order of the
-    arguments doesn't matter."""
+    """Decorator that memoizes a function where the order of the arguments doesn't matter."""
 
     def __call__(self, *args):
         try:
-            key = tuple(sorted(map(hash_object, args)))
+            key = tuple(sorted(map(hash, args)))
             return self.cache[key]
         except KeyError:
             value = self.func(*args)
@@ -157,110 +168,69 @@ class memoized_symmetric(memoized):
             return self.func(*args)
 
 
+class GenericVar(abc.ABC):
+    """Generic variable class. This class is an abstract base class."""
+
+    def __init__(self, val: Any = None):
+        raise NotImplementedError("Can't create GenericVar.")
+
+    def __hash__(self) -> int:
+        raise NotImplementedError("Can't hash GenericVar.")
+
+    def value(self) -> Any:
+        """Returns the value of the variable."""
+        raise NotImplementedError("Can't get the value of GenericVar.")
+
+    def __repr__(self) -> str:
+        return str(self.value())
+
+    def __invert__(self) -> "GenericVar":
+        raise NotImplementedError("Can't invert GenericVar.")
+
+    def __eq__(self, other: Any) -> "GenericVar":
+        raise NotImplementedError("Can't compare GenericVar.")
+
+    def __ne__(self, other: Any) -> "GenericVar":
+        return ~(self.__eq__(other))
+
+    def __gt__(self, other: Any) -> "GenericVar":
+        raise NotImplementedError("Can't compare GenericVar.")
+
+    def __lt__(self, other: Any) -> "GenericVar":
+        raise NotImplementedError("Can't compare GenericVar.")
+
+    def __ge__(self, other: Any) -> "GenericVar":
+        return ~(self.__lt__(other))
+
+    def __le__(self, other: Any) -> "GenericVar":
+        return ~(self.__gt__(other))
+
+    def cond(self, pred: Any, alt: Any) -> "GenericVar":
+        """Returns a GenericVar indicating whether the value of self is."""
+        raise NotImplementedError("Can't apply conditions on GenericVar.")
+
+
 ################################################################################
 ###################################  Solver  ###################################
 ################################################################################
-
-# True and False BoolVars for convenience.
-TRUE_BOOL = None
-FALSE_BOOL = None
-
-
-def reset():
-    """Reset the solver.  Any variables defined before a reset will
-    have bogus values and should not be used."""
-    global last_bool, TRUE_BOOL, FALSE_BOOL, solution
-    global memo_caches, debug_constraints, clasp_rules
-    global single_vars, NUM_BITS, BITS
-
-    NUM_BITS = 16
-    BITS = range(NUM_BITS)
-
-    clasp_rules = []
-    single_vars = set()
-    last_bool = 1  # reserved in clasp
-
-    TRUE_BOOL = BoolVar()
-    solution = set([TRUE_BOOL.index])
-    require(TRUE_BOOL)
-    FALSE_BOOL = ~TRUE_BOOL
-
-    for cache in memo_caches:
-        cache.clear()
-    debug_constraints = []
-
-
-last_bool = None  # used to set the indexes of BoolVars
-
-
-def new_literal() -> int:
-    """Returns the number of a new literal."""
-    global last_bool
-    last_bool += 1
-    return last_bool
-
-
-def require(x):
-    """Constrains the variable x to be true.  The second argument is
-    ignored, for compatibility with required()."""
+def require(x: Any):
+    """Constrains the variable x to be true."""
     x = BoolVar(x)
     add_basic_rule(1, [-x.index])  # basic rule with no head
 
 
-debug_constraints = None
-
-
-def required(x, debug_str):
-    """A debugging tool.  The debug string is printed if x is False
-    after solving.  You can find out which constraint is causing
-    unsatisfiability by changing all require() statements to
-    required(), and adding constraints for the expected solution."""
-    global debug_constraints
-    debug_constraints.append((x, debug_str))
-
-
-clasp_rules = None
-
-
 def add_rule(vals: List[int]):
-    """The rule is encoded as a series of integers, according to the
-    SMODELS internal format.  See lparse.pdf pp.86 (pdf p.90)."""
-    global clasp_rules
-    clasp_rules.append(vals)
-    if need_update():
-        print(len(clasp_rules), "rules")
-
-
-def lit2str(literals: List[int]) -> str:
-    """For debugging, formats the given literals as a string matching
-    smodels format, as would be input to gringo."""
-    return ", ".join(map(lambda x: "v" + str(x) if x > 0 else "not v" + str(-x), literals))
-
-
-def head2str(head: int) -> str:
-    """Formats the head of a rule as a string."""
-    # 1 is the _false atom (lparse.pdf p.87)
-    return "" if head == 1 else "v" + str(head)
+    """The rule is encoded as a series of integers, according to the SMODELS internal format."""
+    gs.clasp_rules.append(vals)
 
 
 def add_basic_rule(head: int, literals: List[int]):
+    """Adds a basic rule."""
     # See rule types in lparse.pdf pp.88 (pdf p.92)
-    if verbose:
-        if len(literals) == 0:
-            print(head2str(head) + ".")
-        else:
-            print(head2str(head), ":-", lit2str(literals) + ".")
     assert head > 0
     literals = optimize_basic_rule(head, literals)
     if literals is None:  # optimization says to skip this rule
-        if verbose:
-            print("#opt")
         return
-    if verbose:
-        if len(literals) == 0:
-            print("#opt", head2str(head) + ".")
-        else:
-            print("#opt", head2str(head), ":-", lit2str(literals) + ".")
     # format: 1 head #literals #negative [negative] [positive]
     negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
     positive_literals = list(filter(lambda x: x > 0, literals))
@@ -268,11 +238,7 @@ def add_basic_rule(head: int, literals: List[int]):
 
 
 def add_choice_rule(heads: List[int], literals: List[int]):
-    if verbose:
-        if len(literals) == 0:
-            print("{", lit2str(heads), "}.")
-        else:
-            print("{", lit2str(heads), "} :-", lit2str(literals))
+    """Adds a choice rule."""
     for i in heads:
         assert i > 0
     # format: 3 #heads [heads] #literals #negative [negative] [positive]
@@ -281,22 +247,9 @@ def add_choice_rule(heads: List[int], literals: List[int]):
     add_rule([3, len(heads)] + heads + [len(literals), len(negative_literals)] + negative_literals + positive_literals)
 
 
-def add_constraint_rule(head: int, bound: int, literals: List[int]):
-    # Note that constraint rules ignore repeated literals
-    if verbose:
-        print(head2str(head), ":-", bound, "{", lit2str(literals), "}.")
-    assert head > 0
-    # format: 2 head #literals #negative bound [negative] [positive]
-    negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
-    positive_literals = list(filter(lambda x: x > 0, literals))
-    add_rule([2, head, len(literals), len(negative_literals), bound] + negative_literals + positive_literals)
-
-
 def add_weight_rule(head: int, bound: int, literals: List[int]):
+    """Adds a weight rule."""
     # Unlike constraint rules, weight rules count repeated literals
-    if verbose:
-        print(head2str(head), ":-", bound, "[", end="")
-        print(", ".join(map(lambda x: x + "=1", lit2str(literals).split(", "))), "].")
     assert head > 0
     # format: 5 head bound #literals #negative [negative] [positive] [weights]
     negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
@@ -305,27 +258,23 @@ def add_weight_rule(head: int, bound: int, literals: List[int]):
     add_rule([5, head, bound, len(literals), len(negative_literals)] + negative_literals + positive_literals + weights)
 
 
-single_vars = None
-
-
 def optimize_basic_rule(head: int, literals: List[int]) -> Union[List[int], None]:
-    """Optimizes a basic rule, returning a new set of literals, or
-    None if the rule can be skipped."""
+    """Optimizes a basic rule, returning a new set of literals, or None if the rule can be skipped."""
     if len(literals) == 0:  # the head must be true
-        if head in single_vars:
+        if head in gs.single_vars:
             return None
-        single_vars.add(head)
+        gs.single_vars.add(head)
     elif head == 1 and len(literals) == 1:  # the literal must be false
-        if -literals[0] in single_vars:
+        if -literals[0] in gs.single_vars:
             return None
-        single_vars.add(-literals[0])
+        gs.single_vars.add(-literals[0])
     elif head == 1:  # we can optimize headless rules
         for x in literals:
             # if the literal is false, the clause is unnecessary
-            if -x in single_vars:
+            if -x in gs.single_vars:
                 return None
             # if the literal is true, the literal is unnecessary
-            if x in single_vars:
+            if x in gs.single_vars:
                 new_literals = list(filter(lambda y: y != x, literals))
                 return optimize_basic_rule(head, new_literals)
     return literals
@@ -343,17 +292,11 @@ def parse_atoms(line: str) -> List[int]:
     return parsed
 
 
-start_time = time()  # time when the library is loaded
-solution = None  # set containing indices of true variables
-
-
 def clasp_solve() -> bool:
     """Solves for all defined variables.  If satisfiable, returns True
-    and stores the solution so that variables can print out their
-    values."""
-    global last_bool, solution, debug_constraints, last_update
+    and stores the solution so that variables can print out their values."""
 
-    print("Solving", last_bool, "variables,", len(clasp_rules), "rules")
+    print("Solving", gs.last_bool, "variables,", len(gs.clasp_rules), "rules")
 
     clasp_process = subprocess.Popen(CLASP_COMMAND.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
@@ -361,7 +304,7 @@ def clasp_solve() -> bool:
         clasp_process.stdin.write(bytes(s, encoding="ascii"))
 
     try:
-        for rule in clasp_rules:
+        for rule in gs.clasp_rules:
             clasp_write(" ".join(map(str, rule)) + "\n")
     except IOError:
         # The stream may be closed early if there is obviously no
@@ -371,43 +314,35 @@ def clasp_solve() -> bool:
 
     clasp_write("0\n")  # end of rules
     # print the literal names
-    for i in range(2, last_bool + 1):
+    for i in range(2, gs.last_bool + 1):
         clasp_write(f"{i}, {'v' + str(i)}\n")
     # print the compute statement
     clasp_write("0\nB+\n0\nB-\n1\n0\n1\n")
     if clasp_process.stdout is None:  # debug mode
         return
     clasp_process.stdin.close()
+
     found_solution = False
     clasp_output = []
     for line in clasp_process.stdout:
         line = line.decode(encoding="ascii").lstrip().rstrip()
-        print(line.rstrip())
+
         if line.startswith("Answer:"):
-            solution = set()
+            gs.solution = set()
         if line.startswith("v"):  # this is a solution line
             assert not found_solution
-            solution = set(parse_atoms(line))
+            gs.solution = set(parse_atoms(line))
             found_solution = True
-            if verbose:
-                print(line.rstrip())
         else:
             clasp_output.append(line.rstrip())
+
     if "SATISFIABLE" in clasp_output:
         print("SATISFIABLE")
     elif "UNSATISFIABLE" in clasp_output:
         print("UNSATISFIABLE")
     else:
         print("\n".join(clasp_output))  # show info if there was an error
-    print()
-    print("Total time: %.2fs" % (time() - start_time))
-    print()
-    if solution and debug_constraints:
-        for x, s in debug_constraints:
-            if not x.value():
-                print("Failed constraint:", s)
-        print()
-    last_update = time()  # reset for future searches
+
     return found_solution
 
 
@@ -416,29 +351,31 @@ def clasp_solve() -> bool:
 ################################################################################
 
 
-# BoolVar is the root variable type, and represents a boolean that can
-# take on either value.  Every boolean has an index, starting at 2,
-# which is used when it's encoded to SMODELS internal representation.
-# BoolVars can also have a negative index, indicating that its value
-# is the inverse of the corresponding boolean.
-class BoolVar:
+class BoolVar(GenericVar):
+    """BoolVar is the root variable type, and represents a boolean that can
+    take on either value. Every boolean has an index, starting at 2,
+    which is used when it's encoded to SMODELS internal representation.
+    BoolVars can also have a negative index, indicating that its value
+    is the inverse of the corresponding boolean."""
+
     index = None  # integer <= -2 or >= 2.  Treat as immutable.
 
     def __init__(self, val: Any = None):
         """BoolVar() : Creates a boolean variable.
-        BoolVar(x) : Constraints to a particular value, or converts
+
+        BoolVar(val) : Constraints to a particular value, or converts
         from another type."""
         if val is None:
-            self.index = new_literal()
+            self.index = gs.new_literal()
             add_choice_rule([self.index], [])  # define the var with a choice rule
         elif isinstance(val, str) and val == "internal":  # don't create a choice rule. (for internal use)
-            self.index = new_literal()
+            self.index = gs.new_literal()
         elif isinstance(val, str) and val == "noinit":  # don't allocate an index. (for internal use)
             return
         elif isinstance(val, BoolVar):
             self.index = val.index
         elif isinstance(val, (bool, int)):
-            self.index = TRUE_BOOL.index if val else FALSE_BOOL.index
+            self.index = gs.TRUE_BOOL.index if val else gs.FALSE_BOOL.index
         elif isinstance(val, IntVar):
             result = reduce(lambda a, b: a | b, val.bits)  # if any bits are non-zero
             self.index = result.index
@@ -451,24 +388,19 @@ class BoolVar:
             raise TypeError("Can't convert to BoolVar: " + str(val) + " " + str(type(val)))
 
     def __hash__(self) -> int:
-        return hash(self.hash_object())
-
-    def hash_object(self) -> Tuple[str, int]:
-        """The hash object of BoolVar."""
-        return ("BoolVar", self.index)
+        return hash(("BoolVar", self.index))
 
     def value(self) -> bool:
         """The value of BoolVar."""
         if self.index > 0:
-            return self.index in solution
+            return self.index in gs.solution
         else:
-            return -self.index not in solution
+            return -self.index not in gs.solution
 
     def __repr__(self) -> str:
         return str(int(self.value()))
 
     def __invert__(self) -> "BoolVar":
-        global last_bool
         # Invert the bool by creating one with a negative index.
         result = BoolVar("noinit")
         result.index = -self.index
@@ -477,25 +409,22 @@ class BoolVar:
     @memoized_symmetric
     def __eq__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
             return self  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.FALSE_BOOL.index:
             return ~self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, other.index])
         add_basic_rule(result.index, [-self.index, -other.index])
         return result
 
-    def __ne__(self, other: Any) -> "BoolVar":
-        return ~(self == other)
-
     @memoized_symmetric
     def __and__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
             return self  # opt
-        if other.index == FALSE_BOOL.index:
-            return FALSE_BOOL  # opt
+        if other.index == gs.FALSE_BOOL.index:
+            return gs.FALSE_BOOL  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, other.index])
         return result
@@ -505,9 +434,9 @@ class BoolVar:
     @memoized_symmetric
     def __or__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
-            return TRUE_BOOL  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
+            return gs.TRUE_BOOL  # opt
+        if other.index == gs.FALSE_BOOL.index:
             return self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index])
@@ -519,9 +448,9 @@ class BoolVar:
     @memoized_symmetric
     def __xor__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
             return ~self  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.FALSE_BOOL.index:
             return self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, -other.index])
@@ -533,9 +462,9 @@ class BoolVar:
     @memoized
     def __gt__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
-            return FALSE_BOOL  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
+            return gs.FALSE_BOOL  # opt
+        if other.index == gs.FALSE_BOOL.index:
             return self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, -other.index])
@@ -543,12 +472,6 @@ class BoolVar:
 
     def __lt__(self, other: Any) -> "BoolVar":
         return BoolVar(other) > self
-
-    def __ge__(self, other: Any) -> "BoolVar":
-        return ~(self < other)
-
-    def __le__(self, other: Any) -> "BoolVar":
-        return ~(self > other)
 
     @memoized_symmetric
     def __add__(self, other: Any) -> "IntVar":
@@ -590,12 +513,13 @@ def sum_bools(n: int, bools: List[Any]) -> "BoolVar":
 ################################################################################
 
 
-# An atom is only true if it is proven.
 class Atom(BoolVar):
+    """The class of an atom. An atom is only true if it is proven."""
+
     def __init__(self):
         BoolVar.__init__(self, "internal")
 
-    def prove_if(self, x):
+    def prove_if(self, x: Any):
         """Proves the atom if x is true."""
         x = BoolVar(x)
         add_basic_rule(self.index, [x.index])
@@ -605,30 +529,18 @@ class Atom(BoolVar):
 ##################################  Integers  ##################################
 ################################################################################
 
-NUM_BITS = None
-BITS = None
-
-
-def set_bits(n: int):
-    """Sets the number of bits used for IntVars."""
-    global NUM_BITS, BITS
-    if last_bool > 2:  # true/false already defined
-        raise RuntimeError("Can't change number of bits after defining variables")
-    print("Setting integers to", n, "bits")
-    NUM_BITS = n
-    BITS = range(NUM_BITS)
-
 
 def set_max_val(n: int):
     """Sets the number of bits corresponding to maximum value n."""
     i = 0
     while n >> i != 0:
         i += 1
-    set_bits(i)
+    gs.set_bits(i)
 
 
-# IntVar is an integer variable, represented as a list of boolean variable bits.
-class IntVar:
+class IntVar(GenericVar):
+    """IntVar is an integer variable, represented as a list of boolean variable bits."""
+
     bits = []  # An array of BoolVar bits, LSB first.  Treat as immutable.
 
     def __init__(
@@ -642,63 +554,54 @@ class IntVar:
         IntVar(<BoolVar>) : Cast from BoolVar.
         IntVar([1,2,3]) : An integer resticted to one of these values."""
         if val is None:
-            self.bits = [BoolVar() for i in BITS]
+            self.bits = [BoolVar() for i in gs.BITS]
         elif max_val is not None:
             if not (isinstance(val, int) and isinstance(max_val, int)):
                 raise RuntimeError("Expected two integers for IntVar() but got: " + str(val) + ", " + str(max_val))
             if max_val < val:
                 raise RuntimeError("Invalid integer range: " + str(val) + ", " + str(max_val))
-            if max_val >= (1 << NUM_BITS):
+            if max_val >= (1 << gs.NUM_BITS):
                 raise RuntimeError("Not enough bits to represent max value: " + str(max_val))
-            self.bits = [(FALSE_BOOL if max_val >> i == 0 else BoolVar()) for i in BITS]
+            self.bits = [(gs.FALSE_BOOL if max_val >> i == 0 else BoolVar()) for i in gs.BITS]
             if val > 0:
                 require(self >= val)
             require(self <= max_val)
         elif isinstance(val, IntVar):
             self.bits = val.bits
         elif isinstance(val, BoolVar):
-            self.bits = [val] + [FALSE_BOOL for i in BITS[1:]]
-        elif isinstance(val, int) and val >> NUM_BITS == 0:
-            self.bits = [(TRUE_BOOL if ((val >> i) & 1) else FALSE_BOOL) for i in BITS]
+            self.bits = [val] + [gs.FALSE_BOOL for i in gs.BITS[1:]]
+        elif isinstance(val, int) and val >> gs.NUM_BITS == 0:
+            self.bits = [(gs.TRUE_BOOL if ((val >> i) & 1) else gs.FALSE_BOOL) for i in gs.BITS]
         elif isinstance(val, bool):
-            self.bits = [TRUE_BOOL if val else FALSE_BOOL] + [FALSE_BOOL for i in BITS[1:]]
+            self.bits = [gs.TRUE_BOOL if val else gs.FALSE_BOOL] + [gs.FALSE_BOOL for i in gs.BITS[1:]]
         elif isinstance(val, list):
-            self.bits = [BoolVar() for i in BITS]
+            self.bits = [BoolVar() for i in gs.BITS]
             require(reduce(lambda a, b: a | b, map(lambda x: self == x, val)))
         else:
             raise TypeError("Can't convert to IntVar: " + str(val))
 
     def __hash__(self):
-        return hash(self.hash_object())
-
-    def hash_object(self) -> Tuple[Union[str, int]]:
-        return ("IntVar",) + tuple(map(lambda b: b.index, self.bits))
+        return hash(("IntVar",) + tuple(map(lambda b: b.index, self.bits)))
 
     def value(self) -> int:
-        return sum((1 << i) for i in BITS if self.bits[i].value())
-
-    def __repr__(self) -> str:
-        return str(self.value())
+        return sum((1 << i) for i in gs.BITS if self.bits[i].value())
 
     @memoized_symmetric
     def __eq__(self, other: Any) -> "BoolVar":
         other = IntVar(other)
-        return reduce(lambda a, b: a & b, [self.bits[i] == other.bits[i] for i in BITS])
-
-    def __ne__(self, other: Any) -> "BoolVar":
-        return ~(self == other)
+        return reduce(lambda a, b: a & b, [self.bits[i] == other.bits[i] for i in gs.BITS])
 
     @memoized_symmetric
     def __add__(self, other: Any) -> "IntVar":
         other = IntVar(other)
         # Optimization: only allocate the necessary number of bits.
         max_bit = max(
-            [i for i in BITS if self.bits[i].index != FALSE_BOOL.index]
-            + [i for i in BITS if other.bits[i].index != FALSE_BOOL.index]
+            [i for i in gs.BITS if self.bits[i].index != gs.FALSE_BOOL.index]
+            + [i for i in gs.BITS if other.bits[i].index != gs.FALSE_BOOL.index]
             + [-1]
         )
         result = IntVar(0)  # don't allocate bools yet
-        result.bits = [(FALSE_BOOL if i > max_bit + 1 else BoolVar()) for i in BITS]
+        result.bits = [(gs.FALSE_BOOL if i > max_bit + 1 else BoolVar()) for i in gs.BITS]
         IntVar.constrain_sum(self, other, result)
         return result
 
@@ -716,21 +619,15 @@ class IntVar:
     @memoized
     def __gt__(self, other: Any) -> "BoolVar":
         other = IntVar(other)
-        result = FALSE_BOOL
-        for i in BITS:
+        result = gs.FALSE_BOOL
+        for i in gs.BITS:
             result = cond(
-                self.bits[i] > other.bits[i], TRUE_BOOL, cond(self.bits[i] < other.bits[i], FALSE_BOOL, result)
+                self.bits[i] > other.bits[i], gs.TRUE_BOOL, cond(self.bits[i] < other.bits[i], gs.FALSE_BOOL, result)
             )
         return result
 
     def __lt__(self, other: Any) -> "BoolVar":
         return IntVar(other) > self
-
-    def __ge__(self, other: Any) -> "BoolVar":
-        return ~(self < other)
-
-    def __le__(self, other: Any) -> "BoolVar":
-        return ~(self > other)
 
     def cond(self, pred: Any, alt: Any) -> "IntVar":
         pred = BoolVar(pred)
@@ -744,24 +641,24 @@ class IntVar:
         assert isinstance(i, int)
         if i == 0:
             return self
-        if i >= NUM_BITS:
+        if i >= gs.NUM_BITS:
             return IntVar(0)
         result = IntVar(0)  # don't allocate bools
-        result.bits = [FALSE_BOOL for _ in range(i)] + self.bits[:-i]
+        result.bits = [gs.FALSE_BOOL for _ in range(i)] + self.bits[:-i]
         return result
 
     @memoized
     def __rshift__(self, i: int) -> "IntVar":
         assert isinstance(i, int)
         result = IntVar(0)  # don't allocate bools
-        result.bits = self.bits[i:] + [FALSE_BOOL for _ in range(i)]
+        result.bits = self.bits[i:] + [gs.FALSE_BOOL for _ in range(i)]
         return result
 
     @memoized_symmetric
     def __mul__(self, other: Any) -> "IntVar":
         other = IntVar(other)
         result = IntVar(0)
-        for i in BITS:
+        for i in gs.BITS:
             result += cond(other.bits[i], self << i, 0)
         return result
 
@@ -773,11 +670,11 @@ class IntVar:
         c = BoolVar(False)  # carry bit
         # Optimization: stop at the the necessary number of bits.
         max_bit = max(
-            [i + 1 for i in BITS if a.bits[i].index != FALSE_BOOL.index]
-            + [i + 1 for i in BITS if b.bits[i].index != FALSE_BOOL.index]
-            + [i for i in BITS if result.bits[i].index != FALSE_BOOL.index]
+            [i + 1 for i in gs.BITS if a.bits[i].index != gs.FALSE_BOOL.index]
+            + [i + 1 for i in gs.BITS if b.bits[i].index != gs.FALSE_BOOL.index]
+            + [i for i in gs.BITS if result.bits[i].index != gs.FALSE_BOOL.index]
         )
-        for i in BITS:
+        for i in gs.BITS:
             d = a.bits[i] ^ b.bits[i]
             require(result.bits[i] == (d ^ c))
             if i == max_bit:  # opt: we know the rest of the bits are false.
@@ -793,9 +690,9 @@ def cond(pred: Any, cons: Any, alt: Any):
     if isinstance(pred, bool):
         return cons if pred else alt
     pred = BoolVar(pred)
-    if pred.index == TRUE_BOOL.index:
+    if pred.index == gs.TRUE_BOOL.index:
         return cons  # opt
-    if pred.index == FALSE_BOOL.index:
+    if pred.index == gs.FALSE_BOOL.index:
         return alt  # opt
     if isinstance(cons, (bool, BoolVar)) and isinstance(alt, (bool, BoolVar)):
         cons = BoolVar(cons)
@@ -811,29 +708,13 @@ def cond(pred: Any, cons: Any, alt: Any):
 
 
 def require_all_diff(lst: List[Any]):
-    """Constrain all variables in the list to be different.  Note that
-    this creates O(N^2) rules."""
-
-    def choose(items, num):  # this could be replaced with itertools?
-        """Returns an iterator over all choises of num elements from items."""
-        if len(items) < num or num <= 0:
-            yield items[:0]
-            return
-        if len(items) == num:
-            yield items
-            return
-        for x in choose(items[1:], num - 1):
-            yield items[:1] + x
-        for x in choose(items[1:], num):
-            yield x
-
-    for a, b in choose(lst, 2):
+    """Constrain all variables in the list to be different. Note that this creates C(N,2) rules."""
+    for a, b in itertools.combinations(lst, 2):
         require(a != b)
 
 
 def sum_vars(lst: List[Any]) -> Any:
-    """Sum a list of vars, using a tree.  This is often more efficient
-    than adding in sequence, as bits can be saved."""
+    """Sum a list of vars, using a tree. This is often more efficient than adding in sequence, as bits can be saved."""
     if len(lst) < 2:
         return lst[0]
     middle = len(lst) // 2
@@ -845,12 +726,11 @@ def sum_vars(lst: List[Any]) -> Any:
 ################################################################################
 
 
-# MultiVar is a generic variable which can take on the value of one of
-# a given set of python objects, and supports many operations on those
-# objects.  It is implemented as a set of BoolVars, one for each
-# possible value.
-class MultiVar:
-    vals = None  # Dictionary from value to boolean variable,
+class MultiVar(GenericVar):
+    """MultiVar is a generic variable which can take on the value of one
+    of a given set of python objects, and supports many operations on
+    those objects. It is implemented as a set of BoolVars, one for
+    each possible value."""
 
     # representing that selection.  Treat as immutable.
     def __init__(self, *values):
@@ -863,7 +743,7 @@ class MultiVar:
             if isinstance(values[0], MultiVar):
                 self.vals = values[0].vals
             else:
-                self.vals = {values[0]: TRUE_BOOL}
+                self.vals = {values[0]: gs.TRUE_BOOL}
             return
         for v in values:
             if isinstance(v, (BoolVar, IntVar, MultiVar)):
@@ -875,19 +755,13 @@ class MultiVar:
         require(sum_bools(1, self.vals.values()))
 
     def __hash__(self) -> int:
-        return hash(self.hash_object())
-
-    def hash_object(self) -> Tuple[Union[str, int]]:
-        return ("MultiVar",) + tuple([(v, b.index) for (v, b) in self.vals.items()])
+        return hash(("MultiVar",) + tuple([(v, b.index) for (v, b) in self.vals.items()]))
 
     def value(self) -> Any:
         for v, b in self.vals.items():
             if b.value():
                 return v
         return "???"  # unknown
-
-    def __repr__(self) -> str:
-        return str(self.value())
 
     @staticmethod
     def boolean_op(a, op, b):
@@ -917,7 +791,7 @@ class MultiVar:
             # otherwise we might compute ~True for __ne__ below.
             return BoolVar(result) ^ invert
         else:
-            return FALSE_BOOL ^ invert
+            return gs.FALSE_BOOL ^ invert
 
     @staticmethod
     def generic_op(a, op, b):
@@ -939,9 +813,6 @@ class MultiVar:
     @memoized_symmetric
     def __eq__(self, other: Any) -> "BoolVar":
         return MultiVar.boolean_op(self, lambda x, y: x == y, other)
-
-    def __ne__(self, other: Any) -> "BoolVar":
-        return ~(self == other)
 
     @memoized_symmetric
     def __add__(self, other: Any) -> "MultiVar":
@@ -968,12 +839,6 @@ class MultiVar:
             other = MultiVar(other)
         return other > self
 
-    def __ge__(self, other: Any) -> "BoolVar":
-        return ~(self < other)
-
-    def __le__(self, other: Any) -> "BoolVar":
-        return ~(self > other)
-
     @memoized
     def __getitem__(self, key: Any) -> "MultiVar":
         return MultiVar.generic_op(self, lambda x, y: x[y], key)
@@ -992,8 +857,14 @@ class MultiVar:
         return result
 
 
-def var_in(v, lst) -> Union[bool, BoolVar]:
+def var_in(v: Any, lst: List[Any]) -> BoolVar:
+    """Judge whether v is equal to some element in lst."""
     return reduce(lambda a, b: a | b, map(lambda x: v == x, lst))
+
+
+def reset():
+    """Reset the solver. Any variables defined before a reset will have bogus values and should not be used."""
+    gs.reset()
 
 
 # initialize on startup
