@@ -65,7 +65,7 @@
 import subprocess
 from functools import reduce
 from time import time
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Union
 
 CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic"
 
@@ -73,16 +73,6 @@ CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=d
 ################################################################################
 ###############################  Infrastructure  ###############################
 ################################################################################
-
-verbose = False
-
-
-def set_verbose(b=True):
-    """Set verbose to show rules as they are created."""
-    global verbose
-    verbose = b
-
-
 last_update = time()
 
 
@@ -200,7 +190,7 @@ def new_literal() -> int:
     return last_bool
 
 
-def require(x):
+def require(x: Any):
     """Constrains the variable x to be true.  The second argument is
     ignored, for compatibility with required()."""
     x = BoolVar(x)
@@ -231,36 +221,12 @@ def add_rule(vals: List[int]):
         print(len(clasp_rules), "rules")
 
 
-def lit2str(literals: List[int]) -> str:
-    """For debugging, formats the given literals as a string matching
-    smodels format, as would be input to gringo."""
-    return ", ".join(map(lambda x: "v" + str(x) if x > 0 else "not v" + str(-x), literals))
-
-
-def head2str(head: int) -> str:
-    """Formats the head of a rule as a string."""
-    # 1 is the _false atom (lparse.pdf p.87)
-    return "" if head == 1 else "v" + str(head)
-
-
 def add_basic_rule(head: int, literals: List[int]):
     # See rule types in lparse.pdf pp.88 (pdf p.92)
-    if verbose:
-        if len(literals) == 0:
-            print(head2str(head) + ".")
-        else:
-            print(head2str(head), ":-", lit2str(literals) + ".")
     assert head > 0
     literals = optimize_basic_rule(head, literals)
     if literals is None:  # optimization says to skip this rule
-        if verbose:
-            print("#opt")
         return
-    if verbose:
-        if len(literals) == 0:
-            print("#opt", head2str(head) + ".")
-        else:
-            print("#opt", head2str(head), ":-", lit2str(literals) + ".")
     # format: 1 head #literals #negative [negative] [positive]
     negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
     positive_literals = list(filter(lambda x: x > 0, literals))
@@ -268,11 +234,6 @@ def add_basic_rule(head: int, literals: List[int]):
 
 
 def add_choice_rule(heads: List[int], literals: List[int]):
-    if verbose:
-        if len(literals) == 0:
-            print("{", lit2str(heads), "}.")
-        else:
-            print("{", lit2str(heads), "} :-", lit2str(literals))
     for i in heads:
         assert i > 0
     # format: 3 #heads [heads] #literals #negative [negative] [positive]
@@ -283,8 +244,6 @@ def add_choice_rule(heads: List[int], literals: List[int]):
 
 def add_constraint_rule(head: int, bound: int, literals: List[int]):
     # Note that constraint rules ignore repeated literals
-    if verbose:
-        print(head2str(head), ":-", bound, "{", lit2str(literals), "}.")
     assert head > 0
     # format: 2 head #literals #negative bound [negative] [positive]
     negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
@@ -294,9 +253,6 @@ def add_constraint_rule(head: int, bound: int, literals: List[int]):
 
 def add_weight_rule(head: int, bound: int, literals: List[int]):
     # Unlike constraint rules, weight rules count repeated literals
-    if verbose:
-        print(head2str(head), ":-", bound, "[", end="")
-        print(", ".join(map(lambda x: x + "=1", lit2str(literals).split(", "))), "].")
     assert head > 0
     # format: 5 head bound #literals #negative [negative] [positive] [weights]
     negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
@@ -389,8 +345,6 @@ def clasp_solve() -> bool:
             assert not found_solution
             solution = set(parse_atoms(line))
             found_solution = True
-            if verbose:
-                print(line.rstrip())
         else:
             clasp_output.append(line.rstrip())
     if "SATISFIABLE" in clasp_output:
