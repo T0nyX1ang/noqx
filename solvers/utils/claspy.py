@@ -215,15 +215,6 @@ def add_choice_rule(heads: List[int], literals: List[int]):
     add_rule([3, len(heads)] + heads + [len(literals), len(negative_literals)] + negative_literals + positive_literals)
 
 
-def add_constraint_rule(head: int, bound: int, literals: List[int]):
-    # Note that constraint rules ignore repeated literals
-    assert head > 0
-    # format: 2 head #literals #negative bound [negative] [positive]
-    negative_literals = list(map(abs, filter(lambda x: x < 0, literals)))
-    positive_literals = list(filter(lambda x: x > 0, literals))
-    add_rule([2, head, len(literals), len(negative_literals), bound] + negative_literals + positive_literals)
-
-
 def add_weight_rule(head: int, bound: int, literals: List[int]):
     # Unlike constraint rules, weight rules count repeated literals
     assert head > 0
