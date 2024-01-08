@@ -61,6 +61,7 @@
 
 # from __future__ import absolute_import, division, generator_stop, print_function, unicode_literals
 
+import itertools
 import subprocess
 from functools import reduce
 from time import time
@@ -702,29 +703,13 @@ def cond(pred: Any, cons: Any, alt: Any):
 
 
 def require_all_diff(lst: List[Any]):
-    """Constrain all variables in the list to be different.  Note that
-    this creates O(N^2) rules."""
-
-    def choose(items, num):  # this could be replaced with itertools?
-        """Returns an iterator over all choises of num elements from items."""
-        if len(items) < num or num <= 0:
-            yield items[:0]
-            return
-        if len(items) == num:
-            yield items
-            return
-        for x in choose(items[1:], num - 1):
-            yield items[:1] + x
-        for x in choose(items[1:], num):
-            yield x
-
-    for a, b in choose(lst, 2):
+    """Constrain all variables in the list to be different. Note that this creates C(N,2) rules."""
+    for a, b in itertools.combinations(lst, 2):
         require(a != b)
 
 
 def sum_vars(lst: List[Any]) -> Any:
-    """Sum a list of vars, using a tree.  This is often more efficient
-    than adding in sequence, as bits can be saved."""
+    """Sum a list of vars, using a tree. This is often more efficient than adding in sequence, as bits can be saved."""
     if len(lst) < 2:
         return lst[0]
     middle = len(lst) // 2
