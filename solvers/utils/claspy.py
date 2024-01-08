@@ -73,16 +73,6 @@ CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=d
 ################################################################################
 ###############################  Infrastructure  ###############################
 ################################################################################
-last_update = time()
-
-
-def need_update() -> bool:
-    """Returns True once every two seconds."""
-    global last_update
-    if time() - last_update > 2:
-        last_update = time()
-        return True
-    return False
 
 
 def hash_object(x):
@@ -217,8 +207,6 @@ def add_rule(vals: List[int]):
     SMODELS internal format.  See lparse.pdf pp.86 (pdf p.90)."""
     global clasp_rules
     clasp_rules.append(vals)
-    if need_update():
-        print(len(clasp_rules), "rules")
 
 
 def add_basic_rule(head: int, literals: List[int]):
@@ -307,7 +295,7 @@ def clasp_solve() -> bool:
     """Solves for all defined variables.  If satisfiable, returns True
     and stores the solution so that variables can print out their
     values."""
-    global last_bool, solution, debug_constraints, last_update
+    global last_bool, solution, debug_constraints
 
     print("Solving", last_bool, "variables,", len(clasp_rules), "rules")
 
@@ -361,7 +349,6 @@ def clasp_solve() -> bool:
             if not x.value():
                 print("Failed constraint:", s)
         print()
-    last_update = time()  # reset for future searches
     return found_solution
 
 
