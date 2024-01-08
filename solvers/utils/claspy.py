@@ -13,52 +13,54 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Claspy
-#
-# A python constraint solver based on the answer set solver 'clasp'.
-# Compiles constraints to an ASP problem in lparse's internal format.
-#
-## Main interface ##
-#
-# BoolVar() : Create a boolean variable.
-# IntVar() : Create a non-negative integer variable.
-# IntVar(1,9) : Integer variable in range 1-9, inclusive.
-# IntVar([1,2,3]) : Integer variable with one of the given values.
-# MultiVar('a','b') : Generalized variable with one of the given values.
-# Atom() : An atom is only true if it is proven, with Atom.prove_if(<b>).
-# cond(<pred>, <cons>, <alt>) : Create an "if" statement.
-# require(<expr>) : Constrain a variable or expression to be true.
-# clasp_solve() : Runs clasp and returns True if satisfiable.
-#
-# After running solve, print the variables or call var.value() to get
-# the result.
-#
-## Additional functions ##
-#
-# reset() : Resets the system.  Do not use any old variables after reset.
-# set_bits(8) : Set the number of bits for integer variables.
-#               Must be called before any variables are created.
-# set_max_val(100) : Set the max number of bits as necessary for the given value.
-#                    Must be called before any variables are created.
-# require_all_diff(lst) : Constrain all vars in a list to be different.
-# sum_vars(lst) : Convenience function to sum a list of variables.
-# at_least(n, bools) : Whether at least n of the booleans are true.
-# at_most(n, bools) : Whether at most n of the booleans are true.
-# sum_bools(n, bools) : Whether exactly n of the booleans are true.
-# required(<expr>, <str>) : Print the debug string if the expression
-#   is false.  You can change a 'require' statement to 'required' for debugging.
-# var_in(v, lst) : Whether var v is equal to some element in lst.
-#
-## Variable methods ##
-#
-# v.value() : The solution value.
-#
-## Gotchas ##
-#
-# Do not use and/or/not with variables. Only use &, |, ~.
-# Subtracting from an IntVar requires that the result is positive,
-# so you usually want to add to the other side of the equation instead.
 
+"""Claspy
+
+A python constraint solver based on the answer set solver 'clasp'.
+Compiles constraints to an ASP problem in lparse's internal format.
+
+# Main interface ##
+
+BoolVar() : Create a boolean variable.
+IntVar() : Create a non-negative integer variable.
+IntVar(1,9) : Integer variable in range 1-9, inclusive.
+IntVar([1,2,3]) : Integer variable with one of the given values.
+MultiVar('a','b') : Generalized variable with one of the given values.
+Atom() : An atom is only true if it is proven, with Atom.prove_if(<b>).
+cond(<pred>, <cons>, <alt>) : Create an "if" statement.
+require(<expr>) : Constrain a variable or expression to be true.
+clasp_solve() : Runs clasp and returns True if satisfiable.
+
+After running solve, print the variables or call var.value() to get
+the result.
+
+# Additional functions ##
+
+reset() : Resets the system.  Do not use any old variables after reset.
+set_bits(8) : Set the number of bits for integer variables.
+              Must be called before any variables are created.
+set_max_val(100) : Set the max number of bits as necessary for the given value.
+                   Must be called before any variables are created.
+require_all_diff(lst) : Constrain all vars in a list to be different.
+sum_vars(lst) : Convenience function to sum a list of variables.
+at_least(n, bools) : Whether at least n of the booleans are true.
+at_most(n, bools) : Whether at most n of the booleans are true.
+sum_bools(n, bools) : Whether exactly n of the booleans are true.
+required(<expr>, <str>) : Print the debug string if the expression
+  is false.  You can change a 'require' statement to 'required' for debugging.
+var_in(v, lst) : Whether var v is equal to some element in lst.
+
+# Variable methods ##
+
+v.value() : The solution value.
+
+# Gotchas ##
+
+Do not use and/or/not with variables. Only use &, |, ~.
+Subtracting from an IntVar requires that the result is positive,
+so you usually want to add to the other side of the equation instead."""
+
+import abc
 import itertools
 import subprocess
 from functools import reduce
@@ -69,7 +71,7 @@ CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=d
 
 
 class SolverStorage:
-    """Storage for all global variables"""
+    """Storage for all global variables."""
 
     def __init__(self):
         self.NUM_BITS = 16
@@ -164,6 +166,48 @@ class memoized_symmetric(memoized):
             return value
         except TypeError:
             return self.func(*args)
+
+
+class GenericVar(abc.ABC):
+    """Generic variable class. This class is an abstract base class."""
+
+    def __init__(self, val: Any = None):
+        raise NotImplementedError("Can't create GenericVar.")
+
+    def __hash__(self) -> int:
+        raise NotImplementedError("Can't hash GenericVar.")
+
+    def value(self) -> Any:
+        """Returns the value of the variable."""
+        raise NotImplementedError("Can't get the value of GenericVar.")
+
+    def __repr__(self) -> str:
+        return str(self.value())
+
+    def __invert__(self) -> "GenericVar":
+        raise NotImplementedError("Can't invert GenericVar.")
+
+    def __eq__(self, other: Any) -> "GenericVar":
+        raise NotImplementedError("Can't compare GenericVar.")
+
+    def __ne__(self, other: Any) -> "GenericVar":
+        return ~(self.__eq__(other))
+
+    def __gt__(self, other: Any) -> "GenericVar":
+        raise NotImplementedError("Can't compare GenericVar.")
+
+    def __lt__(self, other: Any) -> "GenericVar":
+        raise NotImplementedError("Can't compare GenericVar.")
+
+    def __ge__(self, other: Any) -> "GenericVar":
+        return ~(self.__lt__(other))
+
+    def __le__(self, other: Any) -> "GenericVar":
+        return ~(self.__gt__(other))
+
+    def cond(self, pred: Any, alt: Any) -> "GenericVar":
+        """Returns a GenericVar indicating whether the value of self is."""
+        raise NotImplementedError("Can't apply conditions on GenericVar.")
 
 
 ################################################################################
@@ -307,7 +351,7 @@ def clasp_solve() -> bool:
 ################################################################################
 
 
-class BoolVar:
+class BoolVar(GenericVar):
     """BoolVar is the root variable type, and represents a boolean that can
     take on either value. Every boolean has an index, starting at 2,
     which is used when it's encoded to SMODELS internal representation.
@@ -374,9 +418,6 @@ class BoolVar:
         add_basic_rule(result.index, [-self.index, -other.index])
         return result
 
-    def __ne__(self, other: Any) -> "BoolVar":
-        return ~(self == other)
-
     @memoized_symmetric
     def __and__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
@@ -431,12 +472,6 @@ class BoolVar:
 
     def __lt__(self, other: Any) -> "BoolVar":
         return BoolVar(other) > self
-
-    def __ge__(self, other: Any) -> "BoolVar":
-        return ~(self < other)
-
-    def __le__(self, other: Any) -> "BoolVar":
-        return ~(self > other)
 
     @memoized_symmetric
     def __add__(self, other: Any) -> "IntVar":
@@ -502,8 +537,9 @@ def set_max_val(n: int):
     gs.set_bits(i)
 
 
-# IntVar is an integer variable, represented as a list of boolean variable bits.
-class IntVar:
+class IntVar(GenericVar):
+    """IntVar is an integer variable, represented as a list of boolean variable bits."""
+
     bits = []  # An array of BoolVar bits, LSB first.  Treat as immutable.
 
     def __init__(
@@ -549,16 +585,10 @@ class IntVar:
     def value(self) -> int:
         return sum((1 << i) for i in gs.BITS if self.bits[i].value())
 
-    def __repr__(self) -> str:
-        return str(self.value())
-
     @memoized_symmetric
     def __eq__(self, other: Any) -> "BoolVar":
         other = IntVar(other)
         return reduce(lambda a, b: a & b, [self.bits[i] == other.bits[i] for i in gs.BITS])
-
-    def __ne__(self, other: Any) -> "BoolVar":
-        return ~(self == other)
 
     @memoized_symmetric
     def __add__(self, other: Any) -> "IntVar":
@@ -597,12 +627,6 @@ class IntVar:
 
     def __lt__(self, other: Any) -> "BoolVar":
         return IntVar(other) > self
-
-    def __ge__(self, other: Any) -> "BoolVar":
-        return ~(self < other)
-
-    def __le__(self, other: Any) -> "BoolVar":
-        return ~(self > other)
 
     def cond(self, pred: Any, alt: Any) -> "IntVar":
         pred = BoolVar(pred)
@@ -701,7 +725,7 @@ def sum_vars(lst: List[Any]) -> Any:
 ################################################################################
 
 
-class MultiVar:
+class MultiVar(GenericVar):
     """MultiVar is a generic variable which can take on the value of one
     of a given set of python objects, and supports many operations on
     those objects. It is implemented as a set of BoolVars, one for
@@ -737,9 +761,6 @@ class MultiVar:
             if b.value():
                 return v
         return "???"  # unknown
-
-    def __repr__(self) -> str:
-        return str(self.value())
 
     @staticmethod
     def boolean_op(a, op, b):
@@ -792,9 +813,6 @@ class MultiVar:
     def __eq__(self, other: Any) -> "BoolVar":
         return MultiVar.boolean_op(self, lambda x, y: x == y, other)
 
-    def __ne__(self, other: Any) -> "BoolVar":
-        return ~(self == other)
-
     @memoized_symmetric
     def __add__(self, other: Any) -> "MultiVar":
         return MultiVar.generic_op(self, lambda x, y: x + y, other)
@@ -819,12 +837,6 @@ class MultiVar:
         if not isinstance(other, MultiVar):
             other = MultiVar(other)
         return other > self
-
-    def __ge__(self, other: Any) -> "BoolVar":
-        return ~(self < other)
-
-    def __le__(self, other: Any) -> "BoolVar":
-        return ~(self > other)
 
     @memoized
     def __getitem__(self, key: Any) -> "MultiVar":
