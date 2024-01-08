@@ -68,18 +68,42 @@ from typing import Any, List, Union
 
 CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic"
 
-NUM_BITS = 16
-BITS = range(NUM_BITS)
 
-clasp_rules = []
-single_vars = set()
-last_bool = 1  # reserved in clasp
+class SolverStorage:
+    """Storage for all global variables"""
 
-TRUE_BOOL = True
-FALSE_BOOL = False
-solution = set()
+    def __init__(self):
+        self.NUM_BITS = 16
+        self.BITS = range(self.NUM_BITS)
 
-memo_caches = []  # a reference to all memoization dictionaries, to allow reset
+        self.clasp_rules = []
+        self.single_vars = set()
+        self.last_bool = 1  # reserved in clasp
+
+        self.memo_caches = []  # list of caches to clear on reset
+        self.TRUE_BOOL = True
+        self.FALSE_BOOL = False
+        self.solution = set()
+
+    def reset(self):
+        """Reset the solver storage."""
+        self.NUM_BITS = 16
+        self.BITS = range(self.NUM_BITS)
+
+        self.clasp_rules = []
+        self.single_vars = set()
+        self.last_bool = 1  # reserved in clasp
+
+        self.TRUE_BOOL = BoolVar()
+        self.solution = set([self.TRUE_BOOL.index])
+        require(self.TRUE_BOOL)
+        self.FALSE_BOOL = ~self.TRUE_BOOL
+
+        for cache in self.memo_caches:
+            cache.clear()
+
+
+gs = SolverStorage()  # initialize global storage
 
 
 ################################################################################
@@ -91,10 +115,9 @@ class memoized:
     """Decorator that caches a function's return value."""
 
     def __init__(self, func):
-        global memo_caches
         self.func = func
         self.cache = {}
-        memo_caches.append(self.cache)
+        gs.memo_caches.append(self.cache)
 
     def __call__(self, *args):
         try:
@@ -134,35 +157,10 @@ class memoized_symmetric(memoized):
 ################################################################################
 ###################################  Solver  ###################################
 ################################################################################
-
-
-def reset():
-    """Reset the solver. Any variables defined before a reset will have bogus values and should not be used."""
-    global last_bool, TRUE_BOOL, FALSE_BOOL, solution
-    global memo_caches, clasp_rules
-    global single_vars, NUM_BITS, BITS
-
-    NUM_BITS = 16
-    BITS = range(NUM_BITS)
-
-    clasp_rules = []
-    single_vars = set()
-    last_bool = 1  # reserved in clasp
-
-    TRUE_BOOL = BoolVar()
-    solution = set([TRUE_BOOL.index])
-    require(TRUE_BOOL)
-    FALSE_BOOL = ~TRUE_BOOL
-
-    for cache in memo_caches:
-        cache.clear()
-
-
 def new_literal() -> int:
     """Returns the number of a new literal."""
-    global last_bool
-    last_bool += 1
-    return last_bool
+    gs.last_bool += 1
+    return gs.last_bool
 
 
 def require(x: Any):
@@ -173,8 +171,7 @@ def require(x: Any):
 
 def add_rule(vals: List[int]):
     """The rule is encoded as a series of integers, according to the SMODELS internal format."""
-    global clasp_rules
-    clasp_rules.append(vals)
+    gs.clasp_rules.append(vals)
 
 
 def add_basic_rule(head: int, literals: List[int]):
@@ -212,20 +209,20 @@ def optimize_basic_rule(head: int, literals: List[int]) -> Union[List[int], None
     """Optimizes a basic rule, returning a new set of literals, or
     None if the rule can be skipped."""
     if len(literals) == 0:  # the head must be true
-        if head in single_vars:
+        if head in gs.single_vars:
             return None
-        single_vars.add(head)
+        gs.single_vars.add(head)
     elif head == 1 and len(literals) == 1:  # the literal must be false
-        if -literals[0] in single_vars:
+        if -literals[0] in gs.single_vars:
             return None
-        single_vars.add(-literals[0])
+        gs.single_vars.add(-literals[0])
     elif head == 1:  # we can optimize headless rules
         for x in literals:
             # if the literal is false, the clause is unnecessary
-            if -x in single_vars:
+            if -x in gs.single_vars:
                 return None
             # if the literal is true, the literal is unnecessary
-            if x in single_vars:
+            if x in gs.single_vars:
                 new_literals = list(filter(lambda y: y != x, literals))
                 return optimize_basic_rule(head, new_literals)
     return literals
@@ -247,11 +244,9 @@ def clasp_solve() -> bool:
     """Solves for all defined variables.  If satisfiable, returns True
     and stores the solution so that variables can print out their
     values."""
-    global last_bool, solution
-
     start_time = time()  # time when solving process is invoked
 
-    print("Solving", last_bool, "variables,", len(clasp_rules), "rules")
+    print("Solving", gs.last_bool, "variables,", len(gs.clasp_rules), "rules")
 
     clasp_process = subprocess.Popen(CLASP_COMMAND.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
@@ -259,7 +254,7 @@ def clasp_solve() -> bool:
         clasp_process.stdin.write(bytes(s, encoding="ascii"))
 
     try:
-        for rule in clasp_rules:
+        for rule in gs.clasp_rules:
             clasp_write(" ".join(map(str, rule)) + "\n")
     except IOError:
         # The stream may be closed early if there is obviously no
@@ -269,7 +264,7 @@ def clasp_solve() -> bool:
 
     clasp_write("0\n")  # end of rules
     # print the literal names
-    for i in range(2, last_bool + 1):
+    for i in range(2, gs.last_bool + 1):
         clasp_write(f"{i}, {'v' + str(i)}\n")
     # print the compute statement
     clasp_write("0\nB+\n0\nB-\n1\n0\n1\n")
@@ -282,10 +277,10 @@ def clasp_solve() -> bool:
         line = line.decode(encoding="ascii").lstrip().rstrip()
         print(line.rstrip())
         if line.startswith("Answer:"):
-            solution = set()
+            gs.solution = set()
         if line.startswith("v"):  # this is a solution line
             assert not found_solution
-            solution = set(parse_atoms(line))
+            gs.solution = set(parse_atoms(line))
             found_solution = True
         else:
             clasp_output.append(line.rstrip())
@@ -328,7 +323,7 @@ class BoolVar:
         elif isinstance(val, BoolVar):
             self.index = val.index
         elif isinstance(val, (bool, int)):
-            self.index = TRUE_BOOL.index if val else FALSE_BOOL.index
+            self.index = gs.TRUE_BOOL.index if val else gs.FALSE_BOOL.index
         elif isinstance(val, IntVar):
             result = reduce(lambda a, b: a | b, val.bits)  # if any bits are non-zero
             self.index = result.index
@@ -346,15 +341,14 @@ class BoolVar:
     def value(self) -> bool:
         """The value of BoolVar."""
         if self.index > 0:
-            return self.index in solution
+            return self.index in gs.solution
         else:
-            return -self.index not in solution
+            return -self.index not in gs.solution
 
     def __repr__(self) -> str:
         return str(int(self.value()))
 
     def __invert__(self) -> "BoolVar":
-        global last_bool
         # Invert the bool by creating one with a negative index.
         result = BoolVar("noinit")
         result.index = -self.index
@@ -363,9 +357,9 @@ class BoolVar:
     @memoized_symmetric
     def __eq__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
             return self  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.FALSE_BOOL.index:
             return ~self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, other.index])
@@ -378,10 +372,10 @@ class BoolVar:
     @memoized_symmetric
     def __and__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
             return self  # opt
-        if other.index == FALSE_BOOL.index:
-            return FALSE_BOOL  # opt
+        if other.index == gs.FALSE_BOOL.index:
+            return gs.FALSE_BOOL  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, other.index])
         return result
@@ -391,9 +385,9 @@ class BoolVar:
     @memoized_symmetric
     def __or__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
-            return TRUE_BOOL  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
+            return gs.TRUE_BOOL  # opt
+        if other.index == gs.FALSE_BOOL.index:
             return self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index])
@@ -405,9 +399,9 @@ class BoolVar:
     @memoized_symmetric
     def __xor__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
             return ~self  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.FALSE_BOOL.index:
             return self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, -other.index])
@@ -419,9 +413,9 @@ class BoolVar:
     @memoized
     def __gt__(self, other: Any) -> "BoolVar":
         other = BoolVar(other)
-        if other.index == TRUE_BOOL.index:
-            return FALSE_BOOL  # opt
-        if other.index == FALSE_BOOL.index:
+        if other.index == gs.TRUE_BOOL.index:
+            return gs.FALSE_BOOL  # opt
+        if other.index == gs.FALSE_BOOL.index:
             return self  # opt
         result = BoolVar("internal")
         add_basic_rule(result.index, [self.index, -other.index])
@@ -494,12 +488,11 @@ class Atom(BoolVar):
 
 def set_bits(n: int):
     """Sets the number of bits used for IntVars."""
-    global NUM_BITS, BITS
-    if last_bool > 2:  # true/false already defined
+    if gs.last_bool > 2:  # true/false already defined
         raise RuntimeError("Can't change number of bits after defining variables")
     print("Setting integers to", n, "bits")
-    NUM_BITS = n
-    BITS = range(NUM_BITS)
+    gs.NUM_BITS = n
+    gs.BITS = range(gs.NUM_BITS)
 
 
 def set_max_val(n: int):
@@ -525,28 +518,28 @@ class IntVar:
         IntVar(<BoolVar>) : Cast from BoolVar.
         IntVar([1,2,3]) : An integer resticted to one of these values."""
         if val is None:
-            self.bits = [BoolVar() for i in BITS]
+            self.bits = [BoolVar() for i in gs.BITS]
         elif max_val is not None:
             if not (isinstance(val, int) and isinstance(max_val, int)):
                 raise RuntimeError("Expected two integers for IntVar() but got: " + str(val) + ", " + str(max_val))
             if max_val < val:
                 raise RuntimeError("Invalid integer range: " + str(val) + ", " + str(max_val))
-            if max_val >= (1 << NUM_BITS):
+            if max_val >= (1 << gs.NUM_BITS):
                 raise RuntimeError("Not enough bits to represent max value: " + str(max_val))
-            self.bits = [(FALSE_BOOL if max_val >> i == 0 else BoolVar()) for i in BITS]
+            self.bits = [(gs.FALSE_BOOL if max_val >> i == 0 else BoolVar()) for i in gs.BITS]
             if val > 0:
                 require(self >= val)
             require(self <= max_val)
         elif isinstance(val, IntVar):
             self.bits = val.bits
         elif isinstance(val, BoolVar):
-            self.bits = [val] + [FALSE_BOOL for i in BITS[1:]]
-        elif isinstance(val, int) and val >> NUM_BITS == 0:
-            self.bits = [(TRUE_BOOL if ((val >> i) & 1) else FALSE_BOOL) for i in BITS]
+            self.bits = [val] + [gs.FALSE_BOOL for i in gs.BITS[1:]]
+        elif isinstance(val, int) and val >> gs.NUM_BITS == 0:
+            self.bits = [(gs.TRUE_BOOL if ((val >> i) & 1) else gs.FALSE_BOOL) for i in gs.BITS]
         elif isinstance(val, bool):
-            self.bits = [TRUE_BOOL if val else FALSE_BOOL] + [FALSE_BOOL for i in BITS[1:]]
+            self.bits = [gs.TRUE_BOOL if val else gs.FALSE_BOOL] + [gs.FALSE_BOOL for i in gs.BITS[1:]]
         elif isinstance(val, list):
-            self.bits = [BoolVar() for i in BITS]
+            self.bits = [BoolVar() for i in gs.BITS]
             require(reduce(lambda a, b: a | b, map(lambda x: self == x, val)))
         else:
             raise TypeError("Can't convert to IntVar: " + str(val))
@@ -555,7 +548,7 @@ class IntVar:
         return hash(("IntVar",) + tuple(map(lambda b: b.index, self.bits)))
 
     def value(self) -> int:
-        return sum((1 << i) for i in BITS if self.bits[i].value())
+        return sum((1 << i) for i in gs.BITS if self.bits[i].value())
 
     def __repr__(self) -> str:
         return str(self.value())
@@ -563,7 +556,7 @@ class IntVar:
     @memoized_symmetric
     def __eq__(self, other: Any) -> "BoolVar":
         other = IntVar(other)
-        return reduce(lambda a, b: a & b, [self.bits[i] == other.bits[i] for i in BITS])
+        return reduce(lambda a, b: a & b, [self.bits[i] == other.bits[i] for i in gs.BITS])
 
     def __ne__(self, other: Any) -> "BoolVar":
         return ~(self == other)
@@ -573,12 +566,12 @@ class IntVar:
         other = IntVar(other)
         # Optimization: only allocate the necessary number of bits.
         max_bit = max(
-            [i for i in BITS if self.bits[i].index != FALSE_BOOL.index]
-            + [i for i in BITS if other.bits[i].index != FALSE_BOOL.index]
+            [i for i in gs.BITS if self.bits[i].index != gs.FALSE_BOOL.index]
+            + [i for i in gs.BITS if other.bits[i].index != gs.FALSE_BOOL.index]
             + [-1]
         )
         result = IntVar(0)  # don't allocate bools yet
-        result.bits = [(FALSE_BOOL if i > max_bit + 1 else BoolVar()) for i in BITS]
+        result.bits = [(gs.FALSE_BOOL if i > max_bit + 1 else BoolVar()) for i in gs.BITS]
         IntVar.constrain_sum(self, other, result)
         return result
 
@@ -596,10 +589,10 @@ class IntVar:
     @memoized
     def __gt__(self, other: Any) -> "BoolVar":
         other = IntVar(other)
-        result = FALSE_BOOL
-        for i in BITS:
+        result = gs.FALSE_BOOL
+        for i in gs.BITS:
             result = cond(
-                self.bits[i] > other.bits[i], TRUE_BOOL, cond(self.bits[i] < other.bits[i], FALSE_BOOL, result)
+                self.bits[i] > other.bits[i], gs.TRUE_BOOL, cond(self.bits[i] < other.bits[i], gs.FALSE_BOOL, result)
             )
         return result
 
@@ -624,24 +617,24 @@ class IntVar:
         assert isinstance(i, int)
         if i == 0:
             return self
-        if i >= NUM_BITS:
+        if i >= gs.NUM_BITS:
             return IntVar(0)
         result = IntVar(0)  # don't allocate bools
-        result.bits = [FALSE_BOOL for _ in range(i)] + self.bits[:-i]
+        result.bits = [gs.FALSE_BOOL for _ in range(i)] + self.bits[:-i]
         return result
 
     @memoized
     def __rshift__(self, i: int) -> "IntVar":
         assert isinstance(i, int)
         result = IntVar(0)  # don't allocate bools
-        result.bits = self.bits[i:] + [FALSE_BOOL for _ in range(i)]
+        result.bits = self.bits[i:] + [gs.FALSE_BOOL for _ in range(i)]
         return result
 
     @memoized_symmetric
     def __mul__(self, other: Any) -> "IntVar":
         other = IntVar(other)
         result = IntVar(0)
-        for i in BITS:
+        for i in gs.BITS:
             result += cond(other.bits[i], self << i, 0)
         return result
 
@@ -653,11 +646,11 @@ class IntVar:
         c = BoolVar(False)  # carry bit
         # Optimization: stop at the the necessary number of bits.
         max_bit = max(
-            [i + 1 for i in BITS if a.bits[i].index != FALSE_BOOL.index]
-            + [i + 1 for i in BITS if b.bits[i].index != FALSE_BOOL.index]
-            + [i for i in BITS if result.bits[i].index != FALSE_BOOL.index]
+            [i + 1 for i in gs.BITS if a.bits[i].index != gs.FALSE_BOOL.index]
+            + [i + 1 for i in gs.BITS if b.bits[i].index != gs.FALSE_BOOL.index]
+            + [i for i in gs.BITS if result.bits[i].index != gs.FALSE_BOOL.index]
         )
-        for i in BITS:
+        for i in gs.BITS:
             d = a.bits[i] ^ b.bits[i]
             require(result.bits[i] == (d ^ c))
             if i == max_bit:  # opt: we know the rest of the bits are false.
@@ -673,9 +666,9 @@ def cond(pred: Any, cons: Any, alt: Any):
     if isinstance(pred, bool):
         return cons if pred else alt
     pred = BoolVar(pred)
-    if pred.index == TRUE_BOOL.index:
+    if pred.index == gs.TRUE_BOOL.index:
         return cons  # opt
-    if pred.index == FALSE_BOOL.index:
+    if pred.index == gs.FALSE_BOOL.index:
         return alt  # opt
     if isinstance(cons, (bool, BoolVar)) and isinstance(alt, (bool, BoolVar)):
         cons = BoolVar(cons)
@@ -727,7 +720,7 @@ class MultiVar:
             if isinstance(values[0], MultiVar):
                 self.vals = values[0].vals
             else:
-                self.vals = {values[0]: TRUE_BOOL}
+                self.vals = {values[0]: gs.TRUE_BOOL}
             return
         for v in values:
             if isinstance(v, (BoolVar, IntVar, MultiVar)):
@@ -778,7 +771,7 @@ class MultiVar:
             # otherwise we might compute ~True for __ne__ below.
             return BoolVar(result) ^ invert
         else:
-            return FALSE_BOOL ^ invert
+            return gs.FALSE_BOOL ^ invert
 
     @staticmethod
     def generic_op(a, op, b):
@@ -855,6 +848,11 @@ class MultiVar:
 
 def var_in(v, lst) -> Union[bool, BoolVar]:
     return reduce(lambda a, b: a | b, map(lambda x: v == x, lst))
+
+
+def reset():
+    """Reset the solver. Any variables defined before a reset will have bogus values and should not be used."""
+    gs.reset()
 
 
 # initialize on startup
