@@ -74,15 +74,6 @@ CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=d
 ################################################################################
 
 
-def hash_object(x):
-    """Given a variable or object x, returns an object suitable for
-    hashing.  Equivalent variables should return equivalent objects."""
-    if hasattr(x, "hash_object"):
-        return x.hash_object()
-    else:
-        return x
-
-
 memo_caches = []  # a reference to all memoization dictionaries, to allow reset
 
 
@@ -97,7 +88,7 @@ class memoized:
 
     def __call__(self, *args):
         try:
-            key = tuple(map(hash_object, args))
+            key = tuple(map(hash, args))
             return self.cache[key]
         except KeyError:
             value = self.func(*args)
@@ -105,10 +96,6 @@ class memoized:
             return value
         except TypeError:  # uncacheable
             return self.func(*args)
-
-    def __repr__(self):
-        """Return the function's docstring."""
-        return self.func.__doc__
 
     def __get__(self, obj, objtype):
         """Support instance methods."""
@@ -124,7 +111,7 @@ class memoized_symmetric(memoized):
 
     def __call__(self, *args):
         try:
-            key = tuple(sorted(map(hash_object, args)))
+            key = tuple(sorted(map(hash, args)))
             return self.cache[key]
         except KeyError:
             value = self.func(*args)
@@ -147,7 +134,7 @@ def reset():
     """Reset the solver.  Any variables defined before a reset will
     have bogus values and should not be used."""
     global last_bool, TRUE_BOOL, FALSE_BOOL, solution
-    global memo_caches, debug_constraints, clasp_rules
+    global memo_caches, clasp_rules
     global single_vars, NUM_BITS, BITS
 
     NUM_BITS = 16
@@ -164,7 +151,6 @@ def reset():
 
     for cache in memo_caches:
         cache.clear()
-    debug_constraints = []
 
 
 last_bool = None  # used to set the indexes of BoolVars
@@ -363,11 +349,7 @@ class BoolVar:
             raise TypeError("Can't convert to BoolVar: " + str(val) + " " + str(type(val)))
 
     def __hash__(self) -> int:
-        return hash(self.hash_object())
-
-    def hash_object(self) -> Tuple[str, int]:
-        """The hash object of BoolVar."""
-        return ("BoolVar", self.index)
+        return hash(("BoolVar", self.index))
 
     def value(self) -> bool:
         """The value of BoolVar."""
@@ -581,10 +563,7 @@ class IntVar:
             raise TypeError("Can't convert to IntVar: " + str(val))
 
     def __hash__(self):
-        return hash(self.hash_object())
-
-    def hash_object(self) -> Tuple[Union[str, int]]:
-        return ("IntVar",) + tuple(map(lambda b: b.index, self.bits))
+        return hash(("IntVar",) + tuple(map(lambda b: b.index, self.bits)))
 
     def value(self) -> int:
         return sum((1 << i) for i in BITS if self.bits[i].value())
@@ -787,10 +766,7 @@ class MultiVar:
         require(sum_bools(1, self.vals.values()))
 
     def __hash__(self) -> int:
-        return hash(self.hash_object())
-
-    def hash_object(self) -> Tuple[Union[str, int]]:
-        return ("MultiVar",) + tuple([(v, b.index) for (v, b) in self.vals.items()])
+        return hash(("MultiVar",) + tuple([(v, b.index) for (v, b) in self.vals.items()]))
 
     def value(self) -> Any:
         for v, b in self.vals.items():
