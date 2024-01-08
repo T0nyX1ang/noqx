@@ -67,15 +67,27 @@ from functools import reduce
 from time import time
 from typing import Any, List, Union
 
+
 CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic"
+
+start_time = time()  # time when the library is loaded
+NUM_BITS = 16
+BITS = range(NUM_BITS)
+
+clasp_rules = []
+single_vars = set()
+last_bool = 1  # reserved in clasp
+
+TRUE_BOOL = True
+FALSE_BOOL = False
+solution = set()
+
+memo_caches = []  # a reference to all memoization dictionaries, to allow reset
 
 
 ################################################################################
 ###############################  Infrastructure  ###############################
 ################################################################################
-
-
-memo_caches = []  # a reference to all memoization dictionaries, to allow reset
 
 
 class memoized:
@@ -126,10 +138,6 @@ class memoized_symmetric(memoized):
 ###################################  Solver  ###################################
 ################################################################################
 
-# True and False BoolVars for convenience.
-TRUE_BOOL = None
-FALSE_BOOL = None
-
 
 def reset():
     """Reset the solver.  Any variables defined before a reset will
@@ -154,9 +162,6 @@ def reset():
         cache.clear()
 
 
-last_bool = None  # used to set the indexes of BoolVars
-
-
 def new_literal() -> int:
     """Returns the number of a new literal."""
     global last_bool
@@ -169,9 +174,6 @@ def require(x: Any):
     ignored, for compatibility with required()."""
     x = BoolVar(x)
     add_basic_rule(1, [-x.index])  # basic rule with no head
-
-
-clasp_rules = None
 
 
 def add_rule(vals: List[int]):
@@ -212,9 +214,6 @@ def add_weight_rule(head: int, bound: int, literals: List[int]):
     add_rule([5, head, bound, len(literals), len(negative_literals)] + negative_literals + positive_literals + weights)
 
 
-single_vars = None
-
-
 def optimize_basic_rule(head: int, literals: List[int]) -> Union[List[int], None]:
     """Optimizes a basic rule, returning a new set of literals, or
     None if the rule can be skipped."""
@@ -248,10 +247,6 @@ def parse_atoms(line: str) -> List[int]:
         if token[0] == "v":
             parsed.append(int(token[1:]))
     return parsed
-
-
-start_time = time()  # time when the library is loaded
-solution = None  # set containing indices of true variables
 
 
 def clasp_solve() -> bool:
@@ -499,9 +494,6 @@ class Atom(BoolVar):
 ################################################################################
 ##################################  Integers  ##################################
 ################################################################################
-
-NUM_BITS = None
-BITS = None
 
 
 def set_bits(n: int):
