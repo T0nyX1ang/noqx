@@ -52,7 +52,6 @@
 ## Variable methods ##
 #
 # v.value() : The solution value.
-# v.info() : Return detailed information about a variable.
 #
 ## Gotchas ##
 #
@@ -88,8 +87,7 @@ memo_caches = []  # a reference to all memoization dictionaries, to allow reset
 
 
 class memoized:
-    """Decorator that caches a function's return value.  Based on:
-    http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize"""
+    """Decorator that caches a function's return value."""
 
     def __init__(self, func):
         global memo_caches
@@ -122,8 +120,7 @@ class memoized:
 
 
 class memoized_symmetric(memoized):
-    """Decorator that memoizes a function where the order of the
-    arguments doesn't matter."""
+    """Decorator that memoizes a function where the order of the arguments doesn't matter."""
 
     def __call__(self, *args):
         try:
@@ -185,18 +182,6 @@ def require(x: Any):
     ignored, for compatibility with required()."""
     x = BoolVar(x)
     add_basic_rule(1, [-x.index])  # basic rule with no head
-
-
-debug_constraints = None
-
-
-def required(x, debug_str):
-    """A debugging tool.  The debug string is printed if x is False
-    after solving.  You can find out which constraint is causing
-    unsatisfiability by changing all require() statements to
-    required(), and adding constraints for the expected solution."""
-    global debug_constraints
-    debug_constraints.append((x, debug_str))
 
 
 clasp_rules = None
@@ -295,7 +280,7 @@ def clasp_solve() -> bool:
     """Solves for all defined variables.  If satisfiable, returns True
     and stores the solution so that variables can print out their
     values."""
-    global last_bool, solution, debug_constraints
+    global last_bool, solution
 
     print("Solving", last_bool, "variables,", len(clasp_rules), "rules")
 
@@ -344,11 +329,6 @@ def clasp_solve() -> bool:
     print()
     print("Total time: %.2fs" % (time() - start_time))
     print()
-    if solution and debug_constraints:
-        for x, s in debug_constraints:
-            if not x.value():
-                print("Failed constraint:", s)
-        print()
     return found_solution
 
 
