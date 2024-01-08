@@ -513,12 +513,13 @@ def sum_bools(n: int, bools: List[Any]) -> "BoolVar":
 ################################################################################
 
 
-# An atom is only true if it is proven.
 class Atom(BoolVar):
+    """The class of an atom. An atom is only true if it is proven."""
+
     def __init__(self):
         BoolVar.__init__(self, "internal")
 
-    def prove_if(self, x):
+    def prove_if(self, x: Any):
         """Proves the atom if x is true."""
         x = BoolVar(x)
         add_basic_rule(self.index, [x.index])
@@ -856,7 +857,8 @@ class MultiVar(GenericVar):
         return result
 
 
-def var_in(v, lst) -> Union[bool, BoolVar]:
+def var_in(v: Any, lst: List[Any]) -> BoolVar:
+    """Judge whether v is equal to some element in lst."""
     return reduce(lambda a, b: a | b, map(lambda x: v == x, lst))
 
 
