@@ -62,8 +62,7 @@
 import itertools
 import subprocess
 from functools import reduce
-from time import time
-from typing import Any, List, Union
+from typing import Any, Callable, List, Union
 
 
 CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic"
@@ -81,8 +80,8 @@ class SolverStorage:
         self.last_bool = 1  # reserved in clasp
 
         self.memo_caches = []  # list of caches to clear on reset
-        self.TRUE_BOOL = True
-        self.FALSE_BOOL = False
+        self.TRUE_BOOL = True  # should convert to BoolVar
+        self.FALSE_BOOL = False  # should convert to BoolVar
         self.solution = set()
 
     def reset(self):
@@ -102,6 +101,19 @@ class SolverStorage:
         for cache in self.memo_caches:
             cache.clear()
 
+    def new_literal(self) -> int:
+        """Returns the number of a new literal."""
+        self.last_bool += 1
+        return self.last_bool
+
+    def set_bits(self, n: int):
+        """Sets the number of bits used for IntVars."""
+        if self.last_bool > 2:  # true/false already defined
+            raise RuntimeError("Can't change number of bits after defining variables")
+        print("Setting integers to", n, "bits")
+        self.NUM_BITS = n
+        self.BITS = range(self.NUM_BITS)
+
 
 gs = SolverStorage()  # initialize global storage
 
@@ -114,7 +126,7 @@ gs = SolverStorage()  # initialize global storage
 class memoized:
     """Decorator that caches a function's return value."""
 
-    def __init__(self, func):
+    def __init__(self, func: Callable[..., Any]):
         self.func = func
         self.cache = {}
         gs.memo_caches.append(self.cache)
@@ -157,12 +169,6 @@ class memoized_symmetric(memoized):
 ################################################################################
 ###################################  Solver  ###################################
 ################################################################################
-def new_literal() -> int:
-    """Returns the number of a new literal."""
-    gs.last_bool += 1
-    return gs.last_bool
-
-
 def require(x: Any):
     """Constrains the variable x to be true."""
     x = BoolVar(x)
@@ -175,6 +181,7 @@ def add_rule(vals: List[int]):
 
 
 def add_basic_rule(head: int, literals: List[int]):
+    """Adds a basic rule."""
     # See rule types in lparse.pdf pp.88 (pdf p.92)
     assert head > 0
     literals = optimize_basic_rule(head, literals)
@@ -187,6 +194,7 @@ def add_basic_rule(head: int, literals: List[int]):
 
 
 def add_choice_rule(heads: List[int], literals: List[int]):
+    """Adds a choice rule."""
     for i in heads:
         assert i > 0
     # format: 3 #heads [heads] #literals #negative [negative] [positive]
@@ -196,6 +204,7 @@ def add_choice_rule(heads: List[int], literals: List[int]):
 
 
 def add_weight_rule(head: int, bound: int, literals: List[int]):
+    """Adds a weight rule."""
     # Unlike constraint rules, weight rules count repeated literals
     assert head > 0
     # format: 5 head bound #literals #negative [negative] [positive] [weights]
@@ -206,8 +215,7 @@ def add_weight_rule(head: int, bound: int, literals: List[int]):
 
 
 def optimize_basic_rule(head: int, literals: List[int]) -> Union[List[int], None]:
-    """Optimizes a basic rule, returning a new set of literals, or
-    None if the rule can be skipped."""
+    """Optimizes a basic rule, returning a new set of literals, or None if the rule can be skipped."""
     if len(literals) == 0:  # the head must be true
         if head in gs.single_vars:
             return None
@@ -242,9 +250,7 @@ def parse_atoms(line: str) -> List[int]:
 
 def clasp_solve() -> bool:
     """Solves for all defined variables.  If satisfiable, returns True
-    and stores the solution so that variables can print out their
-    values."""
-    start_time = time()  # time when solving process is invoked
+    and stores the solution so that variables can print out their values."""
 
     print("Solving", gs.last_bool, "variables,", len(gs.clasp_rules), "rules")
 
@@ -271,11 +277,12 @@ def clasp_solve() -> bool:
     if clasp_process.stdout is None:  # debug mode
         return
     clasp_process.stdin.close()
+
     found_solution = False
     clasp_output = []
     for line in clasp_process.stdout:
         line = line.decode(encoding="ascii").lstrip().rstrip()
-        print(line.rstrip())
+
         if line.startswith("Answer:"):
             gs.solution = set()
         if line.startswith("v"):  # this is a solution line
@@ -284,15 +291,14 @@ def clasp_solve() -> bool:
             found_solution = True
         else:
             clasp_output.append(line.rstrip())
+
     if "SATISFIABLE" in clasp_output:
         print("SATISFIABLE")
     elif "UNSATISFIABLE" in clasp_output:
         print("UNSATISFIABLE")
     else:
         print("\n".join(clasp_output))  # show info if there was an error
-    print()
-    print("Total time: %.2fs" % (time() - start_time))
-    print()
+
     return found_solution
 
 
@@ -301,23 +307,25 @@ def clasp_solve() -> bool:
 ################################################################################
 
 
-# BoolVar is the root variable type, and represents a boolean that can
-# take on either value.  Every boolean has an index, starting at 2,
-# which is used when it's encoded to SMODELS internal representation.
-# BoolVars can also have a negative index, indicating that its value
-# is the inverse of the corresponding boolean.
 class BoolVar:
+    """BoolVar is the root variable type, and represents a boolean that can
+    take on either value. Every boolean has an index, starting at 2,
+    which is used when it's encoded to SMODELS internal representation.
+    BoolVars can also have a negative index, indicating that its value
+    is the inverse of the corresponding boolean."""
+
     index = None  # integer <= -2 or >= 2.  Treat as immutable.
 
     def __init__(self, val: Any = None):
         """BoolVar() : Creates a boolean variable.
-        BoolVar(x) : Constraints to a particular value, or converts
+
+        BoolVar(val) : Constraints to a particular value, or converts
         from another type."""
         if val is None:
-            self.index = new_literal()
+            self.index = gs.new_literal()
             add_choice_rule([self.index], [])  # define the var with a choice rule
         elif isinstance(val, str) and val == "internal":  # don't create a choice rule. (for internal use)
-            self.index = new_literal()
+            self.index = gs.new_literal()
         elif isinstance(val, str) and val == "noinit":  # don't allocate an index. (for internal use)
             return
         elif isinstance(val, BoolVar):
@@ -486,21 +494,12 @@ class Atom(BoolVar):
 ################################################################################
 
 
-def set_bits(n: int):
-    """Sets the number of bits used for IntVars."""
-    if gs.last_bool > 2:  # true/false already defined
-        raise RuntimeError("Can't change number of bits after defining variables")
-    print("Setting integers to", n, "bits")
-    gs.NUM_BITS = n
-    gs.BITS = range(gs.NUM_BITS)
-
-
 def set_max_val(n: int):
     """Sets the number of bits corresponding to maximum value n."""
     i = 0
     while n >> i != 0:
         i += 1
-    set_bits(i)
+    gs.set_bits(i)
 
 
 # IntVar is an integer variable, represented as a list of boolean variable bits.
@@ -702,12 +701,11 @@ def sum_vars(lst: List[Any]) -> Any:
 ################################################################################
 
 
-# MultiVar is a generic variable which can take on the value of one of
-# a given set of python objects, and supports many operations on those
-# objects.  It is implemented as a set of BoolVars, one for each
-# possible value.
 class MultiVar:
-    vals = None  # Dictionary from value to boolean variable,
+    """MultiVar is a generic variable which can take on the value of one
+    of a given set of python objects, and supports many operations on
+    those objects. It is implemented as a set of BoolVars, one for
+    each possible value."""
 
     # representing that selection.  Treat as immutable.
     def __init__(self, *values):
