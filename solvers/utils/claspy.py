@@ -59,8 +59,6 @@
 # Subtracting from an IntVar requires that the result is positive,
 # so you usually want to add to the other side of the equation instead.
 
-# from __future__ import absolute_import, division, generator_stop, print_function, unicode_literals
-
 import itertools
 import subprocess
 from functools import reduce
@@ -70,7 +68,6 @@ from typing import Any, List, Union
 
 CLASP_COMMAND = "python -m clingo --mode=clasp --sat-prepro --eq=1 --trans-ext=dynamic"
 
-start_time = time()  # time when the library is loaded
 NUM_BITS = 16
 BITS = range(NUM_BITS)
 
@@ -140,8 +137,7 @@ class memoized_symmetric(memoized):
 
 
 def reset():
-    """Reset the solver.  Any variables defined before a reset will
-    have bogus values and should not be used."""
+    """Reset the solver. Any variables defined before a reset will have bogus values and should not be used."""
     global last_bool, TRUE_BOOL, FALSE_BOOL, solution
     global memo_caches, clasp_rules
     global single_vars, NUM_BITS, BITS
@@ -170,15 +166,13 @@ def new_literal() -> int:
 
 
 def require(x: Any):
-    """Constrains the variable x to be true.  The second argument is
-    ignored, for compatibility with required()."""
+    """Constrains the variable x to be true."""
     x = BoolVar(x)
     add_basic_rule(1, [-x.index])  # basic rule with no head
 
 
 def add_rule(vals: List[int]):
-    """The rule is encoded as a series of integers, according to the
-    SMODELS internal format.  See lparse.pdf pp.86 (pdf p.90)."""
+    """The rule is encoded as a series of integers, according to the SMODELS internal format."""
     global clasp_rules
     clasp_rules.append(vals)
 
@@ -254,6 +248,8 @@ def clasp_solve() -> bool:
     and stores the solution so that variables can print out their
     values."""
     global last_bool, solution
+
+    start_time = time()  # time when solving process is invoked
 
     print("Solving", last_bool, "variables,", len(clasp_rules), "rules")
 
