@@ -1,30 +1,34 @@
-"""The Minesweeper solver."""
+"""The blacksweeper solver."""
 
-from typing import List
+from typing import Dict, List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.rules import get_grid_rule, get_ranged_number_rule, get_surroundings_rule
+from .utilsx.solutions import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
-def solve(E: Encoding) -> List:
-    set_max_val(8)
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-
-    # Enforce that clue cells can't be shaded, and that their numbers are correct
-    shading_solver.white_clues(E.clues)
+def solve(E: Encoding) -> List[Dict[str, str]]:
+    solver.reset()
+    solver.add_program_line(get_grid_rule(E.R, E.C))
+    solver.add_program_line(get_ranged_number_rule(0, 8))
+    solver.add_program_line("1 {number(R, C, N) : range(N) ; black(R, C)} 1 :- grid(R, C).")
+    solver.add_program_line(get_surroundings_rule())
+    solver.add_program_line("N {black(R1, C1) : adj(R, C, R1, C1)} N :- number(R, C, N).")
 
     for cell, num in E.clues.items():
+        r, c = cell
         if num != "?":
-            require(sum_bools(num, [shading_solver.grid[surr] for surr in shading_solver.grid.get_surroundings(*cell)]))
+            solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    return shading_solver.solutions()
+    solver.add_program_line("#show black/2.")
+    solver.solve()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
