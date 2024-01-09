@@ -1,6 +1,6 @@
 """Generate solutions for the given problem."""
 
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from clingo.control import Control
 from clingo.solving import Model
