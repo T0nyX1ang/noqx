@@ -4,7 +4,14 @@ from typing import Dict, List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import adjacent, display, grid, ranged, shading
+from .utilsx.rules import (
+    diag_adjacent,
+    display,
+    grid,
+    orth_adjacent,
+    ranged,
+    shade_without_num,
+)
 from .utilsx.solutions import solver
 
 
@@ -16,9 +23,10 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(ranged(0, 8))
-    solver.add_program_line(shading())
-    solver.add_program_line(adjacent())
-    solver.add_program_line("N {black(R1, C1) : adj(R, C, R1, C1)} N :- number(R, C, N).")
+    solver.add_program_line(shade_without_num())
+    solver.add_program_line(orth_adjacent())
+    solver.add_program_line(diag_adjacent())
+    solver.add_program_line("{black(R1, C1) : adj(R, C, R1, C1)} = N :- number(R, C, N).")
 
     for (r, c), num in E.clues.items():
         if num != "?":
