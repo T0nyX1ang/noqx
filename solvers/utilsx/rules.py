@@ -8,7 +8,6 @@ def display() -> str:
 
 def ranged(lower: int, upper: int, name: str = "range") -> str:
     """Generates a rule for getting a range of numbers."""
-    assert name.isalpha() is True
     return f"{name}({lower}..{upper})."
 
 
@@ -19,8 +18,7 @@ def grid(rows: int, cols: int) -> str:
 
 def shading(name: str = "range") -> str:
     """Generates a rule that enforces a black cell or a with cell with ranged numbers."""
-    assert name.isalpha() is True
-    return "1 {number(R, C, N) : range(N) ; black(R, C)} 1 :- grid(R, C)."
+    return f"1 {{number(R, C, N) : {name}(N) ; black(R, C)}} 1 :- grid(R, C)."
 
 
 def hv_adjacent() -> str:
@@ -42,7 +40,23 @@ def adjacent() -> str:
 
 def no_adjacent(color: str = "black") -> str:
     """Generates a rule for no adjacent {color: default = black} cells."""
-    assert color.isalpha() is True
     adj_rule = adjacent()
     avoid_rule = f":- {color}(R, C), {color}(R1, C1), adj(R, C, R1, C1)."
     return f"{adj_rule}\n{avoid_rule}"
+
+
+def r_unique(color: str = "-black") -> str:
+    """Generates a rule for unique {color: default = not black} cell in every row."""
+    return f":- number(_, C, N), 2 {{ {color}(R, C) : number(R, C, N) }}."
+
+
+def c_unique(color: str = "-black") -> str:
+    """Generates a rule for unique {color: default = not black} cell in every row."""
+    return f":- number(R, _, N), 2 {{ {color}(R, C) : number(R, C, N) }}."
+
+
+def rc_unique(color: str = "-black") -> str:
+    """Generates a rule for unique {color: default = not black} cell in every row and column."""
+    r_uni_rule = r_unique(color)
+    c_uni_rule = c_unique(color)
+    return f"{r_uni_rule}\n{c_uni_rule}"
