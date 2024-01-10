@@ -33,10 +33,10 @@ def solve(E: Encoding) -> List:
 
     for (r, c), clue in E.clues.items():
         if isinstance(clue, list):
-            assert clue[1] == "gray"  # initial color is gray
+            assert clue[1] == "black"  # initial color is gray
             solver.add_program_line(f"black({r}, {c}).")
         else:
-            num = int(str(clue), 36)
+            num = int(clue)
             solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display())

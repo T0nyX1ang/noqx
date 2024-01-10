@@ -251,6 +251,7 @@ class Elf
 		this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
 		this.puzzle_image_str = '';
 		this.puzzle_elt.style.backgroundColor = '';
+    this.puzzle_elt.style.color = '';
 		this.puzzle_elt.innerHTML = '';
 		for (let obj of Object.values(this.puzzle_borders))
 			obj.style.backgroundColor = '';
@@ -261,6 +262,7 @@ class Elf
 		this.solution_elt.style.backgroundImage = '';
 		this.solution_image_str = '';
 		this.solution_elt.style.backgroundColor = '';
+    this.solution_elt.style.color = '';
 		this.solution_elt.innerHTML = '';
 		for (let obj of Object.values(this.solution_borders))
 			obj.style.backgroundColor = '';
@@ -635,7 +637,7 @@ function BgColorElf(keyToColor = {'x': ['black', 'black']}, resetInnerHtml = tru
 			let controls = super.controls();
 			for (const [key, value] of Object.entries(keyToColor))
 			{
-				controls[key] = `Toggle background color ${value[1]}`;
+				controls[key] = `Toggle background color ${value[0]}`;
 			}
 			return controls;
 		}
@@ -647,11 +649,15 @@ function BgColorElf(keyToColor = {'x': ['black', 'black']}, resetInnerHtml = tru
 			if (key in keyToColor)
 			{
 				const bgColor = keyToColor[key][0];
-				if (this.puzzle_elt.style.backgroundColor == bgColor)
+        const innerColor = keyToColor[key][1];
+				if (this.puzzle_elt.style.backgroundColor == bgColor) {
 					this.puzzle_elt.style.backgroundColor = '';
+          this.puzzle_elt.style.color = '';
+        }
 				else {
 					if (resetInnerHtml) this.puzzle_elt.innerHTML = '';
 					this.puzzle_elt.style.backgroundColor = bgColor;
+          this.puzzle_elt.style.color = innerColor;
 				}
 			}
 		}
@@ -838,15 +844,13 @@ class EasyAsElf extends Elf
 	}
 }
 
-let s = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 class HitoriElf extends DirectSum(
-	LetterElf(s), BgColorElf({'#': ['gray', 'gray']}, false)
+	IntElf(), BgColorElf({'x': ['black', 'darkgray']}, false)
 ) {
 	static controls()
 		{
 			let controls = super.controls();
-			delete controls['['+s.toUpperCase()+']'];
-			controls['[0-9A-Z]'] = 'Write clue in cell';
+      controls['x'] = 'Add black cell (as an initial clue)';
 			return controls;
 		}
 }
@@ -1606,7 +1610,7 @@ let elf_types = {
 	gokigen: DirectSum(QuestionMarkElf, IntElf(0,4,'[0-4]', 'center_dot'), 'first'),
 	haisu: DirectSum(IntBordersElf(), LetterElf('SG'), 'first'),
 	hashi: DirectSum(QuestionMarkElf, IntElf(0,8,'[0-8]'), 'first'),
-	heteromino: BgColorElf({'x': ['darkgray', 'gray']}),
+	heteromino: BgColorElf({'x': ['gray', 'gray']}),
 	heyawake: InvertSolutionZOrder(IntBordersElf()),
 	hitori: HitoriElf,
 	hotaru: DirectSum(
