@@ -231,8 +231,12 @@ class Elf
 	load_solution(str)
 	{
 		if (COLORS.includes(str))
+    {
 			this.solution_elt.style.backgroundColor = str;
-		else if (/^[0-9]+$/.test(str))
+      if (str == 'black') this.solution_elt.style.color = 'darkgray';
+      this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
+    }
+    else if (/^[0-9]+$/.test(str))
 			this.solution_elt.innerHTML = str;
 		else if (/^.+\.png$/.test(str))
 		{
