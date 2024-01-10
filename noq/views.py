@@ -2,6 +2,7 @@
 
 import importlib
 import json
+import time
 import traceback
 from typing import Any, Mapping
 
@@ -64,11 +65,14 @@ for pt_dict in PUZZLE_TYPES:
 def solver(request):
     """Solver view."""
     try:
+        start = time.time()
         reset()
         module = importlib.import_module(f"solvers.{request.GET['puzzle_type']}")
         puzzle_encoding = module.encode(request.GET["puzzle"])
         solutions_encoded = module.solve(puzzle_encoding)
         solutions_decoded = module.decode(solutions_encoded)
+        stop = time.time()
+        print(f"Solver took {stop - start} seconds", flush=True)
         return HttpResponse(solutions_decoded)
     # show error messages
     except ValueError as err:
