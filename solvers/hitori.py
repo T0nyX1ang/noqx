@@ -2,37 +2,48 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, set_max_val
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.rules import (
+    avoid_adjacent,
+    col_num_unique,
+    connected,
+    display,
+    grid,
+    orth_adjacent,
+    row_num_unique,
+    shade,
+)
+from .utilsx.solutions import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
-    set_max_val(max(E.R, E.C))
-    s = RectangularGridShadingSolver(E.R, E.C)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade())
+    solver.add_program_line(row_num_unique(color="not black"))
+    solver.add_program_line(col_num_unique(color="not black"))
+    solver.add_program_line(orth_adjacent())
+    solver.add_program_line(avoid_adjacent())
+    solver.add_program_line(connected(color="not black"))
 
-    K = list(E.clues.keys())
-    for i, (r, c) in enumerate(K):
-        if isinstance(E.clues[(r, c)], list):
-            num, color = E.clues[(r, c)]
-            assert color == 'gray'
-            require(s.grid[r][c])
-            E.clues[(r, c)] = int(num) if '0' <= num <= '9' else num
+    for (r, c), clue in E.clues.items():
+        if isinstance(clue, list):
+            assert clue[1] == "gray"  # initial color is gray
+            solver.add_program_line(f"black({r}, {c}).")
+        else:
+            num = int(str(clue), 36)
+            solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    for i, (r, c) in enumerate(K):
-        for r1, c1 in K[i + 1 :]:
-            if E.clues[(r, c)] == E.clues[(r1, c1)] and (r == r1 or c == c1):
-                require(s.grid[r][c] | s.grid[r1][c1])
-    s.no_adjacent()
-    s.white_connectivity()
+    solver.add_program_line(display())
+    solver.solve()
 
-    return s.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
