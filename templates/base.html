@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    {% load static %}
-    {% block head %}
-        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    {% endblock %}
-    <title>{% block title %}Home{% endblock %}</title>
+  {% load static %}
+  {% block head %}
+  <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  {% endblock %}
+  <title>{% block title %}Home{% endblock %}</title>
 </head>
+
 <body>
-    {% block content %}
-        TODO add content here
-    {% endblock %}
+  {% block content %}
+  TODO add content here
+  {% endblock %}
 </body>
+
 </html>
