@@ -9,8 +9,7 @@ from .utilsx.rules import (
     display,
     grid,
     orth_adjacent,
-    ranged,
-    shade_without_num,
+    shade_nc,
 )
 from .utilsx.solutions import solver
 
@@ -22,8 +21,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(ranged(0, 8))
-    solver.add_program_line(shade_without_num())
+    solver.add_program_line(shade_nc(num_range="0..8", color="black"))
     solver.add_program_line(orth_adjacent())
     solver.add_program_line(diag_adjacent())
     solver.add_program_line("{black(R1, C1) : adj(R, C, R1, C1)} = N :- number(R, C, N).")

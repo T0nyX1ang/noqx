@@ -1,6 +1,6 @@
 """The Hitori solver."""
 
-from typing import List
+from typing import List, Dict
 
 from . import utilsx
 from .utilsx.encoding import Encoding
@@ -12,7 +12,7 @@ from .utilsx.rules import (
     grid,
     orth_adjacent,
     row_num_unique,
-    shade,
+    shade_c,
 )
 from .utilsx.solutions import solver
 
@@ -21,10 +21,10 @@ def encode(string: str) -> Encoding:
     return utilsx.encode(string)
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade())
+    solver.add_program_line(shade_c())
     solver.add_program_line(row_num_unique(color="not black"))
     solver.add_program_line(col_num_unique(color="not black"))
     solver.add_program_line(orth_adjacent())
