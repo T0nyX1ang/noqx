@@ -199,6 +199,7 @@ const puzzle_types = {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
+      m: { name: "Mines", value: "" },
     },
     properties: { outside: "0000", border: false },
   },

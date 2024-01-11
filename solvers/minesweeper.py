@@ -5,6 +5,8 @@ from typing import Dict, List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.rules import (
+    adjacent_num,
+    count,
     diag_adjacent,
     display,
     grid,
@@ -19,19 +21,32 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List[Dict[str, str]]:
+    mine_count = E.params["m"]
+
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_nc(num_range="0..8", color="black"))
     solver.add_program_line(orth_adjacent())
     solver.add_program_line(diag_adjacent())
-    solver.add_program_line("{black(R1, C1) : adj(R, C, R1, C1)} = N :- number(R, C, N).")
+    solver.add_program_line(adjacent_num())
 
-    for (r, c), num in E.clues.items():
-        if num != "?":
-            solver.add_program_line(f"number({r}, {c}, {num}).")
+    print(E.clues.items())
+
+    for (r, c), clue in E.clues.items():
+        if isinstance(clue, list):
+            assert clue[2] == "black"
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        else:
+            solver.add_program_line(f"number({r}, {c}, {clue}).")
+
+    if mine_count:
+        solver.add_program_line(count(mine_count, color="black"))
 
     solver.add_program_line(display())
     solver.solve()
+
     return solver.solutions
 
 
