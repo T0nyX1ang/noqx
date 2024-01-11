@@ -114,7 +114,8 @@ function toggle_background_image(elt, img) {
     if (riu == "s") aff_neigh = ["s"];
     if (riu == "se") aff_neigh = ["s", "e", "se"];
 
-    for (let neigh of aff_neigh) { // reset their images
+    for (let neigh of aff_neigh) {
+      // reset their images
       let neighbor = neighbors[neigh];
       if (neighbor) {
         neighbor.raw_image_url = "";
@@ -577,7 +578,7 @@ function BgColorElf(
     static controls() {
       let controls = super.controls();
       for (const [key, value] of Object.entries(keyToColor)) {
-        controls[key] = `Toggle background color ${value[0]}`;
+        controls[key] = `Toggle ${value[0]} cell`;
       }
       return controls;
     }
@@ -596,6 +597,12 @@ function BgColorElf(
           this.puzzle_elt.style.backgroundColor = bgColor;
           this.puzzle_elt.style.color = innerColor;
         }
+      } else if (
+        resetInnerHtml &&
+        this.puzzle_elt.style.backgroundColor &&
+        !del_keys.includes(key)
+      ) {
+        this.puzzle_elt.innerHTML = "";
       }
     }
 
@@ -776,17 +783,6 @@ class EasyAsElf extends Elf {
   }
 }
 
-class HitoriElf extends DirectSum(
-  IntElf(),
-  BgColorElf({ x: ["black", "darkgray"] }, false)
-) {
-  static controls() {
-    let controls = super.controls();
-    controls["x"] = "Add black cell (as an initial clue)";
-    return controls;
-  }
-}
-
 class KakuroElf extends Elf {
   static controls() {
     let controls = super.controls();
@@ -807,7 +803,8 @@ class KakuroElf extends Elf {
     this.down_elt = make_elt("DIV", "kakuro_down_clue", this.puzzle_elt);
   }
 
-  handle_becoming_inactive() { // reset outline boxes for clues
+  handle_becoming_inactive() {
+    // reset outline boxes for clues
     this.across_elt.style.outline = "none";
     this.down_elt.style.outline = "none";
   }
@@ -1494,7 +1491,7 @@ let elf_types = {
   hashi: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
   heteromino: BgColorElf({ x: ["gray", "gray"] }),
   heyawake: InvertSolutionZOrder(IntBordersElf()),
-  hitori: HitoriElf,
+  hitori: DirectSum(IntElf(), BgColorElf({ x: ["black", "darkgray"] }, false)),
   hotaru: DirectSum(
     IntElf(),
     ImageElf(
@@ -1517,7 +1514,7 @@ let elf_types = {
   lits: BorderElf,
   magnets: MagnetsElf,
   masyu: CircleElf,
-  minesweeper: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
+  minesweeper: DirectSum(IntElf(0, 8, "[0-8]"), BgColorElf()),
   moonsun: DirectSum(
     ImageElf(
       {
