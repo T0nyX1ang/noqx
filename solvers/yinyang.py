@@ -4,8 +4,8 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import avoid_rect, connected, display, grid, orth_adjacent, shade_cc
-from .utilsx.solutions import solver
+from .utilsx.rules import avoid_rect, connected, display, grid, orth_adjacent, shade_c
+from .utilsx.solutions import solver, rc_to_grid
 
 
 def encode(string: str) -> Encoding:
@@ -15,25 +15,25 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_cc(color1="black", color2="white"))
+    solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(orth_adjacent())
     solver.add_program_line(connected(color="black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="black"))
-    solver.add_program_line(connected(color="white"))
-    solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="white"))
+    solver.add_program_line(connected(color="not black"))
+    solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="not black"))
 
     for (r, c), color in E.clues.items():
-        color = "black" if color == "b" else "white"
+        color = "black" if color == "b" else "not black"
         solver.add_program_line(f"{color}({r}, {c}).")
 
     solver.add_program_line(display(color="black"))
-    solver.add_program_line(display(color="white"))
     solver.solve()
 
     for solution in solver.solutions:
-        for rc, color in solution.items():
-            color = "black" if color == "1" else "white"
-            solution[rc] += "_circle.png"
+        for r in range(E.R):
+            for c in range(E.C):
+                rc = rc_to_grid(r, c)
+                solution[rc] = "white_circle.png" if rc not in solution else "black_circle.png"
 
     return solver.solutions
 

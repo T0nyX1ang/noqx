@@ -1,5 +1,7 @@
 """Utility for general clingo rules."""
 
+from typing import List
+
 
 def display(color: str = "black") -> str:
     """Generates a rule for displaying the {color} cells."""
@@ -28,13 +30,13 @@ def shade_nc(num_range: str, color: str = "black") -> str:
     return f"{{ number(R, C, {num_range}) ; {color}(R, C) }} = 1 :- grid(R, C)."
 
 
-def shade_cc(color1: str = "black", color2: str = "white") -> str:
+def shade_cc(colors: List[str]) -> str:
     """
-    Generates a rule that enforces two different {color} cells.
+    Generates a rule that enforces several different {color} cells.
 
     A grid rule should be defined first.
     """
-    return f"{{ {color1}(R, C) ; {color2}(R, C) }} = 1 :- grid(R, C)."
+    return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
 def count(counts: int, color: str = "black") -> str:
@@ -122,5 +124,5 @@ def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
 
     A grid rule should be defined first. (This is indirectly required by the shade rule.)
     """
-    rect_pattern = [f"{color}(R + {r}, C + {c})" for r in range(rect_r) for c in range(rect_c)]
+    rect_pattern = [f"grid(R + {r}, C + {c}), {color}(R + {r}, C + {c})" for r in range(rect_r) for c in range(rect_c)]
     return f":- {', '.join(rect_pattern)}."
