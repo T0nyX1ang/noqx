@@ -116,10 +116,11 @@ def connected(color: str = "black") -> str:
     return "\n".join([reachable, reachable_propagation, connectivity])
 
 
-def avoid_2x2(color: str = "black") -> str:
+def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
     """
-    Generates a constraint to avoid 2x2-patterned {color} cells.
+    Generates a constraint to avoid rectangular patterned {color} cells.
 
     A grid rule should be defined first. (This is indirectly required by the shade rule.)
     """
-    return f":- {color}(R, C), {color}(R + 1, C), {color}(R, C + 1), {color}(R + 1, C + 1)."
+    rect_pattern = [f"{color}(R + {r}, C + {c})" for r in range(rect_r) for c in range(rect_c)]
+    return f":- {', '.join(rect_pattern)}."
