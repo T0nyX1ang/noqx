@@ -1,9 +1,11 @@
 """Utility for general clingo rules."""
 
+from typing import List
 
-def display(color: str = "black") -> str:
+
+def display() -> str:
     """Generates a rule for displaying the {color} cells."""
-    return f"#show {color}/2."
+    return "#show color/3."
 
 
 def grid(rows: int, cols: int) -> str:
@@ -11,30 +13,24 @@ def grid(rows: int, cols: int) -> str:
     return f"grid(0..{rows - 1}, 0..{cols - 1})."
 
 
-def shade_c(color: str = "black") -> str:
+def shade_c(colors: List[str] = "black") -> str:
     """
     Generate a rule that a cell is either {color} or not {color}.
 
-    A grid rule should be defined first."""
-    return f"{{ {color}(R, C) }} :- grid(R, C)."
+    A grid rule should be defined first. A color rule is defined here.
+    [grid] :- [color].
+    """
+    return f"{{ color(R, C, ({'; '.join(colors)})) }} = 1 :- grid(R, C)."
 
 
 def shade_nc(num_range: str, color: str = "black") -> str:
     """
     Generates a rule that enforces a {color} cell or a with cell with ranged numbers.
 
-    A grid rule should be defined first.
+    A grid rule should be defined first. A number rule and a color rule is defined here.
+    [grid] :- [number], [color].
     """
-    return f"{{ number(R, C, {num_range}) ; {color}(R, C) }} = 1 :- grid(R, C)."
-
-
-def shade_cc(color1: str = "black", color2: str = "white") -> str:
-    """
-    Generates a rule that enforces two different {color} cells.
-
-    A grid rule should be defined first.
-    """
-    return f"{{ {color1}(R, C) ; {color2}(R, C) }} = 1 :- grid(R, C)."
+    return f"{{ number(R, C, {num_range}) ; color(R, C, {color}) }} = 1 :- grid(R, C)."
 
 
 def count(counts: int, color: str = "black") -> str:
@@ -43,7 +39,7 @@ def count(counts: int, color: str = "black") -> str:
 
     A grid rule should be defined first.
     """
-    return f":- #count {{ grid(R, C) : {color}(R, C) }} != {counts}."
+    return f":- #count {{ grid(R, C) : color(R, C, {color}) }} != {counts}."
 
 
 def orth_adjacent() -> str:
@@ -70,16 +66,16 @@ def avoid_adjacent(color: str = "black") -> str:
 
     An adjacent rule should be defined first.
     """
-    return f":- {color}(R, C), {color}(R1, C1), adj(R, C, R1, C1)."
+    return f":- color(R, C, {color}), color(R1, C1, {color}), adj(R, C, R1, C1)."
 
 
 def row_num_unique(color: str = "black") -> str:
     """
-    Generates a constraint for unique {colo} numbered cell in every row.
+    Generates a constraint for unique {color} numbered cell in every row.
 
     A number rule should be defined first.
     """
-    return f":- number(_, C, N), 2 {{ {color}(R, C) : number(R, C, N) }}."
+    return f":- number(_, C, N), 2 {{ color(R, C, {color}) : number(R, C, N) }}."
 
 
 def col_num_unique(color: str = "black") -> str:
@@ -88,7 +84,7 @@ def col_num_unique(color: str = "black") -> str:
 
     A number rule should be defined first.
     """
-    return f":- number(R, _, N), 2 {{ {color}(R, C) : number(R, C, N) }}."
+    return f":- number(R, _, N), 2 {{ color(R, C, {color}) : number(R, C, N) }}."
 
 
 def adjacent_num(color: str = "black") -> str:
@@ -97,7 +93,7 @@ def adjacent_num(color: str = "black") -> str:
 
     A number rule and an adjacent rule should be defined first.
     """
-    return f"{{ {color}(R1, C1) : adj(R, C, R1, C1) }} = N :- number(R, C, N)."
+    return f"{{ color(R1, C1, {color}) : adj(R, C, R1, C1) }} = N :- number(R, C, N)."
 
 
 def connected(color: str = "black") -> str:
@@ -108,11 +104,11 @@ def connected(color: str = "black") -> str:
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    reachable = f"reachable_{color_escape}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
+    reachable = f"reachable_{color_escape}(R, C) :- (R, C) = #min{{ (R1, C1) : color(R1, C1, {color}), grid(R1, C1) }}."
     reachable_propagation = (
-        f"reachable_{color_escape}(R, C) :- reachable_{color_escape}(R1, C1), adj(R, C, R1, C1), {color}(R, C)."
+        f"reachable_{color_escape}(R, C) :- reachable_{color_escape}(R1, C1), adj(R, C, R1, C1), color(R, C, {color})."
     )
-    connectivity = f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
+    connectivity = f":- grid(R, C), color(R, C, {color}), not reachable_{color_escape}(R, C)."
     return "\n".join([reachable, reachable_propagation, connectivity])
 
 
@@ -122,5 +118,5 @@ def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
 
     A grid rule should be defined first. (This is indirectly required by the shade rule.)
     """
-    rect_pattern = [f"{color}(R + {r}, C + {c})" for r in range(rect_r) for c in range(rect_c)]
+    rect_pattern = [f"color(R + {r}, C + {c}, {color})" for r in range(rect_r) for c in range(rect_c)]
     return f":- {', '.join(rect_pattern)}."

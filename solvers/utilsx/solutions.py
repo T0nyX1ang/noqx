@@ -28,15 +28,14 @@ class ClingoSolver:
         formatted: Dict[str, str] = {}
 
         for item in solution:
-            color, coords = item.replace("(", " ").replace(")", " ").split()
-            r, c = coords.split(",")
+            r, c, color = item.replace("color(", "").replace(")", "").split(",")
             formatted[rc_to_grid(int(r), int(c))] = color
 
         self.solutions.append(formatted)
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
-        self.program += (line + "\n")
+        self.program += line + "\n"
 
     def reset(self):
         """Reset the program."""

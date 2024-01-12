@@ -33,9 +33,9 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     for (r, c), clue in E.clues.items():
         if isinstance(clue, list):
             assert clue[2] == "black"
-            solver.add_program_line(f"black({r}, {c}).")
+            solver.add_program_line(f"color({r}, {c}, black).")
         elif clue == "black":
-            solver.add_program_line(f"black({r}, {c}).")
+            solver.add_program_line(f"color({r}, {c}, black).")
         else:
             solver.add_program_line(f"number({r}, {c}, {clue}).")
 

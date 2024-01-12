@@ -4,7 +4,7 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import avoid_rect, connected, display, grid, orth_adjacent, shade_cc
+from .utilsx.rules import avoid_rect, connected, display, grid, orth_adjacent, shade_c
 from .utilsx.solutions import solver
 
 
@@ -15,7 +15,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_cc(color1="black", color2="white"))
+    solver.add_program_line(shade_c(colors=["black", "white"]))
     solver.add_program_line(orth_adjacent())
     solver.add_program_line(connected(color="black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="black"))
@@ -24,10 +24,9 @@ def solve(E: Encoding) -> List:
 
     for (r, c), color in E.clues.items():
         color = "black" if color == "b" else "white"
-        solver.add_program_line(f"{color}({r}, {c}).")
+        solver.add_program_line(f"color({r}, {c}, {color}).")
 
-    solver.add_program_line(display(color="black"))
-    solver.add_program_line(display(color="white"))
+    solver.add_program_line(display())
     solver.solve()
 
     for solution in solver.solutions:
