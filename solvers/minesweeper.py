@@ -30,8 +30,6 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(diag_adjacent())
     solver.add_program_line(adjacent_num())
 
-    print(E.clues.items())
-
     for (r, c), clue in E.clues.items():
         if isinstance(clue, list):
             assert clue[2] == "black"

@@ -19,7 +19,7 @@ class ClingoSolver:
     def __init__(self):
         """Initialize a solver."""
         self.clingo_instance: Control = Control()
-        self.program_lines: List[str] = []
+        self.program: str = ""
         self.solutions: List[Dict[str, str]] = []
 
     def store_solutions(self, model: Model):
@@ -34,18 +34,14 @@ class ClingoSolver:
 
         self.solutions.append(formatted)
 
-    def generate_program(self):
-        """Generate the program to solve."""
-        return "\n".join(self.program_lines)
-
     def add_program_line(self, line: str):
         """Add a line to the program."""
-        self.program_lines.append(line)
+        self.program += (line + "\n")
 
     def reset(self):
         """Reset the program."""
         self.clingo_instance = Control()
-        self.program_lines = []
+        self.program = ""
         self.solutions = []
 
     def solve(self):
@@ -54,7 +50,7 @@ class ClingoSolver:
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"
         self.clingo_instance.configuration.asp.eq = 1
         self.clingo_instance.configuration.solve.models = MAX_SOLUTIONS_TO_FIND
-        self.clingo_instance.add("base", [], self.generate_program())
+        self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
         self.clingo_instance.solve(on_model=self.store_solutions)
 
