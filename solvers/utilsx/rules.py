@@ -1,6 +1,6 @@
 """Utility for general clingo rules."""
 
-from typing import List
+from typing import List, Literal
 
 
 def display(color: str = "black") -> str:
@@ -39,13 +39,23 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def count(counts: int, color: str = "black") -> str:
+def count(target: int, color: str = "black", count_for: str = Literal["grid", "row", "col"]) -> str:
     """
-    Generates a constraint for counting the number of {color} cells.
+    Generates a constraint for counting the number of {color} cells in a grid / row / column.
 
     A grid rule should be defined first.
     """
-    return f":- #count {{ grid(R, C) : {color}(R, C) }} != {counts}."
+
+    if count_for == "grid":
+        return f":- #count {{ grid(R, C) : {color}(R, C) }} != {target}."
+
+    if count_for == "row":
+        return f":- grid(R, _), #count {{ C : {color}(R, C) }} != {target}."
+
+    if count_for == "col":
+        return f":- grid(_, C), #count {{ R : {color}(R, C) }} != {target}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col'.")
 
 
 def orth_adjacent() -> str:
@@ -77,7 +87,7 @@ def avoid_adjacent(color: str = "black") -> str:
 
 def row_num_unique(color: str = "black") -> str:
     """
-    Generates a constraint for unique {colo} numbered cell in every row.
+    Generates a constraint for unique {color} numbered cell in every row.
 
     A number rule should be defined first.
     """
