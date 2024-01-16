@@ -39,20 +39,20 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def count(target: int, color: str = "black", count_for: str = Literal["grid", "row", "col"]) -> str:
+def count(target: int, color: str = "black", _type: str = Literal["grid", "row", "col"]) -> str:
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column.
 
     A grid rule should be defined first.
     """
 
-    if count_for == "grid":
+    if _type == "grid":
         return f":- #count {{ grid(R, C) : {color}(R, C) }} != {target}."
 
-    if count_for == "row":
+    if _type == "row":
         return f":- grid(R, _), #count {{ C : {color}(R, C) }} != {target}."
 
-    if count_for == "col":
+    if _type == "col":
         return f":- grid(_, C), #count {{ R : {color}(R, C) }} != {target}."
 
     raise ValueError("Invalid type, must be one of 'grid', 'row', 'col'.")
@@ -85,25 +85,28 @@ def avoid_adjacent(color: str = "black") -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj(R, C, R1, C1)."
 
 
-def row_num_unique(color: str = "black") -> str:
-    """
-    Generates a constraint for unique {color} numbered cell in every row.
-
-    A number rule should be defined first.
-    """
-    return f":- number(_, C, N), 2 {{ {color}(R, C) : number(R, C, N) }}."
-
-
-def col_num_unique(color: str = "black") -> str:
-    """
-    Generates a constraint for unique {color} numbered cell in every column.
-
-    A number rule should be defined first.
-    """
-    return f":- number(R, _, N), 2 {{ {color}(R, C) : number(R, C, N) }}."
-
-
 def adjacent_num(color: str = "black") -> str:
+    """
+    Generates a constraint for adjacent {color} numbered cells.
+
+    A number rule and an adjacent rule should be defined first.
+    """
+    return f":- number(R, C, N), {{ {color}(R1, C1) : adj(R, C, R1, C1) }} != N."
+
+
+def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
+    """
+    Generates a constraint for unique {color} numbered cells in a row / column.
+
+    A number rule should be defined first.
+    """
+    if _type == "row":
+        return f":- number(_, C, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
+
+    if _type == "col":
+        return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
+
+    raise ValueError("Invalid type, must be one of 'row', 'col'.")
     """
     Generates a constraint for adjacent {color} numbered cells.
 
