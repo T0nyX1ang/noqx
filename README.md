@@ -11,7 +11,7 @@ Extended logic puzzle solver of Noq.
   - [x] Minesweeper
   - [x] Hitori
   - [x] Yin-Yang
-  - [ ] Binairo
+  - [x] Binairo
 
 ## How to run locally
 
