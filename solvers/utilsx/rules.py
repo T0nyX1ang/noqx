@@ -107,12 +107,28 @@ def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> st
         return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
     raise ValueError("Invalid type, must be one of 'row', 'col'.")
-    """
-    Generates a constraint for adjacent {color} numbered cells.
 
-    A number rule and an adjacent rule should be defined first.
+
+def unique_linecolor(colors: List[str], _type: Literal["row", "col"] = "row") -> str:
     """
-    return f"{{ {color}(R1, C1) : adj(R, C, R1, C1) }} = N :- number(R, C, N)."
+    Generates a constraint for unique row / column in a grid.
+    At least one pair of cells in the same row / column should have different colors.
+
+    A grid rule should be defined first.
+    """
+    if _type == "row":
+        colors_row = ", ".join(
+            f"#count {{ C : grid(R1, C), grid(R2, C), {color}(R1, C), not {color}(R2, C) }} = 0" for color in colors
+        ).replace("not not ", "")
+        return f":- grid(R1, _), grid(R2, _), R1 < R2, {colors_row}."
+
+    if _type == "col":
+        colors_col = ", ".join(
+            f"#count {{ R : grid(R, C1), grid(R, C2), {color}(R, C1), not {color}(R, C2) }} = 0" for color in colors
+        ).replace("not not ", "")
+        return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
+
+    raise ValueError("Invalid type, must be one of 'row', 'col'.")
 
 
 def connected(color: str = "black") -> str:
