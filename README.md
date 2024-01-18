@@ -12,6 +12,7 @@ Extended logic puzzle solver of Noq.
   - [x] Hitori
   - [x] Yin-Yang
   - [x] Binairo
+  - [x] Kuromasu
 
 ## How to run locally
 
