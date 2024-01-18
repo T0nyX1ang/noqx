@@ -21,15 +21,6 @@ def shade_c(color: str = "black") -> str:
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
 
-def shade_nc(num_range: str, color: str = "black") -> str:
-    """
-    Generates a rule that enforces a {color} cell or a with cell with ranged numbers.
-
-    A grid rule should be defined first.
-    """
-    return f"{{ number(R, C, {num_range}) ; {color}(R, C) }} = 1 :- grid(R, C)."
-
-
 def shade_cc(colors: List[str]) -> str:
     """
     Generates a rule that enforces several different {color} cells.
@@ -85,13 +76,13 @@ def avoid_adjacent(color: str = "black") -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj(R, C, R1, C1)."
 
 
-def adjacent_num(color: str = "black") -> str:
+def count_adjacent(target: int, src_r: int, src_c: int, color: str = "black") -> str:
     """
-    Generates a constraint for adjacent {color} numbered cells.
+    Generates a constraint for counting the number of {color} cells adjacent to a cell.
 
-    A number rule and an adjacent rule should be defined first.
+    An adjacent rule should be defined first.
     """
-    return f":- number(R, C, N), {{ {color}(R1, C1) : adj(R, C, R1, C1) }} != N."
+    return f":- #count {{ R, C: {color}(R, C), adj(R, C, {src_r}, {src_c}) }} != {target}."
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
