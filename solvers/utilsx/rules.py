@@ -157,6 +157,20 @@ def connected(color: str = "black") -> str:
     return f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
 
 
+def lit_up(src_r: int, src_c: int, color: str = "black") -> str:
+    """
+    Generate a rule to check the cells can be lit up with a source {color} cell.
+
+    An adjacent rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    tag = f"lit_{src_r}_{src_c}_{color_escape}"
+    source_cell = f"{tag}({src_r}, {src_c})."
+    lit_propagation = (
+        f"{tag}(R, C) :- {tag}(R1, C1), adj(R, C, R1, C1), {color}(R, C), (R - {src_r}) * (C - {src_c}) == 0."
+    )
+    return source_cell + "\n" + lit_propagation
 
 
 def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
