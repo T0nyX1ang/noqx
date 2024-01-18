@@ -173,6 +173,18 @@ def lit_up(src_r: int, src_c: int, color: str = "black") -> str:
     return source_cell + "\n" + lit_propagation
 
 
+def count_lit_up(target: int, src_r: int, src_c: int, color: str = "black") -> str:
+    """
+    Generate a constraint to count the number of {color} cells lit up by a source cell.
+
+    A lit-up rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    tag = f"lit_{src_r}_{src_c}_{color_escape}"
+    return f":- {{ {tag}(R, C) }} != {target}."
+
+
 def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
     """
     Generates a constraint to avoid rectangular patterned {color} cells.
