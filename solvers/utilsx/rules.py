@@ -131,20 +131,32 @@ def unique_linecolor(colors: List[str], _type: Literal["row", "col"] = "row") ->
     raise ValueError("Invalid type, must be one of 'row', 'col'.")
 
 
-def connected(color: str = "black") -> str:
+def reachable(color: str = "black") -> str:
     """
-    Generate a rule and a constraint to check the connectivity of {color} cells.
+    Generate a rule to check the reachability of {color} cells.
 
     An adjacent rule and a grid rule should be defined first.
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    reachable = f"reachable_{color_escape}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
+    reachable_source = f"reachable_{color_escape}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
     reachable_propagation = (
         f"reachable_{color_escape}(R, C) :- reachable_{color_escape}(R1, C1), adj(R, C, R1, C1), {color}(R, C)."
     )
-    connectivity = f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
-    return "\n".join([reachable, reachable_propagation, connectivity])
+    return reachable_source + "\n" + reachable_propagation
+
+
+def connected(color: str = "black") -> str:
+    """
+    Generate a constraint to check the connectivity of {color} cells.
+
+    A grid rule and a reachable rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    return f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
+
+
 
 
 def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
