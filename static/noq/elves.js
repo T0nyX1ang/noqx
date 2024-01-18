@@ -1514,7 +1514,10 @@ let elf_types = {
   lits: BorderElf,
   magnets: MagnetsElf,
   masyu: CircleElf,
-  minesweeper: DirectSum(IntElf(0, 8, "[0-8]"), BgColorElf()),
+  minesweeper: DirectSum(
+    IntElf(0, 8, "[0-8]"),
+    BgColorElf({ x: ["black", "black"], g: ["green", "green"] })
+  ),
   moonsun: DirectSum(
     ImageElf(
       {
