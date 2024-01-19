@@ -25,8 +25,12 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
 
     for (r, c), clue in E.clues.items():
         if isinstance(clue, list):
-            assert clue[1] == "black"  # initial color is gray
-            solver.add_program_line(f"black({r}, {c}).")
+            if clue[1] == "black":
+                solver.add_program_line(f"black({r}, {c}).")
+            elif clue[1] == "green":
+                num = int(clue[0])
+                solver.add_program_line(f"not black({r}, {c}).")
+                solver.add_program_line(f"number({r}, {c}, {num}).")
         else:
             num = int(clue)
             solver.add_program_line(f"number({r}, {c}, {num}).")

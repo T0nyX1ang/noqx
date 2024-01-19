@@ -31,8 +31,10 @@ def solve(E: Encoding) -> List:
     for (r, c), num in E.clues.items():
         if num == 1:
             solver.add_program_line(f"black({r}, {c}).")
-        else:
+        elif num == 0:
             solver.add_program_line(f"not black({r}, {c}).")
+        else:
+            raise ValueError(f"Invalid clue: {num}")
 
     solver.add_program_line(display())
     solver.solve()

@@ -32,9 +32,15 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(connected(color="not black"))
 
     for (r, c), num in E.clues.items():
-        solver.add_program_line(f"not black({r}, {c}).")
-        solver.add_program_line(lit_up(r, c, color="not black"))
-        solver.add_program_line(count_lit_up(num, r, c, color="not black"))
+        if num == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif num == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
+        else:
+            num = int(num)
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(lit_up(r, c, color="not black"))
+            solver.add_program_line(count_lit_up(num, r, c, color="not black"))
 
     solver.add_program_line(display())
     solver.solve()

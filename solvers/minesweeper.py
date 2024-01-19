@@ -35,8 +35,9 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
         elif clue == "green":
             solver.add_program_line(f"not black({r}, {c}).")
         else:
+            num = int(clue)
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(count_adjacent(clue, r, c, color="black"))
+            solver.add_program_line(count_adjacent(num, r, c, color="black"))
 
     if mine_count:
         solver.add_program_line(count(mine_count, color="black", _type="grid"))

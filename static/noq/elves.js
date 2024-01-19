@@ -1491,7 +1491,10 @@ let elf_types = {
   hashi: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
   heteromino: BgColorElf({ x: ["gray", "gray"] }),
   heyawake: InvertSolutionZOrder(IntBordersElf()),
-  hitori: DirectSum(IntElf(), BgColorElf({ x: ["black", "darkgray"] }, false)),
+  hitori: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "white"], g: ["green", "white"] }, false)
+  ),
   hotaru: DirectSum(
     IntElf(),
     ImageElf(
@@ -1510,7 +1513,10 @@ let elf_types = {
   ),
   kakuro: KakuroElf,
   kurotto: KurottoElf,
-  kuromasu: DirectSum(QuestionMarkElf, IntElf(1, 99), "first"),
+  kuromasu: DirectSum(
+    IntElf(1, 99),
+    BgColorElf({ x: ["black", "black"], g: ["green", "green"] })
+  ),
   lits: BorderElf,
   magnets: MagnetsElf,
   masyu: CircleElf,
