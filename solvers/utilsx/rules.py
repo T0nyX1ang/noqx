@@ -149,11 +149,11 @@ def connected(color: str = "black") -> str:
     return f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
 
 
-def reachable_from_src(
+def region(
     src_cell: Tuple[int, int], exclude_cells: List[Tuple[int, int]] = None, color: str = "black"
 ) -> str:
     """
-    Generate a rule to check the reachability of {color} cells from a source cell.
+    Generate a rule to construct a region of {color} cells from a source cell.
 
     An adjacent rule and a grid rule should be defined first.
     """
@@ -172,9 +172,9 @@ def reachable_from_src(
     return source_cell + "\n" + excludes + reachable_propagation
 
 
-def count_connected_from_src(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
     """
-    Generate a constraint to count the number of {color} cells connected to a source cell.
+    Generate a constraint to count the size of {color} region connected to a source cell.
 
     A reachable rule should be defined first.
     """
