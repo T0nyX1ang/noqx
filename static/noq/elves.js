@@ -1563,7 +1563,10 @@ let elf_types = {
   norinori: BorderElf,
   numberlink: InvertSolutionZOrder(IntElf()),
   nuribou: IntElf(),
-  nurikabe: DirectSum(QuestionMarkElf, IntElf(1, 99), "first"),
+  nurikabe: DirectSum(
+    IntElf(1, 99),
+    BgColorElf({ x: ["black", "black"], g: ["green", "green"], y: ["yellow", "yellow"] })
+  ),
   nurimisaki: DirectSum(QuestionMarkElf, IntElf(1, 99), "first"),
   onsen: InvertSolutionZOrder(IntBordersElf()),
   rippleeffect: IntBordersElf(),
