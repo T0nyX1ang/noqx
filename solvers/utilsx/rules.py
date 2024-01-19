@@ -149,6 +149,41 @@ def connected(color: str = "black") -> str:
     return f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
 
 
+def reachable_from_src(
+    src_cell: Tuple[int, int], exclude_cells: List[Tuple[int, int]] = None, color: str = "black"
+) -> str:
+    """
+    Generate a rule to check the reachability of {color} cells from a source cell.
+
+    An adjacent rule and a grid rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    src_r, src_c = src_cell
+    tag = f"reachable_{src_r}_{src_c}_{color_escape}"
+
+    excludes = ""
+    if isinstance(exclude_cells, list):
+        for exclude_r, exclude_c in exclude_cells:
+            excludes += f"not {tag}({exclude_r}, {exclude_c}).\n"
+
+    source_cell = f"{tag}({src_r}, {src_c})."
+    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj(R, C, R1, C1), {color}(R, C)."
+    return source_cell + "\n" + excludes + reachable_propagation
+
+
+def count_connected_from_src(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+    """
+    Generate a constraint to count the number of {color} cells connected to a source cell.
+
+    A reachable rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    src_r, src_c = src_cell
+    return f":- {{ reachable_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
+
+
 def lit_up(src_cell: Tuple[int, int], color: str = "black") -> str:
     """
     Generate a rule to check the cells can be lit up with a source {color} cell.
