@@ -184,6 +184,21 @@ def count_connected_from_src(target: int, src_cell: Tuple[int, int], color: str 
     return f":- {{ reachable_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
 
 
+def avoid_unknown_region(known_src_cells: Tuple[int, int], color: str = "black") -> str:
+    """
+    Generate a constraint to avoid regions that does not derive from a source cell.
+
+    A grid rule and a reachable-from-source rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    included = ""
+    for src_r, src_c in known_src_cells:
+        included += f"not reachable_{src_r}_{src_c}_{color_escape}(R, C), "
+
+    return f":- grid(R, C), {included.strip()} {color}(R, C)."
+
+
 def lit_up(src_cell: Tuple[int, int], color: str = "black") -> str:
     """
     Generate a rule to check the cells can be lit up with a source {color} cell.
