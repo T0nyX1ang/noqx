@@ -1515,14 +1515,14 @@ let elf_types = {
   kurotto: KurottoElf,
   kuromasu: DirectSum(
     IntElf(1, 99),
-    BgColorElf({ x: ["black", "black"], g: ["green", "green"] })
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
   lits: BorderElf,
   magnets: MagnetsElf,
   masyu: CircleElf,
   minesweeper: DirectSum(
     IntElf(0, 8, "[0-8]"),
-    BgColorElf({ x: ["black", "black"], g: ["green", "green"] })
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
   moonsun: DirectSum(
     ImageElf(
@@ -1565,7 +1565,7 @@ let elf_types = {
   nuribou: IntElf(),
   nurikabe: DirectSum(
     IntElf(1, 99),
-    BgColorElf({ x: ["black", "black"], g: ["green", "green"], y: ["yellow", "yellow"] })
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"], "?": ["yellow", "yellow"] })
   ),
   nurimisaki: DirectSum(QuestionMarkElf, IntElf(1, 99), "first"),
   onsen: InvertSolutionZOrder(IntBordersElf()),
