@@ -891,36 +891,6 @@ class KakuroElf extends Elf {
   }
 }
 
-class KurottoElf extends DirectSum(
-  IntElf(),
-  ImageElf({ "-": "white_circle.png" }, { "-": "Place empty circle" }),
-  "first"
-) {
-  handle_input(key, modifiers) {
-    super.handle_input(key, modifiers);
-
-    if (/^[\-0-9]+$/.test(key))
-      // add circle around all clue numbers
-      this.puzzle_elt.style.backgroundImage = image_url("white_circle.png");
-
-    // adjust size of numbers so they fit in the circle
-    if (this.puzzle_elt.innerHTML.length >= 2)
-      this.puzzle_elt.style.fontSize = "20px";
-    else this.puzzle_elt.style.fontSize = "30px";
-  }
-
-  load_example(str) {
-    super.load_example(str);
-    if (/^[\-0-9]+$/.test(str))
-      this.puzzle_elt.style.backgroundImage = image_url("white_circle.png");
-  }
-
-  encode_input() {
-    let s = super.encode_input();
-    return s == "-" ? "black" : s;
-  }
-}
-
 class MagnetsElf extends IntBordersElf() {
   static controls() {
     let controls = super.controls();
@@ -1512,7 +1482,10 @@ let elf_types = {
     "center_dot" // TODO fix load_example for arrays
   ),
   kakuro: KakuroElf,
-  kurotto: KurottoElf,
+  kurotto: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
   kuromasu: DirectSum(
     IntElf(1, 99),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
@@ -1565,7 +1538,11 @@ let elf_types = {
   nuribou: IntElf(),
   nurikabe: DirectSum(
     IntElf(1, 99),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"], "?": ["yellow", "yellow"] })
+    BgColorElf({
+      x: ["black", "black"],
+      o: ["green", "green"],
+      "?": ["yellow", "yellow"],
+    })
   ),
   nurimisaki: DirectSum(QuestionMarkElf, IntElf(1, 99), "first"),
   onsen: InvertSolutionZOrder(IntBordersElf()),
