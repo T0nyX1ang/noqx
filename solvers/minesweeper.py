@@ -5,12 +5,11 @@ from typing import Dict, List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.rules import (
+    adjacent,
     count,
     count_adjacent,
-    diag_adjacent,
     display,
     grid,
-    orth_adjacent,
     shade_c,
 )
 from .utilsx.solutions import solver
@@ -26,8 +25,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
-    solver.add_program_line(orth_adjacent())
-    solver.add_program_line(diag_adjacent())
+    solver.add_program_line(adjacent(_type=8))
 
     for (r, c), clue in E.clues.items():
         if clue == "black":
@@ -37,7 +35,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
         else:
             num = int(clue)
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(count_adjacent(num, (r, c), color="black"))
+            solver.add_program_line(count_adjacent(num, (r, c), color="black", adj_type=8))
 
     if mine_count:
         solver.add_program_line(count(mine_count, color="black", _type="grid"))

@@ -4,7 +4,16 @@ from typing import Dict, List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import avoid_adjacent, connected, display, grid, orth_adjacent, shade_c, unique_num, reachable
+from .utilsx.rules import (
+    adjacent,
+    avoid_adjacent,
+    connected,
+    display,
+    grid,
+    reachable,
+    shade_c,
+    unique_num,
+)
 from .utilsx.solutions import solver
 
 
@@ -18,7 +27,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(shade_c())
     solver.add_program_line(unique_num(color="not black", _type="row"))
     solver.add_program_line(unique_num(color="not black", _type="col"))
-    solver.add_program_line(orth_adjacent())
+    solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent())
     solver.add_program_line(reachable(color="not black"))
     solver.add_program_line(connected(color="not black"))

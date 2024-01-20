@@ -5,13 +5,13 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.rules import (
+    adjacent,
     avoid_adjacent,
     connected,
     count_lit_up,
     display,
     grid,
     lit_up,
-    orth_adjacent,
     reachable,
     shade_c,
 )
@@ -26,7 +26,7 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
-    solver.add_program_line(orth_adjacent())
+    solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent(color="black"))
     solver.add_program_line(reachable(color="not black"))
     solver.add_program_line(connected(color="not black"))

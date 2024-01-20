@@ -49,41 +49,42 @@ def count(target: int, color: str = "black", _type: str = Literal["grid", "row",
     raise ValueError("Invalid type, must be one of 'grid', 'row', 'col'.")
 
 
-def orth_adjacent() -> str:
+def adjacent(_type: int = 4) -> str:
     """
-    Generates a rule for getting the orthogonal neighbors.
+    Generates a rule for getting the adjacent neighbors.
+    If _type = 4, then only orthogonal neighbors are considered.
+    If _type = 8, then both orthogonal and diagonal neighbors are considered.
 
     A grid rule should be defined first.
     """
-    return "adj(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
+    if _type == 4:
+        return "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
+
+    if _type == 8:
+        res = "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
+        res += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        return res
+
+    raise ValueError("Invalid type, must be one of '4', '8'.")
 
 
-def diag_adjacent() -> str:
-    """
-    Generates a rule for getting the diagonal neighbors.
-
-    A grid rule should be defined first.
-    """
-    return "adj(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
-
-
-def avoid_adjacent(color: str = "black") -> str:
+def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid adjacent {color} cells based on adjacent definition.
 
     An adjacent rule should be defined first.
     """
-    return f":- {color}(R, C), {color}(R1, C1), adj(R, C, R1, C1)."
+    return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
-def count_adjacent(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+def count_adjacent(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint for counting the number of {color} cells adjacent to a cell.
 
     An adjacent rule should be defined first.
     """
     src_r, src_c = src_cell
-    return f":- #count {{ R, C: {color}(R, C), adj(R, C, {src_r}, {src_c}) }} != {target}."
+    return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} != {target}."
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
@@ -123,7 +124,7 @@ def unique_linecolor(colors: List[str], _type: Literal["row", "col"] = "row") ->
     raise ValueError("Invalid type, must be one of 'row', 'col'.")
 
 
-def reachable(color: str = "black") -> str:
+def reachable(color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a rule to check the reachability of {color} cells.
 
@@ -131,10 +132,9 @@ def reachable(color: str = "black") -> str:
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    reachable_source = f"reachable_{color_escape}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
-    reachable_propagation = (
-        f"reachable_{color_escape}(R, C) :- reachable_{color_escape}(R1, C1), adj(R, C, R1, C1), {color}(R, C)."
-    )
+    tag = f"reachable_{color_escape}"
+    reachable_source = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
+    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C)."
     return reachable_source + "\n" + reachable_propagation
 
 
@@ -150,7 +150,7 @@ def connected(color: str = "black") -> str:
 
 
 def region(
-    src_cell: Tuple[int, int], exclude_cells: List[Tuple[int, int]] = None, color: str = "black"
+    src_cell: Tuple[int, int], exclude_cells: List[Tuple[int, int]] = None, color: str = "black", adj_type: int = 4
 ) -> str:
     """
     Generate a rule to construct a region of {color} cells from a source cell.
@@ -168,7 +168,7 @@ def region(
             excludes += f"not {tag}({exclude_r}, {exclude_c}).\n"
 
     source_cell = f"{tag}({src_r}, {src_c})."
-    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj(R, C, R1, C1), {color}(R, C)."
+    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C)."
     return source_cell + "\n" + excludes + reachable_propagation
 
 
@@ -199,7 +199,7 @@ def avoid_unknown_region(known_src_cells: Tuple[int, int], color: str = "black")
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
-def lit_up(src_cell: Tuple[int, int], color: str = "black") -> str:
+def lit_up(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a rule to check the cells can be lit up with a source {color} cell.
 
@@ -210,9 +210,7 @@ def lit_up(src_cell: Tuple[int, int], color: str = "black") -> str:
     src_r, src_c = src_cell
     tag = f"lit_{src_r}_{src_c}_{color_escape}"
     source_cell = f"{tag}({src_r}, {src_c})."
-    lit_propagation = (
-        f"{tag}(R, C) :- {tag}(R1, C1), adj(R, C, R1, C1), {color}(R, C), (R - {src_r}) * (C - {src_c}) == 0."
-    )
+    lit_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C), (R - {src_r}) * (C - {src_c}) == 0."  # pylint: disable=line-too-long
     return source_cell + "\n" + lit_propagation
 
 
