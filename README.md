@@ -13,6 +13,8 @@ Extended logic puzzle solver of Noq.
   - [x] Yin-Yang
   - [x] Binairo
   - [x] Kuromasu
+  - [x] Nurikabe
+  - [x] Kurotto
 
 ## How to run locally
 
