@@ -30,7 +30,7 @@ class ClingoSolver:
         for item in solution:
             color, coords = item.replace("(", " ").replace(")", " ").split()
             r, c = coords.split(",")
-            formatted[rc_to_grid(int(r), int(c))] = color
+            formatted[rc_to_grid(int(r), int(c))] = color.replace("color", "")
 
         self.solutions.append(formatted)
 

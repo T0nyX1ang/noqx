@@ -1,12 +1,14 @@
 """Utility for general clingo rules."""
 
-from typing import List, Literal, Tuple
+from typing import List, Literal, Tuple, Union
 
 
-def display(color: str = "black") -> str:
+def display(color: Union[str, List[str]] = "black") -> str:
     """Generates a rule for displaying the {color} cells."""
-    return f"#show {color}/2."
+    if isinstance(color, str):
+        return f"#show {color}/2."
 
+    return "\n".join(f"#show {c}/2." for c in color)
 
 def grid(rows: int, cols: int) -> str:
     """Generates a rule for generating a grid."""
@@ -160,7 +162,7 @@ def region(
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    tag = f"reachable_{src_r}_{src_c}_{color_escape}"
+    tag = f"region_{src_r}_{src_c}_{color_escape}"
 
     excludes = ""
     if isinstance(exclude_cells, list):
@@ -176,25 +178,25 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -
     """
     Generate a constraint to count the size of {color} region connected to a source cell.
 
-    A reachable rule should be defined first.
+    A region rule should be defined first.
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    return f":- {{ reachable_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
+    return f":- {{ region_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
 
 
 def avoid_unknown_region(known_src_cells: Tuple[int, int], color: str = "black") -> str:
     """
     Generate a constraint to avoid regions that does not derive from a source cell.
 
-    A grid rule and a reachable-from-source rule should be defined first.
+    A grid rule and a region rule should be defined first.
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     included = ""
     for src_r, src_c in known_src_cells:
-        included += f"not reachable_{src_r}_{src_c}_{color_escape}(R, C), "
+        included += f"not region_{src_r}_{src_c}_{color_escape}(R, C), "
 
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
