@@ -10,9 +10,15 @@ def display(color: Union[str, List[str]] = "black") -> str:
 
     return "\n".join(f"#show {c}/2." for c in color)
 
+
 def grid(rows: int, cols: int) -> str:
     """Generates a rule for generating a grid."""
     return f"grid(0..{rows - 1}, 0..{cols - 1})."
+
+
+def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
+    """Generates a rule for defining an area."""
+    return "\n".join(f"area_{_id}({r}, {c})." for r, c in src_cells)
 
 
 def shade_c(color: str = "black") -> str:
@@ -32,9 +38,9 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def count(target: int, color: str = "black", _type: str = Literal["grid", "row", "col"]) -> str:
+def count(target: int, color: str = "black", _type: str = "grid") -> str:
     """
-    Generates a constraint for counting the number of {color} cells in a grid / row / column.
+    Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
 
     A grid rule should be defined first.
     """
@@ -48,7 +54,10 @@ def count(target: int, color: str = "black", _type: str = Literal["grid", "row",
     if _type == "col":
         return f":- grid(_, C), #count {{ R : {color}(R, C) }} != {target}."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col'.")
+    if _type.startswith("area"):
+        return f":- #count {{ R, C : {_type}(R, C), {color}(R, C) }} != {target}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area_id'.")
 
 
 def adjacent(_type: int = 4) -> str:
