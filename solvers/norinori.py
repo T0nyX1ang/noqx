@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.regions import full_bfs
-from .utilsx.rules import adjacent, area, grid, shade_c, count, display, nori_adjacent
+from .utilsx.rules import adjacent, area, count, display, grid, nori_adjacent, shade_c
 from .utilsx.solutions import solver
 
 
@@ -26,10 +26,10 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(area(i, src_cells=ar))
         solver.add_program_line(count(2, color="darkgray", _type=f"area_{i}"))
 
-    for (r, c), clues in E.clues.items():
-        if clues == "darkgray":
+    for (r, c), clue in E.clues.items():
+        if clue == "darkgray":
             solver.add_program_line(f"darkgray({r}, {c}).")
-        elif clues == "green":
+        elif clue == "green":
             solver.add_program_line(f"not darkgray({r}, {c}).")
 
     solver.add_program_line(display(color="darkgray"))
