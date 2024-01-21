@@ -2,57 +2,62 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, IntVar, at_least, require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.rules import (
+    adjacent,
+    avoid_rect,
+    avoid_unknown_misaki,
+    connected,
+    count_adjacent,
+    count_lit,
+    display,
+    grid,
+    lit,
+    reachable,
+    shade_c,
+)
+from .utilsx.solutions import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
-    set_max_val(E.R * E.C)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
+    solver.add_program_line(adjacent())
+    solver.add_program_line(reachable(color="not black"))
+    solver.add_program_line(connected(color="not black"))
+    solver.add_program_line(avoid_rect(2, 2, color="black"))
+    solver.add_program_line(avoid_rect(2, 2, color="not black"))
 
-    s = RectangularGridShadingSolver(E.R, E.C)
-    arbitrary_white_clue = None  # Use this later
-    # Steal #-seen-cells logic from Cave
-    for (r, c), value in E.clues.items():
-        arbitrary_white_clue = (r, c)
-        if value == "?":
-            continue
-        dirs = {}
-        for u, v in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            ray = []
-            n = 1
-            while 0 <= r + u * n < E.R and 0 <= c + v * n < E.C:  # add all ray cells
-                ray.append((r + u * n, c + v * n))
-                n += 1
-            num_seen_cells = IntVar(0, len(ray))
-            for n in range(len(ray) + 1):
-                cond_n = BoolVar(True)
-                for d in range(n):
-                    cond_n &= ~s.grid[ray[d]]
-                if n < len(ray):
-                    cond_n &= s.grid[ray[n]]
-                require((num_seen_cells == n) == cond_n)
-            dirs[(u, v)] = num_seen_cells
-        require(dirs[(1, 0)] + dirs[(-1, 0)] + dirs[(0, 1)] + dirs[(0, -1)] == E.clues[(r, c)] - 1)
-    # A white cell can see in exactly 1 of the directions iff it is specially indicated
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) in E.clues:
-                require(sum_bools(1, [~s.grid[y][x] for (y, x) in s.grid.get_neighbors(r, c)]))
-            else:
-                require(at_least(2, [~s.grid[y][x] for (y, x) in s.grid.get_neighbors(r, c)]) | s.grid[r][c])
-    # Simple rules
-    s.white_clues(E.clues)
-    s.white_connectivity(known_root=arbitrary_white_clue)
-    s.no_black_2x2()
-    s.no_white_2x2()
-    return s.solutions()
+    all_src = []
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
+        elif clue == "yellow":
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(count_adjacent(1, (r, c), color="not black"))
+            all_src.append((r, c))
+        else:
+            num = int(clue)
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(count_adjacent(1, (r, c), color="not black"))
+            solver.add_program_line(lit((r, c), color="not black"))
+            solver.add_program_line(count_lit(num, (r, c), color="not black"))
+            all_src.append((r, c))
+
+    solver.add_program_line(avoid_unknown_misaki(all_src, color="not black"))
+    solver.add_program_line(display())
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

@@ -1550,7 +1550,14 @@ let elf_types = {
       "?": ["yellow", "yellow"],
     })
   ),
-  nurimisaki: DirectSum(QuestionMarkElf, IntElf(1, 99), "first"),
+  nurimisaki: DirectSum(
+    IntElf(1, 99),
+    BgColorElf({
+      x: ["black", "black"],
+      o: ["green", "green"],
+      "?": ["yellow", "yellow"],
+    })
+  ),
   onsen: InvertSolutionZOrder(IntBordersElf()),
   rippleeffect: IntBordersElf(),
   shakashaka: AkariElf,

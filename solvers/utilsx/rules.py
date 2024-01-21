@@ -104,7 +104,18 @@ def nori_adjacent(target: int = 1, color: str = "darkgray", adj_type: int = 4) -
 
     A grid rule and an adjacent rule should be defined first.
     """
-    return f":- grid(R1, C1), {color}(R1, C1), #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, R1, C1) }} != {target}."  # pylint: disable=line-too-long
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != {target}."  # pylint: disable=line-too-long
+
+
+def avoid_unknown_misaki(known_src_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to avoid dead ends that does not have a record.
+
+    A grid rule and an adjacent rule should be defined first.
+    """
+
+    included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_src_cells)
+    return f":- {included}, grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1."  # pylint: disable=line-too-long
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
