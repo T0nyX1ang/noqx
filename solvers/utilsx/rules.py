@@ -246,11 +246,19 @@ def count_lit_up(target: int, src_cell: Tuple[int, int], color: str = "black") -
     return f":- {{ lit_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
 
 
-def avoid_rect(rect_r: int, rect_c: int, color: str = "black") -> str:
+def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
     """
     Generates a constraint to avoid rectangular patterned {color} cells.
 
     A grid rule should be defined first.
     """
-    rect_pattern = [f"grid(R + {r}, C + {c}), {color}(R + {r}, C + {c})" for r in range(rect_r) for c in range(rect_c)]
+    corner_r, corner_c = corner
+    corner_r = corner_r if corner_r is not None else "R"
+    corner_c = corner_c if corner_c is not None else "C"
+
+    rect_pattern = [
+        f"grid({corner_r} + {r}, {corner_c} + {c}), {color}({corner_r} + {r}, {corner_c} + {c})"
+        for r in range(rect_r)
+        for c in range(rect_c)
+    ]
     return f":- {', '.join(rect_pattern)}."
