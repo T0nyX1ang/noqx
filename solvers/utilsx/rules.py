@@ -115,7 +115,11 @@ def avoid_unknown_misaki(known_src_cells: Tuple[int, int], color: str = "black",
     """
 
     included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_src_cells)
-    return f":- {included}, grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1."  # pylint: disable=line-too-long
+
+    if not known_src_cells:
+        return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1."
+
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1, {included}."  # pylint: disable=line-too-long
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:

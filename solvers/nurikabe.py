@@ -38,6 +38,9 @@ def solve(E: Encoding) -> List:
         if isinstance(clue, int) or clue == "yellow":
             all_src.append((r, c))
 
+    if not all_src:
+        raise ValueError("No clues found.")
+
     for (r, c), clue in E.clues.items():
         if clue == "black":
             solver.add_program_line(f"black({r}, {c}).")
