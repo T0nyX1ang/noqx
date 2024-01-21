@@ -98,6 +98,15 @@ def count_adjacent(target: int, src_cell: Tuple[int, int], color: str = "black",
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} != {target}."
 
 
+def nori_adjacent(target: int = 1, color: str = "darkgray", adj_type: int = 4) -> str:
+    """
+    Generates a constraint for Norinori-styled puzzles.
+
+    A grid rule and an adjacent rule should be defined first.
+    """
+    return f":- grid(R1, C1), {color}(R1, C1), #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, R1, C1) }} != {target}."  # pylint: disable=line-too-long
+
+
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
     """
     Generates a constraint for unique {color} numbered cells in a row / column.

@@ -1533,7 +1533,10 @@ let elf_types = {
   nanro: NanroElf,
   ncells: IntElf(),
   nonogram: NonogramElf,
-  norinori: BorderElf,
+  norinori: DirectSum(
+    BorderElf,
+    BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] })
+  ),
   numberlink: InvertSolutionZOrder(IntElf()),
   nuribou: IntElf(),
   nurikabe: DirectSum(
