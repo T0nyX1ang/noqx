@@ -15,6 +15,9 @@ Extended logic puzzle solver of Noq.
   - [x] Kuromasu
   - [x] Nurikabe
   - [x] Kurotto
+  - [x] Norinori
+  - [x] Heyawake
+  - [x] Nurimisaki
 
 ## How to run locally
 
