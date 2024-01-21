@@ -219,7 +219,7 @@ def avoid_unknown_region(known_src_cells: Tuple[int, int], color: str = "black")
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
-def lit_up(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a rule to check the cells can be lit up with a source {color} cell.
 
@@ -234,11 +234,11 @@ def lit_up(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -
     return source_cell + "\n" + lit_propagation
 
 
-def count_lit_up(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
     """
     Generate a constraint to count the number of {color} cells lit up by a source cell.
 
-    A lit-up rule should be defined first.
+    A lit rule should be defined first.
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
