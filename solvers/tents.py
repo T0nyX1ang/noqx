@@ -11,6 +11,7 @@ from .utilsx.rules import (
     count_adjacent,
     display,
     grid,
+    identical_adjacent_map,
     shade_c,
 )
 from .utilsx.solutions import solver
@@ -30,12 +31,11 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=8))
     solver.add_program_line(avoid_adjacent(color="black", adj_type=8))
 
-    total_trees = 0
+    all_trees = []
     for (r, c), clue in E.clues.items():
         if clue == "e":
-            total_trees += 1
+            all_trees.append((r, c))
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(count_adjacent(1, color="black", adj_type=4, src_cell=(r, c)).replace("!=", "<"))
         elif clue == "n":
             solver.add_program_line(f"black({r}, {c}).")
         elif clue == "green":
@@ -47,7 +47,7 @@ def solve(E: Encoding) -> List:
     for r, num in E.left.items():
         solver.add_program_line(count(int(num), color="black", _type="row", _id=r))
 
-    solver.add_program_line(count(total_trees, color="black", _type="grid"))
+    solver.add_program_line(identical_adjacent_map(all_trees, color="black", adj_type=4))
     solver.add_program_line(display(color="black"))
     solver.solve()
 
