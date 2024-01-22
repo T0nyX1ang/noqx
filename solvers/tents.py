@@ -2,11 +2,7 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, MultiVar, at_most, require, sum_bools
-from .utils.encoding import Encoding
-from .utils.grids import get_surroundings, is_valid_coord
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.rules import (
     adjacent,
@@ -17,13 +13,13 @@ from .utilsx.rules import (
     grid,
     shade_c,
 )
-from .utilsx.solutions import rc_to_grid, solver
+from .utilsx.solutions import solver
 
 neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
@@ -64,4 +60,4 @@ def solve(E: Encoding) -> List:
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
