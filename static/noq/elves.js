@@ -1580,7 +1580,7 @@ let elf_types = {
   tapa: TapaElf,
   tatamibari: LetterElf("+-|"),
   tents: DirectSum(
-    IntElf(0, 99),
+    DirectSum(IntElf(0, 99), BgColorElf({o: ["green", "green"]})),
     ImageElf(
       {
         n: "tent",

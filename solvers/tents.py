@@ -7,6 +7,17 @@ from .utils.claspy import BoolVar, MultiVar, at_most, require, sum_bools
 from .utils.encoding import Encoding
 from .utils.grids import get_surroundings, is_valid_coord
 from .utils.solutions import get_all_grid_solutions
+from .utilsx.encoding import Encoding
+from .utilsx.rules import (
+    adjacent,
+    avoid_adjacent,
+    count,
+    count_adjacent,
+    display,
+    grid,
+    shade_c,
+)
+from .utilsx.solutions import rc_to_grid, solver
 
 neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
@@ -16,81 +27,40 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    # --- Validation ---
-    for x in set(E.top.values()).union(E.left.values()):
-        if not (x.isnumeric() or x == ""):
-            raise ValueError("Clues along the sides must be integers.")
-    for x in E.clues.values():
-        if x not in "ne":
-            raise ValueError("Clues inside the grid must be tents or trees.")
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type=8))
+    solver.add_program_line(avoid_adjacent(color="black", adj_type=8))
 
-    grid = [[MultiVar("n", "e", "") for c in range(E.C)] for r in range(E.R)]
+    total_trees = 0
+    for (r, c), clue in E.clues.items():
+        if clue == "e":
+            total_trees += 1
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(count_adjacent(1, color="black", adj_type=4, src_cell=(r, c)).replace("!=", "<"))
+        elif clue == "n":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
 
-    # For each coordinate of a tree, maintain a list of BoolVars for
-    # whether it is "connected to" its top, right, bottom, left.
-    tree_clues = {}
+    for c, num in E.top.items():
+        solver.add_program_line(count(int(num), color="black", _type="col", _id=c))
 
-    # --- Basic tent / tree rules ---
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) in E.clues:
-                value = E.clues[(r, c)]
-                # If tent/tree is provided, there must be a tent/tree there.
-                require(grid[r][c] == value)
-                # Bookkeeping for tree clues.
-                if value == "e":
-                    tree_clues[(r, c)] = [BoolVar() for i in range(4)]
-            else:
-                # If a cell is not provided as a clue, it cannot be a tree.
-                require(grid[r][c] != "e")
+    for r, num in E.left.items():
+        solver.add_program_line(count(int(num), color="black", _type="row", _id=r))
 
-    for (r, c), conns in tree_clues.items():
-        for i, (dy, dx) in enumerate(neighbor_offsets):
-            y, x = r + dy, c + dx
-            if is_valid_coord(E.R, E.C, y, x):
-                # If a tree is "connected" in some direction, there must be a tent there
-                require((grid[y][x] == "n") | ~conns[i])
-            else:
-                # If there's nothing in a certain direction, tree cannot be connected to it
-                require(~conns[i])
+    solver.add_program_line(count(total_trees, color="black", _type="grid"))
+    solver.add_program_line(display(color="black"))
+    solver.solve()
 
-    for conns in tree_clues.values():
-        # Each tree is connected to exactly 1 tent
-        require(sum_bools(1, conns))
+    for solution in solver.solutions:
+        for rc, color in solution.items():
+            if color == "black":
+                solution[rc] = "tent.png"
 
-    for r in range(E.R):
-        for c in range(E.C):
-            # If (r, c) has tent, none of surroundings can be tent.
-            require(
-                at_most(0, [grid[y][x] == "n" for (y, x) in get_surroundings(E.R, E.C, r, c)]) | (grid[r][c] != "n")
-            )
-            # If (r, c) has tent, there must be exactly one tree connected to it.
-            possible_tree_conns = []
-            for i, (dy, dx) in enumerate(neighbor_offsets):
-                y, x = r + dy, c + dx
-                if (y, x) in tree_clues:
-                    possible_tree_conns.append(tree_clues[(y, x)][(i + 2) % 4])
-            require(sum_bools(1, possible_tree_conns) | (grid[r][c] != "n"))
-
-    # Number of tents in cols / rows are correct.
-    for c, value in E.top.items():
-        if value != "":
-            require(sum_bools(int(value), [grid[r][c] == "n" for r in range(E.R)]))
-    for r, value in E.left.items():
-        if value != "":
-            require(sum_bools(int(value), [grid[r][c] == "n" for c in range(E.C)]))
-
-    # Create solution
-    def format_function(r: int, c: int) -> str:
-        if grid[r][c].value() == "n":
-            return "tent.png"
-        elif grid[r][c].value() == "e":
-            return "tree.png"
-        return ""
-
-    # The placement of trees and tents is all that matters;
-    # tree-tent connections are not considered for duplicate checks.
-    return get_all_grid_solutions(grid, format_function=format_function)
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
