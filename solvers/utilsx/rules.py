@@ -1,5 +1,6 @@
 """Utility for general clingo rules."""
 
+import itertools
 from typing import List, Literal, Tuple, Union
 
 
@@ -112,19 +113,38 @@ def nori_adjacent(target: int = 1, color: str = "darkgray", adj_type: int = 4) -
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != {target}."  # pylint: disable=line-too-long
 
 
-def avoid_unknown_misaki(known_src_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to avoid dead ends that does not have a record.
 
     A grid rule and an adjacent rule should be defined first.
     """
 
-    included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_src_cells)
+    included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_cells)
 
-    if not known_src_cells:
+    if not known_cells:
         return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1."
 
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1, {included}."  # pylint: disable=line-too-long
+
+
+def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate n * (n - 1) / 2 constraints and n rules to only accept identical adjacent cell maps.
+
+    A grid rule and an adjacent rule should be defined first.
+    n is the number of known source cells.
+    """
+
+    rules = "\n".join(
+        f"{{ map_{r}_{c}(R, C): adj_{adj_type}(R, C, {r}, {c}), {color}(R, C) }} = 1 :- grid({r}, {c})."
+        for r, c in known_cells
+    )  # n rules are generated
+    constraints = "\n".join(
+        f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C). "
+        for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
+    )  # n * (n - 1) / 2 constraints are generated
+    return rules + "\n" + constraints
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
@@ -224,7 +244,7 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -
     return f":- {{ region_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
 
 
-def avoid_unknown_region(known_src_cells: Tuple[int, int], color: str = "black") -> str:
+def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> str:
     """
     Generate a constraint to avoid regions that does not derive from a source cell.
 
@@ -233,7 +253,7 @@ def avoid_unknown_region(known_src_cells: Tuple[int, int], color: str = "black")
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     included = ""
-    for src_r, src_c in known_src_cells:
+    for src_r, src_c in known_cells:
         included += f"not region_{src_r}_{src_c}_{color_escape}(R, C), "
 
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
