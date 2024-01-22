@@ -4,8 +4,30 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import avoid_rect, count, display, grid, shade_c, unique_linecolor
+from .utilsx.rules import avoid_rect, count, display, grid, shade_c
 from .utilsx.solutions import solver
+
+
+def unique_linecolor(colors: List[str], _type: str = "row") -> str:
+    """
+    Generates a constraint for unique row / column in a grid.
+    At least one pair of cells in the same row / column should have different colors.
+
+    A grid rule should be defined first.
+    """
+    if _type == "row":
+        colors_row = ", ".join(
+            f"#count {{ C : grid(R1, C), grid(R2, C), {color}(R1, C), not {color}(R2, C) }} = 0" for color in colors
+        ).replace("not not ", "")
+        return f":- grid(R1, _), grid(R2, _), R1 < R2, {colors_row}."
+
+    if _type == "col":
+        colors_col = ", ".join(
+            f"#count {{ R : grid(R, C1), grid(R, C2), {color}(R, C1), not {color}(R, C2) }} = 0" for color in colors
+        ).replace("not not ", "")
+        return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
+
+    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
 def encode(string: str) -> Encoding:
