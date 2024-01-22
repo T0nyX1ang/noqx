@@ -57,7 +57,7 @@ def count(target: int, color: str = "black", _type: str = "grid") -> str:
     if _type.startswith("area"):
         return f":- #count {{ R, C : {_type}(R, C), {color}(R, C) }} != {target}."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area_id'.")
+    raise ValueError("Invalid area type, must be one of 'grid', 'row', 'col', 'area_id'.")
 
 
 def adjacent(_type: int = 4) -> str:
@@ -76,7 +76,7 @@ def adjacent(_type: int = 4) -> str:
         res += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return res
 
-    raise ValueError("Invalid type, must be one of '4', '8'.")
+    raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
 
 def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
@@ -134,7 +134,7 @@ def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> st
     if _type == "col":
         return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
-    raise ValueError("Invalid type, must be one of 'row', 'col'.")
+    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
 def unique_linecolor(colors: List[str], _type: Literal["row", "col"] = "row") -> str:
@@ -156,7 +156,7 @@ def unique_linecolor(colors: List[str], _type: Literal["row", "col"] = "row") ->
         ).replace("not not ", "")
         return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
 
-    raise ValueError("Invalid type, must be one of 'row', 'col'.")
+    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
 def reachable(color: str = "black", adj_type: int = 4) -> str:
@@ -245,7 +245,17 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
     src_r, src_c = src_cell
     tag = f"lit_{src_r}_{src_c}_{color_escape}"
     source_cell = f"{tag}({src_r}, {src_c})."
-    lit_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C), (R - {src_r}) * (C - {src_c}) == 0."  # pylint: disable=line-too-long
+
+    if adj_type == 4:
+        lit_constraint = f"(R - {src_r}) * (C - {src_c}) == 0"
+    elif adj_type == 8:
+        lit_constraint = (
+            f"(R - {src_r}) * (C - {src_c}) * (R - {src_r} - C + {src_c}) * (R - {src_r} + C - {src_c}) == 0"
+        )
+    else:
+        raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
+
+    lit_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C), {lit_constraint}."
     return source_cell + "\n" + lit_propagation
 
 
