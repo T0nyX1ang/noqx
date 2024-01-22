@@ -1420,7 +1420,10 @@ class CustomElf extends Elf {
 
 let elf_types = {
   akari: AkariElf,
-  aqre: InvertSolutionZOrder(IntBordersElf()),
+  aqre: DirectSum(
+    InvertSolutionZOrder(IntBordersElf()),
+    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false)
+  ),
   aquarium: IntBordersElf(),
   balanceloop: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(

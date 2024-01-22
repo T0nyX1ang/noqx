@@ -2,41 +2,58 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.regions import full_bfs
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.regions import full_bfs
+from .utilsx.rules import grid, area, shade_c, count, connected, reachable, avoid_rect, adjacent, display
+from .utilsx.solutions import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    set_max_val(E.R * E.C)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(reachable(color="darkgray"))
+    solver.add_program_line(connected(color="darkgray"))
+    solver.add_program_line(avoid_rect(4, 1, color="darkgray"))
+    solver.add_program_line(avoid_rect(1, 4, color="darkgray"))
+    solver.add_program_line(avoid_rect(4, 1, color="not darkgray"))
+    solver.add_program_line(avoid_rect(1, 4, color="not darkgray"))
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-    shading_solver.black_connectivity()
-    grid = shading_solver.grid
+    clues = {}  # remove color-relevant clues here
+    for (r, c), clue in E.clues.items():
+        if isinstance(clue, list):
+            if clue[1] == "darkgray":
+                solver.add_program_line(f"darkgray({r}, {c}).")
+            elif clue[1] == "green":
+                solver.add_program_line(f"not darkgray({r}, {c}).")
+            clues[(r, c)] = int(clue[0])
+        elif clue == "darkgray":
+            solver.add_program_line(f"darkgray({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not darkgray({r}, {c}).")
+        else:
+            clues[(r, c)] = int(clue)
 
-    # GIVEN NUMBERS ARE SATISFIED
-    if E.clues:
-        for coord in (clue_regions := full_bfs(E.R, E.C, E.edge_ids, clues=E.clues)):
-            require(sum_bools(E.clues[coord], [grid[other] for other in clue_regions[coord]]))
+    if clues:
+        areas = full_bfs(E.R, E.C, E.edges, clues)
+        for i, (rc, ar) in enumerate(areas.items()):
+            solver.add_program_line(area(i, src_cells=ar))
+            solver.add_program_line(count(clues[rc], color="darkgray", _type=f"area_{i}"))
 
-    # NO FOUR IN A ROW
-    for i in range(E.R):
-        for j in range(E.C):
-            if i < E.R - 3:
-                require(grid[(i, j)] | grid[(i + 1, j)] | grid[(i + 2, j)] | grid[(i + 3, j)])
-                require((~grid[(i, j)]) | (~grid[(i + 1, j)]) | (~grid[(i + 2, j)]) | (~grid[(i + 3, j)]))
-            if j < E.C - 3:
-                require(grid[(i, j)] | grid[(i, j + 1)] | grid[(i, j + 2)] | grid[(i, j + 3)])
-                require((~grid[(i, j)]) | (~grid[(i, j + 1)]) | (~grid[(i, j + 2)]) | (~grid[(i, j + 3)]))
+    solver.add_program_line(display(color="darkgray"))
 
-    return shading_solver.solutions(shaded_color="darkgray")
+    print(solver.program)
+
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
