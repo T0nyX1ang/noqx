@@ -1,7 +1,7 @@
 """Utility for general clingo rules."""
 
 import itertools
-from typing import List, Literal, Tuple, Union
+from typing import List, Tuple, Union
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
@@ -141,54 +141,21 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def reachable(color: str = "black", adj_type: int = 4) -> str:
+def connected(color: str = "black", adj_type: int = 4, area_id: int = None) -> str:
     """
-    Generate a rule to check the reachability of {color} cells.
+    Generate a constraint to check the reachability of {color} cells.
 
     An adjacent rule and a grid rule should be defined first.
     """
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    tag = f"reachable_{color_escape}"
-    reachable_source = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
-    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C)."
-    return reachable_source + "\n" + reachable_propagation
+    tag = f"reachable_{color_escape}" + f"_area_{area_id}" * (area_id is not None)
+    _type = f"area_{area_id}" if area_id is not None else "grid"
 
-
-def connected(color: str = "black") -> str:
-    """
-    Generate a constraint to check the connectivity of {color} cells.
-
-    A grid rule and a reachable rule should be defined first.
-    """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    return f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
-
-
-def reachable_in_area(_id: int, color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a rule to check the reachability of {color} cells.
-
-    An adjacent rule and an area rule should be defined first.
-    """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    tag = f"reachable_{color_escape}_area_{_id}"
-    reachable_source = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), area_{_id}(R1, C1) }}."
-    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C), area_{_id}(R, C), area_{_id}(R1, C1)."  # pylint: disable=line-too-long
-    return reachable_source + "\n" + reachable_propagation
-
-
-def connected_in_area(_id: int, color: str = "black") -> str:
-    """
-    Generate a constraint to check the connectivity of {color} cells.
-
-    An area rule and a reachable rule should be defined first.
-    """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    return f":- area_{_id}(R, C), {color}(R, C), not reachable_{color_escape}_area_{_id}(R, C)."
+    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), {_type}(R1, C1) }}."
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {_type}(R, C), {color}(R, C)."
+    constraint = f":- {_type}(R, C), {color}(R, C), not {tag}(R, C)."
+    return initial + "\n" + propagation + "\n" + constraint
 
 
 def region(

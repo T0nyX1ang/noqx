@@ -12,7 +12,6 @@ from .utilsx.rules import (
     count_region,
     display,
     grid,
-    reachable,
     region,
     shade_c,
 )
@@ -29,7 +28,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent())
-    solver.add_program_line(reachable(color="black"))
     solver.add_program_line(connected(color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
 

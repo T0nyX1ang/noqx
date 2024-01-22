@@ -10,11 +10,10 @@ from .utilsx.rules import (
     adjacent,
     area,
     avoid_rect,
-    connected_in_area,
+    connected,
     count,
     display,
     grid,
-    reachable_in_area,
     shade_c,
 )
 from .utilsx.solutions import solver
@@ -72,8 +71,7 @@ def solve(E: Encoding) -> List:
         if not tag:
             solver.add_program_line(count(1, op="ge", color="darkgray", _type="area", _id=i))
 
-        solver.add_program_line(reachable_in_area(_id=i, color="darkgray"))
-        solver.add_program_line(connected_in_area(_id=i, color="darkgray"))
+        solver.add_program_line(connected(area_id=i, color="darkgray"))
 
     for r in range(E.R):
         borders_in_row = [c for c in range(1, E.C) if (r, c, Direction.LEFT) in E.edges]

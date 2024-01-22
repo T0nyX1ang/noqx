@@ -12,7 +12,6 @@ from .utilsx.rules import (
     display,
     grid,
     lit,
-    reachable,
     shade_c,
 )
 from .utilsx.solutions import solver
@@ -28,7 +27,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent(color="black"))
-    solver.add_program_line(reachable(color="not black"))
     solver.add_program_line(connected(color="not black"))
 
     for (r, c), clue in E.clues.items():

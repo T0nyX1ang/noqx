@@ -10,7 +10,6 @@ from .utilsx.rules import (
     connected,
     display,
     grid,
-    reachable,
     shade_c,
 )
 from .utilsx.solutions import rc_to_grid, solver
@@ -25,10 +24,8 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(reachable(color="black"))
     solver.add_program_line(connected(color="black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="black"))
-    solver.add_program_line(reachable(color="not black"))
     solver.add_program_line(connected(color="not black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="not black"))
 

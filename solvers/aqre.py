@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.regions import full_bfs
-from .utilsx.rules import grid, area, shade_c, count, connected, reachable, avoid_rect, adjacent, display
+from .utilsx.rules import grid, area, shade_c, count, connected, avoid_rect, adjacent, display
 from .utilsx.solutions import solver
 
 
@@ -18,7 +18,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="darkgray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(reachable(color="darkgray"))
     solver.add_program_line(connected(color="darkgray"))
     solver.add_program_line(avoid_rect(4, 1, color="darkgray"))
     solver.add_program_line(avoid_rect(1, 4, color="darkgray"))

@@ -15,7 +15,6 @@ from .utilsx.rules import (
     count,
     display,
     grid,
-    reachable,
     shade_c,
 )
 from .utilsx.solutions import solver
@@ -32,7 +31,6 @@ def solve(E: Encoding) -> List:
 
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent(color="darkgray"))
-    solver.add_program_line(reachable(color="not darkgray"))
     solver.add_program_line(connected(color="not darkgray"))
 
     clues = {}  # remove color-relevant clues here

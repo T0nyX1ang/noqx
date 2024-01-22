@@ -10,7 +10,6 @@ from .utilsx.rules import (
     connected,
     display,
     grid,
-    reachable,
     shade_c,
     unique_num,
 )
@@ -29,7 +28,6 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(unique_num(color="not black", _type="col"))
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent())
-    solver.add_program_line(reachable(color="not black"))
     solver.add_program_line(connected(color="not black"))
 
     for (r, c), clue in E.clues.items():

@@ -13,7 +13,6 @@ from .utilsx.rules import (
     display,
     grid,
     lit,
-    reachable,
     shade_c,
 )
 from .utilsx.solutions import solver
@@ -43,7 +42,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent())
-    solver.add_program_line(reachable(color="not black"))
     solver.add_program_line(connected(color="not black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
