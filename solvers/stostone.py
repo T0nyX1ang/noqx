@@ -16,9 +16,19 @@ from .utilsx.rules import (
     grid,
     reachable_in_area,
     shade_c,
-    valid_stostone,
 )
 from .utilsx.solutions import solver
+
+
+def valid_stostone(color: str = "black") -> str:
+    """
+    Generate a constraint to enforce a valid stostone dropping.
+
+    A grid rule should be defined first.
+    """
+    below_C = f"grid(R, C), {color}(R, C), #count {{ R1: grid(R1, C), {color}(R1, C), R1 < R }} = BC"
+    below_C1 = f"grid(R, C + 1), {color}(R, C + 1), #count {{ R1: grid(R1, C + 1), {color}(R1, C + 1), R1 < R }} = BC1"
+    return f":- {below_C}, {below_C1}, BC != BC1."
 
 
 def encode(string: str) -> Encoding:

@@ -5,8 +5,17 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.regions import full_bfs
-from .utilsx.rules import adjacent, area, count, display, grid, nori_adjacent, shade_c
+from .utilsx.rules import adjacent, area, count, display, grid, shade_c
 from .utilsx.solutions import solver
+
+
+def nori_adjacent(color: str = "darkgray", adj_type: int = 4) -> str:
+    """
+    Generates a constraint for Norinori puzzles.
+
+    A grid rule and an adjacent rule should be defined first.
+    """
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
 def encode(string: str) -> Encoding:

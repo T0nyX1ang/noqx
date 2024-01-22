@@ -108,30 +108,6 @@ def count_adjacent(
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
 
 
-def nori_adjacent(color: str = "darkgray", adj_type: int = 4) -> str:
-    """
-    Generates a constraint for Norinori puzzles.
-
-    A grid rule and an adjacent rule should be defined first.
-    """
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
-
-
-def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to avoid dead ends that does not have a record.
-
-    A grid rule and an adjacent rule should be defined first.
-    """
-
-    included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_cells)
-
-    if not known_cells:
-        return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1."
-
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1, {included}."  # pylint: disable=line-too-long
-
-
 def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
@@ -148,17 +124,6 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
         for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
     )  # n * (n - 1) / 2 constraints are generated
     return rules + "\n" + constraints
-
-
-def valid_stostone(color: str = "black") -> str:
-    """
-    Generate a constraint to enforce a valid stostone dropping.
-
-    A grid rule should be defined first.
-    """
-    below_C = f"grid(R, C), {color}(R, C), #count {{ R1: grid(R1, C), {color}(R1, C), R1 < R }} = BC"
-    below_C1 = f"grid(R, C + 1), {color}(R, C + 1), #count {{ R1: grid(R1, C + 1), {color}(R1, C + 1), R1 < R }} = BC1"
-    return f":- {below_C}, {below_C1}, BC != BC1."
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
