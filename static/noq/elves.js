@@ -1575,7 +1575,10 @@ let elf_types = {
   spiralgalaxies: SpiralGalaxiesElf,
   starbattle: BorderElf,
   statuepark: CircleElf,
-  stostone: IntBordersElf(),
+  stostone: DirectSum(
+    IntBordersElf(),
+    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false)
+  ),
   sudoku: SudokuElf,
   tapa: TapaElf,
   tatamibari: LetterElf("+-|"),
