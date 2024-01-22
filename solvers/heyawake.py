@@ -50,8 +50,8 @@ def solve(E: Encoding) -> List:
         else:
             clues[(r, c)] = int(clue)
 
-    areas = full_bfs(E.R, E.C, E.edges, clues)
     if clues:
+        areas = full_bfs(E.R, E.C, E.edges, clues)
         for i, (rc, ar) in enumerate(areas.items()):
             solver.add_program_line(area(i, src_cells=ar))
             solver.add_program_line(count(clues[rc], color="darkgray", _type=f"area_{i}"))
