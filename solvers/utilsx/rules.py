@@ -3,6 +3,8 @@
 import itertools
 from typing import List, Literal, Tuple, Union
 
+rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+
 
 def display(color: Union[str, List[str]] = "black") -> str:
     """Generates a rule for displaying the {color} cells."""
@@ -39,14 +41,13 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def count(target: int, color: str = "black", _type: str = "grid", _id: int = None, _op: str = "eq") -> str:
+def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid", _id: int = None) -> str:
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
 
     A grid rule should be defined first.
     """
-    rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
-    op = rev_op_dict[_op]
+    op = rev_op_dict[op]
 
     if _id is None:
         _id = "R" if _type == "row" else "C" if _type == "col" else None
@@ -94,23 +95,26 @@ def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
-def count_adjacent(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def count_adjacent(
+    target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4
+) -> str:
     """
     Generates a constraint for counting the number of {color} cells adjacent to a cell.
 
     An adjacent rule should be defined first.
     """
     src_r, src_c = src_cell
-    return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} != {target}."
+    op = rev_op_dict[op]
+    return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
 
 
-def nori_adjacent(target: int = 1, color: str = "darkgray", adj_type: int = 4) -> str:
+def nori_adjacent(color: str = "darkgray", adj_type: int = 4) -> str:
     """
-    Generates a constraint for Norinori-styled puzzles.
+    Generates a constraint for Norinori puzzles.
 
     A grid rule and an adjacent rule should be defined first.
     """
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != {target}."  # pylint: disable=line-too-long
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
 def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
@@ -130,10 +134,9 @@ def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj
 
 def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
-    Generate n * (n - 1) / 2 constraints and n rules to only accept identical adjacent cell maps.
+    Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
 
-    A grid rule and an adjacent rule should be defined first.
-    n is the number of known source cells.
+    A grid rule and an adjacent rule should be defined first. n is the number of known source cells.
     """
 
     rules = "\n".join(
@@ -145,6 +148,17 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
         for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
     )  # n * (n - 1) / 2 constraints are generated
     return rules + "\n" + constraints
+
+
+def valid_stostone(color: str = "black") -> str:
+    """
+    Generate a constraint to enforce a valid stostone dropping.
+
+    A grid rule should be defined first.
+    """
+    below_C = f"grid(R, C), {color}(R, C), #count {{ R1: grid(R1, C), {color}(R1, C), R1 < R }} = BC"
+    below_C1 = f"grid(R, C + 1), {color}(R, C + 1), #count {{ R1: grid(R1, C + 1), {color}(R1, C + 1), R1 < R }} = BC1"
+    return f":- {below_C}, {below_C1}, BC != BC1."
 
 
 def unique_num(color: str = "black", _type: Literal["row", "col"] = "row") -> str:
@@ -207,6 +221,31 @@ def connected(color: str = "black") -> str:
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     return f":- grid(R, C), {color}(R, C), not reachable_{color_escape}(R, C)."
+
+
+def reachable_in_area(_id: int, color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a rule to check the reachability of {color} cells.
+
+    An adjacent rule and an area rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    tag = f"reachable_{color_escape}_area_{_id}"
+    reachable_source = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), area_{_id}(R1, C1) }}."
+    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C), area_{_id}(R, C), area_{_id}(R1, C1)."  # pylint: disable=line-too-long
+    return reachable_source + "\n" + reachable_propagation
+
+
+def connected_in_area(_id: int, color: str = "black") -> str:
+    """
+    Generate a constraint to check the connectivity of {color} cells.
+
+    An area rule and a reachable rule should be defined first.
+    """
+
+    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    return f":- area_{_id}(R, C), {color}(R, C), not reachable_{color_escape}_area_{_id}(R, C)."
 
 
 def region(
@@ -284,7 +323,7 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
     return source_cell + "\n" + lit_propagation
 
 
-def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+def count_lit(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black") -> str:
     """
     Generate a constraint to count the number of {color} cells lit up by a source cell.
 
@@ -293,7 +332,8 @@ def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black") -> s
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    return f":- {{ lit_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
+    op = rev_op_dict[op]
+    return f":- {{ lit_{src_r}_{src_c}_{color_escape}(R, C) }} {op} {target}."
 
 
 def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
