@@ -38,26 +38,29 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def count(target: int, color: str = "black", _type: str = "grid") -> str:
+def count(target: int, color: str = "black", _type: str = "grid", _id: int = None) -> str:
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
 
     A grid rule should be defined first.
     """
 
+    if _id is None:
+        _id = "R" if _type == "row" else "C" if _type == "col" else None
+
     if _type == "grid":
         return f":- #count {{ grid(R, C) : {color}(R, C) }} != {target}."
 
     if _type == "row":
-        return f":- grid(R, _), #count {{ C : {color}(R, C) }} != {target}."
+        return f":- grid({_id}, _), #count {{ C : {color}({_id}, C) }} != {target}."
 
     if _type == "col":
-        return f":- grid(_, C), #count {{ R : {color}(R, C) }} != {target}."
+        return f":- grid(_, {_id}), #count {{ R : {color}(R, {_id}) }} != {target}."
 
-    if _type.startswith("area"):
-        return f":- #count {{ R, C : {_type}(R, C), {color}(R, C) }} != {target}."
+    if _type == "area":
+        return f":- #count {{ R, C : area_{_id}(R, C), {color}(R, C) }} != {target}."
 
-    raise ValueError("Invalid area type, must be one of 'grid', 'row', 'col', 'area_id'.")
+    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
 
 
 def adjacent(_type: int = 4) -> str:

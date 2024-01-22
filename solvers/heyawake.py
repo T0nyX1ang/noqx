@@ -53,8 +53,8 @@ def solve(E: Encoding) -> List:
     if clues:
         areas = full_bfs(E.R, E.C, E.edges, clues)
         for i, (rc, ar) in enumerate(areas.items()):
-            solver.add_program_line(area(i, src_cells=ar))
-            solver.add_program_line(count(clues[rc], color="darkgray", _type=f"area_{i}"))
+            solver.add_program_line(area(_id=i, src_cells=ar))
+            solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
 
     for r in range(E.R):
         borders_in_row = [c for c in range(1, E.C) if (r, c, Direction.LEFT) in E.edges]

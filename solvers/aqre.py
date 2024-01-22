@@ -43,13 +43,10 @@ def solve(E: Encoding) -> List:
     if clues:
         areas = full_bfs(E.R, E.C, E.edges, clues)
         for i, (rc, ar) in enumerate(areas.items()):
-            solver.add_program_line(area(i, src_cells=ar))
-            solver.add_program_line(count(clues[rc], color="darkgray", _type=f"area_{i}"))
+            solver.add_program_line(area(_id=i, src_cells=ar))
+            solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
 
     solver.add_program_line(display(color="darkgray"))
-
-    print(solver.program)
-
     solver.solve()
 
     return solver.solutions

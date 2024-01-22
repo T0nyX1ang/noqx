@@ -23,8 +23,8 @@ def solve(E: Encoding) -> List:
 
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
-        solver.add_program_line(area(i, src_cells=ar))
-        solver.add_program_line(count(2, color="darkgray", _type=f"area_{i}"))
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(count(2, color="darkgray", _type="area", _id=i))
 
     for (r, c), clue in E.clues.items():
         if clue == "darkgray":
