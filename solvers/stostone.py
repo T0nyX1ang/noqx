@@ -15,7 +15,8 @@ from .utils.claspy import (
     sum_bools,
 )
 from .utils.encoding import Encoding
-from .utils.regions import full_bfs, get_neighbors
+from .utils.grids import get_neighbors
+from .utils.regions import full_bfs
 from .utils.shading import RectangularGridShadingSolver
 
 
