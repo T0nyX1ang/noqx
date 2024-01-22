@@ -593,7 +593,10 @@ function BgColorElf(
           this.puzzle_elt.style.backgroundColor = "";
           this.puzzle_elt.style.color = "";
         } else {
-          if (resetInnerHtml) this.puzzle_elt.innerHTML = "";
+          if (resetInnerHtml) {
+            this.puzzle_elt.innerHTML = "";
+            this.puzzle_elt.style.backgroundImage = "";
+          }
           this.puzzle_elt.style.backgroundColor = bgColor;
           this.puzzle_elt.style.color = innerColor;
         }
@@ -603,6 +606,7 @@ function BgColorElf(
         !del_keys.includes(key)
       ) {
         this.puzzle_elt.innerHTML = "";
+        this.puzzle_elt.style.backgroundImage = "";
       }
     }
 
