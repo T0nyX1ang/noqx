@@ -21,7 +21,7 @@ def grid(rows: int, cols: int) -> str:
 
 def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
     """Generates a rule for defining an area."""
-    return "\n".join(f"area_{_id}({r}, {c})." for r, c in src_cells)
+    return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
 
 def shade_c(color: str = "black") -> str:
@@ -62,7 +62,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
         return f":- grid(_, {_id}), #count {{ R : {color}(R, {_id}) }} {op} {target}."
 
     if _type == "area":
-        return f":- #count {{ R, C : area_{_id}(R, C), {color}(R, C) }} {op} {target}."
+        return f":- #count {{ R, C : area({_id}, R, C), {color}(R, C) }} {op} {target}."
 
     raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
 
@@ -84,6 +84,16 @@ def adjacent(_type: int = 4) -> str:
         return res
 
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
+
+
+def area_adjacent(adj_type: int = 4) -> str:
+    """
+    Generate a rule for getting the adjacent areas.
+
+    An adjacent rule should be defined first.
+    """
+
+    return f"area_adj_{adj_type}(A, A1) :- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
 
 
 def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
@@ -150,11 +160,11 @@ def connected(color: str = "black", adj_type: int = 4, area_id: int = None) -> s
 
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     tag = f"reachable_{color_escape}" + f"_area_{area_id}" * (area_id is not None)
-    _type = f"area_{area_id}" if area_id is not None else "grid"
+    _type = f"area({area_id}, " if area_id is not None else "grid("  # sort of messy code here, but it works
 
-    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), {_type}(R1, C1) }}."
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {_type}(R, C), {color}(R, C)."
-    constraint = f":- {_type}(R, C), {color}(R, C), not {tag}(R, C)."
+    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), {_type}R1, C1) }}."
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {_type}R, C), {color}(R, C)."
+    constraint = f":- {_type}R, C), {color}(R, C), not {tag}(R, C)."
     return initial + "\n" + propagation + "\n" + constraint
 
 
