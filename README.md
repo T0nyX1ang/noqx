@@ -22,6 +22,7 @@ Extended logic puzzle solver of Noq.
   - [x] Tents
   - [x] Stostone
   - [x] Shimaguni
+  - [x] Aquarium
 
 ## How to run locally
 
