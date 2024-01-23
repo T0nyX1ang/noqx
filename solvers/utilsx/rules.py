@@ -105,6 +105,15 @@ def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
+def unique_area_borders(color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generates a constraint to avoid same {color} cells on the both sides of an area.
+
+    An adjacent rule and an area rule should be defined first.
+    """
+    return f":- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
+
+
 def count_adjacent(
     target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4
 ) -> str:

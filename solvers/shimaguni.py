@@ -3,19 +3,18 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.borders import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.regions import full_bfs
 from .utilsx.rules import (
     adjacent,
     area,
     area_adjacent,
-    avoid_rect,
     connected,
     count,
     display,
     grid,
     shade_c,
+    unique_area_borders,
 )
 from .utilsx.solutions import solver
 
@@ -70,16 +69,7 @@ def solve(E: Encoding) -> List:
 
         solver.add_program_line(connected(area_id=i, color="darkgray"))
 
-    for r in range(E.R):
-        borders_in_row = [c for c in range(1, E.C) if (r, c, Direction.LEFT) in E.edges]
-        for i in borders_in_row:
-            solver.add_program_line(avoid_rect(1, 2, color="darkgray", corner=(r, i - 1)))
-
-    for c in range(E.C):
-        borders_in_col = [r for r in range(1, E.R) if (r, c, Direction.TOP) in E.edges]
-        for i in borders_in_col:
-            solver.add_program_line(avoid_rect(2, 1, color="darkgray", corner=(i - 1, c)))
-
+    solver.add_program_line(unique_area_borders(color="darkgray"))
     solver.add_program_line(area_adjacent())
     solver.add_program_line(adjacent_area_different_size(color="darkgray"))
     solver.add_program_line(display(color="darkgray"))
