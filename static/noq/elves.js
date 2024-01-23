@@ -1569,7 +1569,10 @@ let elf_types = {
   rippleeffect: IntBordersElf(),
   shakashaka: AkariElf,
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
-  shimaguni: InvertSolutionZOrder(IntBordersElf()),
+  shimaguni: DirectSum(
+    InvertSolutionZOrder(IntBordersElf()),
+    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false)
+  ),
   skyscrapers: DirectSum(QuestionMarkElf, IntElf(), "first"),
   slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("sw"), "first"),
   spiralgalaxies: SpiralGalaxiesElf,
