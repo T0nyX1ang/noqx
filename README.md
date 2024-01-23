@@ -18,6 +18,10 @@ Extended logic puzzle solver of Noq.
   - [x] Norinori
   - [x] Heyawake
   - [x] Nurimisaki
+  - [x] Aqre
+  - [x] Tents
+  - [x] Stostone
+  - [x] Shimaguni
 
 ## How to run locally
 
