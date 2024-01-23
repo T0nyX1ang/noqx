@@ -1428,7 +1428,10 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false)
   ),
-  aquarium: IntBordersElf(),
+  aquarium: DirectSum(
+    IntBordersElf(),
+    BgColorElf({ x: ["lightblue", "lightblue"], o: ["darkgray", "darkgray"] })
+  ),
   balanceloop: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(
     ImageElf(
