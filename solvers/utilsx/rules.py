@@ -3,6 +3,8 @@
 import itertools
 from typing import List, Tuple, Union
 
+from .shapes import OMINOES, get_variants
+
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
 
@@ -22,6 +24,24 @@ def grid(rows: int, cols: int) -> str:
 def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
     """Generates a rule for defining an area."""
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
+
+
+def omino(num: int = 4, _types: List[str] = None) -> str:
+    """Generates a rule for defining omino types."""
+    if _types is None:
+        _types = list(OMINOES[num].keys())
+
+    data = []
+
+    for omino_type in _types:
+        omino_shape = OMINOES[num][omino_type]
+        omino_variants = get_variants(omino_shape, allow_rotations=True, allow_reflections=True)
+
+        for i, variant in enumerate(omino_variants):
+            for dr, dc in variant:
+                data.append(f'omino_{num}("{omino_type}", {i}, {dr}, {dc}).')
+
+    return "\n".join(data)
 
 
 def shade_c(color: str = "black") -> str:

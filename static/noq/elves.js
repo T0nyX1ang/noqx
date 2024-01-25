@@ -1503,7 +1503,10 @@ let elf_types = {
     IntElf(1, 99),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
-  lits: BorderElf,
+  lits: DirectSum(
+    BorderElf,
+    BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] })
+  ),
   magnets: MagnetsElf,
   masyu: CircleElf,
   minesweeper: DirectSum(
