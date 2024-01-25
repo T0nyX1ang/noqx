@@ -26,7 +26,10 @@ def area_adjacent_with_color(adj_type: int = 4, color: str = "black") -> str:
     An adjacent rule should be defined first.
     """
 
-    return f"area_adj_{adj_type}_{color}(A, A1) :- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
+    return (
+        f"area_adj_{adj_type}_{color}(A, A1) :- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), "
+        + f"adj_{adj_type}(R, C, R1, C1), A < A1."
+    )
 
 
 def valid_omino(num: int = 4, color: str = "black"):
@@ -48,7 +51,10 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
 
     An area rule, an omino rule and an area adjacent rule should be defined first.
     """
-    return f":- area_adj_{adj_type}_{color}(A, A1), valid_omino_{num}(A, T, R, C), valid_omino_{num}(A1, T1, R1, C1), T = T1, A < A1."
+    return (
+        f":- area_adj_{adj_type}_{color}(A, A1), A < A1, "
+        + f"valid_omino_{num}(A, T, _, _), valid_omino_{num}(A1, T1, _, _), T = T1."
+    )
 
 
 def encode(string: str) -> Encoding:
