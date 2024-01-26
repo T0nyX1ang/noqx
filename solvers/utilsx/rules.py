@@ -299,9 +299,11 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
         rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
     else:
         rect_pattern = [
-            f"grid({corner_r} + {r}, {corner_c} + {c}), {color}({corner_r} + {r}, {corner_c} + {c})"
+            f"{color}({corner_r} + {r}, {corner_c} + {c})"
             for r in range(rect_r)
             for c in range(rect_c)
         ]
+        rect_pattern.append(f"grid({corner_r}, {corner_c})")
+        rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
     return f":- {', '.join(rect_pattern)}."
