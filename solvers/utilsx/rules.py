@@ -1,27 +1,18 @@
 """Utility for general clingo rules."""
 
 import itertools
-from typing import List, Tuple, Union
+from typing import Any, List, Tuple, Union
 
 from .shapes import OMINOES, get_variants
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
 
-def tag_encode(name: str, _type: int = None, color: str = "black", src_cell: Tuple[int, int] = (None, None)) -> str:
+def tag_encode(name: str, *data: Any) -> str:
     """Encode a valid tag predicate without spaces or hyphens."""
     tag_data = [name]
-
-    if _type is not None:
-        tag_data.append(str(_type))
-
-    src_r, src_c = src_cell
-    if src_r is not None and src_c is not None:
-        tag_data.append(str(src_r))
-        tag_data.append(str(src_c))
-
-    if color is not None:
-        tag_data.append(color.replace("-", "_").replace(" ", "_"))
+    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
+        tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
 
     return "_".join(tag_data)
 
@@ -142,7 +133,7 @@ def area_adjacent(adj_type: int = 4, color: str = None) -> str:
     area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
     if color is not None:
         area_adj += f", {color}(R, C), {color}(R1, C1)"
-        return f"{tag_encode('area_adj', _type=adj_type, color=color)}(A, A1) :- {area_adj}."
+        return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
     return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
 
 
@@ -207,7 +198,7 @@ def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> s
 
     An adjacent rule and a grid fact should be defined first.
     """
-    tag = tag_encode("reachable", _type=adj_type, color=color)
+    tag = tag_encode("reachable", adj_type, color)
 
     if _type == "grid":
         initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
@@ -230,7 +221,7 @@ def connected_parts(color: str = "black", adj_type: int = 4) -> str:
 
     An adjacent rule and a grid fact should be defined first.
     """
-    tag = tag_encode("reachable", _type=adj_type, color=color)
+    tag = tag_encode("reachable", adj_type, color)
     initial = f"{tag}(R0, C0, R, C) :- grid(R0, C0), {color}(R0, C0), R = R0, C = C0."
     propagation = (
         f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
@@ -245,7 +236,7 @@ def count_connected_parts(target: int, color: str = "black", adj_type: int = 4, 
     A reachable rule should be defined first.
     """
     op = rev_op_dict[op]
-    tag = tag_encode("reachable", _type=adj_type, color=color)
+    tag = tag_encode("reachable", adj_type, color)
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} {op} {target}."
 
 
@@ -258,7 +249,7 @@ def region(
     An adjacent rule and a grid fact should be defined first.
     """
     src_r, src_c = src_cell
-    tag = tag_encode("region", _type=adj_type, color=color, src_cell=src_cell)
+    tag = tag_encode("region", adj_type, src_r, src_c, color)
 
     excludes = ""
     if isinstance(exclude_cells, list):
@@ -276,7 +267,8 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", a
 
     A region rule should be defined first.
     """
-    return f":- {{ {tag_encode('region', _type=adj_type, color=color, src_cell=src_cell)}(R, C) }} != {target}."
+    src_r, src_c = src_cell
+    return f":- {{ {tag_encode('region', adj_type, src_r, src_c, color)}(R, C) }} != {target}."
 
 
 def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
@@ -286,8 +278,8 @@ def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj
     A grid fact and a region rule should be defined first.
     """
     included = ""
-    for src_cell in known_cells:
-        included += f"not {tag_encode('region', _type=adj_type, color=color, src_cell=src_cell)}(R, C), "
+    for src_r, src_c in known_cells:
+        included += f"not {tag_encode('region', adj_type, src_r, src_c, color)}(R, C), "
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
@@ -297,8 +289,8 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
-    tag = tag_encode("lit", _type=adj_type, color=color, src_cell=src_cell)
     src_r, src_c = src_cell
+    tag = tag_encode("lit", adj_type, src_r, src_c, color)
     source_cell = f"{tag}({src_r}, {src_c})."
 
     if adj_type == 4:
@@ -321,7 +313,8 @@ def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_
     A lit rule should be defined first.
     """
     op = rev_op_dict[op]
-    return f":- {{ {tag_encode('lit', _type=adj_type, color=color, src_cell=src_cell)}(R, C) }} {op} {target}."
+    src_r, src_c = src_cell
+    return f":- {{ {tag_encode('lit', adj_type, src_r, src_c, color)}(R, C) }} {op} {target}."
 
 
 def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
@@ -351,7 +344,7 @@ def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
     A grid rule or an area rule should be defined first.
     """
     common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
-    tag = tag_encode("valid_omino", _type=num, color=color)
+    tag = tag_encode("valid_omino", num, color)
 
     if _type == "grid":
         count_valid = f"#count {{ R, C : grid(R, C), {color}(R, C), {common} }} = {num}"
@@ -371,5 +364,5 @@ def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq"
     A grid rule or an area rule should be defined first.
     """
     op = rev_op_dict[op]
-    tag = tag_encode("valid_omino", _type=num, color=color)
+    tag = tag_encode("valid_omino", num, color)
     return f":- #count {{ R, C: {tag}({omino_type}, R, C) }} {op} {target}."
