@@ -23,6 +23,9 @@ Extended logic puzzle solver of Noq.
   - [x] Stostone
   - [x] Shimaguni
   - [x] Aquarium
+  - [x] Lits
+  - [x] Statue Park
+  - [x] Chocona
 
 ## How to run locally
 
