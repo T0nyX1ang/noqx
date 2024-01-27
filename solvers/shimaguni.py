@@ -67,7 +67,7 @@ def solve(E: Encoding) -> List:
         if not tag:
             solver.add_program_line(count(1, op="ge", color="darkgray", _type="area", _id=i))
 
-    solver.add_program_line(connected(color="darkgray", _in="area"))
+    solver.add_program_line(connected(color="darkgray", _type="area"))
     solver.add_program_line(avoid_area_adjacent(color="darkgray"))
     solver.add_program_line(area_adjacent())
     solver.add_program_line(adjacent_area_different_size(color="darkgray"))

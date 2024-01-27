@@ -8,9 +8,12 @@ from .shapes import OMINOES, get_variants
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
 
-def tag_encode(_type: str, src_cell: Tuple[int, int] = (None, None), color: str = "black") -> str:
+def tag_encode(name: str, _type: int = None, color: str = "black", src_cell: Tuple[int, int] = (None, None)) -> str:
     """Encode a valid tag predicate without spaces or hyphens."""
-    tag_data = [_type]
+    tag_data = [name]
+
+    if _type is not None:
+        tag_data.append(str(_type))
 
     src_r, src_c = src_cell
     if src_r is not None and src_c is not None:
@@ -139,7 +142,7 @@ def area_adjacent(adj_type: int = 4, color: str = None) -> str:
     area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
     if color is not None:
         area_adj += f", {color}(R, C), {color}(R1, C1)"
-        return f"{tag_encode(f'area_adj_{adj_type}', color=color)}(A, A1) :- {area_adj}."
+        return f"{tag_encode('area_adj', _type=adj_type, color=color)}(A, A1) :- {area_adj}."
     return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
 
 
@@ -198,19 +201,19 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def connected(color: str = "black", adj_type: int = 4, _in: str = "grid") -> str:
+def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
 
     An adjacent rule and a grid fact should be defined first.
     """
-    tag = tag_encode(f"reachable_{_in}", color=color)
+    tag = tag_encode("reachable", _type=adj_type, color=color)
 
-    if _in == "grid":
+    if _type == "grid":
         initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
         propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
         constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
-    elif _in == "area":
+    elif _type == "area":
         initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1) : area(A, R1, C1), {color}(R1, C1) }}."
         propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), adj_{adj_type}(R, C, R1, C1), area(A, R, C), {color}(R, C)."
         constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
@@ -218,6 +221,32 @@ def connected(color: str = "black", adj_type: int = 4, _in: str = "grid") -> str
         raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
     return initial + "\n" + propagation + "\n" + constraint
+
+
+def connected_parts(color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a rule to get all the connected components of {color} cells.
+    Please note that 'reachable/4' is much slower than the 'reachable/2' which only searches for one component.
+
+    An adjacent rule and a grid fact should be defined first.
+    """
+    tag = tag_encode("reachable", _type=adj_type, color=color)
+    initial = f"{tag}(R0, C0, R, C) :- grid(R0, C0), {color}(R0, C0), R = R0, C = C0."
+    propagation = (
+        f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
+    )
+    return initial + "\n" + propagation
+
+
+def count_connected_parts(target: int, color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
+    """
+    Generate a constraint to count the number of connected components of {color} cells.
+
+    A reachable rule should be defined first.
+    """
+    op = rev_op_dict[op]
+    tag = tag_encode("reachable", _type=adj_type, color=color)
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} {op} {target}."
 
 
 def region(
@@ -229,7 +258,7 @@ def region(
     An adjacent rule and a grid fact should be defined first.
     """
     src_r, src_c = src_cell
-    tag = tag_encode("region", src_cell, color)
+    tag = tag_encode("region", _type=adj_type, color=color, src_cell=src_cell)
 
     excludes = ""
     if isinstance(exclude_cells, list):
@@ -241,16 +270,16 @@ def region(
     return source_cell + "\n" + excludes + reachable_propagation
 
 
-def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to count the size of {color} region connected to a source cell.
 
     A region rule should be defined first.
     """
-    return f":- {{ {tag_encode('region', src_cell, color)}(R, C) }} != {target}."
+    return f":- {{ {tag_encode('region', _type=adj_type, color=color, src_cell=src_cell)}(R, C) }} != {target}."
 
 
-def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> str:
+def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to avoid regions that does not derive from a source cell.
 
@@ -258,7 +287,7 @@ def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> 
     """
     included = ""
     for src_cell in known_cells:
-        included += f"not {tag_encode('region', src_cell, color)}(R, C), "
+        included += f"not {tag_encode('region', _type=adj_type, color=color, src_cell=src_cell)}(R, C), "
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
@@ -268,7 +297,7 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
-    tag = tag_encode("lit", src_cell, color)
+    tag = tag_encode("lit", _type=adj_type, color=color, src_cell=src_cell)
     src_r, src_c = src_cell
     source_cell = f"{tag}({src_r}, {src_c})."
 
@@ -285,14 +314,14 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
     return source_cell + "\n" + lit_propagation
 
 
-def count_lit(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black") -> str:
+def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
     """
     Generate a constraint to count the number of {color} cells lit up by a source cell.
 
     A lit rule should be defined first.
     """
     op = rev_op_dict[op]
-    return f":- {{ {tag_encode('lit', src_cell, color)}(R, C) }} {op} {target}."
+    return f":- {{ {tag_encode('lit', _type=adj_type, color=color, src_cell=src_cell)}(R, C) }} {op} {target}."
 
 
 def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
@@ -313,3 +342,34 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
         rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
     return f":- {', '.join(rect_pattern)}."
+
+
+def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
+    """
+    Generates a rule for a valid omino.
+
+    A grid rule or an area rule should be defined first.
+    """
+    common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
+    tag = tag_encode("valid_omino", _type=num, color=color)
+
+    if _type == "grid":
+        count_valid = f"#count {{ R, C : grid(R, C), {color}(R, C), {common} }} = {num}"
+        return f"{tag}(T, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+
+    if _type == "area":
+        count_valid = f"#count {{ R, C : area(A, R, C), {color}(R, C), {common} }} = {num}"
+        return f"{tag}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
+def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:
+    """
+    Generates a rule for a valid omino.
+
+    A grid rule or an area rule should be defined first.
+    """
+    op = rev_op_dict[op]
+    tag = tag_encode("valid_omino", _type=num, color=color)
+    return f":- #count {{ R, C: {tag}({omino_type}, R, C) }} {op} {target}."
