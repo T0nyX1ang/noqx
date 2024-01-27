@@ -18,37 +18,19 @@ from .utilsx.rules import (
 from .utilsx.solutions import solver
 
 
-def connected_area(color: str = "black", adj_type: int = 4, area_id: int = None) -> str:
+def connected_area(target: int, color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to check connected areas of {color} cells.
 
     An adjacent rule and a grid rule should be defined first.
     """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    tag = f"reachable_{color_escape}" + f"_area_{area_id}" * (area_id is not None)
-    _type = f"not connected_{area_id-1}(" if area_id > 0 else "grid("
-
-    not_connected = f", {_type}R1, C1)" if area_id > 0 else ""
-    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : grid(R1, C1), {color}(R1, C1){not_connected} }}."
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {_type}R, C), {color}(R, C)."
-    add_connected = f"connected_{area_id}(R, C) :- connected_{area_id-1}(R, C).\n" if area_id > 0 else ""
-    add_connected += f"connected_{area_id}(R, C) :- {tag}(R, C)."
-    return initial + "\n" + propagation + "\n" + add_connected, tag
+    initial = f"reachable(R0, C0, R, C) :- grid(R0, C0), {color}(R0, C0), R = R0, C = C0."
+    propagation = f"reachable(R0, C0, R, C) :- reachable(R0, C0, R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
+    counter = f":- grid(R, C), {color}(R, C), #count {{ R1, C1: reachable(R, C, R1, C1) }} != {target}."
+    return initial + "\n" + propagation + "\n" + counter
 
 
-def count_tag(target: int, op: str = "eq", tag: str = None) -> str:
-    """
-    Generates a constraint for counting the number of {tag} cells.
-
-    A grid rule should be defined first.
-    """
-    op = rev_op_dict[op]
-
-    return f":- #count {{ R, C : {tag}(R, C) }} {op} {target}."
-
-
-def valid_omino(num: int = 4, tag: str = None, color: str = "black"):
+def valid_omino(num: int = 4, color: str = "black"):
     """
     Generates a rule for a valid omino.
 
@@ -56,9 +38,9 @@ def valid_omino(num: int = 4, tag: str = None, color: str = "black"):
     """
 
     count_valid = (
-        f"#count {{ R, C : {tag}(R, C), {color}(R, C), omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC }} = {num}"
+        f"#count {{ R, C : grid(R, C), {color}(R, C), omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC }} = {num}"
     )
-    return f"valid_omino_{num}(T, AR, AC) :- {tag}(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+    return f"valid_omino_{num}(T, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
 
 def restrict_omino_count(num: int = 4, _type: int = 0, target: int = 1):
@@ -68,7 +50,6 @@ def restrict_omino_count(num: int = 4, _type: int = 0, target: int = 1):
     A grid rule or an area rule should be defined first.
     """
     op = rev_op_dict["eq"]
-
     return f":- #count {{ R, C : valid_omino_{num}({_type}, R, C) }} {op} {target}."
 
 
@@ -100,11 +81,8 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(connected(color="not black"))
     solver.add_program_line(count(black_num, color="black", _type="grid"))
 
-    for i in range(omino_count):
-        program, tag = connected_area(color="black", area_id=i)
-        solver.add_program_line(program)
-        solver.add_program_line(count_tag(target=omino_num, tag=tag))
-        solver.add_program_line(valid_omino(num=omino_num, tag=tag))
+    solver.add_program_line(connected_area(target=omino_num, color="black"))
+    solver.add_program_line(valid_omino(num=omino_num))
 
     for o in ominos:
         solver.add_program_line(restrict_omino_count(num=omino_num, _type=f'"{o}"', target=omino_count_type))
@@ -116,9 +94,6 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(color="black"))
-
-    # print(solver.program)
-
     solver.solve()
 
     return solver.solutions
