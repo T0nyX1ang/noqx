@@ -71,7 +71,6 @@ def solve(E: Encoding) -> List:
     #         solver.add_program_line(f"not darkgray({r}, {c}).")
 
     solver.add_program_line(display(color="darkgray"))
-    print(solver.program)
     solver.solve()
 
     return solver.solutions
