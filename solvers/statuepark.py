@@ -12,7 +12,7 @@ from .utilsx.rules import (
     display,
     grid,
     omino,
-    shade_cc,
+    shade_c,
     rev_op_dict,
 )
 from .utilsx.solutions import solver
@@ -89,14 +89,15 @@ def solve(E: Encoding) -> List:
         omino_num, omino_count_type = 4, 2
     else:
         raise ValueError("Shape set not supported.")
+
     solver.add_program_line(omino(omino_num))
     ominos = list(OMINOES[omino_num].keys())
     omino_count = len(ominos) * omino_count_type
     black_num = omino_num * omino_count
 
-    solver.add_program_line(shade_cc(["black", "white"]))
+    solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="white"))
+    solver.add_program_line(connected(color="not black"))
     solver.add_program_line(count(black_num, color="black", _type="grid"))
 
     for i in range(omino_count):
@@ -112,9 +113,12 @@ def solve(E: Encoding) -> List:
         if clue == "b":
             solver.add_program_line(f"black({r}, {c}).")
         elif clue == "w":
-            solver.add_program_line(f"white({r}, {c}).")
+            solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(color="black"))
+
+    # print(solver.program)
+
     solver.solve()
 
     return solver.solutions

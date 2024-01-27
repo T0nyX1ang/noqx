@@ -14,7 +14,7 @@ from .utilsx.rules import (
     display,
     grid,
     shade_c,
-    unique_area_borders,
+    avoid_area_adjacent,
 )
 from .utilsx.solutions import solver
 
@@ -69,7 +69,7 @@ def solve(E: Encoding) -> List:
 
         solver.add_program_line(connected(area_id=i, color="darkgray"))
 
-    solver.add_program_line(unique_area_borders(color="darkgray"))
+    solver.add_program_line(avoid_area_adjacent(color="darkgray"))
     solver.add_program_line(area_adjacent())
     solver.add_program_line(adjacent_area_different_size(color="darkgray"))
     solver.add_program_line(display(color="darkgray"))

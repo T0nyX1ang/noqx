@@ -17,17 +17,17 @@ def display(color: Union[str, List[str]] = "black") -> str:
 
 
 def grid(rows: int, cols: int) -> str:
-    """Generates a rule for generating a grid."""
+    """Generates facts for a grid."""
     return f"grid(0..{rows - 1}, 0..{cols - 1})."
 
 
 def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
-    """Generates a rule for defining an area."""
+    """Generates facts for areas."""
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
 
 def omino(num: int = 4, _types: List[str] = None) -> str:
-    """Generates a rule for defining omino types."""
+    """Generates facts for omino types."""
     if _types is None:
         _types = list(OMINOES[num].keys())
 
@@ -48,7 +48,7 @@ def shade_c(color: str = "black") -> str:
     """
     Generate a rule that a cell is either {color} or not {color}.
 
-    A grid rule should be defined first."""
+    A grid fact should be defined first."""
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
 
@@ -56,7 +56,7 @@ def shade_cc(colors: List[str]) -> str:
     """
     Generates a rule that enforces several different {color} cells.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
@@ -65,7 +65,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     op = rev_op_dict[op]
 
@@ -93,7 +93,7 @@ def adjacent(_type: int = 4) -> str:
     If _type = 4, then only orthogonal neighbors are considered.
     If _type = 8, then both orthogonal and diagonal neighbors are considered.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     if _type == 4:
         return "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
@@ -106,13 +106,15 @@ def adjacent(_type: int = 4) -> str:
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
 
-def area_adjacent(adj_type: int = 4) -> str:
+def area_adjacent(adj_type: int = 4, color: str = None) -> str:
     """
     Generate a rule for getting the adjacent areas.
 
     An adjacent rule should be defined first.
     """
-
+    if color is not None:
+        color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+        return f"area_adj_{adj_type}_{color_escape}(A, A1) {avoid_area_adjacent(color, adj_type)}"
     return f"area_adj_{adj_type}(A, A1) :- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
 
 
@@ -125,11 +127,11 @@ def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
-def unique_area_borders(color: str = "black", adj_type: int = 4) -> str:
+def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid same {color} cells on the both sides of an area.
 
-    An adjacent rule and an area rule should be defined first.
+    An adjacent rule and an area fact should be defined first.
     """
     return f":- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
 
@@ -151,9 +153,8 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
     """
     Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
 
-    A grid rule and an adjacent rule should be defined first. n is the number of known source cells.
+    A grid fact and an adjacent rule should be defined first. n is the number of known source cells.
     """
-
     rules = "\n".join(
         f"{{ map_{r}_{c}(R, C): adj_{adj_type}(R, C, {r}, {c}), {color}(R, C) }} = 1 :- grid({r}, {c})."
         for r, c in known_cells
@@ -184,9 +185,8 @@ def connected(color: str = "black", adj_type: int = 4, area_id: int = None) -> s
     """
     Generate a constraint to check the reachability of {color} cells.
 
-    An adjacent rule and a grid rule should be defined first.
+    An adjacent rule and A grid fact should be defined first.
     """
-
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     tag = f"reachable_{color_escape}" + f"_area_{area_id}" * (area_id is not None)
     _type = f"area({area_id}, " if area_id is not None else "grid("  # sort of messy code here, but it works
@@ -203,9 +203,8 @@ def region(
     """
     Generate a rule to construct a region of {color} cells from a source cell.
 
-    An adjacent rule and a grid rule should be defined first.
+    An adjacent rule and A grid fact should be defined first.
     """
-
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
     tag = f"region_{src_r}_{src_c}_{color_escape}"
@@ -226,7 +225,6 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -
 
     A region rule should be defined first.
     """
-
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
     return f":- {{ region_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
@@ -236,9 +234,8 @@ def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> 
     """
     Generate a constraint to avoid regions that does not derive from a source cell.
 
-    A grid rule and a region rule should be defined first.
+    A grid fact and a region rule should be defined first.
     """
-
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     included = ""
     for src_r, src_c in known_cells:
@@ -253,7 +250,6 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
-
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
     tag = f"lit_{src_r}_{src_c}_{color_escape}"
@@ -278,7 +274,6 @@ def count_lit(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str
 
     A lit rule should be defined first.
     """
-
     color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
     op = rev_op_dict[op]
@@ -289,7 +284,7 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
     """
     Generates a constraint to avoid rectangular patterned {color} cells.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     corner_r, corner_c = corner
     corner_r = corner_r if corner_r is not None else "R"
@@ -298,11 +293,7 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
     if corner_r != "R" and corner_c != "C":
         rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
     else:
-        rect_pattern = [
-            f"{color}({corner_r} + {r}, {corner_c} + {c})"
-            for r in range(rect_r)
-            for c in range(rect_c)
-        ]
+        rect_pattern = [f"{color}({corner_r} + {r}, {corner_c} + {c})" for r in range(rect_r) for c in range(rect_c)]
         rect_pattern.append(f"grid({corner_r}, {corner_c})")
         rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
