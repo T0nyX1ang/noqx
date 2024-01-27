@@ -6,6 +6,7 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.regions import full_bfs
 from .utilsx.rules import (
+    area_adjacent,
     adjacent,
     area,
     avoid_rect,
@@ -19,19 +20,6 @@ from .utilsx.rules import (
 from .utilsx.solutions import solver
 
 
-def area_adjacent_with_color(adj_type: int = 4, color: str = "black") -> str:
-    """
-    Generate a rule for getting the adjacent areas.
-
-    An adjacent rule should be defined first.
-    """
-
-    return (
-        f"area_adj_{adj_type}_{color}(A, A1) :- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), "
-        + f"adj_{adj_type}(R, C, R1, C1), A < A1."
-    )
-
-
 def valid_omino(num: int = 4, color: str = "black"):
     """
     Generates a rule for a valid omino.
@@ -40,16 +28,16 @@ def valid_omino(num: int = 4, color: str = "black"):
     """
 
     count_valid = (
-        f"#count {{ R, C : area(A, R, C), {color}(R, C), omino_4(T, V, DR, DC), R = AR + DR, C = AC + DC }} = {num}"
+        f"#count {{ R, C : area(A, R, C), {color}(R, C), omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC }} = {num}"
     )
-    return f"valid_omino_{num}(A, T, AR, AC) :- area(A, AR, AC), omino_4(T, V, _, _), {count_valid}."
+    return f"valid_omino_{num}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
 
 def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> None:
     """
     Generates a constraint to avoid adjacent ominos with the same type.
 
-    An area rule, an omino rule and an area adjacent rule should be defined first.
+    An area adjacent rule, an omino rule should be defined first.
     """
     return (
         f":- area_adj_{adj_type}_{color}(A, A1), A < A1, "
@@ -74,10 +62,10 @@ def solve(E: Encoding) -> List:
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count(4, color="darkgray", _type="area", _id=i))
-        solver.add_program_line(connected(color="darkgray", area_id=i))
 
+    solver.add_program_line(connected(color="darkgray", _type="area"))
     solver.add_program_line(valid_omino(4, color="darkgray"))
-    solver.add_program_line(area_adjacent_with_color(color="darkgray"))
+    solver.add_program_line(area_adjacent(color="darkgray"))
     solver.add_program_line(avoid_adjacent_same_omino(4, color="darkgray"))
 
     for (r, c), clue in E.clues.items():

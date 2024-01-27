@@ -1,11 +1,20 @@
 """Utility for general clingo rules."""
 
 import itertools
-from typing import List, Tuple, Union
+from typing import Any, List, Tuple, Union
 
 from .shapes import OMINOES, get_variants
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+
+
+def tag_encode(name: str, *data: Any) -> str:
+    """Encode a valid tag predicate without spaces or hyphens."""
+    tag_data = [name]
+    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
+        tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
+
+    return "_".join(tag_data)
 
 
 def display(color: Union[str, List[str]] = "black") -> str:
@@ -17,17 +26,17 @@ def display(color: Union[str, List[str]] = "black") -> str:
 
 
 def grid(rows: int, cols: int) -> str:
-    """Generates a rule for generating a grid."""
+    """Generates facts for a grid."""
     return f"grid(0..{rows - 1}, 0..{cols - 1})."
 
 
 def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
-    """Generates a rule for defining an area."""
+    """Generates facts for areas."""
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
 
 def omino(num: int = 4, _types: List[str] = None) -> str:
-    """Generates a rule for defining omino types."""
+    """Generates facts for omino types."""
     if _types is None:
         _types = list(OMINOES[num].keys())
 
@@ -48,7 +57,7 @@ def shade_c(color: str = "black") -> str:
     """
     Generate a rule that a cell is either {color} or not {color}.
 
-    A grid rule should be defined first."""
+    A grid fact should be defined first."""
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
 
@@ -56,7 +65,7 @@ def shade_cc(colors: List[str]) -> str:
     """
     Generates a rule that enforces several different {color} cells.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
@@ -65,7 +74,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     op = rev_op_dict[op]
 
@@ -93,7 +102,7 @@ def adjacent(_type: int = 4) -> str:
     If _type = 4, then only orthogonal neighbors are considered.
     If _type = 8, then both orthogonal and diagonal neighbors are considered.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     if _type == 4:
         return "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
@@ -106,16 +115,6 @@ def adjacent(_type: int = 4) -> str:
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
 
-def area_adjacent(adj_type: int = 4) -> str:
-    """
-    Generate a rule for getting the adjacent areas.
-
-    An adjacent rule should be defined first.
-    """
-
-    return f"area_adj_{adj_type}(A, A1) :- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
-
-
 def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid adjacent {color} cells based on adjacent definition.
@@ -125,13 +124,27 @@ def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
-def unique_area_borders(color: str = "black", adj_type: int = 4) -> str:
+def area_adjacent(adj_type: int = 4, color: str = None) -> str:
+    """
+    Generate a rule for getting the adjacent areas.
+
+    An adjacent rule should be defined first.
+    """
+    area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
+    if color is not None:
+        area_adj += f", {color}(R, C), {color}(R1, C1)"
+        return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
+    return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
+
+
+def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid same {color} cells on the both sides of an area.
 
-    An adjacent rule and an area rule should be defined first.
+    An adjacent rule and an area fact should be defined first.
     """
-    return f":- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
+    area_adj = area_adjacent(adj_type, color)
+    return area_adj[area_adj.find(":-") :]
 
 
 def count_adjacent(
@@ -151,9 +164,8 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
     """
     Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
 
-    A grid rule and an adjacent rule should be defined first. n is the number of known source cells.
+    A grid fact and an adjacent rule should be defined first. n is the number of known source cells.
     """
-
     rules = "\n".join(
         f"{{ map_{r}_{c}(R, C): adj_{adj_type}(R, C, {r}, {c}), {color}(R, C) }} = 1 :- grid({r}, {c})."
         for r, c in known_cells
@@ -180,21 +192,52 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def connected(color: str = "black", adj_type: int = 4, area_id: int = None) -> str:
+def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
 
-    An adjacent rule and a grid rule should be defined first.
+    An adjacent rule and a grid fact should be defined first.
     """
+    tag = tag_encode("reachable", adj_type, color)
 
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    tag = f"reachable_{color_escape}" + f"_area_{area_id}" * (area_id is not None)
-    _type = f"area({area_id}, " if area_id is not None else "grid("  # sort of messy code here, but it works
+    if _type == "grid":
+        initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
+        propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
+        constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    elif _type == "area":
+        initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1) : area(A, R1, C1), {color}(R1, C1) }}."
+        propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), adj_{adj_type}(R, C, R1, C1), area(A, R, C), {color}(R, C)."
+        constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
+    else:
+        raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
-    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), {_type}R1, C1) }}."
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {_type}R, C), {color}(R, C)."
-    constraint = f":- {_type}R, C), {color}(R, C), not {tag}(R, C)."
     return initial + "\n" + propagation + "\n" + constraint
+
+
+def connected_parts(color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a rule to get all the connected components of {color} cells.
+    Please note that 'reachable/4' is much slower than the 'reachable/2' which only searches for one component.
+
+    An adjacent rule and a grid fact should be defined first.
+    """
+    tag = tag_encode("reachable", adj_type, color)
+    initial = f"{tag}(R0, C0, R, C) :- grid(R0, C0), {color}(R0, C0), R = R0, C = C0."
+    propagation = (
+        f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
+    )
+    return initial + "\n" + propagation
+
+
+def count_connected_parts(target: int, color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
+    """
+    Generate a constraint to count the number of connected components of {color} cells.
+
+    A reachable rule should be defined first.
+    """
+    op = rev_op_dict[op]
+    tag = tag_encode("reachable", adj_type, color)
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} {op} {target}."
 
 
 def region(
@@ -203,12 +246,10 @@ def region(
     """
     Generate a rule to construct a region of {color} cells from a source cell.
 
-    An adjacent rule and a grid rule should be defined first.
+    An adjacent rule and a grid fact should be defined first.
     """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    tag = f"region_{src_r}_{src_c}_{color_escape}"
+    tag = tag_encode("region", adj_type, src_r, src_c, color)
 
     excludes = ""
     if isinstance(exclude_cells, list):
@@ -220,30 +261,25 @@ def region(
     return source_cell + "\n" + excludes + reachable_propagation
 
 
-def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to count the size of {color} region connected to a source cell.
 
     A region rule should be defined first.
     """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    return f":- {{ region_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
+    return f":- {{ {tag_encode('region', adj_type, src_r, src_c, color)}(R, C) }} != {target}."
 
 
-def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> str:
+def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to avoid regions that does not derive from a source cell.
 
-    A grid rule and a region rule should be defined first.
+    A grid fact and a region rule should be defined first.
     """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     included = ""
     for src_r, src_c in known_cells:
-        included += f"not region_{src_r}_{src_c}_{color_escape}(R, C), "
-
+        included += f"not {tag_encode('region', adj_type, src_r, src_c, color)}(R, C), "
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
@@ -253,10 +289,8 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    tag = f"lit_{src_r}_{src_c}_{color_escape}"
+    tag = tag_encode("lit", adj_type, src_r, src_c, color)
     source_cell = f"{tag}({src_r}, {src_c})."
 
     if adj_type == 4:
@@ -272,24 +306,22 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
     return source_cell + "\n" + lit_propagation
 
 
-def count_lit(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black") -> str:
+def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
     """
     Generate a constraint to count the number of {color} cells lit up by a source cell.
 
     A lit rule should be defined first.
     """
-
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    src_r, src_c = src_cell
     op = rev_op_dict[op]
-    return f":- {{ lit_{src_r}_{src_c}_{color_escape}(R, C) }} {op} {target}."
+    src_r, src_c = src_cell
+    return f":- {{ {tag_encode('lit', adj_type, src_r, src_c, color)}(R, C) }} {op} {target}."
 
 
 def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
     """
     Generates a constraint to avoid rectangular patterned {color} cells.
 
-    A grid rule should be defined first.
+    A grid fact should be defined first.
     """
     corner_r, corner_c = corner
     corner_r = corner_r if corner_r is not None else "R"
@@ -298,12 +330,39 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
     if corner_r != "R" and corner_c != "C":
         rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
     else:
-        rect_pattern = [
-            f"{color}({corner_r} + {r}, {corner_c} + {c})"
-            for r in range(rect_r)
-            for c in range(rect_c)
-        ]
+        rect_pattern = [f"{color}({corner_r} + {r}, {corner_c} + {c})" for r in range(rect_r) for c in range(rect_c)]
         rect_pattern.append(f"grid({corner_r}, {corner_c})")
         rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
     return f":- {', '.join(rect_pattern)}."
+
+
+def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
+    """
+    Generates a rule for a valid omino.
+
+    A grid rule or an area rule should be defined first.
+    """
+    common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
+    tag = tag_encode("valid_omino", num, color)
+
+    if _type == "grid":
+        count_valid = f"#count {{ R, C : grid(R, C), {color}(R, C), {common} }} = {num}"
+        return f"{tag}(T, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+
+    if _type == "area":
+        count_valid = f"#count {{ R, C : area(A, R, C), {color}(R, C), {common} }} = {num}"
+        return f"{tag}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
+def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:
+    """
+    Generates a rule for a valid omino.
+
+    A grid rule or an area rule should be defined first.
+    """
+    op = rev_op_dict[op]
+    tag = tag_encode("valid_omino", num, color)
+    return f":- #count {{ R, C: {tag}({omino_type}, R, C) }} {op} {target}."

@@ -23,19 +23,19 @@ def all_rectangles(color: str = "black") -> str:
     An adjacent rule should be defined first.
     """
 
-    not_color = f"not_color(R, C) :- grid(R+1, C), not grid(R, C).\n"
-    not_color += f"not_color(R, C) :- grid(R, C+1), not grid(R, C).\n"
+    not_color = "not_color(R, C) :- grid(R+1, C), not grid(R, C).\n"
+    not_color += "not_color(R, C) :- grid(R, C+1), not grid(R, C).\n"
     not_color += f"not_color(R, C) :- grid(R, C), not {color}(R, C)."
 
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not_color(R-1, C), not_color(R, C-1)."
-    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R-1, C), {color}(R-1, C), not_color(R, C-1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R-1, C), {color}(R-1, C), not_color(R, C-1)."
-    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C-1), {color}(R, C-1), not_color(R-1, C).\n"
-    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C-1), {color}(R, C-1), not_color(R-1, C).\n"
-    remain = f"remain(R, C) :- grid(R, C), left(R, C-1), up(R-1, C).\n"
-    remain += f"remain(R, C) :- grid(R, C), left(R, C-1), remain(R-1, C).\n"
-    remain += f"remain(R, C) :- grid(R, C), remain(R, C-1), up(R-1, C).\n"
-    remain += f"remain(R, C) :- grid(R, C), remain(R, C-1), remain(R-1, C)."
+    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not_color(R - 1, C), not_color(R, C - 1)."
+    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not_color(R, C - 1).\n"
+    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not_color(R, C - 1)."
+    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not_color(R - 1, C).\n"
+    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not_color(R - 1, C).\n"
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C)."
 
     constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C)."
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C)."
@@ -63,12 +63,11 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(count(num, color="darkgray", _type="area", _id=i))
     solver.add_program_line(all_rectangles(color="darkgray"))
 
-    # 桶后面统一把初值加了吧
-    # for (r, c), clue in E.clues.items():
-    #     if clue == "darkgray":
-    #         solver.add_program_line(f"darkgray({r}, {c}).")
-    #     elif clue == "green":
-    #         solver.add_program_line(f"not darkgray({r}, {c}).")
+    for (r, c), clue in E.clues.items():
+        if clue == "darkgray":
+            solver.add_program_line(f"darkgray({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not darkgray({r}, {c}).")
 
     solver.add_program_line(display(color="darkgray"))
     solver.solve()
