@@ -52,23 +52,29 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c("darkgray"))
     solver.add_program_line(adjacent())
 
-    areas = full_bfs(E.R, E.C, E.edges)
-    for i, ar in enumerate(areas):
-        num = -1
-        for cell in ar:
-            if cell in E.clues:
-                num = E.clues[cell]
-        solver.add_program_line(area(_id=i, src_cells=ar))
-        if num >= 0:
-            solver.add_program_line(count(num, color="darkgray", _type="area", _id=i))
-    solver.add_program_line(all_rectangles(color="darkgray"))
-
+    clues = {}  # remove color-relevant clues here
     for (r, c), clue in E.clues.items():
-        if clue == "darkgray":
+        if isinstance(clue, list):
+            if clue[1] == "darkgray":
+                solver.add_program_line(f"darkgray({r}, {c}).")
+            elif clue[1] == "green":
+                solver.add_program_line(f"not darkgray({r}, {c}).")
+            clues[(r, c)] = int(clue[0])
+        elif clue == "darkgray":
             solver.add_program_line(f"darkgray({r}, {c}).")
         elif clue == "green":
             solver.add_program_line(f"not darkgray({r}, {c}).")
+        else:
+            clues[(r, c)] = int(clue)
 
+    areas = full_bfs(E.R, E.C, E.edges, clues)
+    if clues:
+        areas = full_bfs(E.R, E.C, E.edges, clues)
+        for i, (rc, ar) in enumerate(areas.items()):
+            solver.add_program_line(area(_id=i, src_cells=ar))
+            solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
+
+    solver.add_program_line(all_rectangles(color="darkgray"))
     solver.add_program_line(display(color="darkgray"))
     solver.solve()
 
