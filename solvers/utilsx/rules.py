@@ -8,6 +8,21 @@ from .shapes import OMINOES, get_variants
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
 
+def tag_encode(_type: str, src_cell: Tuple[int, int] = (None, None), color: str = "black") -> str:
+    """Encode a valid tag predicate without spaces or hyphens."""
+    tag_data = [_type]
+
+    src_r, src_c = src_cell
+    if src_r is not None and src_c is not None:
+        tag_data.append(str(src_r))
+        tag_data.append(str(src_c))
+
+    if color is not None:
+        tag_data.append(color.replace("-", "_").replace(" ", "_"))
+
+    return "_".join(tag_data)
+
+
 def display(color: Union[str, List[str]] = "black") -> str:
     """Generates a rule for displaying the {color} cells."""
     if isinstance(color, str):
@@ -113,8 +128,7 @@ def area_adjacent(adj_type: int = 4, color: str = None) -> str:
     An adjacent rule should be defined first.
     """
     if color is not None:
-        color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-        return f"area_adj_{adj_type}_{color_escape}(A, A1) {avoid_area_adjacent(color, adj_type)}"
+        return f"{tag_encode(f'area_adj_{adj_type}', color=color)}(A, A1) {avoid_area_adjacent(color, adj_type)}"
     return f"area_adj_{adj_type}(A, A1) :- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
 
 
@@ -187,8 +201,8 @@ def connected(color: str = "black", adj_type: int = 4, area_id: int = None) -> s
 
     An adjacent rule and A grid fact should be defined first.
     """
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    tag = f"reachable_{color_escape}" + f"_area_{area_id}" * (area_id is not None)
+    color_encode = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    tag = f"reachable_{color_encode}" + f"_area_{area_id}" * (area_id is not None)
     _type = f"area({area_id}, " if area_id is not None else "grid("  # sort of messy code here, but it works
 
     initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), {_type}R1, C1) }}."
@@ -205,9 +219,8 @@ def region(
 
     An adjacent rule and A grid fact should be defined first.
     """
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     src_r, src_c = src_cell
-    tag = f"region_{src_r}_{src_c}_{color_escape}"
+    tag = tag_encode("region", src_cell, color)
 
     excludes = ""
     if isinstance(exclude_cells, list):
@@ -225,9 +238,7 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black") -
 
     A region rule should be defined first.
     """
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    src_r, src_c = src_cell
-    return f":- {{ region_{src_r}_{src_c}_{color_escape}(R, C) }} != {target}."
+    return f":- {{ {tag_encode('region', src_cell, color)}(R, C) }} != {target}."
 
 
 def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> str:
@@ -236,11 +247,9 @@ def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black") -> 
 
     A grid fact and a region rule should be defined first.
     """
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
     included = ""
-    for src_r, src_c in known_cells:
-        included += f"not region_{src_r}_{src_c}_{color_escape}(R, C), "
-
+    for src_cell in known_cells:
+        included += f"not {tag_encode('region', src_cell, color)}(R, C), "
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
@@ -250,9 +259,8 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
+    tag = tag_encode("lit", src_cell, color)
     src_r, src_c = src_cell
-    tag = f"lit_{src_r}_{src_c}_{color_escape}"
     source_cell = f"{tag}({src_r}, {src_c})."
 
     if adj_type == 4:
@@ -274,10 +282,8 @@ def count_lit(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str
 
     A lit rule should be defined first.
     """
-    color_escape = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    src_r, src_c = src_cell
     op = rev_op_dict[op]
-    return f":- {{ lit_{src_r}_{src_c}_{color_escape}(R, C) }} {op} {target}."
+    return f":- {{ {tag_encode('lit', src_cell, color)}(R, C) }} {op} {target}."
 
 
 def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
