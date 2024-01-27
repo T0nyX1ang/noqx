@@ -23,20 +23,23 @@ def all_rectangles(color: str = "black") -> str:
     An adjacent rule should be defined first.
     """
 
-    not_start = f"not_start(R, C) :- grid(R, C), not {color}(R, C).\n"
-    not_start += f"not_start(R, C) :- grid(R, C), grid(R-1,C), {color}(R-1, C).\n"
-    not_start += f"not_start(R, C) :- grid(R, C), grid(R,C-1), {color}(R, C-1)."
+    not_color = f"not_color(R, C) :- grid(R+1, C), not grid(R, C).\n"
+    not_color += f"not_color(R, C) :- grid(R, C+1), not grid(R, C).\n"
+    not_color += f"not_color(R, C) :- grid(R, C), not {color}(R, C)."
 
-    connected = f"reachable(R0, C0, R, C) :- grid(R0, C0), darkgray(R0, C0), R = R0, C = C0.\n"
-    connected += f"reachable(R0, C0, R, C) :- reachable(R0, C0, R1, C1), adj_4(R, C, R1, C1), grid(R, C), {color}(R, C)."
+    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not_color(R-1, C), not_color(R, C-1)."
+    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R-1, C), {color}(R-1, C), not_color(R, C-1).\n"
+    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R-1, C), {color}(R-1, C), not_color(R, C-1)."
+    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C-1), {color}(R, C-1), not_color(R-1, C).\n"
+    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C-1), {color}(R, C-1), not_color(R-1, C).\n"
+    remain = f"remain(R, C) :- grid(R, C), left(R, C-1), up(R-1, C).\n"
+    remain += f"remain(R, C) :- grid(R, C), left(R, C-1), remain(R-1, C).\n"
+    remain += f"remain(R, C) :- grid(R, C), remain(R, C-1), up(R-1, C).\n"
+    remain += f"remain(R, C) :- grid(R, C), remain(R, C-1), remain(R-1, C)."
 
-    min_reachable = "min_reachable(R, C, MR, MC) :- grid(R, C), #min { R1 : reachable(R, C, R1, _) } = MR, #min { C1 : reachable(R, C, _, C1) } = MC.\n"
-    max_reachable = "max_reachable(R, C, MR, MC) :- grid(R, C), #max { R1 : reachable(R, C, R1, _) } = MR, #max { C1 : reachable(R, C, _, C1) } = MC.\n"
-    rectangle = "rectangle(R, C) :- grid(R, C), max_reachable(R, C, MR, MC), #count { R1, C1 : grid(R1, C1), reachable(R, C, R1, C1)} = (MR - R + 1) * (MC - C + 1)."
-
-    constraint = ":- grid(R, C), not not_start(R, C), not min_reachable(R, C, R, C).\n"
-    constraint += ":- grid(R, C), not not_start(R, C), not rectangle(R, C)."
-    return not_start + "\n" + connected + "\n" + min_reachable + "\n" + max_reachable + "\n" + rectangle + "\n" + constraint
+    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C)."
+    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C)."
+    return not_color + "\n" + upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
 
 
 def encode(string: str) -> Encoding:
@@ -68,6 +71,7 @@ def solve(E: Encoding) -> List:
     #         solver.add_program_line(f"not darkgray({r}, {c}).")
 
     solver.add_program_line(display(color="darkgray"))
+    print(solver.program)
     solver.solve()
 
     return solver.solutions
