@@ -62,8 +62,8 @@ def solve(E: Encoding) -> List:
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count(4, color="darkgray", _type="area", _id=i))
-        solver.add_program_line(connected(color="darkgray", area_id=i))
 
+    solver.add_program_line(connected(color="darkgray", _in="area"))
     solver.add_program_line(valid_omino(4, color="darkgray"))
     solver.add_program_line(area_adjacent(color="darkgray"))
     solver.add_program_line(avoid_adjacent_same_omino(4, color="darkgray"))

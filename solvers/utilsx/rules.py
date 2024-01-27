@@ -195,19 +195,25 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def connected(color: str = "black", adj_type: int = 4, area_id: int = None) -> str:
+def connected(color: str = "black", adj_type: int = 4, _in: str = "grid") -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
 
-    An adjacent rule and A grid fact should be defined first.
+    An adjacent rule and a grid fact should be defined first.
     """
-    color_encode = color.replace("-", "_").replace(" ", "_")  # make a valid predicate name
-    tag = f"reachable_{color_encode}" + f"_area_{area_id}" * (area_id is not None)
-    _type = f"area({area_id}, " if area_id is not None else "grid("  # sort of messy code here, but it works
+    tag = tag_encode(f"reachable_{_in}", color=color)
 
-    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), {_type}R1, C1) }}."
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {_type}R, C), {color}(R, C)."
-    constraint = f":- {_type}R, C), {color}(R, C), not {tag}(R, C)."
+    if _in == "grid":
+        initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
+        propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
+        constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    elif _in == "area":
+        initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1) : area(A, R1, C1), {color}(R1, C1) }}."
+        propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), adj_{adj_type}(R, C, R1, C1), area(A, R, C), {color}(R, C)."
+        constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
+    else:
+        raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
     return initial + "\n" + propagation + "\n" + constraint
 
 
@@ -217,7 +223,7 @@ def region(
     """
     Generate a rule to construct a region of {color} cells from a source cell.
 
-    An adjacent rule and A grid fact should be defined first.
+    An adjacent rule and a grid fact should be defined first.
     """
     src_r, src_c = src_cell
     tag = tag_encode("region", src_cell, color)

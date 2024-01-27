@@ -70,8 +70,7 @@ def solve(E: Encoding) -> List:
         if not tag:
             solver.add_program_line(count(1, op="ge", color="darkgray", _type="area", _id=i))
 
-        solver.add_program_line(connected(area_id=i, color="darkgray"))
-
+    solver.add_program_line(connected(color="darkgray", _in="area"))
     solver.add_program_line(avoid_area_adjacent(color="darkgray"))
     solver.add_program_line(valid_stostone(color="darkgray"))
     solver.add_program_line(display(color="darkgray"))
