@@ -121,17 +121,6 @@ def adjacent(_type: int = 4) -> str:
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
 
-def area_adjacent(adj_type: int = 4, color: str = None) -> str:
-    """
-    Generate a rule for getting the adjacent areas.
-
-    An adjacent rule should be defined first.
-    """
-    if color is not None:
-        return f"{tag_encode(f'area_adj_{adj_type}', color=color)}(A, A1) {avoid_area_adjacent(color, adj_type)}"
-    return f"area_adj_{adj_type}(A, A1) :- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
-
-
 def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid adjacent {color} cells based on adjacent definition.
@@ -141,13 +130,27 @@ def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
+def area_adjacent(adj_type: int = 4, color: str = None) -> str:
+    """
+    Generate a rule for getting the adjacent areas.
+
+    An adjacent rule should be defined first.
+    """
+    area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
+    if color is not None:
+        area_adj += f", {color}(R, C), {color}(R1, C1)"
+        return f"{tag_encode(f'area_adj_{adj_type}', color=color)}(A, A1) :- {area_adj}."
+    return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
+
+
 def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid same {color} cells on the both sides of an area.
 
     An adjacent rule and an area fact should be defined first.
     """
-    return f":- area(A, R, C), {color}(R, C), area(A1, R1, C1), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1."
+    area_adj = area_adjacent(adj_type, color)
+    return area_adj[area_adj.find(":-") :]
 
 
 def count_adjacent(
