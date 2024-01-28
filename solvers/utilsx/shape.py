@@ -1,8 +1,11 @@
 """Rules and constraints to detect certain shapes."""
 
+from typing import Tuple
+
 from .helper import tag_encode
 
-def all_rectangles(color: str = "black") -> str:
+
+def all_rect(color: str = "black") -> str:
     """
     Generate a constraint to force rectangles.
 
@@ -26,6 +29,26 @@ def all_rectangles(color: str = "black") -> str:
     constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C)."
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C)."
     return not_color + "\n" + upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
+
+
+def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
+    """
+    Generates a constraint to avoid rectangular patterned {color} cells.
+
+    A grid fact should be defined first.
+    """
+    corner_r, corner_c = corner
+    corner_r = corner_r if corner_r is not None else "R"
+    corner_c = corner_c if corner_c is not None else "C"
+
+    if corner_r != "R" and corner_c != "C":
+        rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
+    else:
+        rect_pattern = [f"{color}({corner_r} + {r}, {corner_c} + {c})" for r in range(rect_r) for c in range(rect_c)]
+        rect_pattern.append(f"grid({corner_r}, {corner_c})")
+        rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
+
+    return f":- {', '.join(rect_pattern)}."
 
 
 def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:

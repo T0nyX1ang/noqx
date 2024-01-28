@@ -7,8 +7,8 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid, omino
 from .utilsx.helper import tag_encode
 from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, area_adjacent, avoid_rect, connected, count, shade_c
-from .utilsx.shape import valid_omino
+from .utilsx.rule import adjacent, area_adjacent, connected, count, shade_c
+from .utilsx.shape import avoid_rect, valid_omino
 from .utilsx.solution import solver
 
 

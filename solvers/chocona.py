@@ -8,7 +8,7 @@ from .utilsx.fact import area, display, grid
 from .utilsx.helper import mark_and_extract_clues
 from .utilsx.region import full_bfs
 from .utilsx.rule import adjacent, count, shade_c
-from .utilsx.shape import all_rectangles
+from .utilsx.shape import all_rect
 from .utilsx.solution import solver
 
 
@@ -29,7 +29,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(area(_id=i, src_cells=ar))
             solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
 
-    solver.add_program_line(all_rectangles(color="darkgray"))
+    solver.add_program_line(all_rect(color="darkgray"))
     solver.add_program_line(display(color="darkgray"))
     solver.solve()
 

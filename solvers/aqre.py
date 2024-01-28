@@ -7,7 +7,8 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.helper import mark_and_extract_clues
 from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, avoid_rect, connected, count, shade_c
+from .utilsx.rule import adjacent, connected, count, shade_c
+from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 

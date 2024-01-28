@@ -5,15 +5,8 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import (
-    adjacent,
-    avoid_rect,
-    connected,
-    count_adjacent,
-    count_lit,
-    lit,
-    shade_c,
-)
+from .utilsx.rule import adjacent, connected, count_adjacent, count_lit, lit, shade_c
+from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 

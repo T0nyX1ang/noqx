@@ -6,7 +6,8 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
 from .utilsx.helper import tag_encode
-from .utilsx.rule import adjacent, avoid_rect, connected, count_region, region, shade_c
+from .utilsx.rule import adjacent, connected, count_region, region, shade_c
+from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 

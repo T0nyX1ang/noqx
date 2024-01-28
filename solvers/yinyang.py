@@ -5,7 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, avoid_rect, connected, shade_c
+from .utilsx.rule import adjacent, connected, shade_c
+from .utilsx.shape import avoid_rect
 from .utilsx.solution import rc_to_grid, solver
 
 

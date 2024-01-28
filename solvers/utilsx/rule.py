@@ -259,26 +259,6 @@ def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_
     return f":- {{ {tag_encode('lit', adj_type, src_r, src_c, color)}(R, C) }} {op} {target}."
 
 
-def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
-    """
-    Generates a constraint to avoid rectangular patterned {color} cells.
-
-    A grid fact should be defined first.
-    """
-    corner_r, corner_c = corner
-    corner_r = corner_r if corner_r is not None else "R"
-    corner_c = corner_c if corner_c is not None else "C"
-
-    if corner_r != "R" and corner_c != "C":
-        rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
-    else:
-        rect_pattern = [f"{color}({corner_r} + {r}, {corner_c} + {c})" for r in range(rect_r) for c in range(rect_c)]
-        rect_pattern.append(f"grid({corner_r}, {corner_c})")
-        rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
-
-    return f":- {', '.join(rect_pattern)}."
-
-
 def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:
     """
     Generates a rule for a valid omino.
