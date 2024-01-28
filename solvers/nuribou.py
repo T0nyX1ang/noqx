@@ -2,107 +2,73 @@
 
 from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import BoolVar, cond, require, set_max_val
-from .utils.encoding import Encoding
-from .utils.grids import is_valid_coord
-from .utils.regions import RectangularGridRegionSolver
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, connected_parts, count_region, region, shade_c
+from .utilsx.shape import all_rect
+from .utilsx.solution import solver
 
-HORIZONTAL_OFFSETS = ((0, 1), (0, -1))
-VERTICAL_OFFSETS = ((1, 0), (-1, 0))
+
+def noribou_strip_different(color: str = "black") -> str:
+    """Generate a rule to ensure that no two adjacent cells are shaded."""
+    tag = tag_encode("reachable", "adj", 4, color)
+    adj_x = "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+    count1 = f"#count {{ R2, C2: {tag}(R, C, R2, C2) }} = CC1"
+    count2 = f"#count {{ R2, C2: {tag}(R1, C1, R2, C2) }} = CC2"
+    return adj_x + "\n" + f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), {count1}, {count2}, CC1 = CC2."
+
+
+def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to avoid regions that does not derive from a source cell.
+
+    A grid fact and a region rule should be defined first.
+    """
+    included = ""
+    for src_r, src_c in known_cells:
+        included += f"not {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C), "
+    return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     if len(E.clues) == 0:
         raise ValueError("The grid is empty.")
-    elif len(E.clues) == 1:
+    if len(E.clues) == 1:
         raise ValueError("Are you sure you put in all the clues?")
 
-    # Map each clue cell to its clue number
-    # (starts at 0, increases left-to-right, top-to-bottom)
-    clue_cell_id = {}
-    for r, c in E.clues:
-        clue_cell_id[(r, c)] = r * E.C + c
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="black"))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type=8))
 
-    num_cells = E.R * E.C
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
+        else:
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(region((r, c), color="not black"))
 
-    # Restrict the number of bits used for IntVar.
-    set_max_val(num_cells)
+            num = int(clue)
+            solver.add_program_line(count_region(num, (r, c), color="not black"))
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-    region_solver = RectangularGridRegionSolver(
-        E.R, E.C, shading_solver.grid, max_num_regions=num_cells, region_symbol_sets=[[True], [False]]
-    )
+    solver.add_program_line(avoid_unknown_region(list(E.clues.keys()), color="not black"))
+    solver.add_program_line(connected_parts(color="black"))
+    solver.add_program_line(noribou_strip_different(color="black"))
+    solver.add_program_line(all_rect(color="black"))
+    solver.add_program_line(display(color="black"))
+    solver.solve()
 
-    region_solver.region_roots(clue_cell_id, region_symbol_set=[False], exact=True)
-    region_solver.set_region_size(num_cells, E.clues)
-
-    def get_neighbors_with_offsets(r: int, c: int, offset_tuples: Tuple[int, int]) -> List[Tuple[int, int]]:
-        neighbors = []
-        for dy, dx in offset_tuples:
-            y, x = r + dy, c + dx
-            if is_valid_coord(E.R, E.C, y, x):
-                neighbors.append((y, x))
-        return neighbors
-
-    # each shaded region must be a width-1 line
-    for r in range(E.R):
-        for c in range(E.C):
-            # determine whether the cell has a horizontal neighbor
-            has_horizontal_neighbor = BoolVar(False)
-            for y, x in get_neighbors_with_offsets(r, c, HORIZONTAL_OFFSETS):
-                has_horizontal_neighbor |= shading_solver.grid[y][x]
-
-            # determine whether the cell has a vertical neighbor
-            has_vertical_neighbor = BoolVar(False)
-            for y, x in get_neighbors_with_offsets(r, c, VERTICAL_OFFSETS):
-                has_vertical_neighbor |= shading_solver.grid[y][x]
-
-            # the cell can't be shaded and have both a horizontal and a vertical neighbor
-            require(~(shading_solver.grid[r][c] & has_horizontal_neighbor & has_vertical_neighbor))
-
-    for r in range(E.R):
-        for c in range(E.C):
-            # Make a list of the sizes of the shaded regions that are adjacent to this
-            # cell, in a clockwise order, replacing any "invalid sizes" with a 0.
-            #   (A size is "invalid" if it's not actually shaded or if it's off the grid.)
-            shaded_sizes = []
-            # neighbors in a clockwise order
-            for y, x in ((r - 1, c), (r, c + 1), (r + 1, c), (r, c - 1)):
-                if is_valid_coord(E.R, E.C, y, x):
-                    shaded_sizes.append(cond(shading_solver.grid[y][x], region_solver.region_size[y][x], 0))
-                else:
-                    shaded_sizes.append(0)
-
-            # For regions that touch diagonally, make sure they're not the same length.
-            for i in range(len(shaded_sizes)):
-                counterclockwise_index = (i - 1) % len(shaded_sizes)
-                clockwise_index = (i + 1) % len(shaded_sizes)
-
-                # require that...
-                require(
-                    # the current cell is not shaded,
-                    shading_solver.grid[r][c]
-                    |
-                    # the neighbor we have chosen is not shaded or invalid,
-                    (shaded_sizes[i] == 0)
-                    |
-                    # or the sizes are different.
-                    (
-                        (shaded_sizes[i] != shaded_sizes[counterclockwise_index])
-                        & (shaded_sizes[i] != shaded_sizes[clockwise_index])
-                    )
-                )
-
-    solutions = shading_solver.solutions()
-
-    return solutions
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
