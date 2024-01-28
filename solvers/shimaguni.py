@@ -4,19 +4,17 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.regions import full_bfs
-from .utilsx.rules import (
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import (
     adjacent,
-    area,
     area_adjacent,
+    avoid_area_adjacent,
     connected,
     count,
-    display,
-    grid,
     shade_c,
-    avoid_area_adjacent,
 )
-from .utilsx.solutions import solver
+from .utilsx.solution import solver
 
 
 def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str:

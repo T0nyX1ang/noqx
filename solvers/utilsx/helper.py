@@ -1,31 +1,16 @@
-"""Utility for shapes."""
+"""Helper functions for generation solvers and rules."""
 
 import itertools
-from typing import Set, Tuple
+from typing import Any, Set, Tuple
 
-OMINOES = {
-    4: {
-        "T": ((0, 0), (1, 0), (1, 1), (2, 0)),
-        "O": ((0, 0), (0, 1), (1, 0), (1, 1)),
-        "I": ((0, 0), (1, 0), (2, 0), (3, 0)),
-        "L": ((0, 0), (1, 0), (2, 0), (2, 1)),
-        "S": ((0, 0), (0, 1), (1, 1), (1, 2)),
-    },
-    5: {
-        "F": ((0, 0), (0, 1), (1, -1), (1, 0), (2, 0)),
-        "I": ((0, 0), (1, 0), (2, 0), (3, 0), (4, 0)),
-        "L": ((0, 0), (1, 0), (2, 0), (3, 0), (3, 1)),
-        "N": ((0, 0), (0, 1), (1, 1), (1, 2), (1, 3)),
-        "P": ((0, 0), (0, 1), (1, 0), (1, 1), (2, 0)),
-        "T": ((0, 0), (0, 1), (0, 2), (1, 1), (2, 1)),
-        "U": ((0, 0), (0, 2), (1, 0), (1, 1), (1, 2)),
-        "V": ((0, 0), (1, 0), (2, 0), (2, 1), (2, 2)),
-        "W": ((0, 0), (0, 1), (1, 1), (1, 2), (2, 2)),
-        "X": ((0, 0), (1, -1), (1, 0), (1, 1), (2, 0)),
-        "Y": ((0, 0), (1, -1), (1, 0), (1, 1), (1, 2)),
-        "Z": ((0, 0), (0, 1), (1, 1), (2, 1), (2, 2)),
-    },
-}
+
+def tag_encode(name: str, *data: Any) -> str:
+    """Encode a valid tag predicate without spaces or hyphens."""
+    tag_data = [name]
+    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
+        tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
+
+    return "_".join(tag_data)
 
 
 def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
@@ -43,16 +28,6 @@ def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
     return tuple((r + dr, c + dc) for r, c in shape)
 
 
-def rotate(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
-    """Rotate a shape 90 degrees."""
-    return canonicalize_shape((-c, r) for r, c in shape)
-
-
-def reflect(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
-    """Reflect a shape vertically."""
-    return canonicalize_shape((-r, c) for r, c in shape)
-
-
 def get_variants(
     shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
 ) -> Set[Tuple[Tuple[int, int]]]:
@@ -66,9 +41,9 @@ def get_variants(
     # in the desired ways
     functions = set()
     if allow_rotations:
-        functions.add(rotate)
+        functions.add(lambda shape: canonicalize_shape((-c, r) for r, c in shape))
     if allow_reflections:
-        functions.add(reflect)
+        functions.add(lambda shape: canonicalize_shape((-r, c) for r, c in shape))
 
     # make a set of currently found shapes
     result = set()

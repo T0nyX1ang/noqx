@@ -4,9 +4,10 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.regions import full_bfs
-from .utilsx.rules import grid, area, shade_c, count, connected, avoid_rect, adjacent, display
-from .utilsx.solutions import solver
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_rect, connected, count, shade_c
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:

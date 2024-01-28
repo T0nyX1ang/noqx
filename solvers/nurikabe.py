@@ -1,21 +1,25 @@
 """The Nurikabe solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import (
-    adjacent,
-    avoid_rect,
-    avoid_unknown_region,
-    connected,
-    count_region,
-    display,
-    grid,
-    region,
-    shade_c,
-)
-from .utilsx.solutions import solver
+from .utilsx.fact import display, grid
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, avoid_rect, connected, count_region, region, shade_c
+from .utilsx.solution import solver
+
+
+def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to avoid regions that does not derive from a source cell.
+
+    A grid fact and a region rule should be defined first.
+    """
+    included = ""
+    for src_r, src_c in known_cells:
+        included += f"not {tag_encode('region', adj_type, src_r, src_c, color)}(R, C), "
+    return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
 def encode(string: str) -> Encoding:

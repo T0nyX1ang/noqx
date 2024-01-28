@@ -4,18 +4,17 @@ from typing import List, Tuple
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import (
+from .utilsx.fact import display, grid
+from .utilsx.rule import (
     adjacent,
     avoid_rect,
     connected,
     count_adjacent,
     count_lit,
-    display,
-    grid,
     lit,
     shade_c,
 )
-from .utilsx.solutions import solver
+from .utilsx.solution import solver
 
 
 def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:

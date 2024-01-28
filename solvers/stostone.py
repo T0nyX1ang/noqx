@@ -4,18 +4,10 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.regions import full_bfs
-from .utilsx.rules import (
-    adjacent,
-    area,
-    connected,
-    count,
-    display,
-    grid,
-    shade_c,
-    avoid_area_adjacent,
-)
-from .utilsx.solutions import solver
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_area_adjacent, connected, count, shade_c
+from .utilsx.solution import solver
 
 
 def valid_stostone(color: str = "black") -> str:

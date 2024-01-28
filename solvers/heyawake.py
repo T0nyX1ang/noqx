@@ -3,21 +3,12 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.borders import Direction
+from .utilsx.border import Direction
 from .utilsx.encoding import Encoding
-from .utilsx.regions import full_bfs
-from .utilsx.rules import (
-    adjacent,
-    area,
-    avoid_adjacent,
-    avoid_rect,
-    connected,
-    count,
-    display,
-    grid,
-    shade_c,
-)
-from .utilsx.solutions import solver
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_adjacent, avoid_rect, connected, count, shade_c
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:

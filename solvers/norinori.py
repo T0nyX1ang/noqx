@@ -4,9 +4,10 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.regions import full_bfs
-from .utilsx.rules import adjacent, area, count, display, grid, shade_c
-from .utilsx.solutions import solver
+from .utilsx.region import full_bfs
+from .utilsx.fact import area, display, grid
+from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.solution import solver
 
 
 def nori_adjacent(color: str = "darkgray", adj_type: int = 4) -> str:

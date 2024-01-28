@@ -1,25 +1,19 @@
 """The Tapa solver."""
 
-from typing import List
 import itertools
+from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import (
-    adjacent,
-    connected,
-    display,
-    grid,
-    shade_c,
-    avoid_rect,
-)
-from .utilsx.solutions import solver
+from .utilsx.fact import display, grid
+from .utilsx.rule import adjacent, avoid_rect, connected, shade_c
+from .utilsx.solution import solver
 
 
 def parse_shading(shading: List[str]):
     """
     Returns the Tapa clue that a ring of 8 cells corresponds to, digits sorted in increasing order.
-    For example, shading = [T,F,T,T,T,F,F,T] should output [2, 3]. 
+    For example, shading = [T,F,T,T,T,F,F,T] should output [2, 3].
     As a special case, outputs [0] if shading is all False.
     """
     if all(shading):  # shading is all True
@@ -46,6 +40,7 @@ def parse_shading(shading: List[str]):
         clue = [0]
     return sorted(clue)
 
+
 def generate_patterns(pattern):
     """
     Generate patterns given numbers and "?"
@@ -53,12 +48,12 @@ def generate_patterns(pattern):
     result = [pattern]
     num_max = 9 - len(pattern) * 2
     for i in range(len(pattern)):
-        if pattern[i] == '?':
+        if pattern[i] == "?":
             old_result = result
             result = []
             for patt in old_result:
                 new_patt = []
-                for num in range(1, num_max+1):
+                for num in range(1, num_max + 1):
                     tmp = patt.copy()
                     tmp[i] = num
                     new_patt.append(tmp)
@@ -66,14 +61,17 @@ def generate_patterns(pattern):
     result = [tuple(sorted(patt)) for patt in result if sum(patt) + len(patt) <= 8]
     return list(set(result))
 
+
 def encode(string: str) -> Encoding:
     return utilsx.encode(string, has_borders=True)
+
 
 def color_to_num(r: int, c: int, color: str = "black") -> str:
     num = f"num(R, C, N) :- -1 <= R, R <= {r}, -1 <= C, C <= {c}, not grid(R, C), N = 0.\n"
     num += f"num(R, C, N) :- grid(R, C), not {color}(R, C), N = 0.\n"
     num += f"num(R, C, N) :- grid(R, C), {color}(R, C), N = 1."
     return num
+
 
 def tapa_rules() -> str:
     valid_tapa = []
@@ -83,6 +81,7 @@ def tapa_rules() -> str:
         shading_var = ", ".join(map(str, map(int, shading)))
         valid_tapa.append(f"valid_tapa({tapa_var}, {shading_var}).")
     return "\n".join(valid_tapa)
+
 
 def valid_tapa_pattern(r: int, c: int, patterns: list, color: str = "black") -> str:
     valid_pattern, num_str, num_constrain = [], [], []
@@ -97,6 +96,7 @@ def valid_tapa_pattern(r: int, c: int, patterns: list, color: str = "black") -> 
         valid_pattern.append(rule)
     valid_pattern = ", ".join(valid_pattern)
     return f":- {valid_pattern}, {num_constrain}."
+
 
 def solve(E: Encoding) -> List:
     solver.reset()

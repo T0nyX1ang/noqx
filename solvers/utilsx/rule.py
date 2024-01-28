@@ -1,63 +1,18 @@
 """Utility for general clingo rules."""
 
-import itertools
-from typing import Any, List, Tuple, Union
+from typing import List, Tuple
 
-from .shapes import OMINOES, get_variants
+from .helper import tag_encode
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
-
-
-def tag_encode(name: str, *data: Any) -> str:
-    """Encode a valid tag predicate without spaces or hyphens."""
-    tag_data = [name]
-    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
-        tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
-
-    return "_".join(tag_data)
-
-
-def display(color: Union[str, List[str]] = "black") -> str:
-    """Generates a rule for displaying the {color} cells."""
-    if isinstance(color, str):
-        return f"#show {color}/2."
-
-    return "\n".join(f"#show {c}/2." for c in color)
-
-
-def grid(rows: int, cols: int) -> str:
-    """Generates facts for a grid."""
-    return f"grid(0..{rows - 1}, 0..{cols - 1})."
-
-
-def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
-    """Generates facts for areas."""
-    return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
-
-
-def omino(num: int = 4, _types: List[str] = None) -> str:
-    """Generates facts for omino types."""
-    if _types is None:
-        _types = list(OMINOES[num].keys())
-
-    data = []
-
-    for omino_type in _types:
-        omino_shape = OMINOES[num][omino_type]
-        omino_variants = get_variants(omino_shape, allow_rotations=True, allow_reflections=True)
-
-        for i, variant in enumerate(omino_variants):
-            for dr, dc in variant:
-                data.append(f'omino_{num}("{omino_type}", {i}, {dr}, {dc}).')
-
-    return "\n".join(data)
 
 
 def shade_c(color: str = "black") -> str:
     """
     Generate a rule that a cell is either {color} or not {color}.
 
-    A grid fact should be defined first."""
+    A grid fact should be defined first.
+    """
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
 
@@ -160,23 +115,6 @@ def count_adjacent(
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
 
 
-def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
-
-    A grid fact and an adjacent rule should be defined first. n is the number of known source cells.
-    """
-    rules = "\n".join(
-        f"{{ map_{r}_{c}(R, C): adj_{adj_type}(R, C, {r}, {c}), {color}(R, C) }} = 1 :- grid({r}, {c})."
-        for r, c in known_cells
-    )  # n rules are generated
-    constraints = "\n".join(
-        f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C). "
-        for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
-    )  # n * (n - 1) / 2 constraints are generated
-    return rules + "\n" + constraints
-
-
 def unique_num(color: str = "black", _type: str = "row") -> str:
     """
     Generates a constraint for unique {color} numbered cells in a row / column.
@@ -271,18 +209,6 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", a
     return f":- {{ {tag_encode('region', adj_type, src_r, src_c, color)}(R, C) }} != {target}."
 
 
-def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to avoid regions that does not derive from a source cell.
-
-    A grid fact and a region rule should be defined first.
-    """
-    included = ""
-    for src_r, src_c in known_cells:
-        included += f"not {tag_encode('region', adj_type, src_r, src_c, color)}(R, C), "
-    return f":- grid(R, C), {included.strip()} {color}(R, C)."
-
-
 def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a rule to check the cells can be lit up with a source {color} cell.
@@ -335,26 +261,6 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
         rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
     return f":- {', '.join(rect_pattern)}."
-
-
-def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
-    """
-    Generates a rule for a valid omino.
-
-    A grid rule or an area rule should be defined first.
-    """
-    common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
-    tag = tag_encode("valid_omino", num, color)
-
-    if _type == "grid":
-        count_valid = f"#count {{ R, C : grid(R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}(T, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
-
-    if _type == "area":
-        count_valid = f"#count {{ R, C : area(A, R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
-
-    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
 
 def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:

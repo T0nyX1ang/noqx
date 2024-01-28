@@ -4,8 +4,9 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import avoid_rect, count, display, grid, shade_c
-from .utilsx.solutions import solver
+from .utilsx.fact import display, grid
+from .utilsx.rule import avoid_rect, count, shade_c
+from .utilsx.solution import solver
 
 
 def unique_linecolor(colors: List[str], _type: str = "row") -> str:

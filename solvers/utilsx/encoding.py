@@ -3,7 +3,7 @@
 import json
 import urllib.parse
 
-from .borders import Direction, get_edge_id_from_border_coord
+from .border import Direction, get_edge_id_from_border_coord
 
 
 class Encoding:

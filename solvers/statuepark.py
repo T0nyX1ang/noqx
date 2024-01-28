@@ -4,21 +4,18 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.rules import (
+from .utilsx.fact import display, grid, omino, OMINOES
+from .utilsx.rule import (
     adjacent,
     connected,
     connected_parts,
     count,
     count_connected_parts,
-    display,
-    grid,
-    omino,
-    valid_omino,
     count_valid_omino,
     shade_c,
 )
-from .utilsx.shapes import OMINOES
-from .utilsx.solutions import solver
+from .utilsx.shape import valid_omino
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
