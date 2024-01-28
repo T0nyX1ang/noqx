@@ -17,8 +17,8 @@ def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "blac
     A lit rule should be defined first.
     """
     src_r, src_c = src_cell
-    count_r = f"#count {{ R: {tag_encode('lit', adj_type, src_r, src_c, color)}(R, C) }} = CR"
-    count_c = f"#count {{ C: {tag_encode('lit', adj_type, src_r, src_c, color)}(R, C) }} = CC"
+    count_r = f"#count {{ R: {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} = CC"
     return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 

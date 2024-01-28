@@ -2,7 +2,7 @@
 
 from typing import List, Tuple
 
-from .helper import tag_encode
+from .helper import tag_encode, ConnectivityHelper
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
@@ -136,19 +136,10 @@ def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> s
 
     An adjacent rule and a grid fact should be defined first.
     """
-    tag = tag_encode("reachable", adj_type, color)
-
-    if _type == "grid":
-        initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1), grid(R1, C1) }}."
-        propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
-        constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
-    elif _type == "area":
-        initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1) : area(A, R1, C1), {color}(R1, C1) }}."
-        propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), adj_{adj_type}(R, C, R1, C1), area(A, R, C), {color}(R, C)."
-        constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
-    else:
-        raise ValueError("Invalid type, must be one of 'grid', 'area'.")
-
+    helper = ConnectivityHelper("reachable", _type, color, adj_type)
+    initial = helper.initial()
+    propagation = helper.propagation()
+    constraint = helper.constraint()
     return initial + "\n" + propagation + "\n" + constraint
 
 
@@ -158,13 +149,11 @@ def connected_edge(row: int, col: int, color: str = "black", adj_type: int = 4) 
 
     An adjacent rule and a grid fact should be defined first.
     """
-    tag = tag_encode("reachable_edge", adj_type, color)
-    initial = f"{tag}(R, C) :- grid(R, C), {color}(R, C), R = 0.\n"
-    initial += f"{tag}(R, C) :- grid(R, C), {color}(R, C), R = {row - 1}.\n"
-    initial += f"{tag}(R, C) :- grid(R, C), {color}(R, C), C = 0.\n"
-    initial += f"{tag}(R, C) :- grid(R, C), {color}(R, C), C = {col - 1}."
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
-    constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    borders = [(r, c) for r in range(row) for c in range(col) if r in [0, row - 1] or c in [0, col - 1]]
+    helper = ConnectivityHelper("reachable_edge", "grid", color, adj_type)
+    initial = helper.initial(borders, enforce_color=True)
+    propagation = helper.propagation()
+    constraint = helper.constraint()
     return initial + "\n" + propagation + "\n" + constraint
 
 
@@ -175,11 +164,9 @@ def connected_parts(color: str = "black", adj_type: int = 4) -> str:
 
     An adjacent rule and a grid fact should be defined first.
     """
-    tag = tag_encode("reachable", adj_type, color)
-    initial = f"{tag}(R0, C0, R, C) :- grid(R0, C0), {color}(R0, C0), R = R0, C = C0."
-    propagation = (
-        f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
-    )
+    helper = ConnectivityHelper("reachable", "grid", color, adj_type)
+    initial = helper.initial(full_search=True)
+    propagation = helper.propagation(full_search=True)
     return initial + "\n" + propagation
 
 
@@ -190,7 +177,7 @@ def count_connected_parts(target: int, color: str = "black", adj_type: int = 4, 
     A reachable rule should be defined first.
     """
     op = rev_op_dict[op]
-    tag = tag_encode("reachable", adj_type, color)
+    tag = tag_encode("reachable", "adj", adj_type, color)
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} {op} {target}."
 
 
@@ -202,17 +189,12 @@ def region(
 
     An adjacent rule and a grid fact should be defined first.
     """
-    src_r, src_c = src_cell
-    tag = tag_encode("region", adj_type, src_r, src_c, color)
-
-    excludes = ""
-    if isinstance(exclude_cells, list):
-        for exclude_r, exclude_c in exclude_cells:
-            excludes += f"not {tag}({exclude_r}, {exclude_c}).\n"
-
-    source_cell = f"{tag}({src_r}, {src_c})."
-    reachable_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C)."
-    return source_cell + "\n" + excludes + reachable_propagation
+    if exclude_cells is None:
+        exclude_cells = []
+    helper = ConnectivityHelper("region", "grid", color, adj_type)
+    initial = helper.initial([src_cell], exclude_cells, full_search=True)
+    propagation = helper.propagation(full_search=True)
+    return initial + "\n" + propagation
 
 
 def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
@@ -222,7 +204,7 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", a
     A region rule should be defined first.
     """
     src_r, src_c = src_cell
-    return f":- {{ {tag_encode('region', adj_type, src_r, src_c, color)}(R, C) }} != {target}."
+    return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} != {target}."
 
 
 def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
@@ -231,21 +213,17 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
-    src_r, src_c = src_cell
-    tag = tag_encode("lit", adj_type, src_r, src_c, color)
-    source_cell = f"{tag}({src_r}, {src_c})."
-
     if adj_type == 4:
-        lit_constraint = f"(R - {src_r}) * (C - {src_c}) == 0"
+        lit_constraint = "(R - R0) * (C - C0) == 0"
     elif adj_type == 8:
-        lit_constraint = (
-            f"(R - {src_r}) * (C - {src_c}) * (R - {src_r} - C + {src_c}) * (R - {src_r} + C - {src_c}) == 0"
-        )
+        lit_constraint = "(R - R0) * (C - C0) * (R - R0 - C + C0) * (R - R0 + C - C0) == 0"
     else:
         raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
-    lit_propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), {color}(R, C), {lit_constraint}."
-    return source_cell + "\n" + lit_propagation
+    helper = ConnectivityHelper("lit", "grid", color, adj_type)
+    initial = helper.initial([src_cell], [], full_search=True)
+    propagation = helper.propagation(full_search=True, extra_constraint=lit_constraint)
+    return initial + "\n" + propagation
 
 
 def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
@@ -256,7 +234,7 @@ def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_
     """
     op = rev_op_dict[op]
     src_r, src_c = src_cell
-    return f":- {{ {tag_encode('lit', adj_type, src_r, src_c, color)}(R, C) }} {op} {target}."
+    return f":- {{ {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
 def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:

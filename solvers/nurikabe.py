@@ -19,7 +19,7 @@ def avoid_unknown_region(known_cells: Tuple[int, int], color: str = "black", adj
     """
     included = ""
     for src_r, src_c in known_cells:
-        included += f"not {tag_encode('region', adj_type, src_r, src_c, color)}(R, C), "
+        included += f"not {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C), "
     return f":- grid(R, C), {included.strip()} {color}(R, C)."
 
 
@@ -52,7 +52,7 @@ def solve(E: Encoding) -> List:
         else:
             current_excluded = [src for src in all_src if src != (r, c)]
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), current_excluded, color="not black"))
+            solver.add_program_line(region((r, c), current_excluded, color="not black"))  # TODO: constraint simplify
 
             if clue != "yellow":
                 num = int(clue)
