@@ -1456,7 +1456,10 @@ let elf_types = {
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
   castlewall: CastleWallElf,
-  cave: DirectSum(QuestionMarkElf, IntElf(), "first"),
+  cave: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
   chocona: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false)

@@ -152,6 +152,22 @@ def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> s
     return initial + "\n" + propagation + "\n" + constraint
 
 
+def connected_edge(row: int, col: int, color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to check the reachability of {color} cells from the edge.
+
+    An adjacent rule and a grid fact should be defined first.
+    """
+    tag = tag_encode("reachable_edge", adj_type, color)
+    initial = f"{tag}(R, C) :- grid(R, C), {color}(R, C), R = 0.\n"
+    initial += f"{tag}(R, C) :- grid(R, C), {color}(R, C), R = {row - 1}.\n"
+    initial += f"{tag}(R, C) :- grid(R, C), {color}(R, C), C = 0.\n"
+    initial += f"{tag}(R, C) :- grid(R, C), {color}(R, C), C = {col - 1}."
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), adj_{adj_type}(R, C, R1, C1), grid(R, C), {color}(R, C)."
+    constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    return initial + "\n" + propagation + "\n" + constraint
+
+
 def connected_parts(color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a rule to get all the connected components of {color} cells.
