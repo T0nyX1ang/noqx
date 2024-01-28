@@ -1,7 +1,9 @@
 """Helper functions for generation solvers and rules."""
 
 import itertools
-from typing import Any, Set, Tuple
+from typing import Any, Set, Tuple, Dict
+
+from .solution import ClingoSolver
 
 
 def tag_encode(name: str, *data: Any) -> str:
@@ -59,3 +61,31 @@ def get_variants(
         result = result.union(new_shapes)
         all_shapes_covered = current_num_shapes == len(result)
     return result
+
+
+def mark_and_extract_clues(
+    solver: ClingoSolver,
+    original_clues: Dict[Tuple[int, int], Any],
+    shaded_color: str = "black",
+    safe_color: str = "green",
+) -> Dict[Tuple[int, int], int]:
+    """
+    Mark clues to the solver and extract the clues that are not color-relevant.
+
+    Recommended to use it before performing a bfs on a grid.
+    """
+    clues = {}  # remove color-relevant clues here
+    for (r, c), clue in original_clues.items():
+        if isinstance(clue, list):
+            if clue[1] == shaded_color:
+                solver.add_program_line(f"{shaded_color}({r}, {c}).")
+            elif clue[1] == safe_color:
+                solver.add_program_line(f"not {shaded_color}({r}, {c}).")
+            clues[(r, c)] = int(clue[0])
+        elif clue == shaded_color:
+            solver.add_program_line(f"{shaded_color}({r}, {c}).")
+        elif clue == safe_color:
+            solver.add_program_line(f"not {shaded_color}({r}, {c}).")
+        else:
+            clues[(r, c)] = int(clue)
+    return clues
