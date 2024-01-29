@@ -1560,7 +1560,14 @@ let elf_types = {
     BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] })
   ),
   numberlink: InvertSolutionZOrder(IntElf()),
-  nuribou: IntElf(),
+  nuribou: DirectSum(
+    IntElf(1, 99),
+    BgColorElf({
+      x: ["black", "black"],
+      o: ["green", "green"],
+      "?": ["yellow", "yellow"],
+    })
+  ),
   nurikabe: DirectSum(
     IntElf(1, 99),
     BgColorElf({

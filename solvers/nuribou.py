@@ -40,10 +40,13 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    if len(E.clues) == 0:
-        raise ValueError("The grid is empty.")
-    if len(E.clues) == 1:
-        raise ValueError("Are you sure you put in all the clues?")
+    all_src = []
+    for (r, c), clue in E.clues.items():
+        if isinstance(clue, int) or clue == "yellow":
+            all_src.append((r, c))
+
+    if not all_src:
+        raise ValueError("No clues found.")
 
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
@@ -57,11 +60,13 @@ def solve(E: Encoding) -> List:
         elif clue == "green":
             solver.add_program_line(f"not black({r}, {c}).")
         else:
+            current_excluded = [src for src in all_src if src != (r, c)]
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), color="not black"))
+            solver.add_program_line(region((r, c), current_excluded, color="not black", avoid_unknown=True))
 
-            num = int(clue)
-            solver.add_program_line(count_region(num, (r, c), color="not black"))
+            if clue != "yellow":
+                num = int(clue)
+                solver.add_program_line(count_region(num, (r, c), color="not black"))
 
     solver.add_program_line(avoid_unknown_region(list(E.clues.keys()), color="not black"))
     solver.add_program_line(connected_parts(color="black"))
