@@ -15,8 +15,7 @@ def noribou_strip_different(color: str = "black") -> str:
     """Generate a rule to ensure that no two adjacent cells are shaded."""
     tag = tag_encode("reachable", "adj", 4, color)
     same_rc, constraint = "", ""
-    count = []
-    for i, dir in enumerate(["lu", "rd", "ld", "ru"]):
+    for dir in ["lu", "rd", "ld", "ru"]:
         op1 = "<=" if dir[0] == "l" else ">="
         op2 = "<" if dir[1] == "u" else ">"
         same_rc += f"{dir}_rule(R, C, R2, C2) :- grid(R, C), grid(R2, C2), R2 = R, C2 {op1} C.\n"
