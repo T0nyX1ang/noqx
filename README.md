@@ -26,6 +26,9 @@ Extended logic puzzle solver of Noq.
   - [x] Lits
   - [x] Statue Park
   - [x] Chocona
+  - [x] Tapa
+  - [x] Cave
+  - [x] Nuribou
 
 ## How to run locally
 
