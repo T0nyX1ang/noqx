@@ -14,19 +14,13 @@ from .utilsx.solution import solver
 def noribou_strip_different(color: str = "black") -> str:
     """Generate a rule to ensure that no two adjacent cells are shaded."""
     tag = tag_encode("reachable", "adj", 4, color)
-    same_rc, constraint = "", ""
-    for dir in ["lu", "rd", "ld", "ru"]:
-        op1 = "<=" if dir[0] == "l" else ">="
-        op2 = "<" if dir[1] == "u" else ">"
-        same_rc += f"{dir}_rule(R, C, R2, C2) :- grid(R, C), grid(R2, C2), R2 = R, C2 {op1} C.\n"
-        same_rc += f"{dir}_rule(R, C, R2, C2) :- grid(R, C), grid(R2, C2), C2 = C, R2 {op2} R.\n"
-    count1 = f"#count {{ R2, C2: {tag}(R, C, R2, C2), lu_rule(R, C, R2, C2) }} = CC1"
-    count2 = f"#count {{ R2, C2: {tag}(R+1, C+1, R2, C2), rd_rule(R+1, C+1, R2, C2) }} = CC2"
-    constraint = f":- {color}(R, C), {color}(R+1, C+1), {count1}, {count2}, CC1 = CC2.\n"
-    count1 = f"#count {{ R2, C2: {tag}(R, C, R2, C2), ld_rule(R, C, R2, C2) }} = CC1"
-    count2 = f"#count {{ R2, C2: {tag}(R-1, C+1, R2, C2), ru_rule(R-1, C+1, R2, C2) }} = CC2"
-    constraint += f":- {color}(R, C), {color}(R-1, C+1), {count1}, {count2}, CC1 = CC2."
-    return same_rc + constraint
+    adj_x = "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+    same_rc = "same_rc(R, C, R1, C1) :- grid(R, C), grid(R1, C1), R1 = R.\n"
+    same_rc += "same_rc(R, C, R1, C1) :- grid(R, C), grid(R1, C1), C1 = C."
+    count1 = f"#count {{ R2, C2: {tag}(R, C, R2, C2), same_rc(R, C, R2, C2) }} = CC1"
+    count2 = f"#count {{ R2, C2: {tag}(R1, C1, R2, C2), same_rc(R1, C1, R2, C2) }} = CC2"
+    constraint = f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), {count1}, {count2}, CC1 = CC2."
+    return adj_x + "\n" + same_rc + "\n" + constraint
 
 
 def encode(string: str) -> Encoding:
