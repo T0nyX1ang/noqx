@@ -1,86 +1,73 @@
 """The Yajilin-Kazusan solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from .utils import claspy
+from . import utilsx
+from .utilsx.encoding import Encoding
 
-from . import utils
-from .utils.claspy import Atom, BoolVar, at_most, require, sum_bools, clasp_solve
-from .utils.encoding import Encoding
-from .utils.solutions import MAX_SOLUTIONS_TO_FIND, rc_to_grid
+
+from .utilsx.fact import grid, display
+from .utilsx.rule import shade_c, adjacent, avoid_adjacent, connected
+from .utilsx.solution import solver
+
+
+def yajikazu_count(target: int, src_cell: Tuple[int, int], direction: str, color: str = "black") -> str:
+    """
+    Generates a constraint for counting the number of {color} cells in a row / col.
+
+    A grid fact should be defined first.
+    """
+    src_r, src_c = src_cell
+
+    if direction == "l":
+        return f":- not {color}({src_r}, {src_c}), #count {{ C1 : {color}({src_r}, C1), C1 < {src_c} }} != {target}."
+
+    if direction == "r":
+        return f":- not {color}({src_r}, {src_c}), #count {{ C1 : {color}({src_r}, C1), C1 > {src_c} }} != {target}."
+
+    if direction == "u":
+        return f":- not {color}({src_r}, {src_c}), #count {{ R1 : {color}(R1, {src_c}), R1 < {src_r} }} != {target}."
+
+    if direction == "d":
+        return f":- not {color}({src_r}, {src_c}), #count {{ R1 : {color}(R1, {src_c}), R1 > {src_r} }} != {target}."
+
+    raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    # Restrict the number of bits used for IntVar.
-    # The highest number that we need is the highest clue number.
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(avoid_adjacent(color="darkgray"))
+    solver.add_program_line(connected(color="not darkgray"))
 
-    grid = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
-    atoms = [[Atom() for c in range(E.C)] for r in range(E.R)]
-    free_prove = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
+    for (r, c), clue in E.clues.items():
+        if clue == "darkgray":
+            solver.add_program_line(f"darkgray({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not darkgray({r}, {c}).")
+        elif clue[1] == "darkgray":
+            num, direction = clue[0]
+            solver.add_program_line(f"darkgray({r}, {c}).")
+            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="darkgray"))
+        elif clue[1] == "green":
+            num, direction = clue[0]
+            solver.add_program_line(f"not darkgray({r}, {c}).")
+            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="darkgray"))
+        else:
+            num, direction = clue
+            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="darkgray"))
 
-    # no two adjacent cells are shaded
-    for r in range(E.R):
-        for c in range(E.C):
-            if r < E.R - 1:
-                require(~(grid[r][c] & grid[r + 1][c]))
-            if c < E.C - 1:
-                require(~(grid[r][c] & grid[r][c + 1]))
+    solver.add_program_line(display(color="darkgray"))
+    solver.solve()
 
-    # connectivity:
-    # (i) at most one cell is free-proved
-    require(at_most(1, sum((row for row in free_prove), [])))
-    # (ii) proving structure
-    for r in range(E.R):
-        for c in range(E.C):
-            atoms[r][c].prove_if(free_prove[r][c])
-            for i, j in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                if 0 <= r + i < E.R and 0 <= c + j < E.C:
-                    atoms[r][c].prove_if((~grid[r + i][c + j]) & atoms[r + i][c + j])
-            require(atoms[r][c] | grid[r][c])  # everything is proved or shaded
-
-    # clues are correct (or shaded over)
-    for r, c in E.clues:
-        num_string = E.clues[(r, c)][0]
-        direction = E.clues[(r, c)][1]
-        # check the clue for validity
-        if not num_string.isnumeric() or direction not in "lrud":
-            raise ValueError("Please ensure that each clue has both a number and a direction.")
-
-        # build a list of coordinates that are "seen" by this clue
-        seen_cells = []
-        if direction == "l":
-            seen_cells = [(r, y) for y in range(0, c)]
-        elif direction == "r":
-            seen_cells = [(r, y) for y in range(c + 1, E.C)]
-        elif direction == "u":
-            seen_cells = [(x, c) for x in range(0, r)]
-        elif direction == "d":
-            seen_cells = [(x, c) for x in range(r + 1, E.R)]
-        # get a list of boolean variables that tell you whether the cells are shaded
-        require(sum_bools(int(num_string), [grid[x][y] for (x, y) in seen_cells]) | grid[r][c])
-
-    sols = []
-    while len(sols) < MAX_SOLUTIONS_TO_FIND and clasp_solve():
-        # append found solution
-        sol = {}
-        for r in range(E.R):
-            for c in range(E.C):
-                sol[rc_to_grid(r, c)] = "darkgray" if grid[r][c].value() else ""
-        sols.append(sol)
-
-        # prevent duplicate solution before re-solving
-        x = BoolVar(True)
-        for r in range(E.R):
-            for c in range(E.C):
-                x &= grid[r][c] == grid[r][c].value()
-        require(~x)
-
-    return sols
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

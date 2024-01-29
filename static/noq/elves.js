@@ -493,7 +493,7 @@ function ImageElf(dict, controls_dict, styles = {}) {
       if (!this.dict[key]) return false;
 
       this.key = key;
-      this.puzzle_elt.style = "";
+      // this.puzzle_elt.style = "";
       this.puzzle_elt.style.backgroundImage = image_url(this.dict[key]);
       if (styles[key] !== undefined) {
         for (const [attribute, value] of Object.entries(styles[key])) {
@@ -1358,7 +1358,7 @@ class YajikazuElf extends InvertSolutionZOrder(
         { "[urdl]": "Add arrow to cell" }
       )
     ),
-    BgColorElf({ x: ["gray", "gray"] })
+    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false)
   )
 ) {
   handle_input(key, modifiers) {
@@ -1366,7 +1366,7 @@ class YajikazuElf extends InvertSolutionZOrder(
   }
 
   load_example(l) {
-    if (l === "gray") {
+    if (l === "darkgray") {
       this.elf2.load_example("gray");
     } else {
       this.elf1.elf1.load_example(l[0][0]);
