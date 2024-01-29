@@ -182,7 +182,11 @@ def count_connected_parts(target: int, color: str = "black", adj_type: int = 4, 
 
 
 def region(
-    src_cell: Tuple[int, int], exclude_cells: List[Tuple[int, int]] = None, color: str = "black", adj_type: int = 4
+    src_cell: Tuple[int, int],
+    exclude_cells: List[Tuple[int, int]] = None,
+    color: str = "black",
+    adj_type: int = 4,
+    avoid_unknown: bool = False,
 ) -> str:
     """
     Generate a rule to construct a region of {color} cells from a source cell.
@@ -194,7 +198,8 @@ def region(
     helper = ConnectivityHelper("region", "grid", color, adj_type)
     initial = helper.initial([src_cell], exclude_cells, full_search=True)
     propagation = helper.propagation(full_search=True)
-    return initial + "\n" + propagation
+    constraint = "\n" + helper.constraint(full_search=True) if avoid_unknown else ""
+    return initial + "\n" + propagation + constraint
 
 
 def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:

@@ -156,12 +156,15 @@ class ConnectivityHelper:
 
         return f"{self.tag}(R0, C0, R, C) :- {self.tag}(R0, C0, R1, C1), grid(R, C), {mutual}."
 
-    def constraint(self) -> str:
+    def constraint(self, full_search: bool = False) -> str:
         """Generate the constraint rule."""
         if self.bound_type == "area":
             return f":- area(A, R, C), {self.color}(R, C), not {self.tag}(A, R, C)."
 
-        return f":- grid(R, C), {self.color}(R, C), not {self.tag}(R, C)."
+        if not full_search:
+            return f":- grid(R, C), {self.color}(R, C), not {self.tag}(R, C)."
+
+        return f":- grid(R, C), {self.color}(R, C), not {self.tag}(_, _, R, C)."
 
     def get_tag(self) -> str:
         """Return the tag of the generator."""
