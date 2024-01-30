@@ -1,25 +1,60 @@
 """The Nonogram solver."""
 
-from typing import List
+from typing import List, Union
 
-from . import utils
-from .utils.claspy import IntVar, require, reset
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.rule import shade_c
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s, outside_clues="1001")
+    return utilsx.encode(string, clue_encoder=lambda s: s, outside_clues="1001")
+
+
+def nono(tag: str, R: int, C: int, clues: list[list[Union[int, str]]], color: str = "black"):
+    # Take care that start and end is left-close-right-open.
+    assert tag in ["row", "col"]
+    init = f"{{ {tag}_start(R, C) }} :- grid(R, C).\n"
+    init += f"{{ {tag}_end(R, C) }} :- 0 <= R, R < {R + (tag=='col')}, 0 <= C, C < {C + (tag=='row')}."
+    constraints = [init]
+    for i, clue in clues.items():
+        cell_str = f"{i}, C" if tag == "row" else f"R, {i}"
+        end_cond = f"0 <= C, C < {C+1}" if tag == "row" else f"0 <= R, R < {R+1}"
+        if len(clue) == 1 and clue[0] == 0:
+            constraint_i = f":- grid({cell_str}), {color}({cell_str}).\n"
+            constraint_i += f":- grid({cell_str}), {tag}_start({cell_str}).\n"
+            constraint_i += f":- {end_cond}, {tag}_end({cell_str})."
+        else:
+            cell_var = "C" if tag == "row" else "R"
+            constraint_i = f":- #count{{ {cell_var}: {tag}_start({cell_str}), grid({cell_str}) }} != {len(clue)}."
+            constraint_i += f"\n:- #count{{ {cell_var}: {tag}_end({cell_str}), {end_cond} }} != {len(clue)}."
+            for j, num in enumerate(clue):
+                if num != "?":
+                    cell_end = f"{i}, C+{num}" if tag == "row" else f"R+{num}, {i}"
+                    cell_end_2 = f"{i}, C+{num-1}" if tag == "row" else f"R+{num-1}, {i}"
+                    constraint_i += f"\n:- grid({cell_str}), {tag}_start({cell_str}), {tag}_start_count({cell_str}, {j+1}), not {tag}_end({cell_end})."
+                    constraint_i += f"\n:- grid({cell_str}), {tag}_start({cell_str}), {tag}_start_count({cell_str}, {j+1}), not {tag}_start_count({cell_end_2}, {j+1})."
+            constraint_i += f"\n:- not {color}({cell_str}), 0<=N, N<={len(clue)}, {tag}_start_count({cell_str}, N + 1), {tag}_end_count({cell_str}, N)."
+            constraint_i += f"\n:- {color}({cell_str}), 0<=N, N<={len(clue)}, {tag}_start_count({cell_str}, N), {tag}_end_count({cell_str}, N)."
+        constraints.append(constraint_i)
+
+    if tag == "row":
+        constraint = f"{tag}_start_count(R, C, N) :- grid(R, C), #count{{ C1: {tag}_start(R, C1), grid(R, C1), C1 <= C }} = N.\n"
+        constraint += f"{tag}_end_count(R, C, N) :- grid(R, C), #count{{ C1: {tag}_end(R, C1), grid(R, C1), C1 <= C }} = N.\n"
+    else:
+        constraint = f"{tag}_start_count(R, C, N) :- grid(R, C), #count{{ R1: {tag}_start(R1, C), grid(R1, C), R1 <= R }} = N.\n"
+        constraint += f"{tag}_end_count(R, C, N) :- grid(R, C), #count{{ R1: {tag}_end(R1, C), grid(R1, C), R1 <= R }} = N.\n"
+    constraint += f":- {tag}_start_count(R, C, N1), {tag}_end_count(R, C, N2), N1 > N2 + 1.\n"
+    constraint += f":- {tag}_start_count(R, C, N1), {tag}_end_count(R, C, N2), N1 < N2.\n"
+    constraint += f":- grid(R, C), {tag}_end(R, C), {tag}_start(R, C)."
+    constraints.append(constraint)
+    
+    return "\n".join(constraints)
 
 
 def solve(E: Encoding) -> List:
-    """
-    Given an encoding of a Nonogram, as would be returned by the
-    encode_nonogram function,
-
-    Returns a list of lists, of maximum size MAX_SOLUTIONS_TO_FIND,
-    where each inner list contains 1-indexed coordinates of shaded cells.
-    """
     if len(E.top) + len(E.left) == 0:
         raise ValueError("No clues provided.")
 
@@ -31,71 +66,18 @@ def solve(E: Encoding) -> List:
     for r in E.left:
         left_clues[r] = [int(clue) if clue != "?" else "?" for clue in E.left[r].split()]
 
-    # reset clasp, & set max IntVar value to max row / col coordinate
-    reset()
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
 
-    #  set_max_val(max(E.R,E.C))
-    # this line is problematic if the clue numbers are absurdly large :(
-    # so i commented it out for now --michael 6/22
+    solver.add_program_line(nono("row", E.R, E.C, left_clues))
+    solver.add_program_line(nono("col", E.R, E.C, top_clues))
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
+    solver.add_program_line(display())
+    solver.solve()
 
-    # --- SATISFY ROW CLUES ---
-    for r in left_clues:
-        # make lists of (inclusive) start and end points of runs
-        start_points = [IntVar(0, E.C - 1) for clue in range(len(left_clues[r]))]
-        end_points = []
-        for clue_idx in range(len(start_points)):
-            # if we have a mystery clue,
-            if left_clues[r][clue_idx] == "?":
-                # the end point has to be greater than or equal to the start
-                end_point = IntVar(0, E.C - 1)
-                require(start_points[clue_idx] <= end_point)
-            # if we have a known run length,
-            else:
-                end_point = start_points[clue_idx] + left_clues[r][clue_idx] - 1
-            # the run can't leave the grid
-            if clue_idx == len(start_points) - 1:
-                require(end_point < E.C)
-            # and there must be whitespace between consecutive runs
-            else:
-                require(end_point + 1 < start_points[clue_idx + 1])
-            end_points.append(end_point)
-
-        if left_clues[r] != []:
-            # apply the shading rules
-            for c in range(E.C):
-                is_in_some_run = False
-                for clue_idx in range(len(start_points)):
-                    is_in_some_run |= (start_points[clue_idx] <= c) & (c <= end_points[clue_idx])
-                # a cell is shaded IFF it belongs to a run
-                require(shading_solver.grid[r][c] == is_in_some_run)
-
-    # --- SATISFY COLUMN CLUES ---
-    for c in top_clues:
-        start_points = [IntVar(0, E.R - 1) for clue in range(len(top_clues[c]))]
-        end_points = []
-        for clue_idx in range(len(start_points)):
-            if top_clues[c][clue_idx] == "?":
-                end_point = IntVar(0, E.R - 1)
-                require(start_points[clue_idx] <= end_point)
-            else:
-                end_point = start_points[clue_idx] + top_clues[c][clue_idx] - 1
-            if clue_idx == len(start_points) - 1:
-                require(end_point < E.R)
-            else:
-                require(end_point + 1 < start_points[clue_idx + 1])
-            end_points.append(end_point)
-
-        if top_clues[c] != []:
-            for r in range(E.R):
-                is_in_some_run = False
-                for clue_idx in range(len(start_points)):
-                    is_in_some_run |= (start_points[clue_idx] <= r) & (r <= end_points[clue_idx])
-                require(shading_solver.grid[r][c] == is_in_some_run)
-
-    return shading_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
