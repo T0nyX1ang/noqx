@@ -17,7 +17,8 @@ def nono(tag: str, R: int, C: int, clues: list[list[Union[int, str]]], color: st
     # Take care that start and end is left-close-right-open.
     assert tag in ["row", "col"]
     init = f"{{ {tag}_start(R, C) }} :- grid(R, C).\n"
-    init += f"{{ {tag}_end(R, C) }} :- 0 <= R, R < {R + (tag=='col')}, 0 <= C, C < {C + (tag=='row')}."
+    init += f"{tag}_endgrid(0..{R-1+(tag=='col')}, 0..{C-1+(tag=='row')}).\n"
+    init += f"{{ {tag}_end(R, C) }} :- {tag}_endgrid(R, C).\n"
     constraints = [init]
     for i, clue in clues.items():
         cell_str = f"{i}, C" if tag == "row" else f"R, {i}"
@@ -46,15 +47,15 @@ def nono(tag: str, R: int, C: int, clues: list[list[Union[int, str]]], color: st
         constraint += f"{tag}_start_count(R, C, N) :- grid(R, C), {tag}_count_range(R, N), {tag}_start(R, C), {tag}_start_count(R, C-1, N-1).\n"
         constraint += f"{tag}_start_count(R, C, N) :- grid(R, C), {tag}_count_range(R, N), not {tag}_start(R, C), {tag}_start_count(R, C-1, N).\n"
         constraint += f"{tag}_end_count(R, -1, 0) :- grid(R, _).\n"
-        constraint += f"{tag}_end_count(R, C, N) :- grid(R, C), {tag}_count_range(R, N), {tag}_end(R, C), {tag}_end_count(R, C-1, N-1).\n"
-        constraint += f"{tag}_end_count(R, C, N) :- grid(R, C), {tag}_count_range(R, N), not {tag}_end(R, C), {tag}_end_count(R, C-1, N).\n"
+        constraint += f"{tag}_end_count(R, C, N) :- {tag}_endgrid(R, C), {tag}_count_range(R, N), {tag}_end(R, C), {tag}_end_count(R, C-1, N-1).\n"
+        constraint += f"{tag}_end_count(R, C, N) :- {tag}_endgrid(R, C), {tag}_count_range(R, N), not {tag}_end(R, C), {tag}_end_count(R, C-1, N).\n"
     else:
         constraint = f"{tag}_start_count(-1, C, 0) :- grid(_, C).\n"
         constraint += f"{tag}_start_count(R, C, N) :- grid(R, C), {tag}_count_range(C, N), {tag}_start(R, C), {tag}_start_count(R-1, C, N-1).\n"
         constraint += f"{tag}_start_count(R, C, N) :- grid(R, C), {tag}_count_range(C, N), not {tag}_start(R, C), {tag}_start_count(R-1, C, N).\n"
         constraint += f"{tag}_end_count(-1, C, 0) :- grid(_, C).\n"
-        constraint += f"{tag}_end_count(R, C, N) :- grid(R, C), {tag}_count_range(C, N), {tag}_end(R, C), {tag}_end_count(R-1, C, N-1).\n"
-        constraint += f"{tag}_end_count(R, C, N) :- grid(R, C), {tag}_count_range(C, N), not {tag}_end(R, C), {tag}_end_count(R-1, C, N).\n"
+        constraint += f"{tag}_end_count(R, C, N) :- {tag}_endgrid(R, C), {tag}_count_range(C, N), {tag}_end(R, C), {tag}_end_count(R-1, C, N-1).\n"
+        constraint += f"{tag}_end_count(R, C, N) :- {tag}_endgrid(R, C), {tag}_count_range(C, N), not {tag}_end(R, C), {tag}_end_count(R-1, C, N).\n"
     constraint += f":- {tag}_start_count(R, C, N1), {tag}_end_count(R, C, N2), N1 > N2 + 1.\n"
     constraint += f":- {tag}_start_count(R, C, N1), {tag}_end_count(R, C, N2), N1 < N2.\n"
     constraint += f":- grid(R, C), {tag}_end(R, C), {tag}_start(R, C)."
