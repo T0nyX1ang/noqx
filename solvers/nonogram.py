@@ -27,10 +27,8 @@ def nono_row(R: int, C: int, clues: list[list[Union[int, str]]], color: str = "b
             constraint_i += f":- grid({cell_str}), {tag}_start({cell_str}).\n"
             constraint_i += f":- 0 <= C, C < {C+1}, {tag}_end({cell_str})."
         else:
-            constraint_i = f":- #count{{ C: {tag}_start({cell_str}), grid({cell_str}) }} != {len(clue)}."
-            constraint_i += f"\n:- #count{{ C: {tag}_end({cell_str}), 0 <= C, C < {C+1} }} != {len(clue)}."
-            # constraint_i = f"{tag}_start_count({i}, {C-1}, {len(clue)})."
-            # constraint_i += f"\n{tag}_end_count({i}, {C}, {len(clue)})."
+            constraint_i = f":- grid(0,0), not {tag}_start_count({i}, {C-1}, {len(clue)})."
+            constraint_i += f"\n:- grid(0,0), not {tag}_end_count({i}, {C}, {len(clue)})."
             for j, num in enumerate(clue):
                 if num != "?":
                     constraint_i += f"\n:- grid({cell_str}), {tag}_start({cell_str}), {tag}_start_count({cell_str}, {j+1}), not {tag}_end({i}, C+{num})."
@@ -68,8 +66,8 @@ def nono_col(R: int, C: int, clues: list[list[Union[int, str]]], color: str = "b
             constraint_i += f":- grid({cell_str}), {tag}_start({cell_str}).\n"
             constraint_i += f":- 0 <= R, R < {R+1}, {tag}_end({cell_str})."
         else:
-            constraint_i = f":- #count{{ R: {tag}_start({cell_str}), grid({cell_str}) }} != {len(clue)}."
-            constraint_i += f"\n:- #count{{ R: {tag}_end({cell_str}), 0 <= R, R < {R+1} }} != {len(clue)}."
+            constraint_i = f":- grid(0,0), not {tag}_start_count({R-1}, {i}, {len(clue)})."
+            constraint_i += f"\n:- grid(0,0), not {tag}_end_count({R}, {i}, {len(clue)})."
             for j, num in enumerate(clue):
                 if num != "?":
                     constraint_i += f"\n:- grid({cell_str}), {tag}_start({cell_str}), {tag}_start_count({cell_str}, {j+1}), not {tag}_end(R+{num}, {i})."
@@ -113,7 +111,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(nono_col(E.R, E.C, top_clues))
 
     solver.add_program_line(display())
-    print(solver.program)
     solver.solve()
 
     return solver.solutions
