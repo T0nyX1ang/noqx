@@ -1,59 +1,58 @@
 """The Cave solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import BoolVar, IntVar, require, set_max_val
-from .utils.encoding import Encoding
-from .utils.numbers import factor_pairs
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, connected, connected_edge, count_lit, lit, shade_c
+from .utilsx.solution import solver
+
+
+def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: str = 4):
+    """
+    Product rule for cave.
+
+    A lit rule should be defined first.
+    """
+    src_r, src_c = src_cell
+    count_r = f"#count {{ R: {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} = CC"
+    return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
-    #    max_val = max(E.clues.values(), default=E.R*E.C)
-    set_max_val(E.R * E.C)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="black"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(connected(color="not black"))
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-    shading_solver.white_connectivity()
-    shading_solver.black_edge_connectivity()
-    shading_solver.white_clues(E.clues)
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
+        else:
+            num = int(clue)
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(lit((r, c), color="not black"))
+            if E.params["Product"]:
+                solver.add_program_line(cave_product_rule(num, (r, c), color="not black"))
+            else:
+                solver.add_program_line(count_lit(num, (r, c), color="not black"))
 
-    # GIVEN NUMBERS ARE SATISFIED
-    for r, c in E.clues:
-        if E.clues[(r, c)] == "?":
-            continue
-        dirs = {}
-        for u, v in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            ray = []
-            n = 1
-            while 0 <= r + u * n < E.R and 0 <= c + v * n < E.C:  # add all ray cells
-                ray.append((r + u * n, c + v * n))
-                n += 1
-            num_seen_cells = IntVar(0, len(ray))
-            for n in range(len(ray) + 1):
-                cond_n = BoolVar(True)
-                for d in range(n):
-                    cond_n &= ~shading_solver.grid[ray[d]]
-                if n < len(ray):
-                    cond_n &= shading_solver.grid[ray[n]]
-                require((num_seen_cells == n) == cond_n)
-            dirs[(u, v)] = num_seen_cells
+    solver.add_program_line(connected_edge(E.R, E.C, color="black"))
+    solver.add_program_line(display())
+    solver.solve()
 
-        # use product rule
-        if E.params["Product"]:
-            cond_product = BoolVar(False)  # unwind the product (so claspy works correctly)
-            for a, b in factor_pairs(E.clues[(r, c)]):
-                cond_product |= (dirs[(1, 0)] + dirs[(-1, 0)] == a - 1) & (dirs[(0, 1)] + dirs[(0, -1)] == b - 1)
-            require(cond_product)
-        else:  # use normal rule
-            require(dirs[(1, 0)] + dirs[(-1, 0)] + dirs[(0, 1)] + dirs[(0, -1)] == E.clues[(r, c)] - 1)
-
-    return shading_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions):
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

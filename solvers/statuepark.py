@@ -2,79 +2,66 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import IntVar, require, sum_bools
-from .utils.encoding import Encoding
-from .utils.grids import get_neighbors
-from .utils.shading import RectangularGridShadingSolver
-from .utils.shapes import OMINOES, get_variants, place_shape_in_grid
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid, omino, OMINOES
+from .utilsx.rule import (
+    adjacent,
+    connected,
+    connected_parts,
+    count,
+    count_connected_parts,
+    count_valid_omino,
+    shade_c,
+)
+from .utilsx.shape import valid_omino
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder = lambda s: s)
+    return utilsx.encode(string, has_borders=True)
+
 
 def solve(E: Encoding) -> List:
-    shapeset = E.params['shapeset']
-
-    shape_id_to_variants = {}
-    if shapeset == 'Tetrominoes':
-        for tetromino in OMINOES[4].values():
-            shape_id_to_variants[len(shape_id_to_variants)] = get_variants(tetromino, True, True)
-    elif shapeset == 'Pentominoes':
-        for pentomino in OMINOES[5].values():
-            shape_id_to_variants[len(shape_id_to_variants)] = get_variants(pentomino, True, True)
-    elif shapeset == 'Double Tetrominoes':
-        for tetromino in OMINOES[4].values():
-            variants = get_variants(tetromino, True, True)
-            shape_id_to_variants[len(shape_id_to_variants)] = variants
-            # this is useful because the second time, we assign the next higher id
-            shape_id_to_variants[len(shape_id_to_variants)] = variants
+    shapeset = E.params["shapeset"]
+    if shapeset == "Tetrominoes":
+        omino_num, omino_count_type = 4, 1
+    elif shapeset == "Pentominoes":
+        omino_num, omino_count_type = 5, 1
+    elif shapeset == "Double Tetrominoes":
+        omino_num, omino_count_type = 4, 2
     else:
-        raise ValueError('Shape set not supported.')
+        raise ValueError("Shape set not supported.")
 
-    shape_id_bound = len(shape_id_to_variants)
-    grid = [[IntVar(0, shape_id_bound) for c in range(E.C)] for r in range(E.R)]
-    s = RectangularGridShadingSolver(E.R, E.C, grid,
-        shading_symbols = [shape_id for shape_id in range(shape_id_bound)])
+    ominos = list(OMINOES[omino_num].keys())
+    omino_count = len(ominos) * omino_count_type
+    black_num = omino_num * omino_count
 
-    # keep track of a list of "shape conditions", where each "shape condition" requires
-    # that all cells involved in the shape have the correct shape ID
-    # and that no other cell anywhere else does
-    for shape_id, variants in shape_id_to_variants.items():
-        possible_shape_conditions = []
-        for r in range(E.R):
-            for c in range(E.C):
-                for variant in variants:
-                    occupied_cells = place_shape_in_grid(E.R, E.C, variant, r, c)
-                    if occupied_cells is not None:
-                        possible_shape_conditions.append(
-                            sum_bools(E.R*E.C,
-                                [(grid[y][x] == shape_id) == ((y,x) in occupied_cells) \
-                                    for y in range(E.R) for x in range(E.C)])
-                        )
-        # exactly 1 of the possible placements is actually correct
-        require(sum_bools(1, possible_shape_conditions))
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(omino(omino_num))
+    solver.add_program_line(shade_c(color="black"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(count(black_num, color="black"))
+    solver.add_program_line(connected(color="not black"))
+    solver.add_program_line(connected_parts(color="black"))
+    solver.add_program_line(count_connected_parts(target=omino_num, color="black"))
+    solver.add_program_line(valid_omino(num=omino_num, color="black"))
 
-    # no touchy rule
-    for r in range(E.R):
-        for c in range(E.C):
-            # for each pair of neighbors, they are either part of the same shape
-            # or at least one is not part of any shape
-            for (y, x) in get_neighbors(E.R, E.C, r, c):
-                require(
-                    (grid[r][c] == grid[y][x]) |
-                    (grid[r][c] == shape_id_bound) |
-                    (grid[y][x] == shape_id_bound)
-                )
+    for o_type in ominos:
+        solver.add_program_line(count_valid_omino(omino_count_type, f'"{o_type}"', num=omino_num, color="black"))
 
-    # unshaded connectivity
-    s.white_connectivity()
+    for (r, c), clue in E.clues.items():
+        if clue == "b":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "w":
+            solver.add_program_line(f"not black({r}, {c}).")
 
-    # require clue correctness
-    for (r, c) in E.clues:
-        require((E.clues[(r,c)] == 'w') == (grid[r][c] == shape_id_bound))
+    solver.add_program_line(display(color="black"))
+    solver.solve()
 
-    return s.solutions()
+    return solver.solutions
+
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

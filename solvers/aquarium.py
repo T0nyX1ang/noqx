@@ -2,46 +2,55 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools
-from .utils.borders import Direction
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import count, shade_c
+from .utilsx.solution import solver
+
+
+def area_gravity(color: str = "black") -> str:
+    """
+    Generates a constraint to fill the {color} areas according to gravity.
+
+    A grid rule should be defined first.
+    """
+    target = f":- area(A, R, C), area(A, R1, C1), R1 >= R, {color}(R, C), not {color}(R1, C1)."
+    return target.replace("not not ", "")
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True, outside_clues="1001")
+    return utilsx.encode(string, has_borders=True, outside_clues="1001")
 
 
 def solve(E: Encoding):
-    max_left_clue = max(E.left.values(), default=0)
-    max_top_clue = max(E.top.values(), default=0)
-    set_max_val(max(max_left_clue, max_top_clue, 1))
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="lightblue"))
 
-    s = RectangularGridShadingSolver(E.R, E.C)
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(area_gravity(color="lightblue"))
 
-    # Ensure that counts of shaded cells in columns and rows are satisfied.
-    for c in E.top:
-        require(sum_bools(E.top[c], [s.grid[r][c] for r in range(E.R)]))
-    for r in E.left:
-        require(sum_bools(E.left[r], [s.grid[r][c] for c in range(E.C)]))
+    for c, num in E.top.items():
+        solver.add_program_line(count(int(num), color="lightblue", _type="col", _id=c))
 
-    # Water-falling constraints.
-    for r in range(1, E.R):
-        for c in range(E.C):
-            # If there is no top border on a cell,
-            if (r, c, Direction.TOP) not in E.edges:
-                # When the cell above it is shaded, the cell itself is also shaded.
-                require(s.grid[r][c] | ~s.grid[r - 1][c])
-    for c in range(1, E.C):
-        for r in range(E.R):
-            # If there is no vertical border between cells,
-            if (r, c, Direction.LEFT) not in E.edges:
-                # The two cells' shadedness must match.
-                require(s.grid[r][c] == s.grid[r][c - 1])
+    for r, num in E.left.items():
+        solver.add_program_line(count(int(num), color="lightblue", _type="row", _id=r))
 
-    return s.solutions(shaded_color="lightblue")
+    for (r, c), clue in E.clues.items():
+        if clue == "lightblue":
+            solver.add_program_line(f"lightblue({r}, {c}).")
+        elif clue == "darkgray":
+            solver.add_program_line(f"not lightblue({r}, {c}).")
+
+    solver.add_program_line(display(color="lightblue"))
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

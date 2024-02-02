@@ -2,41 +2,43 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.regions import full_bfs
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.helper import mark_and_extract_clues
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, connected, count, shade_c
+from .utilsx.shape import avoid_rect
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    set_max_val(E.R * E.C)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(connected(color="darkgray"))
+    solver.add_program_line(avoid_rect(4, 1, color="darkgray"))
+    solver.add_program_line(avoid_rect(1, 4, color="darkgray"))
+    solver.add_program_line(avoid_rect(4, 1, color="not darkgray"))
+    solver.add_program_line(avoid_rect(1, 4, color="not darkgray"))
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-    shading_solver.black_connectivity()
-    grid = shading_solver.grid
+    clues = mark_and_extract_clues(solver, E.clues, shaded_color="darkgray", safe_color="green")
+    if clues:
+        areas = full_bfs(E.R, E.C, E.edges, clues)
+        for i, (rc, ar) in enumerate(areas.items()):
+            solver.add_program_line(area(_id=i, src_cells=ar))
+            solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
 
-    # GIVEN NUMBERS ARE SATISFIED
-    if E.clues:
-        for coord in (clue_regions := full_bfs(E.R, E.C, E.edge_ids, clues=E.clues)):
-            require(sum_bools(E.clues[coord], [grid[other] for other in clue_regions[coord]]))
+    solver.add_program_line(display(color="darkgray"))
+    solver.solve()
 
-    # NO FOUR IN A ROW
-    for i in range(E.R):
-        for j in range(E.C):
-            if i < E.R - 3:
-                require(grid[(i, j)] | grid[(i + 1, j)] | grid[(i + 2, j)] | grid[(i + 3, j)])
-                require((~grid[(i, j)]) | (~grid[(i + 1, j)]) | (~grid[(i + 2, j)]) | (~grid[(i + 3, j)]))
-            if j < E.C - 3:
-                require(grid[(i, j)] | grid[(i, j + 1)] | grid[(i, j + 2)] | grid[(i, j + 3)])
-                require((~grid[(i, j)]) | (~grid[(i, j + 1)]) | (~grid[(i, j + 2)]) | (~grid[(i, j + 3)]))
-
-    return shading_solver.solutions(shaded_color="darkgray")
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

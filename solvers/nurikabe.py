@@ -2,63 +2,54 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import set_max_val
-from .utils.encoding import Encoding
-from .utils.regions import RectangularGridRegionSolver
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.rule import adjacent, connected, count_region, region, shade_c
+from .utilsx.shape import avoid_rect
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     # Reduce IntVar size by counting clue cells and assigning each one an id.
-    clue_cell_id = {}
-    number_clues = {}
-    has_nonnumber_clue = False
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) in E.clues:
-                clue_cell_id[(r, c)] = len(clue_cell_id)
-                value = E.clues[(r, c)]
-                if value == "?":
-                    has_nonnumber_clue = True
-                else:
-                    number_clues[(r, c)] = value
-    max_clue = (
-        (E.R * E.C - sum(number_clues.values()))
-        if has_nonnumber_clue
-        else (max(number_clues.values()) if number_clues else 0)
-    )
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
+    solver.add_program_line(adjacent())
+    solver.add_program_line(connected(color="black"))
+    solver.add_program_line(avoid_rect(2, 2, color="black"))
 
-    if len(clue_cell_id) == 0:
-        raise ValueError("Error: No clues")
+    all_src = []
+    for (r, c), clue in E.clues.items():
+        if isinstance(clue, int) or clue == "yellow":
+            all_src.append((r, c))
 
-    # Restrict the number of bits used for IntVar.
-    set_max_val(max(len(clue_cell_id), max_clue))
+    if not all_src:
+        raise ValueError("No clues found.")
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-    shading_solver.black_connectivity()
-    shading_solver.no_black_2x2()
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
+        else:
+            current_excluded = [src for src in all_src if src != (r, c)]
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(region((r, c), current_excluded, color="not black", avoid_unknown=True))
 
-    region_solver = RectangularGridRegionSolver(
-        E.R,
-        E.C,
-        shading_solver.grid,
-        max_num_regions=len(clue_cell_id),
-        region_symbol_sets=[
-            [
-                False,
-            ]
-        ],
-    )
-    region_solver.region_roots(clue_cell_id, exact=True)
-    region_solver.set_region_size(max_clue, number_clues, clue_region_bijection=not has_nonnumber_clue)
+            if clue != "yellow":
+                num = int(clue)
+                solver.add_program_line(count_region(num, (r, c), color="not black"))
 
-    return shading_solver.solutions()
+    solver.add_program_line(display())
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

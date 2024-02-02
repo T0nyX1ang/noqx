@@ -2,71 +2,69 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import IntVar, cond, require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.rule import count, shade_c
+from .utilsx.shape import avoid_rect
+from .utilsx.solution import solver
+
+
+def unique_linecolor(colors: List[str], _type: str = "row") -> str:
+    """
+    Generates a constraint for unique row / column in a grid.
+    At least one pair of cells in the same row / column should have different colors.
+
+    A grid rule should be defined first.
+    """
+    if _type == "row":
+        colors_row = ", ".join(
+            f"#count {{ C : grid(R1, C), grid(R2, C), {color}(R1, C), not {color}(R2, C) }} = 0" for color in colors
+        ).replace("not not ", "")
+        return f":- grid(R1, _), grid(R2, _), R1 < R2, {colors_row}."
+
+    if _type == "col":
+        colors_col = ", ".join(
+            f"#count {{ R : grid(R, C1), grid(R, C2), {color}(R, C1), not {color}(R, C2) }} = 0" for color in colors
+        ).replace("not not ", "")
+        return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
+
+    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     if not (E.R % 2 == 0 and E.C % 2 == 0):
         raise ValueError("# rows and # columns must both be even!")
 
-    set_max_val(max(E.R // 2, E.C // 2, 3))
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
+    solver.add_program_line(count(E.R // 2, color="black", _type="row"))
+    solver.add_program_line(count(E.C // 2, color="black", _type="col"))
+    solver.add_program_line(unique_linecolor(colors=["black", "not black"], _type="row"))
+    solver.add_program_line(unique_linecolor(colors=["black", "not black"], _type="col"))
+    solver.add_program_line(avoid_rect(1, 3, color="black"))
+    solver.add_program_line(avoid_rect(1, 3, color="not black"))
+    solver.add_program_line(avoid_rect(3, 1, color="black"))
+    solver.add_program_line(avoid_rect(3, 1, color="not black"))
 
-    # Use True (black) to represent 1
-    s = RectangularGridShadingSolver(E.R, E.C)
-    black_row_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
-    black_col_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
-    white_row_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
-    white_col_counts = [[IntVar(0, 3) for c in range(E.C)] for r in range(E.R)]
-
-    for r in range(E.R):
-        # Half of the items in a row must be 1s; the other half must be 0s
-        require(sum_bools(E.C // 2, [s.grid[r][c] for c in range(E.C)]))
-        require(black_row_counts[r][0] == cond(s.grid[r][0], 1, 0))
-        require(white_row_counts[r][0] == cond(s.grid[r][0], 0, 1))
-        for c in range(1, E.C):
-            require(black_row_counts[r][c] == cond(s.grid[r][c], black_row_counts[r][c - 1] + 1, 0))
-            require(white_row_counts[r][c] == cond(s.grid[r][c], 0, white_row_counts[r][c - 1] + 1))
-            require(black_row_counts[r][c] < 3)
-            require(white_row_counts[r][c] < 3)
-
-    for c in range(E.C):
-        require(sum_bools(E.R // 2, [s.grid[r][c] for r in range(E.R)]))
-        require(black_col_counts[0][c] == cond(s.grid[0][c], 1, 0))
-        require(white_col_counts[0][c] == cond(s.grid[0][c], 0, 1))
-        for r in range(1, E.R):
-            require(black_col_counts[r][c] == cond(s.grid[r][c], black_col_counts[r - 1][c] + 1, 0))
-            require(white_col_counts[r][c] == cond(s.grid[r][c], 0, white_col_counts[r - 1][c] + 1))
-            require(black_col_counts[r][c] < 3)
-            require(white_col_counts[r][c] < 3)
-
-    # Require that no two rows are the same.
-    for r1 in range(E.R):
-        for r2 in range(r1 + 1, E.R):
-            require(~sum_bools(E.C, [s.grid[r1][c] == s.grid[r2][c] for c in range(E.C)]))
-
-    # Require that no two columns are the same.
-    for c1 in range(E.C):
-        for c2 in range(c1 + 1, E.C):
-            require(~sum_bools(E.R, [s.grid[r][c1] == s.grid[r][c2] for r in range(E.R)]))
-
-    # Populate given clues.
-    for r, c in E.clues:
-        if E.clues[(r, c)] == 1:
-            require(s.grid[r][c])
-        elif E.clues[(r, c)] == 0:
-            require(~s.grid[r][c])
+    for (r, c), num in E.clues.items():
+        if num == 1:
+            solver.add_program_line(f"black({r}, {c}).")
+        elif num == 0:
+            solver.add_program_line(f"not black({r}, {c}).")
         else:
-            raise ValueError("Please only enter 0s or 1s")
+            raise ValueError(f"Invalid clue: {num}")
 
-    return s.solutions()
+    solver.add_program_line(display())
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

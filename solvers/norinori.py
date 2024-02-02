@@ -2,40 +2,51 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.grids import get_neighbors
-from .utils.regions import full_bfs
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.region import full_bfs
+from .utilsx.fact import area, display, grid
+from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.solution import solver
+
+
+def nori_adjacent(color: str = "darkgray", adj_type: int = 4) -> str:
+    """
+    Generates a constraint for Norinori puzzles.
+
+    A grid rule and an adjacent rule should be defined first.
+    """
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    set_max_val(2)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c("darkgray"))
 
-    s = RectangularGridShadingSolver(E.R, E.C)
-    regions = full_bfs(E.R, E.C, E.edges)
+    solver.add_program_line(adjacent())
+    solver.add_program_line(nori_adjacent(color="darkgray"))
 
-    # Nori rules
-    for r in range(E.R):
-        for c in range(E.C):
-            # If shaded, then
-            require(
-                # Exactly 1 neighbor is shaded
-                sum_bools(1, [s.grid[y][x] for (y, x) in get_neighbors(E.R, E.C, r, c)])
-                | ~s.grid[r][c]
-            )
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(count(2, color="darkgray", _type="area", _id=i))
 
-    # Region clues
-    for region in regions:
-        require(sum_bools(2, [s.grid[r][c] for (r, c) in region]))
+    for (r, c), clue in E.clues.items():
+        if clue == "darkgray":
+            solver.add_program_line(f"darkgray({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not darkgray({r}, {c}).")
 
-    return s.solutions(shaded_color="darkgray")
+    solver.add_program_line(display(color="darkgray"))
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

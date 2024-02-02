@@ -2,87 +2,60 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import MultiVar, require, sum_bools
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
-from .utils.shapes import OMINOES, get_adjacent, get_variants, place_shape_in_region
-from .utils.regions import full_bfs
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid, omino
+from .utilsx.helper import tag_encode
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, area_adjacent, connected, count, shade_c
+from .utilsx.shape import avoid_rect, valid_omino
+from .utilsx.solution import solver
 
-L = OMINOES[4]["L"]  # L shape
-I = OMINOES[4]["I"]  # I shape  # noqa: E741
-T = OMINOES[4]["T"]  # T shape
-S = OMINOES[4]["S"]  # S shape
+
+def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> None:
+    """
+    Generates a constraint to avoid adjacent ominos with the same type.
+
+    An area adjacent rule, an omino rule should be defined first.
+    """
+    tag = tag_encode("valid_omino", num, color)
+    return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, T, _, _), {tag}(A1, T1, _, _), T = T1."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    regions = full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(omino(4, ["L", "I", "T", "S"]))
+    solver.add_program_line(shade_c("darkgray"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(connected(color="darkgray"))
+    solver.add_program_line(avoid_rect(2, 2, color="darkgray"))
 
-    if len(regions) == 1:
-        raise ValueError("Are you sure you drew all of the borders?")
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(count(4, color="darkgray", _type="area", _id=i))
 
-    # make a list of lists, where each internal list represents a row of the puzzle.
-    # each cell has value:
-    # - 'L': if the cell is part of an L shape
-    # - 'I': if the cell is part of an I shape
-    # - 'T': if the cell is part of an T shape
-    # - 'S': if the cell is part of an S shape
-    # - ' ': if the cell is empty
-    grid = [[MultiVar("L", "I", "T", "S", " ") for c in range(E.C)] for r in range(E.R)]
+    solver.add_program_line(connected(color="darkgray", _type="area"))
+    solver.add_program_line(valid_omino(4, color="darkgray", _type="area"))
+    solver.add_program_line(area_adjacent(color="darkgray"))
+    solver.add_program_line(avoid_adjacent_same_omino(4, color="darkgray"))
 
-    # make a dictionary which maps each character in 'LITS' to a tuple of tuples,
-    # where each internal tuple is a canonical representation of a shape variant
-    variants = {}
-    for name, shape in (("L", L), ("I", I), ("T", T), ("S", S)):
-        variants[name] = get_variants(shape, True, True)
+    for (r, c), clue in E.clues.items():
+        if clue == "darkgray":
+            solver.add_program_line(f"darkgray({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not darkgray({r}, {c}).")
 
-    for region in regions:
-        # keep track of a list of "shape conditions", where each "shape condition" requires:
-        #  - that a shape is at located at a particular coordinate
-        #  (all cells involved in the shape have the correct grid values)
-        #  - that there are no other shaded cells in that region
-        possible_shape_conditions = []
-        for r, c in region:
-            # for each "type" (LITS)
-            for lits_type in variants:  # pylint: disable=consider-using-dict-items
-                # for each variant (a canonical shape representation of one of the type's variants)
-                for variant in variants[lits_type]:
-                    # get a list of cells that this variant occupies when its anchor point is (r, c)
-                    occupied_cells = place_shape_in_region(region, variant, r, c)
-                    # if the shape actually fits in the region
-                    if occupied_cells is not None:
-                        # set all of the occupied cells' LITS values
-                        shape_cells = sum_bools(4, [grid[y][x] == lits_type for (y, x) in occupied_cells])
-                        # all other cells must be empty
-                        non_shape_cells = []
-                        for y, x in region:
-                            if (y, x) not in occupied_cells:
-                                non_shape_cells.append(grid[y][x] == " ")
-                        non_shape_cells = sum_bools(len(region) - 4, non_shape_cells)
-                        # the "shape condition" requires that we have a exactly one shape in the region
-                        shape_cond = shape_cells & non_shape_cells
-                        # keep track of this particular shape condition
-                        possible_shape_conditions.append(shape_cond)
-                        # all of the shapes (if any) that are adjacent to this one cannot be of the same type
-                        neighboring_cells = get_adjacent(E.R, E.C, variant, r, c)
-                        require(
-                            sum_bools(len(neighboring_cells), [grid[y][x] != lits_type for (y, x) in neighboring_cells])
-                            | ~shape_cond
-                        )
-        # of the possible shapes, exactly 1 of them is actually correct
-        require(sum_bools(1, possible_shape_conditions))
+    solver.add_program_line(display(color="darkgray"))
+    solver.solve()
 
-    # add black-connectivity and no-2x2 rules
-    shading_solver = RectangularGridShadingSolver(E.R, E.C, grid, ["L", "I", "T", "S"])
-    shading_solver.black_connectivity()
-    shading_solver.no_black_2x2()
-
-    return shading_solver.solutions(shaded_color="darkgray")
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

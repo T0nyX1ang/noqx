@@ -2,87 +2,61 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import (
-    Atom,
-    BoolVar,
-    IntVar,
-    at_least,
-    at_most,
-    cond,
-    require,
-    set_max_val,
-    sum_bools,
-)
-from .utils.encoding import Encoding
-from .utils.grids import get_neighbors
-from .utils.regions import full_bfs
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.helper import mark_and_extract_clues
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_area_adjacent, connected, count, shade_c
+from .utilsx.solution import solver
+
+
+def valid_stostone(color: str = "black") -> str:
+    """
+    Generate a constraint to enforce a valid stostone dropping.
+
+    A grid rule should be defined first.
+    """
+    below_C = f"grid(R, C), {color}(R, C), #count {{ R1: grid(R1, C), {color}(R1, C), R1 < R }} = BC"
+    below_C1 = f"grid(R, C + 1), {color}(R, C + 1), #count {{ R1: grid(R1, C + 1), {color}(R1, C + 1), R1 < R }} = BC1"
+    return f":- {below_C}, {below_C1}, BC != BC1."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
     if E.R % 2 != 0:
         raise ValueError("The stostone grid must have an even # rows.")
 
-    max_stone_id = E.R // 2
-    set_max_val(max_stone_id)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(count(E.R // 2, color="darkgray", _type="col"))
 
-    rooms = full_bfs(E.R, E.C, E.edges)
-    rc_to_room, room_to_clue = {}, {}
-    for room in rooms:
-        for r, c in room:
-            rc_to_room[(r, c)] = room
-            if (r, c) in E.clues:
-                room_to_clue[room] = int(E.clues[(r, c)])
+    clues = mark_and_extract_clues(solver, E.clues, shaded_color="darkgray", safe_color="green")
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
 
-    s = RectangularGridShadingSolver(E.R, E.C)
-    # Count number of black cells at a certain position and below in the same column.
-    grid = [[IntVar(0, max_stone_id) for c in range(E.C)] for r in range(E.R)]
+        tag = False
+        for rc in ar:
+            if rc in clues:
+                solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
+                tag = True
+        if not tag:
+            solver.add_program_line(count(1, op="ge", color="darkgray", _type="area", _id=i))
 
-    # Black cells within a room must be connected.
-    for room in rooms:
-        chosen = {(r, c): BoolVar() for (r, c) in room}
-        conns = [[Atom() for c in range(E.C)] for r in range(E.R)]
-        for r, c in room:
-            for y, x in get_neighbors(E.R, E.C, r, c):
-                conns[r][c].prove_if((s.grid[y][x] & conns[y][x]) | chosen[(r, c)])
-            require(conns[r][c] | ~s.grid[r][c])
-        require(sum_bools(1, chosen.values()))
+    solver.add_program_line(connected(color="darkgray", _type="area"))
+    solver.add_program_line(avoid_area_adjacent(color="darkgray"))
+    solver.add_program_line(valid_stostone(color="darkgray"))
+    solver.add_program_line(display(color="darkgray"))
+    solver.solve()
 
-    # Cell with a number indicates number of black cells in region.
-    # Or, if no number is present, >= 1 must be black.
-    for room in rooms:
-        if room in room_to_clue:
-            require(sum_bools(room_to_clue[room], [s.grid[r][c] for (r, c) in room]))
-        else:
-            require(at_least(1, [s.grid[r][c] for (r, c) in room]))
-
-    # When 2 cells are adjacent across region boundaries, at most 1 can be black.
-    for r in range(E.R):
-        for c in range(E.C):
-            if r < E.R - 1 and rc_to_room[(r, c)] != rc_to_room[(r + 1, c)]:
-                require(at_most(1, [s.grid[r][c], s.grid[r + 1][c]]))
-            if c < E.C - 1 and rc_to_room[(r, c)] != rc_to_room[(r, c + 1)]:
-                require(at_most(1, [s.grid[r][c], s.grid[r][c + 1]]))
-
-    # Each column must have numbers 1 through max_stone_id.
-    for c in range(E.C):
-        require(grid[E.R - 1][c] == cond(s.grid[E.R - 1][c], 1, 0))
-        for r in range(E.R - 2, -1, -1):
-            require(grid[r][c] == (grid[r + 1][c] + cond(s.grid[r][c], 1, 0)))
-        require(grid[0][c] == max_stone_id)
-
-    # Connected stones in different columns must fall together.
-    for r in range(E.R):
-        for c in range(E.C - 1):
-            require((grid[r][c] == grid[r][c + 1]) | ~(s.grid[r][c] & s.grid[r][c + 1]))
-
-    return s.solutions(shaded_color="darkgray")
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

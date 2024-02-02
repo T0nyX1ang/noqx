@@ -1,30 +1,44 @@
-"""The Minesweeper solver."""
+"""The blacksweeper solver."""
 
-from typing import List
+from typing import Dict, List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.rule import adjacent, count, count_adjacent, shade_c
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
-def solve(E: Encoding) -> List:
-    set_max_val(8)
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
+def solve(E: Encoding) -> List[Dict[str, str]]:
+    mine_count = E.params["m"]
 
-    # Enforce that clue cells can't be shaded, and that their numbers are correct
-    shading_solver.white_clues(E.clues)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
+    solver.add_program_line(adjacent(_type=8))
 
-    for cell, num in E.clues.items():
-        if num != "?":
-            require(sum_bools(num, [shading_solver.grid[surr] for surr in shading_solver.grid.get_surroundings(*cell)]))
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
+        else:
+            num = int(clue)
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(count_adjacent(num, (r, c), color="black", adj_type=8))
 
-    return shading_solver.solutions()
+    if mine_count:
+        solver.add_program_line(count(mine_count, color="black", _type="grid"))
+
+    solver.add_program_line(display())
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

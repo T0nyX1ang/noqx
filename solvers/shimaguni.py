@@ -2,96 +2,58 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import (
-    Atom,
-    BoolVar,
-    IntVar,
-    at_least,
-    at_most,
-    cond,
-    require,
-    set_max_val,
-    sum_bools,
-)
-from .utils.borders import Direction
-from .utils.encoding import Encoding
-from .utils.grids import get_neighbors
-from .utils.regions import full_bfs
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.helper import mark_and_extract_clues
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, area_adjacent, avoid_area_adjacent, connected, count, shade_c
+from .utilsx.solution import solver
+
+
+def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to enforce that adjacent areas have different sizes.
+
+    An adjacent area rule and an area rule should be defined first.
+    """
+    size_count = f"#count {{R, C: area(A, R, C), {color}(R, C) }} = N"
+    size1_count = f"#count {{R, C: area(A1, R, C), {color}(R, C) }} = N1"
+    return f":- area_adj_{adj_type}(A, A1), A < A1, {size_count}, {size1_count}, N = N1."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    rooms = full_bfs(E.R, E.C, E.edges)
-    # Map clue numbers to their rooms.
-    clue_coord_to_room = {}
-    for clue in E.clues:
-        for room in rooms:
-            for cell in room:
-                if clue == cell:
-                    clue_coord_to_room[clue] = room
-                    break
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(adjacent())
 
-    max_val = max(max([len(room) for room in rooms]), max(E.clues.values(), default=0))
-    set_max_val(max_val)
-    s = RectangularGridShadingSolver(E.R, E.C)
-    conn = [[Atom() for c in range(E.C)] for r in range(E.R)]
-    chosen = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
-    num_shaded_in_region = [[IntVar(1, max_val) for c in range(E.C)] for r in range(E.R)]
+    clues = mark_and_extract_clues(solver, E.clues, shaded_color="darkgray", safe_color="green")
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
 
-    # Shaded cells in a region must be connected.
-    for room in rooms:
-        for r, c in room:
-            # Connected iff shaded.
-            require(conn[r][c] == s.grid[r][c])
-            # Prove the "chosen" cell for the region.
-            conn[r][c].prove_if(chosen[r][c])
-            # Prove via connectivity.
-            for y, x in get_neighbors(E.R, E.C, r, c):
-                if (y, x) in room:
-                    conn[r][c].prove_if(conn[y][x] & s.grid[r][c])
-        # Choose 1 cell per region.
-        require(at_most(1, [chosen[r][c] for (r, c) in room]))
+        tag = False
+        for rc in ar:
+            if rc in clues:
+                solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
+                tag = True
+        if not tag:
+            solver.add_program_line(count(1, op="ge", color="darkgray", _type="area", _id=i))
 
-    # Clue cells indicate number of shaded cells there.
-    for coord, room in clue_coord_to_room.items():
-        require(sum_bools(E.clues[coord], [s.grid[r][c] for (r, c) in room]))
+    solver.add_program_line(connected(color="darkgray", _type="area"))
+    solver.add_program_line(avoid_area_adjacent(color="darkgray"))
+    solver.add_program_line(area_adjacent())
+    solver.add_program_line(adjacent_area_different_size(color="darkgray"))
+    solver.add_program_line(display(color="darkgray"))
+    solver.solve()
 
-    # Every room has at least 1 shaded cell.
-    for room in rooms:
-        # Don't need to check clued cells.
-        if room not in clue_coord_to_room.values():
-            require(at_least(1, [s.grid[r][c] for (r, c) in room]))
-
-    # Calculate # shaded in each region (needed for next step).
-    for room in rooms:
-        num_shaded = IntVar(0)
-        for r, c in room:
-            num_shaded += cond(s.grid[r][c], 1, 0)
-        for r, c in room:
-            require(num_shaded_in_region[r][c] == num_shaded)
-
-    for r in range(E.R):
-        for c in range(E.C):
-            if r < E.R:
-                if (r + 1, c, Direction.TOP) in E.edges:
-                    # Regions with same # black cells cannot be adjacent.
-                    require(num_shaded_in_region[r][c] != num_shaded_in_region[r + 1][c])
-                    # Cells orthogonally adjacent across region boundaries - >= 1 unshaded.
-                    require(at_most(1, [s.grid[r][c], s.grid[r + 1][c]]))
-            if c < E.C:
-                if (r, c + 1, Direction.LEFT) in E.edges:
-                    # Regions with same # black cells cannot be adjacent.
-                    require(num_shaded_in_region[r][c] != num_shaded_in_region[r][c + 1])
-                    # Cells orthogonally adjacent across region boundaries - >= 1 unshaded.
-                    require(at_most(1, [s.grid[r][c], s.grid[r][c + 1]]))
-
-    return s.solutions(shaded_color="darkgray")
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
