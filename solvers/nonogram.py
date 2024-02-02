@@ -10,7 +10,7 @@ from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s, outside_clues="1001")
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def nono_row(C: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):
@@ -77,29 +77,19 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
             constraints.append(f"col_count_range({i}, 0..{len(clue)}).")
             for j, num in enumerate(clue):
                 if num != "?":
-                    constraints.append(
-                        f":- grid(R, {i}), col_start(R, {i}), col_start_count(R, {i}, {j + 1}), not col_end(R + {num - 1}, {i})."
-                    )
-                    constraints.append(
-                        f":- grid(R, {i}), col_start(R, {i}), col_start_count(R, {i}, {j + 1}), not col_start_count(R + {num - 1}, {i}, {j + 1})."
-                    )
+                    common_i = f"grid(R, {i}), col_start(R, {i}), col_start_count(R, {i}, {j + 1})"
+                    constraints.append(f":- {common_i}, not col_end(R + {num - 1}, {i}).")
+                    constraints.append(f":- {common_i}, not col_start_count(R + {num - 1}, {i}, {j + 1}).")
 
+    common = "grid(R, C), col_count_range(C, N)"
     constraints.append(f":- grid(R, C), not {color}(R, C), col_start_count(R, C, N + 1), col_end_count(R - 1, C, N).")
     constraints.append(f":- grid(R, C), {color}(R, C), col_start_count(R, C, N), col_end_count(R - 1, C, N).")
     constraints.append("col_start_count(-1, C, 0) :- grid(_, C).")
-    constraints.append(
-        "col_start_count(R, C, N) :- grid(R, C), col_count_range(C, N), col_start(R, C), col_start_count(R - 1, C, N - 1)."
-    )
-    constraints.append(
-        "col_start_count(R, C, N) :- grid(R, C), col_count_range(C, N), not col_start(R, C), col_start_count(R - 1, C, N)."
-    )
+    constraints.append(f"col_start_count(R, C, N) :- {common}, col_start(R, C), col_start_count(R - 1, C, N - 1).")
+    constraints.append(f"col_start_count(R, C, N) :- {common}, not col_start(R, C), col_start_count(R - 1, C, N).")
     constraints.append("col_end_count(-1, C, 0) :- grid(_, C).")
-    constraints.append(
-        "col_end_count(R, C, N) :- grid(R, C), col_count_range(C, N), col_end(R, C), col_end_count(R - 1, C, N - 1)."
-    )
-    constraints.append(
-        "col_end_count(R, C, N) :- grid(R, C), col_count_range(C, N), not col_end(R, C), col_end_count(R - 1, C, N)."
-    )
+    constraints.append(f"col_end_count(R, C, N) :- {common}, col_end(R, C), col_end_count(R - 1, C, N - 1).")
+    constraints.append(f"col_end_count(R, C, N) :- {common}, not col_end(R, C), col_end_count(R - 1, C, N).")
     constraints.append(":- col_start_count(R, C, N1), col_end_count(R - 1, C, N2), N1 > N2 + 1.")
     constraints.append(":- col_start_count(R, C, N1), col_end_count(R - 1, C, N2), N1 < N2.")
     constraints.append(":- grid(R, C), col_start(R, C), col_end(R - 1, C).")
