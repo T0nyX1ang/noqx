@@ -76,9 +76,7 @@ def unquote_plus(value):
 def encode(
     string,
     clue_encoder=default_clue_encoder,
-    has_params=False,  # currently useless 5/21/21 --michael
     has_borders=False,
-    outside_clues="0000",
 ):
     """
     Given a JSON object representing a puzzle,
