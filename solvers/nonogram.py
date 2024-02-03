@@ -9,11 +9,8 @@ from .utilsx.rule import shade_c
 from .utilsx.solution import solver
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
-
-
 def nono_row(C: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):
+    """Generates the nonogram row constraints."""
     prefix = "row_count(R, C, N, V) :- grid(R, C), row_count_value_range(R, N, V)"
     constraints = []
     constraints.append("row_count(R, -1, -1, 0) :- grid(R, _), R >= 0.")
@@ -41,6 +38,7 @@ def nono_row(C: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
 
 
 def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):
+    """Generates the nonogram column constraints."""
     prefix = "col_count(R, C, N, V) :- grid(R, C), col_count_value_range(C, N, V)"
     constraints = []
     constraints.append("col_count(-1, C, -1, 0) :- grid(_, C), C >= 0.")
@@ -65,6 +63,10 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
                     constraints.append(f"col_count_value_range({i}, {j}, 0..{R+2-2*len(clue)}).")
 
     return "\n".join(constraints)
+
+
+def encode(string: str) -> Encoding:
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
@@ -95,9 +97,9 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"black({r}, {c}).")
         elif clue == "green":
             solver.add_program_line(f"not black({r}, {c}).")
+
     solver.solve()
 
-    print(solver.program)
     return solver.solutions
 
 
