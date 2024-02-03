@@ -34,6 +34,8 @@ def nono_row(C: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
                     slope = f"row_count({i}, C, {j}, V), row_count({i}, C + 1, {j}, 0)"
                     constraints.append(f"row_count_value_range({i}, {j}, 0..{num}).")
                     constraints.append(f":- grid({i}, C), {color}({i}, C), {slope} , V != {num}.")
+                else:
+                    constraints.append(f"row_count_value_range({i}, {j}, 0..{C+2-2*len(clue)}).")
 
     return "\n".join(constraints)
 
@@ -59,6 +61,8 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
                     slope = f"col_count(R, {i}, {j}, V), col_count(R + 1, {i}, {j}, 0)"
                     constraints.append(f"col_count_value_range({i}, {j}, 0..{num}).")
                     constraints.append(f":- grid(R, {i}), {color}(R, {i}), {slope}, V != {num}.")
+                else:
+                    constraints.append(f"col_count_value_range({i}, {j}, 0..{R+2-2*len(clue)}).")
 
     return "\n".join(constraints)
 
@@ -93,6 +97,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not black({r}, {c}).")
     solver.solve()
 
+    print(solver.program)
     return solver.solutions
 
 
