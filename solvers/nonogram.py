@@ -85,6 +85,12 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(nono_row(E.C, left_clues))
     solver.add_program_line(nono_col(E.R, top_clues))
     solver.add_program_line(display())
+
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not black({r}, {c}).")
     solver.solve()
 
     return solver.solutions

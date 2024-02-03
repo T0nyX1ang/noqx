@@ -1007,6 +1007,12 @@ class NonogramElf extends Elf {
   }
 
   handle_input(key, modifiers) {
+    console.log(
+      key,
+      modifiers,
+      this.siblings[3].id,
+      ELVES[this.siblings[0].id]
+    );
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
 
@@ -1023,8 +1029,13 @@ class NonogramElf extends Elf {
     // resize extender dimension for all siblings, as needed
     let max_size = Math.max(1, this.true_num_clues());
     for (let elt of this.siblings)
-      if (ELVES[elt.id])
-        max_size = Math.max(ELVES[elt.id].true_num_clues(), max_size);
+      if (ELVES[elt.id]) {
+        let elf = ELVES[elt.id];
+        if (typeof elf.true_num_clues !== "function") {
+          elf = typeof elf.elf1.true_num_clues === "function" ? elf.elf1 : elf.elf2;
+        }
+        max_size = Math.max(elf.true_num_clues(), max_size);
+      }
 
     for (let elt of this.siblings)
       elt.style[this.extend_attr] = `calc(${max_size}*var(--dimension))`;
@@ -1044,8 +1055,13 @@ class NonogramElf extends Elf {
 
     let max_size = Math.max(1, this.true_num_clues());
     for (let elt of this.siblings)
-      if (ELVES[elt.id])
-        max_size = Math.max(ELVES[elt.id].true_num_clues(), max_size);
+      if (ELVES[elt.id]) {
+        let elf = ELVES[elt.id];
+        if (typeof elf.true_num_clues !== "function") {
+          elf = typeof elf.elf1.true_num_clues === "function" ? elf.elf1 : elf.elf2;
+        }
+        max_size = Math.max(elf.true_num_clues(), max_size);
+      }
 
     for (let elt of this.siblings)
       elt.style[this.extend_attr] = `${45 * max_size}px`;
@@ -1554,7 +1570,11 @@ let elf_types = {
   ),
   nanro: NanroElf,
   ncells: IntElf(),
-  nonogram: NonogramElf,
+  nonogram: DirectSum(
+    NonogramElf,
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
+  // nonogram: NonogramElf,
   norinori: DirectSum(
     BorderElf,
     BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] })
