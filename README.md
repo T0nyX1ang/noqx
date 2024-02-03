@@ -29,6 +29,8 @@ Extended logic puzzle solver of Noq.
   - [x] Tapa
   - [x] Cave
   - [x] Nuribou
+  - [x] Yajisan-Kazusan
+  - [x] Nonogram
 
 ## How to run locally
 
