@@ -959,6 +959,17 @@ class NanroElf extends InvertSolutionZOrder(IntBordersElf()) {
   }
 }
 
+function find_elf_with_func(elf, func_name) {
+  let result = null;
+  if (typeof elf[func_name] === "function") {
+    result = elf;
+  } else if (elf.hasOwnProperty('elf1')) {
+    let e1 = find_elf_with_func(elf.elf1, func_name);
+    result = e1 !== null ? e1 : find_elf_with_func(elf.elf2, func_name);
+  }
+  return result;
+}
+
 // big
 class NonogramElf extends Elf {
   static controls() {
@@ -1007,12 +1018,6 @@ class NonogramElf extends Elf {
   }
 
   handle_input(key, modifiers) {
-    console.log(
-      key,
-      modifiers,
-      this.siblings[3].id,
-      ELVES[this.siblings[0].id]
-    );
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
 
@@ -1030,10 +1035,7 @@ class NonogramElf extends Elf {
     let max_size = Math.max(1, this.true_num_clues());
     for (let elt of this.siblings)
       if (ELVES[elt.id]) {
-        let elf = ELVES[elt.id];
-        if (typeof elf.true_num_clues !== "function") {
-          elf = typeof elf.elf1.true_num_clues === "function" ? elf.elf1 : elf.elf2;
-        }
+        let elf = find_elf_with_func(ELVES[elt.id], "true_num_clues");
         max_size = Math.max(elf.true_num_clues(), max_size);
       }
 
@@ -1056,10 +1058,7 @@ class NonogramElf extends Elf {
     let max_size = Math.max(1, this.true_num_clues());
     for (let elt of this.siblings)
       if (ELVES[elt.id]) {
-        let elf = ELVES[elt.id];
-        if (typeof elf.true_num_clues !== "function") {
-          elf = typeof elf.elf1.true_num_clues === "function" ? elf.elf1 : elf.elf2;
-        }
+        let elf = find_elf_with_func(ELVES[elt.id], "true_num_clues");
         max_size = Math.max(elf.true_num_clues(), max_size);
       }
 
@@ -1574,7 +1573,6 @@ let elf_types = {
     NonogramElf,
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
-  // nonogram: NonogramElf,
   norinori: DirectSum(
     BorderElf,
     BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] })
