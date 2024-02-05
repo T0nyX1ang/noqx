@@ -9,6 +9,7 @@ from .utils.shading import RectangularGridShadingSolver
 from .utils.regions import RectangularGridRegionSolver
 from .utils.solutions import get_all_grid_solutions
 
+
 def encode(string: str) -> Encoding:
     def clue_encoder(s):
         try:

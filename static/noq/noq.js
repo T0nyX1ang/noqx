@@ -14,7 +14,7 @@ $.getMultiScripts = function (arr, path) {
   _arr.push(
     $.Deferred(function (d) {
       $(d.resolve);
-    })
+    }),
   );
   return $.when.apply($, _arr);
 };
@@ -544,7 +544,7 @@ function display_grid(param_dict) {
         (borders = borders),
         (i = i),
         (j = j),
-        (dots = dots)
+        (dots = dots),
       );
     }
 }
@@ -586,7 +586,7 @@ function show_example(idx) {
 
   if (example.link)
     get(
-      "header_div"
+      "header_div",
     ).innerHTML = `<a href=${example.link} target='_blank'>(Example source)</a>`;
 }
 
@@ -631,7 +631,7 @@ function solve_puzzle() {
   current_request = new XMLHttpRequest();
   current_request.open(
     "GET",
-    `solver?puzzle_type=${pt}&puzzle=${encodeURI(parse_input())}`
+    `solver?puzzle_type=${pt}&puzzle=${encodeURI(parse_input())}`,
   );
   current_request.onreadystatechange = function () {
     if (this.stopped) return;
