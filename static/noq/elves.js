@@ -1570,8 +1570,8 @@ let elf_types = {
   nanro: NanroElf,
   ncells: IntElf(),
   nonogram: DirectSum(
-    NonogramElf,
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] }),
+    NonogramElf,
   ),
   norinori: DirectSum(
     BorderElf,
