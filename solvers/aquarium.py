@@ -21,7 +21,7 @@ def area_gravity(color: str = "black") -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True, outside_clues="1001")
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding):
@@ -43,7 +43,7 @@ def solve(E: Encoding):
     for (r, c), clue in E.clues.items():
         if clue == "blue":
             solver.add_program_line(f"blue({r}, {c}).")
-        elif clue == "gray":
+        elif clue == "green":
             solver.add_program_line(f"not blue({r}, {c}).")
 
     solver.add_program_line(display(color="blue"))

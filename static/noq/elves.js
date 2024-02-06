@@ -1450,7 +1450,7 @@ let elf_types = {
   ),
   aquarium: DirectSum(
     IntBordersElf(),
-    BgColorElf({ x: ["blue", "blue"], o: ["gray", "gray"] }),
+    BgColorElf({ x: ["blue", "blue"], o: ["green", "green"] }),
   ),
   balanceloop: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(
