@@ -586,6 +586,10 @@ function BgColorElf(
     handle_input(key, modifiers) {
       super.handle_input(key, modifiers);
 
+      // restrict bg color to be within the grid
+      if (this.i < 0 || this.j < 0 || this.i > 2 * ROWS || this.j > 2 * COLS)
+        return;
+
       if (key in keyToColor) {
         const bgColor = keyToColor[key][0];
         const innerColor = keyToColor[key][1];
