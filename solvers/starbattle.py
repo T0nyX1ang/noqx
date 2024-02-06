@@ -31,7 +31,7 @@ def solve(E: Encoding) -> List:
     for c in range(E.C):
         require(sum_bools(num_stars, [shading_solver.grid[r][c] for r in range(E.R)]))
 
-    return shading_solver.solutions(shaded_color="darkgray")
+    return shading_solver.solutions(shaded_color="gray")
 
 
 def decode(solutions: List[Encoding]) -> str:

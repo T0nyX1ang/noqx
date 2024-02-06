@@ -83,7 +83,7 @@ def solve(E: Encoding) -> List:
 
     def format_function(r: int, c: int) -> str:
         unshaded_count = region_solver.get_unshaded_cells_in_region(r, c, [True])
-        return "darkgray" if shading_solver.grid[r][c].value() else unshaded_count.value()
+        return "gray" if shading_solver.grid[r][c].value() else unshaded_count.value()
 
     return get_all_grid_solutions(shading_solver.grid, format_function=format_function)
 

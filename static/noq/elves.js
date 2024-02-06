@@ -4,7 +4,7 @@ let image_url = (str) =>
     : str;
 const nav_keys = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
 const del_keys = ["Backspace", "Delete", "Escape"];
-const COLORS = ["black", "darkgray", "lightblue"];
+const COLORS = ["black", "gray", "blue", "green", "yellow"];
 const CLIPBOARD_SYMBOLS = {
   1: "│",
   "-": "─",
@@ -215,7 +215,7 @@ class Elf {
   load_solution(str) {
     if (COLORS.includes(str)) {
       this.solution_elt.style.backgroundColor = str;
-      if (str == "black") this.solution_elt.style.color = "darkgray";
+      if (str == "black") this.solution_elt.style.color = "gray";
       this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
     } else if (/^[0-9]+$/.test(str)) this.solution_elt.innerHTML = str;
     else if (/^.+\.png$/.test(str)) {
@@ -1373,7 +1373,7 @@ class YajikazuElf extends InvertSolutionZOrder(
         { "[urdl]": "Add arrow to cell" },
       ),
     ),
-    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false),
+    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false),
   ),
 ) {
   handle_input(key, modifiers) {
@@ -1381,7 +1381,7 @@ class YajikazuElf extends InvertSolutionZOrder(
   }
 
   load_example(l) {
-    if (l === "darkgray") {
+    if (l === "gray") {
       this.elf2.load_example("gray");
     } else {
       this.elf1.elf1.load_example(l[0][0]);
@@ -1441,11 +1441,11 @@ let elf_types = {
   akari: AkariElf,
   aqre: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false),
+    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false),
   ),
   aquarium: DirectSum(
     IntBordersElf(),
-    BgColorElf({ x: ["lightblue", "lightblue"], o: ["darkgray", "darkgray"] }),
+    BgColorElf({ x: ["blue", "blue"], o: ["gray", "gray"] }),
   ),
   balanceloop: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(
@@ -1477,7 +1477,7 @@ let elf_types = {
   ),
   chocona: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false),
+    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false),
   ),
   countryroad: InvertSolutionZOrder(IntBordersElf()),
   doppelblock: IntElf(),
@@ -1493,7 +1493,7 @@ let elf_types = {
   heteromino: BgColorElf({ x: ["gray", "gray"] }),
   heyawake: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false),
+    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false),
   ),
   hitori: DirectSum(
     IntElf(),
@@ -1526,7 +1526,7 @@ let elf_types = {
   ),
   lits: DirectSum(
     BorderElf,
-    BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] }),
+    BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] }),
   ),
   magnets: MagnetsElf,
   masyu: CircleElf,
@@ -1575,7 +1575,7 @@ let elf_types = {
   ),
   norinori: DirectSum(
     BorderElf,
-    BgColorElf({ x: ["darkgray", "darkgray"], o: ["green", "green"] }),
+    BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] }),
   ),
   numberlink: InvertSolutionZOrder(IntElf()),
   nuribou: DirectSum(
@@ -1608,7 +1608,7 @@ let elf_types = {
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
   shimaguni: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false),
+    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false),
   ),
   skyscrapers: DirectSum(QuestionMarkElf, IntElf(), "first"),
   slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("sw"), "first"),
@@ -1617,7 +1617,7 @@ let elf_types = {
   statuepark: CircleElf,
   stostone: DirectSum(
     IntBordersElf(),
-    BgColorElf({ x: ["darkgray", "black"], o: ["green", "white"] }, false),
+    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false),
   ),
   sudoku: SudokuElf,
   tapa: TapaElf,
