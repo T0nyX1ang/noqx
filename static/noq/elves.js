@@ -312,6 +312,7 @@ class Elf {
 
       // flip text color to white, if the cell is black (for e.g. Akari, Shakashaka)
       if (td.style.backgroundColor == "black") td.style.color = "white";
+      if (td.style.backgroundColor == "green") td.style.color = "white";
     }
 
     td.style.textAlign = "center";
