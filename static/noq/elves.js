@@ -1618,7 +1618,10 @@ let elf_types = {
   skyscrapers: DirectSum(QuestionMarkElf, IntElf(), "first"),
   slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("sw"), "first"),
   spiralgalaxies: SpiralGalaxiesElf,
-  starbattle: BorderElf,
+  starbattle: DirectSum(
+    BorderElf,
+    BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] }),
+  ),
   statuepark: CircleElf,
   stostone: DirectSum(
     IntBordersElf(),
