@@ -21,7 +21,7 @@ class TextImp {
       this.inp.setAttribute(
         "onchange",
         `display_grid();
-        this.style.width = get_text_width(this.value);`,
+        this.style.width = get_text_width(this.value);`
       );
 
     this.set_value(value);
