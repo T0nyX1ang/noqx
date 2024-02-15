@@ -14,7 +14,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List[Dict[str, str]]:
-    solver.reset()
+    solver.reset(mode="shade")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(unique_num(color="not black", _type="row"))

@@ -16,7 +16,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List[Dict[str, str]]:
     mine_count = E.params["m"]
 
-    solver.reset()
+    solver.reset(mode="shade")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent(_type=8))

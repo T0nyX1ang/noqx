@@ -35,8 +35,7 @@ class ClingoSolver:
         self.clingo_instance: Control = Control()
         self.program: str = ""
         self.solutions: List[Dict[str, str]] = []
-        self.mode = "shade"
-        self.R, self.C = None, None
+        self.mode, self.R, self.C = None, None, None
 
     def store_solutions(self, model: Model):
         """Get the solution."""
@@ -61,7 +60,6 @@ class ClingoSolver:
                 formatted[rc_to_grid(int(r), int(c))] = int(num)
 
         if self.mode == "region":
-            print(region)
             for r in range(self.R):
                 for c in range(self.C):
                     if r and region[r][c] != region[r - 1][c]:
@@ -81,9 +79,9 @@ class ClingoSolver:
         """Add a line to the program."""
         self.program += line + "\n"
 
-    def reset(self, mode: str = "shade", R: int = None, C: int = None):
+    def reset(self, mode: str, R: int = None, C: int = None):
         """Reset the program."""
-        assert mode in ["shade", "region", "number"], "Mode must be in shade, region, number!"
+        assert mode in ["shade", "region", "number"], "Mode must be in 'shade', 'region' or 'number'"
         self.mode = mode
         self.R, self.C = R, C
         self.clingo_instance = Control()

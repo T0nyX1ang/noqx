@@ -36,7 +36,7 @@ def solve(E: Encoding) -> List:
     if not all_src:
         raise ValueError("No clues found.")
 
-    solver.reset()
+    solver.reset(mode="shade")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent(_type=4))

@@ -30,7 +30,7 @@ def solve(E: Encoding) -> List:
     if E.R % 2 != 0:
         raise ValueError("The stostone grid must have an even # rows.")
 
-    solver.reset()
+    solver.reset(mode="shade")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())

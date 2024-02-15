@@ -37,7 +37,7 @@ def solve(E: Encoding) -> List:
     omino_count = len(ominos) * omino_count_type
     black_num = omino_num * omino_count
 
-    solver.reset()
+    solver.reset(mode="shade")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(omino(omino_num))
     solver.add_program_line(shade_c(color="black"))

@@ -17,7 +17,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     num_stars = int(E.params["stars"])
 
-    solver.reset()
+    solver.reset(mode="shade")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="gray"))
 
