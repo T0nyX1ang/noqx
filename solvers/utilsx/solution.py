@@ -39,7 +39,7 @@ class ClingoSolver:
         self.solutions: List[Dict[str, str]] = []
         self.mode = "shade"
         self.R, self.C = None, None
-    
+
     def store_solutions(self, model: Model):
         """Get the solution."""
         solution = tuple(str(model).split())  # raw solution converted from clingo
@@ -59,21 +59,21 @@ class ClingoSolver:
                 region[r][c] = id
             elif self.mode == "number":
                 raise NotImplementedError("Number mode not implemented!")
-        
+
         if self.mode == "region":
             print(region)
             for r in range(self.R):
                 for c in range(self.C):
-                    if r and region[r][c] != region[r-1][c]:
-                        formatted[rcd_to_edge(r,c,Direction.TOP)] = "black"
-                    if c and region[r][c] != region[r][c-1]:
-                        formatted[rcd_to_edge(r,c,Direction.LEFT)] = "black"
+                    if r and region[r][c] != region[r - 1][c]:
+                        formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
+                    if c and region[r][c] != region[r][c - 1]:
+                        formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
             for c in range(self.C):
-                formatted[rcd_to_edge(0,c,Direction.TOP)] = "black"
-                formatted[rcd_to_edge(self.R-1,c,Direction.BOTTOM)] = "black"
+                formatted[rcd_to_edge(0, c, Direction.TOP)] = "black"
+                formatted[rcd_to_edge(self.R - 1, c, Direction.BOTTOM)] = "black"
             for r in range(self.R):
-                formatted[rcd_to_edge(r,0,Direction.LEFT)] = "black"
-                formatted[rcd_to_edge(r,self.C-1,Direction.RIGHT)] = "black"
+                formatted[rcd_to_edge(r, 0, Direction.LEFT)] = "black"
+                formatted[rcd_to_edge(r, self.C - 1, Direction.RIGHT)] = "black"
 
         self.solutions.append(formatted)
 
@@ -81,7 +81,7 @@ class ClingoSolver:
         """Add a line to the program."""
         self.program += line + "\n"
 
-    def reset(self, mode: str="color", R: int=None, C: int=None):
+    def reset(self, mode: str = "shade", R: int = None, C: int = None):
         """Reset the program."""
         assert mode in ["shade", "region", "number"], "Mode must be in shade, region, number!"
         self.mode = mode

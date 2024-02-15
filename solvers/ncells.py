@@ -81,12 +81,11 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(connected_number())
 
     for (r, c), clue in E.clues.items():
-        solver.add_program_line(num_same_adj(r, c, 4-clue))
-        
+        solver.add_program_line(num_same_adj(r, c, 4 - clue))
+
     solver.add_program_line(display_region())
     # print(solver.program)
     solver.solve()
-
     return solver.solutions
 
 
