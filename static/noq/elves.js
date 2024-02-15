@@ -682,15 +682,19 @@ function LetterElf(letterset, concat = false) {
 /////////////////////////////////////
 
 class AkariElf extends DirectSum(
-  BgColorElf(),
-  IntElf(0, 4, "[0-4]"),
-  "second"
+  DirectSum(BgColorElf(), IntElf(0, 4, "[0-4]"), "second"),
+  ImageElf(
+    { o: "bulb" },
+    { o: "Place blub" },
+    { o: { color: "", backgroundColor: "" } }
+  )
 ) {
   handle_input(key, modifiers) {
     super.handle_input(key, modifiers);
     if ("01234".includes(key)) {
       this.puzzle_elt.style.backgroundColor = "black";
       this.puzzle_elt.style.color = "white";
+      this.puzzle_elt.style.backgroundImage = "";
     }
   }
 
@@ -699,6 +703,7 @@ class AkariElf extends DirectSum(
     if ("01234".includes(str)) {
       this.puzzle_elt.style.backgroundColor = "black";
       this.puzzle_elt.style.color = "white";
+      this.puzzle_elt.style.backgroundImage = "";
     }
   }
 }
