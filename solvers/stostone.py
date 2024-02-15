@@ -52,7 +52,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(connected(color="gray", _type="area"))
     solver.add_program_line(avoid_area_adjacent(color="gray"))
     solver.add_program_line(valid_stostone(color="gray"))
-    solver.add_program_line(display(color="gray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions

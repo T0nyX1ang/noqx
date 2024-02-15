@@ -16,9 +16,7 @@ def rc_to_grid(r: int, c: int):
 
 
 def rcd_to_edge(r, c, d):
-    """
-    Given an edge id, returns the border coordinate of the edge.
-    """
+    """Given an edge id, returns the border coordinate of the edge."""
     if d == Direction.TOP:
         return f"{r*2},{c*2+1}"
     elif d == Direction.LEFT:
@@ -55,8 +53,8 @@ class ClingoSolver:
                 formatted[rc_to_grid(int(r), int(c))] = color.replace("color", "")
             elif self.mode == "region":
                 _, coords = item.replace("(", " ").replace(")", " ").split()
-                r, c, id = map(int, coords.split(","))
-                region[r][c] = id
+                r, c, _id = map(int, coords.split(","))
+                region[r][c] = _id
             elif self.mode == "number":
                 raise NotImplementedError("Number mode not implemented!")
 

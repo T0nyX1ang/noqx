@@ -59,7 +59,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(connected_parts(color="black"))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))
-    solver.add_program_line(display(color="black"))
+    solver.add_program_line(display(item="black"))
     solver.solve()
 
     return solver.solutions

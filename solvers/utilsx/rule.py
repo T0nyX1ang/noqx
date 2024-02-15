@@ -117,7 +117,7 @@ def count_adjacent(
 
 def unique_num(color: str = "black", _type: str = "row") -> str:
     """
-    Generates a constraint for unique {color} numbered cells in a row / column.
+    Generates a constraint for unique {color} numbered cells in a(an) row / column / area.
 
     A number rule should be defined first.
     """
@@ -127,7 +127,11 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     if _type == "col":
         return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
-    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
+    if _type == "area":
+        area_unique_constraint = f"#count {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1"
+        return f":- area(A, _, _), number(_, _, N), {area_unique_constraint}."
+
+    raise ValueError("Invalid line type, must be one of 'row', 'col', 'area'.")
 
 
 def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> str:

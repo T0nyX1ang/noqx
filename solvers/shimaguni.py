@@ -49,7 +49,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(avoid_area_adjacent(color="gray"))
     solver.add_program_line(area_adjacent())
     solver.add_program_line(adjacent_area_different_size(color="gray"))
-    solver.add_program_line(display(color="gray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions

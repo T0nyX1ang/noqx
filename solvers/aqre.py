@@ -34,7 +34,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(area(_id=i, src_cells=ar))
             solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
 
-    solver.add_program_line(display(color="gray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions

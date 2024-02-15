@@ -63,7 +63,7 @@ def solve(E: Encoding) -> List:
             num, direction = clue
             solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="gray"))
 
-    solver.add_program_line(display(color="gray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions

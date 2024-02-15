@@ -46,7 +46,7 @@ def solve(E: Encoding):
         elif clue == "green":
             solver.add_program_line(f"not blue({r}, {c}).")
 
-    solver.add_program_line(display(color="blue"))
+    solver.add_program_line(display(item="blue"))
     solver.solve()
 
     return solver.solutions

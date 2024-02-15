@@ -59,7 +59,7 @@ def solve(E: Encoding) -> List:
 
     solver.add_program_line(identical_adjacent_map(all_trees, color="black", adj_type=4))
     solver.add_program_line(count(len(all_trees), color="black", _type="grid"))
-    solver.add_program_line(display(color="black"))
+    solver.add_program_line(display(item="black"))
     solver.solve()
 
     for solution in solver.solutions:

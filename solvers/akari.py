@@ -47,7 +47,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"black({r}, {c}).")
             solver.add_program_line(count_adjacent(num, (r, c), color="bulb"))
 
-    solver.add_program_line(display("bulb"))
+    solver.add_program_line(display(item="bulb"))
     solver.solve()
 
     for solution in solver.solutions:

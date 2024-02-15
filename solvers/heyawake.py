@@ -45,7 +45,7 @@ def solve(E: Encoding) -> List:
             b1, b2 = borders_in_col[i], borders_in_col[i + 1]
             solver.add_program_line(avoid_rect(b2 - b1 + 2, 1, color="not gray", corner=(b1 - 1, c)))
 
-    solver.add_program_line(display(color="gray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions

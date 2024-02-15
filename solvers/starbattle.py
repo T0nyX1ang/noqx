@@ -38,7 +38,7 @@ def solve(E: Encoding) -> List:
         elif clue == "green":
             solver.add_program_line(f"not gray({r}, {c}).")
 
-    solver.add_program_line(display(color="gray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions
