@@ -21,32 +21,32 @@ def area_gravity(color: str = "black") -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True, outside_clues="1001")
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding):
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c(color="lightblue"))
+    solver.add_program_line(shade_c(color="blue"))
 
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(area_gravity(color="lightblue"))
+        solver.add_program_line(area_gravity(color="blue"))
 
     for c, num in E.top.items():
-        solver.add_program_line(count(int(num), color="lightblue", _type="col", _id=c))
+        solver.add_program_line(count(int(num), color="blue", _type="col", _id=c))
 
     for r, num in E.left.items():
-        solver.add_program_line(count(int(num), color="lightblue", _type="row", _id=r))
+        solver.add_program_line(count(int(num), color="blue", _type="row", _id=r))
 
     for (r, c), clue in E.clues.items():
-        if clue == "lightblue":
-            solver.add_program_line(f"lightblue({r}, {c}).")
-        elif clue == "darkgray":
-            solver.add_program_line(f"not lightblue({r}, {c}).")
+        if clue == "blue":
+            solver.add_program_line(f"blue({r}, {c}).")
+        elif clue == "green":
+            solver.add_program_line(f"not blue({r}, {c}).")
 
-    solver.add_program_line(display(color="lightblue"))
+    solver.add_program_line(display(color="blue"))
     solver.solve()
 
     return solver.solutions

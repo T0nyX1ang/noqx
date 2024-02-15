@@ -41,29 +41,29 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_adjacent(color="darkgray"))
-    solver.add_program_line(connected(color="not darkgray"))
+    solver.add_program_line(avoid_adjacent(color="gray"))
+    solver.add_program_line(connected(color="not gray"))
 
     for (r, c), clue in E.clues.items():
-        if clue == "darkgray":
-            solver.add_program_line(f"darkgray({r}, {c}).")
+        if clue == "gray":
+            solver.add_program_line(f"gray({r}, {c}).")
         elif clue == "green":
-            solver.add_program_line(f"not darkgray({r}, {c}).")
-        elif clue[1] == "darkgray":
+            solver.add_program_line(f"not gray({r}, {c}).")
+        elif clue[1] == "gray":
             num, direction = clue[0]
-            solver.add_program_line(f"darkgray({r}, {c}).")
-            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="darkgray"))
+            solver.add_program_line(f"gray({r}, {c}).")
+            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="gray"))
         elif clue[1] == "green":
             num, direction = clue[0]
-            solver.add_program_line(f"not darkgray({r}, {c}).")
-            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="darkgray"))
+            solver.add_program_line(f"not gray({r}, {c}).")
+            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="gray"))
         else:
             num, direction = clue
-            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="darkgray"))
+            solver.add_program_line(yajikazu_count(int(num), (r, c), direction, color="gray"))
 
-    solver.add_program_line(display(color="darkgray"))
+    solver.add_program_line(display(color="gray"))
     solver.solve()
 
     return solver.solutions

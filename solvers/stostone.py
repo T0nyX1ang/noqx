@@ -32,11 +32,11 @@ def solve(E: Encoding) -> List:
 
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c(color="darkgray"))
+    solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(count(E.R // 2, color="darkgray", _type="col"))
+    solver.add_program_line(count(E.R // 2, color="gray", _type="col"))
 
-    clues = mark_and_extract_clues(solver, E.clues, shaded_color="darkgray", safe_color="green")
+    clues = mark_and_extract_clues(solver, E.clues, shaded_color="gray", safe_color="green")
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
@@ -44,15 +44,15 @@ def solve(E: Encoding) -> List:
         tag = False
         for rc in ar:
             if rc in clues:
-                solver.add_program_line(count(clues[rc], color="darkgray", _type="area", _id=i))
+                solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
                 tag = True
         if not tag:
-            solver.add_program_line(count(1, op="ge", color="darkgray", _type="area", _id=i))
+            solver.add_program_line(count(1, op="ge", color="gray", _type="area", _id=i))
 
-    solver.add_program_line(connected(color="darkgray", _type="area"))
-    solver.add_program_line(avoid_area_adjacent(color="darkgray"))
-    solver.add_program_line(valid_stostone(color="darkgray"))
-    solver.add_program_line(display(color="darkgray"))
+    solver.add_program_line(connected(color="gray", _type="area"))
+    solver.add_program_line(avoid_area_adjacent(color="gray"))
+    solver.add_program_line(valid_stostone(color="gray"))
+    solver.add_program_line(display(color="gray"))
     solver.solve()
 
     return solver.solutions
