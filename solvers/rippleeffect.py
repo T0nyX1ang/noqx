@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.region import full_bfs
-from .utilsx.rule import unique_num
+from .utilsx.rule import unique_num, fill_num
 from .utilsx.solution import solver
 
 
@@ -28,7 +28,7 @@ def solve(E: Encoding) -> List:
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(f"{{ number(R, C, 1..{len(ar)}) }} = 1 :- area({i}, R, C).")
+        solver.add_program_line(fill_num(f"1..{len(ar)}", _type="area", _id=i))
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"number({r}, {c}, {clue}).")

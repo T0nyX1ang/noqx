@@ -25,6 +25,22 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
+def fill_num(_range: str, _type: str = "grid", _id: int = "A") -> str:
+    """
+    Generate a rule that a cell numbered within {_range}.
+    {_range} should have the format "low..high", or "x;y;z" for a list of numbers.
+
+    A grid fact or an area fact should be defined first.
+    """
+    if _type == "grid":
+        return f"{{ number(R, C, {_range}) }} = 1 :- grid(R, C)."
+
+    if _type == "area":
+        return f"{{ number(R, C, {_range}) }} = 1 :- area({_id}, R, C)."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
 def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid", _id: int = None) -> str:
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
