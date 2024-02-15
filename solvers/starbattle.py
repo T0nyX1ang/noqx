@@ -4,9 +4,9 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid, area
-from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
+from .utilsx.fact import area, display, grid
 from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
 from .utilsx.solution import solver
 
 
