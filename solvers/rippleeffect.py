@@ -2,56 +2,44 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import IntVar, require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.regions import full_bfs
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import unique_num
+from .utilsx.solution import solver
+
+
+def ripple_constraint() -> str:
+    """A constraint for the 'ripples'."""
+    row = ":- grid(R, C1), grid(R, C2), number(R, C1, N), number(R, C2, N), (C2 - C1) * (C2 - C1 - N - 1) < 0."
+    col = ":- grid(R1, C), grid(R2, C), number(R1, C, N), number(R2, C, N), (R2 - R1) * (R2 - R1 - N - 1) < 0."
+    return row + "\n" + col
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    rooms = full_bfs(E.R, E.C, E.edges)
+    solver.reset(mode="number")
+    solver.add_program_line(grid(E.R, E.C))
 
-    # set the maximum IntVar value to be the max room size
-    max_room_size = max(len(room) for room in rooms)
-    set_max_val(max_room_size)
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(f"{{ number(R, C, 1..{len(ar)}) }} = 1 :- area({i}, R, C).")
 
-    grid = [[IntVar(1, max_room_size) for c in range(E.C)] for r in range(E.R)]
+    for (r, c), clue in E.clues.items():
+        solver.add_program_line(f"number({r}, {c}, {clue}).")
 
-    # Require that each room has exactly the numbers 1 through (room size), inclusive.
-    for room in rooms:
-        for i in range(1, len(room) + 1):
-            require(sum_bools(1, [grid[r][c] == i for (r, c) in room]))
+    solver.add_program_line(unique_num(color="", _type="area"))
+    solver.add_program_line(ripple_constraint())
+    solver.add_program_line(display(item="number", size=3))
+    solver.solve()
 
-    for r in range(E.R):
-        for c in range(E.C):
-            for i in range(1, max_room_size + 1):
-                # If the cell at this position has value i,
-                # make sure that the next i cells in the row don't have this value
-                require(
-                    sum_bools(0, [grid[r][c] == grid[r][x] for x in range(c + 1, min(c + 1 + i, E.C))])
-                    | (grid[r][c] != i)
-                )
-
-    for c in range(E.C):
-        for r in range(E.R):
-            for i in range(1, max_room_size + 1):
-                # See above, but for columns.
-                require(
-                    sum_bools(0, [grid[r][c] == grid[y][c] for y in range(r + 1, min(r + 1 + i, E.R))])
-                    | (grid[r][c] != i)
-                )
-
-    # If there are any numbers given in the grid, make sure they're the same in the solution.
-    for r, c in E.clues:
-        require(grid[r][c] == E.clues[(r, c)])
-
-    return get_all_grid_solutions(grid)
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

@@ -56,7 +56,9 @@ class ClingoSolver:
                 r, c, _id = map(int, coords.split(","))
                 region[r][c] = _id
             elif self.mode == "number":
-                raise NotImplementedError("Number mode not implemented!")
+                _, coords = item.replace("(", " ").replace(")", " ").split()
+                r, c, num = coords.replace("(", " ").replace(")", " ").split(",")
+                formatted[rc_to_grid(int(r), int(c))] = int(num)
 
         if self.mode == "region":
             print(region)
