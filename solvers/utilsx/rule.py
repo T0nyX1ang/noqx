@@ -1,6 +1,6 @@
 """Utility for general clingo rules."""
 
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 from .helper import tag_encode, ConnectivityHelper
 
@@ -67,7 +67,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
     raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
 
 
-def adjacent(_type: int = 4) -> str:
+def adjacent(_type: Any = 4) -> str:
     """
     Generates a rule for getting the adjacent neighbors.
     If _type = 4, then only orthogonal neighbors are considered.
@@ -82,6 +82,18 @@ def adjacent(_type: int = 4) -> str:
         res = "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
         res += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return res
+
+    if _type == "edge":
+        adj = "adj_edge(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), not vertical_line(R, C).\n"
+        adj += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
+        adj += "adj_edge(R0, C0, R, C) :- adj_edge(R, C, R0, C0)."
+        return adj
+
+    if _type == "loop":
+        adj = f'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_direction(R, C, "l").\n'
+        adj += f'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_direction(R, C, "u").\n'
+        adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
+        return adj
 
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 

@@ -60,14 +60,10 @@ def connected_loop(color: str = "white") -> str:
     Define adjacent loops and constrain the connectivity.
     A grid fact and a loop/path fact should be defined first.
     """
-    adj = f'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, {color}(R, C), {color}(R0, C0), grid_direction(R, C, "l").\n'
-    adj += f'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, {color}(R, C), {color}(R0, C0), grid_direction(R, C, "u").\n'
-    adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0).\n"
-
     initial = f"reachable_loop(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1) }}.\n"
     propagation = f"reachable_loop(R, C) :- {color}(R, C), reachable_loop(R1, C1), adj_loop(R1, C1, R, C).\n"
-    constraint = f":- {color}(R, C), not reachable_loop(R, C).\n"
-    return adj + initial + propagation + constraint
+    constraint = f":- {color}(R, C), not reachable_loop(R, C)."
+    return initial + propagation + constraint
 
 
 def encode(string: str) -> Encoding:
@@ -82,6 +78,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(avoid_adjacent(color="black"))
     # solver.add_program_line(connected(color="white"))
     solver.add_program_line(hamilton_loop(color="white"))
+    solver.add_program_line(adjacent("loop"))
     solver.add_program_line(connected_loop(color="white"))
 
     for (r, c), clue in E.clues.items():
