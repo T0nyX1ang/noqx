@@ -33,7 +33,7 @@ def solve(E: Encoding) -> List:
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"number({r}, {c}, {clue}).")
 
-    solver.add_program_line(unique_num(color="", _type="area"))
+    solver.add_program_line(unique_num(color="grid", _type="area"))
     solver.add_program_line(ripple_constraint())
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

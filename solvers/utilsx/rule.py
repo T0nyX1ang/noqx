@@ -134,6 +134,7 @@ def count_adjacent(
 def unique_num(color: str = "black", _type: str = "row") -> str:
     """
     Generates a constraint for unique {color} numbered cells in a(an) row / column / area.
+    {color} can be set to "grid" for wildcard colors.
 
     A number rule should be defined first.
     """
@@ -144,8 +145,7 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
         return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
     if _type == "area":
-        area_unique_constraint = f"#count {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1"
-        return f":- area(A, _, _), number(_, _, N), {area_unique_constraint}."
+        return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
     raise ValueError("Invalid line type, must be one of 'row', 'col', 'area'.")
 
