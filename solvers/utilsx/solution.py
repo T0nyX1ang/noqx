@@ -1,10 +1,11 @@
 """Generate solutions for the given problem."""
 
 from typing import Dict, List
-from .border import Direction, DEFAULT_DIRECTIONS
 
 from clingo.control import Control
 from clingo.solving import Model
+
+from .border import Direction
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -16,14 +17,13 @@ def rc_to_grid(r: int, c: int):
 
 def rcd_to_edge(r, c, d):
     """Given an edge id, returns the border coordinate of the edge."""
-    if d == Direction.TOP:
-        return f"{r*2},{c*2+1}"
-    elif d == Direction.LEFT:
-        return f"{r*2+1},{c*2}"
-    elif d == Direction.BOTTOM:
-        return f"{r*2+2},{c*2+1}"
-    elif d == Direction.RIGHT:
-        return f"{r*2+1},{c*2+2}"
+    data = {
+        Direction.TOP: f"{r*2},{c*2+1}",
+        Direction.LEFT: f"{r*2+1},{c*2}",
+        Direction.BOTTOM: f"{r*2+2},{c*2+1}",
+        Direction.RIGHT: f"{r*2+1},{c*2+2}",
+    }
+    return data[d]
 
 
 class ClingoSolver:
@@ -34,7 +34,6 @@ class ClingoSolver:
         self.clingo_instance: Control = Control()
         self.program: str = ""
         self.solutions: List[Dict[str, str]] = []
-        self.mode, self.R, self.C = None, None, None
 
     def store_solutions(self, model: Model):
         """Get the solution."""
@@ -42,21 +41,20 @@ class ClingoSolver:
         formatted: Dict[str, str] = {}
 
         for item in solution:
-            if self.mode == "shade":
-                color, coords = item.replace("(", " ").replace(")", " ").split()
-                r, c = coords.split(",")
-                formatted[rc_to_grid(int(r), int(c))] = color.replace("color", "")
-            elif self.mode == "region":
-                type, coords = item.replace("(", " ").replace(")", " ").split()
-                r, c = map(int, coords.split(","))
-                if type.startswith("vertical"):
-                    formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
-                elif type.startswith("horizontal"):
-                    formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
-            elif self.mode == "number":
-                _, coords = item.replace("(", " ").replace(")", " ").split()
-                r, c, num = coords.replace("(", " ").replace(")", " ").split(",")
-                formatted[rc_to_grid(int(r), int(c))] = int(num)
+            _type, _data = item.replace("(", " ").replace(")", " ").split()
+            data = map(int, _data.split(","))
+            if _type.startswith("vertical"):
+                r, c = data
+                formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
+            elif _type.startswith("horizontal"):
+                r, c = data
+                formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
+            elif _type == "number":
+                r, c, num = data
+                formatted[rc_to_grid(r, c)] = num
+            else:
+                r, c = data
+                formatted[rc_to_grid(r, c)] = _type.replace("color", "")
 
         self.solutions.append(formatted)
 
@@ -64,11 +62,8 @@ class ClingoSolver:
         """Add a line to the program."""
         self.program += line + "\n"
 
-    def reset(self, mode: str, R: int = None, C: int = None):
+    def reset(self):
         """Reset the program."""
-        assert mode in ["shade", "region", "number"], "Mode must be in 'shade', 'region' or 'number'"
-        self.mode = mode
-        self.R, self.C = R, C
         self.clingo_instance = Control()
         self.program = ""
         self.solutions = []

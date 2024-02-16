@@ -82,7 +82,7 @@ def solve(E: Encoding) -> List:
     for r in E.left:
         left_clues[r] = tuple(int(clue) if clue != "?" else "?" for clue in E.left[r].split())
 
-    solver.reset(mode="shade")
+    solver.reset()
     solver.add_program_line(f"grid(-1..{E.R}, -1..{E.C}).")
     solver.add_program_line(shade_c())
     solver.add_program_line(f"not black(-1, -1..{E.C}).")

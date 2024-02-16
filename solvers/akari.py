@@ -31,7 +31,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    solver.reset(mode="shade")
+    solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line("{ bulb(R, C) } :- grid(R, C), not black(R, C).")
     solver.add_program_line(adjacent())

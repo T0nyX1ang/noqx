@@ -66,7 +66,7 @@ def solve(E: Encoding) -> List:
     size = int(E.params["region_size"])
     assert E.R * E.C % size == 0, "It's impossible to divide grid into regions of this size!"
 
-    solver.reset(mode="region")
+    solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
     # solver.add_program_line(adjacent())

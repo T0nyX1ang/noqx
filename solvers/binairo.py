@@ -40,7 +40,7 @@ def solve(E: Encoding) -> List:
     if not (E.R % 2 == 0 and E.C % 2 == 0):
         raise ValueError("# rows and # columns must both be even!")
 
-    solver.reset(mode="shade")
+    solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(count(E.R // 2, color="black", _type="row"))

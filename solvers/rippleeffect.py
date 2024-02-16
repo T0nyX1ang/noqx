@@ -22,7 +22,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    solver.reset(mode="number")
+    solver.reset()
     solver.add_program_line(grid(E.R, E.C))
 
     areas = full_bfs(E.R, E.C, E.edges)

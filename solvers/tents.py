@@ -34,7 +34,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    solver.reset(mode="shade")
+    solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent(_type=4))
