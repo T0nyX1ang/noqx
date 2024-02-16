@@ -239,8 +239,10 @@ class Elf {
     this.solution_elt.style.backgroundColor = "";
     this.solution_elt.style.color = "";
     this.solution_elt.innerHTML = "";
-    for (let obj of Object.values(this.solution_borders))
-      obj.style.backgroundColor = "";
+    for (let key of Object.keys(this.solution_borders)) {
+      this.solution_borders[key].style.backgroundColor =
+        this.puzzle_borders[key].style.backgroundColor; // reset solution border to puzzle border
+    }
   }
   puzzle_neighbors() {
     return {
