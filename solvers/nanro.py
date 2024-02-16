@@ -2,12 +2,25 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import at_least, require, set_max_val, sum_bools
-from .utils.encoding import Encoding, default_clue_encoder
-from .utils.shading import RectangularGridShadingSolver
-from .utils.regions import RectangularGridRegionSolver
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding, default_clue_encoder
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, area_adjacent, connected, count
+from .utilsx.shape import avoid_rect
+from .utilsx.solution import solver
+
+
+def nanro_fill_constraint(color: str = "black") -> str:
+    """Generate a constraint for the number filling in nanro."""
+    return f":- number(R0, C0, N), area(A, R0, C0), #count {{ R, C : area(A, R, C), {color}(R, C) }} != N."
+
+
+def nanro_avoid_adjacent() -> str:
+    """Generate a rule to avoid adjacent cells with the same number."""
+    area_adj = area_adjacent()
+    area_adj = area_adj[area_adj.find(":-") : -1]
+    return f"{area_adj}, number(R, C, N), number(R1, C1, N)."
 
 
 def encode(string: str) -> Encoding:
@@ -17,10 +30,9 @@ def encode(string: str) -> Encoding:
         except RuntimeError as exc:
             if s[0] == "s" and s[1:].isnumeric():  # signpost clue
                 return s
-            else:
-                raise RuntimeError("Invalid input, still") from exc
+            raise RuntimeError("Invalid input, still") from exc
 
-    E = utils.encode(string, clue_encoder=clue_encoder, has_borders=True)
+    E = utilsx.encode(string, clue_encoder=clue_encoder, has_borders=True)
 
     # separate signpost clues from regular clues
     new_clues = {}
@@ -36,57 +48,40 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    rooms = utils.regions.full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(adjacent())
+    solver.add_program_line(connected(color="not gray"))
+    solver.add_program_line(avoid_rect(2, 2, color="not gray"))
 
-    # note:  not the largest clue value! not every region has a clue in it,
-    # so a big region could require more unshaded cells than the largest clue.
-    set_max_val(max(len(room) for room in rooms))
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(f"{{ number(R, C, 1..{len(ar)}); gray(R, C) }} = 1 :- area({i}, R, C).")
 
-    shading_solver = RectangularGridShadingSolver(E.R, E.C)
-    region_solver = RectangularGridRegionSolver(E.R, E.C, shading_solver.grid, rooms)
+        flag = True
+        for cell in ar:
+            if cell in E.signpost_clues:  # signpost variant
+                solver.add_program_line(count(E.signpost_clues[cell], "eq", color="not gray", _type="area", _id=i))
+                flag = False
+        if flag:
+            solver.add_program_line(count(0, "gt", color="not gray", _type="area", _id=i))
 
-    shading_solver.white_clues(E.clues)
-    shading_solver.white_connectivity()
-    shading_solver.no_white_2x2()
+    for (r, c), clue in E.clues.items():
+        if clue == "gray":
+            solver.add_program_line(f"gray({r}, {c}).")
+        else:
+            num = int(clue)
+            solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    region_solver.set_unshaded_cells_in_region(E.clues, [True])
+    solver.add_program_line(nanro_fill_constraint(color="not gray"))
+    solver.add_program_line(nanro_avoid_adjacent())
+    solver.add_program_line(display(item="gray", size=2))
+    solver.add_program_line(display(item="number", size=3))
+    solver.solve()
 
-    # require each region to have at least one numbered cell
-    for region in rooms:
-        require(at_least(1, [~shading_solver.grid[r][c] for (r, c) in region]))
-
-    # require signpost clues to be true
-    for region in rooms:
-        for cell in region:
-            if cell in E.signpost_clues:
-                require(sum_bools(E.signpost_clues[cell], [~shading_solver.grid[p] for p in region]))
-
-    for r in range(E.R):
-        for c in range(E.C):
-            unshaded_count = region_solver.get_unshaded_cells_in_region(r, c, [True])
-            neighbors = region_solver.get_neighbors_in_other_regions(r, c)
-            # white cells that are next to each other and in different regions
-            # cannot have the same number in them
-            require(
-                sum_bools(
-                    0,
-                    [
-                        (
-                            ~shading_solver.grid[r][c]
-                            & ~shading_solver.grid[y][x]
-                            & (unshaded_count == region_solver.get_unshaded_cells_in_region(y, x, [True]))
-                        )
-                        for (y, x) in neighbors
-                    ],
-                )
-            )
-
-    def format_function(r: int, c: int) -> str:
-        unshaded_count = region_solver.get_unshaded_cells_in_region(r, c, [True])
-        return "gray" if shading_solver.grid[r][c].value() else unshaded_count.value()
-
-    return get_all_grid_solutions(shading_solver.grid, format_function=format_function)
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

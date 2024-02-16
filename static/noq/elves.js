@@ -916,7 +916,10 @@ class MagnetsElf extends IntBordersElf() {
   }
 }
 
-class NanroElf extends InvertSolutionZOrder(IntBordersElf()) {
+class NanroElf extends DirectSum(
+  InvertSolutionZOrder(IntBordersElf()),
+  BgColorElf({ x: ["gray", "gray"] })
+) {
   static controls() {
     let controls = super.controls();
     controls["Shift + [0-9]"] = "Add signpost clue";
