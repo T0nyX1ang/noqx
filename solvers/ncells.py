@@ -10,6 +10,7 @@ from .utilsx.rule import (
     rev_op_dict,
 )
 from .utilsx.helper import tag_encode
+from .utilsx.border import Direction
 from .utilsx.solution import solver
 
 
@@ -17,7 +18,7 @@ def encode(string: str) -> Encoding:
     return utilsx.encode(string, has_borders=True)
 
 
-def edge(rows: int, cols: int, border_shade: bool = True) -> str:
+def edge(rows: int, cols: int) -> str:
     """
     Generates facts for grid edges.
     Note grid borders are also included.
@@ -25,13 +26,8 @@ def edge(rows: int, cols: int, border_shade: bool = True) -> str:
     fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
     fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
-    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C).\n"
-    if border_shade:
-        fact += "vertical_line(R, C):- vertical_range(R, C), C = 0.\n"
-        fact += f"vertical_line(R, C):- vertical_range(R, C), C = {cols}.\n"
-        fact += "horizontal_line(R, C):- horizontal_range(R, C), R = 0.\n"
-        fact += f"horizontal_line(R, C):- horizontal_range(R, C), R = {rows}.\n"
-    return fact[:-1]
+    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C)."
+    return fact
 
 
 def reachable_edge() -> str:
@@ -70,12 +66,20 @@ def solve(E: Encoding) -> List:
     size = int(E.params["region_size"])
     assert E.R * E.C % size == 0, "It's impossible to divide grid into regions of this size!"
 
-    solver.reset(mode="region", R=E.R, C=E.C)
+    solver.reset(mode="region")
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
     # solver.add_program_line(adjacent())
     solver.add_program_line(reachable_edge())
     solver.add_program_line(count_reachable_edge(size))
+
+    for r, c, d in E.edge_ids:
+        if d in [Direction.LEFT, Direction.RIGHT]:
+            c += d == Direction.RIGHT
+            solver.add_program_line(f"vertical_line({r}, {c}).")
+        elif d in [Direction.TOP, Direction.BOTTOM]:
+            r += d == Direction.BOTTOM
+            solver.add_program_line(f"horizontal_line({r}, {c}).")
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(count_adj_lines(r, c, clue))

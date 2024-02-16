@@ -1,13 +1,12 @@
 """Generate solutions for the given problem."""
 
 from typing import Dict, List
-from enum import Enum
+from .border import Direction, DEFAULT_DIRECTIONS
 
 from clingo.control import Control
 from clingo.solving import Model
 
 MAX_SOLUTIONS_TO_FIND = 10
-Direction = Enum("Direction", "LEFT TOP RIGHT BOTTOM")
 
 
 def rc_to_grid(r: int, c: int):
