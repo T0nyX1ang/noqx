@@ -530,7 +530,6 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
 
     handle_input(key, modifiers) {
       super.handle_input(key, modifiers);
-
       if (!"1234567890".includes(key)) return;
 
       let num = parseInt(this.puzzle_elt.innerHTML + key);
@@ -1355,7 +1354,7 @@ class YajilinElf extends DirectSum(
       { "[urdl]": "Add arrow to cell" }
     )
   ),
-  BgColorElf({ x: ["gray", "gray"] })
+  BgColorElf({ x: ["gray", "black"] }, false)
 ) {
   handle_input(key, modifiers) {
     super.handle_input(key, modifiers);
