@@ -41,9 +41,6 @@ class ClingoSolver:
         """Get the solution."""
         solution = tuple(str(model).split())  # raw solution converted from clingo
         formatted: Dict[str, str] = {}
-        if self.mode == "region":
-            assert self.R is not None and self.C is not None
-            region = [[None for _ in range(self.C)] for _ in range(self.R)]
 
         for item in solution:
             if self.mode == "shade":
@@ -51,27 +48,16 @@ class ClingoSolver:
                 r, c = coords.split(",")
                 formatted[rc_to_grid(int(r), int(c))] = color.replace("color", "")
             elif self.mode == "region":
-                _, coords = item.replace("(", " ").replace(")", " ").split()
-                r, c, _id = map(int, coords.split(","))
-                region[r][c] = _id
+                type, coords = item.replace("(", " ").replace(")", " ").split()
+                r, c = map(int, coords.split(","))
+                if type.startswith("vertical"):
+                    formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
+                elif type.startswith("horizontal"):
+                    formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
             elif self.mode == "number":
                 _, coords = item.replace("(", " ").replace(")", " ").split()
                 r, c, num = coords.replace("(", " ").replace(")", " ").split(",")
                 formatted[rc_to_grid(int(r), int(c))] = int(num)
-
-        if self.mode == "region":
-            for r in range(self.R):
-                for c in range(self.C):
-                    if r and region[r][c] != region[r - 1][c]:
-                        formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
-                    if c and region[r][c] != region[r][c - 1]:
-                        formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
-            for c in range(self.C):
-                formatted[rcd_to_edge(0, c, Direction.TOP)] = "black"
-                formatted[rcd_to_edge(self.R - 1, c, Direction.BOTTOM)] = "black"
-            for r in range(self.R):
-                formatted[rcd_to_edge(r, 0, Direction.LEFT)] = "black"
-                formatted[rcd_to_edge(r, self.C - 1, Direction.RIGHT)] = "black"
 
         self.solutions.append(formatted)
 

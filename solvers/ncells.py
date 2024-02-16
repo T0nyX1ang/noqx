@@ -7,9 +7,6 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
 from .utilsx.rule import (
     adjacent,
-    connected,
-    connected_parts,
-    count_connected_parts,
     rev_op_dict,
 )
 from .utilsx.helper import tag_encode
@@ -20,72 +17,73 @@ def encode(string: str) -> Encoding:
     return utilsx.encode(string, has_borders=True)
 
 
-def fill_num(low: int, high: int) -> str:
+def edge(rows: int, cols: int, border_shade: bool = True) -> str:
     """
-    Generate a rule that a cell numbered between low and high.
+    Generates facts for grid edges.
+    Note grid borders are also included.
     """
-    num = f"num({low}..{high}).\n"
-    num += f"1 {{ number(R, C, N): num(N) }} 1 :- grid(R, C)."
-    return num
+    fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
+    fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
+    fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
+    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C).\n"
+    if border_shade:
+        fact += "vertical_line(R, C):- vertical_range(R, C), C = 0.\n"
+        fact += f"vertical_line(R, C):- vertical_range(R, C), C = {cols}.\n"
+        fact += "horizontal_line(R, C):- horizontal_range(R, C), R = 0.\n"
+        fact += f"horizontal_line(R, C):- horizontal_range(R, C), R = {rows}.\n"
+    return fact[:-1]
 
 
-def order_region() -> str:
+def reachable_edge() -> str:
     """
-    Make sure region id is ordered, to avoid duplicate.
+    Generates edges when numbers on its adjacent grids are different.
     """
-    constriant = ":- num(N1), num(N2), N1<N2, #min{ (R, C): number(R, C, N1) } = (R1, C1), #min{ (R, C): number(R, C, N2) } = (R2, C2), (R1, C1) >= (R2, C2)."
-    return constriant
+    adj_edge = "adj_edge(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), not vertical_line(R, C).\n"
+    adj_edge += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
+    adj_edge += "adj_edge(R0, C0, R, C) :- adj_edge(R, C, R0, C0).\n"
+
+    reachable_edge = "reachable_edge(R0, C0, R, C) :- grid(R, C), grid(R0, C0), R = R0, C = C0.\n"
+    reachable_edge += (
+        "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R1, C1, R, C).\n"
+    )
+    # edge between two reachable grids is forbidden.
+    constraint = ":- reachable_edge(R0, C0, R, C), R=R0, C=C0+1, vertical_line(R, C).\n"
+    constraint += ":- reachable_edge(R0, C0, R, C), R=R0+1, C=C0, horizontal_line(R, C)."
+    return adj_edge + reachable_edge + constraint
 
 
-def count_number(target: int, op: str = "eq") -> str:
+def count_reachable_edge(target: int, op: str = "eq") -> str:
     """
-    Generates a constraint for counting the number in a grid.
+    Generates a constraint for counting grids in a region divided by edges.
     A grid fact should be defined first.
     """
     op = rev_op_dict[op]
-    return f":- num(N), #count {{ R, C: number(R, C, N) }} {op} {target}."
+    return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
 
 
-def connected_number(adj_type: int = 4) -> str:
-    """
-    Generate a rule to get all the connected components of {color} cells.
-    """
-    adj = tag_encode("adj", adj_type)
-    constraint = "reachable(R, C, R1, C1) :- grid(R, C), grid(R1, C1), R = R1, C = C1.\n"
-    constraint += f"reachable(R, C, R1, C1) :- grid(R, C), reachable(R, C, R2, C2), {adj}(R2, C2, R1, C1), num(N), number(R, C, N), number(R2, C2, N), number(R1, C1, N).\n"
-    constraint += ":- num(N), number(R, C, N), number(R1, C1, N), not reachable(R, C, R1, C1)."
-    return constraint
-
-
-def num_same_adj(r: int, c: int, number: int, adj_type: int = 4) -> str:
-    adj = tag_encode("adj", adj_type)
-    return f":- #count{{ R, C: {adj}({r}, {c}, R, C), num(N), number({r}, {c}, N), number(R, C, N) }} != {number}."
-
-
-def display_region() -> str:
-    """Generates a rule to show region ids."""
-    return "#show number/3."
+def count_adj_lines(r: int, c: int, number: int) -> str:
+    return f":- #count{{ R, C, 0: vertical_line(R, C), R={r}, C>={c}, C<={c+1}; R, C, 1: horizontal_line(R, C), R>={r}, R<={r+1}, C={c} }} != {number}."
 
 
 def solve(E: Encoding) -> List:
     size = int(E.params["region_size"])
     assert E.R * E.C % size == 0, "It's impossible to divide grid into regions of this size!"
-    region_num = E.R * E.C // size
 
     solver.reset(mode="region", R=E.R, C=E.C)
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(fill_num(0, region_num - 1))
-    solver.add_program_line(order_region())
-    solver.add_program_line(adjacent())
-    solver.add_program_line(count_number(region_num))
-    solver.add_program_line(connected_number())
+    solver.add_program_line(edge(E.R, E.C))
+    # solver.add_program_line(adjacent())
+    solver.add_program_line(reachable_edge())
+    solver.add_program_line(count_reachable_edge(size))
 
     for (r, c), clue in E.clues.items():
-        solver.add_program_line(num_same_adj(r, c, 4 - clue))
+        solver.add_program_line(count_adj_lines(r, c, clue))
 
-    solver.add_program_line(display_region())
-    # print(solver.program)
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    print(solver.program)
     solver.solve()
+
     return solver.solutions
 
 
