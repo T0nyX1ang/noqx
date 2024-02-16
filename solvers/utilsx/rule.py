@@ -151,13 +151,13 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     A number rule should be defined first.
     """
     if _type == "row":
-        return f":- number(_, C, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
+        return f":- grid(_, C), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} != 1."
 
     if _type == "col":
-        return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
+        return f":- grid(R, _), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} != 1."
 
     if _type == "area":
-        return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
+        return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} != 1."
 
     raise ValueError("Invalid line type, must be one of 'row', 'col', 'area'.")
 
