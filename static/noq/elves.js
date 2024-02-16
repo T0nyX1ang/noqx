@@ -1222,6 +1222,8 @@ class SudokuElf extends IntElf(1, 9, "[1-9]") {
     controls["(Diagonal)"] = "Add rule: each diagonal contains 1-9";
     controls["(Untouch)"] =
       "Add rule: diagonally adjacent numbers can't be equal";
+    controls["(Nonconsecutive)"] =
+      "Add rule: diagonally adjacent numbers can't be consecutive";
     controls["(Antiknight)"] =
       "Add rule: knight's-move adjacent numbers can't be equal";
     return controls;

@@ -365,6 +365,7 @@ const puzzle_types = {
     params: {
       Diagonal: { name: "Diagonal", value: false },
       Untouch: { name: "Untouch", value: false },
+      Nonconsecutive: { name: "Nonconsecutive", value: false },
       Antiknight: { name: "Antiknight", value: false },
     },
     properties: { outside: "0000", border: false },
