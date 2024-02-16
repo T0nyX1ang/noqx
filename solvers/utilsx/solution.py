@@ -6,6 +6,7 @@ from clingo.control import Control
 from clingo.solving import Model
 
 from .border import Direction
+from .loops import ISOLATED, NON_DIRECTED, DIRECTED
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -42,7 +43,12 @@ class ClingoSolver:
 
         for item in solution:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
-            data = map(int, _data.split(","))
+            data = _data.split(",")
+            if not _type in ["loop_sign"]:
+                data = map(int, data)
+            else:
+                data[:-1] = map(int, data[:-1])
+
             if _type.startswith("vertical"):
                 r, c = data
                 formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
@@ -52,7 +58,12 @@ class ClingoSolver:
             elif _type == "number":
                 r, c, num = data
                 formatted[rc_to_grid(r, c)] = num
+            elif _type == "loop_sign":
+                r, c, sign = data
+                sign = sign.replace('"', "")
+                formatted[rc_to_grid(r, c)] = f"{sign}.png"
             else:
+                # color
                 r, c = data
                 formatted[rc_to_grid(r, c)] = _type.replace("color", "")
 
