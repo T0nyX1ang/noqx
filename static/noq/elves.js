@@ -1626,7 +1626,7 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
-  skyscrapers: DirectSum(QuestionMarkElf, IntElf(), "first"),
+  skyscrapers: IntElf(),
   slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("sw"), "first"),
   spiralgalaxies: SpiralGalaxiesElf,
   starbattle: DirectSum(
