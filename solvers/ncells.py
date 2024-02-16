@@ -3,14 +3,10 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.border import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import (
-    adjacent,
-    rev_op_dict,
-)
-from .utilsx.helper import tag_encode
-from .utilsx.border import Direction
+from .utilsx.rule import rev_op_dict
 from .utilsx.solution import solver
 
 
@@ -39,14 +35,14 @@ def reachable_edge() -> str:
     adj_edge += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
     adj_edge += "adj_edge(R0, C0, R, C) :- adj_edge(R, C, R0, C0).\n"
 
-    reachable_edge = "reachable_edge(R0, C0, R, C) :- grid(R, C), grid(R0, C0), R = R0, C = C0.\n"
-    reachable_edge += (
+    initial = "reachable_edge(R0, C0, R, C) :- grid(R, C), grid(R0, C0), R = R0, C = C0.\n"
+    propagation = (
         "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R1, C1, R, C).\n"
     )
     # edge between two reachable grids is forbidden.
     constraint = ":- reachable_edge(R0, C0, R, C), R=R0, C=C0+1, vertical_line(R, C).\n"
     constraint += ":- reachable_edge(R0, C0, R, C), R=R0+1, C=C0, horizontal_line(R, C)."
-    return adj_edge + reachable_edge + constraint
+    return adj_edge + initial + propagation + constraint
 
 
 def count_reachable_edge(target: int, op: str = "eq") -> str:
@@ -69,7 +65,6 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
-    # solver.add_program_line(adjacent())
     solver.add_program_line(reachable_edge())
     solver.add_program_line(count_reachable_edge(size))
 
