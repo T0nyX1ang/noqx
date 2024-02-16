@@ -90,8 +90,8 @@ def adjacent(_type: Any = 4) -> str:
         return adj
 
     if _type == "loop":
-        adj = f'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_direction(R, C, "l").\n'
-        adj += f'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_direction(R, C, "u").\n'
+        adj = 'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_direction(R, C, "l").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_direction(R, C, "u").\n'
         adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
         return adj
 
@@ -151,13 +151,13 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     A number rule should be defined first.
     """
     if _type == "row":
-        return f":- grid(_, C), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} != 1."
+        return f":- grid(_, C), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
     if _type == "col":
-        return f":- grid(R, _), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} != 1."
+        return f":- grid(R, _), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
     if _type == "area":
-        return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} != 1."
+        return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
     raise ValueError("Invalid line type, must be one of 'row', 'col', 'area'.")
 
