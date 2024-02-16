@@ -63,7 +63,7 @@ def count_reachable_edge(target: int, op: str = "eq") -> str:
 
 
 def count_adj_lines(r: int, c: int, number: int) -> str:
-    return f":- #count{{ R, C, 0: vertical_line(R, C), R={r}, C>={c}, C<={c+1}; R, C, 1: horizontal_line(R, C), R>={r}, R<={r+1}, C={c} }} != {number}."
+    return f":- #count{{ 1: vertical_line({r},{c}); 2: vertical_line({r},{c+1}); 3: horizontal_line({r},{c}); 4: horizontal_line({r+1},{c}) }} != {number}."
 
 
 def solve(E: Encoding) -> List:
