@@ -36,7 +36,8 @@ def edge(rows: int, cols: int, border_shade: bool = True) -> str:
 
 def reachable_edge() -> str:
     """
-    Generates edges when numbers on its adjacent grids are different.
+    Define edges as numbers on its adjacent grids are different.
+    A grid fact should be defined first.
     """
     adj_edge = "adj_edge(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), not vertical_line(R, C).\n"
     adj_edge += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
@@ -81,7 +82,6 @@ def solve(E: Encoding) -> List:
 
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
-    print(solver.program)
     solver.solve()
 
     return solver.solutions
