@@ -450,6 +450,7 @@ const examples = {
           "15,13": ["", "w"],
         },
       },
+      link: "https://www.gmpuzzles.com/blog/category/loop/balance-loop/",
     },
   },
   battleship: {
@@ -484,6 +485,23 @@ const examples = {
           "19,17": "w",
         },
       },
+    },
+  },
+  castlewall: {
+    1: {
+      data: {
+        param_values: { r: 7, c: 7 },
+        grid: {
+          "3,11": ["1", "d", "w"],
+          "5,3": ["0", "u", "w"],
+          "5,7": ["", "", "b"],
+          "7,7": ["2", "l", "b"],
+          "9,7": ["", "", "b"],
+          "9,11": ["2", "l", "w"],
+          "11,3": ["3", "r", "w"],
+        },
+      },
+      link: "https://www.gmpuzzles.com/blog/castle-wall-rules-and-info/",
     },
   },
   cave: {

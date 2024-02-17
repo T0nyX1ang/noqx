@@ -406,12 +406,21 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
       }
     }
 
-    load_example(str) {
-      // try to load using elf1's rules
+    load_example_str(str) {
       let res1 = this.elf1.load_example(str);
       if (!res1)
         // if not successful, load using elf2's rules
         this.elf2.load_example(str);
+    }
+
+    load_example(clue) {
+      if (!Array.isArray(clue)) {
+        this.load_example_str(clue);
+      } else {
+        for (let str of clue) {
+          this.load_example_str(str);
+        }
+      }
     }
   };
 }
@@ -541,6 +550,10 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
         num = key;
       else return; // nothing works, so do nothing
       this.puzzle_elt.innerHTML = num + ""; // now set the HTML
+    }
+
+    load_example(str) {
+      return this.handle_input(str, null);
     }
 
     encode_input() {
