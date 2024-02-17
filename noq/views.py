@@ -67,7 +67,7 @@ def solver(request):
     try:
         start = time.time()
         reset()
-        puzzle_type = request.GET['puzzle_type']
+        puzzle_type = request.GET["puzzle_type"]
         module = importlib.import_module(f"solvers.{puzzle_type}")
         puzzle_encoding = module.encode(request.GET["puzzle"])
         solutions_encoded = module.solve(puzzle_encoding)

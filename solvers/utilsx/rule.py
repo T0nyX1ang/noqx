@@ -1,6 +1,6 @@
 """Utility for general clingo rules."""
 
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 from .helper import tag_encode, ConnectivityHelper
 
@@ -23,6 +23,24 @@ def shade_cc(colors: List[str]) -> str:
     A grid fact should be defined first.
     """
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
+
+
+def fill_num(_range: str, _type: str = "grid", _id: int = "A", color: str = None) -> str:
+    """
+    Generate a rule that a cell numbered within {_range}.
+    {_range} should have the format "low..high", or "x;y;z" for a list of numbers.
+
+    A grid fact or an area fact should be defined first.
+    """
+    color_part = "" if color is None else f"; {color}(R, C)"
+
+    if _type == "grid":
+        return f"{{ number(R, C, {_range}){color_part} }} = 1 :- grid(R, C)."
+
+    if _type == "area":
+        return f"{{ number(R, C, {_range}){color_part} }} = 1 :- area({_id}, R, C)."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
 
 def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid", _id: int = None) -> str:
@@ -51,7 +69,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
     raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
 
 
-def adjacent(_type: int = 4) -> str:
+def adjacent(_type: Any = 4) -> str:
     """
     Generates a rule for getting the adjacent neighbors.
     If _type = 4, then only orthogonal neighbors are considered.
@@ -66,6 +84,18 @@ def adjacent(_type: int = 4) -> str:
         res = "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
         res += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return res
+
+    if _type == "edge":
+        adj = "adj_edge(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), not vertical_line(R, C).\n"
+        adj += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
+        adj += "adj_edge(R0, C0, R, C) :- adj_edge(R, C, R0, C0)."
+        return adj
+
+    if _type == "loop":
+        adj = 'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_direction(R, C, "l").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_direction(R, C, "u").\n'
+        adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
+        return adj
 
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
@@ -117,17 +147,21 @@ def count_adjacent(
 
 def unique_num(color: str = "black", _type: str = "row") -> str:
     """
-    Generates a constraint for unique {color} numbered cells in a row / column.
+    Generates a constraint for unique {color} numbered cells in a(an) row / column / area.
+    {color} can be set to "grid" for wildcard colors.
 
     A number rule should be defined first.
     """
     if _type == "row":
-        return f":- number(_, C, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
+        return f":- grid(_, C), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
     if _type == "col":
-        return f":- number(R, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
+        return f":- grid(R, _), number(_, _, N), {{ {color}(R, C) : number(R, C, N) }} > 1."
 
-    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
+    if _type == "area":
+        return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
+
+    raise ValueError("Invalid line type, must be one of 'row', 'col', 'area'.")
 
 
 def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> str:

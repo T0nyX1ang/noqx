@@ -1,6 +1,6 @@
 """Generating facts and meta-facts for the solver."""
 
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 from .helper import get_variants
 
@@ -29,12 +29,9 @@ OMINOES = {
 }
 
 
-def display(color: Union[str, List[str]] = "black") -> str:
-    """Generates a rule for displaying the {color} cells."""
-    if isinstance(color, str):
-        return f"#show {color}/2."
-
-    return "\n".join(f"#show {c}/2." for c in color)
+def display(item: str = "black", size: int = 2) -> str:
+    """Generates a rule for displaying specific items with a certain size."""
+    return f"#show {item}/{size}."
 
 
 def grid(rows: int, cols: int) -> str:

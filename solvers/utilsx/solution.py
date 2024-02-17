@@ -5,12 +5,25 @@ from typing import Dict, List
 from clingo.control import Control
 from clingo.solving import Model
 
+from .border import Direction
+
 MAX_SOLUTIONS_TO_FIND = 10
 
 
 def rc_to_grid(r: int, c: int):
     """Convert row and column to compatible grid coordinates."""
-    return f"{2*r+1},{2*c+1}"
+    return f"{r*2+1},{c*2+1}"
+
+
+def rcd_to_edge(r, c, d):
+    """Given an edge id, returns the border coordinate of the edge."""
+    data = {
+        Direction.TOP: f"{r*2},{c*2+1}",
+        Direction.LEFT: f"{r*2+1},{c*2}",
+        Direction.BOTTOM: f"{r*2+2},{c*2+1}",
+        Direction.RIGHT: f"{r*2+1},{c*2+2}",
+    }
+    return data[d]
 
 
 class ClingoSolver:
@@ -28,15 +41,36 @@ class ClingoSolver:
         formatted: Dict[str, str] = {}
 
         for item in solution:
-            color, coords = item.replace("(", " ").replace(")", " ").split()
-            r, c = coords.split(",")
-            formatted[rc_to_grid(int(r), int(c))] = color.replace("color", "")
+            _type, _data = item.replace("(", " ").replace(")", " ").split()
+            data = _data.split(",")
+            if _type not in ["loop_sign"]:
+                data = map(int, data)
+            else:
+                data[:-1] = map(int, data[:-1])
+
+            if _type.startswith("vertical"):
+                r, c = data
+                formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
+            elif _type.startswith("horizontal"):
+                r, c = data
+                formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
+            elif _type == "number":
+                r, c, num = data
+                formatted[rc_to_grid(r, c)] = num
+            elif _type == "loop_sign":
+                r, c, sign = data
+                sign = sign.replace('"', "")
+                formatted[rc_to_grid(r, c)] = f"{sign}.png"
+            else:
+                # color
+                r, c = data
+                formatted[rc_to_grid(r, c)] = _type.replace("color", "")
 
         self.solutions.append(formatted)
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
-        self.program += (line + "\n")
+        self.program += line + "\n"
 
     def reset(self):
         """Reset the program."""

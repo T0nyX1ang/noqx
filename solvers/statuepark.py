@@ -57,7 +57,7 @@ def solve(E: Encoding) -> List:
         elif clue == "w":
             solver.add_program_line(f"not black({r}, {c}).")
 
-    solver.add_program_line(display(color="black"))
+    solver.add_program_line(display(item="black"))
     solver.solve()
 
     return solver.solutions

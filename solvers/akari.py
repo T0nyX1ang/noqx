@@ -2,62 +2,61 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, at_least, require, sum_bools
-from .utils.encoding import Encoding
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.helper import ConnectivityHelper, tag_encode
+from .utilsx.rule import adjacent, count_adjacent
+from .utilsx.solution import solver
+
+
+def akari_lit(color: str = "black") -> str:
+    """
+    A lit rule specially designed for akari.
+
+    A grid fact and an adjacent rule should be defined first.
+    """
+    tag = tag_encode("lit", "adj", 4, color)
+    helper = ConnectivityHelper("lit", "grid", color, 4)
+    initial = f"{tag}(R0, C0, R, C) :- grid(R, C), bulb(R, C), R0 = R, C0 = C."
+    propagation = helper.propagation(full_search=True, extra_constraint="(R - R0) * (C - C0) == 0")
+    constraint1 = f":- bulb(R0, C0), bulb(R, C), |R0 - R| + |C0 - C| != 0, {tag}(R0, C0, R, C)."
+    constraint2 = f":- grid(R, C), not black(R, C), not bulb(R, C), {{ {tag}(R0, C0, R, C) }} = 0."
+
+    return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    # BoolVar that is True iff (r,c) has a lightbulb
-    bools = [[BoolVar() for c in range(E.C)] for r in range(E.R)]
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line("{ bulb(R, C) } :- grid(R, C), not black(R, C).")
+    solver.add_program_line(adjacent())
+    solver.add_program_line(akari_lit(color="not black"))
 
-    # ENFORCE THAT BLACK CELLS CAN'T HAVE LIGHTBULBS
-    for r, c in E.clues:
-        require(~bools[r][c])
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "o":
+            solver.add_program_line(f"blub({r}, {c}).")
+        else:
+            num = int(clue[0])
+            solver.add_program_line(f"black({r}, {c}).")
+            solver.add_program_line(count_adjacent(num, (r, c), color="bulb"))
 
-    # ENFORCE THAT NUMBERED CLUES ARE CORRECT
-    for r, c in E.clues:
-        if E.clues[(r, c)].isnumeric():
-            # require that contents[(r,c)] equals the number
-            # of true BoolVars for the (up to four) adjacent cells
-            require(
-                sum_bools(
-                    int(E.clues[(r, c)]),
-                    [
-                        bools[r + dr][c + dc]
-                        for (dr, dc) in ((0, 1), (1, 0), (0, -1), (-1, 0))
-                        if 0 <= r + dr < E.R and 0 <= c + dc < E.C
-                    ],
-                )
-            )
+    solver.add_program_line(display(item="bulb"))
+    solver.solve()
 
-    # ENFORCE THAT EVERY CELL IS LIT UP,
-    # AND THAT NO TWO LIGHTBULBS SEE EACH OTHER
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) not in E.clues:
-                # get all other cells from which (r,c) might be lit up
-                visible_cells = []
-                for dr, dc in (0, 1), (1, 0), (0, -1), (-1, 0):
-                    i = 1
-                    while True:
-                        r1, c1 = r + i * dr, c + i * dc
-                        if 0 <= r1 < E.R and 0 <= c1 < E.C and (r1, c1) not in E.clues:
-                            visible_cells.append((r1, c1))
-                        else:
-                            break
-                        i += 1
-                # now, either (r,c) has a lightbulb and none of visible_cells does,
-                # or (r,c) doesn't have a lightbulb and at least one of visible_cells does
-                require(bools[r][c] != at_least(1, [bools[x][y] for (x, y) in visible_cells]))
+    for solution in solver.solutions:
+        for rc, color in solution.items():
+            if color == "bulb":
+                solution[rc] = "bulb.png"
 
-    return get_all_grid_solutions(bools, format_function=lambda r, c: "bulb.png" if bools[r][c].value() else "")
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

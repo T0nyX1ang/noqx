@@ -2,66 +2,57 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import IntVar, at_least, require, set_max_val
-from .utils.encoding import Encoding
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.rule import fill_num, unique_num
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_params=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
-    def require_1_thru_n(arr):
-        for i in range(1, n + 1):
-            require(at_least(1, [x == i for x in arr]))
+    solver.reset()
+    solver.add_program_line(grid(9, 9))
 
-    n = E.R
-    set_max_val(n)
+    for i in range(9):
+        for j in range(9):
+            area_id = (i // 3) * 3 + (j // 3)
+            solver.add_program_line(area(area_id, [(i, j)]))
 
-    grid = [[IntVar(1, n) for c in range(n)] for r in range(n)]
+    solver.add_program_line(fill_num(_range="1..9"))
+    solver.add_program_line(unique_num(_type="row", color="grid"))
+    solver.add_program_line(unique_num(_type="col", color="grid"))
+    solver.add_program_line(unique_num(_type="area", color="grid"))
 
-    # ENFORCE GIVENS ARE SATISFIED
-    for i, j in E.clues:
-        require(grid[i][j] == E.clues[(i, j)])
+    for (r, c), num in E.clues.items():
+        solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    # ENFORCE ROWS, COLS ARE 1-n
-    for i in range(n):
-        require_1_thru_n([grid[i][j] for j in range(n)])
-        require_1_thru_n([grid[j][i] for j in range(n)])
+    if E.params["Diagonal"]:  # diagonal rule
+        for i in range(9):
+            solver.add_program_line(f"area(10, {i}, {i}).")
+            solver.add_program_line(f"area(11, {i}, {8 - i}).")
 
-    # ENFORCE BOXES ARE 1-n
-    m = int(n**0.5)
-    for a in range(m):
-        for b in range(m):
-            require_1_thru_n([grid[m * a + i][m * b + j] for i in range(m) for j in range(m)])
+    if E.params["Untouch"]:  # untouch rule
+        solver.add_program_line("adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 1.")
+        solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_x(R, C, R1, C1).")
 
-    if E.params["Diagonal"]:  # ENFORCE DIAGONALS ARE 1-n
-        require_1_thru_n([grid[i][i] for i in range(n)])
-        require_1_thru_n([grid[i][8 - i] for i in range(n)])
+    if E.params["Nonconsecutive"]:  # untouch rule
+        solver.add_program_line("adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 1.")
+        solver.add_program_line(":- number(R, C, N), number(R1, C1, N1), adj_x(R, C, R1, C1), |N - N1| = 1.")
 
-    if E.params["Untouch"]:  # ENFORCE UNTOUCH RULE
-        for i in range(n - 1):
-            for j in range(n - 1):
-                require(grid[i][j] != grid[i + 1][j + 1])
-                require(grid[i][j + 1] != grid[i + 1][j])
+    if E.params["Antiknight"]:  # antiknight rule
+        solver.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 2, |C - C1| = 1.")
+        solver.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 2.")
+        solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_knight(R, C, R1, C1).")
 
-    if E.params["Antiknight"]:  # ENFORCE ANTIKNIGHT RULE
-        for i in range(n):
-            for j in range(n):
-                for di, dj in (2, -1), (1, -2), (-1, -2), (-2, -1):
-                    i0, j0 = i + di, j + dj
-                    if 0 <= i0 < n and 0 <= j0 < n:
-                        require(grid[i][j] != grid[i0][j0])
+    solver.add_program_line(display(item="number", size=3))
+    solver.solve()
 
-    # antidiagonal, nonconsecutive
-    # thermo, arrow, killer, consecutive-pairs [lambda in general]
-    # add possibilities for a cell
-    # and then don't forget to add instructions / explanation to the controls string
-
-    return get_all_grid_solutions(grid)
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
