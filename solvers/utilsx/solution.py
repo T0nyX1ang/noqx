@@ -6,7 +6,6 @@ from clingo.control import Control
 from clingo.solving import Model
 
 from .border import Direction
-from .loops import ISOLATED, NON_DIRECTED, DIRECTED
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -44,7 +43,7 @@ class ClingoSolver:
         for item in solution:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            if not _type in ["loop_sign"]:
+            if _type not in ["loop_sign"]:
                 data = map(int, data)
             else:
                 data[:-1] = map(int, data[:-1])

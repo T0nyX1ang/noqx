@@ -2,46 +2,64 @@
 
 from typing import List
 
-from .utils.claspy import MultiVar, BoolVar, require, sum_bools
-from . import utils
-from .utils.encoding import Encoding
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.rule import count, fill_num, unique_num
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_params=True, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    letters = list(E.params["letters"])
-    grid = [[MultiVar(*letters, "") for c in range(E.C)] for r in range(E.R)]
+    if E.R != E.C:
+        raise ValueError("Skyscrapers puzzles must be square.")
+    n = E.R
+    letters = E.params["letters"]
+    rev_letters = {v: k + 1 for k, v in enumerate(letters)}
 
-    # ENFORCE CLUED CELLS, IF ANY
-    for r, c in E.clues:
-        require(grid[r][c] == E.clues[(r, c)])
+    solver.reset()
+    solver.add_program_line(grid(n, n))
+    solver.add_program_line(fill_num(_range=f"1..{len(letters)}", color="white"))
+    solver.add_program_line(unique_num(_type="row", color="grid"))
+    solver.add_program_line(count(n - len(letters), _type="row", color="white"))
+    solver.add_program_line(unique_num(_type="col", color="grid"))
+    solver.add_program_line(count(n - len(letters), _type="col", color="white"))
 
-    # ENFORCE LATIN SQUARE CONSTRAINTS
-    for i in range(E.R):
-        for lt in letters:
-            require(sum_bools(1, [grid[i][j] == lt for j in range(E.C)]))
-            require(sum_bools(1, [grid[j][i] == lt for j in range(E.R)]))
+    for c, letter in E.top.items():
+        solver.add_program_line(
+            f":- Rm = #min {{ R: grid(R, {c}), not white(R, {c}) }}, not number(Rm, {c}, {rev_letters[letter]})."
+        )
 
-    # ENFORCE FIRST-SEEN CONSTRAINTS IN EACH DIRECTION
-    for side, clues in ("U", E.top), ("R", E.right), ("B", E.bottom), ("L", E.left):
-        for i, lt in clues.items():
-            view = BoolVar(False)
-            for j in range(E.C) if side in "UL" else range(E.C - 1, -1, -1):  # iteration direction
-                i1, i2 = (i, j) if side in "LR" else (j, i)  # row/col indices in some order
+    for c, letter in E.bottom.items():
+        solver.add_program_line(
+            f":- Rm = #max {{ R: grid(R, {c}), not white(R, {c}) }}, not number(Rm, {c}, {rev_letters[letter]})."
+        )
 
-                # False = seen no letters yet, True = seen l first;
-                # and implicitly require that no other possibilities exist
-                new_view = BoolVar()
-                require(~new_view == (~view & (grid[i1][i2] == "")))
-                require(new_view == ((~view & (grid[i1][i2] == lt)) | view))
-                view = new_view
+    for r, letter in E.left.items():
+        solver.add_program_line(
+            f":- Cm = #min {{ C: grid({r}, C), not white({r}, C) }}, not number({r}, Cm, {rev_letters[letter]})."
+        )
 
-    return get_all_grid_solutions(grid)
+    for r, letter in E.right.items():
+        solver.add_program_line(
+            f":- Cm = #max {{ C: grid({r}, C), not white({r}, C) }}, not number({r}, Cm, {rev_letters[letter]})."
+        )
+
+    for (r, c), letter in E.clues.items():
+        solver.add_program_line(f"number({r}, {c}, {rev_letters[letter]}).")
+
+    solver.add_program_line(display(item="number", size=3))
+    solver.solve()
+
+    for solution in solver.solutions:
+        for rc, num in solution.items():
+            solution[rc] = letters[num - 1]
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
