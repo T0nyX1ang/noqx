@@ -28,7 +28,7 @@ def solve(E: Encoding) -> List:
         color = "black" if color == "b" else "not black"
         solver.add_program_line(f"{color}({r}, {c}).")
 
-    solver.add_program_line(display(color="black"))
+    solver.add_program_line(display(item="black"))
     solver.solve()
 
     for solution in solver.solutions:

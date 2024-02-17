@@ -114,7 +114,7 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(f"not black({r}, {c}).")
         solver.add_program_line(valid_tapa_pattern(r=r, c=c, patterns=patterns, color="black"))
 
-    solver.add_program_line(display(color="black"))
+    solver.add_program_line(display(item="black"))
     solver.solve()
 
     return solver.solutions

@@ -1,60 +1,100 @@
 """The Yajilin solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import BoolVar, require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.loops import RectangularGridLoopSolver
-from .utils.shading import RectangularGridShadingSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+
+from .utilsx.fact import grid, display
+from .utilsx.rule import adjacent, avoid_adjacent
+from .utilsx.solution import solver, rc_to_grid
+from .utilsx.loops import NON_DIRECTED
+
+
+def shade_custom() -> str:
+    """
+    Custom shading. A grid fact should be defined first.
+    """
+    return "{ black(R, C); white(R, C) } = 1 :- grid(R, C), not gray(R, C)."
+
+
+def yajilin_count(target: int, src_cell: Tuple[int, int], direction: str, color: str = "black") -> str:
+    """
+    Generates a constraint for counting the number of {color} cells in a row / col.
+
+    A grid fact should be defined first.
+    """
+    src_r, src_c = src_cell
+    op = "<" if direction in "lu" else ">"
+
+    if direction in "lr":
+        return f":- #count {{ C1 : {color}({src_r}, C1), C1 {op} {src_c} }} != {target}."
+
+    if direction in "ud":
+        return f":- #count {{ R1 : {color}(R1, {src_c}), R1 {op} {src_r} }} != {target}."
+
+    raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
+
+
+def hamilton_loop(color: str = "white"):
+    # NON_DIRECTED = ["J", "7", "L", "r", "-", "1"]
+    dirs = ["lu", "ld", "ru", "rd", "lr", "ud"]
+    fact = 'direction("l"; "u"; "r"; "d").\n'
+    fact += f"{{ grid_direction(R, C, D) }} :- {color}(R, C), direction(D).\n"
+    for sign, direction in zip(NON_DIRECTED, dirs):
+        d1, d2 = direction
+        fact += (
+            f'loop_sign(R, C, "{sign}") :- {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+        )
+
+    constraint = f":- {color}(R, C), #count{{ D: grid_direction(R, C, D) }} != 2.\n"
+    constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C-1, "r").\n'
+    constraint += f':- {color}(R, C), grid_direction(R, C, "u"), not grid_direction(R-1, C, "d").\n'
+    constraint += f':- {color}(R, C), grid_direction(R, C, "r"), not grid_direction(R, C+1, "l").\n'
+    constraint += f':- {color}(R, C), grid_direction(R, C, "d"), not grid_direction(R+1, C, "u").\n'
+    return fact + constraint
+
+
+def connected_loop(color: str = "white") -> str:
+    """
+    Define adjacent loops and constrain the connectivity.
+    A grid fact and a loop/path fact should be defined first.
+    """
+    initial = f"reachable_loop(R, C) :- (R, C) = #min{{ (R1, C1) : {color}(R1, C1) }}.\n"
+    propagation = f"reachable_loop(R, C) :- {color}(R, C), reachable_loop(R1, C1), adj_loop(R1, C1, R, C).\n"
+    constraint = f":- {color}(R, C), not reachable_loop(R, C)."
+    return initial + propagation + constraint
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    # Restrict the number of bits used for IntVar.
-    # The highest number that we need is the highest clue number.
-    set_max_val(max([int(clue[0][0]) for clue in E.clues.values() if clue != "gray"], default=1))
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_custom())
+    solver.add_program_line(adjacent())
+    solver.add_program_line(avoid_adjacent(color="black"))
+    # solver.add_program_line(connected(color="white"))
+    solver.add_program_line(hamilton_loop(color="white"))
+    solver.add_program_line(adjacent("loop"))
+    solver.add_program_line(connected_loop(color="white"))
 
-    loop_solver = RectangularGridLoopSolver(E.R, E.C, shading=True)
-    shading_solver = RectangularGridShadingSolver(E.R, E.C, grid=loop_solver.grid, shading_symbols=["."])
-    loop_solver.loop(E.clues, allow_blanks=False)
-    shading_solver.no_adjacent()
+    for (r, c), clue in E.clues.items():
+        if clue == "gray":
+            solver.add_program_line(f"gray({r}, {c}).")
+        elif clue[1] == "gray":
+            num, direction = clue[0]
+            solver.add_program_line(f"gray({r}, {c}).")
+            solver.add_program_line(yajilin_count(int(num), (r, c), direction, color="black"))
 
-    # ----CLUE RULES----
+    solver.add_program_line(display(item="black"))
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    for r in range(E.R):
-        for c in range(E.C):
-            # clues satisfied
-            if (r, c) in E.clues:
-                if E.clues[(r, c)] == "gray":
-                    require(loop_solver.grid[r][c] == "")
-                else:
-                    num_string = E.clues[(r, c)][0][0]
-                    direction = E.clues[(r, c)][0][1]
-                    # check the clue for validity
-                    if not num_string.isnumeric() or direction not in "lrud":
-                        raise ValueError("Please ensure that each clue has both a number and a direction.")
-
-                    # build a list of coordinates that are "seen" by this clue
-                    seen_cells = []
-                    if direction == "l":
-                        seen_cells = [(r, x) for x in range(0, c)]
-                    elif direction == "r":
-                        seen_cells = [(r, x) for x in range(c + 1, E.C)]
-                    elif direction == "u":
-                        seen_cells = [(y, c) for y in range(0, r)]
-                    elif direction == "d":
-                        seen_cells = [(y, c) for y in range(r + 1, E.R)]
-                    # get a list of boolean variables that tell you whether the cells are shaded
-                    shaded_seen = [BoolVar(loop_solver.grid[y][x] == ".") for (y, x) in seen_cells]
-                    # require that exactly 'num' of the cells are shaded
-                    require(sum_bools(int(num_string), shaded_seen))
-
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

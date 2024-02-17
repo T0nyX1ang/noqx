@@ -30,28 +30,28 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(omino(4, ["L", "I", "T", "S"]))
-    solver.add_program_line(shade_c("darkgray"))
+    solver.add_program_line(shade_c("gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="darkgray"))
-    solver.add_program_line(avoid_rect(2, 2, color="darkgray"))
+    solver.add_program_line(connected(color="gray"))
+    solver.add_program_line(avoid_rect(2, 2, color="gray"))
 
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count(4, color="darkgray", _type="area", _id=i))
+        solver.add_program_line(count(4, color="gray", _type="area", _id=i))
 
-    solver.add_program_line(connected(color="darkgray", _type="area"))
-    solver.add_program_line(valid_omino(4, color="darkgray", _type="area"))
-    solver.add_program_line(area_adjacent(color="darkgray"))
-    solver.add_program_line(avoid_adjacent_same_omino(4, color="darkgray"))
+    solver.add_program_line(connected(color="gray", _type="area"))
+    solver.add_program_line(valid_omino(4, color="gray", _type="area"))
+    solver.add_program_line(area_adjacent(color="gray"))
+    solver.add_program_line(avoid_adjacent_same_omino(4, color="gray"))
 
     for (r, c), clue in E.clues.items():
-        if clue == "darkgray":
-            solver.add_program_line(f"darkgray({r}, {c}).")
+        if clue == "gray":
+            solver.add_program_line(f"gray({r}, {c}).")
         elif clue == "green":
-            solver.add_program_line(f"not darkgray({r}, {c}).")
+            solver.add_program_line(f"not gray({r}, {c}).")
 
-    solver.add_program_line(display(color="darkgray"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions

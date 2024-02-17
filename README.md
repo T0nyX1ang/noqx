@@ -6,29 +6,7 @@ Extended logic puzzle solver of Noq.
 
 - Remove redundant codes and formatting codes.
 
-- New solver API with new visualizations:
-
-  - [x] Minesweeper
-  - [x] Hitori
-  - [x] Yin-Yang
-  - [x] Binairo
-  - [x] Kuromasu
-  - [x] Nurikabe
-  - [x] Kurotto
-  - [x] Norinori
-  - [x] Heyawake
-  - [x] Nurimisaki
-  - [x] Aqre
-  - [x] Tents
-  - [x] Stostone
-  - [x] Shimaguni
-  - [x] Aquarium
-  - [x] Lits
-  - [x] Statue Park
-  - [x] Chocona
-  - [x] Tapa
-  - [x] Cave
-  - [x] Nuribou
+- New solver API with new visualizations (See issue [#2](https://github.com/T0nyX1ang/noqx/issues/2))
 
 ## How to run locally
 
