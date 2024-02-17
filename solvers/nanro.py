@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.encoding import Encoding, default_clue_encoder
 from .utilsx.fact import area, display, grid
 from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, area_adjacent, connected, count
+from .utilsx.rule import adjacent, area_adjacent, connected, count, fill_num
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -57,7 +57,7 @@ def solve(E: Encoding) -> List:
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(f"{{ number(R, C, 1..{len(ar)}); gray(R, C) }} = 1 :- area({i}, R, C).")
+        solver.add_program_line(fill_num(_range=f"1..{len(ar)}", _type="area", _id=i, color="gray"))
 
         flag = True
         for cell in ar:
