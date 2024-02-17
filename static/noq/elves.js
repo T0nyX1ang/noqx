@@ -1496,7 +1496,7 @@ let elf_types = {
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
   countryroad: InvertSolutionZOrder(IntBordersElf()),
-  doppelblock: IntElf(),
+  doppelblock: DirectSum(IntElf(), BgColorElf()),
   easyas: EasyAsElf,
   fillomino: IntElf(),
   gokigen: DirectSum(

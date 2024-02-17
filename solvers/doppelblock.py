@@ -2,83 +2,52 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, IntVar, cond, require, reset, set_max_val, var_in, clasp_solve
-from .utils.encoding import Encoding
-from .utils.numbers import RectangularGridNumbersSolver
-from .utils.solutions import MAX_SOLUTIONS_TO_FIND, rc_to_grid
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.rule import count, fill_num, unique_num
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, outside_clues="1001")
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     assert E.R == E.C, "Doppelblock puzzles must be square."
     n = E.R
 
-    reset()
-    set_max_val((n - 2) * (n - 1) // 2)  # the maximum sum of numbers in a row / col
+    solver.reset()
+    solver.add_program_line(grid(n, n))
+    solver.add_program_line(fill_num(_range=f"1..{n - 2}", color="black"))
+    solver.add_program_line(unique_num(_type="row", color="grid"))
+    solver.add_program_line(count(2, _type="row", color="black"))
+    solver.add_program_line(unique_num(_type="col", color="grid"))
+    solver.add_program_line(count(2, _type="col", color="black"))
 
-    # make a nxn Latin square
-    numbers_solver = RectangularGridNumbersSolver(n, n, 1, n)
-    numbers_solver.rows_and_cols()
+    for c, num in E.top.items():
+        begin_r = f"Rb = #min {{ R: black(R, {c}) }}"
+        end_r = f"Re = #max {{ R: black(R, {c}) }}"
+        solver.add_program_line(f":- {begin_r}, {end_r}, #sum {{ N: number(R, {c}, N), R > Rb, R < Re }} != {num}.")
 
-    # the "numbers" n-1 and n represent shaded blocks
-    shading_symbols = [n - 1, n]
+    for r, num in E.left.items():
+        begin_c = f"Cb = #min {{ C: black({r}, C) }}"
+        end_c = f"Ce = #max {{ C: black({r}, C) }}"
+        solver.add_program_line(f":- {begin_c}, {end_c}, #sum {{ N: number({r}, C, N), C > Cb, C < Ce }} != {num}.")
 
-    for r in E.left:
-        has_seen_first_shaded, has_seen_second_shaded = False, False
-        s = IntVar(0)
-        for c in range(n):
-            s += cond(
-                ~var_in(numbers_solver.grid[r][c], shading_symbols) & has_seen_first_shaded & ~has_seen_second_shaded,
-                numbers_solver.grid[r][c],
-                0,
-            )
-            has_seen_second_shaded |= has_seen_first_shaded & var_in(numbers_solver.grid[r][c], shading_symbols)
-            has_seen_first_shaded |= var_in(numbers_solver.grid[r][c], shading_symbols)
-        require(s == int(E.left[r]))
+    for (r, c), clue in E.clues.items():
+        if clue == "black":
+            solver.add_program_line(f"black({r}, {c}).")
+        else:
+            num = int(clue)
+            solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    for c in E.top:
-        has_seen_first_shaded, has_seen_second_shaded = False, False
-        s = IntVar(0)
-        for r in range(n):
-            s += cond(
-                ~var_in(numbers_solver.grid[r][c], shading_symbols) & has_seen_first_shaded & ~has_seen_second_shaded,
-                numbers_solver.grid[r][c],
-                0,
-            )
-            has_seen_second_shaded |= has_seen_first_shaded & var_in(numbers_solver.grid[r][c], shading_symbols)
-            has_seen_first_shaded |= var_in(numbers_solver.grid[r][c], shading_symbols)
-        require(s == int(E.top[c]))
+    solver.add_program_line(display(item="number", size=3))
+    solver.add_program_line(display(item="black", size=2))
+    solver.solve()
 
-    for r, c in E.clues:
-        require(numbers_solver.grid[r][c] == E.clues[(r, c)])
-
-    solutions = []
-    while len(solutions) < MAX_SOLUTIONS_TO_FIND and clasp_solve():
-        solution = {}
-        for r in range(n):
-            for c in range(n):
-                key = rc_to_grid(r, c)
-                if numbers_solver.grid[r][c].value() in shading_symbols:
-                    solution[key] = "black"
-                else:
-                    solution[key] = numbers_solver.grid[r][c].value()
-        solutions.append(solution)
-        # Once a solution is found, add a constraint eliminating it.
-        x = BoolVar(True)
-        for r in range(n):
-            for c in range(n):
-                if numbers_solver.grid[r][c].value() in shading_symbols:
-                    x = x & var_in(numbers_solver.grid[r][c], shading_symbols)
-                else:
-                    x = x & (numbers_solver.grid[r][c] == numbers_solver.grid[r][c].value())
-        require(~x)
-
-    return solutions
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
