@@ -5,7 +5,7 @@ asgiref==3.7.2
 backports-zoneinfo==0.2.1; python_version < "3.9"
 cffi==1.16.0
 clingo==5.6.2
-django==4.2.9
+django==4.2.10
 pycparser==2.21
 sqlparse==0.4.4
 typing-extensions==4.9.0; python_version < "3.11"
