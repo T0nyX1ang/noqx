@@ -14,7 +14,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    assert E.R == E.C, "Doppelblock puzzles must be square"
+    assert E.R == E.C, "Doppelblock puzzles must be square."
     n = E.R
 
     reset()

@@ -4,7 +4,7 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import grid, display
+from .utilsx.fact import display, grid
 from .utilsx.rule import fill_num, unique_num
 from .utilsx.solution import solver
 
@@ -14,8 +14,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    if E.R != E.C:
-        raise ValueError("Skyscrapers puzzles must be square.")
+    assert E.R == E.C, "Skyscrapers puzzles must be square."
     n = E.R
 
     solver.reset()

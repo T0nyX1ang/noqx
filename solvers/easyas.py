@@ -14,8 +14,7 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    if E.R != E.C:
-        raise ValueError("Skyscrapers puzzles must be square.")
+    assert E.R == E.C, "Easy as puzzles must be square."
     n = E.R
     letters = E.params["letters"]
     rev_letters = {v: k + 1 for k, v in enumerate(letters)}
