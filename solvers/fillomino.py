@@ -4,45 +4,48 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.helper import tag_encode
-from .utilsx.rule import adjacent, fill_num
+from .utilsx.fact import display, grid, edge
+from .utilsx.rule import adjacent, fill_num, reachable_edge
 from .utilsx.solution import solver
-
-
-def fillomino_connectivity(adj_type: int = 4) -> str:
-    """Return a string representing the Fillomino puzzle connectivity rules."""
-
-    tag = tag_encode("num_connectivity", adj_type)
-    adj_num = f"adj_num(R, C, R1, C1) :- number(R, C, N), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1)."
-
-    initial = f"{tag}(R0, C0, R, C) :- grid(R, C), R = R0, C = C0."
-    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_num(R, C, R1, C1)."
-    constraint = f":- grid(R, C), number(R, C, N), #count {{ R1, C1: {tag}(R, C, R1, C1) }} != N."
-
-    return adj_num + "\n" + initial + "\n" + propagation + "\n" + constraint
 
 
 def encode(string: str) -> Encoding:
     return utilsx.encode(string)
 
 
+def fillomino_count():
+    constriant = ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
+    constriant += ":- number(R, C, N), number(R, C+1, N), vertical_line(R, C+1).\n"
+    constriant += ":- number(R, C, N), number(R+1, C, N), horizontal_line(R+1, C).\n"
+    constriant += "number(R, C, N) :- number(R0, C0, N), adj_edge(R0, C0, R, C).\n"
+    constriant += "{ horizontal_line(R, C); horizontal_line(R+1, C); vertical_line(R, C); vertical_line(R, C+1) } = 4 :- number(R, C, 1).\n"
+    constriant += "number(R, C, 1) :- horizontal_line(R, C), horizontal_line(R+1, C), vertical_line(R, C), vertical_line(R, C+1).\n"
+    # constriant += ":- adj_4(R0, C0, R, C), not adj_edge(R0, C0, R, C), number(R0, C0, N), not number(R, C, _), #count{ R1, C1: reachable_edge(R, C, R1, C1) } = N.\n"
+    return constriant[:-1]
+
+
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(adjacent())
-    solver.add_program_line(fillomino_connectivity())
+    solver.add_program_line(edge(E.R, E.C))
+    solver.add_program_line(adjacent(4))
+    solver.add_program_line(adjacent("edge"))
+    solver.add_program_line(reachable_edge())
+    solver.add_program_line(fillomino_count())
 
-    max_num = E.R * E.C
-    occurance = set()
+    for r in range(E.R):
+        solver.add_program_line(f"vertical_line({r}, {0}).")
+        solver.add_program_line(f"vertical_line({r}, {E.C}).")
+    for c in range(E.C):
+        solver.add_program_line(f"horizontal_line({0}, {c}).")
+        solver.add_program_line(f"horizontal_line({E.R}, {c}).")
 
     for (r, c), num in E.clues.items():
-        max_num -= 1
-        occurance.add(num)
         solver.add_program_line(f"number({r}, {c}, {num}).")
-    max_num -= sum(occurance) - len(occurance)  # this bound is sort of conservative
 
-    solver.add_program_line(fill_num(_range=f"1..{max_num}"))
+    # solver.add_program_line(fill_num(_range=f"1..{E.R * E.C}"))
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="number", size=3))
     solver.solve()
 
