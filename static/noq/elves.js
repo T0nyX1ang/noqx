@@ -553,7 +553,8 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
     }
 
     load_example(str) {
-      return this.handle_input(str, null);
+      for (let ch of str) this.handle_input(ch, null);
+      return;
     }
 
     encode_input() {
