@@ -285,3 +285,18 @@ def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq"
     op = rev_op_dict[op]
     tag = tag_encode("valid_omino", num, color)
     return f":- #count {{ R, C: {tag}({omino_type}, R, C) }} {op} {target}."
+
+
+def reachable_edge() -> str:
+    """
+    Define edges as numbers on its adjacent grids are different.
+    A grid fact should be defined first.
+    """
+    initial = "reachable_edge(R0, C0, R, C) :- grid(R, C), grid(R0, C0), R = R0, C = C0.\n"
+    propagation = (
+        "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R1, C1, R, C).\n"
+    )
+    # edge between two reachable grids is forbidden.
+    constraint = ":- reachable_edge(R0, C0, R, C), R=R0, C=C0+1, vertical_line(R, C).\n"
+    constraint += ":- reachable_edge(R0, C0, R, C), R=R0+1, C=C0, horizontal_line(R, C)."
+    return initial + propagation + constraint

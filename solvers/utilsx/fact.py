@@ -60,3 +60,15 @@ def omino(num: int = 4, _types: List[str] = None) -> str:
                 data.append(f'omino_{num}("{omino_type}", {i}, {dr}, {dc}).')
 
     return "\n".join(data)
+
+
+def edge(rows: int, cols: int) -> str:
+    """
+    Generates facts for grid edges.
+    Note grid borders are set outside.
+    """
+    fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
+    fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
+    fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
+    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C)."
+    return fact

@@ -5,40 +5,13 @@ from typing import List
 from . import utilsx
 from .utilsx.border import Direction
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import rev_op_dict, adjacent
+from .utilsx.fact import display, grid, edge
+from .utilsx.rule import rev_op_dict, adjacent, reachable_edge
 from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
     return utilsx.encode(string, has_borders=True)
-
-
-def edge(rows: int, cols: int) -> str:
-    """
-    Generates facts for grid edges.
-    Note grid borders are also included.
-    """
-    fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
-    fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
-    fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
-    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C)."
-    return fact
-
-
-def reachable_edge() -> str:
-    """
-    Define edges as numbers on its adjacent grids are different.
-    A grid fact should be defined first.
-    """
-    initial = "reachable_edge(R0, C0, R, C) :- grid(R, C), grid(R0, C0), R = R0, C = C0.\n"
-    propagation = (
-        "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R1, C1, R, C).\n"
-    )
-    # edge between two reachable grids is forbidden.
-    constraint = ":- reachable_edge(R0, C0, R, C), R=R0, C=C0+1, vertical_line(R, C).\n"
-    constraint += ":- reachable_edge(R0, C0, R, C), R=R0+1, C=C0, horizontal_line(R, C)."
-    return initial + propagation + constraint
 
 
 def count_reachable_edge(target: int, op: str = "eq") -> str:
