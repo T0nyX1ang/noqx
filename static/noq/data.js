@@ -99,6 +99,7 @@ const puzzle_types = {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
+      fast: { name: "Fast Mode", value: true },
     },
     properties: { outside: "0000", border: false },
   },
@@ -1439,7 +1440,7 @@ const examples = {
   fillomino: {
     1: {
       data: {
-        param_values: { r: "6", c: "6" },
+        param_values: { r: "6", c: "6", fast: false },
         grid: {
           "3,1": "1",
           "3,3": "5",
@@ -1458,7 +1459,7 @@ const examples = {
     },
     2: {
       data: {
-        param_values: { r: "16", c: "16" },
+        param_values: { r: "16", c: "16", fast: true },
         grid: {
           "1,9": "1",
           "1,15": "1",
@@ -1570,7 +1571,7 @@ const examples = {
     },
     3: {
       data: {
-        param_values: { r: "10", c: "10" },
+        param_values: { r: "10", c: "10", fast: false },
         grid: {
           "5,3": "8",
           "5,5": "8",

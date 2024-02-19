@@ -55,15 +55,19 @@ def solve(E: Encoding) -> List:
     for (r, c), num in E.clues.items():
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    solver.add_program_line(
-        "{ numberx(R, C, N) } = 1 :- grid(R, C), not number(R, C, _), #count{ R1, C1: reachable_edge(R, C, R1, C1) } = N."
-    )
-    solver.add_program_line(":- numberx(R, C, N), numberx(R1, C1, N), not adj_edge(R, C, R1, C1), adj_4(R, C, R1, C1).")
-
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="number", size=3))
-    solver.add_program_line(display(item="numberx", size=3))
+
+    if not E.params["fast"]:  # precise solution
+        solver.add_program_line(
+            "{ numberx(R, C, N) } = 1 :- grid(R, C), not number(R, C, _), #count{ R1, C1: reachable_edge(R, C, R1, C1) } = N."
+        )
+        solver.add_program_line(
+            ":- numberx(R, C, N), numberx(R1, C1, N), not adj_edge(R, C, R1, C1), adj_4(R, C, R1, C1)."
+        )
+        solver.add_program_line(display(item="numberx", size=3))
+
     solver.solve()
 
     return solver.solutions
