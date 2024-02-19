@@ -290,6 +290,7 @@ def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq"
 def reachable_edge() -> str:
     """
     Define edges as numbers on its adjacent grids are different.
+
     A grid fact should be defined first.
     """
     initial = "reachable_edge(R0, C0, R, C) :- grid(R, C), grid(R0, C0), R = R0, C = C0.\n"

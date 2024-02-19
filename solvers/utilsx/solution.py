@@ -54,7 +54,7 @@ class ClingoSolver:
             elif _type.startswith("horizontal"):
                 r, c = data
                 formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
-            elif _type == "number":
+            elif _type.startswith("number"):
                 r, c, num = data
                 formatted[rc_to_grid(r, c)] = num
             elif _type == "loop_sign":
