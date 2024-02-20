@@ -85,6 +85,21 @@ def adjacent(_type: Any = 4) -> str:
         res += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return res
 
+    # possibly to use symmetry (but not sure if it's faster)
+    # if _type == 4:
+    #     adj = "adj_4(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C).\n"
+    #     adj += "adj_4(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1).\n"
+    #     adj += "adj_4(R, C, R1, C1) :- adj_4(R1, C1, R, C)."
+    #     return adj
+
+    # if _type == 8:
+    #     adj = "adj_8(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C).\n"
+    #     adj += "adj_8(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1).\n"
+    #     adj += "adj_8(R, C, R + 1, C + 1) :- grid(R, C), grid(R + 1, C + 1).\n"
+    #     adj += "adj_8(R, C, R + 1, C - 1) :- grid(R, C), grid(R + 1, C - 1).\n"
+    #     adj += "adj_8(R, C, R1, C1) :- adj_8(R1, C1, R, C)."
+    #     return adj
+
     if _type == "edge":
         adj = "adj_edge(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), not vertical_line(R, C).\n"
         adj += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
