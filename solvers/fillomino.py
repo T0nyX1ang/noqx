@@ -66,26 +66,12 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"vertical_line({r}, {c + 1}).")
             solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-    occurances = sorted(occurances)
-    i, occ_seq = 0, []
-    while i < len(occurances):
-        start = i
-        while i < len(occurances) - 1 and occurances[i + 1] - occurances[i] == 1:
-            i += 1
-        end = i
-        if start < end:
-            occ_seq.append(f"{occurances[start]}..{occurances[end]}")
-        else:
-            occ_seq.append(str(occurances[start]))
-
-        i += 1
-
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="number", size=3))
 
     if E.params["fast"]:
-        solver.add_program_line(fill_num(_range=f"{';'.join(occ_seq)}"))
+        solver.add_program_line(fill_num(_range=occurances))
     else:
         solver.add_program_line(fillomino_slow())
         solver.add_program_line(display(item="numberx", size=3))

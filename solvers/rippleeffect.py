@@ -28,7 +28,7 @@ def solve(E: Encoding) -> List:
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(fill_num(f"1..{len(ar)}", _type="area", _id=i))
+        solver.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i))
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"number({r}, {c}, {clue}).")

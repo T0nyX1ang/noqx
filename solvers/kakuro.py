@@ -68,7 +68,7 @@ def solve(E: Encoding) -> List:
     for sum_clue, coord_list in sums:
         if len(coord_list) > 0:
             solver.add_program_line(area(_id=area_id, src_cells=coord_list))
-            solver.add_program_line(fill_num(_range="1..9", _type="area", _id=area_id))
+            solver.add_program_line(fill_num(_range=range(1, 10), _type="area", _id=area_id))
             if sum_clue > 0:
                 solver.add_program_line(f":- #sum {{ N: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
             area_id += 1

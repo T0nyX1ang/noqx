@@ -1,8 +1,8 @@
 """Utility for general clingo rules."""
 
-from typing import List, Tuple, Any
+from typing import Any, Iterable, List, Tuple
 
-from .helper import tag_encode, ConnectivityHelper
+from .helper import ConnectivityHelper, tag_encode
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
@@ -25,7 +25,7 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def fill_num(_range: str, _type: str = "grid", _id: int = "A", color: str = None) -> str:
+def fill_num(_range: Iterable[int], _type: str = "grid", _id: int = "A", color: str = None) -> str:
     """
     Generate a rule that a cell numbered within {_range}.
     {_range} should have the format "low..high", or "x;y;z" for a list of numbers.
@@ -34,11 +34,27 @@ def fill_num(_range: str, _type: str = "grid", _id: int = "A", color: str = None
     """
     color_part = "" if color is None else f"; {color}(R, C)"
 
+    _range = sorted(set(_range))  # canonicize the range
+    i, range_seq = 0, []
+
+    while i < len(_range):
+        start = i
+        while i < len(_range) - 1 and _range[i + 1] - _range[i] == 1:
+            i += 1
+        end = i
+        if start < end:
+            range_seq.append(f"{_range[start]}..{_range[end]}")
+        else:
+            range_seq.append(str(_range[start]))
+        i += 1
+
+    range_str = f"{';'.join(range_seq)}"
+
     if _type == "grid":
-        return f"{{ number(R, C, ({_range})){color_part} }} = 1 :- grid(R, C)."
+        return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- grid(R, C)."
 
     if _type == "area":
-        return f"{{ number(R, C, ({_range})){color_part} }} = 1 :- area({_id}, R, C)."
+        return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- area({_id}, R, C)."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 

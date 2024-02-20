@@ -22,7 +22,7 @@ def solve(E: Encoding) -> List:
             area_id = (i // 3) * 3 + (j // 3)
             solver.add_program_line(area(area_id, [(i, j)]))
 
-    solver.add_program_line(fill_num(_range="1..9"))
+    solver.add_program_line(fill_num(_range=range(1, 10)))
     solver.add_program_line(unique_num(_type="row", color="grid"))
     solver.add_program_line(unique_num(_type="col", color="grid"))
     solver.add_program_line(unique_num(_type="area", color="grid"))
