@@ -14,30 +14,29 @@ def encode(string: str) -> Encoding:
 
 
 def fillomino_count():
-    constriant = ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
+    constraint = ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
 
     # same number, adjacent cell, no line
-    constriant += ":- number(R, C, N), number(R, C+1, N), vertical_line(R, C+1).\n"
-    constriant += ":- number(R, C, N), number(R+1, C, N), horizontal_line(R+1, C).\n"
+    constraint += ":- number(R, C, N), number(R, C+1, N), vertical_line(R, C+1).\n"
+    constraint += ":- number(R, C, N), number(R+1, C, N), horizontal_line(R+1, C).\n"
 
     # different number, adjacent cell, have line
-    constriant += ":- number(R, C, N1), number(R, C+1, N2), N1 != N2, not vertical_line(R, C+1).\n"
-    constriant += ":- number(R, C, N1), number(R+1, C, N2), N1 != N2, not horizontal_line(R+1, C).\n"
+    constraint += ":- number(R, C, N1), number(R, C+1, N2), N1 != N2, not vertical_line(R, C+1).\n"
+    constraint += ":- number(R, C, N1), number(R+1, C, N2), N1 != N2, not horizontal_line(R+1, C).\n"
 
     # propagation of number
-    constriant += "number(R, C, N) :- number(R0, C0, N), adj_edge(R0, C0, R, C).\n"
+    constraint += "number(R, C, N) :- number(R0, C0, N), adj_edge(R0, C0, R, C).\n"
 
     # special case for 1
-    constriant += "{ horizontal_line(R, C); horizontal_line(R+1, C); vertical_line(R, C); vertical_line(R, C+1) } = 4 :- number(R, C, 1).\n"
-    constriant += "number(R, C, 1) :- horizontal_line(R, C), horizontal_line(R+1, C), vertical_line(R, C), vertical_line(R, C+1).\n"
-    return constriant.strip()
+    constraint += "{ horizontal_line(R, C); horizontal_line(R+1, C); vertical_line(R, C); vertical_line(R, C+1) } = 4 :- number(R, C, 1).\n"
+    constraint += "number(R, C, 1) :- horizontal_line(R, C), horizontal_line(R+1, C), vertical_line(R, C), vertical_line(R, C+1).\n"
+    return constraint.strip()
 
 
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
-    solver.add_program_line(adjacent(4))
     solver.add_program_line(adjacent("edge"))
     solver.add_program_line(reachable_edge())
     solver.add_program_line(fillomino_count())
@@ -68,6 +67,7 @@ def solve(E: Encoding) -> List:
     if E.params["fast"]:
         solver.add_program_line(fill_num(_range=f"{';'.join(occ_seq)}"))
     else:
+        solver.add_program_line(adjacent(4))
         solver.add_program_line(
             ":- adj_4(R0, C0, R, C), not adj_edge(R0, C0, R, C), number(R, C, N), #count{ R1, C1: reachable_edge(R0, C0, R1, C1) } = N."
         )

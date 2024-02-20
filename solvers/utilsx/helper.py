@@ -128,7 +128,7 @@ class ConnectivityHelper:
         if src_cells is None:  # use the default initial rule if no source cells are given
             if not full_search:
                 return f"{self.tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {self.color}(R1, C1) }}."
-            return f"{self.tag}(R0, C0, R, C) :- grid(R0, C0), {self.color}(R0, C0), R = R0, C = C0."
+            return f"{self.tag}(R, C, R, C) :- grid(R, C), {self.color}(R, C)."
 
         # generate the initial rule from the source cells
         initial = ""
