@@ -35,10 +35,10 @@ def fill_num(_range: str, _type: str = "grid", _id: int = "A", color: str = None
     color_part = "" if color is None else f"; {color}(R, C)"
 
     if _type == "grid":
-        return f"{{ number(R, C, {_range}){color_part} }} = 1 :- grid(R, C)."
+        return f"{{ number(R, C, ({_range})){color_part} }} = 1 :- grid(R, C)."
 
     if _type == "area":
-        return f"{{ number(R, C, {_range}){color_part} }} = 1 :- area({_id}, R, C)."
+        return f"{{ number(R, C, ({_range})){color_part} }} = 1 :- area({_id}, R, C)."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
