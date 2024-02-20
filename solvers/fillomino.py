@@ -14,22 +14,21 @@ def encode(string: str) -> Encoding:
 
 
 def fillomino_count():
-    constraint = ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
+    # propagation of number
+    constraint = "number(R, C, N) :- number(R0, C0, N), reachable_edge(R0, C0, R, C).\n"
+    constraint += ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
 
     # same number, adjacent cell, no line
-    constraint += ":- number(R, C, N), number(R, C+1, N), vertical_line(R, C+1).\n"
-    constraint += ":- number(R, C, N), number(R+1, C, N), horizontal_line(R+1, C).\n"
+    constraint += ":- number(R, C, N), number(R, C + 1, N), vertical_line(R, C + 1).\n"
+    constraint += ":- number(R, C, N), number(R + 1, C, N), horizontal_line(R+1, C).\n"
 
     # different number, adjacent cell, have line
-    constraint += ":- number(R, C, N1), number(R, C+1, N2), N1 != N2, not vertical_line(R, C+1).\n"
-    constraint += ":- number(R, C, N1), number(R+1, C, N2), N1 != N2, not horizontal_line(R+1, C).\n"
-
-    # propagation of number
-    constraint += "number(R, C, N) :- number(R0, C0, N), adj_edge(R0, C0, R, C).\n"
+    constraint += ":- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not vertical_line(R, C + 1).\n"
+    constraint += ":- number(R, C, N1), number(R + 1, C, N2), N1 != N2, not horizontal_line(R + 1, C).\n"
 
     # special case for 1
-    constraint += "{ horizontal_line(R, C); horizontal_line(R+1, C); vertical_line(R, C); vertical_line(R, C+1) } = 4 :- number(R, C, 1).\n"
-    constraint += "number(R, C, 1) :- horizontal_line(R, C), horizontal_line(R+1, C), vertical_line(R, C), vertical_line(R, C+1).\n"
+    constraint += "{ horizontal_line(R, C); horizontal_line(R + 1, C); vertical_line(R, C); vertical_line(R, C + 1) } = 4 :- number(R, C, 1).\n"
+    constraint += "number(R, C, 1) :- horizontal_line(R, C), horizontal_line(R + 1, C), vertical_line(R, C), vertical_line(R, C + 1).\n"
     return constraint.strip()
 
 
