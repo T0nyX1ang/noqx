@@ -72,3 +72,9 @@ def edge(rows: int, cols: int) -> str:
     fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
     fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C)."
     return fact
+
+
+def direction(directions: str) -> str:
+    """Generates facts for directions."""
+    format_d = map(lambda x: f'"{x}"', tuple(directions))
+    return f"direction({';'.join(format_d)})."
