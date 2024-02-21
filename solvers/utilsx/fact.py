@@ -5,6 +5,10 @@ from typing import List, Tuple
 from .helper import get_variants
 
 OMINOES = {
+    3: {
+        "I": ((0, 0), (1, 0), (2, 0)),
+        "L": ((0, 0), (1, 0), (1, 1)),
+    },
     4: {
         "T": ((0, 0), (1, 0), (1, 1), (2, 0)),
         "O": ((0, 0), (0, 1), (1, 0), (1, 1)),

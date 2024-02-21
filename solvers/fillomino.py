@@ -49,8 +49,8 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
-    solver.add_program_line(adjacent(4))
-    solver.add_program_line(adjacent("edge"))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(reachable_edge())
     solver.add_program_line(fillomino_constraint())
 

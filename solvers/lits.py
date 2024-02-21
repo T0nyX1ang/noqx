@@ -19,7 +19,7 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
     An area adjacent rule, an omino rule should be defined first.
     """
     tag = tag_encode("valid_omino", num, color)
-    return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, T, _, _), {tag}(A1, T1, _, _), T = T1."
+    return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, T, _, _), {tag}(A1, T, _, _)."
 
 
 def encode(string: str) -> Encoding:

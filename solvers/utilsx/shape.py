@@ -51,7 +51,7 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
     return f":- {', '.join(rect_pattern)}."
 
 
-def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
+def valid_omino(num: int = 4, color: str = "black", _type: str = "grid", distinct_variant: bool = False) -> str:
     """
     Generates a rule for a valid omino.
 
@@ -59,13 +59,18 @@ def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
     """
     common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
     tag = tag_encode("valid_omino", num, color)
+    param = "T, V" if distinct_variant else "T"
 
     if _type == "grid":
         count_valid = f"#count {{ R, C : grid(R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}(T, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+        return f"{tag}({param}, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
     if _type == "area":
         count_valid = f"#count {{ R, C : area(A, R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+        return f"{tag}(A, {param}, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+    if _type == "edge":
+        count_valid = f"#count {{ R, C : reachable_edge(AR, AC, R, C), {color}(R, C), {common} }} = {num}"
+        return f"{tag}({param}, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area', 'edge'.")
