@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid, omino
 from .utilsx.helper import tag_encode
-from .utilsx.rule import adjacent, count_reachable_edge, reachable_edge
+from .utilsx.rule import adjacent, count_reachable_edge, reachable_edge, split_by_edge
 from .utilsx.shape import valid_omino
 from .utilsx.solution import solver
 
@@ -19,14 +19,8 @@ def avoid_adjacent_same_shape(num: int = 3, color: str = "black") -> None:
     """
     t_va = tag_encode("valid_omino", num, color)
     t_be = tag_encode("belong_to_omino", num, color)
-    # constraint = f"{t_be}(T, V, R, C) :- {t_va}(T, V, R1, C1), reachable_edge(R, C, R1, C1).\n"
     constraint = f"{t_be}(T, V, AR + DR, AC + DC) :- grid(AR, AC), omino_{num}(T, V, DR, DC), {t_va}(T, V, AR, AC).\n"
-
     constraint += f":- {t_va}(T, V, R, C), reachable(R, C, R1, C1), not {t_be}(T, V, R1, C1).\n"
-
-    constraint += "split_by_edge(R, C, R+1, C) :- grid(R, C), grid(R+1, C), horizontal_line(R+1, C).\n"
-    constraint += "split_by_edge(R, C, R, C+1) :- grid(R, C), grid(R, C+1), vertical_line(R, C+1).\n"
-    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
     constraint += f":- {t_be}(T, V, R, C), {t_be}(T, V, R1, C1), split_by_edge(R, C, R1, C1)."
 
     return constraint
@@ -48,6 +42,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(reachable_edge())
+    solver.add_program_line(split_by_edge())
     solver.add_program_line(count_reachable_edge(3, color="not black"))
 
     if shaded == 0:
