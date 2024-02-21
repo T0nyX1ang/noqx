@@ -321,11 +321,14 @@ def reachable_edge() -> str:
     return initial + propagation + constraint
 
 
-def count_reachable_edge(target: int, op: str = "eq") -> str:
+def count_reachable_edge(target: int, op: str = "eq", color: str = None) -> str:
     """
     Generates a constraint for counting grids in a region divided by edges.
 
     An edge rule should be defined first.
     """
     op = rev_op_dict[op]
-    return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+    if not color:
+        return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+
+    return f":- grid(R0, C0), {color}(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
