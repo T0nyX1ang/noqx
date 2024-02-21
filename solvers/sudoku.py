@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
-from .utilsx.rule import fill_num, unique_num
+from .utilsx.rule import adjacent, fill_num, unique_num
 from .utilsx.solution import solver
 
 
@@ -16,6 +16,7 @@ def encode(string: str) -> Encoding:
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(9, 9))
+    solver.add_program_line(adjacent(_type="x"))
 
     for i in range(9):
         for j in range(9):
@@ -36,11 +37,9 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"area(11, {i}, {8 - i}).")
 
     if E.params["Untouch"]:  # untouch rule
-        solver.add_program_line("adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 1.")
         solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_x(R, C, R1, C1).")
 
     if E.params["Nonconsecutive"]:  # untouch rule
-        solver.add_program_line("adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 1.")
         solver.add_program_line(":- number(R, C, N), number(R1, C1, N1), adj_x(R, C, R1, C1), |N - N1| = 1.")
 
     if E.params["Antiknight"]:  # antiknight rule

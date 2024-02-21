@@ -14,13 +14,12 @@ from .utilsx.solution import solver
 def noribou_strip_different(color: str = "black") -> str:
     """Generate a rule to ensure that no two adjacent cells are shaded."""
     tag = tag_encode("reachable", "adj", 4, color)
-    adj_x = "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
     same_rc = "same_rc(R, C, R1, C1) :- grid(R, C), grid(R1, C1), R1 = R.\n"
     same_rc += "same_rc(R, C, R1, C1) :- grid(R, C), grid(R1, C1), C1 = C."
     count1 = f"#count {{ R2, C2: {tag}(R, C, R2, C2), same_rc(R, C, R2, C2) }} = CC1"
     count2 = f"#count {{ R2, C2: {tag}(R1, C1, R2, C2), same_rc(R1, C1, R2, C2) }} = CC2"
     constraint = f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), {count1}, {count2}, CC1 = CC2."
-    return adj_x + "\n" + same_rc + "\n" + constraint
+    return same_rc + "\n" + constraint
 
 
 def encode(string: str) -> Encoding:
@@ -40,6 +39,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="x"))
     solver.add_program_line(adjacent(_type=8))
 
     for (r, c), clue in E.clues.items():
