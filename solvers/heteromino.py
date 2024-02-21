@@ -19,8 +19,16 @@ def avoid_adjacent_same_shape(num: int = 3, color: str = "black") -> None:
     """
     t_va = tag_encode("valid_omino", num, color)
     t_be = tag_encode("belong_to_omino", num, color)
+    # constraint = f"{t_be}(T, V, R, C) :- {t_va}(T, V, R1, C1), reachable_edge(R, C, R1, C1).\n"
     constraint = f"{t_be}(T, V, AR + DR, AC + DC) :- grid(AR, AC), omino_{num}(T, V, DR, DC), {t_va}(T, V, AR, AC).\n"
-    constraint += f":- {t_be}(T, V, R, C), {t_be}(T, V, R1, C1), not adj_edge(R, C, R1, C1), adj_4(R, C, R1, C1)."
+
+    constraint += f":- {t_va}(T, V, R, C), reachable(R, C, R1, C1), not {t_be}(T, V, R1, C1).\n"
+
+    constraint += "split_by_edge(R, C, R+1, C) :- grid(R, C), grid(R+1, C), horizontal_line(R+1, C).\n"
+    constraint += "split_by_edge(R, C, R, C+1) :- grid(R, C), grid(R, C+1), vertical_line(R, C+1).\n"
+    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
+    constraint += f":- {t_be}(T, V, R, C), {t_be}(T, V, R1, C1), split_by_edge(R, C, R1, C1)."
+
     return constraint
 
 

@@ -70,7 +70,12 @@ def valid_omino(num: int = 4, color: str = "black", _type: str = "grid", distinc
         return f"{tag}(A, {param}, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
     if _type == "edge":
-        count_valid = f"#count {{ R, C : reachable_edge(AR, AC, R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}({param}, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+        constraint = f"{{ {tag}({param}, R, C) : omino_{num}(T, V, _, _)}} 1 :- grid(R, C).\n"
+        count_omino = f"#count {{ DR, DC : reachable_edge(AR, AC, R, C), {color}(R, C), {common} }}"
+        constraint += (
+            f":- {tag}({param}, AR, AC), grid(AR, AC), {color}(R, C), not reachable_edge(AR, AC, R, C), {common}."
+        )
+        constraint += f":- not {tag}({param}, AR, AC), grid(AR, AC), omino_{num}(T, V, _, _), {count_omino} = {num}."
+        return constraint
 
     raise ValueError("Invalid type, must be one of 'grid', 'area', 'edge'.")
