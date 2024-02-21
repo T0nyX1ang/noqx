@@ -65,14 +65,6 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"vertical_line({r}, {c + 1}).")
             solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-        if (r, c + 1) in E.clues:
-            prefix = "not" if E.clues[(r, c + 1)] == num else ""
-            solver.add_program_line(f"{prefix} vertical_line({r}, {c + 1}).".strip())
-
-        if (r + 1, c) in E.clues:
-            prefix = "not" if E.clues[(r + 1, c)] == num else ""
-            solver.add_program_line(f"{prefix} horizontal_line({r + 1}, {c}).".strip())
-
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="number", size=3))
