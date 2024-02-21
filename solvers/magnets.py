@@ -2,57 +2,61 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import MultiVar, require, set_max_val, sum_bools, sum_vars
-from .utils.encoding import Encoding
-from .utils.grids import RectangularGrid
-from .utils.regions import full_bfs
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, count, shade_cc
+from .utilsx.solution import solver
+
+
+def magnet_constraint() -> str:
+    """Generate the magnet constraint."""
+    constraint = ":- red(R, C), red(R1, C1), adj_4(R, C, R1, C1).\n"
+    constraint += ":- blue(R, C), blue(R1, C1), adj_4(R, C, R1, C1).\n"
+    constraint += ":- red(R, C), area(A, R, C), not blue(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
+    constraint += ":- blue(R, C), area(A, R, C), not red(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
+    constraint += ":- gray(R, C), area(A, R, C), not gray(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
+    return constraint.strip()
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True, outside_clues="1111")
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    rooms = full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_cc(["red", "blue", "gray"]))
+    solver.add_program_line(adjacent(4))
 
-    for room in rooms:
-        if len(room) != 2:
-            raise ValueError("All regions must be of size 2.")
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        assert len(ar) == 2, "All regions must be of size 2."
+        solver.add_program_line(area(_id=i, src_cells=ar))
 
-    set_max_val(3)
-    grid = RectangularGrid(E.R, E.C, lambda: MultiVar("+", "-", " "))
+    for c, num in E.top.items():
+        solver.add_program_line(count(int(num), color="red", _type="col", _id=c))
 
-    # Require that the number of +s is equal to the number of -s; so either there's one of each or none
-    for room in rooms:
-        require(sum_vars([grid[r][c] == "+" for (r, c) in room]) == sum_vars([grid[r][c] == "-" for (r, c) in room]))
+    for r, num in E.left.items():
+        solver.add_program_line(count(int(num), color="red", _type="row", _id=r))
 
-    # Require neighbor conditions
-    for r in range(E.R):
-        for c in range(E.C):
-            print(grid.get_neighbors(r, c))
-            require(
-                # None of the neighbors have the same value as this, or this is blank (neighbors can be anything)
-                (
-                    sum_bools(0, [(grid[y][x] == grid[r][c]) for (y, x) in grid.get_neighbors(r, c)])
-                    | (grid[r][c] == " ")
-                )
-            )
+    for c, num in E.bottom.items():
+        solver.add_program_line(count(int(num), color="blue", _type="col", _id=c))
 
-    # Require correctness of + (top and left) clues
-    for c in E.top:
-        require(sum_bools(E.top[c], [(grid[r][c] == "+") for r in range(E.R)]))
-    for r in E.left:
-        require(sum_bools(E.left[r], [(grid[r][c] == "+") for c in range(E.C)]))
+    for r, num in E.right.items():
+        solver.add_program_line(count(int(num), color="blue", _type="row", _id=r))
 
-    # Require correctness of - (bottom and right) clues
-    for c in E.bottom:
-        require(sum_bools(E.bottom[c], [(grid[r][c] == "-") for r in range(E.R)]))
-    for r in E.right:
-        require(sum_bools(E.right[r], [(grid[r][c] == "-") for c in range(E.C)]))
+    for (r, c), clue in E.clues.items():
+        if clue in ["red", "blue", "gray"]:
+            solver.add_program_line(f"{clue}({r}, {c}).")
 
-    return utils.solutions.get_all_grid_solutions(grid)
+    solver.add_program_line(magnet_constraint())
+    solver.add_program_line(display(item="red"))
+    solver.add_program_line(display(item="blue"))
+    solver.solve()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

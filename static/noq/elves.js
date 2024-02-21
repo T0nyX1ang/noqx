@@ -4,7 +4,7 @@ let image_url = (str) =>
     : str;
 const nav_keys = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
 const del_keys = ["Backspace", "Delete", "Escape"];
-const COLORS = ["black", "gray", "blue", "green", "yellow"];
+const COLORS = ["black", "gray", "blue", "green", "yellow", "red"];
 const CLIPBOARD_SYMBOLS = {
   1: "│",
   "-": "─",
@@ -920,11 +920,14 @@ class KakuroElf extends Elf {
   }
 }
 
-class MagnetsElf extends IntBordersElf() {
+class MagnetsElf extends DirectSum(
+  IntBordersElf(),
+  BgColorElf({ x: ["gray", "gray"], r: ["red", "red"], b: ["blue", "blue"] })
+) {
   static controls() {
     let controls = super.controls();
-    controls["+"] = "Clues should be written on the top and left";
-    controls["−"] = "Clues should be written on the bottom and right";
+    controls["+/red"] = "Clues calculated from the top and left";
+    controls["-/blue"] = "Clues calculated from on the bottom and right";
     return controls;
   }
 }
