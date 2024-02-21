@@ -11,17 +11,17 @@ from .utilsx.solution import solver
 
 
 def valid_omino_3(color: str = "black") -> str:
-    dir = (("-1", "+0"), ("+0", "-1"), ("+1", "+0"), ("+0", "+1"))
+    delta = (("-1", "+0"), ("+0", "-1"), ("+1", "+0"), ("+0", "+1"))
     idx = 0
     constraint = ""
     t_va = tag_encode("valid_omino", 3, color)
     t_be = tag_encode("belong_to_omino", 3, color)
     for i in range(4):
-        dx1, dy1 = dir[i]
+        dx1, dy1 = delta[i]
         for j in range(i + 1, 4):
-            dx2, dy2 = dir[j]
+            dx2, dy2 = delta[j]
             idx += 1
-            remain = [dir[k] for k in range(4) if not k in [i, j]]
+            remain = [delta[k] for k in range(4) if k not in [i, j]]
             (dx3, dy3), (dx4, dy4) = remain
             adj = f"adj_edge(R, C, R{dx1}, C{dy1}), adj_edge(R, C, R{dx2}, C{dy2}), not adj_edge(R, C, R{dx3}, C{dy3}), not adj_edge(R, C, R{dx4}, C{dy4})"
             nadj = f"#count {{ R1, C1: adj_edge(R{dx1}, C{dy1}, R1, C1) }} = 1, #count {{ R1, C1: adj_edge(R{dx2}, C{dy2}, R1, C1) }} = 1"
