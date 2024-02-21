@@ -307,7 +307,7 @@ def reachable_edge() -> str:
     """
     Define edges as numbers on its adjacent grids are different.
 
-    A grid fact should be defined first.
+    A grid fact and an adjacent edge rule should be defined first.
     """
     initial = "reachable_edge(R, C, R, C) :- grid(R, C).\n"
     propagation = (
@@ -319,3 +319,13 @@ def reachable_edge() -> str:
     constraint += ":- reachable_edge(R, C + 1, R, C), vertical_line(R, C + 1).\n"
     constraint += ":- reachable_edge(R + 1, C, R, C), horizontal_line(R + 1, C)."
     return initial + propagation + constraint
+
+
+def count_reachable_edge(target: int, op: str = "eq") -> str:
+    """
+    Generates a constraint for counting grids in a region divided by edges.
+
+    An edge rule should be defined first.
+    """
+    op = rev_op_dict[op]
+    return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."

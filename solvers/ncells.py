@@ -6,25 +6,21 @@ from . import utilsx
 from .utilsx.border import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid, edge
-from .utilsx.rule import rev_op_dict, adjacent, reachable_edge
+from .utilsx.rule import adjacent, reachable_edge, count_reachable_edge
 from .utilsx.solution import solver
+
+
+def count_adj_lines(r: int, c: int, number: int) -> str:
+    """Return a rule that counts the adjacent lines around a cell."""
+    v_1 = f"vertical_line({r},{c})"
+    v_2 = f"vertical_line({r},{c+1})"
+    h_1 = f"horizontal_line({r},{c})"
+    h_2 = f"horizontal_line({r+1},{c})"
+    return f":- #count{{ 1: {v_1}; 2: {v_2}; 3: {h_1}; 4: {h_2} }} != {number}."
 
 
 def encode(string: str) -> Encoding:
     return utilsx.encode(string, has_borders=True)
-
-
-def count_reachable_edge(target: int, op: str = "eq") -> str:
-    """
-    Generates a constraint for counting grids in a region divided by edges.
-    A grid fact should be defined first.
-    """
-    op = rev_op_dict[op]
-    return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
-
-
-def count_adj_lines(r: int, c: int, number: int) -> str:
-    return f":- #count{{ 1: vertical_line({r},{c}); 2: vertical_line({r},{c+1}); 3: horizontal_line({r},{c}); 4: horizontal_line({r+1},{c}) }} != {number}."
 
 
 def solve(E: Encoding) -> List:
@@ -34,7 +30,7 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
-    solver.add_program_line(adjacent("edge"))
+    solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(reachable_edge())
     solver.add_program_line(count_reachable_edge(size))
 
