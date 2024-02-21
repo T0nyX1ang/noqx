@@ -29,6 +29,10 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
+    shaded = len(E.clues)
+    if (E.R * E.C - shaded) % 3 != 0:
+        raise ValueError("The grid cannot be divided into 3-ominoes!")
+
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
@@ -37,6 +41,9 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(reachable_edge())
     solver.add_program_line(count_reachable_edge(3, color="not black"))
+
+    if shaded == 0:
+        solver.add_program_line("black(-1, -1).")
 
     for (r, c), _ in E.clues.items():
         solver.add_program_line(f"black({r}, {c}).")
