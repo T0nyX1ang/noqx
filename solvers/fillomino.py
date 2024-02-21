@@ -15,14 +15,13 @@ def encode(string: str) -> Encoding:
 
 def fillomino_constraint():
     """Generate the Fillomino constraints."""
-
     # propagation of number
     constraint = "number(R, C, N) :- number(R0, C0, N), reachable_edge(R0, C0, R, C).\n"
     constraint += ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
 
     # same number, adjacent cell, no line
     constraint += ":- number(R, C, N), number(R, C + 1, N), vertical_line(R, C + 1).\n"
-    constraint += ":- number(R, C, N), number(R + 1, C, N), horizontal_line(R+1, C).\n"
+    constraint += ":- number(R, C, N), number(R + 1, C, N), horizontal_line(R + 1, C).\n"
 
     # different number, adjacent cell, have line
     constraint += ":- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not vertical_line(R, C + 1).\n"
@@ -65,6 +64,14 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"horizontal_line({r}, {c}).")
             solver.add_program_line(f"vertical_line({r}, {c + 1}).")
             solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
+
+        if (r, c + 1) in E.clues:
+            prefix = "not" if E.clues[(r, c + 1)] == num else ""
+            solver.add_program_line(f"{prefix} vertical_line({r}, {c + 1}).".strip())
+
+        if (r + 1, c) in E.clues:
+            prefix = "not" if E.clues[(r + 1, c)] == num else ""
+            solver.add_program_line(f"{prefix} horizontal_line({r + 1}, {c}).".strip())
 
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
