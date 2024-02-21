@@ -2,174 +2,113 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, IntVar, require, set_max_val, sum_bools
-from .utils.encoding import Encoding
-from .utils.grids import get_surroundings, is_valid_coord
-from .utils.solutions import get_all_grid_solutions
-
-BATTLESHIPS = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]  # standard fleet
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, avoid_adjacent, connected_parts, count, shade_c
+from .utilsx.shape import all_rect
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s, outside_clues="1001")
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    # IDs for which battleship something belongs to; if ID = len(BATTLESHIPS), not part of any
-    max_id = len(BATTLESHIPS)
-    set_max_val(max_id)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_c())
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="x"))
+    solver.add_program_line(avoid_adjacent(adj_type="x"))
+    solver.add_program_line(connected_parts(adj_type=4))
+    solver.add_program_line(all_rect())
 
-    grid = [[IntVar(0, max_id) for c in range(E.C)] for r in range(E.R)]
+    # this code is slow, it may be optimized by enumerating all possible ship placements
+    tag = tag_encode("reachable", "adj", 4, "black")
+    solver.add_program_line(f"count_{tag}(R, C, N) :- black(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} = N.")
+    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 1) }} != 4.")
+    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 2) }} != 6.")
+    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 3) }} != 6.")
+    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 4) }} != 4.")
+    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, N), N > 4 }} != 0.")
 
-    # This solver is slow so put clue validation first
-    # Clue satisfaction for water / ship parts
-    for r, c in E.clues:
-        value = E.clues[(r, c)]
-        print(value)
-        # 1x1 ship
-        if value == "o":
-            require(grid[r][c] != max_id)
-            for y, x in get_surroundings(E.R, E.C, r, c):
-                require(grid[y][x] == max_id)
-        # Top end of the ship (cell below must also be ship, and cell above,
-        # if it exists, must be water)
-        elif value == "d":
-            if r == E.R - 1:
-                raise ValueError("A ship is pointing off the bottom of the grid.")
-            else:
-                require(grid[r][c] != max_id)
-                require(grid[r + 1][c] == grid[r][c])
-                if is_valid_coord(E.R, E.C, r - 1, c):
-                    require(grid[r - 1][c] == max_id)
-        # Right end of the ship (cell to the left must also be ship, and cell
-        # to the right, if it exists, must be water)
-        elif value == "l":
-            if c == 0:
-                raise ValueError("A ship is pointing off the left of the grid.")
-            else:
-                require(grid[r][c] != max_id)
-                require(grid[r][c - 1] == grid[r][c])
-                if is_valid_coord(E.R, E.C, r, c + 1):
-                    require(grid[r][c + 1] == max_id)
-        # Left end of the ship (cell to the right must also be ship, and cell
-        # to the left, if it exists, must be water)
-        elif value == "r":
-            if c == E.C - 1:
-                raise ValueError("A ship is pointing off the right of the grid.")
-            else:
-                require(grid[r][c] != max_id)
-                require(grid[r][c + 1] == grid[r][c])
-                if is_valid_coord(E.R, E.C, r, c - 1):
-                    require(grid[r][c - 1] == max_id)
-        # Bottom end of the ship (cell on top must also be ship, and cell below,
-        # if it exists, must be water)
-        elif value == "u":
-            if r == 0:
-                raise ValueError("A ship is pointing off the top of the grid.")
-            else:
-                require(grid[r][c] != max_id)
-                require(grid[r - 1][c] == grid[r][c])
-                if is_valid_coord(E.R, E.C, r + 1, c):
-                    require(grid[r + 1][c] == max_id)
-        elif value == "m":
-            if 0 < r < E.R - 1 and 0 < c < E.C - 1:
-                require(grid[r][c] != max_id)
-                require(
-                    (grid[r - 1][c] == grid[r][c]) & (grid[r + 1][c] == grid[r][c])
-                    | (grid[r][c - 1] == grid[r][c]) & (grid[r][c + 1] == grid[r][c])  # vertical
-                )  # horiz
-            else:
-                raise ValueError("A ship is pointing off the edge of the grid.")
-        # Water
-        elif value == "w":
-            require(grid[r][c] == max_id)
+    for c, num in E.top.items():
+        solver.add_program_line(count(int(num), _type="col", _id=c))
 
-    # Clue satisfaction for row / column counts
-    for r in range(E.R):
-        try:
-            value = int(E.left[r])
-            if value > E.C:
-                raise ValueError("Sum clue is greater than # of columns.")
-            elif value >= sum(BATTLESHIPS):
-                raise ValueError("Sum clue is greater than # of battleship cells.")
-            require(sum_bools(value, [grid[r][c] != max_id for c in range(E.C)]))
-        except KeyError:
-            pass
-        except TypeError as exc:
-            raise ValueError("Outside clues must be numbers.") from exc
-    for c in range(E.C):
-        try:
-            value = int(E.top[c])
-            require(sum_bools(value, [grid[r][c] != max_id for r in range(E.R)]))
-            if value > E.R:
-                raise ValueError("Sum clue is greater than # of rows.")
-            elif value >= sum(BATTLESHIPS):
-                raise ValueError("Sum clue is greater than # of battleship cells.")
-        except KeyError:
-            pass
-        except TypeError as exc:
-            raise ValueError("Outside clues must be numbers.") from exc
+    for r, num in E.left.items():
+        solver.add_program_line(count(int(num), _type="row", _id=r))
 
-    # Ship placement -- note: slooooooow
-    for ship_id in range(max_id):
-        length = BATTLESHIPS[ship_id]
-        possible_configs = BoolVar(False)
-        for r in range(E.R):
-            for c in range(E.C):
-                if is_valid_coord(E.R, E.C, r + length - 1, c):
-                    ship_vertical_starting_at_rc = BoolVar(True)
-                    for y in range(E.R):
-                        for x in range(E.C):
-                            ship_vertical_starting_at_rc &= (grid[y][x] == ship_id) == (r <= y < r + length and c == x)
-                    possible_configs |= ship_vertical_starting_at_rc
-                if is_valid_coord(E.R, E.C, r, c + length - 1):
-                    ship_horiz_starting_at_rc = BoolVar(True)
-                    for y in range(E.R):
-                        for x in range(E.C):
-                            ship_horiz_starting_at_rc &= (grid[y][x] == ship_id) == (r == y and c <= x < c + length)
-                    possible_configs |= ship_horiz_starting_at_rc
-        require(possible_configs)
+    for (r, c), clue in E.clues.items():
+        if clue in "odlrum":
+            solver.add_program_line(f"black({r}, {c}).")
 
-    # Ships don't touch
-    for r in range(E.R):
-        for c in range(E.C):
-            for y, x in get_surroundings(E.R, E.C, r, c):
-                require((grid[r][c] == grid[y][x]) | (grid[y][x] == max_id) | (grid[r][c] == max_id))
+        if clue == "o":
+            solver.add_program_line(f":- grid({r + 1}, {c}), black({r + 1}, {c}).")
+            solver.add_program_line(f":- grid({r - 1}, {c}), black({r - 1}, {c}).")
+            solver.add_program_line(f":- grid({r}, {c + 1}), black({r}, {c + 1}).")
+            solver.add_program_line(f":- grid({r}, {c - 1}), black({r}, {c - 1}).")
 
-    def equality_function(x, y):
-        return (x == max_id) == (y == max_id)
+        if clue == "l":
+            assert c > 0, "Ship is outside of the board."
+            solver.add_program_line(f":- grid({r}, {c + 1}), black({r}, {c + 1}).")
+            solver.add_program_line(f":- grid({r}, {c - 1}), not black({r}, {c - 1}).")
 
-    def format_function(r, c):
-        is_shaded = grid[r][c].value() != max_id
-        has_top_neighbor = False if r == 0 else grid[r][c].value() == grid[r - 1][c].value()
-        has_bottom_neighbor = False if r == E.R - 1 else grid[r][c].value() == grid[r + 1][c].value()
-        has_left_neighbor = False if c == 0 else grid[r][c].value() == grid[r][c - 1].value()
-        has_right_neighbor = False if c == E.C - 1 else grid[r][c].value() == grid[r][c + 1].value()
-        # water
-        if not is_shaded:
-            return ""
-        # 1x1 ship
-        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            return "large_black_circle.png"
-        # middle part
-        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
-            return "black.png"
-        # top part
-        elif {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            return "battleship_top_end.png"
-        # bottom part
-        elif {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            return "battleship_bottom_end.png"
-        # left part
-        elif {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
-            return "battleship_left_end.png"
-        # right part
-        elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
-            return "battleship_right_end.png"
+        if clue == "r":
+            assert c < E.C - 1, "Ship is outside of the board."
+            solver.add_program_line(f":- grid({r}, {c - 1}), black({r}, {c - 1}).")
+            solver.add_program_line(f":- grid({r}, {c + 1}), not black({r}, {c + 1}).")
 
-    return get_all_grid_solutions(grid, equality_function=equality_function, format_function=format_function)
+        if clue == "u":
+            assert r > 0, "Ship is outside of the board."
+            solver.add_program_line(f":- grid({r + 1}, {c}), black({r + 1}, {c}).")
+            solver.add_program_line(f":- grid({r - 1}, {c}), not black({r - 1}, {c}).")
+
+        if clue == "d":
+            assert r < E.R - 1, "Ship is outside of the board."
+            solver.add_program_line(f":- grid({r - 1}, {c}), black({r - 1}, {c}).")
+            solver.add_program_line(f":- grid({r + 1}, {c}), not black({r + 1}, {c}).")
+
+        if clue == "m":
+            assert 0 < c < E.C - 1 and 0 < r < E.R - 1, "Ship is outside of the board."
+            solver.add_program_line(f":- #count {{ R, C: black(R, C), adj_4({r}, {c}, R, C) }} != 2.")
+
+        if clue == "w":
+            solver.add_program_line(f"not black({r}, {c}).")
+
+    solver.add_program_line(display())
+    solver.solve()
+
+    for solution in solver.solutions:
+        keys = list(solution.keys())
+        for rc in keys:
+            r, c = map(int, rc.split(","))
+            has_top_neighbor = f"{r - 2},{c}" in keys
+            has_left_neighbor = f"{r},{c - 2}" in keys
+            has_bottom_neighbor = f"{r + 2},{c}" in keys
+            has_right_neighbor = f"{r},{c + 2}" in keys
+
+            if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+                solution[rc] = "large_black_circle.png"
+            # middle part
+            elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
+                solution[rc] = "black.png"
+            # top part
+            elif {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+                solution[rc] = "battleship_top_end.png"
+            # bottom part
+            elif {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+                solution[rc] = "battleship_bottom_end.png"
+            # left part
+            elif {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
+                solution[rc] = "battleship_left_end.png"
+            # right part
+            elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
+                solution[rc] = "battleship_right_end.png"
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
