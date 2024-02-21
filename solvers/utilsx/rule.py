@@ -327,7 +327,7 @@ def split_by_edge() -> str:
     """
     constraint = "split_by_edge(R, C, R+1, C) :- grid(R, C), grid(R+1, C), horizontal_line(R+1, C).\n"
     constraint += "split_by_edge(R, C, R, C+1) :- grid(R, C), grid(R, C+1), vertical_line(R, C+1).\n"
-    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
+    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C)."
     return constraint
 
 
