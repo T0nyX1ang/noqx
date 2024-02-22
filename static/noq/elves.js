@@ -700,7 +700,7 @@ class AkariElf extends DirectSum(
   DirectSum(BgColorElf(), IntElf(0, 4, "[0-4]"), "second"),
   ImageElf(
     { o: "bulb" },
-    { o: "Place blub" },
+    { o: "Place bulb" },
     { o: { color: "", backgroundColor: "" } }
   )
 ) {

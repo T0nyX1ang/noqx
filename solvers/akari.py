@@ -41,7 +41,7 @@ def solve(E: Encoding) -> List:
         if clue == "black":
             solver.add_program_line(f"black({r}, {c}).")
         elif clue == "o":
-            solver.add_program_line(f"blub({r}, {c}).")
+            solver.add_program_line(f"bulb({r}, {c}).")
         else:
             num = int(clue[0])
             solver.add_program_line(f"black({r}, {c}).")
