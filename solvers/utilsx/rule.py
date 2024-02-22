@@ -345,3 +345,14 @@ def count_reachable_edge(target: int, op: str = "eq", color: str = None) -> str:
         return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
 
     return f":- grid(R0, C0), {color}(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+
+
+def count_shape(target: int, name: str, _id: int = 0, color: str = "black", op: str = "eq") -> str:
+    """
+    Generates a constraint to count the number of a shape.
+
+    A grid rule and a shape rule should be defined first.
+    """
+    tag = tag_encode("shape", name, color)
+    op = rev_op_dict[op]
+    return f":- {{ {tag}(R, C, {_id}, _) }} {op} {target}."
