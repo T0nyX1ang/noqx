@@ -7,7 +7,7 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
 from .utilsx.helper import tag_encode
 from .utilsx.rule import adjacent, split_by_edge
-from .utilsx.shape import all_shapes, shape_omino
+from .utilsx.shape import all_shapes, general_shape, OMINOES
 from .utilsx.solution import solver
 
 
@@ -46,7 +46,9 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(f"horizontal_line({r}, {c}).")
         solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-    solver.add_program_line(shape_omino(3, color="not black", adj_type="edge"))
+    for i, o_shape in enumerate(OMINOES[3].values()):
+        solver.add_program_line(general_shape("omino_3", i, o_shape, color="not black", adj_type="edge"))
+
     solver.add_program_line(all_shapes("omino_3", color="not black"))
     solver.add_program_line(avoid_adj_same_omino(color="not black"))
     solver.add_program_line(display(item="vertical_line", size=2))

@@ -102,34 +102,38 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
     return f":- {', '.join(rect_pattern)}."
 
 
-def valid_omino(num: int = 4, color: str = "black", _type: str = "grid", distinct_variant: bool = False) -> str:
+def omino(num: int = 4, _types: List[str] = None) -> str:
+    """Generates facts for omino types (only for LITS compatibility now)."""
+    if _types is None:
+        _types = list(OMINOES[num].keys())
+
+    data = []
+
+    for omino_type in _types:
+        omino_shape = OMINOES[num][omino_type]
+        omino_variants = get_variants(omino_shape, allow_rotations=True, allow_reflections=True)
+
+        for i, variant in enumerate(omino_variants):
+            for dr, dc in variant:
+                data.append(f'omino_{num}("{omino_type}", {i}, {dr}, {dc}).')
+
+    return "\n".join(data)
+
+
+def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
     """
-    Generates a rule for a valid omino.
+    Generates a rule for a valid omino (only for LITS compatibility now).
 
     A grid rule or an area rule should be defined first.
     """
     common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
     tag = tag_encode("valid_omino", num, color)
-    param = "T, V" if distinct_variant else "T"
-
-    if _type == "grid":
-        count_valid = f"#count {{ R, C : grid(R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}({param}, AR, AC) :- grid(AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
     if _type == "area":
         count_valid = f"#count {{ R, C : area(A, R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}(A, {param}, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
+        return f"{tag}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
 
-    if _type == "edge":
-        constraint = f"{{ {tag}({param}, R, C) : omino_{num}(T, V, _, _)}} 1 :- grid(R, C).\n"
-        count_omino = f"#count {{ DR, DC : reachable_edge(AR, AC, R, C), {color}(R, C), {common} }}"
-        constraint += (
-            f":- {tag}({param}, AR, AC), grid(AR, AC), {color}(R, C), not reachable_edge(AR, AC, R, C), {common}."
-        )
-        constraint += f":- not {tag}({param}, AR, AC), grid(AR, AC), omino_{num}(T, V, _, _), {count_omino} = {num}."
-        return constraint
-
-    raise ValueError("Invalid type, must be one of 'grid', 'area', 'edge'.")
+    raise ValueError("Invalid type, must be 'area'.")
 
 
 def general_shape(
@@ -165,9 +169,7 @@ def general_shape(
                     sum_adj += 1
                     if adj_type not in [4, 8, "x"] and (dr < nr or dc < nc):
                         valid.append(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-            valid.append(
-                f"#count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}"
-            )
+            valid.append(f" {{ {color}(R1, C1): adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
 
         data += f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
@@ -183,21 +185,3 @@ def all_shapes(name: str, color: str = "black") -> str:
 
     tag = tag_encode("belong_to_shape", name, color)
     return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _, _)."
-
-
-def shape_omino(num: int, omino_types: List[str] = None, color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generates a rule for a valid omino.
-
-    A grid rule or an area rule should be defined first.
-    """
-
-    if omino_types is None:
-        omino_types = list(OMINOES[num].keys())
-
-    data = ""
-    for i, o_type in enumerate(omino_types):
-        o_shape = OMINOES[num][o_type]
-        data += general_shape(f"omino_{num}", _id=i, deltas=o_shape, color=color, adj_type=adj_type) + "\n"
-
-    return data.strip()

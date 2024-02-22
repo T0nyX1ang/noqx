@@ -151,9 +151,7 @@ def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return area_adj[area_adj.find(":-") :]
 
 
-def count_adjacent(
-    target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4
-) -> str:
+def count_adjacent(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint for counting the number of {color} cells adjacent to a cell.
 
@@ -295,17 +293,6 @@ def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_
     return f":- {{ {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
-def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:
-    """
-    Generates a rule for a valid omino.
-
-    A grid rule or an area rule should be defined first.
-    """
-    op = rev_op_dict[op]
-    tag = tag_encode("valid_omino", num, color)
-    return f":- #count {{ R, C: {tag}({omino_type}, R, C) }} {op} {target}."
-
-
 def reachable_edge() -> str:
     """
     Define edges as numbers on its adjacent grids are different.
@@ -313,9 +300,7 @@ def reachable_edge() -> str:
     A grid fact and an adjacent edge rule should be defined first.
     """
     initial = "reachable_edge(R, C, R, C) :- grid(R, C).\n"
-    propagation = (
-        "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R, C, R1, C1).\n"
-    )
+    propagation = "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R, C, R1, C1).\n"
     # edge between two reachable grids is forbidden.
     constraint = ":- reachable_edge(R, C, R, C + 1), vertical_line(R, C + 1).\n"
     constraint += ":- reachable_edge(R, C, R + 1, C), horizontal_line(R + 1, C).\n"

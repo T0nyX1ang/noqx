@@ -4,11 +4,11 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid, omino
+from .utilsx.fact import area, display, grid
 from .utilsx.helper import tag_encode
 from .utilsx.region import full_bfs
 from .utilsx.rule import adjacent, area_adjacent, connected, count, shade_c
-from .utilsx.shape import avoid_rect, valid_omino
+from .utilsx.shape import avoid_rect, omino, valid_omino
 from .utilsx.solution import solver
 
 
