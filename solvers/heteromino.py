@@ -7,7 +7,7 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
 from .utilsx.helper import tag_encode
 from .utilsx.rule import adjacent, split_by_edge
-from .utilsx.shape import all_same_shape, shape_omino
+from .utilsx.shape import all_shapes, shape_omino
 from .utilsx.solution import solver
 
 
@@ -18,7 +18,7 @@ def avoid_adj_same_omino(color: str = "black") -> str:
     An split by edge rule, an omino rule should be defined first.
     """
     t_be = tag_encode("belong_to_shape", "omino", 3, color)
-    return f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T), {t_be}(R1, C1, T), split_by_edge(R, C, R1, C1)."
+    return f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
 
 
 def encode(string: str) -> Encoding:
@@ -46,8 +46,8 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(f"horizontal_line({r}, {c}).")
         solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-    solver.add_program_line(shape_omino(3, color="not black", adj_type="edge", distinct_variant=True))
-    solver.add_program_line(all_same_shape("omino_3", color="not black"))
+    solver.add_program_line(shape_omino(3, color="not black", adj_type="edge"))
+    solver.add_program_line(all_shapes("omino_3", color="not black"))
     solver.add_program_line(avoid_adj_same_omino(color="not black"))
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
