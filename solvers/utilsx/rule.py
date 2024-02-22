@@ -59,6 +59,18 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: int = "A", color: 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
 
+def fill_path(color: str = None) -> str:
+    """
+    Generate a rule that a cell is on a path.
+
+    A grid fact and a direction fact should be defined first.
+    """
+    if color:
+        return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+
+    return "{ grid_direction(R, C, D): direction(D) } :- grid(R, C)."
+
+
 def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid", _id: int = None) -> str:
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
