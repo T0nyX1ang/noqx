@@ -5,9 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.helper import tag_encode
-from .utilsx.rule import adjacent, avoid_adjacent, connected_parts, count, shade_c
-from .utilsx.shape import all_rect
+from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c, count_shape
+from .utilsx.shape import OMINOES, all_shapes, general_shape
 from .utilsx.solution import solver
 
 
@@ -22,17 +21,15 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="x"))
     solver.add_program_line(avoid_adjacent(adj_type="x"))
-    solver.add_program_line(connected_parts(adj_type=4))
-    solver.add_program_line(all_rect())
-
-    # this code is slow, it may be optimized by enumerating all possible ship placements
-    tag = tag_encode("reachable", "adj", 4, "black")
-    solver.add_program_line(f"count_{tag}(R, C, N) :- black(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} = N.")
-    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 1) }} != 4.")
-    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 2) }} != 6.")
-    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 3) }} != 6.")
-    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, 4) }} != 4.")
-    solver.add_program_line(f":- #count {{ R, C: count_{tag}(R, C, N), N > 4 }} != 0.")
+    solver.add_program_line(general_shape("battleship", 1, OMINOES[1]["."], adj_type=4))
+    solver.add_program_line(general_shape("battleship", 2, OMINOES[2]["I"], adj_type=4))
+    solver.add_program_line(general_shape("battleship", 3, OMINOES[3]["I"], adj_type=4))
+    solver.add_program_line(general_shape("battleship", 4, OMINOES[4]["I"], adj_type=4))
+    solver.add_program_line(all_shapes("battleship"))
+    solver.add_program_line(count_shape(4, "battleship", 1))
+    solver.add_program_line(count_shape(3, "battleship", 2))
+    solver.add_program_line(count_shape(2, "battleship", 3))
+    solver.add_program_line(count_shape(1, "battleship", 4))
 
     for c, num in E.top.items():
         solver.add_program_line(count(int(num), _type="col", _id=c))
