@@ -1,9 +1,8 @@
 """Rules and constraints to detect certain shapes."""
 
-from typing import Tuple, Iterable, List
+from typing import Iterable, List, Tuple
 
-from .helper import tag_encode, get_variants
-
+from .helper import get_variants, tag_encode
 
 OMINOES = {
     1: {
@@ -134,55 +133,59 @@ def valid_omino(num: int = 4, color: str = "black", _type: str = "grid", distinc
 
 
 def general_shape(
-    name: str, deltas: Iterable[Tuple[int, int]], color: str = "black", _id: int = None, adj_type: int = 4
+    name: str, _id: int = 0, deltas: Iterable[Tuple[int, int]] = None, color: str = "black", adj_type: int = 4
 ) -> str:
     """
     Generates a rule for general shapes (using bruteforce technique).
+    The deltas are the relative coordinates of the shape cells.
 
     A grid rule and an adjacent rule should be defined first.
     """
+
+    if not deltas:
+        raise ValueError("Shape coordinates must be provided.")
+
     tag = tag_encode("shape", name, color)
-    tag_belong = tag_encode("belong_to_shape", name, color)
+    tag_be = tag_encode("belong_to_shape", name, color)
     neighbor_type = adj_type if adj_type in [4, 8, "x"] else 4
-    param = f"R, C, {_id}" if _id is not None else "R, C"
-    param0 = f"R0, C0, {_id}" if _id is not None else "R0, C0"
+    data = ""
 
-    valid = []
-    belongs_to = []
-    for dr, dc in deltas:
-        valid.append(f"grid(R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
-        belongs_to.append(
-            f"{tag_belong}({param}) :- R = R0 + {dr}, C = C0 + {dc}, grid(R0 + {dr}, C0 + {dc}), {tag}({param0})."
-        )
+    variants = get_variants(deltas, allow_rotations=True, allow_reflections=True)
+    for i, variant in enumerate(variants):
+        valid, belongs_to = [], []
+        for dr, dc in variant:
+            valid.append(f"grid(R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
+            belongs_to.append(
+                f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
+            )
 
-        sum_adj = 0
-        for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
-            if (nr, nc) in deltas:
-                sum_adj += 1
-                if adj_type not in [4, 8, "x"] and (dr < nr or dc < nc):
-                    valid.append(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-        valid.append(f"#count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
+            sum_adj = 0
+            for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
+                if (nr, nc) in variant:
+                    sum_adj += 1
+                    if adj_type not in [4, 8, "x"] and (dr < nr or dc < nc):
+                        valid.append(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
+            valid.append(
+                f"#count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}"
+            )
 
-    return f"{tag}({param}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to)
+        data += f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+
+    return data
 
 
-def all_same_shape(name: str, color: str = "black") -> str:
+def all_shapes(name: str, color: str = "black") -> str:
     """
-    Generates a constraint to force all cells to be the same shape.
+    Generate a constraint to force all {color} cells are in defined shapes.
 
-    A grid rule and a belong_to_shape rule should be defined first.
+    A grid rule and a shape/belong_to_shape rule should be defined first.
     """
+
     tag = tag_encode("belong_to_shape", name, color)
-    return f":- grid(R, C), {color}(R, C), {{ {tag}(R, C, T) }} < 1."
+    return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _, _)."
 
 
-def shape_omino(
-    num: int,
-    omino_types: List[str] = None,
-    color: str = "black",
-    adj_type: int = 4,
-    distinct_variant: bool = False,
-):
+def shape_omino(num: int, omino_types: List[str] = None, color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a rule for a valid omino.
 
@@ -192,14 +195,9 @@ def shape_omino(
     if omino_types is None:
         omino_types = list(OMINOES[num].keys())
 
-    data, total = "", 0
-    for omino_type in omino_types:
-        omino_shape = OMINOES[num][omino_type]
-        omino_variants = get_variants(omino_shape, allow_rotations=True, allow_reflections=True)
-
-        for variant in omino_variants:
-            if distinct_variant:
-                total += 1
-            data += general_shape(f"omino_{num}", variant, color, _id=total, adj_type=adj_type) + "\n"
+    data = ""
+    for i, o_type in enumerate(omino_types):
+        o_shape = OMINOES[num][o_type]
+        data += general_shape(f"omino_{num}", _id=i, deltas=o_shape, color=color, adj_type=adj_type) + "\n"
 
     return data.strip()
