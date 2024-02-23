@@ -62,16 +62,11 @@ def all_rect(color: str = "black") -> str:
 
     A grid rule should be defined first.
     """
-
-    not_color = "not_color(R, C) :- grid(R + 1, C), not grid(R, C).\n"
-    not_color += "not_color(R, C) :- grid(R, C + 1), not grid(R, C).\n"
-    not_color += f"not_color(R, C) :- grid(R, C), not {color}(R, C)."
-
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not_color(R - 1, C), not_color(R, C - 1)."
-    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not_color(R, C - 1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not_color(R, C - 1)."
-    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not_color(R - 1, C).\n"
-    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not_color(R - 1, C).\n"
+    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1)."
+    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
+    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1)."
+    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
+    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
     remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
@@ -79,7 +74,39 @@ def all_rect(color: str = "black") -> str:
 
     constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C)."
-    return not_color + "\n" + upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
+
+    data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
+    return data.replace("not not ", "")
+
+
+def all_rect_region() -> str:
+    """
+    Generate a constraint to force rectangles.
+
+    A grid rule and an edge rule should be defined first.
+    """
+    upleft = "upleft(R, C) :- grid(R, C), vertical_line(R, C), horizontal_line(R, C)."
+    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), vertical_line(R, C), not horizontal_line(R, C).\n"
+    left += "left(R, C) :- grid(R, C), left(R - 1, C), vertical_line(R, C), not horizontal_line(R, C)."
+    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
+    up += "up(R, C) :- grid(R, C), up(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
+    remain += (
+        "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
+    )
+    remain += (
+        "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
+    )
+    remain += (
+        "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C)."
+    )
+    constraint = ":- grid(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
+    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), horizontal_line(R + 1, C).\n"
+    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), horizontal_line(R + 1, C).\n"
+    data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
+    return data.replace("not not ", "")
 
 
 def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
