@@ -65,10 +65,7 @@ def fill_path(color: str = None) -> str:
 
     A grid fact and a direction fact should be defined first.
     """
-    if color:
-        return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
-
-    return "{ grid_direction(R, C, D): direction(D) } :- grid(R, C)."
+    return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 
 
 def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid", _id: int = None) -> str:
