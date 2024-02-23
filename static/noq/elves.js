@@ -1185,7 +1185,7 @@ class SpiralGalaxiesElf extends Elf {
   }
 
   load_example(str) {
-    // TODO
+    this.handle_input(str, null);
   }
 
   encode_input() {
