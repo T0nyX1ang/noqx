@@ -1,6 +1,6 @@
 """Rules and constraints to detect certain shapes."""
 
-from typing import Iterable, List, Tuple
+from typing import Iterable, Tuple
 
 from .helper import get_variants, tag_encode
 
@@ -77,7 +77,7 @@ def all_rect(color: str = "black") -> str:
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C)."
 
-    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C)."
+    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C)."
     return not_color + "\n" + upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
 
@@ -102,42 +102,14 @@ def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None),
     return f":- {', '.join(rect_pattern)}."
 
 
-def omino(num: int = 4, _types: List[str] = None) -> str:
-    """Generates facts for omino types (only for LITS compatibility now)."""
-    if _types is None:
-        _types = list(OMINOES[num].keys())
-
-    data = []
-
-    for omino_type in _types:
-        omino_shape = OMINOES[num][omino_type]
-        omino_variants = get_variants(omino_shape, allow_rotations=True, allow_reflections=True)
-
-        for i, variant in enumerate(omino_variants):
-            for dr, dc in variant:
-                data.append(f'omino_{num}("{omino_type}", {i}, {dr}, {dc}).')
-
-    return "\n".join(data)
-
-
-def valid_omino(num: int = 4, color: str = "black", _type: str = "grid") -> str:
-    """
-    Generates a rule for a valid omino (only for LITS compatibility now).
-
-    A grid rule or an area rule should be defined first.
-    """
-    common = f"omino_{num}(T, V, DR, DC), R = AR + DR, C = AC + DC"
-    tag = tag_encode("valid_omino", num, color)
-
-    if _type == "area":
-        count_valid = f"#count {{ R, C : area(A, R, C), {color}(R, C), {common} }} = {num}"
-        return f"{tag}(A, T, AR, AC) :- area(A, AR, AC), omino_{num}(T, V, _, _), {count_valid}."
-
-    raise ValueError("Invalid type, must be 'area'.")
-
-
 def general_shape(
-    name: str, _id: int = 0, deltas: Iterable[Tuple[int, int]] = None, color: str = "black", adj_type: int = 4
+    name: str,
+    _id: int = 0,
+    deltas: Iterable[Tuple[int, int]] = None,
+    color: str = "black",
+    _type: str = "grid",
+    adj_type: int = 4,
+    simple: bool = False,
 ) -> str:
     """
     Generates a rule for general shapes (using bruteforce technique).
@@ -158,10 +130,16 @@ def general_shape(
     for i, variant in enumerate(variants):
         valid, belongs_to = [], []
         for dr, dc in variant:
-            valid.append(f"grid(R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
-            belongs_to.append(
-                f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
-            )
+            if _type == "grid":
+                valid.append(f"grid(R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
+                belongs_to.append(
+                    f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
+                )
+            elif _type == "area":
+                valid.append(f"area(A, R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
+                belongs_to.append(
+                    f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
+                )
 
             sum_adj = 0
             for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
@@ -169,14 +147,26 @@ def general_shape(
                     sum_adj += 1
                     if adj_type not in [4, 8, "x"] and (dr < nr or dc < nc):
                         valid.append(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-            valid.append(f" {{ {color}(R1, C1): adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
 
-        data += f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            if simple:
+                continue  # Skip the adjacency re-check if it is simple
 
-    return data
+            if _type == "grid":
+                valid.append(f" {{ {color}(R1, C1): adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
+            elif _type == "area":
+                valid.append(
+                    f" {{ {color}(R1, C1): area(A, R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}"
+                )
+
+        if _type == "grid":
+            data += f"{tag}(R, C, {_id}, {i}) :- grid(R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to)
+        elif _type == "area":
+            data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to)
+
+    return data.strip()
 
 
-def all_shapes(name: str, color: str = "black") -> str:
+def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
     """
     Generate a constraint to force all {color} cells are in defined shapes.
 
@@ -184,4 +174,10 @@ def all_shapes(name: str, color: str = "black") -> str:
     """
 
     tag = tag_encode("belong_to_shape", name, color)
-    return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _, _)."
+    if _type == "grid":
+        return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _, _)."
+
+    if _type == "area":
+        return f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C, _, _)."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
