@@ -172,7 +172,7 @@ def general_shape(
             for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
                 if (nr, nc) in variant:
                     sum_adj += 1
-                    if adj_type not in [4, 8, "x"] and (dr < nr or dc < nc):
+                    if adj_type not in [4, 8, "x"] and (dr, dc) < (nr, nc):
                         valid.append(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
 
             if simple:
