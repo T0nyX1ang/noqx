@@ -72,15 +72,21 @@ def connected_loop(color: str = "white") -> str:
     return initial + propagation + constraint
 
 
-def hamilton_loop(color: str = "white"):
+def single_loop(color: str = "white", visit_all=False):
     """
-    Generate a hamilton loop constraint.
+    Generate a single loop constraint.
+    For a hamilton loop, set `visit_all=True`. Otherwise set `visit_all=False`.
 
     A grid fact and a grid_direction rule should be defined first.
     """
-    constraint = f":- {color}(R, C), #count{{ D: grid_direction(R, C, D) }} != 2.\n"
+    constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
+    if visit_all:
+        constraint += f":- {color}(R, C), not pass_by_loop(R, C).\n"
+    else:
+        constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
+        constraint += f":- {color}(R, C), not pass_by_loop(R, C), not not_pass_by_loop(R, C).\n"
     constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
-    return constraint
+    return constraint.strip()

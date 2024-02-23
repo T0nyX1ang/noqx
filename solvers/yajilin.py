@@ -5,7 +5,7 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import hamilton_loop, loop_sign, connected_loop
+from .utilsx.loop import single_loop, loop_sign, connected_loop
 from .utilsx.rule import adjacent, avoid_adjacent, fill_path
 from .utilsx.solution import solver
 
@@ -41,7 +41,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(avoid_adjacent(color="black"))
     solver.add_program_line(connected_loop(color="white"))
-    solver.add_program_line(hamilton_loop(color="white"))
+    solver.add_program_line(single_loop(color="white", visit_all=True))
     solver.add_program_line(adjacent(_type="loop"))
 
     for (r, c), clue in E.clues.items():
