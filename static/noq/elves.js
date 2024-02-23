@@ -796,6 +796,10 @@ class CastleWallElf extends Elf {
     if (num === "" && dir === "" && color === "w") return null;
     return [num, dir, color];
   }
+
+  load_example(arr) {
+    for (let str of arr) this.handle_input(str, null);
+  }
 }
 
 class EasyAsElf extends Elf {
