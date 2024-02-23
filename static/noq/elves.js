@@ -578,6 +578,11 @@ class QuestionMarkElf extends Elf {
     }
   }
 
+  load_example(str) {
+    if (str === "?") this.handle_input("?", null);
+    return;
+  }
+
   encode_input() {
     if (this.puzzle_elt.innerHTML == "?") return "?";
     else return null;
