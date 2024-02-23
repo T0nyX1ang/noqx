@@ -10,6 +10,15 @@ from .utilsx.shape import all_rect_region
 from .utilsx.solution import solver
 
 
+def shikaku_constraint() -> str:
+    """Generate a constraint for shikaku."""
+    size_range = "R1 >= R, R1 <= MR, C1 >= C, C1 <= MC"
+    size_spawn = f"rect_size(R1, C1, S) :- grid(R1, C1), rect(R, C, MR, MC), S = (MR - R + 1) * (MC - C + 1), {size_range}."
+    unique = f":- rect(R, C, MR, MC), #count {{ R1, C1: clue(R1, C1), {size_range} }} != 1."
+
+    return size_spawn + "\n" + unique
+
+
 def encode(string: str) -> Encoding:
     return utilsx.encode(string)
 
@@ -23,11 +32,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(all_rect_region())
-
-    size_range = "R1 >= R, R1 <= MR, C1 >= C, C1 <= MC"
-    size_spawn = f"rect_size(R1, C1, S) :- grid(R1, C1), rect(R, C, MR, MC), S = (MR - R + 1) * (MC - C + 1), {size_range}."
-    solver.add_program_line(size_spawn)
-    solver.add_program_line(f":- rect(R, C, MR, MC), #count {{ R1, C1: clue(R1, C1), {size_range} }} != 1.")
+    solver.add_program_line(shikaku_constraint())
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"clue({r}, {c}).")
