@@ -2,87 +2,80 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import IntVar, cond, require, set_max_val, var_in
-from .utils.encoding import Encoding
-from .utils.loops import ISOLATED, RectangularGridLoopSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid
+from .utilsx.loop import single_loop, loop_sign, connected_loop
+from .utilsx.rule import adjacent, fill_path, shade_c
+from .utilsx.solution import solver
+
+
+def balance_loop_rule(color: str = "black") -> str:
+    """
+    Generate a rule for balance loop.
+
+    A loop_sign rule should be defined first.
+    """
+    op = "=" if color == "black" else "!="
+
+    # must be some methods to simplify these codes
+    rule = f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "J"), R1 = #max {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 < R }}, C1 = #max {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 < C }}.\n'
+    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "7"), R1 = #min {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 > R }}, C1 = #max {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 < C }}.\n'
+    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "L"), R1 = #max {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 < R }}, C1 = #min {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 > C }}.\n'
+    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "r"), R1 = #min {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 > R }}, C1 = #min {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 > C }}.\n'
+    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "1"), R1 = #max {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 < R }}, C1 = #min {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 > R }}.\n'
+    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "-"), R1 = #max {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 < C }}, C1 = #min {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 > C }}.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "J"), |R - R1| {op} |C - C1|.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "7"), |R - R1| {op} |C - C1|.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "L"), |R - R1| {op} |C - C1|.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "r"), |R - R1| {op} |C - C1|.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "1"), |R - R1| {op} |R - C1|.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "-"), |C - R1| {op} |C - C1|.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "J"), |R - R1| + |C - C1| != N.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "7"), |R - R1| + |C - C1| != N.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "L"), |R - R1| + |C - C1| != N.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "r"), |R - R1| + |C - C1| != N.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "1"), |R - R1| + |R - C1| != N.\n'
+    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "-"), |C - R1| + |C - C1| != N.\n'
+    return rule
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
-
-
-TURNING = ["J", "7", "L", "r"]
-STRAIGHT = ["-", "1"]
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    max_clue_val = 0
-    for num, color in E.clues.values():
-        if num == "":
-            max_clue_val = max(E.R, E.C)
-        else:
-            if color == "":
-                raise ValueError("Every number must be in a circle.")
-            max_clue_val = max(max_clue_val, int(num))
-    set_max_val(max_clue_val)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line(shade_c(color="balance_loop"))
+    solver.add_program_line(fill_path(color="balance_loop"))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="balance_loop"))
+    solver.add_program_line(single_loop(color="balance_loop", visit_all=False))
+    solver.add_program_line(loop_sign(color="balance_loop"))
+    solver.add_program_line(balance_loop_rule(color="black"))
+    solver.add_program_line(balance_loop_rule(color="white"))
 
-    ls = RectangularGridLoopSolver(E.R, E.C)
-    ls.loop({})
+    for (r, c), (clue, color) in E.clues.items():
+        solver.add_program_line(f"balance_loop({r}, {c}).")
+        if color == "b":
+            solver.add_program_line(f"black({r}, {c}).")
+            if clue != "":
+                num = int(clue)
+                solver.add_program_line(f"number({r}, {c}, {num}).")
+        elif color == "w":
+            solver.add_program_line(f"white({r}, {c}).")
+            if clue != "":
+                num = int(clue)
+                solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    for (r, c), (num, color) in E.clues.items():
-        require(~var_in(ls.grid[r][c], ISOLATED))
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-        # Count the number of straight loop cells in each direction.
-        count = {direction: IntVar(1) for direction in "urdl"}
-        has_found_bend = {direction: False for direction in "urdl"}
-
-        def count_cells(y, x, direction):
-            """
-            Update 'count' and 'has_found_bend' variables depending
-            on the cell at (y, x) and the direction.
-            """
-            is_straight = var_in(ls.grid[y][x], STRAIGHT)
-            is_bend = var_in(ls.grid[y][x], TURNING)
-            count[direction] += cond(is_straight & ~has_found_bend[direction], 1, 0)
-            has_found_bend[direction] |= is_bend
-
-        for y in range(r - 1, -1, -1):
-            count_cells(y, c, "u")
-        for x in range(c + 1, E.C):
-            count_cells(r, x, "r")
-        for y in range(r + 1, E.R):
-            count_cells(y, c, "d")
-        for x in range(c - 1, -1, -1):
-            count_cells(r, x, "l")
-
-        def apply(fn):
-            """
-            Apply a function that specifies a relationship between
-            two count variables. (Use directions appropriate for the shape)
-            """
-            shape_to_counts = {
-                "L": (count["u"], count["r"]),
-                "1": (count["u"], count["d"]),
-                "J": (count["u"], count["l"]),
-                "r": (count["r"], count["d"]),
-                "-": (count["r"], count["l"]),
-                "7": (count["d"], count["l"]),
-            }
-            for shape, counts in shape_to_counts.items():
-                require(fn(*counts) | (ls.grid[r][c] != shape))
-
-        # Apply constraints based on color (and #, if present).
-        if color == "w":
-            apply(lambda x, y: x == y)
-        else:
-            apply(lambda x, y: x != y)
-        if num != "":
-            int_num = int(num)
-            apply(lambda x, y: x + y == int_num)
-
-    return ls.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
