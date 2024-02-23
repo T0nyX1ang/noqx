@@ -1,7 +1,7 @@
 """Utility for loops."""
 
 # --- ISOLATED CELL PATTERNS ---
-ISOLATED = ["."]
+ISOLATED = [".", ""]
 
 # --- NON-DIRECTIONAL PATTERNS ---
 # Each cell has 0 or 2 edges in.
@@ -18,7 +18,7 @@ UP_CONNECTING = ["J", "L", "1"]
 DOWN_CONNECTING = ["7", "r", "1"]
 NON_DIRECTED_BENDS = ["J", "7", "L", "r"]
 NON_DIRECTED_STRAIGHTS = ["-", "1"]
-NON_DIRECTED = ["J", "7", "L", "r", "-", "1"]
+NON_DIRECTED = ["J", "7", "L", "r", "-", "1", ""]
 
 # --- DIRECTIONAL CELL PATTERNS ---
 # These are similar to the directionless edges, but there is
@@ -31,9 +31,9 @@ LEFT_OUT = ["J<", "7<", "-<"]
 RIGHT_OUT = ["L>", "r>", "->"]
 TOP_OUT = ["J^", "L^", "1^"]
 BOTTOM_OUT = ["7v", "rv", "1v"]
-DIRECTED = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv", "->", "-<", "1^", "1v"]
+DIRECTED = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv", "->", "-<", "1^", "1v", ""]
 DIRECTED_BENDS = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv"]
-DIRECTED_STRAIGHTS = ["->", "-<", "1^", "1v"]
+DIRECTED_STRAIGHTS = ["->", "-<", "1^", "1v", ""]
 
 DIRECTIONAL_PAIR_TO_UNICODE = {
     "J^": "⬏",
