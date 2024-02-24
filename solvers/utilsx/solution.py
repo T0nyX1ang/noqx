@@ -60,7 +60,8 @@ class ClingoSolver:
             elif _type == "loop_sign":
                 r, c, sign = data
                 sign = sign.replace('"', "")
-                formatted[rc_to_grid(r, c)] = f"{sign}.png"
+                if sign != "":
+                    formatted[rc_to_grid(r, c)] = f"{sign}.png"
             else:
                 # color
                 r, c = data

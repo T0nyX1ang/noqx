@@ -5,7 +5,7 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, loop_sign, connected_loop
+from .utilsx.loop import single_loop, connected_loop
 from .utilsx.rule import adjacent, avoid_adjacent, fill_path
 from .utilsx.solution import solver
 
@@ -52,7 +52,6 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(yajilin_count(int(num), (r, c), d, color="black"))
 
-    solver.add_program_line(loop_sign(color="white"))
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
