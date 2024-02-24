@@ -82,6 +82,8 @@ def single_loop(color: str = "white", visit_all: bool = False):
     constraint += f':- {color}(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
 
+    # signs = "; ".join(map(lambda x: f'loop_sign(R, C, "{x}")', NON_DIRECTED[:(6 if visit_all else 7)]))
+    # constraint += f'{{ {signs} }} = 1 :- grid(R, C).\n'
     dirs = ["lu", "ld", "ru", "rd", "lr", "ud"]
     rule = ""
     for sign, (d1, d2) in zip(NON_DIRECTED[:6], dirs):
