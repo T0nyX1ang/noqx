@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, loop_sign, connected_loop
+from .utilsx.loop import single_loop, connected_loop
 from .utilsx.rule import adjacent, fill_path, shade_c
 from .utilsx.solution import solver
 
@@ -59,7 +59,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="masyu_loop"))
     solver.add_program_line(single_loop(color="masyu_loop", visit_all=False))
-    solver.add_program_line(loop_sign(color="masyu_loop"))
     solver.add_program_line(masyu_black_rule())
     solver.add_program_line(masyu_white_rule())
 
