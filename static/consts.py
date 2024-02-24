@@ -22,6 +22,7 @@ types: List[Dict[str, Union[str, List]]] = [
     {"value": "balanceloop", "name": "Balance Loop", "cat": "loop"},
     {"value": "battleship", "name": "Battleship", "cat": "obj"},
     {"value": "binairo", "name": "Binairo", "cat": "shade"},
+    {"value": "canalview", "name": "Canal View", "cat": "shade"},
     {"value": "castlewall", "name": "Castle Wall", "cat": "loop"},
     {"value": "cave", "name": "Cave (Corral)", "cat": "shade"},
     {"value": "chocona", "name": "Chocona", "cat": "shade"},

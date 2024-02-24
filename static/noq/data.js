@@ -55,6 +55,13 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
+  canalview: {
+    params: {
+      r: { name: "Rows", value: 10 },
+      c: { name: "Columns", value: 10 },
+    },
+    properties: { outside: "0000", border: false },
+  },
   castlewall: {
     params: {
       r: { name: "Rows", value: 10 },
@@ -948,6 +955,40 @@ const examples = {
         },
       },
       link: "https://www.puzzle-binairo.com/",
+    },
+  },
+  canalview: {
+    1: {
+      data: {
+        param_values: { r: "12", c: "12" },
+        grid: {
+          "1,1": "2",
+          "1,11": "4",
+          "1,13": "3",
+          "1,23": "1",
+          "5,9": "6",
+          "5,15": "7",
+          "9,5": "8",
+          "9,19": "3",
+          "11,1": "1",
+          "11,11": "4",
+          "11,13": "3",
+          "11,23": "4",
+          "13,1": "3",
+          "13,11": "5",
+          "13,13": "4",
+          "13,23": "2",
+          "15,5": "7",
+          "15,19": "3",
+          "19,9": "4",
+          "19,15": "4",
+          "23,1": "3",
+          "23,11": "6",
+          "23,13": "2",
+          "23,23": "3",
+        },
+      },
+      link: "https://www.gmpuzzles.com/blog/2016/07/canal-view-by-prasanna-seshadri-2/",
     },
   },
   castlewall: {

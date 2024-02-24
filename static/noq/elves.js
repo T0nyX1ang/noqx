@@ -1512,6 +1512,10 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
+  canalview: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
   castlewall: CastleWallElf,
   cave: DirectSum(
     IntElf(),
