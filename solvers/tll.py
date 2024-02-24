@@ -10,7 +10,8 @@ from .utilsx.rule import adjacent, shade_c, fill_path
 from .utilsx.loop import NON_DIRECTED, single_loop, connected_loop
 from .utilsx.solution import solver
 
-directions = ((-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1))
+direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
+direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
 tapa_clue_dict = {}
 NON_DIRECTED_DIRS = ["lu", "ld", "ru", "rd", "lr", "ud"]
 
@@ -38,7 +39,7 @@ def parse_shape_clue(inner: tuple[str], outer: tuple[str]):
     shapes[3] = single_shape(0, inner[2], None, inner[3])
     shapes[4] = single_shape(inner[4], inner[3], outer[2], None)
     shapes[5] = single_shape(inner[5], 0, inner[4], None)
-    shapes[6] = single_shape(outer[3], inner[6], inner[5], None)
+    shapes[6] = single_shape(None, inner[6], inner[5], outer[3])
     shapes[7] = single_shape(None, inner[7], 0, inner[6])
     if None in shapes:
         return None, None
@@ -105,23 +106,24 @@ def tapa_rules() -> str:
     n_clue = 0
     for inner in itertools.product([1, 0], repeat=8):
         for outer in itertools.product([1, 0], repeat=4):
-            shape_clue, tapa_clue = parse_shape_clue(inner, outer)
-            if shape_clue:
+            _, tapa_clue = parse_shape_clue(inner, outer)
+            if tapa_clue:
+                shape_clue = inner + outer
                 shape_clue, tapa_clue = map(tuple, [shape_clue, tapa_clue])
                 if tapa_clue not in tapa_clue_dict:
                     n_clue += 1
                     tapa_clue_dict[tapa_clue] = n_clue
                 tapa_var = str(tapa_clue_dict[tapa_clue])
-                shape_var = ", ".join(map(lambda s: f'"{s}"', shape_clue))
+                shape_var = ", ".join(map(str, shape_clue))
                 valid_tapa.append(f"valid_tapa({tapa_var}, {shape_var}).")
     return "\n".join(valid_tapa)
 
 
 def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
     valid_pattern, num_str, num_constrain = [], [], []
-    for i, (dr, dc) in enumerate(directions):
+    for i, (dr, dc, d) in enumerate(direc + direc_outer):
         num_str.append(f"S{i}")
-        num_constrain.append(f"loop_sign({r+dr}, {c+dc}, S{i})")
+        num_constrain.append(f'grid_direc_num({r+dr}, {c+dc}, "{d}", S{i})')
     num_str = ", ".join(num_str)
     num_constrain = ", ".join(num_constrain)
     for pattern in patterns:
@@ -130,6 +132,13 @@ def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
         valid_pattern.append(rule)
     valid_pattern = ", ".join(valid_pattern)
     return f":- {valid_pattern}, {num_constrain}."
+
+
+def grid_direc_to_num(r: int, c: int) -> str:
+    constraint = f"grid_direc_num(R, C, D, 0) :- -1 <= R, R <= {r}, -1 <= C, C <= {c}, not grid(R, C), direction(D).\n"
+    constraint += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not grid_direction(R, C, D).\n"
+    constraint += "grid_direc_num(R, C, D, 1) :- grid(R, C), grid_direction(R, C, D)."
+    return constraint
 
 
 def solve(E: Encoding) -> List:
@@ -142,6 +151,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="not black"))
     solver.add_program_line(single_loop(color="not black", visit_all=False))
+    solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.c}, not grid(R, C).')
 
     idx = 1
