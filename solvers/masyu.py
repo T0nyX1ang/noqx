@@ -58,7 +58,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="masyu_loop"))
-    solver.add_program_line(single_loop(color="masyu_loop", visit_all=False))
+    solver.add_program_line(single_loop(color="masyu_loop", visit_all=True))
     solver.add_program_line(masyu_black_rule())
     solver.add_program_line(masyu_white_rule())
 

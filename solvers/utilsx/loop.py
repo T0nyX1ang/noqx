@@ -59,7 +59,7 @@ def connected_loop(color: str = "white") -> str:
     """
     initial = f"reachable_loop(R, C) :- (R, C) = #min{{ (R1, C1) : grid(R1, C1), {color}(R1, C1) }}.\n"
     propagation = f"reachable_loop(R, C) :- {color}(R, C), reachable_loop(R1, C1), adj_loop(R1, C1, R, C).\n"
-    constraint = f":- grid(R, C), {color}(R, C), not reachable_loop(R, C)."
+    constraint = f":- grid(R, C), {color}(R, C), not not_pass_by_loop(R, C), not reachable_loop(R, C)."
     return initial + propagation + constraint
 
 
@@ -71,11 +71,12 @@ def single_loop(color: str = "white", visit_all: bool = False):
 
     A grid fact and a grid_direction rule should be defined first.
     """
+    print(visit_all)
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
+    constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
     if visit_all:
         constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
     else:
-        constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
         constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C), not not_pass_by_loop(R, C).\n"
     constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'

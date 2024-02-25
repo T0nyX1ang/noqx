@@ -1354,6 +1354,13 @@ class TapaElf extends Elf {
 class TLLElf extends TapaElf {
   // assumes this.clues contains a nonzero clue already
 
+  static controls() {
+    let controls = super.controls();
+    controls["(VisitAllGrids)"] =
+      "Add rule: All grids must be visited by the loop";
+    return controls;
+  }
+
   // @Override
   _valid_add(num) {
     let min_space = num == "?" ? 1 : num;

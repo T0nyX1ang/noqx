@@ -162,13 +162,13 @@ def solve(E: Encoding) -> List:
     question_mark_clue_dict = set()
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c(color="black"))
+    # solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(tapa_rules())
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(fill_path(color="not black"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="not black"))
-    solver.add_program_line(single_loop(color="not black", visit_all=False))
+    solver.add_program_line(single_loop(color="not black", visit_all=E.params["VisitAllGrids"]))
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.c}, not grid(R, C).')
 
@@ -177,8 +177,8 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(valid_tapa_pattern(r=r, c=c, clue=clue))
 
     solver.add_program_line(display(item="loop_sign", size=3))
-    # with open("logic_puzzles/clingo.txt", "w") as f:
-    #     f.write(solver.program)
+    with open("logic_puzzles/clingo.txt", "w") as f:
+        f.write(solver.program)
     solver.solve()
 
     return solver.solutions
