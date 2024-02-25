@@ -6,8 +6,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid, direction
-from .utilsx.rule import adjacent, shade_c, fill_path
-from .utilsx.loop import NON_DIRECTED, single_loop, connected_loop
+from .utilsx.rule import adjacent, shade_c
+from .utilsx.loop import single_loop, connected_loop, fill_path
 from .utilsx.solution import solver
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))

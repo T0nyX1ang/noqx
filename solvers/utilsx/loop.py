@@ -51,6 +51,15 @@ DIRECTIONAL_PAIR_TO_UNICODE = {
 }
 
 
+def fill_path(color: str = None) -> str:
+    """
+    Generate a rule that a cell is on a path.
+
+    A grid fact and a direction fact should be defined first.
+    """
+    return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+
+
 def connected_loop(color: str = "white") -> str:
     """
     Generate a loop rule to constrain connectivity.
@@ -71,7 +80,6 @@ def single_loop(color: str = "white", visit_all: bool = False):
 
     A grid fact and a grid_direction rule should be defined first.
     """
-    print(visit_all)
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
     constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
     if visit_all:

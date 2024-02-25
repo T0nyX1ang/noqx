@@ -5,8 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, connected_loop
-from .utilsx.rule import adjacent, fill_path, shade_c
+from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 
