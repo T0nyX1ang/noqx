@@ -13,6 +13,7 @@ from .utilsx.solution import solver
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
 tapa_clue_dict = {}
+question_mark_clue_dict = set()
 NON_DIRECTED_DIRS = ["lu", "ld", "ru", "rd", "lr", "ud"]
 
 
@@ -119,21 +120,34 @@ def tapa_rules() -> str:
     return "\n".join(valid_tapa)
 
 
-def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
+def valid_tapa_pattern(r: int, c: int, clue: list) -> str:
     valid_pattern, num_str, num_constrain = [], [], []
     for i, (dr, dc, d) in enumerate(direc + direc_outer):
-        num_str.append(f"S{i}")
-        num_constrain.append(f'grid_direc_num({r+dr}, {c+dc}, "{d}", S{i})')
+        num_str.append(f"E{i}")
+        num_constrain.append(f'grid_direc_num({r+dr}, {c+dc}, "{d}", E{i})')
     num_str = ", ".join(num_str)
     num_constrain = ", ".join(num_constrain)
-    for pattern in patterns:
-        if pattern not in tapa_clue_dict:
-            continue
-        clue_str = str(tapa_clue_dict[pattern])
-        rule = f"not valid_tapa({clue_str}, {num_str})"
-        valid_pattern.append(rule)
-    valid_pattern = ", ".join(valid_pattern)
-    return f":- {valid_pattern}, {num_constrain}."
+
+    patterns = generate_patterns(clue)
+    if "?" in clue:
+        constraint = ""
+        clue = tuple(sorted(clue))
+        clue_str = f'"{"".join(map(str, clue))}"'
+        if clue not in question_mark_clue_dict:
+            for pattern in patterns:
+                if pattern not in tapa_clue_dict:
+                    continue
+                clue_num = str(tapa_clue_dict[pattern])
+                constraint += f"matches({clue_str}, {clue_num}).\n"
+            question_mark_clue_dict.add(clue)
+        matches = f"matches({clue_str}, C)"
+        valid_pattern = f"valid_tapa(C, {num_str})"
+        constraint += f":- #count{{ C: {matches}, {valid_pattern}, {num_constrain} }} != 1."
+    else:
+        clue_num = str(tapa_clue_dict[patterns[0]])
+        valid_pattern = f"not valid_tapa({clue_num}, {num_str})"
+        constraint = f":- {valid_pattern}, {num_constrain}."
+    return constraint.strip()
 
 
 def grid_direc_to_num(r: int, c: int) -> str:
@@ -144,6 +158,8 @@ def grid_direc_to_num(r: int, c: int) -> str:
 
 
 def solve(E: Encoding) -> List:
+    global question_mark_clue_dict
+    question_mark_clue_dict = set()
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))
@@ -156,16 +172,13 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.c}, not grid(R, C).')
 
-    idx = 1
     for (r, c), clue in E.clues.items():
-        patterns = generate_patterns(clue)
         solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(valid_tapa_pattern(r=r, c=c, patterns=patterns))
-        idx += 1
+        solver.add_program_line(valid_tapa_pattern(r=r, c=c, clue=clue))
 
     solver.add_program_line(display(item="loop_sign", size=3))
-    with open("logic_puzzles/clingo.txt", "w") as f:
-        f.write(solver.program)
+    # with open("logic_puzzles/clingo.txt", "w") as f:
+    #     f.write(solver.program)
     solver.solve()
 
     return solver.solutions
