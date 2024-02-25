@@ -127,6 +127,8 @@ def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
     num_str = ", ".join(num_str)
     num_constrain = ", ".join(num_constrain)
     for pattern in patterns:
+        if pattern not in tapa_clue_dict:
+            continue
         clue_str = str(tapa_clue_dict[pattern])
         rule = f"not valid_tapa({clue_str}, {num_str})"
         valid_pattern.append(rule)
@@ -158,8 +160,7 @@ def solve(E: Encoding) -> List:
     for (r, c), clue in E.clues.items():
         patterns = generate_patterns(clue)
         solver.add_program_line(f"black({r}, {c}).")
-        if idx in [1, 2, 3, 4, 5]:
-            solver.add_program_line(valid_tapa_pattern(r=r, c=c, patterns=patterns))
+        solver.add_program_line(valid_tapa_pattern(r=r, c=c, patterns=patterns))
         idx += 1
 
     solver.add_program_line(display(item="loop_sign", size=3))
