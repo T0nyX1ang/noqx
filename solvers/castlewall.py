@@ -1,67 +1,66 @@
 """The Castle Wall solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_bools, var_in
-from .utils.encoding import Encoding
-from .utils.loops import DOWN_CONNECTING, RIGHT_CONNECTING, RectangularGridLoopSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid
+from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.rule import adjacent
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
+
+
+def wall_length(r: int, c: int, direc: str, num: int) -> str:
+    if direc == "l":
+        return f':- #count{{ C: grid_direction({r}, C, "r"), C < {c} }} != {num}.'
+    elif direc == "u":
+        return f':- #count{{ R: grid_direction(R, {c}, "d"), R < {r} }} != {num}.'
+    elif direc == "r":
+        return f':- #count{{ C: grid_direction({r}, C, "r"), C > {c} }} != {num}.'
+    elif direc == "d":
+        return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
+
+
+def black_out_white_in() -> str:
+    in_loop = "binary(0..1).\n"
+    in_loop += "in_loop(R, C, 0) :- R = -1, grid(_, C).\n"
+    in_loop += 'in_loop(R, C, N) :- grid(R, C), binary(N), in_loop(R-1, C, N), not grid_direction(R, C, "r").\n'
+    in_loop += 'in_loop(R, C, N) :- grid(R, C), binary(N), in_loop(R-1, C, 1-N), grid_direction(R, C, "r").\n'
+    constraint = ":- white(R, C), in_loop(R, C, 0).\n"
+    constraint = ":- black(R, C), in_loop(R, C, 1)."
+    return in_loop + constraint
 
 
 def solve(E: Encoding) -> List:
-    # Validation.
-    for clue in E.clues.values():
-        if len(clue) != 3:
-            raise ValueError("Improper clue formatting.")
-        num, d, color = clue
-        if (num == "") != (d == ""):
-            # Number and direction must be specified together
-            # (one alone is meaningless).
-            raise ValueError("Number and direction must be specified together.")
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line("{ wall(R, C) } :- grid(R, C), not black(R, C), not white(R, C), not gray(R, C).")
+    solver.add_program_line(fill_path(color="wall"))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="wall"))
+    solver.add_program_line(single_loop(color="wall", visit_all=True))
+    solver.add_program_line(black_out_white_in())
 
-    # Restrict the number of bits used for IntVar.
-    # The highest number that we need is the highest clue number.
-    set_max_val(max([int(clue[0] if clue[0].isnumeric() else 0) for clue in E.clues.values()], default=1))
+    for (r, c), clue in E.clues.items():
+        print(clue)
+        num, direc, color = clue
+        if direc in ["u", "l", "d", "r"]:
+            solver.add_program_line(wall_length(r, c, direc, int(num)))
+        if color in "wgb":
+            color_dict = {"w": "white", "g": "gray", "b": "black"}
+            color = color_dict[color]
+            solver.add_program_line(f"{color}({r}, {c}).")
 
-    loop_solver = RectangularGridLoopSolver(E.R, E.C)
-    loop_solver.loop(E.clues)
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    white_clues, black_clues = set(), set()
-    for (r, c), (num, d, color) in E.clues.items():
-        # Numbers and directions.
-        if num != "":
-            if d == "u":
-                require(sum_bools(int(num), [var_in(loop_solver.grid[y][c], DOWN_CONNECTING) for y in range(r - 1)]))
-            elif d == "r":
-                require(
-                    sum_bools(
-                        int(num),
-                        [var_in(loop_solver.grid[r][x], RIGHT_CONNECTING) for x in range(c + 1, E.C - 1)],
-                    )
-                )
-            elif d == "d":
-                require(
-                    sum_bools(
-                        int(num),
-                        [var_in(loop_solver.grid[y][c], DOWN_CONNECTING) for y in range(r + 1, E.R - 1)],
-                    )
-                )
-            elif d == "l":
-                require(sum_bools(int(num), [var_in(loop_solver.grid[r][x], RIGHT_CONNECTING) for x in range(c - 1)]))
-        # Colors.
-        if color == "w":
-            white_clues.add((r, c))
-        elif color == "b":
-            black_clues.add((r, c))
-    loop_solver.inside(white_clues)
-    loop_solver.outside(black_clues)
-
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
