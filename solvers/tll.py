@@ -177,8 +177,6 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(valid_tapa_pattern(r=r, c=c, clue=clue))
 
     solver.add_program_line(display(item="loop_sign", size=3))
-    with open("logic_puzzles/clingo.txt", "w") as f:
-        f.write(solver.program)
     solver.solve()
 
     return solver.solutions
