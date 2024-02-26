@@ -15,17 +15,6 @@ def encode(string: str) -> Encoding:
     return utilsx.encode(string, has_borders=True)
 
 
-def wall_length(r: int, c: int, direc: str, num: int) -> str:
-    if direc == "l":
-        return f':- #count{{ C: grid_direction({r}, C, "r"), C < {c} }} != {num}.'
-    elif direc == "u":
-        return f':- #count{{ R: grid_direction(R, {c}, "d"), R < {r} }} != {num}.'
-    elif direc == "r":
-        return f':- #count{{ C: grid_direction({r}, C, "r"), C > {c} }} != {num}.'
-    elif direc == "d":
-        return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
-
-
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
