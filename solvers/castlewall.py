@@ -47,7 +47,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(black_out_white_in())
 
     for (r, c), clue in E.clues.items():
-        print(clue)
         num, direc, color = clue
         if direc in ["u", "l", "d", "r"]:
             solver.add_program_line(wall_length(r, c, direc, int(num)))

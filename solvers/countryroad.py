@@ -1,48 +1,68 @@
 """The Country Road solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import require, reset, set_max_val, sum_bools, var_in
-from .utils.encoding import Encoding
-from .utils.loops import ISOLATED, RectangularGridLoopSolver
-from .utils.regions import full_bfs, RectangularGridRegionSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid, area
+from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.rule import adjacent, count
+from .utilsx.region import full_bfs
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
+
+
+def wall_length(r: int, c: int, direc: str, num: int) -> str:
+    if direc == "l":
+        return f':- #count{{ C: grid_direction({r}, C, "r"), C < {c} }} != {num}.'
+    elif direc == "u":
+        return f':- #count{{ R: grid_direction(R, {c}, "d"), R < {r} }} != {num}.'
+    elif direc == "r":
+        return f':- #count{{ C: grid_direction({r}, C, "r"), C > {c} }} != {num}.'
+    elif direc == "d":
+        return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
 
 
 def solve(E: Encoding) -> List:
-    rooms = full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line("{ country_road(R, C) } :- grid(R, C).")
+    solver.add_program_line(fill_path(color="country_road"))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="country_road"))
+    solver.add_program_line(single_loop(color="country_road", visit_all=True))
 
-    # get the size of the largest room
-    max_room_size = max(len(room) for room in rooms)
+    num_dict = {}
+    for (r, c), clue in E.clues.items():
+        num_dict[(r, c)] = clue
 
-    # reset clasp, and set the maximum IntVar value to the max room size
-    reset()
-    set_max_val(max_room_size)
+    areas = full_bfs(E.R, E.C, E.edges)
+    for id, ar in enumerate(areas):
+        edges = []
+        for r, c in ar:
+            if (r, c) in num_dict:
+                solver.add_program_line(area(_id=id, src_cells=ar))
+                solver.add_program_line(count(num_dict[(r, c)], color="country_road", _type="area", _id=id))
+            for dr, dc, direc in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
+                r1, c1 = r + dr, c + dc
+                if (r1, c1) not in ar:
+                    edges.append(f'grid_direction({r}, {c}, "{direc}")')
+            if (r + 1, c) not in ar and r + 1 < E.R:
+                solver.add_program_line(f":- not country_road({r}, {c}), not country_road({r+1}, {c}).")
+            if (r, c + 1) not in ar and c + 1 < E.C:
+                solver.add_program_line(f":- not country_road({r}, {c}), not country_road({r}, {c+1}).")
+        edges = "; ".join(edges)
+        solver.add_program_line(f":- {{ {edges} }} != 2.")
 
-    loop_solver = RectangularGridLoopSolver(E.R, E.C)
-    loop_solver.loop(E.clues, includes_clues=True)
-    loop_solver.no_reentrance(rooms)
-    loop_solver.hit_every_region(rooms)
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    region_solver = RectangularGridRegionSolver(E.R, E.C, loop_solver.grid, given_regions=rooms)
-
-    for r, c in E.clues:
-        for room in rooms:
-            if (r, c) in room:
-                clued_room = room
-        require(sum_bools(E.clues[(r, c)], [~var_in(loop_solver.grid[y][x], ISOLATED) for (y, x) in clued_room]))
-
-    for r in range(E.R):
-        for c in range(E.C):
-            for y, x in region_solver.get_neighbors_in_other_regions(r, c):
-                require(~(var_in(loop_solver.grid[r][c], ISOLATED) & var_in(loop_solver.grid[y][x], ISOLATED)))
-
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
