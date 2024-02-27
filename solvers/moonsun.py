@@ -1,76 +1,65 @@
 """The Moon-or-Sun solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import BoolVar, MultiVar, require, sum_bools, var_in
-from .utils.borders import Direction
-from .utils.encoding import Encoding
-from .utils.loops import (
-    LEFT_CONNECTING,
-    UP_CONNECTING,
-    RectangularGridLoopSolver,
-)
-from .utils.regions import full_bfs
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid, area
+from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.rule import adjacent, count
+from .utilsx.region import full_bfs
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
+
+
+def moon_sun_area() -> str:
+    rule = "{ sun_area(A) } :- area(A, _, _).\n"
+    rule += ":- sun_area(A), area(A, R, C), sun(R, C), not moon_sun_loop(R, C).\n"
+    rule += ":- sun_area(A), area(A, R, C), moon(R, C), moon_sun_loop(R, C).\n"
+    rule += ":- not sun_area(A), area(A, R, C), sun(R, C), moon_sun_loop(R, C).\n"
+    rule += ":- not sun_area(A), area(A, R, C), moon(R, C), not moon_sun_loop(R, C).\n"
+
+    adj_diff = "adj_area(A1, A2) :- area(A1, R1, C1), area(A2, R2, C2), A1 < A2, adj_loop(R1, C1, R2, C2).\n"
+    adj_diff += ":- adj_area(A1, A2), sun_area(A1), sun_area(A2).\n"
+    adj_diff += ":- adj_area(A1, A2), not sun_area(A1), not sun_area(A2).\n"
+    return (rule + adj_diff).strip()
 
 
 def solve(E: Encoding) -> List:
-    loop_solver = RectangularGridLoopSolver(E.R, E.C)
-    rooms = full_bfs(E.R, E.C, E.edges)
-    region_type = [[MultiVar("m", "s") for r in range(E.R)] for c in range(E.C)]
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line("{ moon_sun_loop(R, C) } :- grid(R, C).")
+    solver.add_program_line(fill_path(color="moon_sun_loop"))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="moon_sun_loop"))
+    solver.add_program_line(single_loop(color="moon_sun_loop", visit_all=True))
 
-    # In each room, either:
-    # - hit all moons + no suns
-    # - hit all suns + no moons
-    for room in rooms:
-        has_moons, has_suns = False, False
-        hit_all_moons, hit_all_suns = BoolVar(True), BoolVar(True)
-        hit_at_least_1_moon, hit_at_least_1_sun = BoolVar(False), BoolVar(False)
-        for r, c in room:
-            if (r, c) in E.clues:
-                is_nonempty = loop_solver.grid[r][c] != ""
-                if E.clues[(r, c)] == "m":
-                    has_moons = True
-                    hit_all_moons &= is_nonempty
-                    hit_at_least_1_moon |= is_nonempty
-                    require(is_nonempty == (region_type[r][c] == "m"))
-                elif E.clues[(r, c)] == "s":
-                    has_suns = True
-                    hit_all_suns &= is_nonempty
-                    hit_at_least_1_sun |= is_nonempty
-                    require(is_nonempty == (region_type[r][c] == "s"))
-        if not (has_moons or has_suns):
-            raise ValueError("Every region must contain at least 1 moon or sun.")
-        require(sum_bools(1, [has_moons & hit_all_moons, has_suns & hit_all_suns]))
-        require(sum_bools(1, [hit_at_least_1_moon, hit_at_least_1_sun]))
+    for (r, c), clue in E.clues.items():
+        _type = "sun" if clue == "s" else "moon"
+        solver.add_program_line(f"{_type}({r}, {c}).")
 
-    # Make sure that each region is marked correctly as an m or s region
-    for r in range(1, E.R):
-        for c in range(E.C):
-            require((region_type[r - 1][c] == region_type[r][c]) | ((r, c, Direction.TOP) in E.edges))
-            require(
-                (region_type[r - 1][c] != region_type[r][c])
-                | ~(var_in(loop_solver.grid[r][c], UP_CONNECTING) & ((r, c, Direction.TOP) in E.edges))
-            )
-    for r in range(E.R):
-        for c in range(1, E.C):
-            require((region_type[r][c - 1] == region_type[r][c]) | ((r, c, Direction.LEFT) in E.edges))
-            require(
-                (region_type[r][c - 1] != region_type[r][c])
-                | ~(var_in(loop_solver.grid[r][c], LEFT_CONNECTING) & ((r, c, Direction.LEFT) in E.edges))
-            )
+    areas = full_bfs(E.R, E.C, E.edges)
+    for id, ar in enumerate(areas):
+        solver.add_program_line(area(_id=id, src_cells=ar))
+        edges = []
+        for r, c in ar:
+            for dr, dc, direc in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
+                r1, c1 = r + dr, c + dc
+                if (r1, c1) not in ar:
+                    edges.append(f'grid_direction({r}, {c}, "{direc}")')
+        edges = "; ".join(edges)
+        solver.add_program_line(f":- {{ {edges} }} != 2.")
 
-    # Basic rules
-    loop_solver.loop({})
-    loop_solver.no_reentrance(rooms)
-    loop_solver.hit_every_region(rooms)
+    solver.add_program_line(moon_sun_area())
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
