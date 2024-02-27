@@ -23,6 +23,11 @@ class TextImp {
         `display_grid();
         this.style.width = get_text_width(this.value);`
       );
+    else
+      this.inp.setAttribute(
+        "onchange",
+        `this.style.width = get_text_width(this.value);`
+      );
 
     this.set_value(value);
   }
