@@ -100,3 +100,14 @@ def single_loop(color: str = "white", visit_all: bool = False):
     if not visit_all:
         rule += f'loop_sign(R, C, "") :- grid(R, C), not_pass_by_loop(R, C).'
     return constraint + rule.strip()
+
+
+def pass_area_one_time(ar: list) -> str:
+    edges = []
+    for r, c in ar:
+        for dr, dc, direc in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
+            r1, c1 = r + dr, c + dc
+            if (r1, c1) not in ar:
+                edges.append(f'grid_direction({r}, {c}, "{direc}")')
+    edges = "; ".join(edges)
+    return f":- {{ {edges} }} != 2."
