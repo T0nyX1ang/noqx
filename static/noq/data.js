@@ -297,6 +297,14 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: true },
   },
+  pigpenpark: {
+    params: {
+      r: { name: "Rows", value: 10 },
+      c: { name: "Columns", value: 10 },
+      word: { name: "Word", value: "" },
+    },
+    properties: { outside: "0000", border: false },
+  },
   rippleeffect: {
     params: {
       r: { name: "Rows", value: 10 },

@@ -332,7 +332,9 @@ def count_reachable_edge(target: int, op: str = "eq", color: str = None) -> str:
     return f":- grid(R0, C0), {color}(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
 
 
-def count_shape(target: int, name: str, _id: int = None, color: str = "black", _type: str = "grid", op: str = "eq") -> str:
+def count_shape(
+    target: int, name: str, _id: int = "_", variant_id: int = "_", color: str = "black", _type: str = "grid", op: str = "eq"
+) -> str:
     """
     Generates a constraint to count the number of a shape.
 
@@ -340,12 +342,11 @@ def count_shape(target: int, name: str, _id: int = None, color: str = "black", _
     """
     tag = tag_encode("shape", name, color)
     op = rev_op_dict[op]
-    _id = "_" if _id is None else _id
 
     if _type == "grid":
-        return f":- {{ {tag}(R, C, {_id}, _) }} {op} {target}."
+        return f":- {{ {tag}(R, C, {_id}, {variant_id}) }} {op} {target}."
 
     if _type == "area":
-        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {op} {target}."
+        return f":- area(A, _, _), {{ {tag}(A, R, C, {_id}, {variant_id}) }} {op} {target}."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")

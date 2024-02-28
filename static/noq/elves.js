@@ -1656,6 +1656,7 @@ let elf_types = {
     })
   ),
   onsen: InvertSolutionZOrder(IntBordersElf()),
+  pigpenpark: CircleElf,
   rippleeffect: IntBordersElf(),
   shakashaka: AkariElf,
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),

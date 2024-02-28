@@ -68,6 +68,7 @@ types: List[Dict[str, Union[str, List]]] = [
     {"value": "nurikabe", "name": "Nurikabe", "cat": "shade"},
     {"value": "nurimisaki", "name": "Nurimisaki", "cat": "shade"},
     {"value": "onsen", "name": "Onsen", "cat": "loop"},
+    {"value": "pigpenpark", "name": "Pigpen Park", "cat": "obj"},
     {"value": "rippleeffect", "name": "Ripple Effect", "cat": "num"},
     {
         "value": "shakashaka",
