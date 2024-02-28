@@ -1,38 +1,47 @@
 """The Slitherlink solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from . import utils
-from .utils.claspy import set_max_val
-from .utils.borders import RectangularGridBorderSolver
-from .utils.encoding import Encoding
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid, area
+from .utilsx.loop import single_loop, connected_loop, fill_path, pass_area_one_time
+from .utilsx.rule import adjacent
+from .utilsx.region import full_bfs
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, has_borders=True)
+
+
+def slither_link() -> str:
+    rule = ':- number(R, C, N), { grid_direction(R, C, "r"); grid_direction(R, C, "d"); grid_direction(R+1, C, "r"); grid_direction(R, C+1, "d") } != N.\n'
+    rule += 'horizontal_line(R, C) :- grid_direction(R, C, "r").\n'
+    rule += 'vertical_line(R, C) :- grid_direction(R, C, "d").\n'
+    return rule.strip()
 
 
 def solve(E: Encoding) -> List:
-    number_clues, inside_clues, outside_clues = {}, set(), set()
-    for clue, value in E.clues.items():
-        if value.isnumeric():
-            number_clues[clue] = int(value)
-        elif value == "s":
-            inside_clues.add(clue)
-        elif value == "w":
-            outside_clues.add(clue)
-        else:
-            raise ValueError("Clues must be numbers, s, or w.")
+    solver.reset()
+    solver.add_program_line(grid(E.R + 1, E.C + 1))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line("{ slither_link(R, C) } :- grid(R, C).")
+    solver.add_program_line(fill_path(color="slither_link"))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="slither_link"))
+    solver.add_program_line(single_loop(color="slither_link", visit_all=True))
 
-    set_max_val(max(number_clues.values()) if number_clues else 0)
+    for (r, c), clue in E.clues.items():
+        solver.add_program_line(f"number({r}, {c}, {clue}).")
 
-    bs = RectangularGridBorderSolver(E.R, E.C)
-    bs.loop()
-    bs.clues(number_clues)
-    bs.inside_loop(inside_clues)
-    bs.outside_loop(outside_clues)
-    return bs.solutions()
+    solver.add_program_line(slither_link())
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.solve()
+
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
