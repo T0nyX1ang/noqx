@@ -56,7 +56,7 @@ def get_neighbor(r: int, c: int, _type: int = 4) -> Tuple[Tuple[int, int]]:
     raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
 
 
-def all_rect(color: str = "black") -> str:
+def all_rect(color: str = "black", square: bool = False) -> str:
     """
     Generate a constraint to force rectangles.
 
@@ -70,13 +70,20 @@ def all_rect(color: str = "black") -> str:
     remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C)."
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
 
     constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
-    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C)."
+    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
 
-    data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint
-    return data.replace("not not ", "")
+    if square:
+        c_min = f"#min {{ C0: grid(R, C0), not {color}(R, C0), C0 > C }}"
+        r_min = f"#min {{ R0: grid(R0, C), not {color}(R0, C), R0 > R }}"
+        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, grid(MR - 1, MC - 1), MR - R != MC - C.\n"
+        constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
+        constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
+
+    data = upleft + left + up + remain + constraint
+    return data.replace("not not ", "").strip()
 
 
 def all_rect_region() -> str:
@@ -106,9 +113,9 @@ def all_rect_region() -> str:
     constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not vertical_line(R, C + 1).\n"
     constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not horizontal_line(R + 1, C)."
 
-    c_min = "#min { C0: vertical_line(R, C0), C0 > C }"
     r_min = "#min { R0: horizontal_line(R0, C), R0 > R }"
-    rect = f"rect(R, C, MR - 1, MC - 1) :- upleft(R, C), {c_min} = MC, {r_min} = MR.\n"
+    c_min = "#min { C0: vertical_line(R, C0), C0 > C }"
+    rect = f"rect(R, C, MR - 1, MC - 1) :- upleft(R, C), {r_min} = MR, {c_min} = MC.\n"
     rect += ":- rect(R, C, MR, MC), vertical_line(R..MR, C + 1..MC).\n"
     rect += ":- rect(R, C, MR, MC), horizontal_line(R + 1..MR, C..MC)."
 
