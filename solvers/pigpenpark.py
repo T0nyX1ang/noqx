@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, shade_c, count_shape, count
+from .utilsx.rule import adjacent, shade_c, count_shape
 from .utilsx.shape import all_shapes, general_shape
 from .utilsx.solution import solver
 from .utilsx.helper import tag_encode, ConnectivityHelper, get_variants
@@ -67,7 +67,7 @@ def special_connected(color: str = "black", adj_type: int = 4, _type: str = "gri
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def special_stuv_case(color: str = "black") -> str:
+def special_stuv_case(stuv_count: int, color: str = "black") -> str:
     """
     Generate a constraint to deal with the overlapping of the S, T, U, V case.
 
@@ -75,8 +75,8 @@ def special_stuv_case(color: str = "black") -> str:
     """
     tag = tag_encode("shape", "pigpen", color)
     tag_stuv = tag_encode("shape", "pigpen_stuv", color)
-    tag_be = tag_encode("belong_to_shape", "pigpen", "black")
-    tag_be_stuv = tag_encode("belong_to_shape", "pigpen_stuv", "black")
+    tag_be = tag_encode("belong_to_shape", "pigpen", color)
+    tag_be_stuv = tag_encode("belong_to_shape", "pigpen_stuv", color)
 
     data = f"{{ {tag_stuv}(R, C, 4, V) }} :- {tag}(R, C, 4, V).\n"
     variants = get_variants(PIGPEN_SHAPES["4"], allow_rotations=True, allow_reflections=True)
@@ -85,8 +85,7 @@ def special_stuv_case(color: str = "black") -> str:
             data += f"{tag_be_stuv}(R + {dr}, C + {dc}, R, C, {i}) :- grid(R + {dr}, C + {dc}), {tag_stuv}(R, C, 4, {i}).\n"
 
     data += f":- {tag_be_stuv}(R, C, R0, C0, V), {tag_be_stuv}(R, C, R1, C1, V1), |R0 - R1| + |C0 - C1| + |V - V1| > 0.\n"
-    # data += f":- grid(R, C), {color}(R, C), {tag_be}(R, C, 4, _), not {tag_be_stuv}(R, C, _, _, _).\n"
-
+    data += f":- #count {{ R, C: {tag_be}(R, C, 4, _) }} != {3 * stuv_count}."
     return data.strip()
 
 
@@ -110,7 +109,6 @@ def solve(E: Encoding) -> List:
     for s in target_word:
         word_count[s] += 1
 
-    solver.add_program_line(special_stuv_case(color="black"))
     for s, cnt in word_count.items():
         _id, vid = word_list[s]
         if s in "stuv":
@@ -118,8 +116,8 @@ def solve(E: Encoding) -> List:
         else:
             solver.add_program_line(count_shape(cnt, name="pigpen", _id=_id, variant_id=vid, color="black"))
 
-    # total_count = sum(cnt * len(PIGPEN_SHAPES[str(word_list[s][0])]) for s, cnt in word_count.items())
-    # solver.add_program_line(count(total_count, color="black"))
+    stuv_count = sum(word_count[s] for s in "stuv")
+    solver.add_program_line(special_stuv_case(stuv_count, color="black"))
 
     for (r, c), clue in E.clues.items():
         if clue == "b":
