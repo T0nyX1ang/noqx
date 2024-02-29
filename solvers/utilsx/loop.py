@@ -98,11 +98,16 @@ def single_loop(color: str = "white", visit_all: bool = False):
     for sign, (d1, d2) in zip(NON_DIRECTED[:6], dirs):
         rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
     if not visit_all:
-        rule += f'loop_sign(R, C, "") :- grid(R, C), not_pass_by_loop(R, C).'
+        rule += 'loop_sign(R, C, "") :- grid(R, C), not_pass_by_loop(R, C).'
     return constraint + rule.strip()
 
 
 def pass_area_one_time(ar: list) -> str:
+    """
+    Generate a rule that a loop passes through an area exactly once.
+
+    A direction fact should be defined first.
+    """
     edges = []
     for r, c in ar:
         for dr, dc, direc in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
