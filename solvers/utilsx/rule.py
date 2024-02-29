@@ -253,14 +253,15 @@ def region(
     return initial + "\n" + propagation + constraint
 
 
-def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
     """
     Generate a constraint to count the size of {color} region connected to a source cell.
 
     A region rule should be defined first.
     """
+    op = rev_op_dict[op]
     src_r, src_c = src_cell
-    return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} != {target}."
+    return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
 def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:

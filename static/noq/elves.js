@@ -1677,6 +1677,14 @@ let elf_types = {
   ),
   sudoku: SudokuElf,
   tapa: TapaElf,
+  tasquare: DirectSum(
+    IntElf(1, 99),
+    BgColorElf({
+      x: ["black", "black"],
+      o: ["green", "green"],
+      "?": ["yellow", "yellow"],
+    })
+  ),
   tatamibari: LetterElf("+-|"),
   tents: DirectSum(
     DirectSum(IntElf(0, 99), BgColorElf({ o: ["green", "green"] })),

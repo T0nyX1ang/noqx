@@ -385,6 +385,13 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
+  tasquare: {
+    params: {
+      r: { name: "Rows", value: 10 },
+      c: { name: "Columns", value: 10 },
+    },
+    properties: { outside: "0000", border: false },
+  },
   tatamibari: {
     params: {
       r: { name: "Rows", value: 10 },
@@ -4856,6 +4863,42 @@ const examples = {
           "19,13": [2],
         },
       },
+    },
+  },
+  tasquare: {
+    1: {
+      data: {
+        param_values: { r: "13", c: "13" },
+        grid: {
+          "1,5": "5",
+          "1,9": "2",
+          "1,13": "yellow",
+          "1,25": "4",
+          "3,13": "9",
+          "5,1": "4",
+          "5,7": "5",
+          "7,3": "yellow",
+          "7,5": "4",
+          "11,1": "2",
+          "11,25": "2",
+          "13,5": "yellow",
+          "13,11": "9",
+          "13,15": "9",
+          "13,21": "yellow",
+          "15,1": "2",
+          "15,25": "2",
+          "19,21": "yellow",
+          "19,23": "2",
+          "21,19": "4",
+          "21,25": "2",
+          "23,13": "8",
+          "25,1": "9",
+          "25,13": "yellow",
+          "25,17": "yellow",
+          "25,21": "2",
+        },
+      },
+      link: "https://puzzles.covering.space/42",
     },
   },
   tatamibari: {
