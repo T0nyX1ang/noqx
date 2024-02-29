@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, count_region, region, shade_c, connected
+from .utilsx.rule import adjacent, connected, count_adjacent, count_region, region, shade_c
 from .utilsx.shape import all_rect
 from .utilsx.solution import solver
 
@@ -29,8 +29,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not black({r}, {c}).")
         elif clue == "yellow":
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), color="black"))
-            solver.add_program_line(count_region(2, (r, c), color="black", op="ge"))
+            solver.add_program_line(count_adjacent(0, (r, c), color="black", op="gt"))
         else:
             solver.add_program_line(f"not black({r}, {c}).")
             solver.add_program_line(region((r, c), color="black"))

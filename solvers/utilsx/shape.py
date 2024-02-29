@@ -76,9 +76,9 @@ def all_rect(color: str = "black", square: bool = False) -> str:
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
 
     if square:
-        c_min = f"#min {{ C0: grid(R, C0), not {color}(R, C0), C0 > C }}"
-        r_min = f"#min {{ R0: grid(R0, C), not {color}(R0, C), R0 > R }}"
-        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, grid(MR - 1, MC - 1), MR - R != MC - C.\n"
+        c_min = f"#min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}"
+        r_min = f"#min {{ R0: grid(R0 - 1, C), not {color}(R0, C), R0 > R }}"
+        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
         constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
         constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
 
