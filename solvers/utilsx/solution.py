@@ -43,7 +43,7 @@ class ClingoSolver:
         for item in solution:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            if _type not in ["loop_sign"]:
+            if _type not in ["loop_sign", "triangle"]:
                 data = map(int, data)
             else:
                 data[:-1] = map(int, data[:-1])
@@ -62,11 +62,20 @@ class ClingoSolver:
                 sign = sign.replace('"', "")
                 if sign != "":
                     formatted[rc_to_grid(r, c)] = f"{sign}.png"
+            elif _type == "triangle":
+                r, c, sign = data
+                sign = sign.replace('"', "")
+                dat2png = {
+                    "ul" : "top-left.png",
+                    "ur" : "top-right.png",
+                    "dl" : "bottom-left.png",
+                    "dr" : "bottom-right.png",
+                }
+                formatted[rc_to_grid(r, c)] = dat2png[sign]
             else:
                 # color
                 r, c = data
                 formatted[rc_to_grid(r, c)] = _type.replace("color", "")
-
         self.solutions.append(formatted)
 
     def add_program_line(self, line: str):

@@ -1,184 +1,105 @@
-"""The Shakashaka solver."""
+"""The Chocona solver."""
 
 from typing import List
 
-from . import utils
-from .utils.claspy import MultiVar, require, set_max_val, sum_bools, var_in
-from .utils.encoding import Encoding
-from .utils.grids import is_valid_coord, get_neighbors
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, display, grid
+from .utilsx.helper import mark_and_extract_clues
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.solution import solver
+
+
+def shaka(R: int, C: int) -> str:
+    """
+    Generate a constraint to force rectangles.
+
+    A grid rule should be defined first.
+    """
+    definition = 'white_down(R, C) :- grid(R, C), white(R, C).\n'
+    definition += 'white_down(R, C) :- grid(R, C), triangle(R, C, "ul").\n'
+    definition += 'white_down(R, C) :- grid(R, C), triangle(R, C, "ur").\n'
+    definition += 'white_right(R, C) :- grid(R, C), white(R, C).\n'
+    definition += 'white_right(R, C) :- grid(R, C), triangle(R, C, "ul").\n'
+    definition += 'white_right(R, C) :- grid(R, C), triangle(R, C, "dl").\n'
+
+    rule_rect = 'rect_ul(R, C) :- grid(R, C), white(R, C), not white_down(R - 1, C), not white_right(R, C - 1).\n'
+    # rule_rect = 'not white_down(R - 1, C) :- grid(R, C), white(R, C), rect_ul(R, C).\n'
+    # rule_rect = 'not white_right(R, C - 1) :- grid(R, C), white(R, C), rect_ul(R, C).\n'
+    rule_rect += "rect_l(R, C) :- grid(R, C), white(R, C), rect_ul(R - 1, C), not white_right(R, C - 1).\n"
+    rule_rect += "rect_l(R, C) :- grid(R, C), white(R, C), rect_l(R - 1, C), not white_right(R, C - 1).\n"
+    rule_rect += "rect_u(R, C) :- grid(R, C), white(R, C), rect_ul(R, C - 1), not white_down(R - 1, C).\n"
+    rule_rect += "rect_u(R, C) :- grid(R, C), white(R, C), rect_u(R, C - 1), not white_down(R - 1, C).\n"
+    rule_rect += "remain(R, C) :- grid(R, C), rect_l(R, C - 1), rect_u(R - 1, C).\n"
+    rule_rect += "remain(R, C) :- grid(R, C), rect_l(R, C - 1), remain(R - 1, C).\n"
+    rule_rect += "remain(R, C) :- grid(R, C), remain(R, C - 1), rect_u(R - 1, C).\n"
+    rule_rect += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
+
+    rule_slant = 'slant_ul(R, C) :- grid(R, C), triangle(R, C, "ul"), triangle(R, C+1, "ur"), triangle(R+1, C, "dl").\n'
+    rule_slant += 'slant_ul(R, C) :- grid(R, C), triangle(R, C, "ul"), triangle(R, C+1, "ur"), triangle(R+1, C-1, "ul").\n'
+    rule_slant += 'slant_ul(R, C) :- grid(R, C), triangle(R, C, "ul"), triangle(R+1, C, "dl"), triangle(R-1, C+1, "ul").\n'
+    rule_slant += 'slant_ul(R, C) :- grid(R, C), triangle(R, C, "ul"), triangle(R-1, C+1, "ul"), triangle(R+1, C-1, "ul").\n'
+    rule_slant += 'slant_ur(R, C) :- grid(R, C), triangle(R, C, "ur"), triangle(R, C-1, "ul"), triangle(R+1, C, "dr").\n'
+    rule_slant += 'slant_ur(R, C) :- grid(R, C), triangle(R, C, "ur"), triangle(R, C-1, "ul"), triangle(R+1, C+1, "ur").\n'
+    rule_slant += 'slant_ur(R, C) :- grid(R, C), triangle(R, C, "ur"), triangle(R+1, C, "dr"), triangle(R-1, C-1, "ur").\n'
+    rule_slant += 'slant_ur(R, C) :- grid(R, C), triangle(R, C, "ur"), triangle(R-1, C-1, "ur"), triangle(R+1, C+1, "ur").\n'
+    rule_slant += 'slant_dl(R, C) :- grid(R, C), triangle(R, C, "dl"), triangle(R, C+1, "dr"), triangle(R-1, C, "ul").\n'
+    rule_slant += 'slant_dl(R, C) :- grid(R, C), triangle(R, C, "dl"), triangle(R, C+1, "dr"), triangle(R-1, C-1, "dl").\n'
+    rule_slant += 'slant_dl(R, C) :- grid(R, C), triangle(R, C, "dl"), triangle(R-1, C, "ul"), triangle(R+1, C+1, "dl").\n'
+    rule_slant += 'slant_dl(R, C) :- grid(R, C), triangle(R, C, "dl"), triangle(R-1, C-1, "dl"), triangle(R+1, C+1, "dl").\n'
+    rule_slant += 'slant_dr(R, C) :- grid(R, C), triangle(R, C, "dr"), triangle(R, C-1, "dl"), triangle(R-1, C, "ur").\n'
+    rule_slant += 'slant_dr(R, C) :- grid(R, C), triangle(R, C, "dr"), triangle(R, C-1, "dl"), triangle(R-1, C+1, "dr").\n'
+    rule_slant += 'slant_dr(R, C) :- grid(R, C), triangle(R, C, "dr"), triangle(R-1, C, "ur"), triangle(R+1, C-1, "dr").\n'
+    rule_slant += 'slant_dr(R, C) :- grid(R, C), triangle(R, C, "dr"), triangle(R-1, C+1, "dr"), triangle(R+1, C-1, "dr"), white(R-1, C), white(R, C-1).\n'
+    rule_slant += 'remain(R, C) :- grid(R, C), slant_ul(R, C-1), slant_ul(R-1, C).\n'
+    rule_slant += 'remain(R, C) :- grid(R, C), slant_dl(R, C-1), slant_dl(R+1, C).\n'
+    rule_slant += 'remain(R, C) :- grid(R, C), slant_ur(R, C+1), slant_ur(R-1, C).\n'
+
+    # constraint = f"black(R, C) :- -1 <= R, R <= {R}, -1 <= C, C <= {C}, not grid(R, C).\n"
+
+    constraint = f':- grid(R, C), triangle(R, C, "ul"), not slant_ul(R, C).\n'
+    constraint += f':- grid(R, C), triangle(R, C, "ur"), not slant_ur(R, C).\n'
+    constraint += f':- grid(R, C), triangle(R, C, "dl"), not slant_dl(R, C).\n'
+    constraint += f':- grid(R, C), triangle(R, C, "dr"), not slant_dr(R, C).\n'
+    constraint += f":- grid(R, C), remain(R, C), not white(R, C).\n"
+    constraint += ":- grid(R, C), white(R, C), not rect_ul(R, C), not rect_l(R, C), not rect_u(R, C), not remain(R, C).\n"
+
+    data = definition + rule_rect + rule_slant + constraint
+    return data.replace("not not ", "").strip()
+
+
+def shade_shaka() -> str:
+    # rule = 'slant_dir("ul"; "ur"; "dl"; "dr").\n'
+    # rule += '{white(R, C); triangle(R, C, D): slant_dir(D)} = 1 :- grid(R, C), not black(R, C).'
+    rule = '{white(R, C); triangle(R, C, "ul"); triangle(R, C, "ur"); triangle(R, C, "dl"); triangle(R, C, "dr")} = 1 :- grid(R, C), not black(R, C).'
+    return rule
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    set_max_val(4)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(shade_shaka())
+    solver.add_program_line(adjacent())
 
-    tl = "top-left.png"
-    tr = "top-right.png"
-    bl = "bottom-left.png"
-    br = "bottom-right.png"
+    for (r, c), clue in E.clues.items():
+        if isinstance(clue, int):
+            solver.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {clue}.")
+        solver.add_program_line(f"black({r}, {c}).")
 
-    TRIANGLE_SYMBOLS = (tl, tr, bl, br)
+    solver.add_program_line(shaka(E.R, E.C))
+    solver.add_program_line(display(item="black"))
+    solver.add_program_line(display(item="triangle", size=3))
+    # print(solver.program)
+    solver.solve()
 
-    grid = [[MultiVar(*TRIANGLE_SYMBOLS, " ", "") for c in range(E.C)] for r in range(E.R)]
-
-    # Diagonal rectangles
-    for r in range(E.R):
-        for c in range(E.C):
-            # ---- Upper-left triangle shading ----
-            if is_valid_coord(E.R, E.C, r - 1, c + 1):
-                # If this cell has upper-left triangle shading,
-                require(
-                    (grid[r][c] != tl)
-                    |
-                    # The cell up and to the right of it is upper-left triangle,
-                    # and the cell to the right of it is unshaded
-                    ((grid[r - 1][c + 1] == tl) & (grid[r][c + 1] == " "))
-                    |
-                    # Or the cell immediately to the right is upper-right triangle.
-                    (grid[r][c + 1] == tr)
-                )
-            elif is_valid_coord(E.R, E.C, r, c + 1):
-                require(
-                    (grid[r][c] != tl)
-                    |
-                    # The cell immediately to the right is upper-right triangle.
-                    (grid[r][c + 1] == tr)
-                )
-            if is_valid_coord(E.R, E.C, r + 1, c - 1):
-                require(
-                    (grid[r][c] != tl)
-                    |
-                    # The cell down and to the left of it is upper-left triangle,
-                    # and the cell below it is unshaded.
-                    ((grid[r + 1][c - 1] == tl) & (grid[r + 1][c] == " "))
-                    |
-                    # Or the cell immediately below is lower-left triangle.
-                    (grid[r + 1][c] == bl)
-                )
-            elif is_valid_coord(E.R, E.C, r + 1, c):
-                require(
-                    (grid[r][c] != tl)
-                    |
-                    # The cell immediately below is lower-left triangle.
-                    (grid[r + 1][c] == bl)
-                )
-            # Cells in the bottom row and rightmost column cannot have upper-left triangle shading.
-            if r == E.R - 1 or c == E.C - 1:
-                require(grid[r][c] != tl)
-
-            # ---- Upper-right triangle shading ----
-            if is_valid_coord(E.R, E.C, r - 1, c - 1):
-                require(
-                    (grid[r][c] != tr)
-                    |
-                    # The cell up and to the left of it is upper-right triangle,
-                    # and the cell to the left of it is unshaded
-                    ((grid[r - 1][c - 1] == tr) & (grid[r][c - 1] == " "))
-                    |
-                    # Or the cell immediately to the left is upper-left triangle.
-                    (grid[r][c - 1] == tl)
-                )
-            elif is_valid_coord(E.R, E.C, r, c - 1):
-                require(
-                    (grid[r][c] != tr)
-                    |
-                    # The cell immediately to the left is upper-left triangle.
-                    (grid[r][c - 1] == tl)
-                )
-            if is_valid_coord(E.R, E.C, r + 1, c + 1):
-                require((grid[r][c] != tr) | ((grid[r][c] == tr) & (grid[r + 1][c] == " ")) | (grid[r + 1][c] == br))
-            elif is_valid_coord(E.R, E.C, r + 1, c):
-                require((grid[r][c] != tr) | (grid[r + 1][c] == br))
-            if r == E.R - 1 or c == 0:
-                # Cannot be upper-right triangle.
-                require(grid[r][c] != tr)
-
-            # ---- Lower-left triangle shading ----
-            if is_valid_coord(E.R, E.C, r + 1, c + 1):
-                require(
-                    (grid[r][c] != bl) | ((grid[r + 1][c + 1] == bl) & (grid[r][c + 1] == " ")) | (grid[r][c + 1] == br)
-                )
-            elif is_valid_coord(E.R, E.C, r, c + 1):
-                require((grid[r][c] != bl) | (grid[r][c + 1] == br))
-            if is_valid_coord(E.R, E.C, r - 1, c - 1):
-                require(
-                    (grid[r][c] != bl) | ((grid[r - 1][c - 1] == bl) & (grid[r - 1][c] == " ")) | (grid[r - 1][c] == tl)
-                )
-            elif is_valid_coord(E.R, E.C, r - 1, c):
-                require((grid[r][c] != bl) | (grid[r - 1][c] == tl))
-            if r == 0 or c == E.C - 1:
-                require(grid[r][c] != bl)
-
-            # ---- Lower-right triangle shading ----
-            if is_valid_coord(E.R, E.C, r + 1, c - 1):
-                require(
-                    (grid[r][c] != br) | ((grid[r + 1][c - 1] == br) & (grid[r][c - 1] == " ")) | (grid[r][c - 1] == bl)
-                )
-            elif is_valid_coord(E.R, E.C, r, c - 1):
-                require((grid[r][c] != br) | (grid[r][c - 1] == bl))
-            if is_valid_coord(E.R, E.C, r - 1, c + 1):
-                require(
-                    (grid[r][c] != br) | ((grid[r - 1][c + 1] == br) & (grid[r - 1][c] == " ")) | (grid[r - 1][c] == tr)
-                )
-            elif is_valid_coord(E.R, E.C, r - 1, c):
-                require((grid[r][c] != br) | (grid[r - 1][c] == tr))
-            if r == 0 or c == 0:
-                require(grid[r][c] != br)
-
-    # Grid-aligned rectangles
-    for r in range(E.R):
-        for c in range(E.C):
-            # If there is a cell up and to the right
-            if is_valid_coord(E.R, E.C, r - 1, c + 1):
-                # If this cell, the cell above, and the cell to the right are all unshaded
-                # The cell up and to the right must have an unshaded lower left
-                require(
-                    ~((grid[r][c] == " ") & (grid[r - 1][c] == " ") & (grid[r][c + 1] == " "))
-                    | (var_in(grid[r - 1][c + 1], (" ", tr)))
-                )
-            # If there is a cell up and to the left
-            if is_valid_coord(E.R, E.C, r - 1, c - 1):
-                require(
-                    ~((grid[r][c] == " ") & (grid[r - 1][c] == " ") & (grid[r][c - 1] == " "))
-                    | (var_in(grid[r - 1][c - 1], (" ", tl)))
-                )
-            # If there is a cell down and to the right
-            if is_valid_coord(E.R, E.C, r + 1, c + 1):
-                require(
-                    ~((grid[r][c] == " ") & (grid[r + 1][c] == " ") & (grid[r][c + 1] == " "))
-                    | (var_in(grid[r + 1][c + 1], (" ", br)))
-                )
-            # If there is a cell down and to the left
-            if is_valid_coord(E.R, E.C, r + 1, c - 1):
-                require(
-                    ~((grid[r][c] == " ") & (grid[r + 1][c] == " ") & (grid[r][c - 1] == " "))
-                    | (var_in(grid[r + 1][c - 1], (" ", bl)))
-                )
-
-    # Clues indicate the number of neighbors that have triangle shading.
-    for r, c in E.clues:
-        if E.clues[(r, c)] != "black":
-            require(
-                sum_bools(
-                    E.clues[(r, c)],
-                    [var_in(grid[y][x], TRIANGLE_SYMBOLS) for (y, x) in get_neighbors(E.R, E.C, r, c)],
-                )
-            )
-
-    # A cell is fully shaded iff it is a clue cell.
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) not in E.clues:
-                require(grid[r][c] != "")
-            else:
-                require(grid[r][c] == "")
-
-    return get_all_grid_solutions(grid)
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
+
