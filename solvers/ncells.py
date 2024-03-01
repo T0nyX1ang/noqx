@@ -5,18 +5,9 @@ from typing import List
 from . import utilsx
 from .utilsx.border import Direction
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid, edge
-from .utilsx.rule import adjacent, reachable_edge, count_reachable_edge
+from .utilsx.fact import display, edge, grid
+from .utilsx.rule import adjacent, count_adjacent_lines, count_reachable_edge, reachable_edge
 from .utilsx.solution import solver
-
-
-def count_adj_lines(r: int, c: int, number: int) -> str:
-    """Return a rule that counts the adjacent lines around a cell."""
-    v_1 = f"vertical_line({r},{c})"
-    v_2 = f"vertical_line({r},{c+1})"
-    h_1 = f"horizontal_line({r},{c})"
-    h_2 = f"horizontal_line({r+1},{c})"
-    return f":- #count{{ 1: {v_1}; 2: {v_2}; 3: {h_1}; 4: {h_2} }} != {number}."
 
 
 def encode(string: str) -> Encoding:
@@ -43,7 +34,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"horizontal_line({r}, {c}).")
 
     for (r, c), clue in E.clues.items():
-        solver.add_program_line(count_adj_lines(r, c, clue))
+        solver.add_program_line(count_adjacent_lines(int(clue), (r, c)))
 
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))

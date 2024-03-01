@@ -162,6 +162,21 @@ def count_adjacent(target: int, src_cell: Tuple[int, int], op: str = "eq", color
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
 
 
+def count_adjacent_lines(target: int, src_cell: Tuple[int, int], op: str = "eq") -> str:
+    """
+    Return a rule that counts the adjacent lines around a cell.
+
+    An edge rule should be defined first.
+    """
+    src_r, src_c = src_cell
+    op = rev_op_dict[op]
+    v_1 = f"vertical_line({src_r}, {src_c})"
+    v_2 = f"vertical_line({src_r}, {src_c + 1})"
+    h_1 = f"horizontal_line({src_r}, {src_c})"
+    h_2 = f"horizontal_line({src_r + 1}, {src_c})"
+    return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} != {target}."
+
+
 def unique_num(color: str = "black", _type: str = "row") -> str:
     """
     Generates a constraint for unique {color} numbered cells in a(an) row / column / area.
