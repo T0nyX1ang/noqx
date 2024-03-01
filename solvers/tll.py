@@ -13,12 +13,12 @@ from .utilsx.solution import solver
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
 tapa_clue_dict = {}
-question_mark_clue_dict = set()
 NON_DIRECTED_DIRS = ["lu", "ld", "ru", "rd", "lr", "ud"]
 
 
 def single_shape(*shape_d: str):
     # sum should be 0 or 2
+    n_edge = sum(0 if x is None else x for x in shape_d)
     if not 0 <= n_edge <= 2:
         return None
     remain = 1 if n_edge == 1 else 0

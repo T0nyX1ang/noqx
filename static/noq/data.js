@@ -410,7 +410,7 @@ const puzzle_types = {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
-      VisitAllGrids: { name: "VisitAllGrids", value: false },
+      visit_all: { name: "Visit All Grids", value: false },
     },
     properties: { outside: "0000", border: false },
   },
@@ -5000,7 +5000,7 @@ const examples = {
   tll: {
     1: {
       data: {
-        param_values: { r: 6, c: 6 },
+        param_values: { r: 6, c: 6, visit_all: false },
         grid: {
           "1,1": [3],
           "1,9": [2, 2],
@@ -5013,7 +5013,7 @@ const examples = {
     },
     2: {
       data: {
-        param_values: { r: 16, c: 16, VisitAllGrids: true },
+        param_values: { r: 16, c: 16, visit_all: true },
         grid: {
           "3,7": [4, 3, 1],
           "5,19": [3, 3, 2],
