@@ -6,11 +6,11 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
 from .utilsx.loop import single_loop, connected_loop, fill_path
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.rule import adjacent, shade_c, rev_op_dict
 from .utilsx.solution import solver
 
 
-def balance_loop_rule(r: int, c: int, color: str = "black") -> str:
+def balance_loop_rule(color: str = "black") -> str:
     """
     Generate a rule for balance loop.
 
@@ -33,14 +33,28 @@ def balance_loop_rule(r: int, c: int, color: str = "black") -> str:
 
     for sign in "J7Lr":
         rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "{sign}"), |R - N1| {op} |C - N2|.\n'
-        rule += f':- balance_{color}(R, C, N1, N2), number(R, C, N), loop_sign(R, C, "{sign}"), |R - N1| + |C - N2| != N.\n'
 
     # special case for straight line
     rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "1"), |R - N1| {op} |R - N2|.\n'
     rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "-"), |C - N1| {op} |C - N2|.\n'
-    rule += f':- balance_{color}(R, C, N1, N2), number(R, C, N), loop_sign(R, C, "1"), |R - N1| + |R - N2| != N.\n'
-    rule += f':- balance_{color}(R, C, N1, N2), number(R, C, N), loop_sign(R, C, "-"), |C - N1| + |C - N2| != N.\n'
-    return rule
+    return rule.strip()
+
+
+def count_balance_loop(target: int, color: str = "black", op: str = "eq") -> str:
+    """
+    Generate a constraint to count the length of "2-way" straight lines.
+
+    A balance loop rule should be defined first.
+    """
+    op = rev_op_dict[op]
+    constraint = ""
+    for sign in "J7Lr":
+        constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "{sign}"), |R - N1| + |C - N2| {op} {target}.\n'
+
+    # special case for straight line
+    constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "1"), |R - N1| + |R - N2| {op} {target}.\n'
+    constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "-"), |C - N1| + |C - N2| {op} {target}.\n'
+    return constraint.strip()
 
 
 def encode(string: str) -> Encoding:
@@ -57,21 +71,19 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="balance_loop"))
     solver.add_program_line(single_loop(color="balance_loop", visit_all=True))
-    solver.add_program_line(balance_loop_rule(E.R, E.C, color="black"))
-    solver.add_program_line(balance_loop_rule(E.R, E.C, color="white"))
+    solver.add_program_line(balance_loop_rule(color="black"))
+    solver.add_program_line(balance_loop_rule(color="white"))
 
     for (r, c), (clue, color) in E.clues.items():
         solver.add_program_line(f"balance_loop({r}, {c}).")
         if color == "b":
             solver.add_program_line(f"black({r}, {c}).")
             if clue != "":
-                num = int(clue)
-                solver.add_program_line(f"number({r}, {c}, {num}).")
+                solver.add_program_line(count_balance_loop(int(clue), color="black"))
         elif color == "w":
             solver.add_program_line(f"white({r}, {c}).")
             if clue != "":
-                num = int(clue)
-                solver.add_program_line(f"number({r}, {c}, {num}).")
+                solver.add_program_line(count_balance_loop(int(clue), color="black"))
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
