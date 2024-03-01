@@ -30,7 +30,7 @@ def wall_length(r: int, c: int, d: str, num: int) -> str:
 
 def black_out_white_in() -> str:
     """
-    Generate a constraint to black out white cells and white in black cells.
+    Generate a constraint to make black cells outside of the loop, and make white cells inside of loop.
 
     A grid direction fact should be defined first.
     """
@@ -50,7 +50,7 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line("{ wall(R, C) } :- grid(R, C), not black(R, C), not white(R, C).")
+    solver.add_program_line("{ wall(R, C) } :- grid(R, C), not clue(R, C).")
     solver.add_program_line(fill_path(color="wall"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="wall"))
@@ -61,10 +61,11 @@ def solve(E: Encoding) -> List:
         num, d, color = clue
         if d in ["u", "l", "d", "r"]:
             solver.add_program_line(wall_length(r, c, d, int(num)))
-        if color in "wb":
-            color_dict = {"w": "white", "b": "black"}
+        if color in "wgb":
+            color_dict = {"w": "white", "g": "gray", "b": "black"}
             color = color_dict[color]
             solver.add_program_line(f"{color}({r}, {c}).")
+            solver.add_program_line(f"clue({r}, {c}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()

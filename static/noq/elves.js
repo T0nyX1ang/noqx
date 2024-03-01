@@ -750,7 +750,7 @@ class CastleWallElf extends Elf {
     let controls = super.controls();
     controls["[0-9"] = "Write clue number";
     controls["[urdl]"] = "Specify clue direction";
-    controls["[wb]"] = "Toggle background color of white / black";
+    controls["[wgb]"] = "Toggle background color of white / gray / black";
     return controls;
   }
 
@@ -772,7 +772,7 @@ class CastleWallElf extends Elf {
     } else if ("urdl".includes(key)) {
       this.puzzle_elt.style.backgroundImage = image_url(this.dirToImage[key]);
       this.dir = key;
-    } else if ("wb".includes(key)) {
+    } else if ("wgb".includes(key)) {
       const bgColor = this.keyToBg[key];
       if (this.puzzle_elt.style.backgroundColor === bgColor) {
         this.puzzle_elt.style.backgroundColor = "";
