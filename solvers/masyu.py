@@ -14,7 +14,7 @@ def masyu_black_rule() -> str:
     """
     Generate a rule for black masyu rule.
 
-    A loop_sign rule should be defined first.
+    A loop sign rule should be defined first.
     """
     black_rule = 'black_rule(R, C) :- loop_sign(R, C, "J"), loop_sign(R - 1, C, "1"), loop_sign(R, C - 1, "-").\n'
     black_rule += 'black_rule(R, C) :- loop_sign(R, C, "7"), loop_sign(R + 1, C, "1"), loop_sign(R, C - 1, "-").\n'
@@ -28,7 +28,7 @@ def masyu_white_rule() -> str:
     """
     Generate a rule for white masyu rule.
 
-    A loop_sign rule should be defined first.
+    A loop sign rule should be defined first.
     """
     white_rule = ""
     for sign in ["J", "7", "L", "r"]:

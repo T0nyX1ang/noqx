@@ -10,7 +10,7 @@ from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 
-def balance_loop_rule(color: str = "black") -> str:
+def balance_loop_rule(r: int, c: int, color: str = "black") -> str:
     """
     Generate a rule for balance loop.
 
@@ -18,25 +18,28 @@ def balance_loop_rule(color: str = "black") -> str:
     """
     op = "=" if color == "black" else "!="
 
-    # must be some methods to simplify these codes
-    rule = f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "J"), R1 = #max {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 < R }}, C1 = #max {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 < C }}.\n'
-    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "7"), R1 = #min {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 > R }}, C1 = #max {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 < C }}.\n'
-    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "L"), R1 = #max {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 < R }}, C1 = #min {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 > C }}.\n'
-    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "r"), R1 = #min {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 > R }}, C1 = #min {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 > C }}.\n'
-    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "1"), R1 = #max {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 < R }}, C1 = #min {{ R0: grid(R0, C), not loop_sign(R0, C, "1"), R0 > R }}.\n'
-    rule += f'balance_{color}(R, C, R1, C1) :- {color}(R, C), loop_sign(R, C, "-"), R1 = #max {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 < C }}, C1 = #min {{ C0: grid(R, C0), not loop_sign(R, C0, "-"), C0 > C }}.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "J"), |R - R1| {op} |C - C1|.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "7"), |R - R1| {op} |C - C1|.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "L"), |R - R1| {op} |C - C1|.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "r"), |R - R1| {op} |C - C1|.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "1"), |R - R1| {op} |R - C1|.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), loop_sign(R, C, "-"), |C - R1| {op} |C - C1|.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "J"), |R - R1| + |C - C1| != N.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "7"), |R - R1| + |C - C1| != N.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "L"), |R - R1| + |C - C1| != N.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "r"), |R - R1| + |C - C1| != N.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "1"), |R - R1| + |R - C1| != N.\n'
-    rule += f':- balance_{color}(R, C, R1, C1), number(R, C, N), loop_sign(R, C, "-"), |C - R1| + |C - C1| != N.\n'
+    # detect the longest straight line
+    max_u = '#max { R0: grid(R0 + 1, C), not loop_sign(R0, C, "1"), R0 < R }'
+    min_d = '#min { R0: grid(R0 - 1, C), not loop_sign(R0, C, "1"), R0 > R }'
+    max_l = '#max { C0: grid(R, C0 + 1), not loop_sign(R, C0, "-"), C0 < C }'
+    min_r = '#min { C0: grid(R, C0 - 1), not loop_sign(R, C0, "-"), C0 > C }'
+
+    rule = f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "J"), N1 = {max_u}, N2 = {max_l}.\n'
+    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "7"), N1 = {min_d}, N2 = {max_l}.\n'
+    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "L"), N1 = {max_u}, N2 = {min_r}.\n'
+    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "r"), N1 = {min_d}, N2 = {min_r}.\n'
+    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "1"), N1 = {max_u}, N2 = {min_d}.\n'
+    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "-"), N1 = {max_l}, N2 = {min_r}.\n'
+
+    for sign in "J7Lr":
+        rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "{sign}"), |R - N1| {op} |C - N2|.\n'
+        rule += f':- balance_{color}(R, C, N1, N2), number(R, C, N), loop_sign(R, C, "{sign}"), |R - N1| + |C - N2| != N.\n'
+
+    # special case for straight line
+    rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "1"), |R - N1| {op} |R - N2|.\n'
+    rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "-"), |C - N1| {op} |C - N2|.\n'
+    rule += f':- balance_{color}(R, C, N1, N2), number(R, C, N), loop_sign(R, C, "1"), |R - N1| + |R - N2| != N.\n'
+    rule += f':- balance_{color}(R, C, N1, N2), number(R, C, N), loop_sign(R, C, "-"), |C - N1| + |C - N2| != N.\n'
     return rule
 
 
@@ -54,8 +57,8 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="balance_loop"))
     solver.add_program_line(single_loop(color="balance_loop", visit_all=True))
-    solver.add_program_line(balance_loop_rule(color="black"))
-    solver.add_program_line(balance_loop_rule(color="white"))
+    solver.add_program_line(balance_loop_rule(E.R, E.C, color="black"))
+    solver.add_program_line(balance_loop_rule(E.R, E.C, color="white"))
 
     for (r, c), (clue, color) in E.clues.items():
         solver.add_program_line(f"balance_loop({r}, {c}).")

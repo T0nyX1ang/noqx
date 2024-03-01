@@ -410,7 +410,7 @@ const puzzle_types = {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
-      visit_all: { name: "Visit All Grids", value: false },
+      visit_all: { name: "Use all cells", value: false },
     },
     properties: { outside: "0000", border: false },
   },
