@@ -4,10 +4,10 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid, area
-from .utilsx.loop import single_loop, connected_loop, fill_path, pass_area_one_time
-from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.fact import area, direction, display, grid
+from .utilsx.loop import connected_loop, fill_path, pass_area_one_time, single_loop
 from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_area_adjacent, count, shade_c
 from .utilsx.solution import solver
 
 

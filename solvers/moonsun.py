@@ -1,13 +1,13 @@
 """The Moon-or-Sun solver."""
 
-from typing import List, Tuple
+from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid, area
-from .utilsx.loop import single_loop, connected_loop, fill_path, pass_area_one_time
-from .utilsx.rule import adjacent
+from .utilsx.fact import area, direction, display, grid
+from .utilsx.loop import connected_loop, fill_path, pass_area_one_time, single_loop
 from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 
@@ -43,8 +43,8 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(f"{_type}({r}, {c}).")
 
     areas = full_bfs(E.R, E.C, E.edges)
-    for id, ar in enumerate(areas):
-        solver.add_program_line(area(_id=id, src_cells=ar))
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(pass_area_one_time(ar))
 
     solver.add_program_line(moon_sun_area())

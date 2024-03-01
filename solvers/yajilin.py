@@ -5,7 +5,7 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.loop import connected_loop, fill_path, single_loop
 from .utilsx.rule import adjacent, avoid_adjacent
 from .utilsx.solution import solver
 

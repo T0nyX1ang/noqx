@@ -5,9 +5,9 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid, direction
-from .utilsx.rule import adjacent, shade_c
-from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.fact import direction, display, grid
+from .utilsx.loop import connected_loop, single_loop, fill_path
+from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
@@ -17,13 +17,12 @@ question_mark_clue_dict = set()
 NON_DIRECTED_DIRS = ["lu", "ld", "ru", "rd", "lr", "ud"]
 
 
-def single_shape(l, u, r, d):
+def single_shape(*shape_d: str):
     # sum should be 0 or 2
-    n_edge = sum([0 if x is None else x for x in [l, u, r, d]])
     if not 0 <= n_edge <= 2:
         return None
     remain = 1 if n_edge == 1 else 0
-    shape_str = "".join(map(str, [remain if x is None else x for x in [l, u, r, d]]))
+    shape_str = "".join(map(str, [remain if x is None else x for x in shape_d]))
     str_to_sign = {"1100": "J", "1010": "-", "1001": "7", "0110": "L", "0101": "1", "0011": "r", "0000": ""}
     return str_to_sign[shape_str]
 
@@ -80,8 +79,8 @@ def generate_patterns(pattern):
     """
     result = [pattern]
     num_max = 8 - len(pattern)
-    for i in range(len(pattern)):
-        if pattern[i] == "?":
+    for i, patt in enumerate(pattern):
+        if patt == "?":
             old_result = result
             result = []
             for patt in old_result:
@@ -129,6 +128,7 @@ def valid_tapa_pattern(r: int, c: int, clue: list) -> str:
     num_constrain = ", ".join(num_constrain)
 
     patterns = generate_patterns(clue)
+    question_mark_clue_dict = []
     if "?" in clue:
         constraint = ""
         clue = tuple(sorted(clue))
@@ -139,7 +139,7 @@ def valid_tapa_pattern(r: int, c: int, clue: list) -> str:
                     continue
                 clue_num = str(tapa_clue_dict[pattern])
                 constraint += f"matches({clue_str}, {clue_num}).\n"
-            question_mark_clue_dict.add(clue)
+            question_mark_clue_dict.append(clue)
         matches = f"matches({clue_str}, C)"
         valid_pattern = f"valid_tapa(C, {num_str})"
         constraint += f":- #count{{ C: {matches}, {valid_pattern}, {num_constrain} }} != 1."
@@ -158,8 +158,6 @@ def grid_direc_to_num(r: int, c: int) -> str:
 
 
 def solve(E: Encoding) -> List:
-    global question_mark_clue_dict
-    question_mark_clue_dict = set()
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     # solver.add_program_line(shade_c(color="black"))
@@ -168,7 +166,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="not black"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="not black"))
-    solver.add_program_line(single_loop(color="not black", visit_all=E.params["VisitAllGrids"]))
+    solver.add_program_line(single_loop(color="not black", visit_all=E.params["visit_all"]))
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.c}, not grid(R, C).')
 

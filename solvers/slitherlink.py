@@ -1,13 +1,12 @@
 """The Slitherlink solver."""
 
-from typing import List, Tuple
+from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid, area
-from .utilsx.loop import single_loop, connected_loop, fill_path, pass_area_one_time
+from .utilsx.fact import direction, display, grid
+from .utilsx.loop import connected_loop, fill_path, single_loop
 from .utilsx.rule import adjacent
-from .utilsx.region import full_bfs
 from .utilsx.solution import solver
 
 
@@ -16,7 +15,7 @@ def encode(string: str) -> Encoding:
 
 
 def slither_link() -> str:
-    rule = ':- number(R, C, N), { grid_direction(R, C, "r"); grid_direction(R, C, "d"); grid_direction(R+1, C, "r"); grid_direction(R, C+1, "d") } != N.\n'
+    rule = ':- number(R, C, N), { grid_direction(R, C, "r"); grid_direction(R, C, "d"); grid_direction(R + 1, C, "r"); grid_direction(R, C + 1, "d") } != N.\n'
     rule += 'horizontal_line(R, C) :- grid_direction(R, C, "r").\n'
     rule += 'vertical_line(R, C) :- grid_direction(R, C, "d").\n'
     return rule.strip()
