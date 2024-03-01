@@ -1655,7 +1655,11 @@ let elf_types = {
       "?": ["yellow", "yellow"],
     })
   ),
-  onsen: InvertSolutionZOrder(IntBordersElf()),
+  onsen: DirectSum(
+    QuestionMarkElf,
+    InvertSolutionZOrder(IntBordersElf()),
+    "first"
+  ),
   rippleeffect: IntBordersElf(),
   shakashaka: AkariElf,
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
