@@ -51,13 +51,12 @@ def shaka() -> str:
     rule_slant += "remain(R, C) :- grid(R, C), slant_ul(R, C-1), slant_ul(R-1, C).\n"
     rule_slant += "remain(R, C) :- grid(R, C), slant_dl(R, C-1), slant_dl(R+1, C).\n"
     rule_slant += "remain(R, C) :- grid(R, C), slant_ur(R, C+1), slant_ur(R-1, C).\n"
-    # rule_slant += 'remain(R, C) :- grid(R, C), slant_dr(R, C+1), slant_dr(R+1, C).\n'
 
-    constraint = f':- grid(R, C), triangle(R, C, "ul"), not slant_ul(R, C).\n'
-    constraint += f':- grid(R, C), triangle(R, C, "ur"), not slant_ur(R, C).\n'
-    constraint += f':- grid(R, C), triangle(R, C, "dl"), not slant_dl(R, C).\n'
-    constraint += f':- grid(R, C), triangle(R, C, "dr"), not slant_dr(R, C).\n'
-    constraint += f":- grid(R, C), remain(R, C), not white(R, C).\n"
+    constraint = ':- grid(R, C), triangle(R, C, "ul"), not slant_ul(R, C).\n'
+    constraint += ':- grid(R, C), triangle(R, C, "ur"), not slant_ur(R, C).\n'
+    constraint += ':- grid(R, C), triangle(R, C, "dl"), not slant_dl(R, C).\n'
+    constraint += ':- grid(R, C), triangle(R, C, "dr"), not slant_dr(R, C).\n'
+    constraint += ":- grid(R, C), remain(R, C), not white(R, C).\n"
     constraint += ":- grid(R, C), white(R, C), not rect_ul(R, C), not rect_l(R, C), not rect_u(R, C), not remain(R, C).\n"
 
     data = definition + rule_rect + rule_slant + constraint
@@ -65,8 +64,6 @@ def shaka() -> str:
 
 
 def shade_shaka() -> str:
-    # rule = 'slant_dir("ul"; "ur"; "dl"; "dr").\n'
-    # rule += '{white(R, C); triangle(R, C, D): slant_dir(D)} = 1 :- grid(R, C), not black(R, C).'
     rule = '{white(R, C); triangle(R, C, "ul"); triangle(R, C, "ur"); triangle(R, C, "dl"); triangle(R, C, "dr")} = 1 :- grid(R, C), not black(R, C).'
     return rule
 
