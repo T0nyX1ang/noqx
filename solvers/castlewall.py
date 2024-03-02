@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
 from .utilsx.loop import connected_loop, fill_path, single_loop
-from .utilsx.rule import adjacent
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 
@@ -50,7 +50,7 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line("{ wall(R, C) } :- grid(R, C), not clue(R, C).")
+    solver.add_program_line(shade_c(color="wall"))
     solver.add_program_line(fill_path(color="wall"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="wall"))
@@ -65,7 +65,7 @@ def solve(E: Encoding) -> List:
             color_dict = {"w": "white", "g": "gray", "b": "black"}
             color = color_dict[color]
             solver.add_program_line(f"{color}({r}, {c}).")
-            solver.add_program_line(f"clue({r}, {c}).")
+            solver.add_program_line(f"not wall({r}, {c}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
