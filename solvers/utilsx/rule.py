@@ -285,16 +285,17 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
+    r, c = src_cell
     if adj_type == 4:
-        lit_constraint = "(R - R0) * (C - C0) == 0"
+        lit_constraint = f"(R - {r}) * (C - {c}) == 0"
     elif adj_type == 8:
-        lit_constraint = "(R - R0) * (C - C0) * (R - R0 - C + C0) * (R - R0 + C - C0) == 0"
+        lit_constraint = f"(R - {r}) * (C - {c}) * (R - {r} - C + {c}) * (R - {r} + C - {c}) == 0"
     else:
         raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
     helper = ConnectivityHelper("lit", "grid", color, adj_type)
     initial = helper.initial([src_cell], [], full_search=True)
-    propagation = helper.propagation(full_search=True, extra_constraint=lit_constraint)
+    propagation = helper.propagation([src_cell], full_search=True, extra_constraint=lit_constraint)
     return initial + "\n" + propagation
 
 
