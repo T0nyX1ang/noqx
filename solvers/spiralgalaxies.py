@@ -6,15 +6,19 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import grid, edge, display
-from .utilsx.rule import adjacent, reachable_edge
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, reachable_source_edge
 from .utilsx.solution import solver
 
 
 def galaxy_constraint(glxr: int, glxc: int) -> str:
     """Generate a constraint for spiral galaxies."""
     r, c = (glxr - 1) // 2, (glxc - 1) // 2
-    rule = f":- grid(R, C), reachable_edge(R, C, {r}, {c}), not reachable_edge({glxr} - R - 1, {glxc} - C - 1, {r}, {c})."
-    return rule
+    tag = tag_encode("reachable", "adj", "edge")
+    rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1)."
+    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), horizontal_line(R, C), not horizontal_line({glxr} - R, {glxc} - C - 1).\n"
+    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), vertical_line(R, C), not vertical_line({glxr} - R - 1, {glxc} - C).\n"
+    return rule.strip()
 
 
 def encode(string: str) -> Encoding:
@@ -40,7 +44,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(reachable_edge())
 
     reachables = []
     for (r, c), _ in E.clues.items():
@@ -60,11 +63,11 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not vertical_line({(r - 1) // 2 + 1}, {c // 2}).")
 
     for r, c in reachables:
-        for r1, c1 in reachables:
-            if (r, c) < (r1, c1):
-                solver.add_program_line(f"not reachable_edge({r}, {c}, {r1}, {c1}).")
+        excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
+        solver.add_program_line(reachable_source_edge((r, c), excluded))
 
-    spawn_points = ", ".join(f"not reachable_edge(R, C, {r}, {c})" for r, c in reachables)
+    tag = tag_encode("reachable", "adj", "edge")
+    spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
     solver.add_program_line(f":- grid(R, C), {spawn_points}.")
 
     solver.add_program_line(display(item="vertical_line", size=2))

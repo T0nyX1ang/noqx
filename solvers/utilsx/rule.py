@@ -325,6 +325,28 @@ def reachable_edge() -> str:
     return initial + propagation + constraint
 
 
+def reachable_source_edge(
+    src_cell: Tuple[int, int],
+    exclude_cells: List[Tuple[int, int]] = None,
+) -> str:
+    """
+    Define edges as numbers on its adjacent grids are different.
+
+    A grid fact and an adjacent edge rule should be defined first.
+    """
+    r, c = src_cell
+    helper = ConnectivityHelper("reachable", "grid", None, "edge")
+    tag = helper.get_tag()
+    initial = helper.initial([src_cell], exclude_cells, full_search=True)
+    propagation = f"{tag}({r}, {c}, R, C) :- grid(R, C), {tag}({r}, {c}, R1, C1), adj_edge(R, C, R1, C1)."
+
+    # edge between two reachable grids is forbidden.
+    constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
+
+    return initial + "\n" + propagation + "\n" + constraint
+
+
 def split_by_edge() -> str:
     """
     A description of two adjacent cells split by edge.

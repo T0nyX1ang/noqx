@@ -30,9 +30,7 @@ def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
     return tuple((r + dr, c + dc) for r, c in shape)
 
 
-def get_variants(
-    shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
-) -> Set[Tuple[Tuple[int, int]]]:
+def get_variants(shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool) -> Set[Tuple[Tuple[int, int]]]:
     """
     Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
 
@@ -111,7 +109,10 @@ class ConnectivityHelper:
         self.adj_type = adj_type
         self.bound_type = bound_type
         self.color = color
-        self.tag = tag_encode(name, "adj", adj_type, color)
+        if self.color is not None:
+            self.tag = tag_encode(name, "adj", adj_type, color)
+        else:
+            self.tag = tag_encode(name, "adj", adj_type)
 
     def initial(
         self,
