@@ -4,14 +4,12 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
-from .utilsx.helper import mark_and_extract_clues
-from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.fact import display, grid
+from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 
-def shaka(R: int, C: int) -> str:
+def shaka() -> str:
     """
     Generate a constraint to force rectangles.
 
@@ -88,7 +86,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {clue}.")
         solver.add_program_line(f"black({r}, {c}).")
 
-    solver.add_program_line(shaka(E.R, E.C))
+    solver.add_program_line(shaka())
     solver.add_program_line(display(item="triangle", size=3))
     solver.solve()
 
