@@ -2,47 +2,45 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, reset, set_max_val, sum_bools, var_in
-from .utils.encoding import Encoding
-from .utils.loops import ISOLATED, RectangularGridLoopSolver
-from .utils.regions import full_bfs, RectangularGridRegionSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, direction, display, grid
+from .utilsx.loop import connected_loop, fill_path, pass_area_one_time, single_loop
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, avoid_area_adjacent, count, shade_c
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    rooms = full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line(shade_c(color="country_road"))
+    solver.add_program_line(fill_path(color="country_road"))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="country_road"))
+    solver.add_program_line(single_loop(color="country_road", visit_all=True))
 
-    # get the size of the largest room
-    max_room_size = max(len(room) for room in rooms)
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(pass_area_one_time(ar))
 
-    # reset clasp, and set the maximum IntVar value to the max room size
-    reset()
-    set_max_val(max_room_size)
+        for rc in ar:
+            if rc in E.clues:
+                solver.add_program_line(count(E.clues[rc], color="country_road", _type="area", _id=i))
 
-    loop_solver = RectangularGridLoopSolver(E.R, E.C)
-    loop_solver.loop(E.clues, includes_clues=True)
-    loop_solver.no_reentrance(rooms)
-    loop_solver.hit_every_region(rooms)
+    solver.add_program_line(avoid_area_adjacent(color="not country_road"))
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    region_solver = RectangularGridRegionSolver(E.R, E.C, loop_solver.grid, given_regions=rooms)
-
-    for r, c in E.clues:
-        for room in rooms:
-            if (r, c) in room:
-                clued_room = room
-        require(sum_bools(E.clues[(r, c)], [~var_in(loop_solver.grid[y][x], ISOLATED) for (y, x) in clued_room]))
-
-    for r in range(E.R):
-        for c in range(E.C):
-            for y, x in region_solver.get_neighbors_in_other_regions(r, c):
-                require(~(var_in(loop_solver.grid[r][c], ISOLATED) & var_in(loop_solver.grid[y][x], ISOLATED)))
-
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

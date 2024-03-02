@@ -30,9 +30,7 @@ def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
     return tuple((r + dr, c + dc) for r, c in shape)
 
 
-def get_variants(
-    shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
-) -> Set[Tuple[Tuple[int, int]]]:
+def get_variants(shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool) -> Set[Tuple[Tuple[int, int]]]:
     """
     Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
 
@@ -111,7 +109,10 @@ class ConnectivityHelper:
         self.adj_type = adj_type
         self.bound_type = bound_type
         self.color = color
-        self.tag = tag_encode(name, "adj", adj_type, color)
+        if self.color is not None:
+            self.tag = tag_encode(name, "adj", adj_type, color)
+        else:
+            self.tag = tag_encode(name, "adj", adj_type)
 
     def initial(
         self,
@@ -128,7 +129,7 @@ class ConnectivityHelper:
         if src_cells is None:  # use the default initial rule if no source cells are given
             if not full_search:
                 return f"{self.tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {self.color}(R1, C1) }}."
-            return f"{self.tag}(R0, C0, R, C) :- grid(R0, C0), {self.color}(R0, C0), R = R0, C = C0."
+            return f"{self.tag}(R, C, R, C) :- grid(R, C), {self.color}(R, C)."
 
         # generate the initial rule from the source cells
         initial = ""
@@ -142,7 +143,9 @@ class ConnectivityHelper:
                     initial += f"not {self.tag}({r}, {c}, {exclude_r}, {exclude_c}).\n"
         return initial.strip()
 
-    def propagation(self, full_search: bool = False, extra_constraint: str = "") -> str:
+    def propagation(
+        self, src_cells: List[Tuple[int, int]] = None, full_search: bool = False, extra_constraint: str = ""
+    ) -> str:
         """Generate the propagation rule."""
         mutual = f"{self.color}(R, C), adj_{self.adj_type}(R, C, R1, C1)"
         if extra_constraint:
@@ -151,10 +154,15 @@ class ConnectivityHelper:
         if self.bound_type == "area":
             return f"{self.tag}(A, R, C) :- {self.tag}(A, R1, C1), area(A, R, C), {mutual}."
 
-        if not full_search:
-            return f"{self.tag}(R, C) :- {self.tag}(R1, C1), grid(R, C), {mutual}."
+        if src_cells is None:
+            if not full_search:
+                return f"{self.tag}(R, C) :- {self.tag}(R1, C1), grid(R, C), {mutual}."
+            return f"{self.tag}(R0, C0, R, C) :- {self.tag}(R0, C0, R1, C1), grid(R, C), {mutual}."
 
-        return f"{self.tag}(R0, C0, R, C) :- {self.tag}(R0, C0, R1, C1), grid(R, C), {mutual}."
+        propagation = ""
+        for r, c in src_cells:
+            propagation += f"{self.tag}({r}, {c}, R, C) :- {self.tag}({r}, {c}, R1, C1), grid(R, C), {mutual}.\n"
+        return propagation.strip()
 
     def constraint(self, full_search: bool = False) -> str:
         """Generate the constraint rule."""

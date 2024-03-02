@@ -1,171 +1,84 @@
 """Solve Fillomino puzzles."""
 
-from typing import Callable, List, Set, Tuple
+from typing import List
 
-from . import utils
-from .utils.claspy import Atom, IntVar, MultiVar, cond, require, set_max_val
-from .utils.encoding import Encoding
-from .utils.grids import RectangularGrid
-from .utils.solutions import get_all_grid_solutions
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, grid, edge
+from .utilsx.rule import adjacent, reachable_edge, fill_num
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
+
+
+def fillomino_constraint():
+    """Generate the Fillomino constraints."""
+    # propagation of number
+    constraint = "number(R, C, N) :- number(R0, C0, N), reachable_edge(R0, C0, R, C).\n"
+    constraint += ":- number(R0, C0, N), #count { R, C: reachable_edge(R0, C0, R, C) } != N.\n"
+
+    # same number, adjacent cell, no line
+    constraint += ":- number(R, C, N), number(R, C + 1, N), vertical_line(R, C + 1).\n"
+    constraint += ":- number(R, C, N), number(R + 1, C, N), horizontal_line(R + 1, C).\n"
+
+    # different number, adjacent cell, have line
+    constraint += ":- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not vertical_line(R, C + 1).\n"
+    constraint += ":- number(R, C, N1), number(R + 1, C, N2), N1 != N2, not horizontal_line(R + 1, C).\n"
+
+    # special case for 1
+    mutual = ["horizontal_line(R, C)", "horizontal_line(R + 1, C)", "vertical_line(R, C)", "vertical_line(R, C + 1)"]
+    constraint += f"{{ {'; '.join(mutual)} }} = 4 :- number(R, C, 1).\n"
+    constraint += f"number(R, C, 1) :- {', '.join(mutual)}.\n"
+    constraint += ":- number(R, C, 1), number(R1, C1, 1), adj_4(R, C, R1, C1).\n"
+
+    return constraint.strip()
+
+
+def fillomino_slow() -> str:
+    """Generate the Fillomino rules for precise solving."""
+    count_edge = "#count{ R1, C1: reachable_edge(R, C, R1, C1) } = N"
+    slow = f":- adj_4(R, C, R0, C0), not reachable_edge(R, C, R0, C0), number(R0, C0, N), {count_edge}.\n"
+    slow += f"{{ numberx(R, C, N) }} = 1 :- grid(R, C), not number(R, C, _), {count_edge}.\n"
+    slow += ":- numberx(R, C, N), numberx(R1, C1, N), not reachable_edge(R, C, R1, C1), adj_4(R, C, R1, C1).\n"
+    return slow.strip()
 
 
 def solve(E: Encoding) -> List:
-    def unclued_areas_bfs(clues: Tuple[int, int], R: int, C: int):
-        region_id = {}
-        id_to_pts = {}
-        num = 0
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(edge(E.R, E.C))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="edge"))
+    solver.add_program_line(reachable_edge())
+    solver.add_program_line(fillomino_constraint())
 
-        # divide unclued cells into connected regions with distinct id's
-        for r in range(R):
-            for c in range(C):
-                if (r, c) in region_id or (r, c) in clues:
-                    continue
-                else:
-                    region_id[(r, c)] = num  # do BFS for id = [num]
-                    id_to_pts[num] = [(r, c)]
-                    frontier = [(r, c)]
-                    while frontier:
-                        new_frontier = []
-                        for r1, c1 in frontier:
-                            for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                                r0, c0 = r1 + dr, c1 + dc
-                                if 0 <= r0 < R and 0 <= c0 < C and (r0, c0) not in clues and (r0, c0) not in region_id:
-                                    region_id[(r0, c0)] = num
-                                    id_to_pts[num].append((r0, c0))
-                                    new_frontier.append((r0, c0))
-                        frontier = new_frontier
-                    num += 1
+    occurances = {1, 2, 3, 4, 5}
+    for (r, c), num in E.clues.items():
+        occurances.add(num)
+        solver.add_program_line(f"number({r}, {c}, {num}).")
 
-        max_region_sizes = {}
-        for _, pts in id_to_pts.items():
-            max_size = len(pts)
-            for r, c in pts:
-                for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                    r0, c0 = r + dr, c + dc
-                    if (r0, c0) in clues:
-                        max_size = max(max_size, clues[(r0, c0)])
-            for pt in pts:
-                max_region_sizes[pt] = max_size
-        return max_region_sizes
+        if num == 1:
+            solver.add_program_line(f"vertical_line({r}, {c}).")
+            solver.add_program_line(f"horizontal_line({r}, {c}).")
+            solver.add_program_line(f"vertical_line({r}, {c + 1}).")
+            solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-    def find_independent_set(S: Set[int], adj: Callable[..., bool]):
-        indep = []
-        for x in S:
-            if all(not adj(x, y) for y in indep):
-                indep.append(x)
-        return indep
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="number", size=3))
 
-    n = E.R * E.C
-    set_max_val(n)
+    if E.params["fast"]:
+        solver.add_program_line(fill_num(_range=occurances))
+    else:
+        solver.add_program_line(fillomino_slow())
+        solver.add_program_line(display(item="numberx", size=3))
 
-    distinct_clues = set(E.clues.values())
-    max_clue = max(distinct_clues, default=n)
+    solver.solve()
 
-    indep_bound = n  # calculate a bound on the maximum size of a hidden region
-    for clue_num in distinct_clues:
-        # clues = list(filter(lambda clue: E.clues[clue] == clue_num, E.clues))
-        # the above line has for-loop variables in closure, not recommended. Use the next line instead.
-        clues = [clue for clue in E.clues if clue == clue_num]
-        indep = find_independent_set(clues, lambda x, y: abs(x[0] - y[0]) + abs(x[1] - y[1]) < clue_num)
-        indep_bound -= len(indep) * clue_num
-    max_region_size = max(indep_bound, max_clue)
-
-    print(indep_bound)
-
-    region_id = RectangularGrid(E.R, E.C, lambda r, c: IntVar(0, E.C * r + c))
-    # this forces each root to be the topleft-most cell (i.e., first in row-major order) of its region
-
-    # refine possibilities for region_id for each clue cell
-    for r, c in E.clues:
-        clue_val = E.clues[(r, c)]
-        if clue_val <= r:  # clue's region can't reach the top row
-            r0 = r - clue_val + 1
-            # row-major-first cell reachable is (r0,c)
-            require(region_id[r][c] >= E.C * r0 + c)
-        else:  # clue's region can reach the top row
-            c0 = c - (clue_val - r - 1)
-            if c0 > 0:  # row-major-first cell reachable is (0,c0), to the right of (0,0)
-                require(region_id[r][c] >= c0)
-
-    bfs_max_region_sizes = unclued_areas_bfs(E.clues, E.R, E.C)
-    region_size = RectangularGrid(
-        E.R,
-        E.C,
-        lambda r, c: IntVar(E.clues[(r, c)])
-        if (r, c) in E.clues
-        else IntVar(1, min(bfs_max_region_sizes[(r, c)], max_region_size)),
-    )
-
-    # flow is a grid of Atoms used to ensure that all cells are
-    # connected along the parent pointer field to a root cell.
-    parent = [[MultiVar("^", "v", ">", "<", ".") for c in range(E.C)] for r in range(E.R)]
-    flow = [[Atom() for c in range(E.C)] for r in range(E.R)]
-    for r in range(E.R):
-        for c in range(E.C):
-            # The root cell is proven.
-            prove_condition = parent[r][c] == "."
-
-            # All unshaded cells must be proven by following the flow backwards from the root.
-            if r > 0:
-                prove_condition |= (parent[r][c] == "^") & flow[r - 1][c]
-            if r < E.R - 1:
-                prove_condition |= (parent[r][c] == "v") & flow[r + 1][c]
-            if c > 0:
-                prove_condition |= (parent[r][c] == "<") & flow[r][c - 1]
-            if c < E.C - 1:
-                prove_condition |= (parent[r][c] == ">") & flow[r][c + 1]
-
-            flow[r][c].prove_if(prove_condition)
-            require(flow[r][c])
-
-    for r in range(E.R):
-        for c in range(E.C):
-            if r > 0:
-                require((parent[r][c] != "^") | (region_size[r][c] == region_size[r - 1][c]))
-            if r < E.R - 1:
-                require((parent[r][c] != "v") | (region_size[r][c] == region_size[r + 1][c]))
-            if c > 0:
-                require((parent[r][c] != "<") | (region_size[r][c] == region_size[r][c - 1]))
-            if c < E.C - 1:
-                require((parent[r][c] != ">") | (region_size[r][c] == region_size[r][c + 1]))
-
-    # To count cells in a group, create a grid of IntVars, where each value
-    # is the sum of the values that flow towards it, plus one.
-    upstream = [[IntVar(0, max_region_size) for c in range(E.C)] for r in range(E.R)]
-    for r in range(E.R):
-        for c in range(E.C):
-            upstream_count = IntVar(1)
-            if r > 0:  # update upstream count
-                upstream_count += cond(parent[r - 1][c] == "v", upstream[r - 1][c], 0)
-            if r < E.R - 1:
-                upstream_count += cond(parent[r + 1][c] == "^", upstream[r + 1][c], 0)
-            if c > 0:
-                upstream_count += cond(parent[r][c - 1] == ">", upstream[r][c - 1], 0)
-            if c < E.C - 1:
-                upstream_count += cond(parent[r][c + 1] == "<", upstream[r][c + 1], 0)
-
-            # all cells must obey upstream counting rule
-            require(upstream[r][c] == upstream_count)
-            require((parent[r][c] != ".") | (upstream[r][c] == region_size[r][c]))
-
-    # if adjacent cells have the same region size, they must be part of the same region
-    for r in range(E.R):
-        for c in range(E.C):
-            require(
-                (region_id[r][c] == E.C * r + c) | (parent[r][c] != ".")
-            )  # root cells must have different region IDs
-            if r > 0:
-                require((region_id[r - 1][c] == region_id[r][c]) | (region_size[r - 1][c] != region_size[r][c]))
-            if c > 0:
-                require((region_id[r][c - 1] == region_id[r][c]) | (region_size[r][c - 1] != region_size[r][c]))
-
-    sols = get_all_grid_solutions(region_size)
-    return sols
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

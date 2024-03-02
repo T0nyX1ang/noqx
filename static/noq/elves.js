@@ -4,7 +4,7 @@ let image_url = (str) =>
     : str;
 const nav_keys = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
 const del_keys = ["Backspace", "Delete", "Escape"];
-const COLORS = ["black", "gray", "blue", "green", "yellow"];
+const COLORS = ["black", "gray", "blue", "green", "yellow", "red"];
 const CLIPBOARD_SYMBOLS = {
   1: "│",
   "-": "─",
@@ -406,12 +406,21 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
       }
     }
 
-    load_example(str) {
-      // try to load using elf1's rules
+    load_example_str(str) {
       let res1 = this.elf1.load_example(str);
       if (!res1)
         // if not successful, load using elf2's rules
         this.elf2.load_example(str);
+    }
+
+    load_example(clue) {
+      if (!Array.isArray(clue)) {
+        this.load_example_str(clue);
+      } else {
+        for (let str of clue) {
+          this.load_example_str(str);
+        }
+      }
     }
   };
 }
@@ -543,6 +552,11 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
       this.puzzle_elt.innerHTML = num + ""; // now set the HTML
     }
 
+    load_example(str) {
+      for (let ch of str) this.handle_input(ch, null);
+      return;
+    }
+
     encode_input() {
       return this.puzzle_elt.innerHTML ? this.puzzle_elt.innerHTML : null;
     }
@@ -562,6 +576,11 @@ class QuestionMarkElf extends Elf {
       this.puzzle_elt.innerHTML = "?";
       return true;
     }
+  }
+
+  load_example(str) {
+    if (str === "?") this.handle_input("?", null);
+    return;
   }
 
   encode_input() {
@@ -686,7 +705,7 @@ class AkariElf extends DirectSum(
   DirectSum(BgColorElf(), IntElf(0, 4, "[0-4]"), "second"),
   ImageElf(
     { o: "bulb" },
-    { o: "Place blub" },
+    { o: "Place bulb" },
     { o: { color: "", backgroundColor: "" } }
   )
 ) {
@@ -776,6 +795,10 @@ class CastleWallElf extends Elf {
     const color = this.color === "" ? "w" : this.color;
     if (num === "" && dir === "" && color === "w") return null;
     return [num, dir, color];
+  }
+
+  load_example(arr) {
+    for (let str of arr) this.handle_input(str, null);
   }
 }
 
@@ -906,11 +929,14 @@ class KakuroElf extends Elf {
   }
 }
 
-class MagnetsElf extends IntBordersElf() {
+class MagnetsElf extends DirectSum(
+  IntBordersElf(),
+  BgColorElf({ x: ["gray", "gray"], r: ["red", "red"], b: ["blue", "blue"] })
+) {
   static controls() {
     let controls = super.controls();
-    controls["+"] = "Clues should be written on the top and left";
-    controls["−"] = "Clues should be written on the bottom and right";
+    controls["+/red"] = "Clues calculated from the top and left";
+    controls["-/blue"] = "Clues calculated from on the bottom and right";
     return controls;
   }
 }
@@ -1163,7 +1189,7 @@ class SpiralGalaxiesElf extends Elf {
   }
 
   load_example(str) {
-    // TODO
+    this.handle_input(str, null);
   }
 
   encode_input() {
@@ -1328,6 +1354,13 @@ class TapaElf extends Elf {
 class TLLElf extends TapaElf {
   // assumes this.clues contains a nonzero clue already
 
+  static controls() {
+    let controls = super.controls();
+    controls["(VisitAllGrids)"] =
+      "Add rule: All grids must be visited by the loop";
+    return controls;
+  }
+
   // @Override
   _valid_add(num) {
     let min_space = num == "?" ? 1 : num;
@@ -1486,6 +1519,10 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
+  canalview: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
   castlewall: CastleWallElf,
   cave: DirectSum(
     IntElf(),
@@ -1584,7 +1621,7 @@ let elf_types = {
     "first"
   ),
   nanro: NanroElf,
-  ncells: DirectSum(BorderElf, IntElf()),
+  ncells: DirectSum(IntElf(), BorderElf),
   nonogram: DirectSum(
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] }),
     NonogramElf
@@ -1618,7 +1655,11 @@ let elf_types = {
       "?": ["yellow", "yellow"],
     })
   ),
-  onsen: InvertSolutionZOrder(IntBordersElf()),
+  onsen: DirectSum(
+    QuestionMarkElf,
+    InvertSolutionZOrder(IntBordersElf()),
+    "first"
+  ),
   rippleeffect: IntBordersElf(),
   shakashaka: AkariElf,
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
@@ -1640,6 +1681,14 @@ let elf_types = {
   ),
   sudoku: SudokuElf,
   tapa: TapaElf,
+  tasquare: DirectSum(
+    IntElf(1, 99),
+    BgColorElf({
+      x: ["black", "black"],
+      o: ["green", "green"],
+      "?": ["yellow", "yellow"],
+    })
+  ),
   tatamibari: LetterElf("+-|"),
   tents: DirectSum(
     DirectSum(IntElf(0, 99), BgColorElf({ o: ["green", "green"] })),

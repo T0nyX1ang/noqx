@@ -21,7 +21,7 @@ def solve(E: Encoding) -> List:
 
     solver.reset()
     solver.add_program_line(grid(n, n))
-    solver.add_program_line(fill_num(_range=f"1..{len(letters)}", color="white"))
+    solver.add_program_line(fill_num(_range=range(1, len(letters) + 1), color="white"))
     solver.add_program_line(unique_num(_type="row", color="grid"))
     solver.add_program_line(count(n - len(letters), _type="row", color="white"))
     solver.add_program_line(unique_num(_type="col", color="grid"))

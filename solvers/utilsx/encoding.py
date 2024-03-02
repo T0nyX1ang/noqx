@@ -52,7 +52,7 @@ def default_clue_encoder(string):
         return int(string)
     elif string in ["?", ""]:
         return string
-    elif string in ["black", "gray", "blue", "green", "yellow"]:
+    elif string in ["black", "gray", "blue", "green", "yellow", "red"]:
         return string
     elif string.isalpha() and len(string) == 1:
         return string

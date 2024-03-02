@@ -3,10 +3,22 @@
 import json
 from typing import List
 
-from . import utils
-from .utils.claspy import Atom, BoolVar, IntVar, require, set_max_val, clasp_solve
-from .utils.encoding import Encoding
-from .utils.solutions import MAX_SOLUTIONS_TO_FIND
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import grid, edge, display
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, reachable_source_edge
+from .utilsx.solution import solver
+
+
+def galaxy_constraint(glxr: int, glxc: int) -> str:
+    """Generate a constraint for spiral galaxies."""
+    r, c = (glxr - 1) // 2, (glxc - 1) // 2
+    tag = tag_encode("reachable", "adj", "edge")
+    rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1)."
+    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), horizontal_line(R, C), not horizontal_line({glxr} - R, {glxc} - C - 1).\n"
+    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), vertical_line(R, C), not vertical_line({glxr} - R - 1, {glxc} - C).\n"
+    return rule.strip()
 
 
 def encode(string: str) -> Encoding:
@@ -20,84 +32,50 @@ def encode(string: str) -> Encoding:
     for i in range(2 * (rows + 1)):
         for j in range(2 * (cols + 1)):
             if f"{i},{j}" in json_grid:
-                clues[(i, j)] = "*"
+                clues[(i, j)] = "*"  # galaxy variation
 
     return Encoding(rows, cols, clues)
 
 
 def solve(E: Encoding) -> List:
-    num_regions = len(E.clues)
-    if num_regions == 0:
-        raise ValueError("No clues provided!")
+    assert len(E.clues) > 0, "No clues provided!"
 
-    set_max_val(num_regions)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(edge(E.R, E.C))
+    solver.add_program_line(adjacent(_type="edge"))
 
-    grid = {}
-    atoms = {}
-    for r in range(E.R):
-        for c in range(E.C):
-            grid[(r, c)] = IntVar(0, num_regions - 1)
-            atoms[(r, c)] = Atom()
+    reachables = []
+    for (r, c), _ in E.clues.items():
+        reachables.append(((r - 1) // 2, (c - 1) // 2))
+        solver.add_program_line(galaxy_constraint(r, c))
 
-    clue_ids = {}
-    for i, (R, C) in enumerate(list(E.clues.keys())):
-        clue_ids[i] = (R, C)
-        # label cells surrounding dot with that region number
-        # (R,C goes to (R-1)/2,(C-1)/2, which we then round to integers in
-        # at most 2^2 = 4 possible ways, to get the surrounding cells)
-        r_near = [(R - 1) // 2] if R % 2 == 1 else [(R - 2) // 2, R // 2]
-        c_near = [(C - 1) // 2] if C % 2 == 1 else [(C - 2) // 2, C // 2]
-        for r in r_near:
-            for c in c_near:
-                if (r, c) in grid:
-                    require(grid[(r, c)] == i)
-                    atoms[(r, c)].prove_if(True)  # connectivity root
+        if r % 2 == 0 and c % 2 == 1:
+            solver.add_program_line(f"not horizontal_line({r // 2}, {(c - 1) // 2}).")
 
-        # enforce rotational symmetry of the region
-        for r in range(E.R):
-            for c in range(E.C):
-                r1, c1 = (R - 1) - r, (C - 1) - c  # reflection of r,c about dot
-                if 0 <= r1 < E.R and 0 <= c1 < E.C:
-                    require((grid[(r, c)] == i) == (grid[(r1, c1)] == i))
-                else:
-                    require(grid[(r, c)] != i)
+        if r % 2 == 1 and c % 2 == 0:
+            solver.add_program_line(f"not vertical_line({(r - 1) // 2}, {c // 2}).")
 
-        # enforce connectedness of the region
-        for r in range(E.R):
-            for c in range(E.C):
-                require(atoms[(r, c)])
-                for i, j in (0, 1), (0, -1), (1, 0), (-1, 0):
-                    if 0 <= r + i < E.R and 0 <= c + j < E.C:
-                        atoms[(r, c)].prove_if(atoms[(r + i, c + j)] & (grid[(r, c)] == grid[(r + i, c + j)]))
+        if r % 2 == 0 and c % 2 == 0:
+            solver.add_program_line(f"not horizontal_line({r // 2}, {(c - 1) // 2}).")
+            solver.add_program_line(f"not horizontal_line({r // 2}, {(c - 1) // 2 + 1}).")
+            solver.add_program_line(f"not vertical_line({(r - 1) // 2}, {c // 2}).")
+            solver.add_program_line(f"not vertical_line({(r - 1) // 2 + 1}, {c // 2}).")
 
-    # solve
-    sols = []
-    while len(sols) < MAX_SOLUTIONS_TO_FIND and clasp_solve():
-        # append found solution
-        sol = {}
-        for r, c in grid:
-            sol[(r, c)] = grid[(r, c)].value()
-        sols.append(sol)
+    for r, c in reachables:
+        excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
+        solver.add_program_line(reachable_source_edge((r, c), excluded))
 
-        # prevent duplicate solution before re-solving
-        x = BoolVar(True)
-        for r, c in grid:
-            x &= grid[(r, c)] == grid[(r, c)].value()
-        require(~x)
+    tag = tag_encode("reachable", "adj", "edge")
+    spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
+    solver.add_program_line(f":- grid(R, C), {spawn_points}.")
 
-    # turn solutions into border diagrams
-    border_sols = []
-    for sol in sols:
-        solution = {}
-        for r, c in grid:
-            for i, j in (0, 1), (0, -1), (1, 0), (-1, 0):
-                if 0 <= r + i < E.R and 0 <= c + j < E.C:
-                    if sol[(r, c)] != sol[(r + i, c + j)]:
-                        solution[f"{2*r+1+i},{2*c+1+j}"] = "black"
-        border_sols.append(solution)
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.solve()
 
-    return border_sols
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

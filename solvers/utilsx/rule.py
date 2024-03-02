@@ -1,8 +1,8 @@
 """Utility for general clingo rules."""
 
-from typing import List, Tuple, Any
+from typing import Any, Iterable, List, Tuple
 
-from .helper import tag_encode, ConnectivityHelper
+from .helper import ConnectivityHelper, tag_encode
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
@@ -25,7 +25,7 @@ def shade_cc(colors: List[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
-def fill_num(_range: str, _type: str = "grid", _id: int = "A", color: str = None) -> str:
+def fill_num(_range: Iterable[int], _type: str = "grid", _id: int = "A", color: str = None) -> str:
     """
     Generate a rule that a cell numbered within {_range}.
     {_range} should have the format "low..high", or "x;y;z" for a list of numbers.
@@ -34,11 +34,27 @@ def fill_num(_range: str, _type: str = "grid", _id: int = "A", color: str = None
     """
     color_part = "" if color is None else f"; {color}(R, C)"
 
+    _range = sorted(set(_range))  # canonicize the range
+    i, range_seq = 0, []
+
+    while i < len(_range):
+        start = i
+        while i < len(_range) - 1 and _range[i + 1] - _range[i] == 1:
+            i += 1
+        end = i
+        if start < end:
+            range_seq.append(f"{_range[start]}..{_range[end]}")
+        else:
+            range_seq.append(str(_range[start]))
+        i += 1
+
+    range_str = f"{';'.join(range_seq)}"
+
     if _type == "grid":
-        return f"{{ number(R, C, {_range}){color_part} }} = 1 :- grid(R, C)."
+        return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- grid(R, C)."
 
     if _type == "area":
-        return f"{{ number(R, C, {_range}){color_part} }} = 1 :- area({_id}, R, C)."
+        return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- area({_id}, R, C)."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
@@ -80,15 +96,18 @@ def adjacent(_type: Any = 4) -> str:
     if _type == 4:
         return "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
 
+    if _type == "x":
+        return "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+
     if _type == 8:
         res = "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
         res += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return res
 
     if _type == "edge":
-        adj = "adj_edge(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), not vertical_line(R, C).\n"
-        adj += "adj_edge(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), not horizontal_line(R, C).\n"
-        adj += "adj_edge(R0, C0, R, C) :- adj_edge(R, C, R0, C0)."
+        adj = "adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not vertical_line(R, C + 1).\n"
+        adj += "adj_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), not horizontal_line(R + 1, C).\n"
+        adj += "adj_edge(R, C, R1, C1) :- adj_edge(R1, C1, R, C)."
         return adj
 
     if _type == "loop":
@@ -132,9 +151,7 @@ def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return area_adj[area_adj.find(":-") :]
 
 
-def count_adjacent(
-    target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4
-) -> str:
+def count_adjacent(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint for counting the number of {color} cells adjacent to a cell.
 
@@ -143,6 +160,21 @@ def count_adjacent(
     src_r, src_c = src_cell
     op = rev_op_dict[op]
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
+
+
+def count_adjacent_lines(target: int, src_cell: Tuple[int, int], op: str = "eq") -> str:
+    """
+    Return a rule that counts the adjacent lines around a cell.
+
+    An edge rule should be defined first.
+    """
+    src_r, src_c = src_cell
+    op = rev_op_dict[op]
+    v_1 = f"vertical_line({src_r}, {src_c})"
+    v_2 = f"vertical_line({src_r}, {src_c + 1})"
+    h_1 = f"horizontal_line({src_r}, {src_c})"
+    h_2 = f"horizontal_line({src_r + 1}, {src_c})"
+    return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} != {target}."
 
 
 def unique_num(color: str = "black", _type: str = "row") -> str:
@@ -236,14 +268,15 @@ def region(
     return initial + "\n" + propagation + constraint
 
 
-def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
     """
     Generate a constraint to count the size of {color} region connected to a source cell.
 
     A region rule should be defined first.
     """
+    op = rev_op_dict[op]
     src_r, src_c = src_cell
-    return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} != {target}."
+    return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
 def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
@@ -252,16 +285,17 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
 
     An adjacent rule should be defined first.
     """
+    r, c = src_cell
     if adj_type == 4:
-        lit_constraint = "(R - R0) * (C - C0) == 0"
+        lit_constraint = f"(R - {r}) * (C - {c}) == 0"
     elif adj_type == 8:
-        lit_constraint = "(R - R0) * (C - C0) * (R - R0 - C + C0) * (R - R0 + C - C0) == 0"
+        lit_constraint = f"(R - {r}) * (C - {c}) * (R - {r} - C + {c}) * (R - {r} + C - {c}) == 0"
     else:
         raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
     helper = ConnectivityHelper("lit", "grid", color, adj_type)
     initial = helper.initial([src_cell], [], full_search=True)
-    propagation = helper.propagation(full_search=True, extra_constraint=lit_constraint)
+    propagation = helper.propagation([src_cell], full_search=True, extra_constraint=lit_constraint)
     return initial + "\n" + propagation
 
 
@@ -276,12 +310,81 @@ def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_
     return f":- {{ {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
-def count_valid_omino(target: int, omino_type: str, num: int = 4, op: str = "eq", color: str = "black") -> str:
+def reachable_edge() -> str:
     """
-    Generates a rule for a valid omino.
+    Define edges as numbers on its adjacent grids are different.
 
-    A grid rule or an area rule should be defined first.
+    A grid fact and an adjacent edge rule should be defined first.
+    """
+    initial = "reachable_edge(R, C, R, C) :- grid(R, C).\n"
+    propagation = "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R, C, R1, C1).\n"
+    # edge between two reachable grids is forbidden.
+    constraint = ":- reachable_edge(R, C, R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += ":- reachable_edge(R, C, R + 1, C), horizontal_line(R + 1, C).\n"
+    constraint += ":- reachable_edge(R, C + 1, R, C), vertical_line(R, C + 1).\n"
+    constraint += ":- reachable_edge(R + 1, C, R, C), horizontal_line(R + 1, C)."
+    return initial + propagation + constraint
+
+
+def reachable_source_edge(
+    src_cell: Tuple[int, int],
+    exclude_cells: List[Tuple[int, int]] = None,
+) -> str:
+    """
+    Define edges as numbers on its adjacent grids are different.
+
+    A grid fact and an adjacent edge rule should be defined first.
+    """
+    r, c = src_cell
+    helper = ConnectivityHelper("reachable", "grid", None, "edge")
+    tag = helper.get_tag()
+    initial = helper.initial([src_cell], exclude_cells, full_search=True)
+    propagation = f"{tag}({r}, {c}, R, C) :- grid(R, C), {tag}({r}, {c}, R1, C1), adj_edge(R, C, R1, C1)."
+
+    # edge between two reachable grids is forbidden.
+    constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
+
+    return initial + "\n" + propagation + "\n" + constraint
+
+
+def split_by_edge() -> str:
+    """
+    A description of two adjacent cells split by edge.
+    """
+    constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), horizontal_line(R + 1, C).\n"
+    constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C)."
+    return constraint
+
+
+def count_reachable_edge(target: int, op: str = "eq", color: str = None) -> str:
+    """
+    Generates a constraint for counting grids in a region divided by edges.
+
+    An edge rule should be defined first.
     """
     op = rev_op_dict[op]
-    tag = tag_encode("valid_omino", num, color)
-    return f":- #count {{ R, C: {tag}({omino_type}, R, C) }} {op} {target}."
+    if not color:
+        return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+
+    return f":- grid(R0, C0), {color}(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+
+
+def count_shape(target: int, name: str, _id: int = None, color: str = "black", _type: str = "grid", op: str = "eq") -> str:
+    """
+    Generates a constraint to count the number of a shape.
+
+    A grid rule and a shape rule should be defined first.
+    """
+    tag = tag_encode("shape", name, color)
+    op = rev_op_dict[op]
+    _id = "_" if _id is None else _id
+
+    if _type == "grid":
+        return f":- {{ {tag}(R, C, {_id}, _) }} {op} {target}."
+
+    if _type == "area":
+        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {op} {target}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")

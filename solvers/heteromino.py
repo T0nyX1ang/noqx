@@ -1,140 +1,62 @@
 """The Heteromino solver."""
 
-from typing import Dict, List, Tuple
+from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, MultiVar, require
-from .utils.borders import Direction, get_border_coord_from_edge_id
-from .utils.encoding import Encoding
-from .utils.grids import get_neighbors, is_valid_coord
-from .utils.solutions import get_all_solutions
-
-# --- Shape definitions ---
-shapeI = "I"  # Vertical segment, size 3
-shape_ = "-"  # Horizontal segment, size 3
-shape7 = "7"  # 7-shaped segment, size 3
-shapeJ = "J"  # J-shaped segment, size 3
-shapeL = "L"  # L-shaped segment, size 3
-shaper = "r"  # r-shaped segment, size 3
-
-SHAPES = (shapeI, shape_, shape7, shapeJ, shapeL, shaper)
-
-# --- Maps the offset from x to y to the direction from y to x ---
-OFFSET_PARENT_PAIRS = {(-1, 0): "v", (0, 1): "<", (1, 0): "^", (0, -1): ">"}
-
-NEIGHBORS = {
-    shapeI: ((-1, 0), (1, 0)),
-    shape_: ((0, -1), (0, 1)),
-    shape7: ((0, -1), (1, 0)),
-    shapeJ: ((-1, 0), (0, -1)),
-    shapeL: ((-1, 0), (0, 1)),
-    shaper: ((0, 1), (1, 0)),
-}
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import display, edge, grid
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, split_by_edge
+from .utilsx.shape import all_shapes, general_shape, OMINOES
+from .utilsx.solution import solver
 
 
-def inverse(t: Tuple[int]) -> Tuple[int]:
-    return tuple(-1 * t[x] for x in range(len(t)))
+def avoid_adj_same_omino(color: str = "black") -> str:
+    """
+    Generates a constraint to avoid adjacent ominos with the same type.
 
-
-# For ths sake of this solver, the middle cell in a region must always be root.
+    An split by edge rule, an omino rule should be defined first.
+    """
+    t_be = tag_encode("belong_to_shape", "omino", 3, color)
+    return f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
-    shape = [[MultiVar(*SHAPES + ("x",)) for c in range(E.C)] for r in range(E.R)]
-    parent = [[MultiVar("^", "v", ">", "<", ".", "x") for c in range(E.C)] for r in range(E.R)]
+    shaded = len(E.clues)
+    if (E.R * E.C - shaded) % 3 != 0:
+        raise ValueError("The grid cannot be divided into 3-ominoes!")
 
-    for r in range(E.R):
-        for c in range(E.C):
-            # parent and shape == 'x' iff shaded
-            if (r, c) in E.clues:
-                require(shape[r][c] == "x")
-                require(parent[r][c] == "x")
-            else:
-                require(shape[r][c] != "x")
-                require(parent[r][c] != "x")
-                # Ensure that every root's neighbors have appropriate shapes + parents.
-                for possible_shape in SHAPES:
-                    neighbor_conds = True
-                    for dy, dx in OFFSET_PARENT_PAIRS:
-                        y, x = r + dy, c + dx
-                        if is_valid_coord(E.R, E.C, y, x):
-                            # If (y, x) is one of the required neighbors for this shape,
-                            # assign its shape and parent values.
-                            if (dy, dx) in NEIGHBORS[possible_shape]:
-                                neighbor_conds &= (shape[y][x] == possible_shape) & (
-                                    parent[y][x] == OFFSET_PARENT_PAIRS[(dy, dx)]
-                                )
-                            # Otherwise, insist that (y, x) has some other parent (not (r, c)).
-                            else:
-                                neighbor_conds &= parent[y][x] != OFFSET_PARENT_PAIRS[(dy, dx)]
-                        else:
-                            # Cell doesn't exist so it can't have the right parent.
-                            # It can't have the wrong parent either, though, so no condition needed there.
-                            if (dy, dx) in NEIGHBORS[possible_shape]:
-                                # Trying to use a cell that's off the grid.
-                                neighbor_conds = False
-                                break
-                    require(neighbor_conds | ~((shape[r][c] == possible_shape) & (parent[r][c] == ".")))
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(edge(E.R, E.C))
+    solver.add_program_line(adjacent(_type="edge"))
+    solver.add_program_line(split_by_edge())
 
-                for (dy, dx), possible_parent in OFFSET_PARENT_PAIRS.items():
-                    parent_dy, parent_dx = inverse((dy, dx))
-                    y, x = r + parent_dy, c + parent_dx  # Coordinate of the supposed parent of (r,c)
+    if shaded == 0:
+        solver.add_program_line("black(-1, -1).")
 
-                    if is_valid_coord(E.R, E.C, y, x):
-                        # Ensure that every arrow points directly at a root of the same shape type.
-                        require(
-                            ((parent[y][x] == ".") & (shape[y][x] == shape[r][c])) | (parent[r][c] != possible_parent)
-                        )
-                    else:
-                        # Trying to use a cell that's off the grid.
-                        require(parent[r][c] != possible_parent)
+    for (r, c), _ in E.clues.items():
+        solver.add_program_line(f"black({r}, {c}).")
+        solver.add_program_line(f"vertical_line({r}, {c}).")
+        solver.add_program_line(f"vertical_line({r}, {c + 1}).")
+        solver.add_program_line(f"horizontal_line({r}, {c}).")
+        solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-                    # Ensure that identical shapes are not adjacent
-                    # (the only cell adjacent to (r, c) with the same shape pattern is its parent)
-                    for cell_r, cell_c in get_neighbors(E.R, E.C, r, c):
-                        if (cell_r, cell_c) != (y, x):
-                            require((shape[cell_r][cell_c] != shape[r][c]) | (parent[r][c] != possible_parent))
+    for i, o_shape in enumerate(OMINOES[3].values()):
+        solver.add_program_line(general_shape("omino_3", i, o_shape, color="not black", adj_type="edge"))
 
-    # --- Compile the solution ---
-    def generate_solution() -> Dict[str, str]:
-        solution = {}
-        for r in range(E.R):
-            for c in range(E.C):
-                # Top
-                edge = (r, c, Direction.TOP)
-                if is_valid_coord(E.R, E.C, r - 1, c):
-                    if shape[r - 1][c].value() != shape[r][c].value():
-                        solution[get_border_coord_from_edge_id(*edge)] = "black"
-                else:
-                    solution[get_border_coord_from_edge_id(*edge)] = "black"
-                # Left
-                edge = (r, c, Direction.LEFT)
-                if is_valid_coord(E.R, E.C, r, c - 1):
-                    if shape[r][c - 1].value() != shape[r][c].value():
-                        solution[get_border_coord_from_edge_id(*edge)] = "black"
-                else:
-                    solution[get_border_coord_from_edge_id(*edge)] = "black"
-                # Bottom
-                if r == E.R - 1:
-                    solution[get_border_coord_from_edge_id(r, c, Direction.BOTTOM)] = "black"
-                # Right
-                if c == E.C - 1:
-                    solution[get_border_coord_from_edge_id(r, c, Direction.RIGHT)] = "black"
-        return solution
+    solver.add_program_line(all_shapes("omino_3", color="not black"))
+    solver.add_program_line(avoid_adj_same_omino(color="not black"))
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.solve()
 
-    def avoid_duplicate_solution():
-        x = BoolVar(True)
-        for r in range(E.R):
-            for c in range(E.C):
-                x = x & (shape[r][c] == shape[r][c].value())
-        require(~x)
-
-    return get_all_solutions(generate_solution, avoid_duplicate_solution)
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

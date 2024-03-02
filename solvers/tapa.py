@@ -48,8 +48,8 @@ def generate_patterns(pattern):
     """
     result = [pattern]
     num_max = 9 - len(pattern) * 2
-    for i in range(len(pattern)):
-        if pattern[i] == "?":
+    for i, patt in enumerate(pattern):
+        if patt == "?":
             old_result = result
             result = []
             for patt in old_result:
@@ -84,7 +84,7 @@ def tapa_rules() -> str:
     return "\n".join(valid_tapa)
 
 
-def valid_tapa_pattern(r: int, c: int, patterns: list, color: str = "black") -> str:
+def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
     valid_pattern, num_str, num_constrain = [], [], []
     for i, (dr, dc) in enumerate(((0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1))):
         num_str.append(f"N{i}")
@@ -112,7 +112,7 @@ def solve(E: Encoding) -> List:
     for (r, c), clue in E.clues.items():
         patterns = generate_patterns(clue)
         solver.add_program_line(f"not black({r}, {c}).")
-        solver.add_program_line(valid_tapa_pattern(r=r, c=c, patterns=patterns, color="black"))
+        solver.add_program_line(valid_tapa_pattern(r=r, c=c, patterns=patterns))
 
     solver.add_program_line(display(item="black"))
     solver.solve()

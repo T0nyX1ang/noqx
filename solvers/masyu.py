@@ -2,10 +2,42 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, var_in
-from .utils.encoding import Encoding
-from .utils.loops import RectangularGridLoopSolver
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid
+from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.rule import adjacent, shade_c
+from .utilsx.solution import solver
+
+
+def masyu_black_rule() -> str:
+    """
+    Generate a rule for black masyu rule.
+
+    A loop sign rule should be defined first.
+    """
+    black_rule = 'black_rule(R, C) :- loop_sign(R, C, "J"), loop_sign(R - 1, C, "1"), loop_sign(R, C - 1, "-").\n'
+    black_rule += 'black_rule(R, C) :- loop_sign(R, C, "7"), loop_sign(R + 1, C, "1"), loop_sign(R, C - 1, "-").\n'
+    black_rule += 'black_rule(R, C) :- loop_sign(R, C, "L"), loop_sign(R - 1, C, "1"), loop_sign(R, C + 1, "-").\n'
+    black_rule += 'black_rule(R, C) :- loop_sign(R, C, "r"), loop_sign(R + 1, C, "1"), loop_sign(R, C + 1, "-").\n'
+    black_rule += ":- grid(R, C), black(R, C), not black_rule(R, C).\n"
+    return black_rule
+
+
+def masyu_white_rule() -> str:
+    """
+    Generate a rule for white masyu rule.
+
+    A loop sign rule should be defined first.
+    """
+    white_rule = ""
+    for sign in ["J", "7", "L", "r"]:
+        white_rule += f'white_rule(R, C) :- loop_sign(R, C, "1"), loop_sign(R - 1, C, "{sign}").\n'
+        white_rule += f'white_rule(R, C) :- loop_sign(R, C, "1"), loop_sign(R + 1, C, "{sign}").\n'
+        white_rule += f'white_rule(R, C) :- loop_sign(R, C, "-"), loop_sign(R, C - 1, "{sign}").\n'
+        white_rule += f'white_rule(R, C) :- loop_sign(R, C, "-"), loop_sign(R, C + 1, "{sign}").\n'
+    white_rule += ":- grid(R, C), white(R, C), not white_rule(R, C).\n"
+    return white_rule
 
 
 def encode(string: str) -> Encoding:
@@ -14,85 +46,34 @@ def encode(string: str) -> Encoding:
             raise ValueError("Invalid input: cells must be w, b, or empty")
         return string
 
-    return utils.encode(string, string_encoder)
+    return utilsx.encode(string, string_encoder)
 
 
 def solve(E: Encoding) -> List:
-    loop_solver = RectangularGridLoopSolver(E.R, E.C)
-    loop_solver.loop(E.clues, includes_clues=True)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line(shade_c(color="masyu_loop"))
+    solver.add_program_line(fill_path(color="masyu_loop"))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(connected_loop(color="masyu_loop"))
+    solver.add_program_line(single_loop(color="masyu_loop", visit_all=True))
+    solver.add_program_line(masyu_black_rule())
+    solver.add_program_line(masyu_white_rule())
 
-    # ----- CLUE ATTRIBUTES -----
-    TURNING = ["J", "7", "L", "r"]
-    STRAIGHT = ["-", "1"]
+    for (r, c), clue in E.clues.items():
+        solver.add_program_line(f"masyu_loop({r}, {c}).")
+        if clue == "b":
+            solver.add_program_line(f"black({r}, {c}).")
+        elif clue == "w":
+            solver.add_program_line(f"white({r}, {c}).")
 
-    for r, c in E.clues:
-        # ----- BLACK CIRCLE RULES -----
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-        if E.clues[(r, c)] == "b":
-            require(var_in(loop_solver.grid[r][c], TURNING))
-
-            # not leftmost
-            if 0 <= c - 1:
-                # if not leftmost and not topmost
-                if 0 <= r - 1:
-                    # if a cell looks like J,
-                    # the cells above and to the left of it must be straight
-                    require(
-                        (var_in(loop_solver.grid[r - 1][c], STRAIGHT) & var_in(loop_solver.grid[r][c - 1], STRAIGHT))
-                        | (loop_solver.grid[r][c] != "J")
-                    )
-                # if not leftmost and not bottommost
-                if r + 1 < E.R:
-                    # if a cell looks like 7,
-                    # the cells below and to the left of it must be straight
-                    require(
-                        (var_in(loop_solver.grid[r + 1][c], STRAIGHT) & var_in(loop_solver.grid[r][c - 1], STRAIGHT))
-                        | (loop_solver.grid[r][c] != "7")
-                    )
-            # not rightmost
-            if c + 1 < E.C:
-                # if not rightmost and not topmost
-                if 0 <= r - 1:
-                    # if a cell looks like L,
-                    # the cells above and to the right of it must be straight
-                    require(
-                        (var_in(loop_solver.grid[r - 1][c], STRAIGHT) & var_in(loop_solver.grid[r][c + 1], STRAIGHT))
-                        | (loop_solver.grid[r][c] != "L")
-                    )
-                # if not rightmost and not bottommost
-                if r + 1 < E.R:
-                    # if a cell looks like r,
-                    # the cells below and to the right of it must be straight
-                    require(
-                        (var_in(loop_solver.grid[r + 1][c], STRAIGHT) & var_in(loop_solver.grid[r][c + 1], STRAIGHT))
-                        | (loop_solver.grid[r][c] != "r")
-                    )
-
-        # ----- WHITE CIRCLE RULES -----
-
-        else:
-            require(var_in(loop_solver.grid[r][c], STRAIGHT))
-
-            # if the line is horizontal,
-            # at least one of the cells to the left and right is a turn
-            if 0 < c and c < E.C - 1:
-                require(
-                    var_in(loop_solver.grid[r][c - 1], TURNING)
-                    | var_in(loop_solver.grid[r][c + 1], TURNING)
-                    | (loop_solver.grid[r][c] != "-")
-                )
-
-            # if the line is vertical,
-            # at least one of the cells to the top and bottom is a turn
-            if 0 < r and r < E.R - 1:
-                require(
-                    var_in(loop_solver.grid[r - 1][c], TURNING)
-                    | var_in(loop_solver.grid[r + 1][c], TURNING)
-                    | (loop_solver.grid[r][c] != "1")
-                )
-
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

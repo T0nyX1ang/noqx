@@ -18,10 +18,10 @@ def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj
     """
 
     included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_cells)
-    main = f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1."
+    main = f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1"
 
     if not known_cells:
-        return main
+        return f"{main}."
     return f"{main}, {included}."
 
 

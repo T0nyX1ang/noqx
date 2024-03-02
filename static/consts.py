@@ -22,6 +22,7 @@ types: List[Dict[str, Union[str, List]]] = [
     {"value": "balanceloop", "name": "Balance Loop", "cat": "loop"},
     {"value": "battleship", "name": "Battleship", "cat": "obj"},
     {"value": "binairo", "name": "Binairo", "cat": "shade"},
+    {"value": "canalview", "name": "Canal View", "cat": "shade"},
     {"value": "castlewall", "name": "Castle Wall", "cat": "loop"},
     {"value": "cave", "name": "Cave (Corral)", "cat": "shade"},
     {"value": "chocona", "name": "Chocona", "cat": "shade"},
@@ -66,7 +67,7 @@ types: List[Dict[str, Union[str, List]]] = [
     {"value": "nuribou", "name": "Nuribou", "cat": "shade"},
     {"value": "nurikabe", "name": "Nurikabe", "cat": "shade"},
     {"value": "nurimisaki", "name": "Nurimisaki", "cat": "shade"},
-    {"value": "onsen", "name": "Onsen", "cat": "loop"},
+    {"value": "onsen", "name": "Onsen-Meguri", "cat": "loop"},
     {"value": "rippleeffect", "name": "Ripple Effect", "cat": "num"},
     {
         "value": "shakashaka",
@@ -88,6 +89,7 @@ types: List[Dict[str, Union[str, List]]] = [
     {"value": "stostone", "name": "Stostone", "cat": "shade"},
     {"value": "sudoku", "name": "Sudoku", "cat": "lsq"},
     {"value": "tapa", "name": "Tapa", "cat": "shade"},
+    {"value": "tasquare", "name": "Tasquare", "cat": "shade"},
     {"value": "tatamibari", "name": "Tatamibari", "cat": "region"},
     {"value": "tents", "name": "Tents", "cat": "obj"},
     {

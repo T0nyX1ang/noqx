@@ -2,86 +2,63 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import BoolVar, IntVar, require
+from . import utilsx
 from .utils.encoding import Encoding
-from .utils.regions import RectangularGridRegionSolver
+from .utilsx.fact import display, edge, grid
+from .utilsx.rule import adjacent
+from .utilsx.shape import all_rect_region
+from .utilsx.solution import solver
+
+
+def tatamibari_constraint() -> str:
+    """Generate a constraint for tatamibari."""
+    size_range = "R1 >= R, R1 <= MR, C1 >= C, C1 <= MC"
+    size_spawn = f"rect_edge(R1, C1, 0) :- grid(R1, C1), rect(R, C, MR, MC), MR - R = MC - C, {size_range}.\n"
+    size_spawn += f"rect_edge(R1, C1, 1) :- grid(R1, C1), rect(R, C, MR, MC), MR - R < MC - C, {size_range}.\n"
+    size_spawn += f"rect_edge(R1, C1, -1) :- grid(R1, C1), rect(R, C, MR, MC), MR - R > MC - C, {size_range}."
+
+    unique = f":- rect(R, C, MR, MC), #count {{ R1, C1: clue(R1, C1), {size_range} }} != 1."
+    no_rect_adjacent_by_point = [
+        "vertical_line(R, C + 1)",
+        "vertical_line(R + 1, C + 1)",
+        "horizontal_line(R + 1, C)",
+        "horizontal_line(R + 1, C + 1)",
+    ]
+    no_rect = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
+
+    return size_spawn + "\n" + unique + "\n" + no_rect
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
-
-
-class Box:
-    """
-    A box whose borders (inclusive) are given by top, bottom, left, & right.
-    e.g. Box(0, 2, 1, 3) would make a 3x3 box with upper left is at (0, 1) & lower right at (2, 3)
-    """
-
-    def __init__(self, top, bottom, left, right):
-        self.top = top
-        self.bottom = bottom
-        self.left = left
-        self.right = right
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    # Pre-processing. Necessary to filter out invalid clues.
-    # Assign each clue to an ID (bijection, by puzzle rules)
-    clue_to_id = {}
-    for (r, c), value in E.clues.items():
-        if value in "+|-":
-            clue_to_id[(r, c)] = len(clue_to_id)
-        else:
-            raise ValueError("Clues must be +, |, or -.")
-
-    if len(clue_to_id) == 0:
+    if len(E.clues) == 0:
         raise ValueError("Please provide at least one clue.")
 
-    rs = RectangularGridRegionSolver(E.R, E.C, max_num_regions=len(clue_to_id))
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(edge(E.R, E.C))
+    solver.add_program_line(adjacent(_type="edge"))
+    solver.add_program_line(all_rect_region())
+    solver.add_program_line(tatamibari_constraint())
 
-    # Assign each clue to a Box
-    clue_to_box = {}
-    for r, c in clue_to_id:
-        value = E.clues[(r, c)]
-        box = Box(IntVar(0, E.R - 1), IntVar(0, E.R - 1), IntVar(0, E.C - 1), IntVar(0, E.C - 1))
-        clue_to_box[(r, c)] = box
-        # Box preconditions.
-        require(box.top <= box.bottom)
-        require(box.left <= box.right)
-        # Shape constraints.
-        height = box.bottom - box.top
-        width = box.right - box.left
-        if value == "+":
-            require(height == width)
-        elif value == "|":
-            require(width < height)
-        elif value == "-":
-            require(height < width)
+    for (r, c), clue in E.clues.items():
+        solver.add_program_line(f"clue({r}, {c}).")
+        if clue == "+":
+            solver.add_program_line(f":- not rect_edge({r}, {c}, 0).")
+        elif clue == "-":
+            solver.add_program_line(f":- not rect_edge({r}, {c}, 1).")
+        elif clue == "|":
+            solver.add_program_line(f":- not rect_edge({r}, {c}, -1).")
 
-    # Assign region IDs based on clue locations and Box corners
-    for r in range(E.R):
-        for c in range(E.C):
-            for y, x in clue_to_id:
-                box = clue_to_box[(y, x)]
-                require(rs.region_id[y][x] == clue_to_id[(y, x)])
-                require(
-                    ((box.top <= r) & (r <= box.bottom) & (box.left <= c) & (c <= box.right))
-                    == (rs.region_id[r][c] == clue_to_id[(y, x)])
-                )
+    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.solve()
 
-    # No 4 boxes at same corner.
-    for r in range(E.R - 1):
-        for c in range(E.C - 1):
-            four_cells = [rs.grid[y][x] for (y, x) in ((r, c), (r, c + 1), (r + 1, c), (r + 1, c + 1))]
-            all_diff = BoolVar(True)
-            for i in range(4):
-                for j in range(i):
-                    all_diff &= four_cells[i] != four_cells[j]
-            require(~all_diff)
-
-    return rs.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

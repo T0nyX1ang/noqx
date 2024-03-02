@@ -1,65 +1,90 @@
-"""The Onsen solver."""
+"""The Onsen-Meguri solver."""
 
 from typing import List
 
-from . import utils
-from .utils.claspy import require, set_max_val, sum_vars
-from .utils.encoding import Encoding
-from .utils.loops import RectangularGridLoopSolver
-from .utils.regions import full_bfs
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import area, direction, display, grid
+from .utilsx.loop import fill_path, single_loop
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent
+from .utilsx.solution import solver
+
+
+def area_border(_id: int, ar: list) -> str:
+    """Generates a fact for the border of an area."""
+    borders = []
+    for r, c in ar:
+        for dr, dc, d in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
+            r1, c1 = r + dr, c + dc
+            if (r1, c1) not in ar:
+                borders.append(f'area_border({_id}, {r}, {c}, "{d}").')
+    rule = "\n".join(borders)
+    return rule
+
+
+def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
+    """
+    Generates a rule for an Onsen-Meguri puzzle.
+
+    An area fact, a grid direction fact and an area border fact should be defined first.
+    """
+    mutual = "area_border(A, R, C, D), grid_direction(R, C, D)"
+
+    rule = f"onsen({_id}, {r}, {c}).\n"
+    rule += f"onsen({_id}, R, C) :- grid(R, C), adj_loop(R, C, R1, C1), onsen({_id}, R1, C1).\n"
+
+    if target != "?":
+        num = int(target)
+        rule += f":- area(A, R, C), onsen({_id}, R, C), #count {{ R1, C1: area(A, R1, C1), onsen({_id}, R1, C1) }} != {num}."
+    else:
+        anch = f"#count {{ R1, C1: area({_id}, R1, C1), onsen({_id}, R1, C1) }} = N"  # set anchor number for clue
+        rule += (
+            f":- area(A, R, C), onsen({_id}, R, C), {anch}, #count {{ R1, C1: area(A, R1, C1), onsen({_id}, R1, C1) }} != N."
+        )
+
+    # any area, go through border at least twice
+    rule += f":- area(A, _, _), #count {{ R, C, D: grid(R, C), {mutual} }} < 2.\n"
+
+    # any area, any onsen area, go through border at most twice
+    rule += f":- area(A, _, _), onsen(O, _, _), #count {{ R, C, D: onsen(O, R, C), {mutual} }} > 2.\n"
+
+    rule += ":- onsen_loop(R, C), not onsen(_, R, C).\n"
+    return rule.strip()
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True)
+    return utilsx.encode(string, has_borders=True)
 
 
 def solve(E: Encoding) -> List:
-    rooms = full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line("{ onsen_loop(R, C) } :- grid(R, C).")
+    solver.add_program_line(fill_path(color="onsen_loop"))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(single_loop(color="onsen_loop", visit_all=True))
 
-    if len(E.clues) == 0:
-        raise ValueError("There are no clues!")
+    # for i, ((r, c), clue) in enumerate(E.clues.items()):
+    #     solver.add_program_line(onsen_rule(i, r, c, int(clue)))
 
-    # get the size of the largest room
-    max_room_size = max(len(room) for room in rooms)
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(area_border(i, ar))
 
-    # set the value of the "max clue" (largest number of loop cells that can be within any region)
-    max_clue = 1
-    for clue in E.clues.values():
-        max_clue = max(max_clue, clue) if clue != "?" else max_room_size
+        for rc in ar:
+            if rc in E.clues:
+                r, c = rc
+                solver.add_program_line(f"onsen_loop({r}, {c}).")
+                solver.add_program_line(onsen_rule(E.clues[rc], i, r, c))
 
-    # give each clue cell its own loop ID
-    loop_ids = {}
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) in E.clues:
-                loop_ids[(r, c)] = len(loop_ids)
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    # set the maximum IntVar value to the largest of:
-    # - greatest clue value (determines number of cells in a region that are part of a loop)
-    # - number of clue cells (determines number of loop IDs)
-    set_max_val(max(len(E.clues), max_clue))
-
-    loop_solver = RectangularGridLoopSolver(E.R, E.C, min_num_loops=len(E.clues), max_num_loops=len(E.clues))
-    loop_solver.loop(E.clues, includes_clues=True)
-    loop_solver.no_reentrance(rooms)
-    loop_solver.hit_every_region(rooms)
-
-    # set the loop IDs of the clue cells (these are our "anchors")
-    for r, c in E.clues:
-        require(loop_solver.loop_id[r][c] == loop_ids[(r, c)])
-
-    # require that each loop has the correct number of cells in a room
-    for room in rooms:
-        for loop_id in range(len(E.clues)):
-            # get the corresponding clue number
-            for r, c in E.clues:
-                if loop_ids[(r, c)] == loop_id:
-                    clue_num = E.clues[(r, c)]
-            path_length = sum_vars([loop_solver.loop_id[r][c] == loop_id for (r, c) in room])
-            require((path_length == 0) | (path_length == clue_num))
-
-    return loop_solver.solutions()
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
