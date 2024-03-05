@@ -71,7 +71,7 @@ def connected_loop(color: str = "white") -> str:
     """
     initial = f"reachable_loop(R, C) :- (R, C) = #min{{ (R1, C1) : grid(R1, C1), {color}(R1, C1) }}.\n"
     propagation = f"reachable_loop(R, C) :- {color}(R, C), reachable_loop(R1, C1), adj_loop(R1, C1, R, C).\n"
-    constraint = f":- grid(R, C), {color}(R, C), not not_pass_by_loop(R, C), not reachable_loop(R, C)."
+    constraint = f":- grid(R, C), {color}(R, C), not reachable_loop(R, C)."
     return initial + propagation + constraint
 
 
@@ -91,7 +91,7 @@ def connected_path(src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color:
     return initial + propagation
 
 
-def single_loop(color: str = "white", visit_all: bool = False, path: bool = False) -> str:
+def single_loop(color: str = "white", path: bool = False) -> str:
     """
     Generate a single loop constraint.
     For a hamilton loop, set `visit_all=True`. Otherwise set `visit_all=False`.
@@ -100,15 +100,11 @@ def single_loop(color: str = "white", visit_all: bool = False, path: bool = Fals
     A grid fact and a grid_direction rule should be defined first.
     """
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
-    constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
     constraint += ":- dead_end(R, C), grid(R, C), #count{ D: grid_direction(R, C, D) } != 1.\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:
         visit_constraints.append("not dead_end(R, C)")
-
-    if not visit_all:
-        visit_constraints.append("not not_pass_by_loop(R, C)")
 
     constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
     constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
@@ -122,8 +118,6 @@ def single_loop(color: str = "white", visit_all: bool = False, path: bool = Fals
     rule = ""
     for sign, (d1, d2) in zip(NON_DIRECTED[:6], dirs):
         rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
-    if not visit_all:
-        rule += 'loop_sign(R, C, "") :- grid(R, C), not_pass_by_loop(R, C).'
     return constraint + rule.strip()
 
 

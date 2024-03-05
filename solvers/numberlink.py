@@ -34,7 +34,7 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(shade_c(color="numberlink"))
     solver.add_program_line(fill_path(color="numberlink"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(single_loop(color="numberlink", visit_all=True, path=True))
+    solver.add_program_line(single_loop(color="numberlink", path=True))
 
     for n, pair in locations.items():
         r0, c0 = pair[0]

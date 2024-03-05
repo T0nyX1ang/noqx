@@ -29,7 +29,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="slither_link"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="slither_link"))
-    solver.add_program_line(single_loop(color="slither_link", visit_all=True))
+    solver.add_program_line(single_loop(color="slither_link"))
     solver.add_program_line(convert_direction_to_edge())
 
     for (r, c), clue in E.clues.items():

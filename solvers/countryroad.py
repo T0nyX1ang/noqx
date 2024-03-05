@@ -24,7 +24,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="country_road"))
-    solver.add_program_line(single_loop(color="country_road", visit_all=True))
+    solver.add_program_line(single_loop(color="country_road"))
 
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):

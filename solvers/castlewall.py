@@ -54,7 +54,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="wall"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="wall"))
-    solver.add_program_line(single_loop(color="wall", visit_all=True))
+    solver.add_program_line(single_loop(color="wall"))
     solver.add_program_line(black_out_white_in())
 
     for (r, c), clue in E.clues.items():

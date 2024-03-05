@@ -64,7 +64,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c(color="onsen_loop"))
     solver.add_program_line(fill_path(color="onsen_loop"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(single_loop(color="onsen_loop", visit_all=True))
+    solver.add_program_line(single_loop(color="onsen_loop"))
 
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):

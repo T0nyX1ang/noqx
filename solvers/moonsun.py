@@ -42,7 +42,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="moon_sun_loop"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="moon_sun_loop"))
-    solver.add_program_line(single_loop(color="moon_sun_loop", visit_all=True))
+    solver.add_program_line(single_loop(color="moon_sun_loop"))
 
     for (r, c), clue in E.clues.items():
         if clue == "m":

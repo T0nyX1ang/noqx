@@ -169,7 +169,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="tll"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(connected_loop(color="tll"))
-    solver.add_program_line(single_loop(color="tll", visit_all=True))
+    solver.add_program_line(single_loop(color="tll"))
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.c}, not grid(R, C).')
 
