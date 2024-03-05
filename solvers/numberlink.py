@@ -10,6 +10,16 @@ from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 
+def no_2x2_path() -> str:
+    """
+    Generate a rule that no 2x2 path is allowed.
+
+    A reachable path rule should be defined first
+    """
+    points = ((0, 0), (0, 1), (1, 0), (1, 1))
+    return f":- { ', '.join(f'reachable_path(R0, C0, R + {r}, C + {c})' for r, c in points) }."
+
+
 def encode(string: str) -> Encoding:
     return utilsx.encode(string, clue_encoder=lambda s: s)
 
@@ -28,10 +38,15 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    if E.params["Use all cells"]:
+
+    if E.params["visit_all"]:
         solver.add_program_line("numberlink(R, C) :- grid(R, C).")
     else:
         solver.add_program_line(shade_c(color="numberlink"))
+
+    if E.params["no_2x2"]:
+        solver.add_program_line(no_2x2_path())
+
     solver.add_program_line(fill_path(color="numberlink"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(single_loop(color="numberlink", path=True))
