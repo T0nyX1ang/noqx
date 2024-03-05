@@ -160,13 +160,16 @@ def grid_direc_to_num(r: int, c: int) -> str:
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
-    # solver.add_program_line(shade_c(color="black"))
+    if E.params["visit_all"]:
+        solver.add_program_line("tll(R, C) :- grid(R, C), not black(R, C).")
+    else:
+        solver.add_program_line("{ tll(R, C) } :- grid(R, C), not black(R, C).")
     solver.add_program_line(tapa_rules())
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(fill_path(color="not black"))
+    solver.add_program_line(fill_path(color="tll"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="not black"))
-    solver.add_program_line(single_loop(color="not black", visit_all=E.params["visit_all"]))
+    solver.add_program_line(connected_loop(color="tll"))
+    solver.add_program_line(single_loop(color="tll", visit_all=True))
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.c}, not grid(R, C).')
 

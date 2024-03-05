@@ -28,13 +28,13 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="numberlink"))
+    if E.params["Use all cells"]:
+        solver.add_program_line("numberlink(R, C) :- grid(R, C).")
+    else:
+        solver.add_program_line(shade_c(color="numberlink"))
     solver.add_program_line(fill_path(color="numberlink"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(single_loop(color="numberlink", path=True))
-
-    if E.params["Use all cells"]:
-        solver.add_program_line(":- grid(R, C), not_pass_by_loop(R, C).")
+    solver.add_program_line(single_loop(color="numberlink", visit_all=True, path=True))
 
     for n, pair in locations.items():
         r0, c0 = pair[0]
