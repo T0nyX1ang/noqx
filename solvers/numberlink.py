@@ -52,7 +52,7 @@ def solve(E: Encoding) -> List:
                 solver.add_program_line(f"not reachable_path({r1}, {c1}, {r10}, {c10}).")
                 solver.add_program_line(f"not reachable_path({r1}, {c1}, {r11}, {c11}).")
 
-    solver.add_program_line(":- grid(R, C), numberlink(R, C), not not_pass_by_loop(R, C), not reachable_path(_, _, R, C).")
+    solver.add_program_line(":- grid(R, C), numberlink(R, C), not reachable_path(_, _, R, C).")
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
 
