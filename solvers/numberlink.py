@@ -2,20 +2,19 @@
 
 from typing import List
 
-from . import utils
-from .utils.claspy import Atom, MultiVar, require, sum_bools
-from .utils.encoding import Encoding
-from .utils.grids import RectangularGrid
-from .utils.solutions import get_all_grid_solutions, rc_to_grid
+from . import utilsx
+from .utilsx.encoding import Encoding
+from .utilsx.fact import direction, display, grid
+from .utilsx.loop import connected_path, fill_path, single_loop
+from .utilsx.rule import adjacent, shade_c
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:
-    use_all_cells = E.params["Use all cells"]
-
     locations = {}
     for (r, c), n in E.clues.items():
         locations[n] = locations.get(n, []) + [(r, c)]
@@ -26,90 +25,39 @@ def solve(E: Encoding) -> List:
         assert len(pair) <= 2, f"Error: There are more than two occurrences of {n}"
         assert len(pair) >= 2, f"Error: There is only one occurrence of {n}"
 
-    sinks = set(locs[1] for locs in locations.values())
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line(shade_c(color="numberlink"))
+    solver.add_program_line(fill_path(color="numberlink"))
+    solver.add_program_line(adjacent(_type="loop"))
+    solver.add_program_line(single_loop(color="numberlink", path=True))
 
-    grid = RectangularGrid(
-        E.R,
-        E.C,
-        lambda r, c: MultiVar("")
-        if (r, c) in sinks
-        else (MultiVar("U", "R", "D", "L") if use_all_cells else MultiVar("U", "R", "D", "L", "")),
-    )
+    if E.params["Use all cells"]:
+        solver.add_program_line(":- grid(R, C), not_pass_by_loop(R, C).")
 
-    atom_grids = {}
-    for n, (source, sink) in locations.items():
-        atoms = RectangularGrid(E.R, E.C, Atom)
-        atom_grids[n] = atoms
+    for n, pair in locations.items():
+        r0, c0 = pair[0]
+        r1, c1 = pair[1]
+        solver.add_program_line(f"numberlink({r0}, {c0}).")
+        solver.add_program_line(f"numberlink({r1}, {c1}).")
+        solver.add_program_line(connected_path((r0, c0), (r1, c1), color="numberlink"))
 
-        # implement path connectivity conditions
-        for r in range(E.R):
-            for c in range(E.C):
-                if r > 0:
-                    atoms[r][c].prove_if(atoms[r - 1][c] & (grid[r - 1][c] == "D"))
-                if c > 0:
-                    atoms[r][c].prove_if(atoms[r][c - 1] & (grid[r][c - 1] == "R"))
-                if r < E.R - 1:
-                    atoms[r][c].prove_if(atoms[r + 1][c] & (grid[r + 1][c] == "U"))
-                if c < E.C - 1:
-                    atoms[r][c].prove_if(atoms[r][c + 1] & (grid[r][c + 1] == "L"))
+        for n1, pair1 in locations.items():
+            if n1 != n:
+                r10, c10 = pair1[0]
+                r11, c11 = pair1[1]
+                solver.add_program_line(f"not reachable_path({r0}, {c0}, {r10}, {c10}).")
+                solver.add_program_line(f"not reachable_path({r0}, {c0}, {r11}, {c11}).")
+                solver.add_program_line(f"not reachable_path({r1}, {c1}, {r10}, {c10}).")
+                solver.add_program_line(f"not reachable_path({r1}, {c1}, {r11}, {c11}).")
 
-        atoms[source].prove_if(True)  # prove source for free
-        require(atoms[sink])  # require that sink is proven
+    solver.add_program_line(":- grid(R, C), numberlink(R, C), not not_pass_by_loop(R, C), not reachable_path(_, _, R, C).")
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-    # each cell is on (at most) one path
-    for r in range(E.R):
-        for c in range(E.C):
-            if (r, c) not in sinks:
-                these_atoms = [atom_grids[n][(r, c)] for n in atom_grids]
-                condition = sum_bools(1, these_atoms) & (grid[r][c] != "")
-                if not use_all_cells:  # allow cell to be unused
-                    unused = grid[r][c] == ""
-                    for this_atom in these_atoms:
-                        unused &= ~this_atom
-                    condition |= unused
-                require(condition)
-
-    sols = get_all_grid_solutions(grid)
-
-    # now convert to loop format
-    lsols = []
-    for sol in sols:
-        lsol = {}
-        for i in range(E.R):
-            for j in range(E.C):
-                s = rc_to_grid(i, j)
-
-                u, xu = sol.get(rc_to_grid(i - 1, j), "") == "D", sol.get(s, "") == "U"
-                r, xr = sol.get(rc_to_grid(i, j + 1), "") == "L", sol.get(s, "") == "R"
-                d, xd = sol.get(rc_to_grid(i + 1, j), "") == "U", sol.get(s, "") == "D"
-                l, xl = sol.get(rc_to_grid(i, j - 1), "") == "R", sol.get(s, "") == "L"
-
-                if (u and xl) or (l and xu):
-                    lsol[s] = "J.png"
-                elif (l and xd) or (d and xl):
-                    lsol[s] = "7.png"
-                elif (r and xu) or (u and xr):
-                    lsol[s] = "L.png"
-                elif (d and xr) or (r and xd):
-                    lsol[s] = "r.png"
-                elif (l and xr) or (r and xl):
-                    lsol[s] = "-.png"
-                elif (u and xd) or (d and xu):
-                    lsol[s] = "1.png"
-
-                # sources and sinks
-                elif u or xu:
-                    lsol[s] = "bottom_end.png"
-                elif l or xl:
-                    lsol[s] = "right_end.png"
-                elif d or xd:
-                    lsol[s] = "top_end.png"
-                elif r or xr:
-                    lsol[s] = "left_end.png"
-        lsols.append(lsol)
-
-    return lsols
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)

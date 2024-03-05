@@ -1,5 +1,8 @@
 """Utility for loops."""
 
+from typing import List, Tuple
+
+
 # --- ISOLATED CELL PATTERNS ---
 ISOLATED = [".", ""]
 
@@ -64,7 +67,7 @@ def connected_loop(color: str = "white") -> str:
     """
     Generate a loop rule to constrain connectivity.
 
-    A grid fact and a loop/path fact should be defined first.
+    A grid fact and a loop/path fact and an adjacent loop rule should be defined first.
     """
     initial = f"reachable_loop(R, C) :- (R, C) = #min{{ (R1, C1) : grid(R1, C1), {color}(R1, C1) }}.\n"
     propagation = f"reachable_loop(R, C) :- {color}(R, C), reachable_loop(R1, C1), adj_loop(R1, C1, R, C).\n"
@@ -72,7 +75,22 @@ def connected_loop(color: str = "white") -> str:
     return initial + propagation + constraint
 
 
-def single_loop(color: str = "white", visit_all: bool = False):
+def connected_path(src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color: str = "white") -> str:
+    """
+    Generate a path rule to constrain connectivity.
+
+    A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
+    """
+    src_r, src_c = src_cell
+    desc_r, desc_c = desc_cell
+    initial = f"reachable_path({src_r}, {src_c}, {desc_r}, {desc_c}).\n"
+    initial += f":- not dead_end({src_r}, {src_c}).\n"
+    initial += f":- not dead_end({desc_r}, {desc_c}).\n"
+    propagation = f"reachable_path({src_r}, {src_c}, R, C) :- {color}(R, C), reachable_path({src_r}, {src_c}, R1, C1), adj_loop(R1, C1, R, C).\n"
+    return initial + propagation
+
+
+def single_loop(color: str = "white", visit_all: bool = False, path: bool = False) -> str:
     """
     Generate a single loop constraint.
     For a hamilton loop, set `visit_all=True`. Otherwise set `visit_all=False`.
@@ -82,10 +100,16 @@ def single_loop(color: str = "white", visit_all: bool = False):
     """
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
     constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
-    if visit_all:
-        constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
-    else:
-        constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C), not not_pass_by_loop(R, C).\n"
+    constraint += "dead_end(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 1.\n"
+
+    visit_constraints = ["not pass_by_loop(R, C)"]
+    if path:
+        visit_constraints.append("not dead_end(R, C)")
+
+    if not visit_all:
+        visit_constraints.append("not not_pass_by_loop(R, C)")
+
+    constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
     constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
@@ -102,7 +126,7 @@ def single_loop(color: str = "white", visit_all: bool = False):
     return constraint + rule.strip()
 
 
-def pass_area_one_time(ar: list) -> str:
+def pass_area_one_time(ar: List[Tuple[int, int]]) -> str:
     """
     Generate a rule that a loop passes through an area exactly once.
 
