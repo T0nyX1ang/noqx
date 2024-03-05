@@ -258,7 +258,8 @@ const puzzle_types = {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
-      "Use all cells": { name: "Use all cells", value: false },
+      visit_all: { name: "Use all cells", value: true },
+      no_2x2: { name: "Avoid 2x2 path", value: true },
     },
     properties: { outside: "0000", border: false },
   },
@@ -3717,7 +3718,7 @@ const examples = {
     },
     2: {
       data: {
-        param_values: { r: "10", c: "10", "Use all cells": true },
+        param_values: { r: "10", c: "10", visit_all: true, no_2x2: false },
         grid: {
           "1,1": "0",
           "1,7": "0",
@@ -3741,7 +3742,7 @@ const examples = {
     },
     3: {
       data: {
-        param_values: { r: "15", c: "15", "Use all cells": true },
+        param_values: { r: "15", c: "15", visit_all: true, no_2x2: true },
         grid: {
           "3,3": "1",
           "3,27": "2",
