@@ -83,9 +83,10 @@ def connected_path(src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color:
     """
     src_r, src_c = src_cell
     desc_r, desc_c = desc_cell
-    initial = f"reachable_path({src_r}, {src_c}, {desc_r}, {desc_c}).\n"
-    initial += f":- not dead_end({src_r}, {src_c}).\n"
-    initial += f":- not dead_end({desc_r}, {desc_c}).\n"
+    initial = f"reachable_path({src_r}, {src_c}, {src_r}, {src_c}).\n"
+    initial += f"reachable_path({src_r}, {src_c}, {desc_r}, {desc_c}).\n"
+    initial += f"dead_end({src_r}, {src_c}).\n"
+    initial += f"dead_end({desc_r}, {desc_c}).\n"
     propagation = f"reachable_path({src_r}, {src_c}, R, C) :- {color}(R, C), reachable_path({src_r}, {src_c}, R1, C1), adj_loop(R1, C1, R, C).\n"
     return initial + propagation
 
@@ -100,7 +101,7 @@ def single_loop(color: str = "white", visit_all: bool = False, path: bool = Fals
     """
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
     constraint += "not_pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 0.\n"
-    constraint += "dead_end(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 1.\n"
+    constraint += ":- dead_end(R, C), grid(R, C), #count{ D: grid_direction(R, C, D) } != 1.\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:
