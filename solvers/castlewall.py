@@ -34,12 +34,12 @@ def black_out_white_in() -> str:
 
     A grid direction fact should be defined first.
     """
-    in_loop = "in_loop(-1, C) :- grid(_, C).\n"
-    in_loop += 'in_loop(R, C) :- grid(R, C), in_loop(R - 1, C), not grid_direction(R, C, "r").\n'
-    in_loop += 'in_loop(R, C) :- grid(R, C), not in_loop(R - 1, C), grid_direction(R, C, "r").\n'
-    constraint = ":- white(R, C), in_loop(R, C).\n"
-    constraint = ":- black(R, C), not in_loop(R, C)."
-    return in_loop + constraint
+    out_loop = "out_loop(-1, C) :- grid(_, C).\n"
+    out_loop += 'out_loop(R, C) :- grid(R, C), out_loop(R - 1, C), not grid_direction(R, C, "r").\n'
+    out_loop += 'out_loop(R, C) :- grid(R, C), not out_loop(R - 1, C), grid_direction(R, C, "r").\n'
+    constraint = ":- white(R, C), out_loop(R, C).\n"
+    constraint += ":- black(R, C), not out_loop(R, C)."
+    return out_loop + constraint
 
 
 def encode(string: str) -> Encoding:
