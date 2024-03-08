@@ -5,8 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop, fill_path, single_loop
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.loop import fill_path
 from .utilsx.solution import solver
 
 
@@ -27,8 +26,7 @@ def slant_conn() -> str:
 
 
 def slant_fill_each() -> str:
-    rule = ':- grid(R, C), grid(R+1, C+1), { grid_direction(R, C, "dr"); grid_direction(R, C+1, "dl") } != 1.\n'
-    return rule
+    return ':- grid(R, C), grid(R+1, C+1), { grid_direction(R, C, "dr"); grid_direction(R, C+1, "dl") } != 1.'
 
 
 def no_loop() -> str:
@@ -55,7 +53,6 @@ def solve(E: Encoding) -> List:
         solver.add_program_line(f":- #count{{ D: grid_direction({r}, {c}, D) }} != {clue}.")
 
     solver.add_program_line(display(item="slant_code", size=3))
-    print(solver.program)
     solver.solve()
 
     return solver.solutions
