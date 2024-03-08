@@ -93,18 +93,16 @@ def connected_path(src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color:
 
 def single_loop(color: str = "white", path: bool = False) -> str:
     """
-    Generate a single loop constraint.
-    For a hamilton loop, set `visit_all=True`. Otherwise set `visit_all=False`.
-    This will also generate a rule for loop signs.
+    Generate a single loop constraint with loop signs.
 
     A grid fact and a grid_direction rule should be defined first.
     """
-    constraint = "pass_by_loop(R, C) :- grid(R, C), #count{ D: grid_direction(R, C, D) } = 2.\n"
-    constraint += ":- dead_end(R, C), grid(R, C), #count{ D: grid_direction(R, C, D) } != 1.\n"
+    constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 2.\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:
         visit_constraints.append("not dead_end(R, C)")
+        constraint += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
 
     constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
     constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'

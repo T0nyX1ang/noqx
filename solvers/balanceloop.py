@@ -1,6 +1,6 @@
 """The Balance Loop solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from . import utilsx
 from .utilsx.encoding import Encoding
@@ -40,20 +40,23 @@ def balance_loop_rule(color: str = "black") -> str:
     return rule.strip()
 
 
-def count_balance_loop(target: int, color: str = "black", op: str = "eq") -> str:
+def count_balance_loop(target: int, src_cell: Tuple[int, int], color: str = "black", op: str = "eq") -> str:
     """
     Generate a constraint to count the length of "2-way" straight lines.
 
     A balance loop rule should be defined first.
     """
     op = rev_op_dict[op]
+    r, c = src_cell
     constraint = ""
     for sign in "J7Lr":
-        constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "{sign}"), |R - N1| + |C - N2| {op} {target}.\n'
+        constraint += (
+            f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "{sign}"), |{r} - N1| + |{c} - N2| {op} {target}.\n'
+        )
 
     # special case for straight line
-    constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "1"), |R - N1| + |R - N2| {op} {target}.\n'
-    constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "-"), |C - N1| + |C - N2| {op} {target}.\n'
+    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "1"), |{r} - N1| + |{r} - N2| {op} {target}.\n'
+    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "-"), |{c} - N1| + |{c} - N2| {op} {target}.\n'
     return constraint.strip()
 
 
@@ -79,11 +82,11 @@ def solve(E: Encoding) -> List:
         if color == "b":
             solver.add_program_line(f"black({r}, {c}).")
             if clue != "":
-                solver.add_program_line(count_balance_loop(int(clue), color="black"))
+                solver.add_program_line(count_balance_loop(int(clue), (r, c), color="black"))
         elif color == "w":
             solver.add_program_line(f"white({r}, {c}).")
             if clue != "":
-                solver.add_program_line(count_balance_loop(int(clue), color="black"))
+                solver.add_program_line(count_balance_loop(int(clue), (r, c), color="white"))
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()

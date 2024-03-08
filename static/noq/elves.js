@@ -1668,7 +1668,7 @@ let elf_types = {
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
   skyscrapers: IntElf(),
-  slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("sw"), "first"),
+  slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
   spiralgalaxies: SpiralGalaxiesElf,
   starbattle: DirectSum(
     BorderElf,
