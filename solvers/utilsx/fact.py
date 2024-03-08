@@ -1,6 +1,6 @@
 """Generating facts and meta-facts for the solver."""
 
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 
 def display(item: str = "black", size: int = 2) -> str:
@@ -34,7 +34,7 @@ def edge(rows: int, cols: int) -> str:
     return fact
 
 
-def direction(directions: str) -> str:
+def direction(directions: Union[str, list]) -> str:
     """Generates facts for directions."""
     format_d = map(lambda x: f'"{x}"', tuple(directions))
     return f"direction({';'.join(format_d)})."

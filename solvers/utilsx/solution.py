@@ -66,12 +66,22 @@ class ClingoSolver:
                 r, c, sign = data
                 sign = sign.replace('"', "")
                 dat2png = {
-                    "ul" : "top-left.png",
-                    "ur" : "top-right.png",
-                    "dl" : "bottom-left.png",
-                    "dr" : "bottom-right.png",
+                    "ul": "top-left.png",
+                    "ur": "top-right.png",
+                    "dl": "bottom-left.png",
+                    "dr": "bottom-right.png",
                 }
                 formatted[rc_to_grid(r, c)] = dat2png[sign]
+            elif _type == "slant_code":
+                r, c, code = data
+                sign = ""
+                sign += "tl" if code & 1 else ""
+                sign += "tr" if code >> 1 & 1 else ""
+                sign += "br" if code >> 3 & 1 else ""
+                sign += "bl" if code >> 2 & 1 else ""
+                if len(sign):
+                    formatted[rc_to_grid(r, c)] = sign + ".png"
+                # formatted[rc_to_grid(r, c)] = code
             else:
                 # color
                 r, c = data
