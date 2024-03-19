@@ -116,6 +116,14 @@ def adjacent(_type: Any = 4) -> str:
         adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
         return adj
 
+    if _type == "loop_directed":
+        adj = 'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
+        adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
+        return adj
+
     raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
 
 
