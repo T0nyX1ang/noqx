@@ -5,46 +5,11 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import fill_path, connected_loop, DIRECTED, DIRECTIONAL_PAIR_TO_UNICODE
+from .utilsx.loop import fill_path, connected_loop, directed_loop
 from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 rev_direction = {"l": "r", "r": "l", "u": "d", "d": "u"}
-
-
-def fill_path_directed(color: str = None) -> str:
-    """
-    Generate a rule that a cell is on a directed path.
-
-    A grid fact and a direction fact should be defined first.
-    """
-    rule = f"{{ grid_in(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C).\n"
-    rule += f"{{ grid_out(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C)."
-    return rule
-
-
-def directed_loop(color: str = "white") -> str:
-    """
-    Generate a directed loop constraint with loop signs.
-
-    A grid fact and a grid_direction rule should be defined first.
-    """
-    constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_in(R, C, D) } = 1, #count { D: grid_out(R, C, D) } = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
-
-    constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
-    constraint += f':- {color}(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
-    constraint += f':- {color}(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
-    constraint += f':- {color}(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
-    constraint += f':- {color}(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
-
-    # signs = "; ".join(map(lambda x: f'loop_sign(R, C, "{x}")', DIRECTED[:12]))
-    # constraint += f'{{ {signs} }} = 1 :- grid(R, C).\n'
-    dirs = ["lu", "ul", "ld", "dl", "ru", "ur", "dr", "rd", "lr", "rl", "du", "ud"]
-    rule = ""
-    for sign, (d1, d2) in zip(DIRECTED[:12], dirs):
-        sign = DIRECTIONAL_PAIR_TO_UNICODE[sign]
-        rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_in(R, C, "{d1}"), grid_out(R, C, "{d2}").\n'
-    return constraint + rule.strip()
 
 
 def nagare_wind(r: int, c: int, d: str, E: Encoding) -> str:
@@ -83,7 +48,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="nagare"))
-    solver.add_program_line(fill_path_directed(color="nagare"))
+    solver.add_program_line(fill_path(color="nagare", directed=True))
     solver.add_program_line(adjacent(_type="loop_directed"))
     solver.add_program_line(connected_loop(color="nagare"))
     solver.add_program_line(directed_loop(color="nagare"))
@@ -101,7 +66,6 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not nagare({r}, {c}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))
-    print(solver.program)
     solver.solve()
 
     return solver.solutions

@@ -54,13 +54,18 @@ DIRECTIONAL_PAIR_TO_UNICODE = {
 }
 
 
-def fill_path(color: str = None) -> str:
+def fill_path(color: str = None, directed: bool = False) -> str:
     """
     Generate a rule that a cell is on a path.
 
     A grid fact and a direction fact should be defined first.
     """
-    return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+    if not directed:
+        return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+    else:
+        rule = f"{{ grid_in(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ grid_out(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C)."
+        return rule
 
 
 def connected_loop(color: str = "white") -> str:
@@ -116,6 +121,30 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     rule = ""
     for sign, (d1, d2) in zip(NON_DIRECTED[:6], dirs):
         rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+    return constraint + rule.strip()
+
+
+def directed_loop(color: str = "white") -> str:
+    """
+    Generate a directed loop constraint with loop signs.
+
+    A grid fact and a grid_direction rule should be defined first.
+    """
+    constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_in(R, C, D) } = 1, #count { D: grid_out(R, C, D) } = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
+
+    constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
+    constraint += f':- {color}(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
+    constraint += f':- {color}(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
+    constraint += f':- {color}(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
+    constraint += f':- {color}(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
+
+    # signs = "; ".join(map(lambda x: f'loop_sign(R, C, "{x}")', DIRECTED[:12]))
+    # constraint += f'{{ {signs} }} = 1 :- grid(R, C).\n'
+    dirs = ["lu", "ul", "ld", "dl", "ru", "ur", "dr", "rd", "lr", "rl", "du", "ud"]
+    rule = ""
+    for sign, (d1, d2) in zip(DIRECTED[:12], dirs):
+        sign = DIRECTIONAL_PAIR_TO_UNICODE[sign]
+        rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_in(R, C, "{d1}"), grid_out(R, C, "{d2}").\n'
     return constraint + rule.strip()
 
 
