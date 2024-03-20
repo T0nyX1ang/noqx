@@ -81,7 +81,7 @@ def connected_loop(color: str = "white") -> str:
 
 
 def connected_path(
-    src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color: str = "white", directed: bool = False, only_one: bool = False
+    src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white", directed: bool = False, only_one: bool = False
 ) -> str:
     """
     Generate a path rule to constrain connectivity.
@@ -89,16 +89,16 @@ def connected_path(
     A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
     """
     src_r, src_c = src_cell
-    desc_r, desc_c = desc_cell
+    dest_r, dest_c = dest_cell
     initial = f"reachable_path({src_r}, {src_c}, {src_r}, {src_c}).\n"
-    initial += f"reachable_path({src_r}, {src_c}, {desc_r}, {desc_c}).\n"
+    initial += f"reachable_path({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
 
     if not directed:
         initial += f"dead_end({src_r}, {src_c}).\n"
-        initial += f"dead_end({desc_r}, {desc_c}).\n"
+        initial += f"dead_end({dest_r}, {dest_c}).\n"
     else:
         initial += f"dead_out({src_r}, {src_c}).\n"
-        initial += f"dead_in({desc_r}, {desc_c}).\n"
+        initial += f"dead_in({dest_r}, {dest_c}).\n"
     propagation = f"reachable_path({src_r}, {src_c}, R, C) :- {color}(R, C), reachable_path({src_r}, {src_c}, R1, C1), adj_loop(R1, C1, R, C).\n"
 
     constraint = ""

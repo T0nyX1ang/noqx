@@ -23,10 +23,15 @@ def area_border(_id: int, ar: list) -> str:
     return rule
 
 
-def fully_reachable_path(color: str) -> str:
-    """Generate a fully-propagated reachable path."""
-    initial = f"fully_reachable_path(R, C, R, C) :- grid(R, C), {color}(R, C).\n"
-    propagation = f"fully_reachable_path(R0, C0, R, C) :- fully_reachable_path(R0, C0, R1, C1), grid(R, C), {color}(R, C), adj_loop(R, C, R1, C1).\n"
+def connected_destpath(dest_cell: Tuple[int, int], color: str = "white") -> str:
+    """
+    Generate a path rule to constrain connectivity.
+
+    A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
+    """
+    dest_r, dest_c = dest_cell
+    initial = f"reachable_destpath({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
+    propagation = f"reachable_destpath(R, C, {dest_r}, {dest_c}) :- {color}(R, C), reachable_destpath(R1, C1, {dest_r}, {dest_c}), adj_loop(R, C, R1, C1)."
     return initial + propagation
 
 
@@ -37,7 +42,7 @@ def haisu_count(target: int, _id: int, dest: Tuple[int, int]) -> str:
     A direction fact and a grid_in should be defined first.
     """
     dest_r, dest_c = dest
-    constraint = f":- #count {{ R, C: area_border({_id}, R, C, D), grid_in(R, C, D), fully_reachable_path(R, C, {dest_r}, {dest_c}) }} != {target}."
+    constraint = f":- #count {{ R, C: area_border({_id}, R, C, D), grid_in(R, C, D), reachable_destpath(R, C, {dest_r}, {dest_c}) }} != {target}."
     return constraint
 
 
@@ -72,13 +77,10 @@ def solve(E: Encoding) -> List:
         elif clue == "G":
             gr, gc = r, c
         else:
+            solver.add_program_line(connected_destpath((r, c), color="haisu"))
             solver.add_program_line(haisu_count(int(clue), _id=clue_index[(r, c)], dest=(r, c)))
 
-    solver.add_program_line("test(R, C, D) :- area_border(0, R, C, D), grid_in(R, C, D), fully_reachable_path(R, C, 2, 2).")
-
     solver.add_program_line(connected_path((sr, sc), (gr, gc), color="haisu", directed=True, only_one=True))
-    solver.add_program_line(fully_reachable_path("haisu"))
-
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
 
