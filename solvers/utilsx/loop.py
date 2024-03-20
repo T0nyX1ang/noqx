@@ -122,10 +122,10 @@ def single_loop(color: str = "white", path: bool = False) -> str:
         constraint += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
 
     constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    constraint += f':- {color}(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
-    constraint += f':- {color}(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
-    constraint += f':- {color}(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
-    constraint += f':- {color}(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
+    constraint += ':- grid(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
+    constraint += ':- grid(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
+    constraint += ':- grid(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
+    constraint += ':- grid(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
 
     dirs = ["lu", "ld", "ru", "rd", "lr", "ud"]
     rule = ""
