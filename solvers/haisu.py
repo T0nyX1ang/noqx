@@ -23,14 +23,16 @@ def area_border(_id: int, ar: list) -> str:
     return rule
 
 
-def connected_destpath(dest_cell: Tuple[int, int], color: str = "white") -> str:
+def connected_destpath(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
     """
     Generate a path rule to constrain connectivity.
 
     A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
     """
+    src_r, src_c = src_cell
     dest_r, dest_c = dest_cell
     initial = f"reachable_destpath({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
+    initial += f"reachable_destpath({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
     propagation = f"reachable_destpath(R, C, {dest_r}, {dest_c}) :- {color}(R, C), reachable_destpath(R1, C1, {dest_r}, {dest_c}), adj_loop(R, C, R1, C1)."
     return initial + propagation
 
@@ -76,8 +78,10 @@ def solve(E: Encoding) -> List:
             sr, sc = r, c
         elif clue == "G":
             gr, gc = r, c
-        else:
-            solver.add_program_line(connected_destpath((r, c), color="haisu"))
+
+    for (r, c), clue in E.clues.items():
+        if clue not in ("S", "G"):
+            solver.add_program_line(connected_destpath((sr, sc), (r, c), color="haisu"))
             solver.add_program_line(haisu_count(int(clue), _id=clue_index[(r, c)], dest=(r, c)))
 
     solver.add_program_line(connected_path((sr, sc), (gr, gc), color="haisu", directed=True, only_one=True))
