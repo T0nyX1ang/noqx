@@ -1,4 +1,4 @@
-"""The Nagare solver."""
+"""The Hotaru Beam solver."""
 
 from typing import List
 
