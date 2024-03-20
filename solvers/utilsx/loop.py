@@ -80,7 +80,9 @@ def connected_loop(color: str = "white") -> str:
     return initial + propagation + constraint
 
 
-def connected_path(src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color: str = "white") -> str:
+def connected_path(
+    src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color: str = "white", directed: bool = False, only_one: bool = False
+) -> str:
     """
     Generate a path rule to constrain connectivity.
 
@@ -90,10 +92,20 @@ def connected_path(src_cell: Tuple[int, int], desc_cell: Tuple[int, int], color:
     desc_r, desc_c = desc_cell
     initial = f"reachable_path({src_r}, {src_c}, {src_r}, {src_c}).\n"
     initial += f"reachable_path({src_r}, {src_c}, {desc_r}, {desc_c}).\n"
-    initial += f"dead_end({src_r}, {src_c}).\n"
-    initial += f"dead_end({desc_r}, {desc_c}).\n"
+
+    if not directed:
+        initial += f"dead_end({src_r}, {src_c}).\n"
+        initial += f"dead_end({desc_r}, {desc_c}).\n"
+    else:
+        initial += f"dead_out({src_r}, {src_c}).\n"
+        initial += f"dead_in({desc_r}, {desc_c}).\n"
     propagation = f"reachable_path({src_r}, {src_c}, R, C) :- {color}(R, C), reachable_path({src_r}, {src_c}, R1, C1), adj_loop(R1, C1, R, C).\n"
-    return initial + propagation
+
+    constraint = ""
+    if only_one:
+        constraint += f":- grid(R, C), {color}(R, C), not reachable_path({src_r}, {src_c}, R, C).\n"
+
+    return initial + propagation + constraint
 
 
 def single_loop(color: str = "white", path: bool = False) -> str:
@@ -115,8 +127,6 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     constraint += f':- {color}(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
     constraint += f':- {color}(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
 
-    # signs = "; ".join(map(lambda x: f'loop_sign(R, C, "{x}")', NON_DIRECTED[:(6 if visit_all else 7)]))
-    # constraint += f'{{ {signs} }} = 1 :- grid(R, C).\n'
     dirs = ["lu", "ld", "ru", "rd", "lr", "ud"]
     rule = ""
     for sign, (d1, d2) in zip(NON_DIRECTED[:6], dirs):
@@ -124,7 +134,7 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     return constraint + rule.strip()
 
 
-def directed_loop(color: str = "white") -> str:
+def directed_loop(color: str = "white", path: bool = False) -> str:
     """
     Generate a directed loop constraint with loop signs.
 
@@ -132,18 +142,25 @@ def directed_loop(color: str = "white") -> str:
     """
     constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), #count {{ D: grid_in(R, C, D) }} = 1, #count {{ D: grid_out(R, C, D) }} = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
 
-    constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
-    constraint += f':- grid(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
-    constraint += f':- grid(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
-    constraint += f':- grid(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
-    constraint += f':- grid(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
-    constraint += f':- grid(R, C), grid_out(R, C, "l"), not grid_in(R, C - 1, "r").\n'
-    constraint += f':- grid(R, C), grid_out(R, C, "u"), not grid_in(R - 1, C, "d").\n'
-    constraint += f':- grid(R, C), grid_out(R, C, "r"), not grid_in(R, C + 1, "l").\n'
-    constraint += f':- grid(R, C), grid_out(R, C, "d"), not grid_in(R + 1, C, "u").\n'
+    visit_constraints = ["not pass_by_loop(R, C)"]
+    if path:
+        visit_constraints.append("not dead_out(R, C)")
+        visit_constraints.append("not dead_in(R, C)")
+        constraint += ":- dead_out(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 1.\n"
+        constraint += ":- dead_out(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 0.\n"
+        constraint += ":- dead_in(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 1.\n"
+        constraint += ":- dead_in(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 0.\n"
 
-    # signs = "; ".join(map(lambda x: f'loop_sign(R, C, "{x}")', DIRECTED[:12]))
-    # constraint += f'{{ {signs} }} = 1 :- grid(R, C).\n'
+    constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
+    constraint += ':- grid(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
+    constraint += ':- grid(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
+    constraint += ':- grid(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
+    constraint += ':- grid(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
+    constraint += ':- grid(R, C), grid_out(R, C, "l"), not grid_in(R, C - 1, "r").\n'
+    constraint += ':- grid(R, C), grid_out(R, C, "u"), not grid_in(R - 1, C, "d").\n'
+    constraint += ':- grid(R, C), grid_out(R, C, "r"), not grid_in(R, C + 1, "l").\n'
+    constraint += ':- grid(R, C), grid_out(R, C, "d"), not grid_in(R + 1, C, "u").\n'
+
     dirs = ["lu", "ul", "ld", "dl", "ru", "ur", "dr", "rd", "lr", "rl", "du", "ud"]
     rule = ""
     for sign, (d1, d2) in zip(DIRECTED[:12], dirs):

@@ -1,6 +1,6 @@
 """The Hashi solver."""
 
-from typing import List, Tuple
+from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
@@ -9,20 +9,21 @@ from .utilsx.loop import connected_loop
 from .utilsx.solution import solver
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
-
-
 def hashi_bridge(R: int, C: int) -> str:
-    rule = f':- hashi_bridge(R, C, "H", N), not hashi_bridge(R, C+1, "H", N), not number(R, C+1, _).\n'
-    rule += f':- hashi_bridge(R, C, "H", N), not hashi_bridge(R, C-1, "H", N), not number(R, C-1, _).\n'
-    rule += f':- hashi_bridge(R, C, "V", N), not hashi_bridge(R+1, C, "V", N), not number(R+1, C, _).\n'
-    rule += f':- hashi_bridge(R, C, "V", N), not hashi_bridge(R-1, C, "V", N), not number(R-1, C, _).\n'
+    """
+    Generate a rule for hashi constraints.
+
+    A grid fact and a direction fact should be defined first.
+    """
+    rule = ':- hashi_bridge(R, C, "H", N), not hashi_bridge(R, C+1, "H", N), not number(R, C+1, _).\n'
+    rule += ':- hashi_bridge(R, C, "H", N), not hashi_bridge(R, C-1, "H", N), not number(R, C-1, _).\n'
+    rule += ':- hashi_bridge(R, C, "V", N), not hashi_bridge(R+1, C, "V", N), not number(R+1, C, _).\n'
+    rule += ':- hashi_bridge(R, C, "V", N), not hashi_bridge(R-1, C, "V", N), not number(R-1, C, _).\n'
 
     rule += f"grid_big(-1..{R}, -1..{C}).\n"
-    rule += f"num_bridge(R, C, D, N) :- grid(R, C), hashi_bridge(R, C, D, N).\n"
-    rule += f"num_bridge(R, C, D, 0) :- grid_big(R, C), direction(D), not hashi_bridge(R, C, D, _).\n"
-    rule += f':- number(R, C, N), num_bridge(R, C-1, "H", N1), num_bridge(R-1, C, "V", N2), num_bridge(R, C+1, "H", N3), num_bridge(R+1, C, "V", N4), N != N1 + N2 + N3 + N4.\n'
+    rule += "num_bridge(R, C, D, N) :- grid(R, C), hashi_bridge(R, C, D, N).\n"
+    rule += "num_bridge(R, C, D, 0) :- grid_big(R, C), direction(D), not hashi_bridge(R, C, D, _).\n"
+    rule += ':- number(R, C, N), num_bridge(R, C-1, "H", N1), num_bridge(R-1, C, "V", N2), num_bridge(R, C+1, "H", N3), num_bridge(R+1, C, "V", N4), N != N1 + N2 + N3 + N4.\n'
 
     show = 'loop_sign(R, C, "-") :- grid(R, C), hashi_bridge(R, C, "H", 1).\n'
     show += 'loop_sign(R, C, "=") :- grid(R, C), hashi_bridge(R, C, "H", 2).\n'
@@ -35,6 +36,10 @@ def hashi_bridge(R: int, C: int) -> str:
     adj += "adj_loop(R0, C0, R, C) :- R=R0+1, C=C0, hashi_all(R, C), hashi_all(R0, C0).\n"
     adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
     return rule + show + adj.strip()
+
+
+def encode(string: str) -> Encoding:
+    return utilsx.encode(string, clue_encoder=lambda s: s)
 
 
 def solve(E: Encoding) -> List:

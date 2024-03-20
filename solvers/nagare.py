@@ -62,7 +62,6 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not nagare({r}, {c}).")
             solver.add_program_line(nagare_wind(r, c, clue, E))
         else:
-            # clue == "black"
             solver.add_program_line(f"not nagare({r}, {c}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))

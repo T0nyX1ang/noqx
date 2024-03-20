@@ -6,17 +6,18 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
 from .utilsx.loop import fill_path, directed_loop, connected_loop
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 drdc = {"l": (0, -1), "r": (0, 1), "u": (-1, 0), "d": (1, 0)}
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
-
-
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
+    """
+    Generate a rule to restrict the number of bends in the path.
+
+    A grid_in/grid_out rule should be defined first.
+    """
     rule = f"reachable({r}, {c}, {r}, {c}).\n"
     rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_loop(R1, C1, R, C).\n"
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "l"), not grid_out(R, C, "r").\n'
@@ -30,11 +31,15 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     return rule
 
 
+def encode(string: str) -> Encoding:
+    return utilsx.encode(string, has_borders=True)
+
+
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(f"{{ hotaru(R, C) }} :- grid(R, C), not dead_end(R, C).")
+    solver.add_program_line("{ hotaru(R, C) } :- grid(R, C), not dead_end(R, C).")
     solver.add_program_line(fill_path(color="hotaru", directed=True))
     solver.add_program_line(adjacent(_type="loop_directed"))
     solver.add_program_line(directed_loop(color="hotaru"))
