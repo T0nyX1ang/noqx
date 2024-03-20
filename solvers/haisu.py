@@ -1,23 +1,44 @@
 """The Haisu solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from . import utils
-from .utils.claspy import Atom, MultiVar, require, sum_bools, var_in
 from .utils.encoding import Encoding
-from .utils.grids import RectangularGrid, get_neighbors
-from .utils.loops import (
-    BOTTOM_IN,
-    BOTTOM_OUT,
-    DIRECTIONAL_PAIR_TO_UNICODE,
-    LEFT_IN,
-    LEFT_OUT,
-    RIGHT_IN,
-    RIGHT_OUT,
-    TOP_IN,
-    TOP_OUT,
-)
 from .utils.regions import full_bfs
+from .utilsx.fact import area, direction, display, grid
+from .utilsx.loop import fill_path, connected_path, directed_loop
+from .utilsx.rule import adjacent
+from .utilsx.solution import solver
+
+
+def area_border(_id: int, ar: list) -> str:
+    """Generates a fact for the border of an area."""
+    borders = []
+    for r, c in ar:
+        for dr, dc, d in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
+            r1, c1 = r + dr, c + dc
+            if (r1, c1) not in ar:
+                borders.append(f'area_border({_id}, {r}, {c}, "{d}").')
+    rule = "\n".join(borders)
+    return rule
+
+
+def fully_reachable_path(color: str) -> str:
+    """Generate a fully-propagated reachable path."""
+    initial = f"fully_reachable_path(R, C, R, C) :- grid(R, C), {color}(R, C).\n"
+    propagation = f"fully_reachable_path(R0, C0, R, C) :- fully_reachable_path(R0, C0, R1, C1), grid(R, C), {color}(R, C), adj_loop(R, C, R1, C1).\n"
+    return initial + propagation
+
+
+def haisu_count(target: int, _id: int, dest: Tuple[int, int]) -> str:
+    """
+    Generate a rule that counts the number that a path passes through an area.
+
+    A direction fact and a grid_in should be defined first.
+    """
+    dest_r, dest_c = dest
+    constraint = f":- #count {{ R, C: area_border({_id}, R, C, D), grid_in(R, C, D), fully_reachable_path(R, C, {dest_r}, {dest_c}) }} != {target}."
+    return constraint
 
 
 def encode(string: str) -> Encoding:
@@ -28,164 +49,40 @@ def solve(E: Encoding) -> List:
     if not ("S" in E.clues.values() and "G" in E.clues.values()):
         raise ValueError("S and G squares must be provided.")
 
-    rooms = full_bfs(E.R, E.C, E.edges)
+    solver.reset()
+    solver.add_program_line(grid(E.R, E.C))
+    solver.add_program_line(direction("lurd"))
+    solver.add_program_line("haisu(R, C) :- grid(R, C).")
+    solver.add_program_line(fill_path(color="haisu", directed=True))
+    solver.add_program_line(adjacent(_type="loop_directed"))
+    solver.add_program_line(directed_loop(color="haisu", path=True))
 
-    room_has_start = {room: False for room in rooms}
-    start = None
-    goal = None
-    for room in rooms:
-        for r, c in room:
-            clue = E.clues.get((r, c))
-            if clue == "S":
-                start = (r, c)
-                room_has_start[room] = True
-            elif clue == "G":
-                goal = (r, c)
+    clue_index = {}
+    areas = full_bfs(E.R, E.C, E.edges)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        solver.add_program_line(area_border(i, ar))
+        for r, c in ar:
+            if (r, c) in E.clues:
+                clue_index[(r, c)] = i
 
-    cell_to_room, room_spanners = {}, {}
-    for room in rooms:
-        for r, c in room:
-            cell_to_room[(r, c)] = room
-            for y, x in get_neighbors(E.R, E.C, r, c):
-                if (y, x) not in room:
-                    if room not in room_spanners:
-                        room_spanners[room] = set()
-                    room_spanners[room].add(((r, c), (y, x)))
-
-    parent = RectangularGrid(E.R, E.C, lambda r, c: MultiVar("^", "v", "<", ">", "."))
-    require(parent[start] == ".")
-
-    # before[u][v] is true iff u comes (weakly) before v in the path
-    before = {}
-    for coord1 in parent.iter_coords():
-        for coord2 in parent.iter_coords():
-            before[(coord1, coord2)] = Atom()
-            if coord1 != coord2 and (coord2, coord1) in before:
-                # require antisymmetry
-                require(before[(coord1, coord2)] != before[(coord2, coord1)])
-
-    for coord1 in parent.iter_coords():
-        for coord2 in parent.iter_coords():
-            if coord1 == coord2:
-                before[(coord1, coord2)].prove_if(True)
-            else:
-                cond = False
-                r, c = coord2
-                if r > 0:
-                    cond |= (parent[coord2] == "^") & before[(coord1, (r - 1, c))]
-                if r < E.R - 1:
-                    cond |= (parent[coord2] == "v") & before[(coord1, (r + 1, c))]
-                if c > 0:
-                    cond |= (parent[coord2] == "<") & before[(coord1, (r, c - 1))]
-                if c < E.C - 1:
-                    cond |= (parent[coord2] == ">") & before[(coord1, (r, c + 1))]
-                before[(coord1, coord2)].prove_if(cond)
-
-    for coord in parent.iter_coords():
-        require(before[(start, coord)])  # everything has to come after start, i.e., be on the path
-        if coord != goal:
-            require(~before[(goal, coord)])  # nothing can come after goal
-
-    for coord in E.clues:
-        room = cell_to_room[coord]
-        value = E.clues[coord]
-        if value in ["S", "G"]:
-            continue
-
-        possible_entrances = []
-        for A, B in room_spanners.get(room, []):  # A in room; B not in room and adj to A
-            # so we want ... -> B -> A -> ... -> coord
-            r2, c2 = B
-            if A == (r2 + 1, c2):  # A below B
-                adj_AB = parent[A] == "^"
-            if A == (r2 - 1, c2):  # A above B
-                adj_AB = parent[A] == "v"
-            if A == (r2, c2 + 1):  # A right of B
-                adj_AB = parent[A] == "<"
-            if A == (r2, c2 - 1):  # A left of B
-                adj_AB = parent[A] == ">"
-
-            possible_entrances.append(before[(A, coord)] & adj_AB)
-
-        if room_has_start[room]:
-            require(sum_bools(value - 1, possible_entrances))
+    for (r, c), clue in E.clues.items():
+        if clue == "S":
+            sr, sc = r, c
+        elif clue == "G":
+            gr, gc = r, c
         else:
-            require(sum_bools(value, possible_entrances))
+            solver.add_program_line(haisu_count(int(clue), _id=clue_index[(r, c)], dest=(r, c)))
 
-    # thanks for writing this formatting code jenna
+    solver.add_program_line("test(R, C, D) :- area_border(0, R, C, D), grid_in(R, C, D), fully_reachable_path(R, C, 2, 2).")
 
-    ALL = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv", "->", "-<", "1^", "1v", "S", "G"]
+    solver.add_program_line(connected_path((sr, sc), (gr, gc), color="haisu", directed=True, only_one=True))
+    solver.add_program_line(fully_reachable_path("haisu"))
 
-    # Paths
-    conn_patterns = [[MultiVar(*ALL) for c in range(E.C)] for r in range(E.R)]
-    for r in range(E.R):
-        for c in range(E.C):
-            require((conn_patterns[r][c] == "S") == ((r, c) == start))
-            require((conn_patterns[r][c] == "G") == ((r, c) == goal))
+    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.solve()
 
-            # --- Top / bottom edge rules ---
-            if r == 0:
-                require(~var_in(conn_patterns[r][c], TOP_IN + TOP_OUT))
-            if r == E.R - 1:
-                require(~var_in(conn_patterns[r][c], BOTTOM_IN + BOTTOM_OUT))
-            # --- Left / right edge rules ---
-            if c == 0:
-                require(~var_in(conn_patterns[r][c], LEFT_IN + LEFT_OUT))
-            if c == E.C - 1:
-                require(~var_in(conn_patterns[r][c], RIGHT_IN + RIGHT_OUT))
-            # # --- Other connectivity rules ---
-            if 0 < r:
-                # Cover cases where this cell has flow in from the top.
-                # Cases where top cell has flow in from the bottom will be covered in the r < E.R - 1 section.
-
-                # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], TOP_IN + ["G"]) | ~var_in(conn_patterns[r - 1][c], BOTTOM_OUT))
-                # Parent tracking & connectivity
-                flow_from_top = var_in(conn_patterns[r - 1][c], BOTTOM_OUT) | (
-                    (conn_patterns[r - 1][c] == "S") & var_in(conn_patterns[r][c], TOP_IN)
-                )
-                require(flow_from_top == (parent[r][c] == "^"))
-
-            if r < E.R - 1:
-                # Cases where this cell has flow in from the bottom.
-
-                # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], BOTTOM_IN + ["G"]) | ~var_in(conn_patterns[r + 1][c], TOP_OUT))
-                # Parent tracking
-                flow_from_bottom = var_in(conn_patterns[r + 1][c], TOP_OUT) | (
-                    (conn_patterns[r + 1][c] == "S") & var_in(conn_patterns[r][c], BOTTOM_IN)
-                )
-                require(flow_from_bottom == (parent[r][c] == "v"))
-
-            if 0 < c:
-                # Cases where this cell has flow in from the left.
-
-                # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], LEFT_IN + ["G"]) | ~var_in(conn_patterns[r][c - 1], RIGHT_OUT))
-                # Parent tracking
-                flow_from_left = var_in(conn_patterns[r][c - 1], RIGHT_OUT) | (
-                    (conn_patterns[r][c - 1] == "S") & var_in(conn_patterns[r][c], LEFT_IN)
-                )
-                require(flow_from_left == (parent[r][c] == "<"))
-
-            if c < E.C - 1:
-                # Cases where this cell has flow in from the right.
-
-                # Basic rules (no dangling edges)
-                require(var_in(conn_patterns[r][c], RIGHT_IN + ["G"]) | ~var_in(conn_patterns[r][c + 1], LEFT_OUT))
-                # Parent tracking
-                flow_from_right = var_in(conn_patterns[r][c + 1], LEFT_OUT) | (
-                    (conn_patterns[r][c + 1] == "S") & var_in(conn_patterns[r][c], RIGHT_IN)
-                )
-                require(flow_from_right == (parent[r][c] == ">"))
-
-    def format_function(r: int, c: int) -> str:
-        if (r, c) == start or (r, c) == goal:
-            return ""
-        return f"{DIRECTIONAL_PAIR_TO_UNICODE[conn_patterns[r][c].value()]}.png"
-
-    res = utils.solutions.get_all_grid_solutions(conn_patterns, format_function=format_function)
-    return res
+    return solver.solutions
 
 
 def decode(solutions: List[Encoding]) -> str:
