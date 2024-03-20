@@ -130,13 +130,17 @@ def directed_loop(color: str = "white") -> str:
 
     A grid fact and a grid_direction rule should be defined first.
     """
-    constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_in(R, C, D) } = 1, #count { D: grid_out(R, C, D) } = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
+    constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), #count {{ D: grid_in(R, C, D) }} = 1, #count {{ D: grid_out(R, C, D) }} = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
 
     constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
-    constraint += f':- {color}(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
-    constraint += f':- {color}(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
-    constraint += f':- {color}(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
-    constraint += f':- {color}(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
+    constraint += f':- grid(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
+    constraint += f':- grid(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
+    constraint += f':- grid(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
+    constraint += f':- grid(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
+    constraint += f':- grid(R, C), grid_out(R, C, "l"), not grid_in(R, C - 1, "r").\n'
+    constraint += f':- grid(R, C), grid_out(R, C, "u"), not grid_in(R - 1, C, "d").\n'
+    constraint += f':- grid(R, C), grid_out(R, C, "r"), not grid_in(R, C + 1, "l").\n'
+    constraint += f':- grid(R, C), grid_out(R, C, "d"), not grid_in(R + 1, C, "u").\n'
 
     # signs = "; ".join(map(lambda x: f'loop_sign(R, C, "{x}")', DIRECTED[:12]))
     # constraint += f'{{ {signs} }} = 1 :- grid(R, C).\n'
