@@ -6,7 +6,7 @@ from . import utils
 from .utils.encoding import Encoding
 from .utils.regions import full_bfs
 from .utilsx.fact import area, direction, display, grid
-from .utilsx.loop import fill_path, connected_path, directed_loop
+from .utilsx.loop import fill_path, directed_loop
 from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
@@ -23,6 +23,21 @@ def area_border(_id: int, ar: list) -> str:
     return rule
 
 
+def connected_directed_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
+    """
+    Generate a directed path rule to constrain connectivity.
+
+    A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
+    """
+    src_r, src_c = src_cell
+    dest_r, dest_c = dest_cell
+    initial = f"reachable_path({src_r}, {src_c}).\n"
+    initial += f"reachable_path({dest_r}, {dest_c}).\n"
+    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_loop(R, C, R1, C1).\n"
+    constraint = f":- grid(R, C), {color}(R, C), not reachable_path(R, C)."
+    return initial + propagation + constraint
+
+
 def connected_destpath(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
     """
     Generate a path rule to constrain connectivity.
@@ -31,9 +46,12 @@ def connected_destpath(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], co
     """
     src_r, src_c = src_cell
     dest_r, dest_c = dest_cell
-    initial = f"reachable_destpath({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
-    initial += f"reachable_destpath({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
-    propagation = f"reachable_destpath(R, C, {dest_r}, {dest_c}) :- {color}(R, C), reachable_destpath(R1, C1, {dest_r}, {dest_c}), adj_loop(R, C, R1, C1)."
+    tag = "reachable_destpath"
+    initial = f"{tag}({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
+    initial += f"{tag}({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
+    propagation = (
+        f"{tag}(R, C, {dest_r}, {dest_c}) :- {color}(R, C), {tag}(R1, C1, {dest_r}, {dest_c}), adj_loop(R, C, R1, C1)."
+    )
     return initial + propagation
 
 
@@ -44,7 +62,10 @@ def haisu_count(target: int, _id: int, dest: Tuple[int, int]) -> str:
     A direction fact and a grid_in should be defined first.
     """
     dest_r, dest_c = dest
-    constraint = f":- #count {{ R, C: area_border({_id}, R, C, D), grid_in(R, C, D), reachable_destpath(R, C, {dest_r}, {dest_c}) }} != {target}."
+    tag = "reachable_destpath"
+    constraint = (
+        f":- #count {{ R, C: area_border({_id}, R, C, D), grid_in(R, C, D), {tag}(R, C, {dest_r}, {dest_c}) }} != {target}."
+    )
     return constraint
 
 
@@ -76,15 +97,17 @@ def solve(E: Encoding) -> List:
     for (r, c), clue in E.clues.items():
         if clue == "S":
             sr, sc = r, c
+            solver.add_program_line(f"dead_out({r}, {c}).")
         elif clue == "G":
             gr, gc = r, c
+            solver.add_program_line(f"dead_in({r}, {c}).")
 
     for (r, c), clue in E.clues.items():
         if clue not in ("S", "G"):
             solver.add_program_line(connected_destpath((sr, sc), (r, c), color="haisu"))
             solver.add_program_line(haisu_count(int(clue), _id=clue_index[(r, c)], dest=(r, c)))
 
-    solver.add_program_line(connected_path((sr, sc), (gr, gc), color="haisu", directed=True, only_one=True))
+    solver.add_program_line(connected_directed_path((sr, sc), (gr, gc), color="haisu"))
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
 

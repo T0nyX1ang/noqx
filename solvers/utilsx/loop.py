@@ -80,9 +80,7 @@ def connected_loop(color: str = "white") -> str:
     return initial + propagation + constraint
 
 
-def connected_path(
-    src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white", directed: bool = False, only_one: bool = False
-) -> str:
+def connected_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
     """
     Generate a path rule to constrain connectivity.
 
@@ -92,20 +90,10 @@ def connected_path(
     dest_r, dest_c = dest_cell
     initial = f"reachable_path({src_r}, {src_c}, {src_r}, {src_c}).\n"
     initial += f"reachable_path({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
-
-    if not directed:
-        initial += f"dead_end({src_r}, {src_c}).\n"
-        initial += f"dead_end({dest_r}, {dest_c}).\n"
-    else:
-        initial += f"dead_out({src_r}, {src_c}).\n"
-        initial += f"dead_in({dest_r}, {dest_c}).\n"
+    initial += f"dead_end({src_r}, {src_c}).\n"
+    initial += f"dead_end({dest_r}, {dest_c}).\n"
     propagation = f"reachable_path({src_r}, {src_c}, R, C) :- {color}(R, C), reachable_path({src_r}, {src_c}, R1, C1), adj_loop(R1, C1, R, C).\n"
-
-    constraint = ""
-    if only_one:
-        constraint += f":- grid(R, C), {color}(R, C), not reachable_path({src_r}, {src_c}, R, C).\n"
-
-    return initial + propagation + constraint
+    return initial + propagation
 
 
 def single_loop(color: str = "white", path: bool = False) -> str:
