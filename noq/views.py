@@ -11,7 +11,6 @@ from django.shortcuts import render
 from django.urls import URLPattern, path
 from django.views.generic.base import RedirectView
 
-from solvers.utils.claspy import reset
 from static.consts import cats as CATS
 from static.consts import types as PUZZLE_TYPES
 
@@ -66,7 +65,6 @@ def solver(request):
     """Solver view."""
     try:
         start = time.time()
-        reset()
         puzzle_type = request.GET["puzzle_type"]
         module = importlib.import_module(f"solvers.{puzzle_type}")
         puzzle_encoding = module.encode(request.GET["puzzle"])
