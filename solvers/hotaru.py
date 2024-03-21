@@ -18,7 +18,8 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
 
     A grid_in/grid_out rule should be defined first.
     """
-    rule = f"reachable({r}, {c}, {r}, {c}).\n"
+    rule = "adj_loop(R, C, R1, C1) :- adj_loop(R1, C1, R, C)."  # ensure symmetry
+    rule += f"reachable({r}, {c}, {r}, {c}).\n"
     rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_loop(R1, C1, R, C).\n"
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "l"), not grid_out(R, C, "r").\n'
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "u"), not grid_out(R, C, "d").\n'
