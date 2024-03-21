@@ -2,12 +2,11 @@
 
 from typing import List, Tuple
 
-from . import utils
-from .utils.encoding import Encoding
-from .utils.regions import full_bfs
+from . import utilsx
+from .utilsx.encoding import Encoding
 from .utilsx.fact import area, direction, display, grid
-from .utilsx.loop import fill_path, directed_loop
-from .utilsx.rule import adjacent
+from .utilsx.loop import directed_loop, fill_path
+from .utilsx.region import full_bfs
 from .utilsx.solution import solver
 
 
@@ -23,6 +22,19 @@ def area_border(_id: int, ar: list) -> str:
     return rule
 
 
+def adj_connected() -> str:
+    """Generate a rule to constrain adjacent connectivity."""
+    adj = 'adj_connected(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
+    adj += 'adj_connected(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
+    adj += 'adj_connected(R0, C0, R, C) :- R=R0, C=C0-1, grid(R, C), grid(R0, C0), grid_in(R, C, "r").\n'
+    adj += 'adj_connected(R0, C0, R, C) :- R=R0-1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "d").\n'
+    adj += 'adj_connected(R, C, R0, C0) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
+    adj += 'adj_connected(R, C, R0, C0) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
+    adj += 'adj_connected(R, C, R0, C0) :- R=R0, C=C0-1, grid(R, C), grid(R0, C0), grid_out(R, C, "r").\n'
+    adj += 'adj_connected(R, C, R0, C0) :- R=R0-1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "d").\n'
+    return adj
+
+
 def connected_directed_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
     """
     Generate a directed path rule to constrain connectivity.
@@ -33,7 +45,7 @@ def connected_directed_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int
     dest_r, dest_c = dest_cell
     initial = f"reachable_path({src_r}, {src_c}).\n"
     initial += f"reachable_path({dest_r}, {dest_c}).\n"
-    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_loop(R, C, R1, C1).\n"
+    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_connected(R, C, R1, C1).\n"
     constraint = f":- grid(R, C), {color}(R, C), not reachable_path(R, C)."
     return initial + propagation + constraint
 
@@ -50,7 +62,7 @@ def connected_destpath(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], co
     initial = f"{tag}({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
     initial += f"{tag}({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
     propagation = (
-        f"{tag}(R, C, {dest_r}, {dest_c}) :- {color}(R, C), {tag}(R1, C1, {dest_r}, {dest_c}), adj_loop(R, C, R1, C1)."
+        f"{tag}(R, C, {dest_r}, {dest_c}) :- {color}(R, C), {tag}(R1, C1, {dest_r}, {dest_c}), adj_connected(R, C, R1, C1)."
     )
     return initial + propagation
 
@@ -70,7 +82,7 @@ def haisu_count(target: int, _id: int, dest: Tuple[int, int]) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utils.encode(string, has_borders=True, clue_encoder=lambda x: int(x) if x.isnumeric() else x)
+    return utilsx.encode(string, has_borders=True, clue_encoder=lambda x: int(x) if x.isnumeric() else x)
 
 
 def solve(E: Encoding) -> List:
@@ -82,7 +94,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("haisu(R, C) :- grid(R, C).")
     solver.add_program_line(fill_path(color="haisu", directed=True))
-    solver.add_program_line(adjacent(_type="loop_directed"))
+    solver.add_program_line(adj_connected())
     solver.add_program_line(directed_loop(color="haisu", path=True))
 
     clue_index = {}
@@ -115,4 +127,4 @@ def solve(E: Encoding) -> List:
 
 
 def decode(solutions: List[Encoding]) -> str:
-    return utils.decode(solutions)
+    return utilsx.decode(solutions)
