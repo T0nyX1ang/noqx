@@ -1084,7 +1084,14 @@ class NonogramElf extends DirectSum(
       this.curr_clue = "";
     }
 
-    if ("1234567890?".includes(key)) this.curr_clue += key;
+    if ("1234567890?".includes(key))
+      if (
+        this.curr_clue.includes("?") ||
+        key === "?" ||
+        this.curr_clue.length > 1
+      )
+        this.curr_clue = key;
+      else this.curr_clue += key;
 
     // resize extender dimension for all siblings, as needed
     let max_size = Math.max(1, this.true_num_clues());
@@ -1107,7 +1114,7 @@ class NonogramElf extends DirectSum(
     if (this.curr_clue != "") this.clues.pop();
   }
   load_example(str) {
-    this.clues = str.split(" ");
+    this.clues = str;
     this.curr_clue = "";
 
     let max_size = Math.max(1, this.true_num_clues());
@@ -1129,7 +1136,7 @@ class NonogramElf extends DirectSum(
       this.clues.push(this.curr_clue);
       this.curr_clue = "";
     }
-    return this.clues.length == 0 ? null : this.clues.join(" ");
+    return this.clues.length == 0 ? null : this.clues;
   }
 }
 

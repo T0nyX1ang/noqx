@@ -75,11 +75,11 @@ def solve(E: Encoding) -> List:
 
     top_clues = {}
     for c in E.top:
-        top_clues[c] = tuple(int(clue) if clue != "?" else "?" for clue in E.top[c].split())
+        top_clues[c] = tuple(int(clue) if clue != "?" else "?" for clue in E.top[c])
 
     left_clues = {}
     for r in E.left:
-        left_clues[r] = tuple(int(clue) if clue != "?" else "?" for clue in E.left[r].split())
+        left_clues[r] = tuple(int(clue) if clue != "?" else "?" for clue in E.left[r])
 
     solver.reset()
     solver.add_program_line(f"grid(-1..{E.R}, -1..{E.C}).")
