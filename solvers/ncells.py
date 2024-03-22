@@ -25,7 +25,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(reachable_edge())
     solver.add_program_line(count_reachable_edge(size))
 
-    for r, c, d in E.edge_ids:
+    for r, c, d in E.edges:
         if d in [Direction.LEFT, Direction.RIGHT]:
             c += d == Direction.RIGHT
             solver.add_program_line(f"vertical_line({r}, {c}).")

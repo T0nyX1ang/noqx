@@ -19,24 +19,16 @@ class Encoding:
         bottom_clues=None,
         left_clues=None,
     ):
-        self.rows = rows
-        self.r = rows
         self.R = rows
-        self.cols = cols
-        self.c = cols
         self.C = cols
         self.clues = clue_cells
         self.clue_cells = clue_cells
         self.params = params
         self.edge_ids = edge_ids
         self.edges = edge_ids
-        self.top_clues = top_clues
         self.top = top_clues
-        self.right_clues = right_clues
         self.right = right_clues
-        self.bottom_clues = bottom_clues
         self.bottom = bottom_clues
-        self.left_clues = left_clues
         self.left = left_clues
 
 
@@ -50,14 +42,13 @@ def default_clue_encoder(string):
         return string
     if string.isnumeric():
         return int(string)
-    elif string in ["?", ""]:
+    if string in ["?", ""]:
         return string
-    elif string in ["black", "gray", "blue", "green", "yellow", "red"]:
+    if string in ["black", "gray", "blue", "green", "yellow", "red"]:
         return string
-    elif string.isalpha() and len(string) == 1:
+    if string.isalpha() and len(string) == 1:
         return string
-    else:
-        raise RuntimeError("Invalid input")
+    raise RuntimeError("Invalid input")
 
 
 def grid_to_rc(i, j):
@@ -65,6 +56,7 @@ def grid_to_rc(i, j):
 
 
 def unquote_plus(value):
+    """Unquote a string or a list of strings."""
     if isinstance(value, list):
         return [unquote_plus(x) for x in value]
     elif isinstance(value, str):
@@ -149,25 +141,25 @@ def encode(
 
     if top_clues is not None:
         for j in range(2 * (cols + 1)):
-            input_coord_string = "{},{}".format(-1, j)
+            input_coord_string = f"{-1},{j}"
             if input_coord_string in json_grid:
                 top_clues[j // 2] = clue_encoder(unquote_plus(json_grid[input_coord_string]))
 
     if right_clues is not None:
         for i in range(2 * (rows + 1)):
-            input_coord_string = "{},{}".format(i, 2 * cols + 1)
+            input_coord_string = f"{i},{2 * cols + 1}"
             if input_coord_string in json_grid:
                 right_clues[i // 2] = clue_encoder(unquote_plus(json_grid[input_coord_string]))
 
     if bottom_clues is not None:
         for j in range(2 * (cols + 1)):
-            input_coord_string = "{},{}".format(2 * rows + 1, j)
+            input_coord_string = f"{2 * rows + 1},{j}"
             if input_coord_string in json_grid:
                 bottom_clues[j // 2] = clue_encoder(unquote_plus(json_grid[input_coord_string]))
 
     if left_clues is not None:
         for i in range(2 * (rows + 1)):
-            input_coord_string = "{},{}".format(i, -1)
+            input_coord_string = f"{i},{-1}"
             if input_coord_string in json_grid:
                 left_clues[i // 2] = clue_encoder(unquote_plus(json_grid[input_coord_string]))
 

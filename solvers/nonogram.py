@@ -1,5 +1,4 @@
 """The Nonogram solver."""
-# 桶帝牛逼！
 
 from typing import Dict, List, Union, Tuple
 
