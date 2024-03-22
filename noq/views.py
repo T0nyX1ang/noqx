@@ -46,13 +46,17 @@ urlpatterns.append(
     )
 )
 
+# preload solvers
+modules = {}
+
 # solver pages
 for pt_dict in PUZZLE_TYPES:
     value = pt_dict["value"]
     name = pt_dict["name"]
+    modules[value] = importlib.import_module(f"solvers.{value}")  # load module
 
     urlpatterns.append(
-        path(route=value, view=create_view(pt_dict), name=f"{name} solver - Noq")
+        path(route=value, view=create_view(pt_dict), name=f"{name} solver - Noqx")
     )  # we have to use another function here because of closures
 
     if "aliases" in pt_dict:
@@ -66,7 +70,7 @@ def solver(request):
     try:
         start = time.time()
         puzzle_type = request.GET["puzzle_type"]
-        module = importlib.import_module(f"solvers.{puzzle_type}")
+        module = modules[puzzle_type]
         puzzle_encoding = module.encode(request.GET["puzzle"])
         solutions_encoded = module.solve(puzzle_encoding)
         solutions_decoded = module.decode(solutions_encoded)

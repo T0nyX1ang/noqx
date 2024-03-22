@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utils.encoding import Encoding
+from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
 from .utilsx.rule import adjacent
 from .utilsx.shape import all_rect_region
