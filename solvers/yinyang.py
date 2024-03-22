@@ -11,7 +11,7 @@ from .utilsx.solution import rc_to_grid, solver
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

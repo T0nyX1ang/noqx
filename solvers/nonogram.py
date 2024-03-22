@@ -66,7 +66,7 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

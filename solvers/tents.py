@@ -29,7 +29,7 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

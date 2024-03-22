@@ -61,7 +61,7 @@ def count_balance_loop(target: int, src_cell: Tuple[int, int], color: str = "bla
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

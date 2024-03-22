@@ -27,7 +27,7 @@ def akari_lit(color: str = "black") -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -43,7 +43,7 @@ def solve(E: Encoding) -> List:
         elif clue == "o":
             solver.add_program_line(f"bulb({r}, {c}).")
         else:
-            num = int(clue[0])
+            num = int(clue)
             solver.add_program_line(f"black({r}, {c}).")
             solver.add_program_line(count_adjacent(num, (r, c), color="bulb"))
 
