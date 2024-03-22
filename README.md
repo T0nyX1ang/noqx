@@ -8,6 +8,8 @@ Extended logic puzzle solver of Noq.
 
 - New solver API with new visualizations (See issue [#2](https://github.com/T0nyX1ang/noqx/issues/2))
 
+- Multiple UI optimizations.
+
 ## How to run locally
 
 ### Use PDM with a virtual environment (Recommended)
@@ -41,8 +43,30 @@ Extended logic puzzle solver of Noq.
     python3 manage.py runserver
 ```
 
+## How to contribute
+
+- Install [PDM](https://pdm-project.org/latest/) first.
+
+- Clone this project and switch to `dev` branch.
+
+```bash
+    git clone https://github.com/T0nyX1ang/noqx.git
+```
+
+- Install dependencies with PDM:
+
+```bash
+    pdm install
+```
+
+- Install [pre-commit](https://pre-commit.com/) and add commit hooks:
+
+```bash
+    pre-commit install
+```
+
+- Free to PR now ^\_^
+
 ## Noq (Original Project)
 
-Noq is currently accessible on the web at [noq.solutions](https://www.noq.solutions/), formerly at [mstang.xyz/noq](https://www.mstang.xyz/noq). It is powered by Django and runs on a PythonAnywhere web server.
-
-The solver guide can be found [here](./solvers/utils/README.md). Once all the solvers are rewritten in Clingo, a new solver guide is expected to be here.
+Noq is currently accessible on the web at [noq.solutions](https://www.noq.solutions/).
