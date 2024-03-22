@@ -612,11 +612,14 @@ function BgColorElf(
     }
 
     handle_input(key, modifiers) {
-      super.handle_input(key, modifiers);
-
       // restrict bg color to be within the grid
-      if (this.i < 0 || this.j < 0 || this.i > 2 * ROWS || this.j > 2 * COLS)
-        return;
+      let curij = this.elt.id.split(",").map((x) => parseInt(x));
+      let curi = curij[0];
+      let curj = curij[1];
+
+      if (curi < 0 || curj < 0 || curi > 2 * ROWS || curj > 2 * COLS) return;
+
+      super.handle_input(key, modifiers);
 
       if (key in keyToColor) {
         const bgColor = keyToColor[key][0];
@@ -1018,7 +1021,10 @@ function find_elf_with_func(elf, func_name) {
 }
 
 // big
-class NonogramElf extends Elf {
+class NonogramElf extends DirectSum(
+  Elf,
+  BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+) {
   static controls() {
     let controls = super.controls();
     controls["Delete"] = "Delete last clue of cell";
@@ -1065,6 +1071,8 @@ class NonogramElf extends Elf {
   }
 
   handle_input(key, modifiers) {
+    this.elf2.handle_input(key, modifiers); // deal with color
+
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
 
@@ -1121,7 +1129,6 @@ class NonogramElf extends Elf {
       this.clues.push(this.curr_clue);
       this.curr_clue = "";
     }
-    console.log(this.clues.join(" "));
     return this.clues.length == 0 ? null : this.clues.join(" ");
   }
 }
@@ -1640,10 +1647,7 @@ let elf_types = {
   ),
   nanro: NanroElf,
   ncells: DirectSum(IntElf(), BorderElf),
-  nonogram: DirectSum(
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] }),
-    NonogramElf
-  ),
+  nonogram: NonogramElf,
   norinori: DirectSum(
     BorderElf,
     BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
