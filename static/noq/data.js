@@ -422,13 +422,6 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
-  yajilin_transparent: {
-    params: {
-      r: { name: "Rows", value: 10 },
-      c: { name: "Columns", value: 10 },
-    },
-    properties: { outside: "0000", border: false },
-  },
   yajisankazusan: {
     params: {
       r: { name: "Rows", value: 10 },

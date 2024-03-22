@@ -1432,6 +1432,16 @@ class YajikazuElf extends InvertSolutionZOrder(
   load_example(l) {
     if (l === "gray") {
       this.elf2.load_example("gray");
+    } else if (l === "green") {
+      this.elf2.load_example("green");
+    } else if (
+      l.includes("u") ||
+      l.includes("r") ||
+      l.includes("d") ||
+      l.includes("l")
+    ) {
+      this.elf1.elf1.load_example(l[0]);
+      this.elf1.elf2.load_example(l[1]);
     } else {
       this.elf1.elf1.load_example(l[0][0]);
       this.elf1.elf2.load_example(l[0][1]);

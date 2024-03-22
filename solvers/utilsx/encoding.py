@@ -62,7 +62,7 @@ def clue_encoder(data: Union[str, List, Any]) -> Union[str, List, Any]:
         return data
     if data.isalpha() and len(data) == 1:  # single letter
         return data
-    if isinstance(data, str) and data[0] == "s" and data[1:].isnumeric():  # signpost clue
+    if data[0] == "s" and data[1:].isnumeric():  # signpost clue
         return data
 
     raise RuntimeError("Invalid input")
