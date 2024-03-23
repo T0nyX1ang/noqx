@@ -130,6 +130,14 @@ function toggle_background_image(elt, img) {
   }
 }
 
+function restrict_to_grid(elt) {
+  // restrict elt to be within the grid
+  let curij = elt.id.split(",").map((x) => parseInt(x));
+  let curi = curij[0];
+  let curj = curij[1];
+  return curi < 0 || curj < 0 || curi > 2 * ROWS || curj > 2 * COLS;
+}
+
 ///////////////////////////////
 //       BASE ELF CLASS      //
 ///////////////////////////////
@@ -507,6 +515,8 @@ function ImageElf(dict, controls_dict, styles = {}) {
     }
 
     handle_input(key, modifiers) {
+      if (restrict_to_grid(this.elt)) return;
+
       super.handle_input(key, modifiers);
 
       if (!this.dict[key]) return false;
@@ -612,12 +622,7 @@ function BgColorElf(
     }
 
     handle_input(key, modifiers) {
-      // restrict bg color to be within the grid
-      let curij = this.elt.id.split(",").map((x) => parseInt(x));
-      let curi = curij[0];
-      let curj = curij[1];
-
-      if (curi < 0 || curj < 0 || curi > 2 * ROWS || curj > 2 * COLS) return;
+      if (restrict_to_grid(this.elt)) return;
 
       super.handle_input(key, modifiers);
 
