@@ -1,4 +1,4 @@
-"""The Castle Wall solver."""
+"""The Castle castle solver."""
 
 from typing import List
 
@@ -12,7 +12,7 @@ from .utilsx.solution import solver
 
 def wall_length(r: int, c: int, d: str, num: int) -> str:
     """
-    Constrain the wall length.
+    Constrain the castle length.
 
     A grid direction fact should be defined first.
     """
@@ -50,11 +50,11 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="wall"))
-    solver.add_program_line(fill_path(color="wall"))
+    solver.add_program_line(shade_c(color="castle"))
+    solver.add_program_line(fill_path(color="castle"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="wall"))
-    solver.add_program_line(single_loop(color="wall"))
+    solver.add_program_line(connected_loop(color="castle"))
+    solver.add_program_line(single_loop(color="castle"))
     solver.add_program_line(black_out_white_in())
 
     for (r, c), clue in E.clues.items():
@@ -65,7 +65,7 @@ def solve(E: Encoding) -> List:
             color_dict = {"w": "white", "g": "gray", "b": "black"}
             color = color_dict[color]
             solver.add_program_line(f"{color}({r}, {c}).")
-            solver.add_program_line(f"not wall({r}, {c}).")
+            solver.add_program_line(f"not castle({r}, {c}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()

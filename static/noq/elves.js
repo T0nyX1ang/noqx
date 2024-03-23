@@ -1524,7 +1524,7 @@ class CustomElf extends Elf {
 }
 
 let elf_types = {
-  akari: AkariElf,
+  lightup: AkariElf,
   aqre: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
@@ -1533,7 +1533,7 @@ let elf_types = {
     IntBordersElf(),
     BgColorElf({ x: ["blue", "blue"], o: ["green", "green"] })
   ),
-  balanceloop: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
+  balance: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(
     ImageElf(
       {
@@ -1556,11 +1556,11 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
-  canalview: DirectSum(
+  canal: DirectSum(
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
-  castlewall: CastleWallElf,
+  castle: CastleWallElf,
   cave: DirectSum(
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
@@ -1569,7 +1569,7 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
-  countryroad: InvertSolutionZOrder(IntBordersElf()),
+  country: InvertSolutionZOrder(IntBordersElf()),
   doppelblock: DirectSum(IntElf(), BgColorElf()),
   easyas: EasyAsElf,
   fillomino: IntElf(),
@@ -1610,7 +1610,7 @@ let elf_types = {
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
-  kuromasu: DirectSum(
+  kurodoko: DirectSum(
     IntElf(1, 99),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
@@ -1620,7 +1620,7 @@ let elf_types = {
   ),
   magnets: MagnetsElf,
   masyu: CircleElf,
-  minesweeper: DirectSum(
+  mines: DirectSum(
     IntElf(0, 8, "[0-8]"),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
@@ -1664,7 +1664,7 @@ let elf_types = {
     BorderElf,
     BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
   ),
-  numberlink: InvertSolutionZOrder(IntElf()),
+  numlin: InvertSolutionZOrder(IntElf()),
   nuribou: DirectSum(
     IntElf(1, 99),
     BgColorElf({
@@ -1694,7 +1694,7 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     "first"
   ),
-  rippleeffect: IntBordersElf(),
+  ripple: IntBordersElf(),
   shakashaka: AkariElf,
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
   shimaguni: DirectSum(
@@ -1702,7 +1702,7 @@ let elf_types = {
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
   skyscrapers: IntElf(),
-  slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
+  slither: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
   spiralgalaxies: SpiralGalaxiesElf,
   starbattle: DirectSum(
     BorderElf,
@@ -1734,8 +1734,8 @@ let elf_types = {
       }
     )
   ),
-  tll: TLLElf,
+  tapaloop: TLLElf,
   yajilin: YajilinElf,
-  yajisankazusan: YajikazuElf,
+  yajikazu: YajikazuElf,
   yinyang: CircleElf,
 };
