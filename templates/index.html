@@ -1,32 +1,36 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% load static %}
 
 {% block title %}Noqx{% endblock %}
 
 {% block content %}
-<div style='margin-left: 15%; margin-right: 15%;'>
+<div style="margin-left: 15%; margin-right: 15%;">
   <center>
-    <b style='font-size: 28px;'>Noqx - Extended logic puzzle solver</b><br>
-    <span style='font-size: 14px'>
+    <b style="font-size: 28px;">Noqx - Extended logic puzzle solver</b><br>
+    <span style="font-size: 14px">
       by
-      <a href='https://github.com/T0nyX1ang/'>T0nyX1ang</a>
+      <a href="https://github.com/T0nyX1ang/">T0nyX1ang</a>
       and
-      <a href='https://github.com/zhuyaoyu/'>zyy</a>
+      <a href="https://github.com/zhuyaoyu/">zyy</a>
       using
-      <a href='https://github.com/potassco/clingo'>clingo</a> <br>
+      <a href="https://github.com/potassco/clingo">clingo</a> <br>
     </span>
   </center>
 
-  <div id='typegroups'>
+  <div id="typegroups">
     {% for cat, cat_name in cats.items %}
-    <div class='typegroup'>
+    <div class="typegroup">
       <b>{{ cat_name }}</b>
       <ul>
         {% for cat0, cat0_types in types.items %}
         {% if cat0 == cat %} <!-- this Django code sorta sucks -->
         {% for pt_dict in cat0_types %}
-        <li><a href='{{ pt_dict.value }}'>{{ pt_dict.name }}</a></li>
+        <li>
+          <a href="{{ pt_dict.value }}">{{ pt_dict.name }}</a>
+          <a style="color: #303030; text-decoration: none; font-size: x-small; vertical-align: super"
+            href="https://puzz.link/rules.html?{{ pt_dict.value }}" target="_blank">?</a>
+        </li>
         {% endfor %}
         {% endif %}
         {% endfor %}
@@ -37,10 +41,11 @@
 
   <br>
 
-  <center style='font-size: 12px' ;>
+  <center style="font-size: 12px" ;>
     &copy; 2023-2024; Licensed under GPLv3 <br>
-    General layout of this page borrowed from <a href='https://puzz.link/list.html'>puzz.link</a> <br>
-    Original <a href='https://noq.solutions'>Noq</a> project by <a href='https://github.com/jenna-h/'>Jenna</a> and <a href='https://mstang.xyz'>Michael</a> using <a href='https://github.com/danyq/claspy'>claspy</a> <br>
+    General layout of this page borrowed from <a href="https://puzz.link/list.html">puzz.link</a> <br>
+    Original <a href="https://noq.solutions">Noq</a> project by <a href="https://github.com/jenna-h/">Jenna</a> and <a
+      href="https://mstang.xyz">Michael</a> using <a href="https://github.com/danyq/claspy">claspy</a> <br>
   </center>
 </div>
 {% endblock %}
