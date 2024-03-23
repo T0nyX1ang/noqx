@@ -1,4 +1,4 @@
-"""The Kuromasu solver."""
+"""The Kurodoko solver."""
 
 from typing import List
 

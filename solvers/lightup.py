@@ -1,4 +1,4 @@
-"""Akari solver."""
+"""Akari (Light up) solver."""
 
 from typing import List
 
@@ -10,7 +10,7 @@ from .utilsx.rule import adjacent, count_adjacent
 from .utilsx.solution import solver
 
 
-def akari_lit(color: str = "black") -> str:
+def lightup(color: str = "black") -> str:
     """
     A lit rule specially designed for akari.
 
@@ -27,7 +27,7 @@ def akari_lit(color: str = "black") -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -35,7 +35,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line("{ bulb(R, C) } :- grid(R, C), not black(R, C).")
     solver.add_program_line(adjacent())
-    solver.add_program_line(akari_lit(color="not black"))
+    solver.add_program_line(lightup(color="not black"))
 
     for (r, c), clue in E.clues.items():
         if clue == "black":
@@ -43,7 +43,7 @@ def solve(E: Encoding) -> List:
         elif clue == "o":
             solver.add_program_line(f"bulb({r}, {c}).")
         else:
-            num = int(clue[0])
+            num = int(clue)
             solver.add_program_line(f"black({r}, {c}).")
             solver.add_program_line(count_adjacent(num, (r, c), color="bulb"))
 

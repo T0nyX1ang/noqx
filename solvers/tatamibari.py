@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utils.encoding import Encoding
+from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
 from .utilsx.rule import adjacent
 from .utilsx.shape import all_rect_region
@@ -30,7 +30,7 @@ def tatamibari_constraint() -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

@@ -130,6 +130,14 @@ function toggle_background_image(elt, img) {
   }
 }
 
+function restrict_to_grid(elt) {
+  // restrict elt to be within the grid
+  let curij = elt.id.split(",").map((x) => parseInt(x));
+  let curi = curij[0];
+  let curj = curij[1];
+  return curi < 0 || curj < 0 || curi > 2 * ROWS || curj > 2 * COLS;
+}
+
 ///////////////////////////////
 //       BASE ELF CLASS      //
 ///////////////////////////////
@@ -213,7 +221,14 @@ class Elf {
     } else this.puzzle_elt.innerHTML = str;
   }
   load_solution(str) {
-    if (COLORS.includes(str)) {
+    if (COLORS.includes(str) && /^.+\.png$/.test(str)) {
+      // special judge for COLORS + image
+      this.solution_elt.style.backgroundColor = str;
+      if (str == "black") this.solution_elt.style.color = "gray";
+      this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
+      this.solution_elt.style.backgroundImage = image_url(str);
+      this.solution_image_str = str.substring(0, str.length - 4); // remove `.png` from str
+    } else if (COLORS.includes(str)) {
       this.solution_elt.style.backgroundColor = str;
       if (str == "black") this.solution_elt.style.color = "gray";
       this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
@@ -500,6 +515,8 @@ function ImageElf(dict, controls_dict, styles = {}) {
     }
 
     handle_input(key, modifiers) {
+      if (restrict_to_grid(this.elt)) return;
+
       super.handle_input(key, modifiers);
 
       if (!this.dict[key]) return false;
@@ -605,11 +622,9 @@ function BgColorElf(
     }
 
     handle_input(key, modifiers) {
-      super.handle_input(key, modifiers);
+      if (restrict_to_grid(this.elt)) return;
 
-      // restrict bg color to be within the grid
-      if (this.i < 0 || this.j < 0 || this.i > 2 * ROWS || this.j > 2 * COLS)
-        return;
+      super.handle_input(key, modifiers);
 
       if (key in keyToColor) {
         const bgColor = keyToColor[key][0];
@@ -1011,7 +1026,10 @@ function find_elf_with_func(elf, func_name) {
 }
 
 // big
-class NonogramElf extends Elf {
+class NonogramElf extends DirectSum(
+  Elf,
+  BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+) {
   static controls() {
     let controls = super.controls();
     controls["Delete"] = "Delete last clue of cell";
@@ -1058,6 +1076,8 @@ class NonogramElf extends Elf {
   }
 
   handle_input(key, modifiers) {
+    this.elf2.handle_input(key, modifiers); // deal with color
+
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
 
@@ -1069,7 +1089,14 @@ class NonogramElf extends Elf {
       this.curr_clue = "";
     }
 
-    if ("1234567890?".includes(key)) this.curr_clue += key;
+    if ("1234567890?".includes(key))
+      if (
+        this.curr_clue.includes("?") ||
+        key === "?" ||
+        this.curr_clue.length > 1
+      )
+        this.curr_clue = key;
+      else this.curr_clue += key;
 
     // resize extender dimension for all siblings, as needed
     let max_size = Math.max(1, this.true_num_clues());
@@ -1092,7 +1119,7 @@ class NonogramElf extends Elf {
     if (this.curr_clue != "") this.clues.pop();
   }
   load_example(str) {
-    this.clues = str.split(" ");
+    this.clues = str;
     this.curr_clue = "";
 
     let max_size = Math.max(1, this.true_num_clues());
@@ -1114,7 +1141,7 @@ class NonogramElf extends Elf {
       this.clues.push(this.curr_clue);
       this.curr_clue = "";
     }
-    return this.clues.length == 0 ? null : this.clues.join(" ");
+    return this.clues.length == 0 ? null : this.clues;
   }
 }
 
@@ -1432,6 +1459,16 @@ class YajikazuElf extends InvertSolutionZOrder(
   load_example(l) {
     if (l === "gray") {
       this.elf2.load_example("gray");
+    } else if (l === "green") {
+      this.elf2.load_example("green");
+    } else if (
+      l.includes("u") ||
+      l.includes("r") ||
+      l.includes("d") ||
+      l.includes("l")
+    ) {
+      this.elf1.elf1.load_example(l[0]);
+      this.elf1.elf2.load_example(l[1]);
     } else {
       this.elf1.elf1.load_example(l[0][0]);
       this.elf1.elf2.load_example(l[0][1]);
@@ -1487,7 +1524,7 @@ class CustomElf extends Elf {
 }
 
 let elf_types = {
-  akari: AkariElf,
+  lightup: AkariElf,
   aqre: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
@@ -1496,7 +1533,7 @@ let elf_types = {
     IntBordersElf(),
     BgColorElf({ x: ["blue", "blue"], o: ["green", "green"] })
   ),
-  balanceloop: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
+  balance: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(
     ImageElf(
       {
@@ -1519,11 +1556,11 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
-  canalview: DirectSum(
+  canal: DirectSum(
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
-  castlewall: CastleWallElf,
+  castle: CastleWallElf,
   cave: DirectSum(
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
@@ -1532,7 +1569,7 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
-  countryroad: InvertSolutionZOrder(IntBordersElf()),
+  country: InvertSolutionZOrder(IntBordersElf()),
   doppelblock: DirectSum(IntElf(), BgColorElf()),
   easyas: EasyAsElf,
   fillomino: IntElf(),
@@ -1573,7 +1610,7 @@ let elf_types = {
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
-  kuromasu: DirectSum(
+  kurodoko: DirectSum(
     IntElf(1, 99),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
@@ -1583,7 +1620,7 @@ let elf_types = {
   ),
   magnets: MagnetsElf,
   masyu: CircleElf,
-  minesweeper: DirectSum(
+  mines: DirectSum(
     IntElf(0, 8, "[0-8]"),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
   ),
@@ -1622,15 +1659,12 @@ let elf_types = {
   ),
   nanro: NanroElf,
   ncells: DirectSum(IntElf(), BorderElf),
-  nonogram: DirectSum(
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] }),
-    NonogramElf
-  ),
+  nonogram: NonogramElf,
   norinori: DirectSum(
     BorderElf,
     BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
   ),
-  numberlink: InvertSolutionZOrder(IntElf()),
+  numlin: InvertSolutionZOrder(IntElf()),
   nuribou: DirectSum(
     IntElf(1, 99),
     BgColorElf({
@@ -1660,7 +1694,7 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     "first"
   ),
-  rippleeffect: IntBordersElf(),
+  ripple: IntBordersElf(),
   shakashaka: AkariElf,
   shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
   shimaguni: DirectSum(
@@ -1668,7 +1702,7 @@ let elf_types = {
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
   skyscrapers: IntElf(),
-  slitherlink: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("sw"), "first"),
+  slither: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
   spiralgalaxies: SpiralGalaxiesElf,
   starbattle: DirectSum(
     BorderElf,
@@ -1700,8 +1734,8 @@ let elf_types = {
       }
     )
   ),
-  tll: TLLElf,
+  tapaloop: TLLElf,
   yajilin: YajilinElf,
-  yajisankazusan: YajikazuElf,
+  yajikazu: YajikazuElf,
   yinyang: CircleElf,
 };

@@ -1,4 +1,4 @@
-"""The Chocona solver."""
+"""The Shakashaka solver."""
 
 from typing import List
 

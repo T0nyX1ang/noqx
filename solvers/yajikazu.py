@@ -4,10 +4,8 @@ from typing import List, Tuple
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-
-
-from .utilsx.fact import grid, display
-from .utilsx.rule import shade_c, adjacent, avoid_adjacent, connected
+from .utilsx.fact import display, grid
+from .utilsx.rule import adjacent, avoid_adjacent, connected, shade_c
 from .utilsx.solution import solver
 
 
@@ -35,7 +33,7 @@ def yajikazu_count(target: int, src_cell: Tuple[int, int], direction: str, color
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

@@ -1,6 +1,6 @@
 """The Balance Loop solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from . import utilsx
 from .utilsx.encoding import Encoding
@@ -10,7 +10,7 @@ from .utilsx.rule import adjacent, shade_c, rev_op_dict
 from .utilsx.solution import solver
 
 
-def balance_loop_rule(color: str = "black") -> str:
+def balance_rule(color: str = "black") -> str:
     """
     Generate a rule for balance loop.
 
@@ -40,50 +40,53 @@ def balance_loop_rule(color: str = "black") -> str:
     return rule.strip()
 
 
-def count_balance_loop(target: int, color: str = "black", op: str = "eq") -> str:
+def count_balance(target: int, src_cell: Tuple[int, int], color: str = "black", op: str = "eq") -> str:
     """
     Generate a constraint to count the length of "2-way" straight lines.
 
     A balance loop rule should be defined first.
     """
     op = rev_op_dict[op]
+    r, c = src_cell
     constraint = ""
     for sign in "J7Lr":
-        constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "{sign}"), |R - N1| + |C - N2| {op} {target}.\n'
+        constraint += (
+            f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "{sign}"), |{r} - N1| + |{c} - N2| {op} {target}.\n'
+        )
 
     # special case for straight line
-    constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "1"), |R - N1| + |R - N2| {op} {target}.\n'
-    constraint += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "-"), |C - N1| + |C - N2| {op} {target}.\n'
+    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "1"), |{r} - N1| + |{r} - N2| {op} {target}.\n'
+    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "-"), |{c} - N1| + |{c} - N2| {op} {target}.\n'
     return constraint.strip()
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="balance_loop"))
-    solver.add_program_line(fill_path(color="balance_loop"))
+    solver.add_program_line(shade_c(color="balance"))
+    solver.add_program_line(fill_path(color="balance"))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="balance_loop"))
-    solver.add_program_line(single_loop(color="balance_loop", visit_all=True))
-    solver.add_program_line(balance_loop_rule(color="black"))
-    solver.add_program_line(balance_loop_rule(color="white"))
+    solver.add_program_line(connected_loop(color="balance"))
+    solver.add_program_line(single_loop(color="balance"))
+    solver.add_program_line(balance_rule(color="black"))
+    solver.add_program_line(balance_rule(color="white"))
 
     for (r, c), (clue, color) in E.clues.items():
-        solver.add_program_line(f"balance_loop({r}, {c}).")
+        solver.add_program_line(f"balance({r}, {c}).")
         if color == "b":
             solver.add_program_line(f"black({r}, {c}).")
             if clue != "":
-                solver.add_program_line(count_balance_loop(int(clue), color="black"))
+                solver.add_program_line(count_balance(int(clue), (r, c), color="black"))
         elif color == "w":
             solver.add_program_line(f"white({r}, {c}).")
             if clue != "":
-                solver.add_program_line(count_balance_loop(int(clue), color="black"))
+                solver.add_program_line(count_balance(int(clue), (r, c), color="white"))
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()

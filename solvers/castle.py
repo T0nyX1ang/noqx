@@ -1,4 +1,4 @@
-"""The Castle Wall solver."""
+"""The Castle castle solver."""
 
 from typing import List
 
@@ -12,7 +12,7 @@ from .utilsx.solution import solver
 
 def wall_length(r: int, c: int, d: str, num: int) -> str:
     """
-    Constrain the wall length.
+    Constrain the castle length.
 
     A grid direction fact should be defined first.
     """
@@ -34,27 +34,27 @@ def black_out_white_in() -> str:
 
     A grid direction fact should be defined first.
     """
-    in_loop = "in_loop(-1, C) :- grid(_, C).\n"
-    in_loop += 'in_loop(R, C) :- grid(R, C), in_loop(R - 1, C), not grid_direction(R, C, "r").\n'
-    in_loop += 'in_loop(R, C) :- grid(R, C), not in_loop(R - 1, C), grid_direction(R, C, "r").\n'
-    constraint = ":- white(R, C), in_loop(R, C).\n"
-    constraint = ":- black(R, C), not in_loop(R, C)."
-    return in_loop + constraint
+    out_loop = "out_loop(-1, C) :- grid(_, C).\n"
+    out_loop += 'out_loop(R, C) :- grid(R, C), out_loop(R - 1, C), not grid_direction(R, C, "r").\n'
+    out_loop += 'out_loop(R, C) :- grid(R, C), not out_loop(R - 1, C), grid_direction(R, C, "r").\n'
+    constraint = ":- white(R, C), out_loop(R, C).\n"
+    constraint += ":- black(R, C), not out_loop(R, C)."
+    return out_loop + constraint
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="wall"))
-    solver.add_program_line(fill_path(color="wall"))
+    solver.add_program_line(shade_c(color="castle"))
+    solver.add_program_line(fill_path(color="castle"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="wall"))
-    solver.add_program_line(single_loop(color="wall", visit_all=True))
+    solver.add_program_line(connected_loop(color="castle"))
+    solver.add_program_line(single_loop(color="castle"))
     solver.add_program_line(black_out_white_in())
 
     for (r, c), clue in E.clues.items():
@@ -65,7 +65,7 @@ def solve(E: Encoding) -> List:
             color_dict = {"w": "white", "g": "gray", "b": "black"}
             color = color_dict[color]
             solver.add_program_line(f"{color}({r}, {c}).")
-            solver.add_program_line(f"not wall({r}, {c}).")
+            solver.add_program_line(f"not castle({r}, {c}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()

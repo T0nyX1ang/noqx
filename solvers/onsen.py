@@ -7,7 +7,7 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import area, direction, display, grid
 from .utilsx.loop import fill_path, single_loop
 from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 
@@ -61,13 +61,10 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line("{ onsen_loop(R, C) } :- grid(R, C).")
+    solver.add_program_line(shade_c(color="onsen_loop"))
     solver.add_program_line(fill_path(color="onsen_loop"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(single_loop(color="onsen_loop", visit_all=True))
-
-    # for i, ((r, c), clue) in enumerate(E.clues.items()):
-    #     solver.add_program_line(onsen_rule(i, r, c, int(clue)))
+    solver.add_program_line(single_loop(color="onsen_loop"))
 
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):

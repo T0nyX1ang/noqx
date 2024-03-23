@@ -29,7 +29,7 @@ def yajilin_count(target: int, src_cell: Tuple[int, int], _direction: str, color
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -41,7 +41,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(avoid_adjacent(color="black"))
     solver.add_program_line(connected_loop(color="white"))
-    solver.add_program_line(single_loop(color="white", visit_all=True))
+    solver.add_program_line(single_loop(color="white"))
     solver.add_program_line(adjacent(_type="loop"))
 
     for (r, c), clue in E.clues.items():

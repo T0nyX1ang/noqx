@@ -23,14 +23,13 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
         for r, c in known_cells
     )  # n rules are generated
     constraints = "\n".join(
-        f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C). "
-        for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
+        f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C). " for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
     )  # n * (n - 1) / 2 constraints are generated
     return rules + "\n" + constraints
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

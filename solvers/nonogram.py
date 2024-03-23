@@ -1,5 +1,4 @@
 """The Nonogram solver."""
-# 桶帝牛逼！
 
 from typing import Dict, List, Union, Tuple
 
@@ -67,7 +66,7 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, clue_encoder=lambda s: s)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -76,11 +75,11 @@ def solve(E: Encoding) -> List:
 
     top_clues = {}
     for c in E.top:
-        top_clues[c] = tuple(int(clue) if clue != "?" else "?" for clue in E.top[c].split())
+        top_clues[c] = tuple(int(clue) if clue != "?" else "?" for clue in E.top[c])
 
     left_clues = {}
     for r in E.left:
-        left_clues[r] = tuple(int(clue) if clue != "?" else "?" for clue in E.left[r].split())
+        left_clues[r] = tuple(int(clue) if clue != "?" else "?" for clue in E.left[r])
 
     solver.reset()
     solver.add_program_line(f"grid(-1..{E.R}, -1..{E.C}).")

@@ -13,7 +13,7 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
-  akari: {
+  lightup: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -34,7 +34,7 @@ const puzzle_types = {
     },
     properties: { outside: "1001", border: true },
   },
-  balanceloop: {
+  balance: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -55,14 +55,14 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
-  canalview: {
+  canal: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
     },
     properties: { outside: "0000", border: false },
   },
-  castlewall: {
+  castle: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -84,7 +84,7 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: true },
   },
-  countryroad: {
+  country: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -175,7 +175,7 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
-  kuromasu: {
+  kurodoko: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -203,7 +203,7 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
-  minesweeper: {
+  mines: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -254,11 +254,12 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: true },
   },
-  numberlink: {
+  numlin: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
-      "Use all cells": { name: "Use all cells", value: false },
+      visit_all: { name: "Use all cells", value: false },
+      no_2x2: { name: "Avoid 2x2 path", value: true },
     },
     properties: { outside: "0000", border: false },
   },
@@ -297,7 +298,7 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: true },
   },
-  rippleeffect: {
+  ripple: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -329,7 +330,7 @@ const puzzle_types = {
     params: { n: { name: "Grid size", value: 6 } },
     properties: { outside: "1111", border: false },
   },
-  slitherlink: {
+  slither: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -406,7 +407,7 @@ const puzzle_types = {
     },
     properties: { outside: "1001", border: false },
   },
-  tll: {
+  tapaloop: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -421,14 +422,7 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
-  yajilin_transparent: {
-    params: {
-      r: { name: "Rows", value: 10 },
-      c: { name: "Columns", value: 10 },
-    },
-    properties: { outside: "0000", border: false },
-  },
-  yajisankazusan: {
+  yajikazu: {
     params: {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
@@ -445,7 +439,7 @@ const puzzle_types = {
 };
 
 const examples = {
-  akari: {
+  lightup: {
     1: {
       data: {
         param_values: { r: "15", c: "15" },
@@ -497,7 +491,7 @@ const examples = {
           "27,27": "black",
         },
       },
-      link: "https://mythstoryhunt.world/puzzles/akari",
+      link: "https://mythstoryhunt.world/puzzles/lightup",
     },
   },
   aqre: {
@@ -854,7 +848,7 @@ const examples = {
       link: "https://www.puzzle-aquarium.com/",
     },
   },
-  balanceloop: {
+  balance: {
     1: {
       data: {
         param_values: { r: 8, c: 8 },
@@ -999,7 +993,7 @@ const examples = {
       link: "https://www.puzzle-binairo.com/",
     },
   },
-  canalview: {
+  canal: {
     1: {
       data: {
         param_values: { r: "12", c: "12" },
@@ -1033,7 +1027,7 @@ const examples = {
       link: "https://www.gmpuzzles.com/blog/2016/07/canal-view-by-prasanna-seshadri-2/",
     },
   },
-  castlewall: {
+  castle: {
     1: {
       data: {
         param_values: { r: 7, c: 7 },
@@ -1268,7 +1262,7 @@ const examples = {
       link: "https://www.cross-plus-a.com/html/cros7choc.htm",
     },
   },
-  countryroad: {
+  country: {
     1: {
       data: {
         param_values: { r: "7", c: "7" },
@@ -2557,7 +2551,7 @@ const examples = {
       },
     },
   },
-  kuromasu: {
+  kurodoko: {
     1: {
       data: {
         param_values: { r: "11", c: "11" },
@@ -2887,7 +2881,7 @@ const examples = {
       },
     },
   },
-  minesweeper: {
+  mines: {
     1: {
       data: {
         param_values: { r: "8", c: "8", m: "10" },
@@ -3426,14 +3420,14 @@ const examples = {
       data: {
         param_values: { r: "4", c: "4" },
         grid: {
-          "-1,1": "? ?",
-          "-1,3": "? ?",
-          "-1,5": "? 1",
-          "-1,7": "1 2",
-          "1,-1": "? ?",
-          "3,-1": "?",
-          "5,-1": "1 1",
-          "7,-1": "? ?",
+          "-1,1": ["?", "?"],
+          "-1,3": ["?", "?"],
+          "-1,5": ["?", "1"],
+          "-1,7": ["1", "2"],
+          "1,-1": ["?", "?"],
+          "3,-1": ["?"],
+          "5,-1": ["1", "1"],
+          "7,-1": ["?", "?"],
         },
       },
     },
@@ -3441,25 +3435,25 @@ const examples = {
       data: {
         param_values: { r: "11", c: "8" },
         grid: {
-          "-1,1": "0",
-          "-1,3": "9",
-          "-1,5": "9",
-          "-1,7": "2 2",
-          "-1,9": "2 2",
-          "-1,11": "4",
-          "-1,13": "4",
-          "-1,15": "0",
-          "1,-1": "0",
-          "3,-1": "4",
-          "5,-1": "6",
-          "7,-1": "2 2",
-          "9,-1": "2 2",
-          "11,-1": "6",
-          "13,-1": "4",
-          "15,-1": "2",
-          "17,-1": "2",
-          "19,-1": "2",
-          "21,-1": "0",
+          "-1,1": ["0"],
+          "-1,3": ["9"],
+          "-1,5": ["9"],
+          "-1,7": ["2", "2"],
+          "-1,9": ["2", "2"],
+          "-1,11": ["4"],
+          "-1,13": ["4"],
+          "-1,15": ["0"],
+          "1,-1": ["0"],
+          "3,-1": ["4"],
+          "5,-1": ["6"],
+          "7,-1": ["2", "2"],
+          "9,-1": ["2", "2"],
+          "11,-1": ["6"],
+          "13,-1": ["4"],
+          "15,-1": ["2"],
+          "17,-1": ["2"],
+          "19,-1": ["2"],
+          "21,-1": ["0"],
         },
       },
       link: "https://en.wikipedia.org/wiki/Nonogram",
@@ -3699,7 +3693,7 @@ const examples = {
       link: "https://www.puzzle-norinori.com",
     },
   },
-  numberlink: {
+  numlin: {
     1: {
       data: {
         param_values: { r: "5", c: "5" },
@@ -3714,6 +3708,70 @@ const examples = {
           "9,9": "1",
         },
       },
+    },
+    2: {
+      data: {
+        param_values: { r: "10", c: "10", visit_all: true, no_2x2: false },
+        grid: {
+          "1,1": "0",
+          "1,7": "0",
+          "1,9": "1",
+          "1,17": "3",
+          "1,19": "2",
+          "3,11": "2",
+          "3,13": "4",
+          "9,15": "5",
+          "11,1": "1",
+          "11,3": "4",
+          "13,13": "6",
+          "15,3": "5",
+          "15,13": "7",
+          "15,17": "3",
+          "19,1": "6",
+          "19,19": "7",
+        },
+      },
+      link: "https://numlins.puzzlebaron.com/play.php",
+    },
+    3: {
+      data: {
+        param_values: { r: "15", c: "15", visit_all: true, no_2x2: true },
+        grid: {
+          "3,3": "1",
+          "3,27": "2",
+          "5,11": "3",
+          "5,19": "2",
+          "7,5": "4",
+          "7,25": "5",
+          "9,5": "1",
+          "9,13": "6",
+          "9,15": "7",
+          "9,17": "8",
+          "9,25": "9",
+          "13,3": "7",
+          "13,27": "10",
+          "15,3": "4",
+          "15,27": "11",
+          "17,9": "11",
+          "17,11": "8",
+          "17,19": "12",
+          "17,21": "13",
+          "19,3": "3",
+          "19,27": "14",
+          "21,3": "15",
+          "21,27": "13",
+          "23,5": "10",
+          "23,7": "12",
+          "23,23": "5",
+          "23,25": "14",
+          "27,3": "16",
+          "27,13": "16",
+          "27,15": "6",
+          "27,17": "9",
+          "27,27": "15",
+        },
+      },
+      link: "https://www.gmpuzzles.com/blog/tag/numlin/",
     },
   },
   nuribou: {
@@ -3964,7 +4022,7 @@ const examples = {
       link: "https://www.mstang.xyz/blog/8/",
     },
   },
-  rippleeffect: {
+  ripple: {
     1: {
       data: {
         param_values: { r: "9", c: "9" },
@@ -4419,7 +4477,7 @@ const examples = {
       link: "https://www.gmpuzzles.com/blog/2019/07/skyscrapers-by-michael-tang/",
     },
   },
-  slitherlink: {
+  slither: {
     1: {
       data: {
         param_values: { r: "13", c: "13" },
@@ -4484,6 +4542,67 @@ const examples = {
           "25,23": "1",
         },
       },
+    },
+    2: {
+      data: {
+        param_values: { r: "9", c: "9" },
+        grid: {
+          "1,1": "3",
+          "1,3": "1",
+          "1,7": "S",
+          "1,11": "S",
+          "1,15": "1",
+          "1,17": "1",
+          "3,1": "2",
+          "3,3": "W",
+          "3,5": "1",
+          "3,13": "1",
+          "3,15": "W",
+          "3,17": "3",
+          "5,3": "1",
+          "5,5": "3",
+          "5,7": "W",
+          "5,9": "2",
+          "5,11": "W",
+          "5,13": "2",
+          "5,15": "2",
+          "7,1": "S",
+          "7,5": "W",
+          "7,7": "2",
+          "7,11": "2",
+          "7,13": "W",
+          "7,17": "S",
+          "9,5": "1",
+          "9,9": "S",
+          "9,13": "3",
+          "11,1": "S",
+          "11,5": "W",
+          "11,7": "1",
+          "11,11": "1",
+          "11,13": "W",
+          "11,17": "S",
+          "13,3": "1",
+          "13,5": "3",
+          "13,7": "W",
+          "13,9": "0",
+          "13,11": "W",
+          "13,13": "2",
+          "13,15": "2",
+          "15,1": "2",
+          "15,3": "W",
+          "15,5": "2",
+          "15,13": "1",
+          "15,15": "W",
+          "15,17": "1",
+          "17,1": "2",
+          "17,3": "2",
+          "17,7": "S",
+          "17,11": "S",
+          "17,15": "1",
+          "17,17": "0",
+        },
+      },
+      link: "https://www.gmpuzzles.com/blog/2014/01/slither-sheep-wolves-thomas-snyder/",
     },
   },
   spiralgalaxies: {
@@ -5145,7 +5264,7 @@ const examples = {
       link: "https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/tents.html#8x8de%23444628898880316",
     },
   },
-  tll: {
+  tapaloop: {
     1: {
       data: {
         param_values: { r: 6, c: 6, visit_all: false },
@@ -5226,7 +5345,7 @@ const examples = {
       link: "https://dj-puzzles.blogspot.com/2021/05/puzzle-38-two-squares-yajilin.html",
     },
   },
-  yajisankazusan: {
+  yajikazu: {
     1: {
       data: {
         param_values: { r: "10", c: "10" },

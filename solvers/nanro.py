@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.encoding import Encoding, default_clue_encoder
+from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.region import full_bfs
 from .utilsx.rule import adjacent, area_adjacent, connected, count, fill_num
@@ -24,15 +24,7 @@ def nanro_avoid_adjacent() -> str:
 
 
 def encode(string: str) -> Encoding:
-    def clue_encoder(s):
-        try:
-            return default_clue_encoder(s)
-        except RuntimeError as exc:
-            if s[0] == "s" and s[1:].isnumeric():  # signpost clue
-                return s
-            raise RuntimeError("Invalid input, still") from exc
-
-    E = utilsx.encode(string, clue_encoder=clue_encoder, has_borders=True)
+    E = utilsx.encode(string, has_borders=True)
 
     # separate signpost clues from regular clues
     new_clues = {}
