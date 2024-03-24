@@ -1,4 +1,4 @@
-"""The N Cell solver."""
+"""The N Cells solver."""
 
 from typing import List
 

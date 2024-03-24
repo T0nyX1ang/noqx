@@ -28,8 +28,11 @@
         {% for pt_dict in cat0_types %}
         <li>
           <a href="{{ pt_dict.value }}">{{ pt_dict.name }}</a>
-          <a style="color: #303030; text-decoration: none; font-size: x-small; vertical-align: super"
-            href="https://puzz.link/rules.html?{{ pt_dict.value }}" target="_blank">?</a>
+          {% if pt_dict.value == "ncells" %}
+          <a class="rules" href="https://puzz.link/rules.html?fivecells" target="_blank">?</a>
+          {% else %}
+          <a class="rules" href="https://puzz.link/rules.html?{{ pt_dict.value }}" target="_blank">?</a>
+          {% endif %}
         </li>
         {% endfor %}
         {% endif %}
