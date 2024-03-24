@@ -96,28 +96,37 @@ def all_rect_region() -> str:
     left = "left(R, C) :- grid(R, C), upleft(R - 1, C), vertical_line(R, C), not horizontal_line(R, C).\n"
     left += "left(R, C) :- grid(R, C), left(R - 1, C), vertical_line(R, C), not horizontal_line(R, C)."
     up = "up(R, C) :- grid(R, C), upleft(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
-    up += "up(R, C) :- grid(R, C), up(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
-    remain += (
-        "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
-    )
-    remain += (
-        "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
-    )
-    remain += (
-        "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C)."
-    )
-    constraint = ":- grid(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
+    up += "up(R, C) :- grid(R, C), up(R, C - 1), horizontal_line(R, C), not vertical_line(R, C)."
+    # remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
+    # remain += (
+    #     "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
+    # )
+    # remain += (
+    #     "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
+    # )
+    # remain += (
+    #     "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C)."
+    # )
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C)."
+    # constraint = ":- grid(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
+    constraint = ":- grid(R, C), { upleft(R, C); left(R, C); up(R, C); remain(R, C) } != 1.\n"
     constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not vertical_line(R, C + 1).\n"
     constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not horizontal_line(R + 1, C).\n"
     constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not vertical_line(R, C + 1).\n"
     constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not horizontal_line(R + 1, C)."
 
-    r_min = "#min { R0: horizontal_line(R0, C), R0 > R }"
-    c_min = "#min { C0: vertical_line(R, C0), C0 > C }"
-    rect = f"rect(R, C, MR - 1, MC - 1) :- upleft(R, C), {r_min} = MR, {c_min} = MC.\n"
-    rect += ":- rect(R, C, MR, MC), vertical_line(R..MR, C + 1..MC).\n"
-    rect += ":- rect(R, C, MR, MC), horizontal_line(R + 1..MR, C..MC)."
+    # r_min = "#min { R0: horizontal_line(R0, C), R0 > R }"
+    # c_min = "#min { C0: vertical_line(R, C0), C0 > C }"
+    # rect = f"rect(R, C, MR - 1, MC - 1) :- upleft(R, C), {r_min} = MR, {c_min} = MC.\n"
+    # rect += ":- rect(R, C, MR, MC), vertical_line(R..MR, C + 1..MC).\n"
+    # rect += ":- rect(R, C, MR, MC), horizontal_line(R + 1..MR, C..MC)."
+    rect = ":- grid(R, C), left(R, C), remain(R, C + 1), vertical_line(R, C + 1).\n"
+    rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), vertical_line(R, C + 1).\n"
+    rect += ":- grid(R, C), up(R, C), remain(R + 1, C), horizontal_line(R + 1, C).\n"
+    rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), horizontal_line(R + 1, C)."
 
     data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint + "\n" + rect
     return data.replace("not not ", "")
