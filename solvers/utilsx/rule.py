@@ -117,10 +117,10 @@ def adjacent(_type: Any = 4) -> str:
         return adj
 
     if _type == "loop_directed":
-        adj = 'adj_loop(R0, C0, R, C) :- R = R0, C = C0+1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
-        adj += 'adj_loop(R0, C0, R, C) :- R = R0+1, C = C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
-        adj += 'adj_loop(R0, C0, R, C) :- R = R0, C = C0+1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
-        adj += 'adj_loop(R0, C0, R, C) :- R = R0+1, C = C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
+        adj = 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
+        adj += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
         adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
         return adj
 
@@ -182,7 +182,7 @@ def count_adjacent_lines(target: int, src_cell: Tuple[int, int], op: str = "eq")
     v_2 = f"vertical_line({src_r}, {src_c + 1})"
     h_1 = f"horizontal_line({src_r}, {src_c})"
     h_2 = f"horizontal_line({src_r + 1}, {src_c})"
-    return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} != {target}."
+    return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {op} {target}."
 
 
 def unique_num(color: str = "black", _type: str = "row") -> str:
