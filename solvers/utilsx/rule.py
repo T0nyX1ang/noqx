@@ -396,3 +396,25 @@ def count_shape(target: int, name: str, _id: int = None, color: str = "black", _
         return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {op} {target}."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
+def reachable_row(adj_type: int) -> str:
+    """
+    Generates a rule for reachable rows.
+    """
+    tag = tag_encode("reachable", "row", adj_type)
+    rule = f"{tag}(R, C1, C2) :- grid(R, C1), C1 = C2.\n"
+    rule += f"{tag}(R, C1, C2) :- grid(R, C1), grid(R, C2), C1 < C2, adj_{adj_type}(R, C2 - 1, R, C2), {tag}(R, C1, C2 - 1).\n"
+    rule += f"{tag}(R, C1, C2) :- grid(R, C1), grid(R, C2), C1 > C2, {tag}(R, C2, C1)."
+    return rule
+
+
+def reachable_col(adj_type: int) -> str:
+    """
+    Generates a rule for reachable columns.
+    """
+    tag = tag_encode("reachable", "col", adj_type)
+    rule = f"{tag}(R1, R2, C) :- grid(R1, C), R1 = R2.\n"
+    rule += f"{tag}(R1, R2, C) :- grid(R1, C), grid(R2, C), R1 < R2, adj_{adj_type}(R2, C, R2 - 1, C), {tag}(R1, R2 - 1, C).\n"
+    rule += f"{tag}(R1, R2, C) :- grid(R1, C), grid(R2, C), R1 > R2, {tag}(R2, R1, C)."
+    return rule

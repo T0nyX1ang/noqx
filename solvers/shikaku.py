@@ -5,25 +5,26 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
-from .utilsx.rule import adjacent
+from .utilsx.helper import tag_encode
+from .utilsx.rule import adjacent, reachable_row, reachable_col
 from .utilsx.shape import all_rect_region
 from .utilsx.solution import solver
 
 
 def shikaku_constraint() -> str:
     """Generate a constraint for shikaku."""
+    tag_col = tag_encode("reachable", "row", "edge")
+    tag_row = tag_encode("reachable", "col", "edge")
 
-    rule = "reachable_row(R, C1, C2) :- grid(R, C1), C1 = C2.\n"
-    rule += "reachable_row(R, C1, C2) :- grid(R, C1), grid(R, C2), C1 < C2, adj_edge(R, C2-1, R, C2), reachable_row(R, C1, C2-1).\n"
-    rule += "reachable_row(R, C1, C2) :- grid(R, C1), grid(R, C2), C1 > C2, reachable_row(R, C2, C1).\n"
-    rule += "reachable_col(R1, R2, C) :- grid(R1, C), R1 = R2.\n"
-    rule += "reachable_col(R1, R2, C) :- grid(R1, C), grid(R2, C), R1 < R2, adj_edge(R2, C, R2-1, C), reachable_col(R1, R2-1, C).\n"
-    rule += "reachable_col(R1, R2, C) :- grid(R1, C), grid(R2, C), R1 > R2, reachable_col(R2, R1, C).\n"
+    size_range = [
+        f"R = #min{{ R0: grid(R0, C1), {tag_row}(R0, R1, C1) }}",
+        f"MR = #max{{ R0: grid(R0, C1), {tag_row}(R0, R1, C1) }}",
+        f"C = #min{{ C0: grid(R1, C0), {tag_col}(R1, C0, C1) }}",
+        f"MC = #max{{ C0: grid(R1, C0), {tag_col}(R1, C0, C1) }}",
+    ]
 
-    size_range = "R = #min{ R0: grid(R0, C1), reachable_col(R0, R1, C1) }, MR = #max{ R0: grid(R0, C1), reachable_col(R0, R1, C1) }, C = #min{ C0: grid(R1, C0), reachable_row(R1, C0, C1) }, MC = #max{ C0: grid(R1, C0), reachable_row(R1, C0, C1) }"
-    rule += f"rect_size(R1, C1, S) :- grid(R1, C1), clue(R1, C1), S = (MR - R + 1) * (MC - C + 1), {size_range}.\n"
-    rule += ":- clue(R0, C0), clue(R1, C1), (R0, C0) != (R1, C1), reachable_row(R0, C0, C1), reachable_col(R0, R1, C1)."
-
+    rule = f"rect_size(R1, C1, S) :- grid(R1, C1), clue(R1, C1), S = (MR - R + 1) * (MC - C + 1), {', '.join(size_range)}.\n"
+    rule += f":- clue(R0, C0), clue(R1, C1), (R0, C0) != (R1, C1), {tag_row}(R0, R1, C1), {tag_col}(R0, C0, C1)."
     return rule
 
 
@@ -40,6 +41,8 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(all_rect_region())
+    solver.add_program_line(reachable_row(adj_type="edge"))
+    solver.add_program_line(reachable_col(adj_type="edge"))
     solver.add_program_line(shikaku_constraint())
 
     for (r, c), clue in E.clues.items():
@@ -48,6 +51,7 @@ def solve(E: Encoding) -> List:
             num = int(clue)
             solver.add_program_line(f":- not rect_size({r}, {c}, {num}).")
 
+    solver.add_program_line(f":- {{ upleft(R, C) }} != {len(E.clues)}.")
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.solve()
