@@ -8,7 +8,7 @@ from .coord import Direction
 
 def full_bfs(
     rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Dict[Tuple[int, int], Any] = None
-) -> Union[Dict[Tuple[int, int], Set[Tuple[int, int]]], Set[FrozenSet[Tuple[int, int]]]]:
+) -> Union[Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]], Set[FrozenSet[Tuple[int, int]]]]:
     """
     Given puzzle dimensions (rows, cols), a list of border coordinates,
     and (optionally) a dictionary mapping clue cells to values,
@@ -28,7 +28,7 @@ def full_bfs(
     # build a set of rooms
     # (if there are clues, we need this for stranded-edge checks)
     room_set: Set[FrozenSet[Tuple[int, int]]] = set()
-    clue_to_room: Dict[Tuple[int, int], Set[Tuple[int, int]]] = {}
+    clue_to_room: Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]] = {}
 
     # --- HELPER METHOD FOR full_bfs---
     def bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], FrozenSet[Tuple[int, int]]]:
@@ -49,10 +49,15 @@ def full_bfs(
                 neighbors = set()
                 if (r, c, Direction.LEFT) not in borders:
                     neighbors.add((r, c - 1))
-                    neighbors.add((r, c))
+
+                if (r, c + 1, Direction.LEFT) not in borders:
+                    neighbors.add((r, c + 1))
+
                 if (r, c, Direction.TOP) not in borders:
                     neighbors.add((r - 1, c))
-                    neighbors.add((r, c))
+
+                if (r + 1, c, Direction.TOP) not in borders:
+                    neighbors.add((r + 1, c))
 
                 # for each neighbor that is a valid grid cell and not in this connected component
                 for neighbor in neighbors:
