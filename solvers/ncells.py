@@ -26,11 +26,9 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(count_reachable_edge(size))
 
     for r, c, d in E.edges:
-        if d in [Direction.LEFT, Direction.RIGHT]:
-            c += d == Direction.RIGHT
+        if d == Direction.LEFT:
             solver.add_program_line(f"vertical_line({r}, {c}).")
-        elif d in [Direction.TOP, Direction.BOTTOM]:
-            r += d == Direction.BOTTOM
+        elif d == Direction.TOP:
             solver.add_program_line(f"horizontal_line({r}, {c}).")
 
     for (r, c), clue in E.clues.items():

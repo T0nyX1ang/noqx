@@ -1,18 +1,14 @@
 """Utility for regions."""
 
-from .coord import Direction, get_edge_id
+import random
+from typing import Any, Dict, FrozenSet, Set, Tuple, Union
+
+from .coord import Direction
 
 
-def is_valid_coord(rows, cols, r, c):
-    """
-    Given puzzle dimensions (rows, cols), and a specific (r, c) coordinate,
-
-    Returns True iff (r, c) is a valid grid coordinate.
-    """
-    return 0 <= r < rows and 0 <= c < cols
-
-
-def full_bfs(rows, cols, borders, clues=None):
+def full_bfs(
+    rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Dict[Tuple[int, int], Any] = None
+) -> Union[Dict[Tuple[int, int], Set[Tuple[int, int]]], Set[FrozenSet[Tuple[int, int]]]]:
     """
     Given puzzle dimensions (rows, cols), a list of border coordinates,
     and (optionally) a dictionary mapping clue cells to values,
@@ -31,13 +27,11 @@ def full_bfs(rows, cols, borders, clues=None):
 
     # build a set of rooms
     # (if there are clues, we need this for stranded-edge checks)
-    room_set = set()
-    if clues:
-        # build a mapping of (clue cell coordinate): {the entire room}
-        clue_to_room = {}
+    room_set: Set[FrozenSet[Tuple[int, int]]] = set()
+    clue_to_room: Dict[Tuple[int, int], Set[Tuple[int, int]]] = {}
 
     # --- HELPER METHOD FOR full_bfs---
-    def bfs(start_cell):
+    def bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], FrozenSet[Tuple[int, int]]]:
         # find the clue cell in this room
         clue_cell = None
         # keep track of which cells are in this connected component
@@ -52,34 +46,31 @@ def full_bfs(rows, cols, borders, clues=None):
             new_frontier = set()
             for r, c in frontier:
                 # build a set of coordinates that are not divided by borders
-                # (they don't have to be part of the grid;
-                # we'll check for membership / validity later)
                 neighbors = set()
                 if (r, c, Direction.LEFT) not in borders:
                     neighbors.add((r, c - 1))
-                if get_edge_id(rows, cols, r, c, Direction.RIGHT) not in borders:
-                    neighbors.add((r, c + 1))
+                    neighbors.add((r, c))
                 if (r, c, Direction.TOP) not in borders:
                     neighbors.add((r - 1, c))
-                if get_edge_id(rows, cols, r, c, Direction.BOTTOM) not in borders:
-                    neighbors.add((r + 1, c))
-                # find the clue cell
-                if clues and (r, c) in clues:
-                    clue_cell = (r, c)
-                # for each neighbor that is a valid grid cell and not in this
-                # connected component:
+                    neighbors.add((r, c))
+
+                # for each neighbor that is a valid grid cell and not in this connected component
                 for neighbor in neighbors:
                     if neighbor in unexplored_cells:
                         connected_component.add(neighbor)
                         unexplored_cells.remove(neighbor)
                         new_frontier.add(neighbor)
+
+                # find the clue cell
+                if clues and (r, c) in clues:
+                    clue_cell = (r, c)
+
             frontier = new_frontier
         return clue_cell, frozenset(connected_component)
 
     while len(unexplored_cells) != 0:
         # get a random start cell
-        iterator = iter(unexplored_cells)
-        start_cell = next(iterator)
+        start_cell = random.choice(tuple(unexplored_cells))
         # run bfs on that connected component
         clue, room = bfs(start_cell)
         # add the room to the room-set
@@ -87,37 +78,23 @@ def full_bfs(rows, cols, borders, clues=None):
         if clue:
             clue_to_room[clue] = room
 
-    # --- HELPER METHOD FOR FINDING WHICH ROOM A CELL BELONGS TO ---
-    def get_room(r, c):
+    def get_room(r: int, c: int) -> FrozenSet[Tuple[int, int]]:
+        """Given a cell, return the room that it belongs to."""
         for room in room_set:
             if (r, c) in room:
                 return room
 
+        raise ValueError("Cell not found in any room.")
+
     # check that there are no stranded edges
     for r, c, d in borders:
-        if d == Direction.LEFT:
-            # if there is a left neighbor
-            if is_valid_coord(rows, cols, r, c - 1):
-                room = get_room(r, c)
-                # make sure it's not in the same room
-                if (r, c - 1) in room:
-                    raise ValueError("There is a dead-end edge.")
-        elif d == Direction.TOP:
-            if is_valid_coord(rows, cols, r - 1, c):
-                room = get_room(r, c)
-                if (r - 1, c) in room:
-                    raise ValueError("There is a dead-end edge.")
-        elif d == Direction.RIGHT:
-            if is_valid_coord(rows, cols, r, c + 1):
-                room = get_room(r, c)
-                if (r, c + 1) in room:
-                    raise ValueError("There is a dead-end edge.")
-        elif d == Direction.BOTTOM:
-            if is_valid_coord(rows, cols, r + 1, c):
-                room = get_room(r, c)
-                if (r + 1, c) in room:
-                    raise ValueError("There is a dead-end edge.")
+        if d == Direction.LEFT and c < cols:
+            room = get_room(r, c)
+            if (r, c - 1) in room:
+                raise ValueError("There is a dead-end edge.")
+        elif d == Direction.TOP and r < rows:
+            room = get_room(r, c)
+            if (r - 1, c) in room:
+                raise ValueError("There is a dead-end edge.")
 
-    if clues:
-        return clue_to_room
-    return room_set
+    return clue_to_room if clues else room_set

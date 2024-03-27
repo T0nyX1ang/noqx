@@ -91,10 +91,10 @@ def encode(string: str) -> Encoding:
     if json_properties["border"]:
         for r in range(rows):
             edge_ids.add((r, 0, Direction.LEFT))
-            edge_ids.add((r, cols - 1, Direction.RIGHT))
+            edge_ids.add((r, cols, Direction.LEFT))
         for c in range(cols):
             edge_ids.add((0, c, Direction.TOP))
-            edge_ids.add((rows - 1, c, Direction.BOTTOM))
+            edge_ids.add((rows, c, Direction.TOP))
 
     # encode every clue cells and edge ids from the input
     clue_cells = {}
