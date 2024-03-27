@@ -1,18 +1,18 @@
 """Utility for borders."""
 
 from enum import Enum
+from typing import Tuple, Union
+
 
 Direction = Enum("Direction", "LEFT TOP RIGHT BOTTOM")
 DEFAULT_DIRECTIONS = {Direction.LEFT, Direction.TOP}
 
 
-def rc_to_grid(r: int, c: int) -> str:
-    """Convert row and column to compatible grid coordinates."""
-    return f"{r * 2 + 1},{c * 2 + 1}"
+def rcd_to_elt(r: int, c: int, d: Direction = None) -> str:
+    """Convert row, column and direction (if has) to compatible elt ID."""
+    if d is None:
+        return f"{r * 2 + 1},{c * 2 + 1}"
 
-
-def rcd_to_edge(r: int, c: int, d: Direction) -> str:
-    """Convert row, column and direction to compatible edge coordinates."""
     data = {
         Direction.TOP: f"{r * 2},{c * 2 + 1}",
         Direction.LEFT: f"{r * 2 + 1},{c * 2}",
@@ -20,6 +20,25 @@ def rcd_to_edge(r: int, c: int, d: Direction) -> str:
         Direction.RIGHT: f"{r * 2 + 1},{c * 2 + 2}",
     }
     return data[d]
+
+
+def grid_to_rc(coord: str, rows: int, cols: int) -> Tuple[Union[int, str], int]:
+    """Convert grid coordinates to row and column."""
+    gr, gc = map(int, coord.split(","))
+
+    if gr == -1:
+        return "top", gc // 2
+
+    if gr == 2 * rows + 1:
+        return "bottom", gc // 2
+
+    if gc == -1:
+        return "left", gr // 2
+
+    if gc == 2 * cols + 1:
+        return "right", gr // 2
+
+    return gr // 2, gc // 2
 
 
 def get_edge_id_from_border_coord(rows, cols, i, j):

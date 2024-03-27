@@ -5,7 +5,7 @@ from typing import Dict, List
 from clingo.control import Control
 from clingo.solving import Model
 
-from .coord import Direction, rc_to_grid, rcd_to_edge
+from .coord import Direction, rcd_to_elt
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -34,18 +34,18 @@ class ClingoSolver:
 
             if _type.startswith("vertical"):
                 r, c = data
-                formatted[rcd_to_edge(r, c, Direction.LEFT)] = "black"
+                formatted[rcd_to_elt(r, c, Direction.LEFT)] = "black"
             elif _type.startswith("horizontal"):
                 r, c = data
-                formatted[rcd_to_edge(r, c, Direction.TOP)] = "black"
+                formatted[rcd_to_elt(r, c, Direction.TOP)] = "black"
             elif _type.startswith("number"):
                 r, c, num = data
-                formatted[rc_to_grid(r, c)] = num
+                formatted[rcd_to_elt(r, c)] = num
             elif _type == "loop_sign":
                 r, c, sign = data
                 sign = sign.replace('"', "")
                 if sign != "":
-                    formatted[rc_to_grid(r, c)] = f"{sign}.png"
+                    formatted[rcd_to_elt(r, c)] = f"{sign}.png"
             elif _type == "triangle":
                 r, c, sign = data
                 sign = sign.replace('"', "")
@@ -55,7 +55,7 @@ class ClingoSolver:
                     "dl": "bottom-left.png",
                     "dr": "bottom-right.png",
                 }
-                formatted[rc_to_grid(r, c)] = dat2png[sign]
+                formatted[rcd_to_elt(r, c)] = dat2png[sign]
             elif _type == "slant_code":
                 r, c, code = data
                 sign = ""
@@ -63,13 +63,12 @@ class ClingoSolver:
                 sign += "tr" if code >> 1 & 1 else ""
                 sign += "br" if code >> 3 & 1 else ""
                 sign += "bl" if code >> 2 & 1 else ""
-                if len(sign):
-                    formatted[rc_to_grid(r, c)] = sign + ".png"
-                # formatted[rc_to_grid(r, c)] = code
+                if sign:
+                    formatted[rcd_to_elt(r, c)] = sign + ".png"
             else:
                 # color
                 r, c = data
-                formatted[rc_to_grid(r, c)] = _type.replace("color", "")
+                formatted[rcd_to_elt(r, c)] = _type.replace("color", "")
         self.solutions.append(formatted)
 
     def add_program_line(self, line: str):

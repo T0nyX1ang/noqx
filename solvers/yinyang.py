@@ -4,10 +4,11 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
+from .utilsx.coord import rcd_to_elt
 from .utilsx.fact import display, grid
 from .utilsx.rule import adjacent, connected, shade_c
 from .utilsx.shape import avoid_rect
-from .utilsx.solution import rc_to_grid, solver
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
@@ -34,7 +35,7 @@ def solve(E: Encoding) -> List:
     for solution in solver.solutions:
         for r in range(E.R):
             for c in range(E.C):
-                rc = rc_to_grid(r, c)
+                rc = rcd_to_elt(r, c)
                 solution[rc] = "white_circle.png" if rc not in solution else "black_circle.png"
 
     return solver.solutions
