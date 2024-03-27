@@ -36,7 +36,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent())
     solver.add_program_line(count(E.R // 2, color="gray", _type="col"))
 
-    clues = mark_and_extract_clues(solver, E.clues, shaded_color="gray", safe_color="green")
+    clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
@@ -49,6 +49,7 @@ def solve(E: Encoding) -> List:
         if not tag:
             solver.add_program_line(count(1, op="ge", color="gray", _type="area", _id=i))
 
+    solver.add_program_line(rules)
     solver.add_program_line(connected(color="gray", _type="area"))
     solver.add_program_line(avoid_area_adjacent(color="gray"))
     solver.add_program_line(valid_stostone(color="gray"))

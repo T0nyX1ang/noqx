@@ -2,8 +2,6 @@
 
 from typing import Any, Dict, List, Tuple
 
-from .solution import ClingoSolver
-
 
 def tag_encode(name: str, *data: Any) -> str:
     """Encode a valid tag predicate without spaces or hyphens."""
@@ -15,31 +13,31 @@ def tag_encode(name: str, *data: Any) -> str:
 
 
 def mark_and_extract_clues(
-    solver: ClingoSolver,
     original_clues: Dict[Tuple[int, int], Any],
     shaded_color: str = "black",
     safe_color: str = "green",
-) -> Dict[Tuple[int, int], int]:
+) -> Tuple[Dict[Tuple[int, int], int], str]:
     """
     Mark clues to the solver and extract the clues that are not color-relevant.
 
     Recommended to use it before performing a bfs on a grid.
     """
     clues = {}  # remove color-relevant clues here
+    rule = ""
     for (r, c), clue in original_clues.items():
         if isinstance(clue, list):
             if clue[1] == shaded_color:
-                solver.add_program_line(f"{shaded_color}({r}, {c}).")
+                rule += f"{shaded_color}({r}, {c}).\n"
             elif clue[1] == safe_color:
-                solver.add_program_line(f"not {shaded_color}({r}, {c}).")
+                rule += f"not {shaded_color}({r}, {c}).\n"
             clues[(r, c)] = int(clue[0])
         elif clue == shaded_color:
-            solver.add_program_line(f"{shaded_color}({r}, {c}).")
+            rule += f"{shaded_color}({r}, {c}).\n"
         elif clue == safe_color:
-            solver.add_program_line(f"not {shaded_color}({r}, {c}).")
+            rule += f"not {shaded_color}({r}, {c}).\n"
         else:
             clues[(r, c)] = int(clue)
-    return clues
+    return clues, rule.strip()
 
 
 class ConnectivityHelper:
