@@ -6,6 +6,22 @@ Direction = Enum("Direction", "LEFT TOP RIGHT BOTTOM")
 DEFAULT_DIRECTIONS = {Direction.LEFT, Direction.TOP}
 
 
+def rc_to_grid(r: int, c: int) -> str:
+    """Convert row and column to compatible grid coordinates."""
+    return f"{r * 2 + 1},{c * 2 + 1}"
+
+
+def rcd_to_edge(r: int, c: int, d: Direction) -> str:
+    """Convert row, column and direction to compatible edge coordinates."""
+    data = {
+        Direction.TOP: f"{r * 2},{c * 2 + 1}",
+        Direction.LEFT: f"{r * 2 + 1},{c * 2}",
+        Direction.BOTTOM: f"{r * 2 + 2},{c * 2 + 1}",
+        Direction.RIGHT: f"{r * 2 + 1},{c * 2 + 2}",
+    }
+    return data[d]
+
+
 def get_edge_id_from_border_coord(rows, cols, i, j):
     """
     Given the dimensions (rows and cols) of a puzzle grid,
@@ -23,22 +39,6 @@ def get_edge_id_from_border_coord(rows, cols, i, j):
             return (i // 2, j // 2, Direction.BOTTOM)
         else:
             return (i // 2, j // 2, Direction.TOP)
-
-
-def get_border_coord_from_edge_id(r, c, d):
-    """
-    Given an edge id,
-
-    Returns the border coordinate of the edge.
-    """
-    if d == Direction.TOP:
-        return "{},{}".format(r * 2, c * 2 + 1)
-    elif d == Direction.LEFT:
-        return "{},{}".format(r * 2 + 1, c * 2)
-    elif d == Direction.BOTTOM:
-        return "{},{}".format((r + 1) * 2, c * 2 + 1)
-    elif d == Direction.RIGHT:
-        return "{},{}".format(r * 2 + 1, (c + 1) * 2)
 
 
 def get_edge_id(rows, cols, r, c, d):

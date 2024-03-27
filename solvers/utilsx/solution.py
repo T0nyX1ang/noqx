@@ -5,25 +5,9 @@ from typing import Dict, List
 from clingo.control import Control
 from clingo.solving import Model
 
-from .border import Direction
+from .coord import Direction, rc_to_grid, rcd_to_edge
 
 MAX_SOLUTIONS_TO_FIND = 10
-
-
-def rc_to_grid(r: int, c: int):
-    """Convert row and column to compatible grid coordinates."""
-    return f"{r*2+1},{c*2+1}"
-
-
-def rcd_to_edge(r, c, d):
-    """Given an edge id, returns the border coordinate of the edge."""
-    data = {
-        Direction.TOP: f"{r*2},{c*2+1}",
-        Direction.LEFT: f"{r*2+1},{c*2}",
-        Direction.BOTTOM: f"{r*2+2},{c*2+1}",
-        Direction.RIGHT: f"{r*2+1},{c*2+2}",
-    }
-    return data[d]
 
 
 class ClingoSolver:

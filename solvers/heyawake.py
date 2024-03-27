@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.border import Direction
+from .utilsx.coord import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.helper import mark_and_extract_clues

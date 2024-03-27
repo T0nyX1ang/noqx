@@ -3,7 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.border import Direction
+from .utilsx.coord import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
 from .utilsx.rule import adjacent, count_adjacent_lines, count_reachable_edge, reachable_edge

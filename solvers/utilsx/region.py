@@ -1,6 +1,6 @@
 """Utility for regions."""
 
-from .border import Direction, get_edge_id
+from .coord import Direction, get_edge_id
 
 
 def is_valid_coord(rows, cols, r, c):

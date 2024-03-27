@@ -4,7 +4,7 @@ import json
 import urllib.parse
 from typing import Any, Dict, List, Set, Tuple, Union
 
-from .border import Direction, get_edge_id_from_border_coord
+from .coord import Direction, get_edge_id_from_border_coord
 
 
 class Encoding:
