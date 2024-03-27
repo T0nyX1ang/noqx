@@ -72,7 +72,7 @@ def grid_to_rc(i: int, j: int) -> Tuple[int, int]:
     return i // 2, j // 2
 
 
-def encode(string: str, has_borders=False) -> Encoding:
+def encode(string: str) -> Encoding:
     """
     Given a JSON object representing a puzzle,
      - has_params = True iff the puzzle has parameters
@@ -110,7 +110,7 @@ def encode(string: str, has_borders=False) -> Encoding:
             del params["n"]
 
     # add outside borders manually, just in case
-    if has_borders:
+    if json_properties["border"]:
         edge_ids = set()
         for r in range(rows):
             edge_ids.add((r, 0, Direction.LEFT))

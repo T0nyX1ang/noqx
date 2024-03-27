@@ -23,7 +23,7 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

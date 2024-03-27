@@ -21,7 +21,7 @@ def area_gravity(color: str = "black") -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding):

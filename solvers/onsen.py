@@ -54,7 +54,7 @@ def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

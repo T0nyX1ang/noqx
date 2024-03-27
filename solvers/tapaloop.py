@@ -95,7 +95,7 @@ def generate_patterns(pattern):
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def tapa_rules() -> str:

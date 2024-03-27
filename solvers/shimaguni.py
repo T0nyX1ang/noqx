@@ -23,7 +23,7 @@ def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

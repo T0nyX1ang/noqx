@@ -40,7 +40,7 @@ def nagare_wind(r: int, c: int, d: str, E: Encoding) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

@@ -82,7 +82,7 @@ def haisu_count(target: int, _id: int, dest: Tuple[int, int]) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

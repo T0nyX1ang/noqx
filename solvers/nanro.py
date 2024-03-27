@@ -24,7 +24,7 @@ def nanro_avoid_adjacent() -> str:
 
 
 def encode(string: str) -> Encoding:
-    E = utilsx.encode(string, has_borders=True)
+    E = utilsx.encode(string)
 
     # separate signpost clues from regular clues
     new_clues = {}

@@ -20,7 +20,7 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

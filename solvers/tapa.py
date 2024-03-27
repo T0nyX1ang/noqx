@@ -64,7 +64,7 @@ def generate_patterns(pattern):
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def color_to_num(r: int, c: int, color: str = "black") -> str:
