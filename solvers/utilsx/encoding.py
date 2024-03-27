@@ -4,7 +4,7 @@ import json
 import urllib.parse
 from typing import Any, Dict, List, Set, Tuple, Union
 
-from .coord import Direction, get_edge_id_from_border_coord
+from .coord import Direction, elt_to_rcd
 
 
 class Encoding:
@@ -68,24 +68,12 @@ def clue_encoder(data: Union[str, List, Any]) -> Union[str, List, Any]:
     raise RuntimeError("Invalid input")
 
 
-def grid_to_rc(i: int, j: int) -> Tuple[int, int]:
-    return i // 2, j // 2
-
-
 def encode(string: str) -> Encoding:
-    """
-    Given a JSON object representing a puzzle,
-     - has_params = True iff the puzzle has parameters
-     - has_borders = True iff the puzzle has borders / regions
-     as part of its input
-     - outside_clues = a binary string which specifies the presence
-     of outside clues in the perimeter, in a top, right, bottom, left
-     ordering, where a 0 represents no border in that location
-    """
+    """Parse a JSON object and encode a puzzle."""
     json_obj: Dict[str, Any] = json.loads(string)
 
     # default values
-    params, edge_ids, top_clues, right_clues, bottom_clues, left_clues = [None] * 6
+    edge_ids, top_clues, right_clues, bottom_clues, left_clues = set(), {}, {}, {}, {}
 
     json_grid: Dict[str, Any] = json_obj["grid"]
     json_params: Dict[str, Any] = json_obj["param_values"]
@@ -99,19 +87,8 @@ def encode(string: str) -> Encoding:
     else:  # sudoku (8/10/2020)
         rows, cols = 9, 9
 
-    # encode extra parameters
-    if json_params:
-        params = json_params.copy()
-        if "r" in params:
-            del params["r"]
-        if "c" in params:
-            del params["c"]
-        if "n" in params:
-            del params["n"]
-
     # add outside borders manually, just in case
     if json_properties["border"]:
-        edge_ids = set()
         for r in range(rows):
             edge_ids.add((r, 0, Direction.LEFT))
             edge_ids.add((r, cols - 1, Direction.RIGHT))
@@ -119,49 +96,26 @@ def encode(string: str) -> Encoding:
             edge_ids.add((0, c, Direction.TOP))
             edge_ids.add((rows - 1, c, Direction.BOTTOM))
 
-    # encode clue cells and inner edge ids
+    # encode every clue cells and edge ids from the input
     clue_cells = {}
-    for i in range(2 * (rows + 1)):
-        for j in range(2 * (cols + 1)):
-            coord_str = f"{i},{j}"
-            if coord_str in json_grid:
-                if (i % 2, j % 2) == (1, 1):  # cell coords
-                    if i < 2 * rows and j < 2 * cols:
-                        clue_cells[grid_to_rc(i, j)] = clue_encoder(json_grid[coord_str])
-                else:  # border coords
-                    edge_ids.add(get_edge_id_from_border_coord(rows, cols, i, j))
+    for coord_str in json_grid.keys():
+        r, c, d = elt_to_rcd(coord_str)
+        if d is None:
+            if r < 0:
+                top_clues[c] = clue_encoder(json_grid[coord_str])
+            elif r >= rows:
+                bottom_clues[c] = clue_encoder(json_grid[coord_str])
+            elif c < 0:
+                left_clues[r] = clue_encoder(json_grid[coord_str])
+            elif c >= cols:
+                right_clues[r] = clue_encoder(json_grid[coord_str])
+            else:
+                clue_cells[(r, c)] = clue_encoder(json_grid[coord_str])
+        else:
+            if 0 <= r < rows and 0 <= c < cols:
+                edge_ids.add((r, c, d))  # ignore borders outside the grid
 
-    # encode outside clues
-    outside_clue_string = json_properties["outside"]
-    if outside_clue_string[0] == "1":
-        top_clues = {}
-        for j in range(2 * (cols + 1)):
-            input_coord_string = f"{-1},{j}"
-            if input_coord_string in json_grid:
-                top_clues[j // 2] = clue_encoder(json_grid[input_coord_string])
-
-    if outside_clue_string[1] == "1":
-        right_clues = {}
-        for i in range(2 * (rows + 1)):
-            input_coord_string = f"{i},{2 * cols + 1}"
-            if input_coord_string in json_grid:
-                right_clues[i // 2] = clue_encoder(json_grid[input_coord_string])
-
-    if outside_clue_string[2] == "1":
-        bottom_clues = {}
-        for j in range(2 * (cols + 1)):
-            input_coord_string = f"{2 * rows + 1},{j}"
-            if input_coord_string in json_grid:
-                bottom_clues[j // 2] = clue_encoder(json_grid[input_coord_string])
-
-    if outside_clue_string[3] == "1":
-        left_clues = {}
-        for i in range(2 * (rows + 1)):
-            input_coord_string = f"{i},{-1}"
-            if input_coord_string in json_grid:
-                left_clues[i // 2] = clue_encoder(json_grid[input_coord_string])
-
-    return Encoding(rows, cols, clue_cells, params, edge_ids, top_clues, right_clues, bottom_clues, left_clues)
+    return Encoding(rows, cols, clue_cells, json_params, edge_ids, top_clues, right_clues, bottom_clues, left_clues)
 
 
 def decode(solutions):

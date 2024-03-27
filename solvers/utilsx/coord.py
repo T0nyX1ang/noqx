@@ -22,42 +22,21 @@ def rcd_to_elt(r: int, c: int, d: Direction = None) -> str:
     return data[d]
 
 
-def grid_to_rc(coord: str, rows: int, cols: int) -> Tuple[Union[int, str], int]:
+def elt_to_rcd(coord: str) -> Tuple[int, int, Union[None, Direction]]:
     """Convert grid coordinates to row and column."""
     gr, gc = map(int, coord.split(","))
+    r, c = gr // 2, gc // 2
 
-    if gr == -1:
-        return "top", gc // 2
+    if gr % 2 == 1 and gc % 2 == 1:  # coordinate case
+        return r, c, None
 
-    if gr == 2 * rows + 1:
-        return "bottom", gc // 2
+    if gr % 2 == 0 and gc % 2 == 1:  # horizontal border case
+        return r, c, Direction.TOP  # bottom border will be ignored
 
-    if gc == -1:
-        return "left", gr // 2
+    if gr % 2 == 1 and gc % 2 == 0:  # vertical border case
+        return r, c, Direction.LEFT  # right border will be ignored
 
-    if gc == 2 * cols + 1:
-        return "right", gr // 2
-
-    return gr // 2, gc // 2
-
-
-def get_edge_id_from_border_coord(rows, cols, i, j):
-    """
-    Given the dimensions (rows and cols) of a puzzle grid,
-    and a border coordinate (i, j),
-
-    Returns the canonical edge id of the edge.
-    """
-    if j % 2 == 0:
-        if j // 2 == cols:
-            return (i // 2, j // 2, Direction.RIGHT)
-        else:
-            return (i // 2, j // 2, Direction.LEFT)
-    else:
-        if i // 2 == rows:
-            return (i // 2, j // 2, Direction.BOTTOM)
-        else:
-            return (i // 2, j // 2, Direction.TOP)
+    raise ValueError("Invalid coordinate!")
 
 
 def get_edge_id(rows, cols, r, c, d):
