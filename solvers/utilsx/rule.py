@@ -1,6 +1,6 @@
 """Utility for general clingo rules."""
 
-from typing import Any, Iterable, List, Tuple
+from typing import Iterable, List, Tuple, Union
 
 from .helper import ConnectivityHelper, tag_encode
 
@@ -85,7 +85,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
     raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
 
 
-def adjacent(_type: Any = 4) -> str:
+def adjacent(_type: Union[int, str] = 4) -> str:
     """
     Generates a rule for getting the adjacent neighbors.
     If _type = 4, then only orthogonal neighbors are considered.
@@ -124,10 +124,10 @@ def adjacent(_type: Any = 4) -> str:
         adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
         return adj
 
-    raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
+    raise ValueError("Invalid adjacent type.")
 
 
-def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
+def avoid_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generates a constraint to avoid adjacent {color} cells based on adjacent definition.
 
@@ -136,7 +136,7 @@ def avoid_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
-def area_adjacent(adj_type: int = 4, color: str = None) -> str:
+def area_adjacent(adj_type: Union[int, str] = 4, color: str = None) -> str:
     """
     Generate a rule for getting the adjacent areas.
 
@@ -149,7 +149,7 @@ def area_adjacent(adj_type: int = 4, color: str = None) -> str:
     return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
 
 
-def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
+def avoid_area_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generates a constraint to avoid same {color} cells on the both sides of an area.
 
@@ -159,7 +159,9 @@ def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return area_adj[area_adj.find(":-") :]
 
 
-def count_adjacent(target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: int = 4) -> str:
+def count_adjacent(
+    target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: Union[int, str] = 4
+) -> str:
     """
     Generates a constraint for counting the number of {color} cells adjacent to a cell.
 
@@ -201,23 +203,10 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     if _type == "area":
         return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
-    raise ValueError("Invalid line type, must be one of 'row', 'col', 'area'.")
+    raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
-def connected(color: str = "black", adj_type: int = 4, _type: str = "grid") -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
-    helper = ConnectivityHelper("reachable", _type, color, adj_type)
-    initial = helper.initial()
-    propagation = helper.propagation()
-    constraint = helper.constraint()
-    return initial + "\n" + propagation + "\n" + constraint
-
-
-def connected_edge(row: int, col: int, color: str = "black", adj_type: int = 4) -> str:
+def connected_edge(row: int, col: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells from the edge.
 
@@ -231,9 +220,9 @@ def connected_edge(row: int, col: int, color: str = "black", adj_type: int = 4) 
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def connected_parts(color: str = "black", adj_type: int = 4) -> str:
+def connected_parts(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
-    Generate a rule to get all the connected components of {color} cells.
+    Generate a rule to get all the grid_color_connected components of {color} cells.
     Please note that 'reachable/4' is much slower than the 'reachable/2' which only searches for one component.
 
     An adjacent rule and a grid fact should be defined first.
@@ -244,9 +233,9 @@ def connected_parts(color: str = "black", adj_type: int = 4) -> str:
     return initial + "\n" + propagation
 
 
-def count_connected_parts(target: int, color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
+def count_connected_parts(target: int, color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq") -> str:
     """
-    Generate a constraint to count the number of connected components of {color} cells.
+    Generate a constraint to count the number of grid_color_connected components of {color} cells.
 
     A reachable rule should be defined first.
     """
@@ -259,7 +248,7 @@ def region(
     src_cell: Tuple[int, int],
     exclude_cells: List[Tuple[int, int]] = None,
     color: str = "black",
-    adj_type: int = 4,
+    adj_type: Union[int, str] = 4,
     avoid_unknown: bool = False,
 ) -> str:
     """
@@ -276,9 +265,11 @@ def region(
     return initial + "\n" + propagation + constraint
 
 
-def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
+def count_region(
+    target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
+) -> str:
     """
-    Generate a constraint to count the size of {color} region connected to a source cell.
+    Generate a constraint to count the size of {color} region grid_color_connected to a source cell.
 
     A region rule should be defined first.
     """
@@ -287,7 +278,7 @@ def count_region(target: int, src_cell: Tuple[int, int], color: str = "black", a
     return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
-def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a rule to check the cells can be lit up with a source {color} cell.
 
@@ -307,7 +298,9 @@ def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> s
     return initial + "\n" + propagation
 
 
-def count_lit(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4, op: str = "eq") -> str:
+def count_lit(
+    target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
+) -> str:
     """
     Generate a constraint to count the number of {color} cells lit up by a source cell.
 

@@ -6,7 +6,8 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.coord import rcd_to_elt
 from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, connected, shade_c
+from .utilsx.reachable import grid_color_connected
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -20,9 +21,9 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="black"))
+    solver.add_program_line(grid_color_connected(color="black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="black"))
-    solver.add_program_line(connected(color="not black"))
+    solver.add_program_line(grid_color_connected(color="not black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="not black"))
 
     for (r, c), color in E.clues.items():

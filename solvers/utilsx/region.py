@@ -34,7 +34,7 @@ def full_bfs(
     def bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], FrozenSet[Tuple[int, int]]]:
         # find the clue cell in this room
         clue_cell = None
-        # keep track of which cells are in this connected component
+        # keep track of which cells are in this grid_color_connected component
         connected_component = {start_cell}
 
         # the start cell has now been explored
@@ -59,7 +59,7 @@ def full_bfs(
                 if (r + 1, c, Direction.TOP) not in borders:
                     neighbors.add((r + 1, c))
 
-                # for each neighbor that is a valid grid cell and not in this connected component
+                # for each neighbor that is a valid grid cell and not in this grid_color_connected component
                 for neighbor in neighbors:
                     if neighbor in unexplored_cells:
                         connected_component.add(neighbor)
@@ -76,7 +76,7 @@ def full_bfs(
     while len(unexplored_cells) != 0:
         # get a random start cell
         start_cell = random.choice(tuple(unexplored_cells))
-        # run bfs on that connected component
+        # run bfs on that grid_color_connected component
         clue, room = bfs(start_cell)
         # add the room to the room-set
         room_set.add(room)
