@@ -117,11 +117,11 @@ def adjacent(_type: Union[int, str] = 4) -> str:
         return adj
 
     if _type == "loop_directed":
-        adj = 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
-        adj += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
-        adj += 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
-        adj += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
-        adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
+        adj = 'adj_loop_directed(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
+        adj += 'adj_loop_directed(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
+        adj += 'adj_loop_directed(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
+        adj += 'adj_loop_directed(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
+        adj += "adj_loop_directed(R0, C0, R, C) :- adj_loop_directed(R, C, R0, C0)."
         return adj
 
     raise ValueError("Invalid adjacent type.")
@@ -143,9 +143,10 @@ def area_adjacent(adj_type: Union[int, str] = 4, color: str = None) -> str:
     An adjacent rule should be defined first.
     """
     area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
-    if color is not None:
+    if color:
         area_adj += f", {color}(R, C), {color}(R1, C1)"
         return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
+
     return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
 
 

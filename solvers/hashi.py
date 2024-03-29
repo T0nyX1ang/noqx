@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop
+from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
 
@@ -49,7 +49,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line("num(1..2).")
     solver.add_program_line("{ hashi_bridge(R, C, D, N): direction(D), num(N) } 1 :- grid(R, C), not number(R, C, _).")
     solver.add_program_line(hashi_bridge(E.R, E.C))
-    solver.add_program_line(connected_loop(color="hashi_all"))
+    solver.add_program_line(grid_color_connected(color="hashi_all", adj_type="loop"))
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"number({r}, {c}, {clue}).")

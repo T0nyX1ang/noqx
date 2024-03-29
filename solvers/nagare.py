@@ -5,7 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import fill_path, connected_loop, directed_loop
+from .utilsx.loop import fill_path, directed_loop
+from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
@@ -50,7 +51,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c(color="nagare"))
     solver.add_program_line(fill_path(color="nagare", directed=True))
     solver.add_program_line(adjacent(_type="loop_directed"))
-    solver.add_program_line(connected_loop(color="nagare"))
+    solver.add_program_line(grid_color_connected(color="nagare", adj_type="loop_directed"))
     solver.add_program_line(directed_loop(color="nagare"))
 
     for (r, c), clue in E.clues.items():

@@ -6,7 +6,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop, single_loop, fill_path
+from .utilsx.loop import single_loop, fill_path
+from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
@@ -94,10 +95,6 @@ def generate_patterns(pattern):
     return list(set(result))
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def tapa_rules() -> str:
     """
     Generate tapa rules and grid shapes.
@@ -157,6 +154,10 @@ def grid_direc_to_num(r: int, c: int) -> str:
     return constraint
 
 
+def encode(string: str) -> Encoding:
+    return utilsx.encode(string)
+
+
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
@@ -168,7 +169,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(fill_path(color="tapaloop"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="tapaloop"))
+    solver.add_program_line(grid_color_connected(color="tapaloop", adj_type="loop"))
     solver.add_program_line(single_loop(color="tapaloop"))
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
     solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.C}, not grid(R, C).')
