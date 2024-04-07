@@ -93,7 +93,7 @@ def edge_src_color_connected(
     color: str = "grid",
 ) -> str:
     """
-    Generate a constraint to check the edge reachability of {color} cells starting from a source.
+    Generate a constraint to check the reachability of {color} edges starting from a source.
 
     An adjacent rule and an edge fact should be defined first.
     """
@@ -113,7 +113,7 @@ def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> st
     """
     Generate a constraint to avoid cells starting from unknown source.
 
-    Use this constraint with grid_src_color_connected.
+    Use this constraint with grid_src_color_connected, and adj_type cannot be "edge".
     """
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
