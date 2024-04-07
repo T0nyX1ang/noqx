@@ -22,7 +22,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(unique_num(color="not black", _type="col"))
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent())
-    solver.add_program_line(grid_color_connected(color="not black"))
+    solver.add_program_line(grid_color_connected(color="not black", initial_cells=[(0, 0), (0, 1)]))
 
     for (r, c), clue in E.clues.items():
         if isinstance(clue, list):
