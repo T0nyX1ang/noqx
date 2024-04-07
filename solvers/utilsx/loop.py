@@ -35,22 +35,6 @@ def fill_path(color: str = None, directed: bool = False) -> str:
     return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 
 
-def connected_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
-    """
-    Generate a path rule to constrain connectivity.
-
-    A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
-    """
-    src_r, src_c = src_cell
-    dest_r, dest_c = dest_cell
-    initial = f"reachable_path({src_r}, {src_c}, {src_r}, {src_c}).\n"
-    initial += f"reachable_path({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
-    initial += f"dead_end({src_r}, {src_c}).\n"
-    initial += f"dead_end({dest_r}, {dest_c}).\n"
-    propagation = f"reachable_path({src_r}, {src_c}, R, C) :- {color}(R, C), reachable_path({src_r}, {src_c}, R1, C1), adj_loop(R1, C1, R, C).\n"
-    return initial + propagation
-
-
 def single_loop(color: str = "white", path: bool = False) -> str:
     """
     Generate a single loop constraint with loop signs.
