@@ -27,7 +27,7 @@ def grid_color_connected(
     else:
         initial = "\n".join(f"{tag}({r}, {c})." for r, c in initial_cells)
 
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
     return initial + "\n" + propagation + "\n" + constraint
 
@@ -42,7 +42,7 @@ def border_color_connected(rows: int, cols: int, color: str = "black", adj_type:
     tag = tag_encode("reachable", "border", "adj", adj_type, color)
     borders = [(r, c) for r in range(rows) for c in range(cols) if r in [0, rows - 1] or c in [0, cols - 1]]
     initial = "\n".join(f"{tag}({r}, {c}) :- {color}({r}, {c})." for r, c in borders)
-    propagation = f"{tag}(R, C) :- {tag}(R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
     return initial + "\n" + propagation + "\n" + constraint
 
@@ -73,7 +73,7 @@ def grid_src_color_connected(
 
     An adjacent rule and a grid fact should be defined first.
     """
-    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "edge", "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
     r, c = src_cell
@@ -83,8 +83,30 @@ def grid_src_color_connected(
     if exclude_cells:
         initial += "\n" + "\n".join(f"not {tag}({r}, {c}, {exc_r}, {exc_c})." for exc_r, exc_c in exclude_cells)
 
-    propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     return initial + "\n" + propagation
+
+
+def edge_src_color_connected(
+    src_cell: Tuple[int, int],
+    exclude_cells: Optional[List[Tuple[int, int]]] = None,
+    color: str = "grid",
+) -> str:
+    """
+    Generate a constraint to check the edge reachability of {color} cells starting from a source.
+
+    An adjacent rule and an edge fact should be defined first.
+    """
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", color)
+
+    r, c = src_cell
+    prepare = grid_src_color_connected(src_cell, exclude_cells=exclude_cells, color=color, adj_type="edge")
+
+    # edge between two reachable grids is forbidden.
+    constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
+
+    return prepare + "\n" + constraint
 
 
 def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
