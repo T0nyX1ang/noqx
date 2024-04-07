@@ -96,7 +96,7 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     return constraint + rule.strip()
 
 
-def pass_area_one_time(ar: List[Tuple[int, int]]) -> str:
+def pass_area_once(ar: List[Tuple[int, int]]) -> str:
     """
     Generate a rule that a loop passes through an area exactly once.
 

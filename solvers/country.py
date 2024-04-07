@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, direction, display, grid
-from .utilsx.loop import fill_path, pass_area_one_time, single_loop
+from .utilsx.loop import fill_path, pass_area_once, single_loop
 from .utilsx.reachable import grid_color_connected
 from .utilsx.region import full_bfs
 from .utilsx.rule import adjacent, avoid_area_adjacent, count, shade_c
@@ -30,7 +30,7 @@ def solve(E: Encoding) -> List:
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(pass_area_one_time(ar))
+        solver.add_program_line(pass_area_once(ar))
 
         for rc in ar:
             if rc in E.clues:

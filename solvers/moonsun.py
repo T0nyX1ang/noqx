@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, direction, display, grid
-from .utilsx.loop import fill_path, pass_area_one_time, single_loop
+from .utilsx.loop import fill_path, pass_area_once, single_loop
 from .utilsx.reachable import grid_color_connected
 from .utilsx.region import full_bfs
 from .utilsx.rule import adjacent, area_adjacent, shade_c
@@ -55,7 +55,7 @@ def solve(E: Encoding) -> List:
     assert len(areas) % 2 == 0, "The number of areas should be even."
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(pass_area_one_time(ar))
+        solver.add_program_line(pass_area_once(ar))
 
     solver.add_program_line(area_adjacent(adj_type="loop"))
     solver.add_program_line(moon_sun_area())
