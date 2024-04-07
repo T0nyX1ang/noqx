@@ -1,6 +1,6 @@
 """Utility for reachable things and connectivity tests."""
 
-from typing import Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from .helper import tag_encode
 
@@ -11,7 +11,9 @@ def validate_type(_type: Union[int, str], target_type: Tuple[Union[int, str]]) -
         raise ValueError(f"Invalid type '{_type}'.")
 
 
-def grid_color_connected(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+def grid_color_connected(
+    color: str = "black", adj_type: Union[int, str] = 4, initial_cells: Optional[List[Tuple[int, int]]] = None
+) -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
 
@@ -19,7 +21,27 @@ def grid_color_connected(color: str = "black", adj_type: Union[int, str] = 4) ->
     """
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
-    initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+
+    if not initial_cells:
+        initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+    else:
+        initial = "\n".join(f"{tag}({r}, {c})." for r, c in initial_cells)
+
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    return initial + "\n" + propagation + "\n" + constraint
+
+
+def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to check the reachability of {color} cells connected to borders.
+
+    An adjacent rule and a grid fact should be defined first.
+    """
+    validate_type(adj_type, (4,))
+    tag = tag_encode("reachable", "border", "adj", adj_type, color)
+    borders = [(r, c) for r in range(rows) for c in range(cols) if r in [0, rows - 1] or c in [0, cols - 1]]
+    initial = "\n".join(f"{tag}({r}, {c}) :- {color}({r}, {c})." for r, c in borders)
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
     return initial + "\n" + propagation + "\n" + constraint

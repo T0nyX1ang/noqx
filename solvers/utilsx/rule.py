@@ -207,20 +207,6 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
-def connected_edge(row: int, col: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells from the edge.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
-    borders = [(r, c) for r in range(row) for c in range(col) if r in [0, row - 1] or c in [0, col - 1]]
-    helper = ConnectivityHelper("reachable_edge", "grid", color, adj_type)
-    initial = helper.initial(borders, enforce_color=True)
-    propagation = helper.propagation()
-    constraint = helper.constraint()
-    return initial + "\n" + propagation + "\n" + constraint
-
-
 def connected_parts(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a rule to get all the grid_color_connected components of {color} cells.
