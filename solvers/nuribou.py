@@ -6,7 +6,8 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
 from .utilsx.helper import tag_encode
-from .utilsx.rule import adjacent, connected_parts, count_region, region, shade_c
+from .utilsx.reachable import avoid_unknown_src, grid_src_color_connected
+from .utilsx.rule import adjacent, connected_parts, count_region, shade_c
 from .utilsx.shape import all_rect
 from .utilsx.solution import solver
 
@@ -50,12 +51,13 @@ def solve(E: Encoding) -> List:
         else:
             current_excluded = [src for src in all_src if src != (r, c)]
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), current_excluded, color="not black", avoid_unknown=True))
+            solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color="not black"))
 
             if clue != "yellow":
                 num = int(clue)
                 solver.add_program_line(count_region(num, (r, c), color="not black"))
 
+    solver.add_program_line(avoid_unknown_src(color="not black"))
     solver.add_program_line(connected_parts(color="black"))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))

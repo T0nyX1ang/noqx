@@ -59,3 +59,41 @@ def area_color_connected(color: str = "black", adj_type: int = 4) -> str:
     propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), area(A, R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
     return initial + "\n" + propagation + "\n" + constraint
+
+
+def grid_src_color_connected(
+    src_cell: Tuple[int, int],
+    include_cells: Optional[List[Tuple[int, int]]] = None,
+    exclude_cells: Optional[List[Tuple[int, int]]] = None,
+    color: str = "black",
+    adj_type: Union[int, str] = 4,
+) -> str:
+    """
+    Generate a constraint to check the reachability of {color} cells starting from a source.
+
+    An adjacent rule and a grid fact should be defined first.
+    """
+    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
+
+    r, c = src_cell
+    initial = f"{tag}({r}, {c}, {r}, {c})."
+    if include_cells:
+        initial += "\n" + "\n".join(f"{tag}({r}, {c}, {inc_r}, {inc_c})." for inc_r, inc_c in include_cells)
+    if exclude_cells:
+        initial += "\n" + "\n".join(f"not {tag}({r}, {c}, {exc_r}, {exc_c})." for exc_r, exc_c in exclude_cells)
+
+    propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    return initial + "\n" + propagation
+
+
+def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+    """
+    Generate a constraint to avoid cells starting from unknown source.
+
+    Use this constraint with grid_src_color_connected.
+    """
+    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
+
+    return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."

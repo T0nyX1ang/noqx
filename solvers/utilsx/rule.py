@@ -231,27 +231,6 @@ def count_connected_parts(target: int, color: str = "black", adj_type: Union[int
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} {op} {target}."
 
 
-def region(
-    src_cell: Tuple[int, int],
-    exclude_cells: List[Tuple[int, int]] = None,
-    color: str = "black",
-    adj_type: Union[int, str] = 4,
-    avoid_unknown: bool = False,
-) -> str:
-    """
-    Generate a rule to construct a region of {color} cells from a source cell.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
-    if exclude_cells is None:
-        exclude_cells = []
-    helper = ConnectivityHelper("region", "grid", color, adj_type)
-    initial = helper.initial([src_cell], exclude_cells, full_search=True)
-    propagation = helper.propagation(full_search=True)
-    constraint = "\n" + helper.constraint(full_search=True) if avoid_unknown else ""
-    return initial + "\n" + propagation + constraint
-
-
 def count_region(
     target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
 ) -> str:
@@ -262,7 +241,7 @@ def count_region(
     """
     op = rev_op_dict[op]
     src_r, src_c = src_cell
-    return f":- {{ {tag_encode('region', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
+    return f":- {{ {tag_encode('reachable', 'grid', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
 def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4) -> str:
