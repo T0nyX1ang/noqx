@@ -88,9 +88,7 @@ def grid_src_color_connected(
 
 
 def edge_src_color_connected(
-    src_cell: Tuple[int, int],
-    exclude_cells: Optional[List[Tuple[int, int]]] = None,
-    color: str = "grid",
+    src_cell: Tuple[int, int], exclude_cells: Optional[List[Tuple[int, int]]] = None, color: str = "grid"
 ) -> str:
     """
     Generate a constraint to check the reachability of {color} edges starting from a source.
@@ -107,6 +105,29 @@ def edge_src_color_connected(
     constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
 
     return prepare + "\n" + constraint
+
+
+def bulb_src_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generate a constraint to check the reachability of {color} cells starting from a bulb.
+
+    An adjacent rule and a grid fact should be defined first.
+    """
+    validate_type(adj_type, (4, 8))
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
+
+    r, c = src_cell
+    initial = f"{tag}({r}, {c}, {r}, {c})."
+
+    if adj_type == 4:
+        bulb_constraint = f"adj_4(R, C, R1, C1), (R - {r}) * (C - {c}) == 0"
+    elif adj_type == 8:
+        bulb_constraint = f"adj_8(R, C, R1, C1), (R - {r}) * (C - {c}) * (R - {r} - C + {c}) * (R - {r} + C - {c}) == 0"
+    else:
+        raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
+
+    propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {color}(R, C), {bulb_constraint}."
+    return initial + "\n" + propagation
 
 
 def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:

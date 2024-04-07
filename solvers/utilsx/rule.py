@@ -244,26 +244,6 @@ def count_region(
     return f":- {{ {tag_encode('reachable', 'grid', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
-def lit(src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generate a rule to check the cells can be lit up with a source {color} cell.
-
-    An adjacent rule should be defined first.
-    """
-    r, c = src_cell
-    if adj_type == 4:
-        lit_constraint = f"(R - {r}) * (C - {c}) == 0"
-    elif adj_type == 8:
-        lit_constraint = f"(R - {r}) * (C - {c}) * (R - {r} - C + {c}) * (R - {r} + C - {c}) == 0"
-    else:
-        raise ValueError("Invalid adjacent type, must be one of '4', '8'.")
-
-    helper = ConnectivityHelper("lit", "grid", color, adj_type)
-    initial = helper.initial([src_cell], [], full_search=True)
-    propagation = helper.propagation([src_cell], full_search=True, extra_constraint=lit_constraint)
-    return initial + "\n" + propagation
-
-
 def count_lit(
     target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
 ) -> str:
@@ -274,7 +254,7 @@ def count_lit(
     """
     op = rev_op_dict[op]
     src_r, src_c = src_cell
-    return f":- {{ {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
+    return f":- {{ {tag_encode('reachable', 'bulb', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
 def reachable_edge() -> str:

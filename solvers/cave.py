@@ -6,8 +6,8 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
 from .utilsx.helper import tag_encode
-from .utilsx.reachable import grid_color_connected, border_color_connected
-from .utilsx.rule import adjacent, count_lit, lit, shade_c
+from .utilsx.reachable import border_color_connected, bulb_src_color_connected, grid_color_connected
+from .utilsx.rule import adjacent, count_lit, shade_c
 from .utilsx.solution import solver
 
 
@@ -15,11 +15,13 @@ def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "blac
     """
     Product rule for cave.
 
-    A lit rule should be defined first.
+    A bulb_src_color_connected rule should be defined first.
     """
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
+
     src_r, src_c = src_cell
-    count_r = f"#count {{ R: {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} = CR"
-    count_c = f"#count {{ C: {tag_encode('lit', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} = CC"
+    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
     return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
@@ -43,7 +45,7 @@ def solve(E: Encoding) -> List:
         else:
             num = int(clue)
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(lit((r, c), color="not black"))
+            solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
             if E.params["Product"]:
                 solver.add_program_line(cave_product_rule(num, (r, c), color="not black"))
             else:
