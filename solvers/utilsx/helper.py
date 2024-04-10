@@ -7,7 +7,8 @@ def tag_encode(name: str, *data: Any) -> str:
     """Encode a valid tag predicate without spaces or hyphens."""
     tag_data = [name]
     for d in data:  # recommended data sequence: *_type, src_r, src_c, color
-        tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
+        if d is not None:
+            tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
 
     return "_".join(tag_data)
 

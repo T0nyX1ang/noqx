@@ -72,39 +72,31 @@ def grid_src_color_connected(
     Generate a constraint to check the reachability of {color} cells starting from a source.
 
     An adjacent rule and a grid fact should be defined first.
+    If adj_type is "edge", an edge fact should be defined first.
     """
     validate_type(adj_type, (4, 8, "edge", "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
     r, c = src_cell
     initial = f"{tag}({r}, {c}, {r}, {c})."
+
     if include_cells:
         initial += "\n" + "\n".join(f"{tag}({r}, {c}, {inc_r}, {inc_c})." for inc_r, inc_c in include_cells)
+
     if exclude_cells:
         initial += "\n" + "\n".join(f"not {tag}({r}, {c}, {exc_r}, {exc_c})." for exc_r, exc_c in exclude_cells)
 
-    propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    if adj_type == "edge":
+        propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
+
+        # edge between two reachable grids is forbidden.
+        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
+        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
+
+        return initial + "\n" + propagation + "\n" + constraint
+
+    propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     return initial + "\n" + propagation
-
-
-def edge_src_color_connected(
-    src_cell: Tuple[int, int], exclude_cells: Optional[List[Tuple[int, int]]] = None, color: str = "grid"
-) -> str:
-    """
-    Generate a constraint to check the reachability of {color} edges starting from a source.
-
-    An adjacent rule and an edge fact should be defined first.
-    """
-    tag = tag_encode("reachable", "grid", "src", "adj", "edge", color)
-
-    r, c = src_cell
-    prepare = grid_src_color_connected(src_cell, exclude_cells=exclude_cells, color=color, adj_type="edge")
-
-    # edge between two reachable grids is forbidden.
-    constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
-    constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
-
-    return prepare + "\n" + constraint
 
 
 def bulb_src_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:

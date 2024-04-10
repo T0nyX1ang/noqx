@@ -7,7 +7,7 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import grid, edge, display
 from .utilsx.helper import tag_encode
-from .utilsx.reachable import edge_src_color_connected
+from .utilsx.reachable import grid_src_color_connected
 from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
@@ -15,7 +15,7 @@ from .utilsx.solution import solver
 def galaxy_constraint(glxr: int, glxc: int) -> str:
     """Generate a constraint for spiral galaxies."""
     r, c = (glxr - 1) // 2, (glxc - 1) // 2
-    tag = tag_encode("reachable", "grid", "src", "adj", "edge", "grid")
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1)."
     rule += f":- grid(R, C), {tag}({r}, {c}, R, C), horizontal_line(R, C), not horizontal_line({glxr} - R, {glxc} - C - 1).\n"
     rule += f":- grid(R, C), {tag}({r}, {c}, R, C), vertical_line(R, C), not vertical_line({glxr} - R - 1, {glxc} - C).\n"
@@ -65,9 +65,9 @@ def solve(E: Encoding) -> List:
 
     for r, c in reachables:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
-        solver.add_program_line(edge_src_color_connected((r, c), excluded))
+        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
 
-    tag = tag_encode("reachable", "grid", "src", "adj", "edge", "grid")
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
     solver.add_program_line(f":- grid(R, C), {spawn_points}.")
 
