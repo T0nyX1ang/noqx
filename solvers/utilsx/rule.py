@@ -207,17 +207,6 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
-def count_connected_parts(target: int, color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq") -> str:
-    """
-    Generate a constraint to count the number of grid_color_connected components of {color} cells.
-
-    A reachable rule should be defined first.
-    """
-    op = rev_op_dict[op]
-    tag = tag_encode("reachable", "adj", adj_type, color)
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {tag}(R, C, R1, C1) }} {op} {target}."
-
-
 def count_region(
     target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
 ) -> str:
@@ -244,33 +233,16 @@ def count_lit(
     return f":- {{ {tag_encode('reachable', 'bulb', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
 
-def reachable_edge() -> str:
-    """
-    Define edges as numbers on its adjacent grids are different.
-
-    A grid fact and an adjacent edge rule should be defined first.
-    """
-    initial = "reachable_edge(R, C, R, C) :- grid(R, C).\n"
-    propagation = "reachable_edge(R0, C0, R, C) :- grid(R, C), reachable_edge(R0, C0, R1, C1), adj_edge(R, C, R1, C1).\n"
-    # edge between two reachable grids is forbidden.
-    constraint = ":- reachable_edge(R, C, R, C + 1), vertical_line(R, C + 1).\n"
-    constraint += ":- reachable_edge(R, C, R + 1, C), horizontal_line(R + 1, C).\n"
-    constraint += ":- reachable_edge(R, C + 1, R, C), vertical_line(R, C + 1).\n"
-    constraint += ":- reachable_edge(R + 1, C, R, C), horizontal_line(R + 1, C)."
-    return initial + propagation + constraint
-
-
-def count_reachable_edge(target: int, op: str = "eq", color: str = None) -> str:
+def count_reachable_edge(target: int, op: str = "eq") -> str:
     """
     Generates a constraint for counting grids in a region divided by edges.
 
     An edge rule should be defined first.
     """
     op = rev_op_dict[op]
-    if not color:
-        return f":- grid(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+    tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
 
-    return f":- grid(R0, C0), {color}(R0, C0), #count {{ R, C: reachable_edge(R0, C0, R, C) }} {op} {target}."
+    return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} {op} {target}."
 
 
 def count_shape(target: int, name: str, _id: int = None, color: str = "black", _type: str = "grid", op: str = "eq") -> str:

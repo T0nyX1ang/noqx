@@ -92,7 +92,6 @@ def grid_src_color_connected(
         # edge between two reachable grids is forbidden.
         constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
         constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
-
         return initial + "\n" + propagation + "\n" + constraint
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -127,13 +126,25 @@ def grid_branch_color_connected(color: str = "black", adj_type: Union[int, str] 
     Generate a constraint to check the reachability of {color} cells with branches.
 
     An adjacent rule and a grid fact should be defined first.
+    If adj_type is "edge", an edge fact should be defined first.
     Unless no initial cells are given, please consider using grid_src_color_connected.
     """
-    validate_type(adj_type, (4, 8))
+    validate_type(adj_type, (4, 8, "edge"))
     tag = tag_encode("reachable", "grid", "branch", "adj", adj_type, color)
 
+    if adj_type == "edge":
+        initial = f"{tag}(R, C, R, C) :- grid(R, C)."
+        propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
+
+        # edge between two reachable grids is forbidden.
+        constraint = f":- {tag}(R, C, R, C + 1), vertical_line(R, C + 1).\n"
+        constraint += f":- {tag}(R, C, R + 1, C), horizontal_line(R + 1, C).\n"
+        constraint += f":- {tag}(R, C + 1, R, C), vertical_line(R, C + 1).\n"
+        constraint += f":- {tag}(R + 1, C, R, C), horizontal_line(R + 1, C)."
+        return initial + "\n" + propagation + "\n" + constraint
+
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
-    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     return initial + "\n" + propagation
 
 

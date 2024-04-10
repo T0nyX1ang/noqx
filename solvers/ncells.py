@@ -6,7 +6,8 @@ from . import utilsx
 from .utilsx.coord import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, edge, grid
-from .utilsx.rule import adjacent, count_adjacent_lines, count_reachable_edge, reachable_edge
+from .utilsx.reachable import grid_branch_color_connected
+from .utilsx.rule import adjacent, count_adjacent_lines, count_reachable_edge
 from .utilsx.solution import solver
 
 
@@ -22,7 +23,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(reachable_edge())
+    solver.add_program_line(grid_branch_color_connected(color=None, adj_type="edge"))
     solver.add_program_line(count_reachable_edge(size))
 
     for r, c, d in E.edges:
