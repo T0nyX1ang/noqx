@@ -130,6 +130,21 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: str = "black", ad
     return initial + "\n" + propagation
 
 
+def grid_branch_color_connected(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+    """
+    Generate a constraint to check the reachability of {color} cells with branches.
+
+    An adjacent rule and a grid fact should be defined first.
+    Unless no initial cells are given, please consider using grid_src_color_connected.
+    """
+    validate_type(adj_type, (4, 8))
+    tag = tag_encode("reachable", "grid", "branch", "adj", adj_type, color)
+
+    initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
+    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+    return initial + "\n" + propagation
+
+
 def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to avoid cells starting from unknown source.

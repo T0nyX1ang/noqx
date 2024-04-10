@@ -2,7 +2,7 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .helper import ConnectivityHelper, tag_encode
+from .helper import tag_encode
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 
@@ -205,19 +205,6 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
         return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
     raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
-
-
-def connected_parts(color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generate a rule to get all the grid_color_connected components of {color} cells.
-    Please note that 'reachable/4' is much slower than the 'reachable/2' which only searches for one component.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
-    helper = ConnectivityHelper("reachable", "grid", color, adj_type)
-    initial = helper.initial(full_search=True)
-    propagation = helper.propagation(full_search=True)
-    return initial + "\n" + propagation
 
 
 def count_connected_parts(target: int, color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq") -> str:
