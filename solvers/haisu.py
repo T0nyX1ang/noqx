@@ -22,17 +22,13 @@ def area_border(_id: int, ar: list) -> str:
     return rule
 
 
-def adj_connected() -> str:
+def adj_before() -> str:
     """Generate a rule to constrain adjacent connectivity."""
-    adj = 'adj_connected(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
-    adj += 'adj_connected(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
-    adj += 'adj_connected(R0, C0, R, C) :- R=R0, C=C0-1, grid(R, C), grid(R0, C0), grid_in(R, C, "r").\n'
-    adj += 'adj_connected(R0, C0, R, C) :- R=R0-1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "d").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0, C=C0-1, grid(R, C), grid(R0, C0), grid_out(R, C, "r").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0-1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "d").\n'
-    return adj
+    adj = 'adj_before(R, C-1, R, C) :- grid(R, C), grid_in(R, C, "l").\n'
+    adj += 'adj_before(R-1, C, R, C) :- grid(R, C), grid_in(R, C, "u").\n'
+    adj += 'adj_before(R, C+1, R, C) :- grid(R, C), grid_in(R, C, "r").\n'
+    adj += 'adj_before(R+1, C, R, C) :- grid(R, C), grid_in(R, C, "d").\n'
+    return adj.strip()
 
 
 def connected_directed_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
@@ -45,24 +41,22 @@ def connected_directed_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int
     dest_r, dest_c = dest_cell
     initial = f"reachable_path({src_r}, {src_c}).\n"
     initial += f"reachable_path({dest_r}, {dest_c}).\n"
-    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_connected(R, C, R1, C1).\n"
+    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_before(R, C, R1, C1).\n"
     constraint = f":- grid(R, C), {color}(R, C), not reachable_path(R, C)."
     return initial + propagation + constraint
 
 
-def connected_destpath(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
+def connected_destpath(dest_cell: Tuple[int, int], color: str = "white") -> str:
     """
     Generate a path rule to constrain connectivity.
 
     A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
     """
-    src_r, src_c = src_cell
     dest_r, dest_c = dest_cell
     tag = "reachable_destpath"
     initial = f"{tag}({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
-    initial += f"{tag}({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
     propagation = (
-        f"{tag}(R, C, {dest_r}, {dest_c}) :- {color}(R, C), {tag}(R1, C1, {dest_r}, {dest_c}), adj_connected(R, C, R1, C1)."
+        f"{tag}(R, C, {dest_r}, {dest_c}) :- {color}(R, C), {tag}(R1, C1, {dest_r}, {dest_c}), adj_before(R, C, R1, C1)."
     )
     return initial + propagation
 
@@ -94,7 +88,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("haisu(R, C) :- grid(R, C).")
     solver.add_program_line(fill_path(color="haisu", directed=True))
-    solver.add_program_line(adj_connected())
+    solver.add_program_line(adj_before())
     solver.add_program_line(directed_loop(color="haisu", path=True))
 
     clue_index = {}
@@ -116,7 +110,7 @@ def solve(E: Encoding) -> List:
 
     for (r, c), clue in E.clues.items():
         if clue not in ("S", "G"):
-            solver.add_program_line(connected_destpath((sr, sc), (r, c), color="haisu"))
+            solver.add_program_line(connected_destpath((r, c), color="haisu"))
             solver.add_program_line(haisu_count(int(clue), _id=clue_index[(r, c)], dest=(r, c)))
 
     solver.add_program_line(connected_directed_path((sr, sc), (gr, gc), color="haisu"))
