@@ -63,8 +63,8 @@ def fill_path(color: str = None, directed: bool = False) -> str:
     if not directed:
         return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
     else:
-        rule = f"{{ grid_in(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C).\n"
-        rule += f"{{ grid_out(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C)."
+        rule = f"{{ grid_in(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ grid_out(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
         return rule
 
 
@@ -132,12 +132,12 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:
-        visit_constraints.append("not dead_out(R, C)")
-        visit_constraints.append("not dead_in(R, C)")
-        constraint += ":- dead_out(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 1.\n"
-        constraint += ":- dead_out(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 0.\n"
-        constraint += ":- dead_in(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 1.\n"
-        constraint += ":- dead_in(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 0.\n"
+        visit_constraints.append("not path_start(R, C)")
+        visit_constraints.append("not path_end(R, C)")
+        constraint += ":- path_start(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 1.\n"
+        constraint += ":- path_start(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 0.\n"
+        constraint += ":- path_end(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 1.\n"
+        constraint += ":- path_end(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 0.\n"
 
     constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
     constraint += ':- grid(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'

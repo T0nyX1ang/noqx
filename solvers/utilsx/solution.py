@@ -28,9 +28,9 @@ class ClingoSolver:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
             if _type not in ["loop_sign", "triangle"]:
-                data = map(int, data)
+                data = list(map(int, data))
             else:
-                data[:-1] = map(int, data[:-1])
+                data[:-1] = list(map(int, data[:-1]))
 
             if _type.startswith("vertical"):
                 r, c = data
@@ -65,10 +65,13 @@ class ClingoSolver:
                 sign += "bl" if code >> 2 & 1 else ""
                 if sign:
                     formatted[rcd_to_elt(r, c)] = sign + ".png"
-            else:
+            elif len(data) == 2:
                 # color
                 r, c = data
                 formatted[rcd_to_elt(r, c)] = _type.replace("color", "")
+            else:
+                # debug
+                print(data)
         self.solutions.append(formatted)
 
     def add_program_line(self, line: str):
