@@ -2,7 +2,7 @@
 
 import json
 import urllib.parse
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, List, Set, Tuple, Union, Callable
 
 from .coord import Direction, elt_to_rcd
 
@@ -44,7 +44,7 @@ def unquote_plus(value: Union[str, List, Any]) -> Union[str, List, Any]:
         return value
 
 
-def clue_encoder(data: Union[str, List, Any]) -> Union[str, List, Any]:
+def default_clue_encoder(data: Union[str, List, Any]) -> Union[str, List, Any]:
     """
     If 'data' is a number, return its int value.
     If 'data' is '?' or '' or a color name or a single letter, return data.
@@ -68,7 +68,7 @@ def clue_encoder(data: Union[str, List, Any]) -> Union[str, List, Any]:
     raise RuntimeError("Invalid input")
 
 
-def encode(string: str) -> Encoding:
+def encode(string: str, clue_encoder: Callable = default_clue_encoder) -> Encoding:
     """Parse a JSON object and encode a puzzle."""
     json_obj: Dict[str, Any] = json.loads(string)
 
