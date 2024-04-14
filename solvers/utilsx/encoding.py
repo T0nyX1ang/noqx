@@ -143,3 +143,9 @@ def tag_encode(name: str, *data: Any) -> str:
             tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
 
     return "_".join(tag_data)
+
+
+def reverse_op(op: str) -> str:
+    """Return the reverse of the given operator."""
+    op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+    return op_rev_dict[op]

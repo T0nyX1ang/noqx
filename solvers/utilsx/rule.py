@@ -2,9 +2,7 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .encoding import tag_encode
-
-rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+from .encoding import reverse_op, tag_encode
 
 
 def shade_c(color: str = "black") -> str:
@@ -65,7 +63,7 @@ def count(target: int, op: str = "eq", color: str = "black", _type: str = "grid"
 
     A grid fact should be defined first.
     """
-    op = rev_op_dict[op]
+    op = reverse_op(op)
 
     if _id is None:
         _id = "R" if _type == "row" else "C" if _type == "col" else None
@@ -169,7 +167,7 @@ def count_adjacent(
     An adjacent rule should be defined first.
     """
     src_r, src_c = src_cell
-    op = rev_op_dict[op]
+    op = reverse_op(op)
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
 
 
@@ -180,7 +178,7 @@ def count_adjacent_lines(target: int, src_cell: Tuple[int, int], op: str = "eq")
     An edge rule should be defined first.
     """
     src_r, src_c = src_cell
-    op = rev_op_dict[op]
+    op = reverse_op(op)
     v_1 = f"vertical_line({src_r}, {src_c})"
     v_2 = f"vertical_line({src_r}, {src_c + 1})"
     h_1 = f"horizontal_line({src_r}, {src_c})"
@@ -215,7 +213,7 @@ def count_region(
 
     A region rule should be defined first.
     """
-    op = rev_op_dict[op]
+    op = reverse_op(op)
     src_r, src_c = src_cell
     return f":- {{ {tag_encode('reachable', 'grid', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
@@ -228,7 +226,7 @@ def count_lit(
 
     A lit rule should be defined first.
     """
-    op = rev_op_dict[op]
+    op = reverse_op(op)
     src_r, src_c = src_cell
     return f":- {{ {tag_encode('reachable', 'bulb', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
 
@@ -239,7 +237,7 @@ def count_reachable_edge(target: int, op: str = "eq") -> str:
 
     An edge rule should be defined first.
     """
-    op = rev_op_dict[op]
+    op = reverse_op(op)
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
 
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} {op} {target}."
@@ -252,7 +250,7 @@ def count_shape(target: int, name: str, _id: int = None, color: str = "black", _
     A grid rule and a shape rule should be defined first.
     """
     tag = tag_encode("shape", name, color)
-    op = rev_op_dict[op]
+    op = reverse_op(op)
     _id = "_" if _id is None else _id
 
     if _type == "grid":

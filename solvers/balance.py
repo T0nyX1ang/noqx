@@ -3,11 +3,11 @@
 from typing import List, Tuple
 
 from . import utilsx
-from .utilsx.encoding import Encoding
+from .utilsx.encoding import Encoding, reverse_op
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, fill_path
+from .utilsx.loop import fill_path, single_loop
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, shade_c, rev_op_dict
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
 
@@ -47,17 +47,17 @@ def count_balance(target: int, src_cell: Tuple[int, int], color: str = "black", 
 
     A balance loop rule should be defined first.
     """
-    op = rev_op_dict[op]
+    rop = reverse_op(op)
     r, c = src_cell
     constraint = ""
     for sign in "J7Lr":
         constraint += (
-            f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "{sign}"), |{r} - N1| + |{c} - N2| {op} {target}.\n'
+            f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "{sign}"), |{r} - N1| + |{c} - N2| {rop} {target}.\n'
         )
 
     # special case for straight line
-    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "1"), |{r} - N1| + |{r} - N2| {op} {target}.\n'
-    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "-"), |{c} - N1| + |{c} - N2| {op} {target}.\n'
+    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "1"), |{r} - N1| + |{r} - N2| {rop} {target}.\n'
+    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "-"), |{c} - N1| + |{c} - N2| {rop} {target}.\n'
     return constraint.strip()
 
 
