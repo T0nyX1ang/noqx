@@ -2,7 +2,7 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .helper import tag_encode
+from .encoding import tag_encode
 
 rev_op_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
 

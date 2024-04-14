@@ -3,7 +3,7 @@
 import itertools
 from typing import Iterable, Set, Tuple
 
-from .helper import tag_encode
+from .encoding import tag_encode
 
 OMINOES = {
     1: {

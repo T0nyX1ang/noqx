@@ -28,8 +28,8 @@ def fill_path(color: str = None, directed: bool = False) -> str:
     A grid fact and a direction fact should be defined first.
     """
     if directed:
-        rule = f"{{ grid_in(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C).\n"
-        rule += f"{{ grid_out(R, C, D): direction(D) }} 1 :- grid(R, C), {color}(R, C)."
+        rule = f"{{ grid_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ grid_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
         return rule
 
     return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."

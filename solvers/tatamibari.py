@@ -3,9 +3,8 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.encoding import Encoding
+from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import display, edge, grid
-from .utilsx.helper import tag_encode
 from .utilsx.rule import adjacent, reachable_row, reachable_col
 from .utilsx.shape import all_rect_region
 from .utilsx.solution import solver

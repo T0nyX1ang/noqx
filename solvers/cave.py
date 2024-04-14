@@ -3,9 +3,8 @@
 from typing import List, Tuple
 
 from . import utilsx
-from .utilsx.encoding import Encoding
+from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import display, grid
-from .utilsx.helper import tag_encode
 from .utilsx.reachable import border_color_connected, bulb_src_color_connected, grid_color_connected
 from .utilsx.rule import adjacent, count_lit, shade_c
 from .utilsx.solution import solver

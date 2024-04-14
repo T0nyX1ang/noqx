@@ -3,16 +3,6 @@
 from typing import Any, Dict, Tuple
 
 
-def tag_encode(name: str, *data: Any) -> str:
-    """Encode a valid tag predicate without spaces or hyphens."""
-    tag_data = [name]
-    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
-        if d is not None:
-            tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
-
-    return "_".join(tag_data)
-
-
 def mark_and_extract_clues(
     original_clues: Dict[Tuple[int, int], Any],
     shaded_color: str = "black",
