@@ -5,7 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop, fill_path, single_loop
+from .utilsx.loop import fill_path, single_loop
+from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, count_adjacent_lines, shade_c
 from .utilsx.solution import solver
 
@@ -39,11 +40,11 @@ def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R + 1, E.C + 1))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="slither_link"))
-    solver.add_program_line(fill_path(color="slither_link"))
+    solver.add_program_line(shade_c(color="slither"))
+    solver.add_program_line(fill_path(color="slither"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="slither_link"))
-    solver.add_program_line(single_loop(color="slither_link"))
+    solver.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
+    solver.add_program_line(single_loop(color="slither"))
     solver.add_program_line(convert_direction_to_edge())
 
     flag = False

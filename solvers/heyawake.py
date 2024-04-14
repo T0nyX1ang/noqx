@@ -8,7 +8,8 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.helper import mark_and_extract_clues
 from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, avoid_adjacent, connected, count, shade_c
+from .utilsx.reachable import grid_color_connected
+from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -24,7 +25,7 @@ def solve(E: Encoding) -> List:
 
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent(color="gray"))
-    solver.add_program_line(connected(color="not gray"))
+    solver.add_program_line(grid_color_connected(color="not gray"))
 
     clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
     if clues:

@@ -5,7 +5,8 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, connected_loop, fill_path
+from .utilsx.loop import single_loop, fill_path
+from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, shade_c, rev_op_dict
 from .utilsx.solution import solver
 
@@ -70,9 +71,8 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="balance"))
     solver.add_program_line(fill_path(color="balance"))
-    solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="balance"))
+    solver.add_program_line(grid_color_connected(color="balance", adj_type="loop"))
     solver.add_program_line(single_loop(color="balance"))
     solver.add_program_line(balance_rule(color="black"))
     solver.add_program_line(balance_rule(color="white"))

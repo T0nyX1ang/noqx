@@ -5,7 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop, fill_path, single_loop
+from .utilsx.loop import fill_path, single_loop
+from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
@@ -53,7 +54,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c(color="castle"))
     solver.add_program_line(fill_path(color="castle"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="castle"))
+    solver.add_program_line(grid_color_connected(color="castle", adj_type="loop"))
     solver.add_program_line(single_loop(color="castle"))
     solver.add_program_line(black_out_white_in())
 

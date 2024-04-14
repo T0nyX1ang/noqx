@@ -5,7 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, connected, count_region, region, shade_c
+from .utilsx.reachable import grid_color_connected, avoid_unknown_src, grid_src_color_connected
+from .utilsx.rule import adjacent, count_region, shade_c
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -20,7 +21,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="black"))
+    solver.add_program_line(grid_color_connected(color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
 
     all_src = []
@@ -39,12 +40,13 @@ def solve(E: Encoding) -> List:
         else:
             current_excluded = [src for src in all_src if src != (r, c)]
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), current_excluded, color="not black", avoid_unknown=True))
+            solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color="not black"))
 
             if clue != "yellow":
                 num = int(clue)
                 solver.add_program_line(count_region(num, (r, c), color="not black"))
 
+    solver.add_program_line(avoid_unknown_src(color="not black"))
     solver.add_program_line(display())
     solver.solve()
 

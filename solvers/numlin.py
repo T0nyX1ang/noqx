@@ -5,7 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_path, fill_path, single_loop
+from .utilsx.loop import fill_path, single_loop
+from .utilsx.reachable import grid_src_color_connected, avoid_unknown_src
 from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 
@@ -14,10 +15,10 @@ def no_2x2_path() -> str:
     """
     Generate a rule that no 2x2 path is allowed.
 
-    A reachable path rule should be defined first
+    A reachable path rule should be defined first.
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    return f":- { ', '.join(f'reachable_path(R0, C0, R + {r}, C + {c})' for r, c in points) }."
+    return f":- { ', '.join(f'reachable_grid_src_adj_loop_numlin(R0, C0, R + {r}, C + {c})' for r, c in points) }."
 
 
 def encode(string: str) -> Encoding:
@@ -55,19 +56,23 @@ def solve(E: Encoding) -> List:
         r0, c0 = pair[0]
         r1, c1 = pair[1]
         solver.add_program_line(f"numlin({r0}, {c0}).")
+        solver.add_program_line(f"dead_end({r0}, {c0}).")
         solver.add_program_line(f"numlin({r1}, {c1}).")
-        solver.add_program_line(connected_path((r0, c0), (r1, c1), color="numlin"))
+        solver.add_program_line(f"dead_end({r1}, {c1}).")
 
+        excluded = []
         for n1, pair1 in locations.items():
             if n1 != n:
-                r10, c10 = pair1[0]
-                r11, c11 = pair1[1]
-                solver.add_program_line(f"not reachable_path({r0}, {c0}, {r10}, {c10}).")
-                solver.add_program_line(f"not reachable_path({r0}, {c0}, {r11}, {c11}).")
-                solver.add_program_line(f"not reachable_path({r1}, {c1}, {r10}, {c10}).")
-                solver.add_program_line(f"not reachable_path({r1}, {c1}, {r11}, {c11}).")
+                excluded.append(pair1[0])
+                excluded.append(pair1[1])
 
-    solver.add_program_line(":- grid(R, C), numlin(R, C), not reachable_path(_, _, R, C).")
+        solver.add_program_line(
+            grid_src_color_connected(
+                (r0, c0), include_cells=[(r1, c1)], exclude_cells=excluded, color="numlin", adj_type="loop"
+            )
+        )
+
+    solver.add_program_line(avoid_unknown_src(color="numlin", adj_type="loop"))
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
 

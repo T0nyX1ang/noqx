@@ -6,8 +6,9 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.helper import mark_and_extract_clues
+from .utilsx.reachable import area_color_connected
 from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, area_adjacent, avoid_area_adjacent, connected, count, shade_c
+from .utilsx.rule import adjacent, area_adjacent, avoid_area_adjacent, count, shade_c
 from .utilsx.solution import solver
 
 
@@ -46,7 +47,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(count(1, op="ge", color="gray", _type="area", _id=i))
 
     solver.add_program_line(rules)
-    solver.add_program_line(connected(color="gray", _type="area"))
+    solver.add_program_line(area_color_connected(color="gray"))
     solver.add_program_line(avoid_area_adjacent(color="gray"))
     solver.add_program_line(area_adjacent())
     solver.add_program_line(adjacent_area_different_size(color="gray"))

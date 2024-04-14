@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.helper import ConnectivityHelper, tag_encode
+from .utilsx.helper import tag_encode
 from .utilsx.rule import adjacent, count_adjacent
 from .utilsx.solution import solver
 
@@ -16,10 +16,9 @@ def lightup(color: str = "black") -> str:
 
     A grid fact and an adjacent rule should be defined first.
     """
-    tag = tag_encode("lit", "adj", 4, color)
-    helper = ConnectivityHelper("lit", "grid", color, 4)
+    tag = tag_encode("reachable", "bulb", "branch", "adj", 4, color)
     initial = f"{tag}(R0, C0, R, C) :- grid(R, C), bulb(R, C), R0 = R, C0 = C."
-    propagation = helper.propagation(full_search=True, extra_constraint="(R - R0) * (C - C0) == 0")
+    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), adj_4(R, C, R1, C1), (R - R0) * (C - C0) = 0."
     constraint1 = f":- bulb(R0, C0), bulb(R, C), |R0 - R| + |C0 - C| != 0, {tag}(R0, C0, R, C)."
     constraint2 = f":- grid(R, C), not black(R, C), not bulb(R, C), {{ {tag}(R0, C0, R, C) }} = 0."
 
