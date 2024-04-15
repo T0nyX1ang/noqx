@@ -5,8 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c, count_shape
-from .utilsx.shape import OMINOES, all_shapes, general_shape
+from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
+from .utilsx.shape import OMINOES, all_shapes, count_shape, general_shape
 from .utilsx.solution import solver
 
 

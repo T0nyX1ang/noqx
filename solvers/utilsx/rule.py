@@ -243,25 +243,6 @@ def count_reachable_edge(target: int, op: str = "eq") -> str:
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} {op} {target}."
 
 
-def count_shape(target: int, name: str, _id: int = None, color: str = "black", _type: str = "grid", op: str = "eq") -> str:
-    """
-    Generates a constraint to count the number of a shape.
-
-    A grid rule and a shape rule should be defined first.
-    """
-    tag = tag_encode("shape", name, color)
-    op = reverse_op(op)
-    _id = "_" if _id is None else _id
-
-    if _type == "grid":
-        return f":- {{ {tag}(R, C, {_id}, _) }} {op} {target}."
-
-    if _type == "area":
-        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {op} {target}."
-
-    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
-
-
 def reachable_row(adj_type: int) -> str:
     """
     Generates a rule for reachable rows.

@@ -5,10 +5,10 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import area, display, grid
-from .utilsx.region import full_bfs
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, area_adjacent, count_shape, shade_c
-from .utilsx.shape import OMINOES, all_shapes, avoid_rect, general_shape
+from .utilsx.region import full_bfs
+from .utilsx.rule import adjacent, area_adjacent, shade_c
+from .utilsx.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_shape
 from .utilsx.solution import solver
 
 

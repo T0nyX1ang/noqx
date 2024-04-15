@@ -6,8 +6,8 @@ from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, count_shape, shade_c
-from .utilsx.shape import OMINOES, all_shapes, general_shape
+from .utilsx.rule import adjacent, shade_c
+from .utilsx.shape import OMINOES, all_shapes, count_shape, general_shape
 from .utilsx.solution import solver
 
 

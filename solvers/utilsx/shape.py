@@ -3,7 +3,7 @@
 import itertools
 from typing import Iterable, Set, Tuple
 
-from .encoding import tag_encode
+from .encoding import reverse_op, tag_encode
 
 OMINOES = {
     1: {
@@ -261,5 +261,24 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
 
     if _type == "area":
         return f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C, _, _)."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
+def count_shape(target: int, name: str, _id: int = None, color: str = "black", _type: str = "grid", op: str = "eq") -> str:
+    """
+    Generates a constraint to count the number of a shape.
+
+    A grid rule and a shape rule should be defined first.
+    """
+    tag = tag_encode("shape", name, color)
+    op = reverse_op(op)
+    _id = "_" if _id is None else _id
+
+    if _type == "grid":
+        return f":- {{ {tag}(R, C, {_id}, _) }} {op} {target}."
+
+    if _type == "area":
+        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {op} {target}."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
