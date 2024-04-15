@@ -1,30 +1,29 @@
 """The Shikaku solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from . import utilsx
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import display, edge, grid
-from .utilsx.rule import adjacent, reachable_row, reachable_col
+from .utilsx.reachable import bulb_src_color_connected
+from .utilsx.rule import adjacent
 from .utilsx.shape import all_rect_region
 from .utilsx.solution import solver
 
 
-def shikaku_constraint() -> str:
-    """Generate a constraint for shikaku."""
-    tag_col = tag_encode("reachable", "row", "edge")
-    tag_row = tag_encode("reachable", "col", "edge")
+def shikaku_constraint(target: int, src_cell: Tuple[int, int]) -> str:
+    """
+    Generate a constraint for shikaku.
 
-    size_range = [
-        f"R = #min{{ R0: grid(R0, C1), {tag_row}(R0, R1, C1) }}",
-        f"MR = #max{{ R0: grid(R0, C1), {tag_row}(R0, R1, C1) }}",
-        f"C = #min{{ C0: grid(R1, C0), {tag_col}(R1, C0, C1) }}",
-        f"MC = #max{{ C0: grid(R1, C0), {tag_col}(R1, C0, C1) }}",
-    ]
+    A bulb_src_color_connected rule should be defined first.
+    """
+    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
 
-    rule = f"rect_size(R1, C1, S) :- grid(R1, C1), clue(R1, C1), S = (MR - R + 1) * (MC - C + 1), {', '.join(size_range)}.\n"
-    rule += f":- clue(R0, C0), clue(R1, C1), (R0, C0) != (R1, C1), {tag_row}(R0, R1, C1), {tag_col}(R0, C0, C1)."
-    return rule
+    src_r, src_c = src_cell
+    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
+
+    return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
 def encode(string: str) -> Encoding:
@@ -40,17 +39,18 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(all_rect_region())
-    solver.add_program_line(reachable_row(adj_type="edge"))
-    solver.add_program_line(reachable_col(adj_type="edge"))
-    solver.add_program_line(shikaku_constraint())
+    solver.add_program_line(f":- {{ upleft(R, C) }} != {len(E.clues)}.")
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"clue({r}, {c}).")
+        solver.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
+
         if clue != "?":
             num = int(clue)
-            solver.add_program_line(f":- not rect_size({r}, {c}, {num}).")
+            solver.add_program_line(shikaku_constraint(num, (r, c)))
 
-    solver.add_program_line(f":- {{ upleft(R, C) }} != {len(E.clues)}.")
+    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+    solver.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.solve()
