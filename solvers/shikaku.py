@@ -11,9 +11,9 @@ from .utilsx.shape import all_rect_region
 from .utilsx.solution import solver
 
 
-def shikaku_constraint(target: int, src_cell: Tuple[int, int]) -> str:
+def shikaku_cell_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     """
-    Generate a constraint for shikaku.
+    Generate a cell-relevant constraint for shikaku.
 
     A bulb_src_color_connected rule should be defined first.
     """
@@ -47,7 +47,7 @@ def solve(E: Encoding) -> List:
 
         if clue != "?":
             num = int(clue)
-            solver.add_program_line(shikaku_constraint(num, (r, c)))
+            solver.add_program_line(shikaku_cell_constraint(num, (r, c)))
 
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
     solver.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
