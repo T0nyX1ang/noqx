@@ -3,15 +3,15 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
-from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
+from .utilsx.helper import full_bfs
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -22,7 +22,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c(color="gray"))
 
     solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(avoid_adjacent(color="gray", adj_type=8))
+    solver.add_program_line(avoid_adjacent_color(color="gray", adj_type=8))
 
     solver.add_program_line(count(num_stars, color="gray", _type="row"))
     solver.add_program_line(count(num_stars, color="gray", _type="col"))

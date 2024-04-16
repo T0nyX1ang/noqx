@@ -3,11 +3,11 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
-from .utilsx.helper import mark_and_extract_clues
-from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, area_adjacent, avoid_area_adjacent, connected, count, shade_c
+from .utilsx.helper import full_bfs, mark_and_extract_clues
+from .utilsx.neighbor import adjacent, area_adjacent, avoid_area_adjacent
+from .utilsx.reachable import area_color_connected
 from .utilsx.solution import solver
 
 
@@ -23,7 +23,7 @@ def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -32,7 +32,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
 
-    clues = mark_and_extract_clues(solver, E.clues, shaded_color="gray", safe_color="green")
+    clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
@@ -43,9 +43,10 @@ def solve(E: Encoding) -> List:
                 solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
                 tag = True
         if not tag:
-            solver.add_program_line(count(1, op="ge", color="gray", _type="area", _id=i))
+            solver.add_program_line(count(("ge", 1), color="gray", _type="area", _id=i))
 
-    solver.add_program_line(connected(color="gray", _type="area"))
+    solver.add_program_line(rules)
+    solver.add_program_line(area_color_connected(color="gray"))
     solver.add_program_line(avoid_area_adjacent(color="gray"))
     solver.add_program_line(area_adjacent())
     solver.add_program_line(adjacent_area_different_size(color="gray"))

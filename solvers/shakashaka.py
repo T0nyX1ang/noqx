@@ -3,9 +3,9 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent
+from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 
@@ -69,7 +69,7 @@ def shade_shaka() -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

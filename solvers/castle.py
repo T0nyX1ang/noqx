@@ -3,10 +3,11 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop, fill_path, single_loop
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.loop import separate_item_from_loop, single_loop
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
 
@@ -28,20 +29,6 @@ def wall_length(r: int, c: int, d: str, num: int) -> str:
     raise ValueError("Invalid direction.")
 
 
-def black_out_white_in() -> str:
-    """
-    Generate a constraint to make black cells outside of the loop, and make white cells inside of loop.
-
-    A grid direction fact should be defined first.
-    """
-    out_loop = "out_loop(-1, C) :- grid(_, C).\n"
-    out_loop += 'out_loop(R, C) :- grid(R, C), out_loop(R - 1, C), not grid_direction(R, C, "r").\n'
-    out_loop += 'out_loop(R, C) :- grid(R, C), not out_loop(R - 1, C), grid_direction(R, C, "r").\n'
-    constraint = ":- white(R, C), out_loop(R, C).\n"
-    constraint += ":- black(R, C), not out_loop(R, C)."
-    return out_loop + constraint
-
-
 def encode(string: str) -> Encoding:
     return utilsx.encode(string)
 
@@ -53,9 +40,9 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c(color="castle"))
     solver.add_program_line(fill_path(color="castle"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="castle"))
+    solver.add_program_line(grid_color_connected(color="castle", adj_type="loop"))
     solver.add_program_line(single_loop(color="castle"))
-    solver.add_program_line(black_out_white_in())
+    solver.add_program_line(separate_item_from_loop(inside_item="white", outside_item="black"))
 
     for (r, c), clue in E.clues.items():
         num, d, color = clue

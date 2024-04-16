@@ -3,17 +3,16 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
-from .utilsx.helper import mark_and_extract_clues
-from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.helper import full_bfs, mark_and_extract_clues
+from .utilsx.neighbor import adjacent
 from .utilsx.shape import all_rect
 from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -22,13 +21,15 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c("gray"))
     solver.add_program_line(adjacent())
 
-    clues = mark_and_extract_clues(solver, E.clues, shaded_color="gray", safe_color="green")
+    clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
     if clues:
         areas = full_bfs(E.R, E.C, E.edges, clues)
-        for i, (rc, ar) in enumerate(areas.items()):
-            solver.add_program_line(area(_id=i, src_cells=ar))
-            solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
+        if isinstance(areas, dict):
+            for i, (rc, ar) in enumerate(areas.items()):
+                solver.add_program_line(area(_id=i, src_cells=ar))
+                solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
 
+    solver.add_program_line(rules)
     solver.add_program_line(all_rect(color="gray"))
     solver.add_program_line(display(item="gray"))
     solver.solve()

@@ -4,9 +4,9 @@ import itertools
 from typing import List, Tuple
 
 from . import utilsx
+from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.solution import solver
 
 neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
@@ -38,7 +38,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(avoid_adjacent(color="black", adj_type=8))
+    solver.add_program_line(avoid_adjacent_color(color="black", adj_type=8))
 
     all_trees = []
     for (r, c), clue in E.clues.items():

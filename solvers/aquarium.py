@@ -3,10 +3,9 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
-from .utilsx.region import full_bfs
-from .utilsx.rule import count, shade_c
+from .utilsx.helper import full_bfs
 from .utilsx.solution import solver
 
 
@@ -21,7 +20,7 @@ def area_gravity(color: str = "black") -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding):

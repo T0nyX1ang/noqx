@@ -1,179 +1,133 @@
 """Helper functions for generation solvers and rules."""
 
-import itertools
-from typing import Any, Dict, List, Set, Tuple
+import random
+from typing import Any, Dict, FrozenSet, Set, Tuple, Union
 
-from .solution import ClingoSolver
-
-
-def tag_encode(name: str, *data: Any) -> str:
-    """Encode a valid tag predicate without spaces or hyphens."""
-    tag_data = [name]
-    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
-        tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
-
-    return "_".join(tag_data)
-
-
-def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
-    """
-    Given a (possibly non-canonical) shape representation,
-
-    Return the canonical representation of the shape, a tuple:
-        - in sorted order
-        - whose first element is (0, 0)
-        - whose other elements represent the offsets of the other cells from the first one
-    """
-    shape = sorted(shape)
-    root_r, root_c = shape[0]
-    dr, dc = -1 * root_r, -1 * root_c
-    return tuple((r + dr, c + dc) for r, c in shape)
-
-
-def get_variants(shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool) -> Set[Tuple[Tuple[int, int]]]:
-    """
-    Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
-
-    allow_rotations = True iff shapes can be rotated
-    allow_reflections = True iff shapes can be reflected
-    """
-    # build a set of functions that transform shapes
-    # in the desired ways
-    functions = set()
-    if allow_rotations:
-        functions.add(lambda shape: canonicalize_shape((-c, r) for r, c in shape))
-    if allow_reflections:
-        functions.add(lambda shape: canonicalize_shape((-r, c) for r, c in shape))
-
-    # make a set of currently found shapes
-    result = set()
-    result.add(canonicalize_shape(shape))
-
-    # apply our functions to the items in this set
-    all_shapes_covered = False
-    while not all_shapes_covered:
-        new_shapes = set()
-        current_num_shapes = len(result)
-        for f, s in itertools.product(functions, result):
-            new_shapes.add(f(s))
-        result = result.union(new_shapes)
-        all_shapes_covered = current_num_shapes == len(result)
-    return result
+from .encoding import Direction
 
 
 def mark_and_extract_clues(
-    solver: ClingoSolver,
     original_clues: Dict[Tuple[int, int], Any],
     shaded_color: str = "black",
     safe_color: str = "green",
-) -> Dict[Tuple[int, int], int]:
+) -> Tuple[Dict[Tuple[int, int], int], str]:
     """
     Mark clues to the solver and extract the clues that are not color-relevant.
 
     Recommended to use it before performing a bfs on a grid.
     """
     clues = {}  # remove color-relevant clues here
+    rule = ""
     for (r, c), clue in original_clues.items():
         if isinstance(clue, list):
             if clue[1] == shaded_color:
-                solver.add_program_line(f"{shaded_color}({r}, {c}).")
+                rule += f"{shaded_color}({r}, {c}).\n"
             elif clue[1] == safe_color:
-                solver.add_program_line(f"not {shaded_color}({r}, {c}).")
+                rule += f"not {shaded_color}({r}, {c}).\n"
             clues[(r, c)] = int(clue[0])
         elif clue == shaded_color:
-            solver.add_program_line(f"{shaded_color}({r}, {c}).")
+            rule += f"{shaded_color}({r}, {c}).\n"
         elif clue == safe_color:
-            solver.add_program_line(f"not {shaded_color}({r}, {c}).")
+            rule += f"not {shaded_color}({r}, {c}).\n"
         else:
             clues[(r, c)] = int(clue)
-    return clues
+    return clues, rule.strip()
 
 
-class ConnectivityHelper:
-    """A helper class to generate connectivity rules."""
+def full_bfs(
+    rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Dict[Tuple[int, int], Any] = None
+) -> Union[Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]], Set[FrozenSet[Tuple[int, int]]]]:
+    """
+    Given puzzle dimensions (rows, cols), a list of border coordinates,
+    and (optionally) a dictionary mapping clue cells to values,
 
-    def __init__(self, name: str, bound_type: str = "grid", color: str = "black", adj_type: int = 4):
-        """
-        Initialize the connectivity generator.
-
-        Parameter [name]: the name of the generator.
-        Parameter [bound_type, color]:
-            + 'grid', then the initial {color} cells are bounded in the grid.
-            + 'area', then the initial {color} cells are bounded in a certain area.
-        Parameter [adj_type]: the type of adjacency, must be one of '4', '8'.
-        """
-        if bound_type not in ("grid", "area"):
-            raise ValueError("Invalid bound type, must be one of 'grid', 'area'.")
-
-        self.name = name
-        self.adj_type = adj_type
-        self.bound_type = bound_type
-        self.color = color
-        if self.color is not None:
-            self.tag = tag_encode(name, "adj", adj_type, color)
+    Returns:
+        if clues were provided:
+            a dictionary mapping each clue cell to a frozenset of
+                the (r, c) coordinates of the room that the clue is in
+            (if a room has no clue cells, it gets ignored)
         else:
-            self.tag = tag_encode(name, "adj", adj_type)
+            a set of frozensets, where each frozenset contains the (r, c)
+                coordinates of an entire room
+    """
+    # initially, all cells are unexplored
+    unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}
 
-    def initial(
-        self,
-        src_cells: List[Tuple[int, int]] = None,
-        exclude_cells: List[Tuple[int, int]] = None,
-        full_search: bool = False,
-        enforce_color: bool = False,
-    ) -> str:
-        """Generate the initial rule."""
-        if self.bound_type == "area":  # judge for area bound type first
-            area_min = f"(R, C) = #min{{ (R1, C1): area(A, R1, C1), {self.color}(R1, C1) }}"
-            return f"{self.tag}(A, R, C) :- area(A, _, _), {area_min}."
+    # build a set of rooms
+    # (if there are clues, we need this for stranded-edge checks)
+    room_set: Set[FrozenSet[Tuple[int, int]]] = set()
+    clue_to_room: Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]] = {}
 
-        if src_cells is None:  # use the default initial rule if no source cells are given
-            if not full_search:
-                return f"{self.tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {self.color}(R1, C1) }}."
-            return f"{self.tag}(R, C, R, C) :- grid(R, C), {self.color}(R, C)."
+    # --- HELPER METHOD FOR full_bfs---
+    def bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], FrozenSet[Tuple[int, int]]]:
+        # find the clue cell in this room
+        clue_cell = None
+        # keep track of which cells are in this grid_color_connected component
+        connected_component = {start_cell}
 
-        # generate the initial rule from the source cells
-        initial = ""
-        for r, c in src_cells:
-            color_constraint = f" :- {self.color}({r}, {c})" if enforce_color else ""
-            if not full_search:
-                initial += f"{self.tag}({r}, {c}){color_constraint}.\n"
-            else:
-                initial += f"{self.tag}({r}, {c}, {r}, {c}){color_constraint}.\n"
-                for exclude_r, exclude_c in exclude_cells:
-                    initial += f"not {self.tag}({r}, {c}, {exclude_r}, {exclude_c}).\n"
-        return initial.strip()
+        # the start cell has now been explored
+        unexplored_cells.remove(start_cell)
 
-    def propagation(
-        self, src_cells: List[Tuple[int, int]] = None, full_search: bool = False, extra_constraint: str = ""
-    ) -> str:
-        """Generate the propagation rule."""
-        mutual = f"{self.color}(R, C), adj_{self.adj_type}(R, C, R1, C1)"
-        if extra_constraint:
-            mutual += f", {extra_constraint}"
+        # bfs!
+        frontier = {start_cell}
+        while frontier:
+            new_frontier = set()
+            for r, c in frontier:
+                # build a set of coordinates that are not divided by borders
+                neighbors = set()
+                if (r, c, Direction.LEFT) not in borders:
+                    neighbors.add((r, c - 1))
 
-        if self.bound_type == "area":
-            return f"{self.tag}(A, R, C) :- {self.tag}(A, R1, C1), area(A, R, C), {mutual}."
+                if (r, c + 1, Direction.LEFT) not in borders:
+                    neighbors.add((r, c + 1))
 
-        if src_cells is None:
-            if not full_search:
-                return f"{self.tag}(R, C) :- {self.tag}(R1, C1), grid(R, C), {mutual}."
-            return f"{self.tag}(R0, C0, R, C) :- {self.tag}(R0, C0, R1, C1), grid(R, C), {mutual}."
+                if (r, c, Direction.TOP) not in borders:
+                    neighbors.add((r - 1, c))
 
-        propagation = ""
-        for r, c in src_cells:
-            propagation += f"{self.tag}({r}, {c}, R, C) :- {self.tag}({r}, {c}, R1, C1), grid(R, C), {mutual}.\n"
-        return propagation.strip()
+                if (r + 1, c, Direction.TOP) not in borders:
+                    neighbors.add((r + 1, c))
 
-    def constraint(self, full_search: bool = False) -> str:
-        """Generate the constraint rule."""
-        if self.bound_type == "area":
-            return f":- area(A, R, C), {self.color}(R, C), not {self.tag}(A, R, C)."
+                # for each neighbor that is a valid grid cell and not in this grid_color_connected component
+                for neighbor in neighbors:
+                    if neighbor in unexplored_cells:
+                        connected_component.add(neighbor)
+                        unexplored_cells.remove(neighbor)
+                        new_frontier.add(neighbor)
 
-        if not full_search:
-            return f":- grid(R, C), {self.color}(R, C), not {self.tag}(R, C)."
+                # find the clue cell
+                if clues and (r, c) in clues:
+                    clue_cell = (r, c)
 
-        return f":- grid(R, C), {self.color}(R, C), not {self.tag}(_, _, R, C)."
+            frontier = new_frontier
+        return clue_cell, frozenset(connected_component)
 
-    def get_tag(self) -> str:
-        """Return the tag of the generator."""
-        return self.tag
+    while len(unexplored_cells) != 0:
+        # get a random start cell
+        start_cell = random.choice(tuple(unexplored_cells))
+        # run bfs on that grid_color_connected component
+        clue, room = bfs(start_cell)
+        # add the room to the room-set
+        room_set.add(room)
+        if clue:
+            clue_to_room[clue] = room
+
+    def get_room(r: int, c: int) -> FrozenSet[Tuple[int, int]]:
+        """Given a cell, return the room that it belongs to."""
+        for room in room_set:
+            if (r, c) in room:
+                return room
+
+        raise ValueError("Cell not found in any room.")
+
+    # check that there are no stranded edges
+    for r, c, d in borders:
+        if d == Direction.LEFT and c < cols:
+            room = get_room(r, c)
+            if (r, c - 1) in room:
+                raise ValueError("There is a dead-end edge.")
+        elif d == Direction.TOP and r < rows:
+            room = get_room(r, c)
+            if (r - 1, c) in room:
+                raise ValueError("There is a dead-end edge.")
+
+    return clue_to_room if clues else room_set

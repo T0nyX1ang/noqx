@@ -4,9 +4,10 @@ import itertools
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, connected, shade_c
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import grid_color_connected
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -64,7 +65,7 @@ def generate_patterns(pattern):
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def color_to_num(r: int, c: int, color: str = "black") -> str:
@@ -106,7 +107,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(color_to_num(r=E.R, c=E.C, color="black"))
     solver.add_program_line(tapa_rules())
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="black"))
+    solver.add_program_line(grid_color_connected(color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
 
     for (r, c), clue in E.clues.items():

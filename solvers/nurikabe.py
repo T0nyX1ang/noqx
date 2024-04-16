@@ -3,9 +3,15 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, connected, count_region, region, shade_c
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import (
+    avoid_unknown_src,
+    count_reachable_src,
+    grid_color_connected,
+    grid_src_color_connected,
+)
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -15,12 +21,11 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    # Reduce IntVar size by counting clue cells and assigning each one an id.
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="black"))
+    solver.add_program_line(grid_color_connected(color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
 
     all_src = []
@@ -39,12 +44,13 @@ def solve(E: Encoding) -> List:
         else:
             current_excluded = [src for src in all_src if src != (r, c)]
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), current_excluded, color="not black", avoid_unknown=True))
+            solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color="not black"))
 
             if clue != "yellow":
                 num = int(clue)
-                solver.add_program_line(count_region(num, (r, c), color="not black"))
+                solver.add_program_line(count_reachable_src(num, (r, c), color="not black"))
 
+    solver.add_program_line(avoid_unknown_src(color="not black"))
     solver.add_program_line(display())
     solver.solve()
 

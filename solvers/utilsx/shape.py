@@ -1,8 +1,9 @@
 """Rules and constraints to detect certain shapes."""
 
-from typing import Iterable, Tuple
+import itertools
+from typing import Iterable, Set, Tuple, Union
 
-from .helper import get_variants, tag_encode
+from .encoding import tag_encode, target_encode
 
 OMINOES = {
     1: {
@@ -56,91 +57,50 @@ def get_neighbor(r: int, c: int, _type: int = 4) -> Tuple[Tuple[int, int]]:
     raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
 
 
-def all_rect(color: str = "black", square: bool = False) -> str:
+def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
     """
-    Generate a constraint to force rectangles.
+    Given a (possibly non-canonical) shape representation,
 
-    A grid rule should be defined first.
+    Return the canonical representation of the shape, a tuple:
+        - in sorted order
+        - whose first element is (0, 0)
+        - whose other elements represent the offsets of the other cells from the first one
     """
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1)."
-    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1)."
-    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
-
-    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
-    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
-
-    if square:
-        c_min = f"#min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}"
-        r_min = f"#min {{ R0: grid(R0 - 1, C), not {color}(R0, C), R0 > R }}"
-        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
-        constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
-        constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
-
-    data = upleft + left + up + remain + constraint
-    return data.replace("not not ", "").strip()
+    shape = sorted(shape)
+    root_r, root_c = shape[0]
+    dr, dc = -1 * root_r, -1 * root_c
+    return tuple((r + dr, c + dc) for r, c in shape)
 
 
-def all_rect_region() -> str:
+def get_variants(shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool) -> Set[Tuple[Tuple[int, int]]]:
     """
-    Generate a constraint to force rectangles.
+    Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
 
-    A grid rule and an edge rule should be defined first.
+    allow_rotations = True iff shapes can be rotated
+    allow_reflections = True iff shapes can be reflected
     """
-    upleft = "upleft(R, C) :- grid(R, C), vertical_line(R, C), horizontal_line(R, C)."
-    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), vertical_line(R, C), not horizontal_line(R, C).\n"
-    left += "left(R, C) :- grid(R, C), left(R - 1, C), vertical_line(R, C), not horizontal_line(R, C)."
-    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
-    up += "up(R, C) :- grid(R, C), up(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
-    remain += (
-        "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
-    )
-    remain += (
-        "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C).\n"
-    )
-    remain += (
-        "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C), not vertical_line(R, C), not horizontal_line(R, C)."
-    )
-    constraint = ":- grid(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
-    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not vertical_line(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not horizontal_line(R + 1, C).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not vertical_line(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not horizontal_line(R + 1, C)."
+    # build a set of functions that transform shapes
+    # in the desired ways
+    functions = set()
+    if allow_rotations:
+        functions.add(lambda shape: canonicalize_shape((-c, r) for r, c in shape))
+    if allow_reflections:
+        functions.add(lambda shape: canonicalize_shape((-r, c) for r, c in shape))
 
-    r_min = "#min { R0: horizontal_line(R0, C), R0 > R }"
-    c_min = "#min { C0: vertical_line(R, C0), C0 > C }"
-    rect = f"rect(R, C, MR - 1, MC - 1) :- upleft(R, C), {r_min} = MR, {c_min} = MC.\n"
-    rect += ":- rect(R, C, MR, MC), vertical_line(R..MR, C + 1..MC).\n"
-    rect += ":- rect(R, C, MR, MC), horizontal_line(R + 1..MR, C..MC)."
+    # make a set of currently found shapes
+    result = set()
+    result.add(canonicalize_shape(shape))
 
-    data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint + "\n" + rect
-    return data.replace("not not ", "")
-
-
-def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
-    """
-    Generates a constraint to avoid rectangular patterned {color} cells.
-
-    A grid fact should be defined first.
-    """
-    corner_r, corner_c = corner
-    corner_r = corner_r if corner_r is not None else "R"
-    corner_c = corner_c if corner_c is not None else "C"
-
-    if corner_r != "R" and corner_c != "C":
-        rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
-    else:
-        rect_pattern = [f"{color}({corner_r} + {r}, {corner_c} + {c})" for r in range(rect_r) for c in range(rect_c)]
-        rect_pattern.append(f"grid({corner_r}, {corner_c})")
-        rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
-
-    return f":- {', '.join(rect_pattern)}."
+    # apply our functions to the items in this set
+    all_shapes_covered = False
+    while not all_shapes_covered:
+        new_shapes = set()
+        current_num_shapes = len(result)
+        for f, s in itertools.product(functions, result):
+            new_shapes.add(f(s))
+        result = result.union(new_shapes)
+        all_shapes_covered = current_num_shapes == len(result)
+    return result
 
 
 def general_shape(
@@ -222,3 +182,105 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
         return f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C, _, _)."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
+def count_shape(
+    target: Union[int, Tuple[str, int]], name: str, _id: int = None, color: str = "black", _type: str = "grid"
+) -> str:
+    """
+    Generates a constraint to count the number of a shape.
+
+    A grid rule and a shape rule should be defined first.
+    """
+    tag = tag_encode("shape", name, color)
+    rop, num = target_encode(target)
+    _id = "_" if _id is None else _id
+
+    if _type == "grid":
+        return f":- {{ {tag}(R, C, {_id}, _) }} {rop} {num}."
+
+    if _type == "area":
+        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
+
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+
+
+def all_rect(color: str = "black", square: bool = False) -> str:
+    """
+    Generate a constraint to force rectangles.
+
+    A grid rule should be defined first.
+    """
+    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1)."
+    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
+    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1)."
+    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
+    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
+
+    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
+    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
+
+    if square:
+        c_min = f"#min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}"
+        r_min = f"#min {{ R0: grid(R0 - 1, C), not {color}(R0, C), R0 > R }}"
+        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
+        constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
+        constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
+
+    data = upleft + left + up + remain + constraint
+    return data.replace("not not ", "").strip()
+
+
+def all_rect_region() -> str:
+    """
+    Generate a constraint to force rectangles.
+
+    A grid rule and an edge rule should be defined first.
+    """
+    upleft = "upleft(R, C) :- grid(R, C), vertical_line(R, C), horizontal_line(R, C)."
+    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), vertical_line(R, C), not horizontal_line(R, C).\n"
+    left += "left(R, C) :- grid(R, C), left(R - 1, C), vertical_line(R, C), not horizontal_line(R, C)."
+    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
+    up += "up(R, C) :- grid(R, C), up(R, C - 1), horizontal_line(R, C), not vertical_line(R, C)."
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C)."
+
+    constraint = ":- grid(R, C), { upleft(R, C); left(R, C); up(R, C); remain(R, C) } != 1.\n"
+    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not vertical_line(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not horizontal_line(R + 1, C).\n"
+    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not vertical_line(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not horizontal_line(R + 1, C)."
+
+    rect = ":- grid(R, C), left(R, C), remain(R, C + 1), vertical_line(R, C + 1).\n"
+    rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), vertical_line(R, C + 1).\n"
+    rect += ":- grid(R, C), up(R, C), remain(R + 1, C), horizontal_line(R + 1, C).\n"
+    rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), horizontal_line(R + 1, C)."
+
+    data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint + "\n" + rect
+    return data
+
+
+def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
+    """
+    Generates a constraint to avoid rectangular patterned {color} cells.
+
+    A grid fact should be defined first.
+    """
+    corner_r, corner_c = corner
+    corner_r = corner_r if corner_r is not None else "R"
+    corner_c = corner_c if corner_c is not None else "C"
+
+    if corner_r != "R" and corner_c != "C":
+        rect_pattern = [f"{color}({corner_r + r}, {corner_c + c})" for r in range(rect_r) for c in range(rect_c)]
+    else:
+        rect_pattern = [f"{color}({corner_r} + {r}, {corner_c} + {c})" for r in range(rect_r) for c in range(rect_c)]
+        rect_pattern.append(f"grid({corner_r}, {corner_c})")
+        rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
+
+    return f":- {', '.join(rect_pattern)}."

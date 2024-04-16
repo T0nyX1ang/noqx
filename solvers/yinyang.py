@@ -3,11 +3,12 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, connected, shade_c
+from .utilsx.common import display, grid, shade_c
+from .utilsx.encoding import Encoding, rcd_to_elt
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import grid_color_connected
 from .utilsx.shape import avoid_rect
-from .utilsx.solution import rc_to_grid, solver
+from .utilsx.solution import solver
 
 
 def encode(string: str) -> Encoding:
@@ -19,9 +20,9 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(connected(color="black"))
+    solver.add_program_line(grid_color_connected(color="black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="black"))
-    solver.add_program_line(connected(color="not black"))
+    solver.add_program_line(grid_color_connected(color="not black"))
     solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color="not black"))
 
     for (r, c), color in E.clues.items():
@@ -34,7 +35,7 @@ def solve(E: Encoding) -> List:
     for solution in solver.solutions:
         for r in range(E.R):
             for c in range(E.C):
-                rc = rc_to_grid(r, c)
+                rc = rcd_to_elt(r, c)
                 solution[rc] = "white_circle.png" if rc not in solution else "black_circle.png"
 
     return solver.solutions

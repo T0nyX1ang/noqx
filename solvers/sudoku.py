@@ -3,9 +3,9 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
-from .utilsx.rule import adjacent, fill_num, unique_num
+from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 

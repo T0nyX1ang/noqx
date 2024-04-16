@@ -3,10 +3,11 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, connected_loop, fill_path
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.loop import single_loop
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
 
@@ -41,29 +42,23 @@ def masyu_white_rule() -> str:
 
 
 def encode(string: str) -> Encoding:
-    def string_encoder(string):
-        if string not in {"w", "b", ""}:
-            raise ValueError("Invalid input: cells must be w, b, or empty")
-        return string
-
-    return utilsx.encode(string, string_encoder)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="masyu_loop"))
-    solver.add_program_line(fill_path(color="masyu_loop"))
-    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(shade_c(color="masyu"))
+    solver.add_program_line(fill_path(color="masyu"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="masyu_loop"))
-    solver.add_program_line(single_loop(color="masyu_loop"))
+    solver.add_program_line(grid_color_connected(color="masyu", adj_type="loop"))
+    solver.add_program_line(single_loop(color="masyu"))
     solver.add_program_line(masyu_black_rule())
     solver.add_program_line(masyu_white_rule())
 
     for (r, c), clue in E.clues.items():
-        solver.add_program_line(f"masyu_loop({r}, {c}).")
+        solver.add_program_line(f"masyu({r}, {c}).")
         if clue == "b":
             solver.add_program_line(f"black({r}, {c}).")
         elif clue == "w":

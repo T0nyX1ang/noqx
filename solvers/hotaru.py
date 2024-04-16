@@ -3,10 +3,11 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid
-from .utilsx.loop import fill_path, directed_loop, connected_loop
-from .utilsx.rule import adjacent
+from .utilsx.loop import directed_loop
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
 drdc = {"l": (0, -1), "r": (0, 1), "u": (-1, 0), "d": (1, 0)}
@@ -18,9 +19,8 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
 
     A grid_in/grid_out rule should be defined first.
     """
-    rule = "adj_loop(R, C, R1, C1) :- adj_loop(R1, C1, R, C)."  # ensure symmetry
-    rule += f"reachable({r}, {c}, {r}, {c}).\n"
-    rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_loop(R1, C1, R, C).\n"
+    rule = f"reachable({r}, {c}, {r}, {c}).\n"
+    rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_loop_directed(R1, C1, R, C).\n"
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "l"), not grid_out(R, C, "r").\n'
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "u"), not grid_out(R, C, "d").\n'
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "r"), not grid_out(R, C, "l").\n'
@@ -33,7 +33,7 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -44,7 +44,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="hotaru", directed=True))
     solver.add_program_line(adjacent(_type="loop_directed"))
     solver.add_program_line(directed_loop(color="hotaru"))
-    solver.add_program_line(connected_loop(color="hotaru_all"))
+    solver.add_program_line(grid_color_connected(color="hotaru_all", adj_type="loop_directed"))
 
     for (r, c), clue in E.clues.items():
         if isinstance(clue, list):

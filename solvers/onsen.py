@@ -3,11 +3,11 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, direction, display, grid
-from .utilsx.loop import fill_path, single_loop
-from .utilsx.region import full_bfs
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.helper import full_bfs
+from .utilsx.loop import single_loop
+from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 
@@ -54,7 +54,7 @@ def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

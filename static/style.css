@@ -111,3 +111,10 @@ html * {
   padding: 10px;
   min-width: 25%;
 }
+
+a.rules {
+  color: #303030;
+  text-decoration: none;
+  font-size: x-small;
+  vertical-align: super;
+}

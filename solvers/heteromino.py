@@ -3,11 +3,10 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.encoding import Encoding
-from .utilsx.fact import display, edge, grid
-from .utilsx.helper import tag_encode
-from .utilsx.rule import adjacent, split_by_edge
-from .utilsx.shape import all_shapes, general_shape, OMINOES
+from .utilsx.common import display, edge, grid
+from .utilsx.encoding import Encoding, tag_encode
+from .utilsx.neighbor import adjacent
+from .utilsx.shape import OMINOES, all_shapes, general_shape
 from .utilsx.solution import solver
 
 
@@ -18,7 +17,11 @@ def avoid_adj_same_omino(color: str = "black") -> str:
     An split by edge rule, an omino rule should be defined first.
     """
     t_be = tag_encode("belong_to_shape", "omino", 3, color)
-    return f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
+    constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), horizontal_line(R + 1, C).\n"
+    constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), vertical_line(R, C + 1).\n"
+    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
+    constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
+    return constraint
 
 
 def encode(string: str) -> Encoding:
@@ -34,7 +37,6 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(split_by_edge())
 
     if shaded == 0:
         solver.add_program_line("black(-1, -1).")

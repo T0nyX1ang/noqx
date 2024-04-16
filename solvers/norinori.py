@@ -3,10 +3,10 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.region import full_bfs
-from .utilsx.fact import area, display, grid
-from .utilsx.rule import adjacent, count, shade_c
+from .utilsx.helper import full_bfs
+from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 
@@ -20,7 +20,7 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:

@@ -3,9 +3,10 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
-from .utilsx.rule import adjacent, count_region, region, shade_c
+from .utilsx.neighbor import adjacent
+from .utilsx.reachable import count_reachable_src, grid_src_color_connected
 from .utilsx.solution import solver
 
 
@@ -25,11 +26,10 @@ def solve(E: Encoding) -> List:
         elif clue == "green":
             solver.add_program_line(f"not black({r}, {c}).")
         else:
-            solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(region((r, c), color="black"))
-
             num = int(clue)
-            solver.add_program_line(count_region(num + 1, (r, c), color="black"))
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(grid_src_color_connected((r, c), color="black"))
+            solver.add_program_line(count_reachable_src(num + 1, (r, c), color="black"))
 
     solver.add_program_line(display())
     solver.solve()

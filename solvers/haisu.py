@@ -1,12 +1,12 @@
 """The Haisu solver."""
 
-from typing import List, Tuple
+from typing import List
 
 from . import utilsx
+from .utilsx.common import area, direction, display, grid, fill_path
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, direction, display, grid
-from .utilsx.loop import directed_loop, fill_path
-from .utilsx.region import full_bfs
+from .utilsx.helper import full_bfs
+from .utilsx.loop import directed_loop
 from .utilsx.solution import solver
 
 
@@ -22,67 +22,63 @@ def area_border(_id: int, ar: list) -> str:
     return rule
 
 
-def adj_connected() -> str:
+def adj_before() -> str:
     """Generate a rule to constrain adjacent connectivity."""
-    adj = 'adj_connected(R0, C0, R, C) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_in(R, C, "l").\n'
-    adj += 'adj_connected(R0, C0, R, C) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "u").\n'
-    adj += 'adj_connected(R0, C0, R, C) :- R=R0, C=C0-1, grid(R, C), grid(R0, C0), grid_in(R, C, "r").\n'
-    adj += 'adj_connected(R0, C0, R, C) :- R=R0-1, C=C0, grid(R, C), grid(R0, C0), grid_in(R, C, "d").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0, C=C0+1, grid(R, C), grid(R0, C0), grid_out(R, C, "l").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0+1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "u").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0, C=C0-1, grid(R, C), grid(R0, C0), grid_out(R, C, "r").\n'
-    adj += 'adj_connected(R, C, R0, C0) :- R=R0-1, C=C0, grid(R, C), grid(R0, C0), grid_out(R, C, "d").\n'
-    return adj
+    adj = 'adj_before(R, C-1, R, C) :- grid(R, C), grid_in(R, C, "l").\n'
+    adj += 'adj_before(R-1, C, R, C) :- grid(R, C), grid_in(R, C, "u").\n'
+    adj += 'adj_before(R, C+1, R, C) :- grid(R, C), grid_in(R, C, "r").\n'
+    adj += 'adj_before(R+1, C, R, C) :- grid(R, C), grid_in(R, C, "d").\n'
+    return adj.strip()
 
 
-def connected_directed_path(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
+def connected_directed_path(color: str = "white") -> str:
     """
     Generate a directed path rule to constrain connectivity.
 
     A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
     """
-    src_r, src_c = src_cell
-    dest_r, dest_c = dest_cell
-    initial = f"reachable_path({src_r}, {src_c}).\n"
-    initial += f"reachable_path({dest_r}, {dest_c}).\n"
-    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_connected(R, C, R1, C1).\n"
+    initial = "reachable_path(R, C) :- path_start(R, C).\n"
+    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_before(R1, C1, R, C).\n"
     constraint = f":- grid(R, C), {color}(R, C), not reachable_path(R, C)."
     return initial + propagation + constraint
 
 
-def connected_destpath(src_cell: Tuple[int, int], dest_cell: Tuple[int, int], color: str = "white") -> str:
+def connected_destpath(color: str = "white") -> str:
     """
     Generate a path rule to constrain connectivity.
 
     A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
     """
-    src_r, src_c = src_cell
-    dest_r, dest_c = dest_cell
     tag = "reachable_destpath"
-    initial = f"{tag}({dest_r}, {dest_c}, {dest_r}, {dest_c}).\n"
-    initial += f"{tag}({src_r}, {src_c}, {dest_r}, {dest_c}).\n"
-    propagation = (
-        f"{tag}(R, C, {dest_r}, {dest_c}) :- {color}(R, C), {tag}(R1, C1, {dest_r}, {dest_c}), adj_connected(R, C, R1, C1)."
-    )
+    initial = f"{tag}(R, C, R, C) :- num(R, C, _).\n"
+    propagation = f"{tag}(R, C, DR, DC) :- {color}(R, C), {tag}(R1, C1, DR, DC), adj_before(R, C, R1, C1)."
     return initial + propagation
 
 
-def haisu_count(target: int, _id: int, dest: Tuple[int, int]) -> str:
+def haisu_rules() -> str:
     """
-    Generate a rule that counts the number that a path passes through an area.
+    Generate constriants for haisu
+    """
+    rule = "clue(R, C) :- num(R, C, _).\n"
+    rule += "clue_area(A) :- clue(R, C), area(A, R, C).\n"
+    rule += "area_max_num(A, N) :- clue_area(A), #max { N0 : area(A, R, C), num(R, C, N0) } = N.\n"
+    rule += "area_possible_num(A, 0..N) :- clue_area(A), area_max_num(A, N).\n"
+    # tag = "reachable_destpath"
+    # rule += f":- grid(R, C), grid(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R1, C1), {tag}(R1, C1, R, C).\n"
+    return rule.strip()
 
-    A direction fact and a grid_in should be defined first.
-    """
-    dest_r, dest_c = dest
-    tag = "reachable_destpath"
-    constraint = (
-        f":- #count {{ R, C: area_border({_id}, R, C, D), grid_in(R, C, D), {tag}(R, C, {dest_r}, {dest_c}) }} != {target}."
-    )
-    return constraint
+
+def haisu_count_x() -> str:
+    rule = "haisu_count(R, C, A, 0) :- path_start(R, C), clue_area(A).\n"
+    rule += "area_in(A, R, C) :- area_border(A, R, C, D), grid_in(R, C, D).\n"
+    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N), not area_in(A, R, C).\n"
+    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N-1), area_in(A, R, C).\n"
+    rule += ":- num(R, C, N), area(A, R, C), not haisu_count(R, C, A, N)."
+    return rule
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -94,8 +90,12 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("haisu(R, C) :- grid(R, C).")
     solver.add_program_line(fill_path(color="haisu", directed=True))
-    solver.add_program_line(adj_connected())
     solver.add_program_line(directed_loop(color="haisu", path=True))
+    solver.add_program_line(connected_directed_path(color="haisu"))
+    solver.add_program_line(haisu_rules())
+    solver.add_program_line(adj_before())
+    solver.add_program_line(haisu_count_x())
+    # solver.add_program_line(connected_destpath(color="haisu"))
 
     clue_index = {}
     areas = full_bfs(E.R, E.C, E.edges)
@@ -108,18 +108,14 @@ def solve(E: Encoding) -> List:
 
     for (r, c), clue in E.clues.items():
         if clue == "S":
-            sr, sc = r, c
-            solver.add_program_line(f"dead_out({r}, {c}).")
+            solver.add_program_line(f"path_start({r}, {c}).")
         elif clue == "G":
-            gr, gc = r, c
-            solver.add_program_line(f"dead_in({r}, {c}).")
+            solver.add_program_line(f"path_end({r}, {c}).")
 
     for (r, c), clue in E.clues.items():
         if clue not in ("S", "G"):
-            solver.add_program_line(connected_destpath((sr, sc), (r, c), color="haisu"))
-            solver.add_program_line(haisu_count(int(clue), _id=clue_index[(r, c)], dest=(r, c)))
+            solver.add_program_line(f"num({r}, {c}, {clue}).")
 
-    solver.add_program_line(connected_directed_path((sr, sc), (gr, gc), color="haisu"))
     solver.add_program_line(display(item="loop_sign", size=3))
     solver.solve()
 

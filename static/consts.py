@@ -16,7 +16,6 @@ cats: Dict[str, str] = {
 types: List[Dict[str, Union[str, List]]] = [
     # 'aho',
     # 'amibo',
-    {"value": "lightup", "name": "Akari (Light Up)", "cat": "var", "aliases": ["akari"]},
     {"value": "aqre", "name": "Aqre", "cat": "shade"},
     {"value": "aquarium", "name": "Aquarium", "cat": "shade"},
     {"value": "balance", "name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"]},
@@ -41,6 +40,7 @@ types: List[Dict[str, Union[str, List]]] = [
     {"value": "kurotto", "name": "Kurotto", "cat": "shade"},
     {"value": "kurodoko", "name": "Kurodoko", "cat": "shade"},
     {"value": "lits", "name": "LITS", "cat": "shade"},
+    {"value": "lightup", "name": "Akari (Light Up)", "cat": "var", "aliases": ["akari"]},
     {"value": "magnets", "name": "Magnets", "cat": "var"},
     {"value": "masyu", "name": "Masyu", "cat": "loop"},
     {"value": "mines", "name": "Minesweeper", "cat": "var", "aliases": ["minesweeper"]},

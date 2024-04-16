@@ -3,10 +3,11 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid
-from .utilsx.loop import connected_loop, fill_path, single_loop
-from .utilsx.rule import adjacent, count_adjacent_lines, shade_c
+from .utilsx.loop import separate_item_from_loop, single_loop
+from .utilsx.neighbor import adjacent, count_adjacent_edges
+from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
 
@@ -17,34 +18,21 @@ def convert_direction_to_edge() -> str:
     return rule.strip()
 
 
-def wolf_out_sheep_in() -> str:
-    """
-    Generate a constraint to make wolves outside of the loop, and make sheep inside of loop.
-
-    A grid direction fact should be defined first.
-    """
-    out_loop = "out_loop(-1, C) :- grid(_, C).\n"
-    out_loop += 'out_loop(R, C) :- grid(R, C), out_loop(R - 1, C), not grid_direction(R, C, "r").\n'
-    out_loop += 'out_loop(R, C) :- grid(R, C), not out_loop(R - 1, C), grid_direction(R, C, "r").\n'
-    constraint = ":- sheep(R, C), out_loop(R, C).\n"
-    constraint += ":- wolf(R, C), not out_loop(R, C)."
-    return out_loop + constraint
-
-
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string, has_borders=True)
+    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R + 1, E.C + 1))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="slither_link"))
-    solver.add_program_line(fill_path(color="slither_link"))
+    solver.add_program_line(shade_c(color="slither"))
+    solver.add_program_line(fill_path(color="slither"))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(connected_loop(color="slither_link"))
-    solver.add_program_line(single_loop(color="slither_link"))
+    solver.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
+    solver.add_program_line(single_loop(color="slither"))
     solver.add_program_line(convert_direction_to_edge())
+    solver.add_program_line(adjacent(_type="edge"))
 
     flag = False
     for (r, c), clue in E.clues.items():
@@ -55,14 +43,15 @@ def solve(E: Encoding) -> List:
             flag = True
             solver.add_program_line(f"sheep({r}, {c}).")
         else:
-            solver.add_program_line(count_adjacent_lines(int(clue), (r, c)))
+            solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
     if flag:
-        solver.add_program_line(wolf_out_sheep_in())
+        solver.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
 
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.solve()
+    print(solver.program)
 
     return solver.solutions
 

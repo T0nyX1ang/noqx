@@ -1,11 +1,10 @@
 """The Nonogram solver."""
 
-from typing import Dict, List, Union, Tuple
+from typing import Dict, List, Tuple, Union
 
 from . import utilsx
+from .utilsx.common import display, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display
-from .utilsx.rule import shade_c
 from .utilsx.solution import solver
 
 
