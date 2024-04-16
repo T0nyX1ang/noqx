@@ -5,12 +5,12 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
+from .utilsx.neighbor import adjacent, count_adjacent
 from .utilsx.reachable import (
     bulb_src_color_connected,
     count_reachable_src,
     grid_color_connected,
 )
-from .utilsx.rule import adjacent, count_adjacent
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 

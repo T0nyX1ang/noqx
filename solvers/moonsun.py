@@ -7,8 +7,8 @@ from .utilsx.common import area, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
 from .utilsx.loop import pass_area_once, single_loop
+from .utilsx.neighbor import adjacent, area_adjacent
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, area_adjacent
 from .utilsx.solution import solver
 
 

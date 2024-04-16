@@ -1,4 +1,4 @@
-"""Utility for general clingo rules."""
+"""Utility for neighbor-relevant (primary to connected) rules."""
 
 from typing import Tuple, Union
 

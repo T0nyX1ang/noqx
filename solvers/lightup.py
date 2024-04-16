@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding, tag_encode
-from .utilsx.rule import adjacent, count_adjacent
+from .utilsx.neighbor import adjacent, count_adjacent
 from .utilsx.solution import solver
 
 

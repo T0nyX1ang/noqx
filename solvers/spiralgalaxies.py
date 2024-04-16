@@ -6,8 +6,8 @@ from typing import List
 from . import utilsx
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
+from .utilsx.neighbor import adjacent
 from .utilsx.reachable import grid_src_color_connected
-from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 

@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.rule import adjacent, avoid_adjacent
+from .utilsx.neighbor import adjacent, avoid_adjacent
 from .utilsx.shape import OMINOES, all_shapes, count_shape, general_shape
 from .utilsx.solution import solver
 

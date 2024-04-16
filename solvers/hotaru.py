@@ -6,8 +6,8 @@ from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
 from .utilsx.loop import directed_loop
+from .utilsx.neighbor import adjacent
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 drdc = {"l": (0, -1), "r": (0, 1), "u": (-1, 0), "d": (1, 0)}

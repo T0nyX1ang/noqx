@@ -6,8 +6,8 @@ from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding, reverse_op
 from .utilsx.loop import single_loop
+from .utilsx.neighbor import adjacent
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 

@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
-from .utilsx.rule import adjacent
+from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 

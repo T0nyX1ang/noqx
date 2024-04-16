@@ -7,7 +7,7 @@ from .utilsx.common import area, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
 from .utilsx.loop import single_loop
-from .utilsx.rule import adjacent
+from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 

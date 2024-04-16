@@ -6,8 +6,8 @@ from . import utilsx
 from .utilsx.common import area, count, display, fill_num, grid
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
+from .utilsx.neighbor import adjacent, area_adjacent
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, area_adjacent
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 

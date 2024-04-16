@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
-from .utilsx.rule import adjacent
+from .utilsx.neighbor import adjacent
 from .utilsx.shape import OMINOES, all_shapes, general_shape
 from .utilsx.solution import solver
 

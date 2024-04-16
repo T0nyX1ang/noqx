@@ -5,13 +5,13 @@ from typing import List
 from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
+from .utilsx.neighbor import adjacent
 from .utilsx.reachable import (
     avoid_unknown_src,
     count_reachable_src,
     grid_branch_color_connected,
     grid_src_color_connected,
 )
-from .utilsx.rule import adjacent
 from .utilsx.shape import all_rect
 from .utilsx.solution import solver
 
