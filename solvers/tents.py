@@ -4,9 +4,9 @@ import itertools
 from typing import List, Tuple
 
 from . import utilsx
-from .utilsx.common import display, grid
+from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
+from .utilsx.rule import adjacent, avoid_adjacent
 from .utilsx.solution import solver
 
 neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))

@@ -4,10 +4,10 @@ import itertools
 from typing import List
 
 from . import utilsx
-from .utilsx.common import display, grid
+from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.rule import adjacent
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 

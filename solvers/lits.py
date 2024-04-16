@@ -3,11 +3,11 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import area, display, grid
+from .utilsx.common import area, display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.helper import full_bfs
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, area_adjacent, shade_c
+from .utilsx.rule import adjacent, area_adjacent
 from .utilsx.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_shape
 from .utilsx.solution import solver
 

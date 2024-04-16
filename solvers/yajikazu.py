@@ -3,10 +3,10 @@
 from typing import List, Tuple
 
 from . import utilsx
-from .utilsx.common import display, grid
+from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, avoid_adjacent, shade_c
+from .utilsx.rule import adjacent, avoid_adjacent
 from .utilsx.solution import solver
 
 

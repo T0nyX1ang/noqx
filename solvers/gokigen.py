@@ -3,9 +3,8 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import direction, display, grid
+from .utilsx.common import direction, display, grid, fill_path
 from .utilsx.encoding import Encoding
-from .utilsx.loop import fill_path
 from .utilsx.solution import solver
 
 

@@ -3,9 +3,9 @@
 from typing import List, Tuple
 
 from . import utilsx
-from .utilsx.common import direction, display, grid
+from .utilsx.common import direction, display, grid, fill_path
 from .utilsx.encoding import Encoding
-from .utilsx.loop import fill_path, single_loop
+from .utilsx.loop import single_loop
 from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, avoid_adjacent
 from .utilsx.solution import solver

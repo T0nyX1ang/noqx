@@ -3,9 +3,9 @@
 from typing import Dict, List
 
 from . import utilsx
-from .utilsx.common import display, grid
+from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.rule import adjacent, count, count_adjacent, shade_c
+from .utilsx.rule import adjacent, count_adjacent
 from .utilsx.solution import solver
 
 

@@ -3,9 +3,8 @@
 from typing import Dict, List, Tuple, Union
 
 from . import utilsx
-from .utilsx.common import display
+from .utilsx.common import display, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.rule import shade_c
 from .utilsx.solution import solver
 
 

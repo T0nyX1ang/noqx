@@ -3,11 +3,11 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import direction, display, grid
+from .utilsx.common import direction, display, grid, fill_path, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.loop import fill_path, separate_item_from_loop, single_loop
+from .utilsx.loop import separate_item_from_loop, single_loop
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, shade_c
+from .utilsx.rule import adjacent
 from .utilsx.solution import solver
 
 

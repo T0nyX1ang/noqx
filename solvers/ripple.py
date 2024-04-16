@@ -3,10 +3,9 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import area, display, grid
+from .utilsx.common import area, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
-from .utilsx.rule import fill_num, unique_num
 from .utilsx.solution import solver
 
 

@@ -3,10 +3,10 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import area, direction, display, grid
+from .utilsx.common import area, direction, display, grid, fill_path
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
-from .utilsx.loop import directed_loop, fill_path
+from .utilsx.loop import directed_loop
 from .utilsx.solution import solver
 
 

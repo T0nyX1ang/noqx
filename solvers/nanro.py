@@ -3,11 +3,11 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import area, display, grid
+from .utilsx.common import area, count, display, fill_num, grid
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, area_adjacent, count, fill_num
+from .utilsx.rule import adjacent, area_adjacent
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -55,10 +55,10 @@ def solve(E: Encoding) -> List:
         flag = True
         for cell in ar:
             if cell in E.signpost_clues:  # signpost variant
-                solver.add_program_line(count(E.signpost_clues[cell], "eq", color="not gray", _type="area", _id=i))
+                solver.add_program_line(count(E.signpost_clues[cell], color="not gray", _type="area", _id=i))
                 flag = False
         if flag:
-            solver.add_program_line(count(0, "gt", color="not gray", _type="area", _id=i))
+            solver.add_program_line(count(("gt", 0), color="not gray", _type="area", _id=i))
 
     for (r, c), clue in E.clues.items():
         if clue == "gray":

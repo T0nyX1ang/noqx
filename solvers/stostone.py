@@ -3,11 +3,11 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.common import area, display, grid
+from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs, mark_and_extract_clues
 from .utilsx.reachable import area_color_connected
-from .utilsx.rule import adjacent, avoid_area_adjacent, count, shade_c
+from .utilsx.rule import adjacent, avoid_area_adjacent
 from .utilsx.solution import solver
 
 
@@ -47,7 +47,7 @@ def solve(E: Encoding) -> List:
                 solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
                 tag = True
         if not tag:
-            solver.add_program_line(count(1, op="ge", color="gray", _type="area", _id=i))
+            solver.add_program_line(count(("ge", 1), color="gray", _type="area", _id=i))
 
     solver.add_program_line(rules)
     solver.add_program_line(area_color_connected(color="gray"))
