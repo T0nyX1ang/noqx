@@ -175,7 +175,7 @@ def count_adjacent(
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
 
 
-def count_adjacent_lines(target: int, src_cell: Tuple[int, int], op: str = "eq") -> str:
+def count_adjacent_edges(target: int, src_cell: Tuple[int, int], op: str = "eq") -> str:
     """
     Return a rule that counts the adjacent lines around a cell.
 

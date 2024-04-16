@@ -7,7 +7,7 @@ from .utilsx.encoding import Encoding
 from .utilsx.fact import direction, display, grid
 from .utilsx.loop import fill_path, separate_item_from_loop, single_loop
 from .utilsx.reachable import grid_color_connected
-from .utilsx.rule import adjacent, count_adjacent_lines, shade_c
+from .utilsx.rule import adjacent, count_adjacent_edges, shade_c
 from .utilsx.solution import solver
 
 
@@ -43,7 +43,7 @@ def solve(E: Encoding) -> List:
             flag = True
             solver.add_program_line(f"sheep({r}, {c}).")
         else:
-            solver.add_program_line(count_adjacent_lines(int(clue), (r, c)))
+            solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
     if flag:
         solver.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))

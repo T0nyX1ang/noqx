@@ -7,7 +7,7 @@ from .utilsx.coord import Direction
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import display, edge, grid
 from .utilsx.reachable import grid_branch_color_connected
-from .utilsx.rule import adjacent, count_adjacent_lines
+from .utilsx.rule import adjacent, count_adjacent_edges
 from .utilsx.solution import solver
 
 
@@ -44,7 +44,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"horizontal_line({r}, {c}).")
 
     for (r, c), clue in E.clues.items():
-        solver.add_program_line(count_adjacent_lines(int(clue), (r, c)))
+        solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
