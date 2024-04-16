@@ -65,13 +65,12 @@ class ClingoSolver:
                 sign += "bl" if code >> 2 & 1 else ""
                 if sign:
                     formatted[rcd_to_elt(r, c)] = sign + ".png"
-            elif len(data) == 2:
-                # color
+            elif len(data) == 2:  # color
                 r, c = data
                 formatted[rcd_to_elt(r, c)] = _type.replace("color", "")
-            else:
-                # debug
+            else:  # debug only
                 print(data)
+
         self.solutions.append(formatted)
 
     def add_program_line(self, line: str):

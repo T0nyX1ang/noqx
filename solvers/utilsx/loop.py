@@ -110,3 +110,23 @@ def pass_area_once(ar: List[Tuple[int, int]]) -> str:
                 edges.append(f'grid_direction({r}, {c}, "{direc}")')
     edges = "; ".join(edges)
     return f":- {{ {edges} }} != 2."
+
+
+def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
+    """
+    Generate a constraint to make outside_items outside of the loop, and make inside_items inside of loop.
+
+    A grid_direction fact should be defined first.
+    """
+    rule = "outside_loop(-1, C) :- grid(_, C).\n"
+    rule += 'outside_loop(R, C) :- grid(R, C), outside_loop(R - 1, C), not grid_direction(R, C, "r").\n'
+    rule += 'outside_loop(R, C) :- grid(R, C), not outside_loop(R - 1, C), grid_direction(R, C, "r").\n'
+
+    constraint = ""
+    if len(inside_item) > 0:
+        constraint = f":- {inside_item}(R, C), outside_loop(R, C).\n"
+
+    if len(outside_item) > 0:
+        constraint += f":- {outside_item}(R, C), not outside_loop(R, C).\n"
+
+    return (rule + constraint).strip()

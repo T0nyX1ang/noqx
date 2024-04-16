@@ -87,7 +87,11 @@ def adjacent(_type: Union[int, str] = 4) -> str:
     """
     Generates a rule for getting the adjacent neighbors.
     If _type = 4, then only orthogonal neighbors are considered.
+    If _type = x, then only diagonal neighbors are considered.
     If _type = 8, then both orthogonal and diagonal neighbors are considered.
+    If _type = edge, then only the neighbors on unblocked edges are considered.
+    If _type = loop, then only the neighbors on the loop are considered.
+    If _type = loop_directed, then only the neighbors on the directed loop are considered.
 
     A grid fact should be defined first.
     """
