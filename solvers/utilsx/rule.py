@@ -205,32 +205,6 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
-def count_region(
-    target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
-) -> str:
-    """
-    Generate a constraint to count the size of {color} region grid_color_connected to a source cell.
-
-    A region rule should be defined first.
-    """
-    op = reverse_op(op)
-    src_r, src_c = src_cell
-    return f":- {{ {tag_encode('reachable', 'grid', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
-
-
-def count_lit(
-    target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4, op: str = "eq"
-) -> str:
-    """
-    Generate a constraint to count the number of {color} cells lit up by a source cell.
-
-    A lit rule should be defined first.
-    """
-    op = reverse_op(op)
-    src_r, src_c = src_cell
-    return f":- {{ {tag_encode('reachable', 'bulb', 'src', 'adj', adj_type, color)}({src_r}, {src_c}, R, C) }} {op} {target}."
-
-
 def count_reachable_edge(target: int, op: str = "eq") -> str:
     """
     Generates a constraint for counting grids in a region divided by edges.

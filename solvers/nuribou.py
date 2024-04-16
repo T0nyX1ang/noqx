@@ -5,8 +5,13 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import display, grid
-from .utilsx.reachable import avoid_unknown_src, grid_src_color_connected, grid_branch_color_connected
-from .utilsx.rule import adjacent, count_region, shade_c
+from .utilsx.reachable import (
+    avoid_unknown_src,
+    count_reachable_src,
+    grid_branch_color_connected,
+    grid_src_color_connected,
+)
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.shape import all_rect
 from .utilsx.solution import solver
 
@@ -54,7 +59,7 @@ def solve(E: Encoding) -> List:
 
             if clue != "yellow":
                 num = int(clue)
-                solver.add_program_line(count_region(num, (r, c), color="not black"))
+                solver.add_program_line(count_reachable_src(num, (r, c), color="not black"))
 
     solver.add_program_line(avoid_unknown_src(color="not black"))
     solver.add_program_line(grid_branch_color_connected(color="black"))

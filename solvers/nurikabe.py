@@ -5,8 +5,13 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import display, grid
-from .utilsx.reachable import grid_color_connected, avoid_unknown_src, grid_src_color_connected
-from .utilsx.rule import adjacent, count_region, shade_c
+from .utilsx.reachable import (
+    avoid_unknown_src,
+    count_reachable_src,
+    grid_color_connected,
+    grid_src_color_connected,
+)
+from .utilsx.rule import adjacent, shade_c
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
@@ -16,7 +21,6 @@ def encode(string: str) -> Encoding:
 
 
 def solve(E: Encoding) -> List:
-    # Reduce IntVar size by counting clue cells and assigning each one an id.
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
@@ -44,7 +48,7 @@ def solve(E: Encoding) -> List:
 
             if clue != "yellow":
                 num = int(clue)
-                solver.add_program_line(count_region(num, (r, c), color="not black"))
+                solver.add_program_line(count_reachable_src(num, (r, c), color="not black"))
 
     solver.add_program_line(avoid_unknown_src(color="not black"))
     solver.add_program_line(display())
