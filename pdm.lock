@@ -193,13 +193,13 @@ files = [
 
 [[package]]
 name = "conventional-pre-commit"
-version = "3.1.0"
+version = "3.2.0"
 requires_python = ">=3.8"
 summary = "A pre-commit hook that checks commit messages for Conventional Commits formatting."
 groups = ["dev"]
 files = [
-    {file = "conventional_pre_commit-3.1.0-py3-none-any.whl", hash = "sha256:b56a8d8f0792836023754dcc9841c63099fb9d082f824cc6cb685cca5bec19e5"},
-    {file = "conventional_pre_commit-3.1.0.tar.gz", hash = "sha256:0d099f1249349b22adadeef19554fae13a0ee8472facd5729d5ae455c471f488"},
+    {file = "conventional_pre_commit-3.2.0-py3-none-any.whl", hash = "sha256:765ff6abed9a1d9866037d3007f154793ef851547da04ef0b6da26a1ef242e6e"},
+    {file = "conventional_pre_commit-3.2.0.tar.gz", hash = "sha256:08369374ff458faec7ed0caa2b0f4f76c0800b49c513f6f0641e9258d0cf9775"},
 ]
 
 [[package]]
