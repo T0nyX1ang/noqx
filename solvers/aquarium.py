@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
-from .utilsx.region import full_bfs
+from .utilsx.helper import full_bfs
 from .utilsx.rule import count, shade_c
 from .utilsx.solution import solver
 

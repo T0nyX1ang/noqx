@@ -4,8 +4,8 @@ from typing import List
 
 from . import utilsx
 from .utilsx.encoding import Encoding
-from .utilsx.region import full_bfs
 from .utilsx.fact import area, display, grid
+from .utilsx.helper import full_bfs
 from .utilsx.rule import adjacent, count, shade_c
 from .utilsx.solution import solver
 

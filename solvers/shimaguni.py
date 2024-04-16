@@ -5,9 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
-from .utilsx.helper import mark_and_extract_clues
+from .utilsx.helper import full_bfs, mark_and_extract_clues
 from .utilsx.reachable import area_color_connected
-from .utilsx.region import full_bfs
 from .utilsx.rule import adjacent, area_adjacent, avoid_area_adjacent, count, shade_c
 from .utilsx.solution import solver
 

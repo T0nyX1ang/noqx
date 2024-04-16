@@ -6,8 +6,7 @@ from . import utilsx
 from .utilsx.coord import Direction
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
-from .utilsx.helper import mark_and_extract_clues
-from .utilsx.region import full_bfs
+from .utilsx.helper import full_bfs, mark_and_extract_clues
 from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, avoid_adjacent, count, shade_c
 from .utilsx.shape import avoid_rect

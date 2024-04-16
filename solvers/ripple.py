@@ -5,8 +5,8 @@ from typing import List
 from . import utilsx
 from .utilsx.encoding import Encoding
 from .utilsx.fact import area, display, grid
-from .utilsx.region import full_bfs
-from .utilsx.rule import unique_num, fill_num
+from .utilsx.helper import full_bfs
+from .utilsx.rule import fill_num, unique_num
 from .utilsx.solution import solver
 
 
