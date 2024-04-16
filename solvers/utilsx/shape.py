@@ -1,9 +1,9 @@
 """Rules and constraints to detect certain shapes."""
 
 import itertools
-from typing import Iterable, Set, Tuple
+from typing import Iterable, Set, Tuple, Union
 
-from .encoding import reverse_op, tag_encode
+from .encoding import tag_encode, target_encode
 
 OMINOES = {
     1: {
@@ -184,21 +184,23 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
 
-def count_shape(target: int, name: str, _id: int = None, color: str = "black", _type: str = "grid", op: str = "eq") -> str:
+def count_shape(
+    target: Union[int, Tuple[str, int]], name: str, _id: int = None, color: str = "black", _type: str = "grid"
+) -> str:
     """
     Generates a constraint to count the number of a shape.
 
     A grid rule and a shape rule should be defined first.
     """
     tag = tag_encode("shape", name, color)
-    op = reverse_op(op)
+    rop, num = target_encode(target)
     _id = "_" if _id is None else _id
 
     if _type == "grid":
-        return f":- {{ {tag}(R, C, {_id}, _) }} {op} {target}."
+        return f":- {{ {tag}(R, C, {_id}, _) }} {rop} {num}."
 
     if _type == "area":
-        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {op} {target}."
+        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
