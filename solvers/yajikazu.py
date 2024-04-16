@@ -5,7 +5,7 @@ from typing import List, Tuple
 from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.neighbor import adjacent, avoid_adjacent
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
@@ -42,7 +42,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_adjacent(color="gray"))
+    solver.add_program_line(avoid_adjacent_color(color="gray"))
     solver.add_program_line(grid_color_connected(color="not gray"))
 
     for (r, c), clue in E.clues.items():

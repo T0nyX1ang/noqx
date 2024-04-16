@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Direction, Encoding
 from .utilsx.helper import full_bfs, mark_and_extract_clues
-from .utilsx.neighbor import adjacent, avoid_adjacent
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.reachable import grid_color_connected
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
@@ -22,7 +22,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c("gray"))
 
     solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_adjacent(color="gray"))
+    solver.add_program_line(avoid_adjacent_color(color="gray"))
     solver.add_program_line(grid_color_connected(color="not gray"))
 
     clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")

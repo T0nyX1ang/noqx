@@ -5,7 +5,7 @@ from typing import Dict, List
 from . import utilsx
 from .utilsx.common import display, grid, shade_c, unique_num
 from .utilsx.encoding import Encoding
-from .utilsx.neighbor import adjacent, avoid_adjacent
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
@@ -21,7 +21,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(unique_num(color="not black", _type="row"))
     solver.add_program_line(unique_num(color="not black", _type="col"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_adjacent())
+    solver.add_program_line(avoid_adjacent_color())
     solver.add_program_line(grid_color_connected(color="not black", initial_cells=[(0, 0), (0, 1)]))
 
     for (r, c), clue in E.clues.items():

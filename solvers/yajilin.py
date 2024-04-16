@@ -6,7 +6,7 @@ from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
 from .utilsx.loop import single_loop
-from .utilsx.neighbor import adjacent, avoid_adjacent
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
@@ -41,7 +41,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(fill_path(color="white"))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(avoid_adjacent(color="black", adj_type=4))
+    solver.add_program_line(avoid_adjacent_color(color="black", adj_type=4))
     solver.add_program_line(grid_color_connected(color="white", adj_type="loop"))
     solver.add_program_line(single_loop(color="white"))
 

@@ -2,7 +2,7 @@
 
 from typing import Tuple, Union
 
-from .encoding import reverse_op, tag_encode
+from .encoding import tag_encode, target_encode
 
 
 def adjacent(_type: Union[int, str] = 4) -> str:
@@ -51,7 +51,7 @@ def adjacent(_type: Union[int, str] = 4) -> str:
     raise ValueError("Invalid adjacent type.")
 
 
-def avoid_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+def avoid_adjacent_color(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generates a constraint to avoid adjacent {color} cells based on adjacent definition.
 
@@ -85,7 +85,7 @@ def avoid_area_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> 
 
 
 def count_adjacent(
-    target: int, src_cell: Tuple[int, int], op: str = "eq", color: str = "black", adj_type: Union[int, str] = 4
+    target: Union[int, Tuple[str, int]], src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4
 ) -> str:
     """
     Generates a constraint for counting the number of {color} cells adjacent to a cell.
@@ -93,20 +93,20 @@ def count_adjacent(
     An adjacent rule should be defined first.
     """
     src_r, src_c = src_cell
-    op = reverse_op(op)
-    return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {op} {target}."
+    rop, num = target_encode(target)
+    return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {rop} {num}."
 
 
-def count_adjacent_edges(target: int, src_cell: Tuple[int, int], op: str = "eq") -> str:
+def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[int, int]) -> str:
     """
     Return a rule that counts the adjacent lines around a cell.
 
     An edge rule should be defined first.
     """
     src_r, src_c = src_cell
-    op = reverse_op(op)
+    rop, num = target_encode(target)
     v_1 = f"vertical_line({src_r}, {src_c})"
     v_2 = f"vertical_line({src_r}, {src_c + 1})"
     h_1 = f"horizontal_line({src_r}, {src_c})"
     h_2 = f"horizontal_line({src_r + 1}, {src_c})"
-    return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {op} {target}."
+    return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."

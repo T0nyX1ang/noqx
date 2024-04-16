@@ -5,7 +5,7 @@ from typing import List
 from . import utilsx
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
-from .utilsx.neighbor import adjacent, avoid_adjacent
+from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.shape import OMINOES, all_shapes, count_shape, general_shape
 from .utilsx.solution import solver
 
@@ -20,7 +20,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="x"))
-    solver.add_program_line(avoid_adjacent(adj_type="x"))
+    solver.add_program_line(avoid_adjacent_color(adj_type="x"))
     solver.add_program_line(general_shape("battleship", 1, OMINOES[1]["."], adj_type=4))
     solver.add_program_line(general_shape("battleship", 2, OMINOES[2]["I"], adj_type=4))
     solver.add_program_line(general_shape("battleship", 3, OMINOES[3]["I"], adj_type=4))

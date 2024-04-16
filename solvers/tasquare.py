@@ -34,7 +34,7 @@ def solve(E: Encoding) -> List:
             solver.add_program_line(f"not black({r}, {c}).")
         elif clue == "yellow":
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(count_adjacent(0, (r, c), color="black", op="gt"))
+            solver.add_program_line(count_adjacent(("gt", 0), (r, c), color="black"))
         else:
             num = int(clue)
             solver.add_program_line(f"not black({r}, {c}).")
