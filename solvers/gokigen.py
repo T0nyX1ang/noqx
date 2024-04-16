@@ -3,8 +3,8 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import direction, display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid
 from .utilsx.loop import fill_path
 from .utilsx.solution import solver
 

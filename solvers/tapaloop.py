@@ -4,9 +4,9 @@ import itertools
 from typing import List
 
 from . import utilsx
+from .utilsx.common import direction, display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import direction, display, grid
-from .utilsx.loop import single_loop, fill_path
+from .utilsx.loop import fill_path, single_loop
 from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent
 from .utilsx.solution import solver

@@ -3,9 +3,14 @@
 from typing import List, Tuple
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding, tag_encode
-from .utilsx.fact import display, grid
-from .utilsx.reachable import border_color_connected, bulb_src_color_connected, grid_color_connected, count_reachable_src
+from .utilsx.reachable import (
+    border_color_connected,
+    bulb_src_color_connected,
+    count_reachable_src,
+    grid_color_connected,
+)
 from .utilsx.rule import adjacent, shade_c
 from .utilsx.solution import solver
 

@@ -4,8 +4,8 @@ import itertools
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
 from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, shade_c
 from .utilsx.shape import avoid_rect

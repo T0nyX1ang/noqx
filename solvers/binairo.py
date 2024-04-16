@@ -3,8 +3,8 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
 from .utilsx.rule import count, shade_c
 from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver

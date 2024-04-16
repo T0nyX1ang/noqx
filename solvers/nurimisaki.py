@@ -3,8 +3,8 @@
 from typing import List, Tuple
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
 from .utilsx.reachable import (
     bulb_src_color_connected,
     count_reachable_src,

@@ -3,8 +3,8 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding, tag_encode
-from .utilsx.fact import display, grid
 from .utilsx.reachable import (
     avoid_unknown_src,
     count_reachable_src,

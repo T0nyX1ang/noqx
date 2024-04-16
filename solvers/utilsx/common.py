@@ -1,4 +1,4 @@
-"""Generating facts and meta-facts for the solver."""
+"""Generating commonly used facts and rules for the solver."""
 
 from typing import List, Tuple, Union
 

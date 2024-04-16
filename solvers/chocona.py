@@ -3,8 +3,8 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import area, display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import area, display, grid
 from .utilsx.helper import full_bfs, mark_and_extract_clues
 from .utilsx.rule import adjacent, count, shade_c
 from .utilsx.shape import all_rect

@@ -3,8 +3,8 @@
 from typing import List
 
 from . import utilsx
+from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding
-from .utilsx.fact import display, grid
 from .utilsx.reachable import (
     count_reachable_src,
     grid_color_connected,
