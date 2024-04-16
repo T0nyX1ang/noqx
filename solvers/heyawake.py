@@ -3,8 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.coord import Direction
-from .utilsx.encoding import Encoding
+from .utilsx.encoding import Direction, Encoding
 from .utilsx.fact import area, display, grid
 from .utilsx.helper import full_bfs, mark_and_extract_clues
 from .utilsx.reachable import grid_color_connected

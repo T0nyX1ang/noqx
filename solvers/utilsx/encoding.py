@@ -2,9 +2,63 @@
 
 import json
 import urllib.parse
+from enum import Enum
 from typing import Any, Dict, List, Set, Tuple, Union
 
-from .coord import Direction, elt_to_rcd
+Direction = Enum("Direction", "LEFT TOP")
+
+
+def rcd_to_elt(r: int, c: int, d: Direction = None) -> str:
+    """Convert row, column and direction (if has) to compatible elt ID."""
+    if d is None:
+        return f"{r * 2 + 1},{c * 2 + 1}"
+
+    data = {
+        Direction.TOP: f"{r * 2},{c * 2 + 1}",
+        Direction.LEFT: f"{r * 2 + 1},{c * 2}",
+    }
+    return data[d]
+
+
+def elt_to_rcd(coord: str) -> Tuple[int, int, Union[None, Direction]]:
+    """Convert grid coordinates to row and column."""
+    gr, gc = map(int, coord.split(","))
+    r, c = gr // 2, gc // 2
+
+    if gr % 2 == 1 and gc % 2 == 1:  # coordinate case
+        return r, c, None
+
+    if gr % 2 == 0 and gc % 2 == 1:  # horizontal border case
+        return r, c, Direction.TOP  # bottom border will be ignored
+
+    if gr % 2 == 1 and gc % 2 == 0:  # vertical border case
+        return r, c, Direction.LEFT  # right border will be ignored
+
+    raise ValueError("Invalid coordinate!")
+
+
+def tag_encode(name: str, *data: Any) -> str:
+    """Encode a valid tag predicate without spaces or hyphens."""
+    tag_data = [name]
+    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
+        if d is not None:
+            tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
+
+    return "_".join(tag_data)
+
+
+def reverse_op(op: str) -> str:
+    """Return the reverse of the given operator."""
+    op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+    return op_rev_dict[op]
+
+
+def target_encode(target: Union[int, Tuple[int, int]]) -> Tuple[str, int]:
+    """Encode a target number for comparison."""
+    if isinstance(target, int):
+        return ("!=", target)
+
+    return (reverse_op(target[0]), target[1])
 
 
 class Encoding:
@@ -133,27 +187,3 @@ def decode(solutions):
     solution_str += f'"num_solutions":{len(solutions)}'
     solution_str += "}"
     return solution_str
-
-
-def tag_encode(name: str, *data: Any) -> str:
-    """Encode a valid tag predicate without spaces or hyphens."""
-    tag_data = [name]
-    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
-        if d is not None:
-            tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
-
-    return "_".join(tag_data)
-
-
-def reverse_op(op: str) -> str:
-    """Return the reverse of the given operator."""
-    op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
-    return op_rev_dict[op]
-
-
-def target_encode(target: Union[int, Tuple[int, int]]) -> Tuple[str, int]:
-    """Encode a target number for comparison."""
-    if isinstance(target, int):
-        return ("!=", target)
-
-    return (reverse_op(target[0]), target[1])

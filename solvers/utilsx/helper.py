@@ -3,7 +3,7 @@
 import random
 from typing import Any, Dict, FrozenSet, Set, Tuple, Union
 
-from .coord import Direction
+from .encoding import Direction
 
 
 def mark_and_extract_clues(

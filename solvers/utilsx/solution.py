@@ -5,7 +5,7 @@ from typing import Dict, List
 from clingo.control import Control
 from clingo.solving import Model
 
-from .coord import Direction, rcd_to_elt
+from .encoding import Direction, rcd_to_elt
 
 MAX_SOLUTIONS_TO_FIND = 10
 

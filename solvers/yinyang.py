@@ -3,8 +3,7 @@
 from typing import List
 
 from . import utilsx
-from .utilsx.encoding import Encoding
-from .utilsx.coord import rcd_to_elt
+from .utilsx.encoding import Encoding, rcd_to_elt
 from .utilsx.fact import display, grid
 from .utilsx.reachable import grid_color_connected
 from .utilsx.rule import adjacent, shade_c
