@@ -203,15 +203,3 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
         return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
     raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
-
-
-def count_reachable_edge(target: int, op: str = "eq") -> str:
-    """
-    Generates a constraint for counting grids in a region divided by edges.
-
-    An edge rule should be defined first.
-    """
-    op = reverse_op(op)
-    tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
-
-    return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} {op} {target}."

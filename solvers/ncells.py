@@ -4,11 +4,22 @@ from typing import List
 
 from . import utilsx
 from .utilsx.coord import Direction
-from .utilsx.encoding import Encoding
+from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.fact import display, edge, grid
 from .utilsx.reachable import grid_branch_color_connected
-from .utilsx.rule import adjacent, count_adjacent_lines, count_reachable_edge
+from .utilsx.rule import adjacent, count_adjacent_lines
 from .utilsx.solution import solver
+
+
+def count_reachable_edge(target: int) -> str:
+    """
+    Generates a constraint for counting grids in a region divided by edges.
+
+    An edge rule and a grid_branch_color_connected rule should be defined first.
+    """
+    tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
+
+    return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."
 
 
 def encode(string: str) -> Encoding:
