@@ -149,3 +149,11 @@ def reverse_op(op: str) -> str:
     """Return the reverse of the given operator."""
     op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
     return op_rev_dict[op]
+
+
+def target_encode(target: Union[int, Tuple[int, int]]) -> Tuple[str, int]:
+    """Encode a target number for comparison."""
+    if isinstance(target, int):
+        return ("!=", target)
+
+    return (reverse_op(target[0]), target[1])

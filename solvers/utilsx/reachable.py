@@ -2,7 +2,7 @@
 
 from typing import List, Optional, Tuple, Union
 
-from .encoding import tag_encode
+from .encoding import tag_encode, target_encode
 
 
 def validate_type(_type: Union[int, str], target_type: Tuple[Union[int, str]]) -> None:
@@ -121,6 +121,45 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: str = "black", ad
     return initial + "\n" + propagation
 
 
+def count_reachable_src(
+    target: Union[int, Tuple[str, int]],
+    src_cell: Tuple[int, int],
+    main_type: str = "grid",
+    color: str = "black",
+    adj_type: Union[int, str] = 4,
+):
+    """
+    Generate a constraint to count the reachable cells starting from a source.
+
+    A grid_src_color_connected or bulb_src_color_connected should be defined first.
+    """
+    if main_type == "grid":
+        validate_type(adj_type, (4, 8, "edge", "loop", "loop_directed"))
+    elif main_type == "bulb":
+        validate_type(adj_type, (4, "edge"))
+    else:
+        raise ValueError("Invalid main type, must be one of 'grid', 'bulb'.")
+
+    src_r, src_c = src_cell
+
+    tag = tag_encode("reachable", main_type, "src", "adj", adj_type, color)
+    rop, num = target_encode(target)
+
+    return f":- {{ {tag}({src_r}, {src_c}, R, C) }} {rop} {num}."
+
+
+def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+    """
+    Generate a constraint to avoid cells starting from unknown source.
+
+    Use this constraint with grid_src_color_connected, and adj_type cannot be "edge".
+    """
+    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
+
+    return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
+
+
 def grid_branch_color_connected(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells with branches.
@@ -146,15 +185,3 @@ def grid_branch_color_connected(color: str = "black", adj_type: Union[int, str] 
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
     propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     return initial + "\n" + propagation
-
-
-def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generate a constraint to avoid cells starting from unknown source.
-
-    Use this constraint with grid_src_color_connected, and adj_type cannot be "edge".
-    """
-    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
-    tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
-
-    return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
