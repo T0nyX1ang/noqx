@@ -1,6 +1,6 @@
 """The Hashi solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, grid
 from .utilsx.encoding import Encoding
@@ -37,7 +37,7 @@ def hashi_bridge(R: int, C: int) -> str:
     return rule + show + adj.strip()
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("HV"))

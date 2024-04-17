@@ -1,6 +1,6 @@
 """The Binario solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -30,7 +30,7 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     if not (E.R % 2 == 0 and E.C % 2 == 0):
         raise ValueError("# rows and # columns must both be even!")
 

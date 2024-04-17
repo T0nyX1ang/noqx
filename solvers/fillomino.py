@@ -1,6 +1,6 @@
 """Solve Fillomino puzzles."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, edge, fill_num, grid
 from .utilsx.encoding import Encoding, tag_encode
@@ -45,7 +45,7 @@ def fillomino_slow() -> str:
     return slow.strip()
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))

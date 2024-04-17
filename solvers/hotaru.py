@@ -1,6 +1,6 @@
 """The Hotaru Beam solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
@@ -31,7 +31,7 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     return rule
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))

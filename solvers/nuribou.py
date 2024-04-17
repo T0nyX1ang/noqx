@@ -1,6 +1,6 @@
 """The Nuribou solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
@@ -26,7 +26,7 @@ def noribou_strip_different(color: str = "black") -> str:
     return same_rc + "\n" + constraint
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     all_src = []
     for (r, c), clue in E.clues.items():
         if isinstance(clue, int) or clue == "yellow":

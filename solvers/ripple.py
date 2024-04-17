@@ -1,6 +1,6 @@
 """The Ripple Effect solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
@@ -15,7 +15,7 @@ def ripple_constraint() -> str:
     return row + "\n" + col
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
 

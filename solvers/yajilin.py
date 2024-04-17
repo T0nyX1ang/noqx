@@ -1,6 +1,6 @@
 """The Yajilin solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
@@ -28,7 +28,7 @@ def yajilin_count(target: int, src_cell: Tuple[int, int], _direction: str, color
     raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))

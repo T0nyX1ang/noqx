@@ -1,6 +1,6 @@
 """The Shakashaka solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding
@@ -67,7 +67,7 @@ def shade_shaka() -> str:
     return rule
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_shaka())

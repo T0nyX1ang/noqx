@@ -1,6 +1,6 @@
 """The Yajilin-Kazusan solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -32,7 +32,7 @@ def yajikazu_count(target: int, src_cell: Tuple[int, int], direction: str, color
     raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="gray"))

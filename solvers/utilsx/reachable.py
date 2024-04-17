@@ -65,7 +65,7 @@ def grid_src_color_connected(
     src_cell: Tuple[int, int],
     include_cells: Optional[List[Tuple[int, int]]] = None,
     exclude_cells: Optional[List[Tuple[int, int]]] = None,
-    color: str = "black",
+    color: Optional[str] = "black",
     adj_type: Union[int, str] = 4,
 ) -> str:
     """
@@ -74,7 +74,11 @@ def grid_src_color_connected(
     An adjacent rule and a grid fact should be defined first.
     If adj_type is "edge", an edge fact should be defined first.
     """
-    validate_type(adj_type, (4, 8, "edge", "loop", "loop_directed"))
+    if color is None:
+        validate_type(adj_type, ("edge",))
+    else:
+        validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
     r, c = src_cell
@@ -98,13 +102,17 @@ def grid_src_color_connected(
     return initial + "\n" + propagation
 
 
-def bulb_src_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells starting from a bulb.
 
     An adjacent rule and a grid fact should be defined first.
     """
-    validate_type(adj_type, (4, "edge"))
+    if color is None:
+        validate_type(adj_type, ("edge",))
+    else:
+        validate_type(adj_type, (4,))
+
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
     r, c = src_cell
@@ -133,10 +141,12 @@ def count_reachable_src(
 
     A grid_src_color_connected or bulb_src_color_connected should be defined first.
     """
-    if main_type == "grid":
-        validate_type(adj_type, (4, 8, "edge", "loop", "loop_directed"))
+    if color is None:
+        validate_type(adj_type, ("edge",))
+    elif main_type == "grid":
+        validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     elif main_type == "bulb":
-        validate_type(adj_type, (4, "edge"))
+        validate_type(adj_type, (4,))
     else:
         raise ValueError("Invalid main type, must be one of 'grid', 'bulb'.")
 
@@ -160,7 +170,7 @@ def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> st
     return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
 
 
-def grid_branch_color_connected(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells with branches.
 
@@ -168,7 +178,11 @@ def grid_branch_color_connected(color: str = "black", adj_type: Union[int, str] 
     If adj_type is "edge", an edge fact should be defined first.
     Unless no initial cells are given, please consider using grid_src_color_connected.
     """
-    validate_type(adj_type, (4, 8, "edge"))
+    if color is None:
+        validate_type(adj_type, ("edge",))
+    else:
+        validate_type(adj_type, (4, 8))
+
     tag = tag_encode("reachable", "grid", "branch", "adj", adj_type, color)
 
     if adj_type == "edge":

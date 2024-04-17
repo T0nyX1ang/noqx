@@ -1,6 +1,6 @@
 """The Norinori solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -18,7 +18,7 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c("gray"))

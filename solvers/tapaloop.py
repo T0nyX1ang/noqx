@@ -1,7 +1,7 @@
 """The Tapa-like Loop solver."""
 
 import itertools
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
@@ -153,7 +153,7 @@ def grid_direc_to_num(r: int, c: int) -> str:
     return constraint
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     if E.params["visit_all"]:

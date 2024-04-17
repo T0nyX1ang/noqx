@@ -1,6 +1,6 @@
 """The Castle castle solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -28,7 +28,7 @@ def wall_length(r: int, c: int, d: str, num: int) -> str:
     raise ValueError("Invalid direction.")
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))

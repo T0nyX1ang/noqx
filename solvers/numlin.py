@@ -1,6 +1,6 @@
 """The Numberlink solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -20,7 +20,7 @@ def no_2x2_path() -> str:
     return f":- { ', '.join(f'reachable_grid_src_adj_loop_numlin(R0, C0, R + {r}, C + {c})' for r, c in points) }."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     locations = {}
     for (r, c), n in E.clues.items():
         locations[n] = locations.get(n, []) + [(r, c)]

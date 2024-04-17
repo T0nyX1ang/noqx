@@ -1,6 +1,6 @@
 """The Nurimisaki solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -14,7 +14,7 @@ from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 
-def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def avoid_unknown_misaki(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a constraint to avoid dead ends that does not have a record.
 
@@ -29,7 +29,7 @@ def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj
     return f"{main}, {included}."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
@@ -38,7 +38,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
 
-    all_src = []
+    all_src: List[Tuple[int, int]] = []
     for (r, c), clue in E.clues.items():
         if clue == "black":
             solver.add_program_line(f"black({r}, {c}).")

@@ -1,6 +1,6 @@
 """The Country Road solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -11,7 +11,7 @@ from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))

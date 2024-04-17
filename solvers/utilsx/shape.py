@@ -40,7 +40,7 @@ OMINOES = {
 }
 
 
-def get_neighbor(r: int, c: int, _type: int = 4) -> Iterable[Tuple[int, int]]:
+def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[int, int]]:
     """Get the neighbors of a cell."""
     shape_4 = ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
     shape_x = ((r - 1, c - 1), (r - 1, c + 1), (r + 1, c - 1), (r + 1, c + 1))
@@ -111,7 +111,7 @@ def general_shape(
     deltas: Optional[Iterable[Tuple[int, int]]] = None,
     color: str = "black",
     _type: str = "grid",
-    adj_type: int = 4,
+    adj_type: Union[int, str] = 4,
     simple: bool = False,
 ) -> str:
     """

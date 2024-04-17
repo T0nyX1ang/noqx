@@ -1,6 +1,6 @@
 """The Slitherlink solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -17,7 +17,7 @@ def convert_direction_to_edge() -> str:
     return rule.strip()
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R + 1, E.C + 1))
     solver.add_program_line(direction("lurd"))
@@ -46,6 +46,5 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.solve()
-    print(solver.program)
 
     return solver.solutions

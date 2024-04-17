@@ -1,6 +1,6 @@
 """The Stostone solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -21,7 +21,7 @@ def valid_stostone(color: str = "black") -> str:
     return f":- {below_C}, {below_C1}, BC != BC1."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     if E.R % 2 != 0:
         raise ValueError("The stostone grid must have an even # rows.")
 

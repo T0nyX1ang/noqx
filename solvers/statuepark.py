@@ -1,6 +1,6 @@
 """The Statue Park solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -10,7 +10,7 @@ from .utilsx.shape import OMINOES, all_shapes, count_shape, general_shape
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     shapeset = E.params["shapeset"]
     if shapeset == "Tetrominoes":
         omino_num, omino_count_type = 4, 1

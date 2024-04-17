@@ -63,7 +63,7 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
     return "\n".join(constraints)
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     if len(E.top) + len(E.left) == 0:
         raise ValueError("No clues provided.")
 

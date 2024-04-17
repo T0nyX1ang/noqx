@@ -1,6 +1,6 @@
 """The Shikaku solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
@@ -25,7 +25,7 @@ def shikaku_cell_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     if len(E.clues) == 0:
         raise ValueError("Please provide at least one clue.")
 

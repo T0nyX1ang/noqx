@@ -1,6 +1,6 @@
 """The Onsen-Meguri solver."""
 
-from typing import List
+from typing import Dict, Iterable, List, Tuple
 
 from .utilsx.common import area, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -10,7 +10,7 @@ from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 
-def area_border(_id: int, ar: list) -> str:
+def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
     """Generates a fact for the border of an area."""
     borders = []
     for r, c in ar:
@@ -52,7 +52,7 @@ def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
     return rule.strip()
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))

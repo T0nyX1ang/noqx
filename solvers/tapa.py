@@ -1,7 +1,7 @@
 """The Tapa solver."""
 
 import itertools
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -95,7 +95,7 @@ def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
     return f":- {valid_pattern}, {num_constrain}."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))

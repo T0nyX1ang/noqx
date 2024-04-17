@@ -1,6 +1,6 @@
 """The Sudoku solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
@@ -8,7 +8,7 @@ from .utilsx.neighbor import adjacent
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(9, 9))
     solver.add_program_line(adjacent(_type="x"))

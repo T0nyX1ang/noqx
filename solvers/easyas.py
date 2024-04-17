@@ -1,13 +1,13 @@
 """The Easy As solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import count, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     assert E.R == E.C, "Easy as puzzles must be square."
     n = E.R
     letters = E.params["letters"]
@@ -49,6 +49,6 @@ def solve(E: Encoding) -> List:
 
     for solution in solver.solutions:
         for rc, num in solution.items():
-            solution[rc] = letters[num - 1]
+            solution[rc] = letters[int(num) - 1]
 
     return solver.solutions

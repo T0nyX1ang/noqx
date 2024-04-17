@@ -1,5 +1,7 @@
 """The Aquarium solver."""
 
+from typing import Dict, List
+
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
@@ -16,7 +18,7 @@ def area_gravity(color: str = "black") -> str:
     return target.replace("not not ", "")
 
 
-def solve(E: Encoding):
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="blue"))

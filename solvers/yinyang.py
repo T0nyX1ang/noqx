@@ -1,6 +1,6 @@
 """The Yin-Yang solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding, rcd_to_elt
@@ -10,7 +10,7 @@ from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))

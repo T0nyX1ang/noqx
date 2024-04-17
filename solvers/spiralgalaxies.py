@@ -1,7 +1,7 @@
 """The Spiral Galaxies solver."""
 
 import json
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
@@ -36,7 +36,7 @@ def encode(string: str) -> Encoding:
     return Encoding(rows, cols, clues)
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     assert len(E.clues) > 0, "No clues provided!"
 
     solver.reset()
@@ -63,7 +63,7 @@ def solve(E: Encoding) -> List:
 
     for r, c in reachables:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
-        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color="grid"))
+        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)

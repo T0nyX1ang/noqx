@@ -1,6 +1,6 @@
 """The Nagare solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -39,7 +39,7 @@ def nagare_wind(r: int, c: int, d: str, E: Encoding) -> str:
         )
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(direction("lurd"))

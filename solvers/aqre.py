@@ -1,6 +1,6 @@
 """The Aqre solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -11,7 +11,7 @@ from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="gray"))
@@ -25,9 +25,9 @@ def solve(E: Encoding) -> List:
     clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
     if clues:
         areas = full_bfs(E.R, E.C, E.edges, clues)
-        if isinstance(areas, dict):
-            for i, (rc, ar) in enumerate(areas.items()):
-                solver.add_program_line(area(_id=i, src_cells=ar))
+        for i, (ar, rc) in enumerate(areas.items()):
+            solver.add_program_line(area(_id=i, src_cells=ar))
+            if rc:
                 solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
 
     solver.add_program_line(rules)

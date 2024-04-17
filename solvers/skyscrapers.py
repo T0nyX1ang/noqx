@@ -1,13 +1,13 @@
 """The Skyscrapers solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     assert E.R == E.C, "Skyscrapers puzzles must be square."
     n = E.R
 

@@ -1,6 +1,6 @@
 """The Heteromino solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
@@ -23,7 +23,7 @@ def avoid_adj_same_omino(color: str = "black") -> str:
     return constraint
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     shaded = len(E.clues)
     if (E.R * E.C - shaded) % 3 != 0:
         raise ValueError("The grid cannot be divided into 3-ominoes!")

@@ -1,13 +1,13 @@
 """The Kakuro solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import area, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     # Find sections and their corresponding clues
     # 'sum' is 0 when the clue is blank; this is because we need to check every run for duplicates.
     sums: List[Tuple[int, List[Tuple[int, int]]]] = []

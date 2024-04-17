@@ -1,7 +1,7 @@
 """The Tents solver."""
 
 import itertools
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -11,7 +11,7 @@ from .utilsx.solution import solver
 neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
 
-def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
 
@@ -27,7 +27,7 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
     return rules + "\n" + constraints
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c())
@@ -35,7 +35,7 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(adjacent(_type=8))
     solver.add_program_line(avoid_adjacent_color(color="black", adj_type=8))
 
-    all_trees = []
+    all_trees: List[Tuple[int, int]] = []
     for (r, c), clue in E.clues.items():
         if clue == "e":
             all_trees.append((r, c))

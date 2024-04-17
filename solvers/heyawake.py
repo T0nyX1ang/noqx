@@ -1,6 +1,6 @@
 """The Heyawake solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Direction, Encoding
@@ -11,7 +11,7 @@ from .utilsx.shape import avoid_rect
 from .utilsx.solution import solver
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c("gray"))
@@ -24,9 +24,10 @@ def solve(E: Encoding) -> List:
     if clues:
         areas = full_bfs(E.R, E.C, E.edges, clues)
         if isinstance(areas, dict):
-            for i, (rc, ar) in enumerate(areas.items()):
+            for i, (ar, rc) in enumerate(areas.items()):
                 solver.add_program_line(area(_id=i, src_cells=ar))
-                solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
+                if rc:
+                    solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
 
     for r in range(E.R):
         borders_in_row = [c for c in range(1, E.C) if (r, c, Direction.LEFT) in E.edges]

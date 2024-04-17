@@ -1,6 +1,6 @@
 """The Haisu solver."""
 
-from typing import List
+from typing import Dict, Iterable, List, Tuple
 
 from .utilsx.common import area, direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
@@ -9,7 +9,7 @@ from .utilsx.loop import directed_loop
 from .utilsx.solution import solver
 
 
-def area_border(_id: int, ar: list) -> str:
+def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
     """Generates a fact for the border of an area."""
     borders = []
     for r, c in ar:
@@ -76,7 +76,7 @@ def haisu_count_x() -> str:
     return rule
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     if not ("S" in E.clues.values() and "G" in E.clues.values()):
         raise ValueError("S and G squares must be provided.")
 

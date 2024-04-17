@@ -1,6 +1,6 @@
 """The Lits solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
@@ -11,7 +11,7 @@ from .utilsx.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_
 from .utilsx.solution import solver
 
 
-def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> None:
+def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> str:
     """
     Generates a constraint to avoid adjacent ominos with the same type.
 
@@ -21,7 +21,7 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
     return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, _, _, T, _), {tag}(A1, _, _, T, _)."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c("gray"))

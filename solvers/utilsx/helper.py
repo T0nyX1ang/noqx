@@ -36,27 +36,21 @@ def mark_and_extract_clues(
 
 def full_bfs(
     rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
-) -> Union[Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]], Set[FrozenSet[Tuple[int, int]]]]:
+) -> Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]]:
     """
     Given puzzle dimensions (rows, cols), a list of border coordinates,
     and (optionally) a dictionary mapping clue cells to values,
 
     Returns:
-        if clues were provided:
-            a dictionary mapping each clue cell to a frozenset of
-                the (r, c) coordinates of the room that the clue is in
-            (if a room has no clue cells, it gets ignored)
-        else:
-            a set of frozensets, where each frozenset contains the (r, c)
-                coordinates of an entire room
+            a dictionary mapping a frozenset of the (r, c) coordinates of the room
+            to the clue cell in that room (if a room has no clue cells, it gets ignored).
     """
     # initially, all cells are unexplored
     unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}
 
     # build a set of rooms
     # (if there are clues, we need this for stranded-edge checks)
-    room_set: Set[FrozenSet[Tuple[int, int]]] = set()
-    clue_to_room: Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]] = {}
+    clue_to_room: Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]] = {}
 
     # --- HELPER METHOD FOR full_bfs---
     def bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], FrozenSet[Tuple[int, int]]]:
@@ -106,14 +100,11 @@ def full_bfs(
         start_cell = random.choice(tuple(unexplored_cells))
         # run bfs on that grid_color_connected component
         clue, room = bfs(start_cell)
-        # add the room to the room-set
-        room_set.add(room)
-        if clue:
-            clue_to_room[clue] = room
+        clue_to_room[room] = clue
 
     def get_room(r: int, c: int) -> FrozenSet[Tuple[int, int]]:
         """Given a cell, return the room that it belongs to."""
-        for room in room_set:
+        for room in clue_to_room:
             if (r, c) in room:
                 return room
 
@@ -130,4 +121,4 @@ def full_bfs(
             if (r - 1, c) in room:
                 raise ValueError("There is a dead-end edge.")
 
-    return clue_to_room if clues else room_set
+    return clue_to_room

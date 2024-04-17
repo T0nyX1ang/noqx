@@ -1,6 +1,6 @@
 """The Shimaguni solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
@@ -21,7 +21,7 @@ def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str
     return f":- area_adj_{adj_type}(A, A1), A < A1, {size_count}, {size1_count}, N = N1."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="gray"))

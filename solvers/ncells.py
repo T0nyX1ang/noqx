@@ -1,6 +1,6 @@
 """The N Cells solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Direction, Encoding, tag_encode
@@ -20,7 +20,7 @@ def count_reachable_edge(target: int) -> str:
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     size = int(E.params["region_size"])
     assert E.R * E.C % size == 0, "It's impossible to divide grid into regions of this size!"
 

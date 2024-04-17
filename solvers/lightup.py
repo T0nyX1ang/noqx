@@ -1,6 +1,6 @@
 """Akari (Light up) solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding, tag_encode
@@ -23,7 +23,7 @@ def lightup(color: str = "black") -> str:
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line("{ bulb(R, C) } :- grid(R, C), not black(R, C).")

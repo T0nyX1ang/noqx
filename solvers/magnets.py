@@ -1,6 +1,6 @@
 """The Magnets solver."""
 
-from typing import List
+from typing import Dict, List
 
 from .utilsx.common import area, count, display, grid, shade_cc
 from .utilsx.encoding import Encoding
@@ -19,7 +19,7 @@ def magnet_constraint() -> str:
     return constraint.strip()
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_cc(["red", "blue", "gray"]))

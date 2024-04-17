@@ -1,7 +1,6 @@
 """Utility for loops."""
 
-from typing import List, Tuple
-
+from typing import Iterable, Tuple
 
 NON_DIRECTED = ["J", "7", "L", "r", "-", "1", ""]
 DIRECTED = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv", "->", "-<", "1^", "1v", ""]
@@ -82,7 +81,7 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     return constraint + rule.strip()
 
 
-def pass_area_once(ar: List[Tuple[int, int]]) -> str:
+def pass_area_once(ar: Iterable[Tuple[int, int]]) -> str:
     """
     Generate a rule that a loop passes through an area exactly once.
 

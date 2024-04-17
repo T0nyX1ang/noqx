@@ -1,6 +1,6 @@
 """The Cave solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
@@ -14,7 +14,7 @@ from .utilsx.reachable import (
 from .utilsx.solution import solver
 
 
-def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: str = 4):
+def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
     """
     Product rule for cave.
 
@@ -28,7 +28,7 @@ def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "blac
     return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(shade_c(color="black"))

@@ -1,6 +1,6 @@
 """The Tatamibari solver."""
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, reverse_op, tag_encode
@@ -36,7 +36,7 @@ def tatamibari_global_constraint() -> str:
     return rule
 
 
-def solve(E: Encoding) -> List:
+def solve(E: Encoding) -> List[Dict[str, str]]:
     if len(E.clues) == 0:
         raise ValueError("Please provide at least one clue.")
 
