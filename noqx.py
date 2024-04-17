@@ -4,8 +4,9 @@ Main file for the noqx project.
 execute "uvicorn noqx:app" to start the server.
 """
 
+
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -41,7 +42,12 @@ async def puzzle_page(request: Request, puzzle_type: str):
 @app.get("/solver/", response_class=HTMLResponse)
 def solver(puzzle_type: str, puzzle: str):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
-    return run(puzzle_type, puzzle)
+    try:
+        return run(puzzle_type, puzzle)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err)) from err
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=str(err)) from err
 
 
 if __name__ == "__main__":

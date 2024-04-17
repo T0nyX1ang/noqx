@@ -728,5 +728,5 @@ function display_error_message(error_str) {
   spinner_pos = null; // stop the spinner
 
   error = JSON.parse(error_str);
-  get("header_div").innerHTML = error.message || "An unknown error occurred";
+  get("header_div").innerHTML = error.detail || "An unknown error occurred";
 }
