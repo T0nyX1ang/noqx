@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Union
 
-cats: Dict[str, str] = {
+CATEGORIES: Dict[str, str] = {
     "shade": "Shading",
     "loop": "Loop / Path",
     "region": "Region division",
@@ -11,7 +11,7 @@ cats: Dict[str, str] = {
     "draw": "Drawing",
 }
 
-types: List[Dict[str, Union[str, List]]] = [
+PUZZLE_TYPES: List[Dict[str, Union[str, List]]] = [
     {"value": "aqre", "name": "Aqre", "cat": "shade"},
     {"value": "aquarium", "name": "Aquarium", "cat": "shade"},
     {"value": "balance", "name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"]},

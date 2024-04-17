@@ -4,7 +4,7 @@ import importlib
 from types import ModuleType
 from typing import Dict, List
 
-from .consts import types as PUZZLE_TYPES
+from .consts import PUZZLE_TYPES
 from .encoding import Encoding, decode, encode
 
 modules: Dict[str, ModuleType] = {}

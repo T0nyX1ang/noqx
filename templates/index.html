@@ -21,9 +21,8 @@
     <div class="typegroup">
       <b>{{ cat_name }}</b>
       <ul>
-        {% for cat0, cat0_types in types.items() %}
-        {% if cat0 == cat %} <!-- this Django code sorta sucks -->
-        {% for pt_dict in cat0_types %}
+        {% for pt_dict in types %}
+        {% if pt_dict.cat == cat %}
         <li>
           <a href="{{ pt_dict.value }}">{{ pt_dict.name }}</a>
           {% if pt_dict.value == "ncells" %}
@@ -32,7 +31,6 @@
           <a class="rules" href="https://puzz.link/rules.html?{{ pt_dict.value }}" target="_blank">?</a>
           {% endif %}
         </li>
-        {% endfor %}
         {% endif %}
         {% endfor %}
       </ul>

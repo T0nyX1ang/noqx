@@ -10,21 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from solvers.utilsx import run
-from solvers.utilsx.consts import cats as CATS
-from solvers.utilsx.consts import types as PUZZLE_TYPES
-
-
-# index page
-types_by_cat = {}
-
-for pt_dict in PUZZLE_TYPES:
-    cat = pt_dict["cat"]
-    if cat not in types_by_cat:
-        types_by_cat[cat] = []
-    types_by_cat[cat].append(pt_dict)
-
-for cat in types_by_cat:
-    types_by_cat[cat] = sorted(types_by_cat[cat], key=lambda d: d["name"])
+from solvers.utilsx.consts import CATEGORIES, PUZZLE_TYPES
 
 
 app = FastAPI(title="noqx", description="An extended logic puzzle solver.")
@@ -36,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
     """The root endpoint of the server."""
-    return templates.TemplateResponse(request=request, name="index.html", context={"types": types_by_cat, "cats": CATS})
+    return templates.TemplateResponse(request=request, name="index.html", context={"types": PUZZLE_TYPES, "cats": CATEGORIES})
 
 
 @app.get("/{puzzle_type}", response_class=HTMLResponse)
