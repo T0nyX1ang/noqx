@@ -641,7 +641,7 @@ function solve_puzzle() {
   current_request = new XMLHttpRequest();
   current_request.open(
     "GET",
-    `solver?puzzle_type=${pt}&puzzle=${encodeURI(parse_input())}`
+    `solver/?puzzle_type=${pt}&puzzle=${encodeURI(parse_input())}`
   );
   current_request.onreadystatechange = function () {
     if (this.stopped) return;
@@ -728,5 +728,5 @@ function display_error_message(error_str) {
   spinner_pos = null; // stop the spinner
 
   error = JSON.parse(error_str);
-  get("header_div").innerHTML = error.message || "An unknown error occurred";
+  get("header_div").innerHTML = error.detail || "An unknown error occurred";
 }

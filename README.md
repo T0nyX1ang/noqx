@@ -10,6 +10,8 @@ Extended logic puzzle solver of Noq.
 
 - Multiple UI optimizations.
 
+- Change the backend from Django to FastAPI (See issue [#31](https://github.com/T0nyX1ang/noqx/issues/31)).
+
 ## How to run locally
 
 ### Use PDM with a virtual environment (Recommended)
@@ -22,10 +24,10 @@ Extended logic puzzle solver of Noq.
     pdm install
 ```
 
-- Run Django with PDM:
+- Run with PDM:
 
 ```bash
-    pdm run manage.py runserver
+    pdm run noqx.py
 ```
 
 ### Use PIP
@@ -36,11 +38,11 @@ Extended logic puzzle solver of Noq.
     pip install -r requirements.txt
 ```
 
-- Run Django locally (based on your system):
+- Run locally (based on your system):
 
 ```bash
-    py -3 manage.py runserver
-    python3 manage.py runserver
+    py -3 noqx.py
+    python3 noqx.py
 ```
 
 ## How to contribute
