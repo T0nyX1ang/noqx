@@ -1076,7 +1076,10 @@ class NonogramElf extends DirectSum(
   }
 
   handle_input(key, modifiers) {
-    this.elf2.handle_input(key, modifiers); // deal with color
+    if (!restrict_to_grid(this.elt)) {
+      this.elf2.handle_input(key, modifiers); // deal with color
+      return;
+    }
 
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
@@ -1119,6 +1122,11 @@ class NonogramElf extends DirectSum(
     if (this.curr_clue != "") this.clues.pop();
   }
   load_example(str) {
+    if (!restrict_to_grid(this.elt)) {
+      this.elf2.load_example(str); // deal with color
+      return;
+    }
+
     this.clues = str;
     this.curr_clue = "";
 
@@ -1137,11 +1145,13 @@ class NonogramElf extends DirectSum(
       this.puzzle_elt.innerHTML += `<div class='aux_cell'>${clue}</div>`;
   }
   encode_input() {
+    let out2 = this.elf2.encode_input();
+
     if (this.curr_clue != "") {
       this.clues.push(this.curr_clue);
       this.curr_clue = "";
     }
-    return this.clues.length == 0 ? null : this.clues;
+    return this.clues.length == 0 ? out2 : this.clues;
   }
 }
 
