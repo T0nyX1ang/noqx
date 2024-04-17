@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% load static %}
-
 {% block title %}Noqx{% endblock %}
 
 {% block content %}
@@ -19,11 +17,11 @@
   </center>
 
   <div id="typegroups">
-    {% for cat, cat_name in cats.items %}
+    {% for cat, cat_name in cats.items() %}
     <div class="typegroup">
       <b>{{ cat_name }}</b>
       <ul>
-        {% for cat0, cat0_types in types.items %}
+        {% for cat0, cat0_types in types.items() %}
         {% if cat0 == cat %} <!-- this Django code sorta sucks -->
         {% for pt_dict in cat0_types %}
         <li>
