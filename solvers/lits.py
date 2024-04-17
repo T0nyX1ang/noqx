@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import area, display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.helper import full_bfs
@@ -20,10 +19,6 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
     """
     tag = tag_encode("belong_to_shape", "omino", num, color)
     return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, _, _, T, _), {tag}(A1, _, _, T, _)."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -57,7 +52,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

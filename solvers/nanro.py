@@ -74,7 +74,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

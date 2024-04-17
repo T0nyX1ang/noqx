@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.shape import avoid_rect
@@ -29,10 +28,6 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
         return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
 
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -63,7 +58,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

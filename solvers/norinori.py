@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
@@ -17,10 +16,6 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
     A grid rule and an adjacent rule should be defined first.
     """
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -46,7 +41,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

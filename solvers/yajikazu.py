@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent, avoid_adjacent_color
@@ -31,10 +30,6 @@ def yajikazu_count(target: int, src_cell: Tuple[int, int], direction: str, color
         return f":- not {color}({src_r}, {src_c}), #count {{ R1 : {color}(R1, {src_c}), R1 > {src_r} }} != {target}."
 
     raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -66,7 +61,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

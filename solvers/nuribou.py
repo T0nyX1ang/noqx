@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.neighbor import adjacent
@@ -25,10 +24,6 @@ def noribou_strip_different(color: str = "black") -> str:
     count2 = f"#count {{ R2, C2: {tag}(R1, C1, R2, C2), same_rc(R1, C1, R2, C2) }} = CC2"
     constraint = f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), {count1}, {count2}, CC1 = CC2."
     return same_rc + "\n" + constraint
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -69,7 +64,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

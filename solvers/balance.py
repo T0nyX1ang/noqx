@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding, reverse_op
 from .utilsx.loop import single_loop
@@ -61,10 +60,6 @@ def count_balance(target: int, src_cell: Tuple[int, int], color: str = "black", 
     return constraint.strip()
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
@@ -92,7 +87,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.loop import directed_loop
@@ -40,10 +39,6 @@ def nagare_wind(r: int, c: int, d: str, E: Encoding) -> str:
         )
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
@@ -69,7 +64,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

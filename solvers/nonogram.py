@@ -2,7 +2,6 @@
 
 from typing import Dict, List, Tuple, Union
 
-from . import utilsx
 from .utilsx.common import display, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.solution import solver
@@ -64,10 +63,6 @@ def nono_col(R: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "bla
     return "\n".join(constraints)
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     if len(E.top) + len(E.left) == 0:
         raise ValueError("No clues provided.")
@@ -100,7 +95,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

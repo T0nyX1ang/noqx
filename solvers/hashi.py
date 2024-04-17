@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import direction, display, grid
 from .utilsx.encoding import Encoding
 from .utilsx.reachable import grid_color_connected
@@ -38,10 +37,6 @@ def hashi_bridge(R: int, C: int) -> str:
     return rule + show + adj.strip()
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
@@ -58,7 +53,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

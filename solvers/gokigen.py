@@ -2,14 +2,9 @@
 
 from typing import List
 
-from . import utilsx
-from .utilsx.common import direction, display, grid, fill_path
+from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
 from .utilsx.solution import solver
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def slant_conn() -> str:
@@ -55,7 +50,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

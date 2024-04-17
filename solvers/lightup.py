@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import display, grid
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.neighbor import adjacent, count_adjacent
@@ -22,10 +21,6 @@ def lightup(color: str = "black") -> str:
     constraint2 = f":- grid(R, C), not black(R, C), not bulb(R, C), {{ {tag}(R0, C0, R, C) }} = 0."
 
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -54,7 +49,3 @@ def solve(E: Encoding) -> List:
                 solution[rc] = "bulb.png"
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

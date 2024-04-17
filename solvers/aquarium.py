@@ -1,8 +1,5 @@
 """The Aquarium solver."""
 
-from typing import List
-
-from . import utilsx
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
@@ -17,10 +14,6 @@ def area_gravity(color: str = "black") -> str:
     """
     target = f":- area(A, R, C), area(A, R1, C1), R1 >= R, {color}(R, C), not {color}(R1, C1)."
     return target.replace("not not ", "")
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding):
@@ -49,7 +42,3 @@ def solve(E: Encoding):
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

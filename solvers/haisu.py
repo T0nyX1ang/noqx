@@ -2,8 +2,7 @@
 
 from typing import List
 
-from . import utilsx
-from .utilsx.common import area, direction, display, grid, fill_path
+from .utilsx.common import area, direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
 from .utilsx.loop import directed_loop
@@ -77,10 +76,6 @@ def haisu_count_x() -> str:
     return rule
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     if not ("S" in E.clues.values() and "G" in E.clues.values()):
         raise ValueError("S and G squares must be provided.")
@@ -120,7 +115,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

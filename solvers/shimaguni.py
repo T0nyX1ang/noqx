@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import area, count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs, mark_and_extract_clues
@@ -20,10 +19,6 @@ def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str
     size_count = f"#count {{R, C: area(A, R, C), {color}(R, C) }} = N"
     size1_count = f"#count {{R, C: area(A1, R, C), {color}(R, C) }} = N1"
     return f":- area_adj_{adj_type}(A, A1), A < A1, {size_count}, {size1_count}, N = N1."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -54,7 +49,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

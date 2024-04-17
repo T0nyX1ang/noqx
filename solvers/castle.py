@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.loop import separate_item_from_loop, single_loop
@@ -27,10 +26,6 @@ def wall_length(r: int, c: int, d: str, num: int) -> str:
         return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
 
     raise ValueError("Invalid direction.")
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -58,7 +53,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

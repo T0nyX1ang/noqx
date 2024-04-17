@@ -1,8 +1,8 @@
 """The Spiral Galaxies solver."""
 
+import json
 from typing import List
 
-from . import utilsx
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.neighbor import adjacent
@@ -21,7 +21,19 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
 
 
 def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
+    json_obj = json.loads(string)
+    json_grid = json_obj["grid"]
+    json_params = json_obj["param_values"]
+
+    rows, cols = int(json_params["r"]), int(json_params["c"])
+    clues = {}
+
+    for i in range(2 * (rows + 1)):
+        for j in range(2 * (cols + 1)):
+            if f"{i},{j}" in json_grid:
+                clues[(i, j)] = "*"  # galaxy variation
+
+    return Encoding(rows, cols, clues)
 
 
 def solve(E: Encoding) -> List:
@@ -62,7 +74,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

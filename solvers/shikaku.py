@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.neighbor import adjacent
@@ -24,10 +23,6 @@ def shikaku_cell_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
 
     return f":- {count_r}, {count_c}, CR * CC != {target}."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -56,7 +51,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

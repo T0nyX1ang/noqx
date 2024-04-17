@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import area, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
@@ -29,10 +28,6 @@ def moon_sun_area() -> str:
     constraint = ":- area_adj_loop(A1, A2), sun_area(A1), sun_area(A2).\n"
     constraint += ":- area_adj_loop(A1, A2), not sun_area(A1), not sun_area(A2).\n"
     return (rule + constraint).strip()
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -63,7 +58,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

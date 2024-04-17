@@ -1,6 +1,5 @@
 """The view for the Noq(x) website."""
 
-import importlib
 import json
 import time
 import traceback
@@ -11,6 +10,7 @@ from django.shortcuts import render
 from django.urls import URLPattern, path
 from django.views.generic.base import RedirectView
 
+from solvers.utilsx import run
 from static.consts import cats as CATS
 from static.consts import types as PUZZLE_TYPES
 
@@ -46,14 +46,10 @@ urlpatterns.append(
     )
 )
 
-# preload solvers
-modules = {}
-
 # solver pages
 for pt_dict in PUZZLE_TYPES:
     value = pt_dict["value"]
     name = pt_dict["name"]
-    modules[value] = importlib.import_module(f"solvers.{value}")  # load module
 
     urlpatterns.append(
         path(route=value, view=create_view(pt_dict), name=f"{name} solver - Noqx")
@@ -70,13 +66,10 @@ def solver(request):
     try:
         start = time.time()
         puzzle_type = request.GET["puzzle_type"]
-        module = modules[puzzle_type]
-        puzzle_encoding = module.encode(request.GET["puzzle"])
-        solutions_encoded = module.solve(puzzle_encoding)
-        solutions_decoded = module.decode(solutions_encoded)
+        solutions = run(puzzle_type, request.GET["puzzle"])
         stop = time.time()
         print(f"{str(puzzle_type)} solver took {stop - start} seconds", flush=True)
-        return HttpResponse(solutions_decoded)
+        return HttpResponse(solutions)
     # show error messages
     except ValueError as err:
         print(traceback.print_exc(), flush=True)

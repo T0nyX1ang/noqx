@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Encoding, reverse_op, tag_encode
 from .utilsx.neighbor import adjacent
@@ -37,10 +36,6 @@ def tatamibari_global_constraint() -> str:
     return rule
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     if len(E.clues) == 0:
         raise ValueError("Please provide at least one clue.")
@@ -71,7 +66,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

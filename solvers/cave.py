@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding, tag_encode
 from .utilsx.neighbor import adjacent
@@ -27,10 +26,6 @@ def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "blac
     count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
     count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
     return f":- {count_r}, {count_c}, CR * CC != {target}."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -59,7 +54,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions):
-    return utilsx.decode(solutions)

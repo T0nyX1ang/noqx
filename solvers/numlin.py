@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.loop import single_loop
@@ -19,10 +18,6 @@ def no_2x2_path() -> str:
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
     return f":- { ', '.join(f'reachable_grid_src_adj_loop_numlin(R0, C0, R + {r}, C + {c})' for r, c in points) }."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -77,7 +72,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

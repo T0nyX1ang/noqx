@@ -3,7 +3,6 @@
 import itertools
 from typing import List
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent
@@ -64,10 +63,6 @@ def generate_patterns(pattern):
     return list(set(result))
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def color_to_num(r: int, c: int, color: str = "black") -> str:
     num = f"num(R, C, N) :- -1 <= R, R <= {r}, -1 <= C, C <= {c}, not grid(R, C), N = 0.\n"
     num += f"num(R, C, N) :- grid(R, C), not {color}(R, C), N = 0.\n"
@@ -119,7 +114,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

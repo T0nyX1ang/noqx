@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import area, count, display, grid, shade_cc
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
@@ -18,10 +17,6 @@ def magnet_constraint() -> str:
     constraint += ":- blue(R, C), area(A, R, C), not red(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
     constraint += ":- gray(R, C), area(A, R, C), not gray(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
     return constraint.strip()
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -56,7 +51,3 @@ def solve(E: Encoding) -> List:
     solver.add_program_line(display(item="blue"))
     solver.solve()
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

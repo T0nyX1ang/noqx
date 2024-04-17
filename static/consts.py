@@ -2,20 +2,16 @@
 
 from typing import Dict, List, Union
 
-PYTHON_ANYWHERE = False
-
 cats: Dict[str, str] = {
     "shade": "Shading",
-    "region": "Region division",
     "loop": "Loop / Path",
+    "region": "Region division",
     "num": "Number",
-    "draw": "Drawing",
     "var": "Variety",
+    "draw": "Drawing",
 }
 
 types: List[Dict[str, Union[str, List]]] = [
-    # 'aho',
-    # 'amibo',
     {"value": "aqre", "name": "Aqre", "cat": "shade"},
     {"value": "aquarium", "name": "Aquarium", "cat": "shade"},
     {"value": "balance", "name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"]},

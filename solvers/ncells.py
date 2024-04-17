@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import display, edge, grid
 from .utilsx.encoding import Direction, Encoding, tag_encode
 from .utilsx.neighbor import adjacent, count_adjacent_edges
@@ -19,10 +18,6 @@ def count_reachable_edge(target: int) -> str:
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
 
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -50,7 +45,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

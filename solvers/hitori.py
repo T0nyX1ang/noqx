@@ -2,16 +2,11 @@
 
 from typing import Dict, List
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c, unique_num
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent, avoid_adjacent_color
 from .utilsx.reachable import grid_color_connected
 from .utilsx.solution import solver
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List[Dict[str, str]]:
@@ -40,7 +35,3 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

@@ -3,7 +3,6 @@
 import itertools
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent, avoid_adjacent_color
@@ -26,10 +25,6 @@ def identical_adjacent_map(known_cells: Tuple[int, int], color: str = "black", a
         f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C). " for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
     )  # n * (n - 1) / 2 constraints are generated
     return rules + "\n" + constraints
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -67,7 +62,3 @@ def solve(E: Encoding) -> List:
                 solution[rc] = "tent.png"
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

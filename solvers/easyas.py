@@ -2,14 +2,9 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import count, display, fill_num, grid, unique_num
 from .utilsx.encoding import Encoding
 from .utilsx.solution import solver
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -57,7 +52,3 @@ def solve(E: Encoding) -> List:
             solution[rc] = letters[num - 1]
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

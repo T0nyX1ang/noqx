@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid
 from .utilsx.encoding import Encoding
 from .utilsx.loop import single_loop
@@ -27,10 +26,6 @@ def yajilin_count(target: int, src_cell: Tuple[int, int], _direction: str, color
         return f":- #count {{ R1 : {color}(R1, {src_c}), R1 {op} {src_r} }} != {target}."
 
     raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -58,7 +53,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

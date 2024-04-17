@@ -2,7 +2,6 @@
 
 from typing import List, Tuple
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent, count_adjacent
@@ -28,10 +27,6 @@ def avoid_unknown_misaki(known_cells: Tuple[int, int], color: str = "black", adj
     if not known_cells:
         return f"{main}."
     return f"{main}, {included}."
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -66,7 +61,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

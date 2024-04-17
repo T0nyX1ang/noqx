@@ -2,17 +2,12 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent
 from .utilsx.reachable import grid_color_connected
 from .utilsx.shape import OMINOES, all_shapes, count_shape, general_shape
 from .utilsx.solution import solver
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -47,7 +42,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

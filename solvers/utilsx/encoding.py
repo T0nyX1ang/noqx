@@ -132,7 +132,6 @@ def encode(string: str) -> Encoding:
     json_grid: Dict[str, Any] = json_obj["grid"]
     json_params: Dict[str, Any] = json_obj["param_values"]
     json_properties: Dict[str, Any] = json_obj["properties"]
-    puzzle_type: str = json_obj["puzzle_type"]
 
     # encode grid dimensions
     if "r" in json_params and "c" in json_params:
@@ -141,16 +140,6 @@ def encode(string: str) -> Encoding:
         rows, cols = int(json_params["n"]), int(json_params["n"])
     else:  # sudoku (8/10/2020)
         rows, cols = 9, 9
-
-    if puzzle_type == "spiralgalaxies":
-        # unfortunately, spiral galaxies has a different clue format
-        # hope to fix this in the future
-        clues = {}
-        for i in range(2 * (rows + 1)):
-            for j in range(2 * (cols + 1)):
-                if f"{i},{j}" in json_grid:
-                    clues[(i, j)] = "*"  # galaxy variation
-        return Encoding(rows, cols, clues)
 
     # add outside borders manually, just in case
     if json_properties["border"]:
@@ -183,7 +172,7 @@ def encode(string: str) -> Encoding:
     return Encoding(rows, cols, clue_cells, json_params, edge_ids, top_clues, right_clues, bottom_clues, left_clues)
 
 
-def decode(solutions):
+def decode(solutions: List[Dict[str, str]]) -> str:
     """
     Given a list of solutions,
     Return a string of the format:

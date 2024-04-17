@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.loop import separate_item_from_loop, single_loop
@@ -16,10 +15,6 @@ def convert_direction_to_edge() -> str:
     rule = 'horizontal_line(R, C) :- grid_direction(R, C, "r").\n'
     rule += 'vertical_line(R, C) :- grid_direction(R, C, "d").\n'
     return rule.strip()
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List:
@@ -54,7 +49,3 @@ def solve(E: Encoding) -> List:
     print(solver.program)
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

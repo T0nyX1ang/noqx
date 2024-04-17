@@ -2,15 +2,10 @@
 
 from typing import Dict, List
 
-from . import utilsx
 from .utilsx.common import count, display, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.neighbor import adjacent, count_adjacent
 from .utilsx.solution import solver
-
-
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
 
 
 def solve(E: Encoding) -> List[Dict[str, str]]:
@@ -38,7 +33,3 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)

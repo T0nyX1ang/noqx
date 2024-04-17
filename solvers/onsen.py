@@ -2,7 +2,6 @@
 
 from typing import List
 
-from . import utilsx
 from .utilsx.common import area, direction, display, fill_path, grid, shade_c
 from .utilsx.encoding import Encoding
 from .utilsx.helper import full_bfs
@@ -53,10 +52,6 @@ def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
     return rule.strip()
 
 
-def encode(string: str) -> Encoding:
-    return utilsx.encode(string)
-
-
 def solve(E: Encoding) -> List:
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
@@ -81,7 +76,3 @@ def solve(E: Encoding) -> List:
     solver.solve()
 
     return solver.solutions
-
-
-def decode(solutions: List[Encoding]) -> str:
-    return utilsx.decode(solutions)
