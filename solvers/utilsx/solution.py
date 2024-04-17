@@ -30,44 +30,45 @@ class ClingoSolver:
             if _type not in ["loop_sign", "triangle"]:
                 data = list(map(int, data))
             else:
-                data[:-1] = list(map(int, data[:-1]))
+                data[:-1] = list(map(int, data[:-1]))  # type: ignore
 
             if _type.startswith("vertical"):
                 r, c = data
-                formatted[rcd_to_elt(r, c, Direction.LEFT)] = "black"
+                formatted[rcd_to_elt(int(r), int(c), Direction.LEFT)] = "black"
             elif _type.startswith("horizontal"):
                 r, c = data
-                formatted[rcd_to_elt(r, c, Direction.TOP)] = "black"
+                formatted[rcd_to_elt(int(r), int(c), Direction.TOP)] = "black"
             elif _type.startswith("number"):
                 r, c, num = data
-                formatted[rcd_to_elt(r, c)] = num
+                formatted[rcd_to_elt(int(r), int(c))] = str(num)
             elif _type == "loop_sign":
                 r, c, sign = data
-                sign = sign.replace('"', "")
+                sign = str(sign).replace('"', "")
                 if sign != "":
-                    formatted[rcd_to_elt(r, c)] = f"{sign}.png"
+                    formatted[rcd_to_elt(int(r), int(c))] = f"{sign}.png"
             elif _type == "triangle":
                 r, c, sign = data
-                sign = sign.replace('"', "")
+                sign = str(sign).replace('"', "")
                 dat2png = {
                     "ul": "top-left.png",
                     "ur": "top-right.png",
                     "dl": "bottom-left.png",
                     "dr": "bottom-right.png",
                 }
-                formatted[rcd_to_elt(r, c)] = dat2png[sign]
+                formatted[rcd_to_elt(int(r), int(c))] = dat2png[sign]
             elif _type == "slant_code":
                 r, c, code = data
+                code = int(code)
                 sign = ""
                 sign += "tl" if code & 1 else ""
                 sign += "tr" if code >> 1 & 1 else ""
                 sign += "br" if code >> 3 & 1 else ""
                 sign += "bl" if code >> 2 & 1 else ""
                 if sign:
-                    formatted[rcd_to_elt(r, c)] = sign + ".png"
+                    formatted[rcd_to_elt(int(r), int(c))] = sign + ".png"
             elif len(data) == 2:  # color
                 r, c = data
-                formatted[rcd_to_elt(r, c)] = _type.replace("color", "")
+                formatted[rcd_to_elt(int(r), int(c))] = _type.replace("color", "")
             else:  # debug only
                 print(data)
 
@@ -86,9 +87,9 @@ class ClingoSolver:
     def solve(self):
         """Solve the problem."""
         self.clingo_instance.configuration.sat_prepro = 2
-        self.clingo_instance.configuration.asp.trans_ext = "dynamic"
-        self.clingo_instance.configuration.asp.eq = 1
-        self.clingo_instance.configuration.solve.models = MAX_SOLUTIONS_TO_FIND
+        self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
+        self.clingo_instance.configuration.asp.eq = 1  # type: ignore
+        self.clingo_instance.configuration.solve.models = MAX_SOLUTIONS_TO_FIND  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
         self.clingo_instance.solve(on_model=self.store_solutions)

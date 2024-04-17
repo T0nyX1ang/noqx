@@ -10,7 +10,7 @@ from .encoding import Encoding, decode, encode
 
 modules: Dict[str, ModuleType] = {}
 for pt_dict in PUZZLE_TYPES:
-    value = pt_dict["value"]
+    value: str = pt_dict["value"]  # type: ignore
     modules[value] = importlib.import_module(f"solvers.{value}")  # load module
 
 

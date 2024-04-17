@@ -1,11 +1,11 @@
 """Utility for reachable things and connectivity tests."""
 
-from typing import List, Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union
 
 from .encoding import tag_encode, target_encode
 
 
-def validate_type(_type: Union[int, str], target_type: Tuple[Union[int, str]]) -> None:
+def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
     """Validate any matching type."""
     if _type not in target_type:
         raise ValueError(f"Invalid type '{_type}'.")

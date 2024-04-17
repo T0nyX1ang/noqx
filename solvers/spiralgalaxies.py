@@ -63,7 +63,7 @@ def solve(E: Encoding) -> List:
 
     for r, c in reachables:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
-        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
+        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color="grid"))
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)

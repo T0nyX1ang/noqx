@@ -1,6 +1,6 @@
 """Utility for neighbor-relevant (primary to connected) rules."""
 
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
 from .encoding import tag_encode, target_encode
 
@@ -60,7 +60,7 @@ def avoid_adjacent_color(color: str = "black", adj_type: Union[int, str] = 4) ->
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
 
-def area_adjacent(adj_type: Union[int, str] = 4, color: str = None) -> str:
+def area_adjacent(adj_type: Union[int, str] = 4, color: Optional[str] = None) -> str:
     """
     Generate a rule for getting the adjacent areas.
 

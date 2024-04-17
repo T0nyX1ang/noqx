@@ -1,7 +1,7 @@
 """Helper functions for generation solvers and rules."""
 
 import random
-from typing import Any, Dict, FrozenSet, Set, Tuple, Union
+from typing import Any, Dict, FrozenSet, Optional, Set, Tuple, Union
 
 from .encoding import Direction
 
@@ -35,7 +35,7 @@ def mark_and_extract_clues(
 
 
 def full_bfs(
-    rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Dict[Tuple[int, int], Any] = None
+    rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
 ) -> Union[Dict[Tuple[int, int], FrozenSet[Tuple[int, int]]], Set[FrozenSet[Tuple[int, int]]]]:
     """
     Given puzzle dimensions (rows, cols), a list of border coordinates,

@@ -1,7 +1,7 @@
 """Rules and constraints to detect certain shapes."""
 
 import itertools
-from typing import Iterable, Set, Tuple, Union
+from typing import Iterable, Optional, Set, Tuple, Union
 
 from .encoding import tag_encode, target_encode
 
@@ -40,7 +40,7 @@ OMINOES = {
 }
 
 
-def get_neighbor(r: int, c: int, _type: int = 4) -> Tuple[Tuple[int, int]]:
+def get_neighbor(r: int, c: int, _type: int = 4) -> Iterable[Tuple[int, int]]:
     """Get the neighbors of a cell."""
     shape_4 = ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
     shape_x = ((r - 1, c - 1), (r - 1, c + 1), (r + 1, c - 1), (r + 1, c + 1))
@@ -57,7 +57,7 @@ def get_neighbor(r: int, c: int, _type: int = 4) -> Tuple[Tuple[int, int]]:
     raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
 
 
-def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
+def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
     """
     Given a (possibly non-canonical) shape representation,
 
@@ -72,7 +72,9 @@ def canonicalize_shape(shape: Tuple[Tuple[int, int]]) -> Tuple[Tuple[int, int]]:
     return tuple((r + dr, c + dc) for r, c in shape)
 
 
-def get_variants(shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool) -> Set[Tuple[Tuple[int, int]]]:
+def get_variants(
+    shape: Iterable[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
+) -> Set[Iterable[Tuple[int, int]]]:
     """
     Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
 
@@ -106,7 +108,7 @@ def get_variants(shape: Tuple[Tuple[int, int]], allow_rotations: bool, allow_ref
 def general_shape(
     name: str,
     _id: int = 0,
-    deltas: Iterable[Tuple[int, int]] = None,
+    deltas: Optional[Iterable[Tuple[int, int]]] = None,
     color: str = "black",
     _type: str = "grid",
     adj_type: int = 4,
@@ -185,7 +187,11 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
 
 
 def count_shape(
-    target: Union[int, Tuple[str, int]], name: str, _id: int = None, color: str = "black", _type: str = "grid"
+    target: Union[int, Tuple[str, int]],
+    name: str,
+    _id: Optional[Union[int, str]] = None,
+    color: str = "black",
+    _type: str = "grid",
 ) -> str:
     """
     Generates a constraint to count the number of a shape.
@@ -266,7 +272,9 @@ def all_rect_region() -> str:
     return data
 
 
-def avoid_rect(rect_r: int, rect_c: int, corner: Tuple[int, int] = (None, None), color: str = "black") -> str:
+def avoid_rect(
+    rect_r: int, rect_c: int, corner: Tuple[Optional[int], Optional[int]] = (None, None), color: str = "black"
+) -> str:
     """
     Generates a constraint to avoid rectangular patterned {color} cells.
 

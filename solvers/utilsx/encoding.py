@@ -3,12 +3,12 @@
 import json
 import urllib.parse
 from enum import Enum
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 Direction = Enum("Direction", "LEFT TOP")
 
 
-def rcd_to_elt(r: int, c: int, d: Direction = None) -> str:
+def rcd_to_elt(r: int, c: int, d: Optional[Direction] = None) -> str:
     """Convert row, column and direction (if has) to compatible elt ID."""
     if d is None:
         return f"{r * 2 + 1},{c * 2 + 1}"
@@ -53,7 +53,7 @@ def reverse_op(op: str) -> str:
     return op_rev_dict[op]
 
 
-def target_encode(target: Union[int, Tuple[int, int]]) -> Tuple[str, int]:
+def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
     """Encode a target number for comparison."""
     if isinstance(target, int):
         return ("!=", target)
@@ -66,26 +66,26 @@ class Encoding:
 
     def __init__(
         self,
-        rows: int = None,
-        cols: int = None,
-        clue_cells: Dict[Tuple[int, int], Any] = None,
-        params: Dict[str, Any] = None,
-        edge_ids: Set[Tuple[int, int, Direction]] = None,
-        top_clues: Dict[int, Any] = None,
-        right_clues: Dict[int, Any] = None,
-        bottom_clues: Dict[int, Any] = None,
-        left_clues: Dict[int, Any] = None,
+        rows: int,
+        cols: int,
+        clue_cells: Dict[Tuple[int, int], Any],
+        params: Optional[Dict[str, Any]] = None,
+        edge_ids: Optional[Set[Tuple[int, int, Direction]]] = None,
+        top_clues: Optional[Dict[int, Any]] = None,
+        right_clues: Optional[Dict[int, Any]] = None,
+        bottom_clues: Optional[Dict[int, Any]] = None,
+        left_clues: Optional[Dict[int, Any]] = None,
     ):
         """Initialize the encoding of the puzzle."""
         self.R = rows
         self.C = cols
         self.clues = clue_cells
-        self.params = params
-        self.edges = edge_ids
-        self.top = top_clues
-        self.right = right_clues
-        self.bottom = bottom_clues
-        self.left = left_clues
+        self.params = params if params else {}
+        self.edges = edge_ids if edge_ids else set()
+        self.top = top_clues if top_clues else {}
+        self.right = right_clues if right_clues else {}
+        self.bottom = bottom_clues if bottom_clues else {}
+        self.left = left_clues if left_clues else {}
 
 
 def unquote_plus(value: Union[str, List, Any]) -> Union[str, List, Any]:

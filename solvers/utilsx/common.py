@@ -1,6 +1,6 @@
 """Generating commonly used facts and rules for the solver."""
 
-from typing import List, Tuple, Union, Iterable
+from typing import Iterable, Optional, Tuple, Union
 
 from .encoding import target_encode
 
@@ -15,7 +15,7 @@ def grid(rows: int, cols: int) -> str:
     return f"grid(0..{rows - 1}, 0..{cols - 1})."
 
 
-def area(_id: int, src_cells: List[Tuple[int, int]]) -> str:
+def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
     """Generates facts for areas."""
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
@@ -29,7 +29,7 @@ def shade_c(color: str = "black") -> str:
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
 
-def shade_cc(colors: List[str]) -> str:
+def shade_cc(colors: Iterable[str]) -> str:
     """
     Generates a rule that enforces several different {color} cells.
 
@@ -60,7 +60,7 @@ def direction(directions: Union[str, list]) -> str:
     return f"direction({';'.join(format_d)})."
 
 
-def fill_path(color: str = None, directed: bool = False) -> str:
+def fill_path(color: str = "black", directed: bool = False) -> str:
     """
     Generate a rule that a cell is on a path.
 
@@ -74,7 +74,7 @@ def fill_path(color: str = None, directed: bool = False) -> str:
     return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 
 
-def fill_num(_range: Iterable[int], _type: str = "grid", _id: int = "A", color: str = None) -> str:
+def fill_num(_range: Iterable[int], _type: str = "grid", _id: Union[int, str] = "A", color: Optional[str] = None) -> str:
     """
     Generate a rule that a cell numbered within {_range}.
     {_range} should have the format "low..high", or "x;y;z" for a list of numbers.
@@ -127,7 +127,9 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
-def count(target: Union[int, Tuple[str, int]], color: str = "black", _type: str = "grid", _id: int = None) -> str:
+def count(
+    target: Union[int, Tuple[str, int]], color: str = "black", _type: str = "grid", _id: Optional[Union[int, str]] = None
+) -> str:
     """
     Generates a constraint for counting the number of {color} cells in a grid / row / column / area.
 
