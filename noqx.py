@@ -5,7 +5,7 @@ execute "uvicorn noqx:app" to start the server.
 """
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -48,8 +48,11 @@ async def puzzle_page(request: Request, puzzle_type: str):
                 request=request, name="noq.html", context={"name": _pt_dict["name"], "value": _pt_dict["value"]}
             )
 
+        if "aliases" in _pt_dict and puzzle_type in _pt_dict["aliases"]:
+            return RedirectResponse(url=f"/{_pt_dict['value']}")
+
 
 @app.get("/solver/", response_class=HTMLResponse)
-async def solver(puzzle_type: str, puzzle: str):
+def solver(puzzle_type: str, puzzle: str):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
     return run(puzzle_type, puzzle)
