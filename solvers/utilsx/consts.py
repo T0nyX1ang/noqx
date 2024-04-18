@@ -11,7 +11,7 @@ CATEGORIES: Dict[str, str] = {
     "draw": "Drawing",
 }
 
-PUZZLE_TYPES: List[Dict[str, Union[str, List]]] = [
+PUZZLE_TYPES: List[Dict[str, Union[str, List[str]]]] = [
     {"value": "aqre", "name": "Aqre", "cat": "shade"},
     {"value": "aquarium", "name": "Aquarium", "cat": "shade"},
     {"value": "balance", "name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"]},

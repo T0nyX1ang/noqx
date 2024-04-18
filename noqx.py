@@ -1,9 +1,4 @@
-"""
-Main file for the noqx project.
-
-execute "uvicorn noqx:app" to start the server.
-"""
-
+"""Main file for the noqx project."""
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
