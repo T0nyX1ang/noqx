@@ -6,8 +6,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from solvers.utilsx import run
-from solvers.utilsx.consts import CATEGORIES, PUZZLE_TYPES
+from solver import run_solver
+from solver.core.const import CATEGORIES, PUZZLE_TYPES
 
 app = FastAPI(title="noqx", description="An extended logic puzzle solver.")
 
@@ -38,7 +38,7 @@ async def puzzle_page(request: Request, puzzle_type: str):
 def solver(puzzle_type: str, puzzle: str):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
     try:
-        return run(puzzle_type, puzzle)
+        return run_solver(puzzle_type, puzzle)
     except ValueError as err:
         raise HTTPException(status_code=400, detail=str(err)) from err
     except Exception as err:
