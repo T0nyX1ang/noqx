@@ -49,9 +49,12 @@ def connected_destpath(color: str = "white") -> str:
     A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
     """
     tag = "reachable_destpath"
-    initial = f"{tag}(R, C, R, C) :- num(R, C, _).\n"
-    propagation = f"{tag}(R, C, DR, DC) :- {color}(R, C), {tag}(R1, C1, DR, DC), adj_before(R, C, R1, C1)."
-    return initial + propagation
+    initial = f"{{ {tag}(R0, C0, R, C) }} :- clue(R, C), grid(R0, C0).\n"
+    initial = f"not {tag}(R0, C0, R, C) :- path_start(R0, C0), clue(R, C).\n"
+    initial += f"{tag}(R, C, R, C) :- clue(R, C).\n"
+    propagation = f"not {tag}(R0, C0, R, C) :- grid(R0, C0), clue(R, C), (R0, C0) != (R, C), adj_before(R1, C1, R0, C0), not {tag}(R1, C1, R, C).\n"
+    propagation += f"{tag}(R0, C0, R, C) :- grid(R0, C0), clue(R, C), (R0, C0) != (R, C), adj_before(R1, C1, R0, C0), {tag}(R1, C1, R, C).\n"
+    return initial + propagation.strip()
 
 
 def haisu_rules() -> str:
@@ -62,8 +65,6 @@ def haisu_rules() -> str:
     rule += "clue_area(A) :- clue(R, C), area(A, R, C).\n"
     rule += "area_max_num(A, N) :- clue_area(A), #max { N0 : area(A, R, C), num(R, C, N0) } = N.\n"
     rule += "area_possible_num(A, 0..N) :- clue_area(A), area_max_num(A, N).\n"
-    # tag = "reachable_destpath"
-    # rule += f":- grid(R, C), grid(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R1, C1), {tag}(R1, C1, R, C).\n"
     return rule.strip()
 
 
@@ -72,8 +73,11 @@ def haisu_count_x() -> str:
     rule += "area_in(A, R, C) :- area_border(A, R, C, D), grid_in(R, C, D).\n"
     rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N), not area_in(A, R, C).\n"
     rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N-1), area_in(A, R, C).\n"
-    rule += ":- num(R, C, N), area(A, R, C), not haisu_count(R, C, A, N)."
-    return rule
+    rule += ":- clue_area(A), grid(R, C), haisu_count(R, C, A, N1), haisu_count(R, C, A, N2), N1 < N2.\n"
+    rule += ":- num(R, C, N), area(A, R, C), not haisu_count(R, C, A, N).\n"
+    # rule += ":- area_in(A, R, C), area(A, R1, C1), clue(R1, C1), not reachable_destpath(R, C, R1, C1), not haisu_count(R, C, A, _).\n"
+    # rule += ":- area_in(A, R, C), area(A, R1, C1), num(R1, C1, N1), not reachable_destpath(R, C, R1, C1), haisu_count(R, C, A, N0), N0 > N1.\n"
+    return rule.strip()
 
 
 def solve(E: Encoding) -> List[Dict[str, str]]:
@@ -112,6 +116,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
             solver.add_program_line(f"num({r}, {c}, {clue}).")
 
     solver.add_program_line(display(item="loop_sign", size=3))
+    # print(solver.program)
     solver.solve()
 
     return solver.solutions
