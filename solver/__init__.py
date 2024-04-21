@@ -1,6 +1,7 @@
 """Initialize the solver manager."""
 
 import importlib
+import time
 from types import ModuleType
 from typing import Dict, List
 
@@ -26,7 +27,10 @@ def run_solver(puzzle_type: str, puzzle_content: str) -> str:
     if not hasattr(module, "decode"):
         module.decode = decode
 
+    start = time.time()
     puzzle_encoded: Encoding = module.encode(puzzle_content)
     solutions_encoded: List[Dict[str, str]] = module.solve(puzzle_encoded)
     solutions_decoded: str = module.decode(solutions_encoded)
+    stop = time.time()
+    print(f"{str(puzzle_type)} solver took {stop - start} seconds", flush=True)
     return solutions_decoded
