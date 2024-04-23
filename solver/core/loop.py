@@ -79,13 +79,7 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     constraint += ':- grid(R, C), grid_out(R, C, "u"), not grid_in(R - 1, C, "d").\n'
     constraint += ':- grid(R, C), grid_out(R, C, "r"), not grid_in(R, C + 1, "l").\n'
     constraint += ':- grid(R, C), grid_out(R, C, "d"), not grid_in(R + 1, C, "u").\n'
-
-    dirs = ["lu", "ul", "ld", "dl", "ru", "ur", "dr", "rd", "lr", "rl", "du", "ud"]
-    rule = ""
-    for sign, (d1, d2) in zip(DIRECTED[:12], dirs):
-        sign = DIRECTIONAL_PAIR_TO_UNICODE[sign]
-        rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_in(R, C, "{d1}"), grid_out(R, C, "{d2}").\n'
-    return constraint + rule.strip()
+    return constraint.strip()
 
 
 def pass_area_once(ar: Iterable[Tuple[int, int]]) -> str:

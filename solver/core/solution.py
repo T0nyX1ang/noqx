@@ -27,7 +27,7 @@ class ClingoSolver:
         for item in solution:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            if _type not in ["grid_direction", "triangle"]:
+            if _type not in ["grid_direction", "grid_in", "grid_out", "triangle"]:
                 data = list(map(int, data))
             else:
                 data[:-1] = list(map(int, data[:-1]))  # type: ignore
@@ -41,13 +41,14 @@ class ClingoSolver:
             elif _type.startswith("number"):
                 r, c, num = data
                 formatted[rcd_to_elt(int(r), int(c))] = str(num)
-            elif _type == "grid_direction":
+            elif _type.startswith("grid_"):
                 r, c, grid_direction = data
                 grid_direction = grid_direction.replace('"', "")
+                out = "_out" if _type == "grid_out" else ""
                 if not formatted.get(rcd_to_elt(int(r), int(c))):
-                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}.png"
+                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}{out}.png"
                 else:
-                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}.png"
+                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}{out}.png"
             elif _type == "triangle":
                 r, c, sign = data
                 sign = str(sign).replace('"', "")
