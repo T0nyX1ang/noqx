@@ -25,7 +25,7 @@ def nanro_avoid_adjacent() -> str:
 
 
 def encode(string: str) -> Encoding:
-    E = core.encode(string)
+    E = core.encoding.encode(string)
 
     # separate signpost clues from regular clues
     new_clues = {}
