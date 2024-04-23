@@ -3,7 +3,8 @@
 from typing import Dict, List
 
 from .core.common import display, edge, grid
-from .core.encoding import Direction, Encoding, tag_encode
+from .core.helper import extract_initial_edges
+from .core.encoding import Encoding, tag_encode
 from .core.neighbor import adjacent, count_adjacent_edges
 from .core.reachable import grid_branch_color_connected
 from .core.solution import solver
@@ -30,12 +31,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(grid_branch_color_connected(color=None, adj_type="edge"))
     solver.add_program_line(count_reachable_edge(size))
-
-    for r, c, d in E.edges:
-        if d == Direction.LEFT:
-            solver.add_program_line(f"vertical_line({r}, {c}).")
-        elif d == Direction.TOP:
-            solver.add_program_line(f"horizontal_line({r}, {c}).")
+    solver.add_program_line(extract_initial_edges(E.edges))
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))

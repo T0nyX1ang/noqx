@@ -34,6 +34,17 @@ def mark_and_extract_clues(
     return clues, rule.strip()
 
 
+def extract_initial_edges(edges: Set[Tuple[int, int, Direction]]) -> str:
+    """Extract the initial edges to the solver."""
+    rule = ""
+    for r, c, d in edges:
+        if d == Direction.LEFT:
+            rule += f"vertical_line({r}, {c}).\n"
+        elif d == Direction.TOP:
+            rule += f"horizontal_line({r}, {c}).\n"
+    return rule.strip()
+
+
 def full_bfs(
     rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
 ) -> Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]]:

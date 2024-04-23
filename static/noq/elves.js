@@ -1590,7 +1590,7 @@ let elf_types = {
   ),
   haisu: DirectSum(IntBordersElf(), LetterElf("SG"), "first"),
   hashi: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
-  heteromino: BgColorElf({ x: ["gray", "gray"] }),
+  heteromino: DirectSum(BorderElf, BgColorElf({ x: ["gray", "gray"] })),
   heyawake: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)

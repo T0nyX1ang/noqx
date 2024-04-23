@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from .core.common import display, edge, grid
 from .core.encoding import Encoding, tag_encode
+from .core.helper import extract_initial_edges
 from .core.neighbor import adjacent
 from .core.shape import OMINOES, all_shapes, general_shape
 from .core.solution import solver
@@ -32,6 +33,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(grid(E.R, E.C))
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type="edge"))
+    solver.add_program_line(extract_initial_edges(E.edges))
 
     if shaded == 0:
         solver.add_program_line("black(-1, -1).")

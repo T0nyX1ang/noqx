@@ -137,7 +137,7 @@ const puzzle_types = {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
     },
-    properties: { outside: "0000", border: false },
+    properties: { outside: "0000", border: true },
   },
   heyawake: {
     params: {
@@ -317,7 +317,7 @@ const puzzle_types = {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
     },
-    properties: { outside: "0000", border: false },
+    properties: { outside: "0000", border: true },
   },
   shimaguni: {
     params: {
@@ -342,7 +342,7 @@ const puzzle_types = {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
     },
-    properties: { outside: "0000", border: false },
+    properties: { outside: "0000", border: true },
   },
   starbattle: {
     params: {
@@ -398,7 +398,7 @@ const puzzle_types = {
       r: { name: "Rows", value: 10 },
       c: { name: "Columns", value: 10 },
     },
-    properties: { outside: "0000", border: false },
+    properties: { outside: "0000", border: true },
   },
   tents: {
     params: {
