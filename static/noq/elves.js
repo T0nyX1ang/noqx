@@ -221,14 +221,7 @@ class Elf {
     } else this.puzzle_elt.innerHTML = str;
   }
   load_solution(str) {
-    if (COLORS.includes(str) && /^.+\.png$/.test(str)) {
-      // special judge for COLORS + image
-      this.solution_elt.style.backgroundColor = str;
-      if (str == "black") this.solution_elt.style.color = "gray";
-      this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
-      this.solution_elt.style.backgroundImage = image_url(str);
-      this.solution_image_str = str.substring(0, str.length - 4); // remove `.png` from str
-    } else if (COLORS.includes(str)) {
+    if (COLORS.includes(str)) {
       this.solution_elt.style.backgroundColor = str;
       if (str == "black") this.solution_elt.style.color = "gray";
       this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
