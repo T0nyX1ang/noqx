@@ -38,12 +38,7 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     constraint += ':- grid(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
     constraint += ':- grid(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
     constraint += ':- grid(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
-
-    dirs = ["lu", "ld", "ru", "rd", "lr", "ud"]
-    rule = ""
-    for sign, (d1, d2) in zip(NON_DIRECTED[:6], dirs):
-        rule += f'loop_sign(R, C, "{sign}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
-    return constraint + rule.strip()
+    return constraint
 
 
 def directed_loop(color: str = "white", path: bool = False) -> str:

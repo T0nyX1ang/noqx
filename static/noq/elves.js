@@ -227,8 +227,14 @@ class Elf {
       this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
     } else if (/^[0-9]+$/.test(str)) this.solution_elt.innerHTML = str;
     else if (/^.+\.png$/.test(str)) {
-      this.solution_elt.style.backgroundImage = image_url(str);
-      this.solution_image_str = str.substring(0, str.length - 4); // remove `.png` from str
+      let image_urls = [];
+      let image_strs = [];
+      for (let url of str.split(",")) {
+        image_urls.push(image_url(url));
+        image_strs.push(url.substring(0, url.length - 4)); // remove `.png` from str
+      }
+      this.solution_elt.style.backgroundImage = image_urls.join(",");
+      this.solution_image_str = image_strs.sort().join(",");
     } else this.solution_elt.innerHTML = str;
   }
   reset() {

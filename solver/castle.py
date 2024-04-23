@@ -49,7 +49,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
             solver.add_program_line(f"{color}({r}, {c}).")
             solver.add_program_line(f"not castle({r}, {c}).")
 
-    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
     return solver.solutions
