@@ -568,12 +568,12 @@ function load_puzzle(puzzle) {
     if (pt == "spiralgalaxies") {
       // this is a hack to allow loading examples of spiral galaxies
       let [i, j] = get_id_arr(get(elt_id));
-      if (i % 2 == 1 && j % 2 == 1) ELVES[`${i},${j}`].load_example("s");
+      if (i % 2 == 1 && j % 2 == 1) ELVES[`${i},${j}`].elf1.load_example("s");
       else if (i % 2 == 1 && j % 2 == 0)
-        ELVES[`${i},${j - 1}`].load_example("d");
+        ELVES[`${i},${j - 1}`].elf1.load_example("d");
       else if (i % 2 == 0 && j % 2 == 1)
-        ELVES[`${i - 1},${j}`].load_example("x");
-      else ELVES[`${i - 1},${j - 1}`].load_example("c");
+        ELVES[`${i - 1},${j}`].elf1.load_example("x");
+      else ELVES[`${i - 1},${j - 1}`].elf1.load_example("c");
     }
     // hack to allow loading of borders, which
     // technically don't have an elf representing them

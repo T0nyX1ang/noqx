@@ -1590,7 +1590,7 @@ let elf_types = {
   ),
   haisu: DirectSum(IntBordersElf(), LetterElf("SG"), "first"),
   hashi: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
-  heteromino: DirectSum(BorderElf, BgColorElf({ x: ["gray", "gray"] })),
+  heteromino: DirectSum(BgColorElf({ x: ["gray", "gray"] }), BorderElf),
   heyawake: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
@@ -1706,14 +1706,14 @@ let elf_types = {
   ),
   ripple: IntBordersElf(),
   shakashaka: AkariElf,
-  shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
+  shikaku: DirectSum(DirectSum(QuestionMarkElf, IntElf(), "first"), BorderElf),
   shimaguni: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
   skyscrapers: IntElf(),
   slither: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
-  spiralgalaxies: SpiralGalaxiesElf,
+  spiralgalaxies: DirectSum(SpiralGalaxiesElf, BorderElf),
   starbattle: DirectSum(
     BorderElf,
     BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
@@ -1733,7 +1733,7 @@ let elf_types = {
       "?": ["yellow", "yellow"],
     })
   ),
-  tatamibari: LetterElf("+-|"),
+  tatamibari: DirectSum(LetterElf("+-|"), BorderElf),
   tents: DirectSum(
     DirectSum(IntElf(0, 99), BgColorElf({ o: ["green", "green"] })),
     ImageElf(
