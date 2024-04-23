@@ -17,12 +17,11 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(adjacent())
 
     clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
-    if clues:
-        areas = full_bfs(E.R, E.C, E.edges, clues)
-        for i, (ar, rc) in enumerate(areas.items()):
-            solver.add_program_line(area(_id=i, src_cells=ar))
-            if rc:
-                solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
+    areas = full_bfs(E.R, E.C, E.edges, clues)
+    for i, (ar, rc) in enumerate(areas.items()):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        if rc:
+            solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
 
     solver.add_program_line(rules)
     solver.add_program_line(all_rect(color="gray"))
