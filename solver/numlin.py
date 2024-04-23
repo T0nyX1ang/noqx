@@ -68,7 +68,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
         )
 
     solver.add_program_line(avoid_unknown_src(color="numlin", adj_type="loop"))
-    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
     return solver.solutions

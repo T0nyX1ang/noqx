@@ -167,13 +167,12 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(grid_color_connected(color="tapaloop", adj_type="loop"))
     solver.add_program_line(single_loop(color="tapaloop"))
     solver.add_program_line(grid_direc_to_num(r=E.R, c=E.C))
-    solver.add_program_line(f'loop_sign(R, C, "") :- -1 <= R, R <= {E.R}, -1 <= C, C <= {E.C}, not grid(R, C).')
 
     for (r, c), clue in E.clues.items():
         solver.add_program_line(f"black({r}, {c}).")
         solver.add_program_line(valid_tapa_pattern(r=r, c=c, clue=clue))
 
-    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
     return solver.solutions
