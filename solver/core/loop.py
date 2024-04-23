@@ -2,7 +2,6 @@
 
 from typing import Iterable, Tuple
 
-NON_DIRECTED = ["J", "7", "L", "r", "-", "1", ""]
 DIRECTED = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv", "->", "-<", "1^", "1v", ""]
 DIRECTIONAL_PAIR_TO_UNICODE = {
     "J^": "⬏",
@@ -39,6 +38,19 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     constraint += ':- grid(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
     constraint += ':- grid(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").\n'
     return constraint
+
+
+def loop_sign(color: str = "white") -> str:
+    """
+    Generate a constraint to generate loop signs for bent/straight loops.
+
+    A grid fact and a grid_direction rule should be defined first.
+    """
+    rule = ""
+    for d1, d2 in ["lu", "ld", "ru", "rd", "lr", "ud"]:
+        rule += f'loop_sign(R, C, "{d1}{d2}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+
+    return rule.strip()
 
 
 def directed_loop(color: str = "white", path: bool = False) -> str:
