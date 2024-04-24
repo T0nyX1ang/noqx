@@ -232,7 +232,7 @@ class Elf {
       if (pt === "hashi" && /^[0-9]+$/.test(this.puzzle_elt.innerHTML)) {
         // special case for Hashi solution display
         this.solution_elt.style.clipPath =
-          "polygon(0% 0%, 0% 100%, 15% 100%, 15% 15%, 85% 15%, 85% 85%, 15% 85%, 15% 100%, 100% 100%, 100% 0%)";
+          "polygon(0% 0%, 0% 100%, 20% 100%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 100%, 100% 100%, 100% 0%)";
       }
     } else this.solution_elt.innerHTML = str;
   }
