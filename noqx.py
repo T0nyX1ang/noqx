@@ -1,5 +1,7 @@
 """Main file for the noqx project."""
 
+import traceback
+
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -40,10 +42,12 @@ def solver(puzzle_type: str, puzzle: str):  # clingo might be incompatible with 
     try:
         return run_solver(puzzle_type, puzzle)
     except ValueError as err:
+        print(traceback.format_exc())
         raise HTTPException(status_code=400, detail=str(err)) from err
     except Exception as err:
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(err)) from err
 
 
 if __name__ == "__main__":
-    uvicorn.run(app="noqx:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(app="noqx:app", host="127.0.0.1", port=8000, reload=True, log_level="debug")

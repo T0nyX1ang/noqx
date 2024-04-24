@@ -27,10 +27,10 @@ class ClingoSolver:
         for item in solution:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            if _type not in ["loop_sign", "triangle"]:
+            if _type not in ["grid_direction", "grid_in", "grid_out", "triangle"]:
                 data = list(map(int, data))
             else:
-                data[:-1] = list(map(int, data[:-1]))  # type: ignore
+                data[:2] = list(map(int, data[:2]))  # type: ignore
 
             if _type.startswith("vertical"):
                 r, c = data
@@ -41,11 +41,18 @@ class ClingoSolver:
             elif _type.startswith("number"):
                 r, c, num = data
                 formatted[rcd_to_elt(int(r), int(c))] = str(num)
-            elif _type == "loop_sign":
-                r, c, sign = data
-                sign = str(sign).replace('"', "")
-                if sign != "":
-                    formatted[rcd_to_elt(int(r), int(c))] = f"{sign}.png"
+            elif _type.startswith("grid_"):
+                if len(data) == 3:
+                    r, c, grid_direction, num = data + [""]
+                else:
+                    r, c, grid_direction, num = data
+                    num = "_2" if num == "2" else ""
+                grid_direction = grid_direction.replace('"', "")
+                out = "_out" if _type == "grid_out" else ""
+                if not formatted.get(rcd_to_elt(int(r), int(c))):
+                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}{out}{num}.png"
+                else:
+                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}{out}{num}.png"
             elif _type == "triangle":
                 r, c, sign = data
                 sign = str(sign).replace('"', "")

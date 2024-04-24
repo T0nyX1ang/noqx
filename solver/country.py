@@ -32,7 +32,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
                 solver.add_program_line(count(E.clues[rc], color="country_road", _type="area", _id=i))
 
     solver.add_program_line(avoid_area_adjacent(color="not country_road", adj_type=4))
-    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
     return solver.solutions

@@ -51,7 +51,8 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
         solver.add_program_line(f'grid_out({r}, {c}, "{clue}").')
         solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{clue}".')
 
-    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.add_program_line(display(item="grid_in", size=3))
+    solver.add_program_line(display(item="grid_out", size=3))
     solver.solve()
 
     return solver.solutions

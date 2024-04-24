@@ -98,7 +98,8 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
         if clue not in ("S", "G"):
             solver.add_program_line(f"num({r}, {c}, {clue}).")
 
-    solver.add_program_line(display(item="loop_sign", size=3))
+    solver.add_program_line(display(item="grid_in", size=3))
+    solver.add_program_line(display(item="grid_out", size=3))
     solver.solve()
 
     return solver.solutions

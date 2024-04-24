@@ -54,12 +54,6 @@ const CLIPBOARD_SYMBOLS = {
 
   tree: "🌲",
   tent: "⛺",
-
-  // 'white_circle_u':'Ȯ',
-  // 'white_circle_r':'⟥',
-  // 'white_circle_d':'Ọ',
-  // 'white_circle_l':'⟤', TODO find better symbols for these if possible; and also make hotaru copy-to-clipboard actually work
-  // (the issue is that generate_copy_td doesn't work well with DirectSum. actually DirectSum just sorta sucks in general imo)
 };
 
 function add_json_objects(d1, d2) {
@@ -223,12 +217,23 @@ class Elf {
   load_solution(str) {
     if (COLORS.includes(str)) {
       this.solution_elt.style.backgroundColor = str;
-      if (str == "black") this.solution_elt.style.color = "gray";
+      if (str === "black") this.solution_elt.style.color = "gray";
       this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
     } else if (/^[0-9]+$/.test(str)) this.solution_elt.innerHTML = str;
     else if (/^.+\.png$/.test(str)) {
-      this.solution_elt.style.backgroundImage = image_url(str);
-      this.solution_image_str = str.substring(0, str.length - 4); // remove `.png` from str
+      let image_urls = [];
+      let image_strs = [];
+      for (let url of str.split(",")) {
+        image_urls.push(image_url(url));
+        image_strs.push(url.substring(0, url.length - 4)); // remove `.png` from str
+      }
+      this.solution_elt.style.backgroundImage = image_urls.join(",");
+      this.solution_image_str = image_strs.sort().join(",");
+      if (pt === "hashi" && /^[0-9]+$/.test(this.puzzle_elt.innerHTML)) {
+        // special case for Hashi solution display
+        this.solution_elt.style.clipPath =
+          "polygon(0% 0%, 0% 100%, 15% 100%, 15% 15%, 85% 15%, 85% 85%, 15% 85%, 15% 100%, 100% 100%, 100% 0%)";
+      }
     } else this.solution_elt.innerHTML = str;
   }
   reset() {
@@ -1606,7 +1611,7 @@ let elf_types = {
       }
     ),
     "compress",
-    "center_dot" // TODO fix load_example for arrays
+    "center_dot"
   ),
   kakuro: KakuroElf,
   kurotto: DirectSum(
