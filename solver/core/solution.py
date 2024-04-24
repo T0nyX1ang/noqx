@@ -77,12 +77,7 @@ class ClingoSolver:
                 r, c = data
                 formatted[rcd_to_elt(int(r), int(c))] = _type.replace("color", "")
             else:  # debug only
-                if len(data) >= 3:
-                    r, c = data[0], data[1]
-                    print(r, c, data[2:])
-                    formatted[rcd_to_elt(int(r), int(c))] = "".join(data[2:])
-                else:
-                    print(data)
+                print(data)
 
         self.solutions.append(formatted)
 
