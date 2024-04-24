@@ -1125,7 +1125,7 @@ class NonogramElf extends DirectSum(
       return;
     }
 
-    this.clues = str;
+    this.clues = str.slice();
     this.curr_clue = "";
 
     let max_size = Math.max(1, this.true_num_clues());
