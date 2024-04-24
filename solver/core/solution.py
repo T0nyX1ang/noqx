@@ -30,7 +30,7 @@ class ClingoSolver:
             if _type not in ["grid_direction", "grid_in", "grid_out", "triangle"]:
                 data = list(map(int, data))
             else:
-                data[:-1] = list(map(int, data[:-1]))  # type: ignore
+                data[:2] = list(map(int, data[:2]))  # type: ignore
 
             if _type.startswith("vertical"):
                 r, c = data
@@ -42,13 +42,17 @@ class ClingoSolver:
                 r, c, num = data
                 formatted[rcd_to_elt(int(r), int(c))] = str(num)
             elif _type.startswith("grid_"):
-                r, c, grid_direction = data
+                if len(data) == 3:
+                    r, c, grid_direction, num = data + [""]
+                else:
+                    r, c, grid_direction, num = data
+                    num = "_2" if num == "2" else ""
                 grid_direction = grid_direction.replace('"', "")
                 out = "_out" if _type == "grid_out" else ""
                 if not formatted.get(rcd_to_elt(int(r), int(c))):
-                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}{out}.png"
+                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}{out}{num}.png"
                 else:
-                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}{out}.png"
+                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}{out}{num}.png"
             elif _type == "triangle":
                 r, c, sign = data
                 sign = str(sign).replace('"', "")
@@ -73,7 +77,12 @@ class ClingoSolver:
                 r, c = data
                 formatted[rcd_to_elt(int(r), int(c))] = _type.replace("color", "")
             else:  # debug only
-                print(data)
+                if len(data) >= 3:
+                    r, c = data[0], data[1]
+                    print(r, c, data[2:])
+                    formatted[rcd_to_elt(int(r), int(c))] = "".join(data[2:])
+                else:
+                    print(data)
 
         self.solutions.append(formatted)
 
