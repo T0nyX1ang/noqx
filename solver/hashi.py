@@ -14,24 +14,13 @@ def hashi_bridge(R: int, C: int) -> str:
 
     A grid fact and a direction fact should be defined first.
     """
-    rule = ':- hashi_bridge(R, C, "H", N), not hashi_bridge(R, C+1, "H", N), not number(R, C+1, _).\n'
-    rule += ':- hashi_bridge(R, C, "H", N), not hashi_bridge(R, C-1, "H", N), not number(R, C-1, _).\n'
-    rule += ':- hashi_bridge(R, C, "V", N), not hashi_bridge(R+1, C, "V", N), not number(R+1, C, _).\n'
-    rule += ':- hashi_bridge(R, C, "V", N), not hashi_bridge(R-1, C, "V", N), not number(R-1, C, _).\n'
-
-    rule += f"grid_big(-1..{R}, -1..{C}).\n"
-    rule += "num_bridge(R, C, D, N) :- grid(R, C), hashi_bridge(R, C, D, N).\n"
-    rule += "num_bridge(R, C, D, 0) :- grid_big(R, C), direction(D), not hashi_bridge(R, C, D, _).\n"
-
-    rule += 'direction1("l";"u";"r";"d").\n'
+    rule = 'direction1("l";"u";"r";"d").\n'
     rule += "{ grid_direction(R, C, D, N) : num(N) } 1 :- grid(R, C), number(R, C, _), direction1(D).\n"
     rule += ":- number(R, C, N), #sum{ N1, D: grid_direction(R, C, D, N1) } != N.\n"
     rule += ':- grid(R, C), num(N), grid_direction(R, C, "l", N), not grid_direction(R, C-1, "r", N).\n'
     rule += ':- grid(R, C), num(N), grid_direction(R, C, "r", N), not grid_direction(R, C+1, "l", N).\n'
     rule += ':- grid(R, C), num(N), grid_direction(R, C, "u", N), not grid_direction(R-1, C, "d", N).\n'
     rule += ':- grid(R, C), num(N), grid_direction(R, C, "d", N), not grid_direction(R+1, C, "u", N).\n'
-
-    # rule += ':- number(R, C, N), num_bridge(R, C-1, "H", N1), num_bridge(R-1, C, "V", N2), num_bridge(R, C+1, "H", N3), num_bridge(R+1, C, "V", N4), N != N1 + N2 + N3 + N4.\n'
 
     show = 'grid_direction(R, C, "l", 1) :- grid(R, C), hashi_bridge(R, C, "H", 1).\n'
     show += 'grid_direction(R, C, "r", 1) :- grid(R, C), hashi_bridge(R, C, "H", 1).\n'
