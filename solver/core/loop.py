@@ -2,22 +2,6 @@
 
 from typing import Iterable, Tuple
 
-DIRECTED = ["J^", "J<", "7v", "7<", "L^", "L>", "r>", "rv", "->", "-<", "1^", "1v", ""]
-DIRECTIONAL_PAIR_TO_UNICODE = {
-    "J^": "⬏",
-    "J<": "↲",
-    "7v": "↴",
-    "7<": "↰",
-    "L^": "⬑",
-    "L>": "↳",
-    "r>": "↱",
-    "rv": "⬐",
-    "->": "→",
-    "-<": "←",
-    "1^": "↑",
-    "1v": "↓",
-}
-
 
 def single_loop(color: str = "white", path: bool = False) -> str:
     """
