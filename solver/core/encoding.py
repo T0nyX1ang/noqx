@@ -37,7 +37,7 @@ def elt_to_rcd(coord: str) -> Tuple[int, int, Union[None, Direction]]:
     raise ValueError("Invalid coordinate!")
 
 
-def tag_encode(name: str, *data: Any) -> str:
+def tag_encode(name: str, *data: Union[str, int, None]) -> str:
     """Encode a valid tag predicate without spaces or hyphens."""
     tag_data = [name]
     for d in data:  # recommended data sequence: *_type, src_r, src_c, color

@@ -9,7 +9,7 @@ from .core.reachable import grid_src_color_connected, count_reachable_src
 from .core.solution import solver
 
 
-def fillomino_constraint():
+def fillomino_constraint() -> str:
     """Generate the Fillomino constraints."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
 
@@ -33,7 +33,7 @@ def fillomino_constraint():
     return constraint.strip()
 
 
-def fillomino_filtered(fast: bool = True):
+def fillomino_filtered(fast: bool = True) -> str:
     """Generate the Fillomino filtered connection constraints."""
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
     initial = f"{tag}(R, C, R, C) :- grid(R, C), not number(R, C, _)."
