@@ -4,7 +4,6 @@ from typing import Dict, List
 
 from .core.common import display, edge, grid
 from .core.encoding import Encoding, tag_encode
-from .core.helper import extract_initial_edges
 from .core.neighbor import adjacent
 from .core.reachable import grid_src_color_connected, count_reachable_src
 from .core.solution import solver
@@ -65,7 +64,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(edge(E.R, E.C))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(extract_initial_edges(E.edges))
+    solver.add_program_line(fillomino_constraint())
 
     for (r, c), num in E.clues.items():
         solver.add_program_line(f"number({r}, {c}, {num}).")
@@ -78,7 +77,6 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
             solver.add_program_line(f"vertical_line({r}, {c + 1}).")
             solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-    solver.add_program_line(fillomino_constraint())
     solver.add_program_line(fillomino_filtered())
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
