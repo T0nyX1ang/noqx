@@ -95,7 +95,7 @@ def grid_src_color_connected(
 
         # edge between two reachable grids is forbidden.
         constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C).\n"
+        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C)."
         return initial + "\n" + propagation + "\n" + constraint
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -133,7 +133,7 @@ def count_reachable_src(
     target: Union[int, Tuple[str, int]],
     src_cell: Tuple[int, int],
     main_type: str = "grid",
-    color: str = "black",
+    color: Optional[str] = "black",
     adj_type: Union[int, str] = 4,
 ):
     """
