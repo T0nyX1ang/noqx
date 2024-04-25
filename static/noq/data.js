@@ -108,7 +108,7 @@ const puzzle_types = {
       c: { name: "Columns", value: 10 },
       fast: { name: "Fast Mode", value: true },
     },
-    properties: { outside: "0000", border: false },
+    properties: { outside: "0000", border: true },
   },
   gokigen: {
     params: {

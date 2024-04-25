@@ -1580,7 +1580,7 @@ let elf_types = {
   country: InvertSolutionZOrder(IntBordersElf()),
   doppelblock: DirectSum(IntElf(), BgColorElf()),
   easyas: EasyAsElf,
-  fillomino: IntElf(),
+  fillomino: DirectSum(IntElf(), BorderElf),
   gokigen: DirectSum(
     QuestionMarkElf,
     IntElf(0, 4, "[0-4]", "center_dot"),
