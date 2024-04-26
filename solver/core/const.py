@@ -55,6 +55,7 @@ PUZZLE_TYPES: List[Dict[str, Union[str, List[str]]]] = [
     {"value": "shakashaka", "name": "Shakashaka", "cat": "var"},
     {"value": "shikaku", "name": "Shikaku", "cat": "region"},
     {"value": "shimaguni", "name": "Shimaguni (Islands)", "cat": "shade", "aliases": ["islands"]},
+    {"value": "simpleloop", "name": "Simple Loop", "cat": "loop"},
     {"value": "skyscrapers", "name": "Skyscrapers", "cat": "num"},
     {"value": "slither", "name": "Slitherlink", "cat": "loop", "aliases": ["slitherlink"]},
     {"value": "spiralgalaxies", "name": "Spiral Galaxies", "cat": "region"},

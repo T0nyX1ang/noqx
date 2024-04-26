@@ -326,6 +326,13 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: true },
   },
+  simpleloop: {
+    params: {
+      r: { name: "Rows", value: 10 },
+      c: { name: "Columns", value: 10 },
+    },
+    properties: { outside: "0000", border: false },
+  },
   skyscrapers: {
     params: { n: { name: "Grid size", value: 6 } },
     properties: { outside: "1111", border: false },
@@ -4560,6 +4567,22 @@ const examples = {
         },
       },
       link: "https://www.mstang.xyz/blog/13/",
+    },
+  },
+  simpleloop: {
+    1: {
+      data: {
+        param_values: { r: "5", c: "5" },
+        grid: {
+          "1,1": "black",
+          "1,3": "black",
+          "1,5": "black",
+          "3,1": "black",
+          "7,7": "black",
+        },
+        puzzle_type: "simpleloop",
+        properties: { outside: "0000", border: false },
+      },
     },
   },
   skyscrapers: {
