@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+
 {% block head %}
-{{ block.super }}
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'noq/noq.css' %}">
-</link>
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/noq/noq.css') }}"></link>
 {% endblock %}
+
 {% block title %}{{ name }} solver - Noqx{% endblock %}
+
 {% block content %}
 <div id="noq">
   <center>
@@ -39,7 +40,7 @@
 <script>
   pt = "{{ value }}";
 </script>
-<script src="{% static 'noq/noq.js' %}"></script>
+<script src="{{ url_for('static', path='/noq/noq.js') }}"></script>
 
 <br>
 <center><a href="/">Back</a></center>

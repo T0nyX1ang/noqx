@@ -54,12 +54,6 @@ const CLIPBOARD_SYMBOLS = {
 
   tree: "🌲",
   tent: "⛺",
-
-  // 'white_circle_u':'Ȯ',
-  // 'white_circle_r':'⟥',
-  // 'white_circle_d':'Ọ',
-  // 'white_circle_l':'⟤', TODO find better symbols for these if possible; and also make hotaru copy-to-clipboard actually work
-  // (the issue is that generate_copy_td doesn't work well with DirectSum. actually DirectSum just sorta sucks in general imo)
 };
 
 function add_json_objects(d1, d2) {
@@ -221,21 +215,25 @@ class Elf {
     } else this.puzzle_elt.innerHTML = str;
   }
   load_solution(str) {
-    if (COLORS.includes(str) && /^.+\.png$/.test(str)) {
-      // special judge for COLORS + image
+    if (COLORS.includes(str)) {
       this.solution_elt.style.backgroundColor = str;
-      if (str == "black") this.solution_elt.style.color = "gray";
-      this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
-      this.solution_elt.style.backgroundImage = image_url(str);
-      this.solution_image_str = str.substring(0, str.length - 4); // remove `.png` from str
-    } else if (COLORS.includes(str)) {
-      this.solution_elt.style.backgroundColor = str;
-      if (str == "black") this.solution_elt.style.color = "gray";
+      if (str === "black") this.solution_elt.style.color = "gray";
       this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
     } else if (/^[0-9]+$/.test(str)) this.solution_elt.innerHTML = str;
     else if (/^.+\.png$/.test(str)) {
-      this.solution_elt.style.backgroundImage = image_url(str);
-      this.solution_image_str = str.substring(0, str.length - 4); // remove `.png` from str
+      let image_urls = [];
+      let image_strs = [];
+      for (let url of str.split(",")) {
+        image_urls.push(image_url(url));
+        image_strs.push(url.substring(0, url.length - 4)); // remove `.png` from str
+      }
+      this.solution_elt.style.backgroundImage = image_urls.join(",");
+      this.solution_image_str = image_strs.sort().join(",");
+      if (pt === "hashi" && /^[0-9]+$/.test(this.puzzle_elt.innerHTML)) {
+        // special case for Hashi solution display
+        this.solution_elt.style.clipPath =
+          "polygon(0% 0%, 0% 100%, 20% 100%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 100%, 100% 100%, 100% 0%)";
+      }
     } else this.solution_elt.innerHTML = str;
   }
   reset() {
@@ -1076,7 +1074,10 @@ class NonogramElf extends DirectSum(
   }
 
   handle_input(key, modifiers) {
-    this.elf2.handle_input(key, modifiers); // deal with color
+    if (!restrict_to_grid(this.elt)) {
+      this.elf2.handle_input(key, modifiers); // deal with color
+      return;
+    }
 
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
@@ -1119,7 +1120,12 @@ class NonogramElf extends DirectSum(
     if (this.curr_clue != "") this.clues.pop();
   }
   load_example(str) {
-    this.clues = str;
+    if (!restrict_to_grid(this.elt)) {
+      this.elf2.load_example(str); // deal with color
+      return;
+    }
+
+    this.clues = str.slice();
     this.curr_clue = "";
 
     let max_size = Math.max(1, this.true_num_clues());
@@ -1137,11 +1143,13 @@ class NonogramElf extends DirectSum(
       this.puzzle_elt.innerHTML += `<div class='aux_cell'>${clue}</div>`;
   }
   encode_input() {
+    let out2 = this.elf2.encode_input();
+
     if (this.curr_clue != "") {
       this.clues.push(this.curr_clue);
       this.curr_clue = "";
     }
-    return this.clues.length == 0 ? null : this.clues;
+    return this.clues.length == 0 ? out2 : this.clues;
   }
 }
 
@@ -1572,7 +1580,7 @@ let elf_types = {
   country: InvertSolutionZOrder(IntBordersElf()),
   doppelblock: DirectSum(IntElf(), BgColorElf()),
   easyas: EasyAsElf,
-  fillomino: IntElf(),
+  fillomino: DirectSum(IntElf(), BorderElf),
   gokigen: DirectSum(
     QuestionMarkElf,
     IntElf(0, 4, "[0-4]", "center_dot"),
@@ -1580,7 +1588,7 @@ let elf_types = {
   ),
   haisu: DirectSum(IntBordersElf(), LetterElf("SG"), "first"),
   hashi: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
-  heteromino: BgColorElf({ x: ["gray", "gray"] }),
+  heteromino: DirectSum(BgColorElf({ x: ["gray", "gray"] }), BorderElf),
   heyawake: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
@@ -1603,7 +1611,7 @@ let elf_types = {
       }
     ),
     "compress",
-    "center_dot" // TODO fix load_example for arrays
+    "center_dot"
   ),
   kakuro: KakuroElf,
   kurotto: DirectSum(
@@ -1696,14 +1704,14 @@ let elf_types = {
   ),
   ripple: IntBordersElf(),
   shakashaka: AkariElf,
-  shikaku: DirectSum(QuestionMarkElf, IntElf(), "first"),
+  shikaku: DirectSum(DirectSum(QuestionMarkElf, IntElf(), "first"), BorderElf),
   shimaguni: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
   skyscrapers: IntElf(),
   slither: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
-  spiralgalaxies: SpiralGalaxiesElf,
+  spiralgalaxies: DirectSum(SpiralGalaxiesElf, BorderElf),
   starbattle: DirectSum(
     BorderElf,
     BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
@@ -1723,7 +1731,7 @@ let elf_types = {
       "?": ["yellow", "yellow"],
     })
   ),
-  tatamibari: LetterElf("+-|"),
+  tatamibari: DirectSum(LetterElf("+-|"), BorderElf),
   tents: DirectSum(
     DirectSum(IntElf(0, 99), BgColorElf({ o: ["green", "green"] })),
     ImageElf(
