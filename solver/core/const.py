@@ -17,6 +17,7 @@ PUZZLE_TYPES: List[Dict[str, Union[str, List[str]]]] = [
     {"value": "balance", "name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"]},
     {"value": "battleship", "name": "Battleship", "cat": "var"},
     {"value": "binairo", "name": "Binairo", "cat": "shade"},
+    {"value": "box", "name": "Box", "cat": "shade"},
     {"value": "canal", "name": "Canal View", "cat": "shade", "aliases": ["canalview"]},
     {"value": "castle", "name": "Castle Wall", "cat": "loop", "aliases": ["castlewall"]},
     {"value": "cave", "name": "Cave (Corral)", "cat": "shade"},

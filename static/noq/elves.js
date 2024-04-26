@@ -1564,6 +1564,10 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
+  box: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
   canal: DirectSum(
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
