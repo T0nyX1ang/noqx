@@ -13,6 +13,8 @@ def fillomino_rules(fast: bool = True):
 
     # propagation of number
     rule = "number(R, C, N) :- grid(R, C), num(N), adj_edge(R0, C0, R, C), number(R0, C0, N).\n"
+    # rule = "number(RT, CT, N) :- grid(R, C), num(N), region_id(R, C, RT, CT), number(R, C, N).\n"
+    # rule += "number(R, C, N) :- grid(R, C), num(N), region_id(R, C, RT, CT), number(RT, CT, N).\n"
     rule += "numberx(R, C, N) :- grid(R, C), num(N), number(R, C, N).\n"
     rule += ":- grid(R, C), num(N1), num(N2), N1<N2, numberx(R, C, N1), numberx(R, C, N2).\n"
     if fast:
@@ -50,18 +52,21 @@ def fillomino_tree():
     rule += 'region_id(R, C, RT, CT) :- grid(R, C), grid(RT, CT), fa(R, C, "r"), region_id(R, C+1, RT, CT).\n'
     rule += 'region_id(R, C, RT, CT) :- grid(R, C), grid(RT, CT), fa(R, C, "u"), region_id(R-1, C, RT, CT).\n'
     rule += 'region_id(R, C, RT, CT) :- grid(R, C), grid(RT, CT), fa(R, C, "d"), region_id(R+1, C, RT, CT).\n'
-    rule += ":- grid(R, C), region_id(R, C, R1, C1), region_id(R, C, R2, C2), (R1, C1) < (R2, C2).\n"
-    rule += ":- grid(R, C), not region_id(R, C, _, _).\n"
+    rule += ":- grid(R, C), #count{ RT, CT: grid(RT, CT), region_id(R, C, RT, CT) } != 1.\n"
     rule += ":- grid(R, C), region_id(R, C, R1, C1), (R, C) < (R1, C1).\n"
     rule += ":- grid(R, C), adj_edge(R, C, R1, C1), region_id(R, C, RT, CT), not region_id(R1, C1, RT, CT).\n"
 
     rule += 'size_to(R, C, D, N) :- grid(R, C), direction(D), D != ".", num(N), fa(R, C, D), size(R, C, N).\n'
+    rule += 'size_to(R, C, ".", 0) :- grid(R, C).\n'
     rule += "size_to(R, C, D, 0) :- grid(R, C), direction(D), num(N), not fa(R, C, D).\n"
     rule += "size_to(R, C, D, 0) :- grid_big(R, C), not grid(R, C), direction(D).\n"
     rule += 'size(R, C, N1+N2+N3+N4+1) :- num(N1), num(N2), num(N3), num(N4), num(N1+N2+N3+N4+1), size_to(R, C+1, "l", N1), size_to(R, C-1, "r", N2), size_to(R+1, C, "u", N3), size_to(R-1, C, "d", N4).\n'
     rule += ":- grid(R, C), num(N1), num(N2), N1<N2, size(R, C, N1), size(R, C, N2).\n"
+    rule += ":- grid(R, C), not size(R, C, _).\n"
+    # rule += ":- grid(R, C), #count{ N: num(N), size(R, C, N) } != 1.\n"
     rule += ':- fa(R, C, "."), size(R, C, N), not numberx(R, C, N).\n'
     rule += ':- fa(R, C, "."), numberx(R, C, N), not size(R, C, N).\n'
+    rule += ":- grid(R, C), numberx(R, C, N), size(R, C, N1), N<N1.\n"
     return rule.strip()
 
 
@@ -90,10 +95,9 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(f"num(0..{mx_num}).")
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
-    # solver.add_program_line(display(item="number", size=3))
-    solver.add_program_line(display(item="numberx", size=3))
+    # solver.add_program_line(display(item="numberx", size=3))
     # solver.add_program_line(display(item="size", size=3))
-    # solver.add_program_line(display(item="fa", size=3))
+    solver.add_program_line(display(item="fa", size=3))
     solver.solve()
 
     return solver.solutions
