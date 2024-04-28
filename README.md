@@ -1,14 +1,12 @@
 # Noqx
 
-Extended logic puzzle solver of Noq.
+Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 ## Current development status
 
 - Remove redundant codes and formatting codes.
 
-- New solver API with new visualizations (See issue [#2](https://github.com/T0nyX1ang/noqx/issues/2))
-
-- Multiple UI optimizations.
+- New solver backend with new UI design (See issue [#2](https://github.com/T0nyX1ang/noqx/issues/2))
 
 - Change the backend from Django to FastAPI (See issue [#31](https://github.com/T0nyX1ang/noqx/issues/31)).
 
@@ -45,6 +43,20 @@ Extended logic puzzle solver of Noq.
     python3 noqx.py
 ```
 
+### Additional Usage
+
+```text
+    usage: noqx.py [-h] [-H HOST] [-p PORT] [-r] [-l LOG_LEVEL]
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -H HOST, --host HOST  The host to run the server on.
+      -p PORT, --port PORT  The port to run the server on.
+      -r, --reload          Whether to reload the server on changes.
+      -l LOG_LEVEL, --log-level LOG_LEVEL
+                            The log level of the server.
+```
+
 ## How to contribute
 
 - Install [PDM](https://pdm-project.org/latest/) first.
@@ -58,7 +70,7 @@ Extended logic puzzle solver of Noq.
 - Install dependencies with PDM:
 
 ```bash
-    pdm install
+    pdm install -d
 ```
 
 - Install [pre-commit](https://pre-commit.com/) and add commit hooks:
@@ -68,7 +80,3 @@ Extended logic puzzle solver of Noq.
 ```
 
 - Free to PR now ^\_^
-
-## Noq (Original Project)
-
-Noq is currently accessible on the web at [noq.solutions](https://www.noq.solutions/).

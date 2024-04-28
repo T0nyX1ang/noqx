@@ -55,6 +55,13 @@ const puzzle_types = {
     },
     properties: { outside: "0000", border: false },
   },
+  box: {
+    params: {
+      r: { name: "Rows", value: 10 },
+      c: { name: "Columns", value: 10 },
+    },
+    properties: { outside: "1111", border: false },
+  },
   canal: {
     params: {
       r: { name: "Rows", value: 10 },
@@ -325,6 +332,13 @@ const puzzle_types = {
       c: { name: "Columns", value: 10 },
     },
     properties: { outside: "0000", border: true },
+  },
+  simpleloop: {
+    params: {
+      r: { name: "Rows", value: 10 },
+      c: { name: "Columns", value: 10 },
+    },
+    properties: { outside: "0000", border: false },
   },
   skyscrapers: {
     params: { n: { name: "Grid size", value: 6 } },
@@ -991,6 +1005,53 @@ const examples = {
         },
       },
       link: "https://www.puzzle-binairo.com/",
+    },
+  },
+  box: {
+    1: {
+      data: {
+        param_values: { r: "9", c: "9" },
+        grid: {
+          "-1,1": "15",
+          "-1,3": "23",
+          "-1,5": "30",
+          "-1,7": "23",
+          "-1,9": "23",
+          "-1,11": "25",
+          "-1,13": "23",
+          "-1,15": "23",
+          "-1,17": "26",
+          "1,-1": "11",
+          "1,19": "1",
+          "3,-1": "14",
+          "3,19": "2",
+          "5,-1": "15",
+          "5,19": "3",
+          "7,-1": "12",
+          "7,19": "4",
+          "9,-1": "11",
+          "9,19": "5",
+          "11,-1": "6",
+          "11,19": "6",
+          "13,-1": "36",
+          "13,19": "7",
+          "15,-1": "36",
+          "15,19": "8",
+          "17,-1": "36",
+          "17,19": "9",
+          "19,1": "1",
+          "19,3": "2",
+          "19,5": "3",
+          "19,7": "4",
+          "19,9": "5",
+          "19,11": "6",
+          "19,13": "7",
+          "19,15": "8",
+          "19,17": "9",
+        },
+        puzzle_type: "box",
+        properties: { outside: "1111", border: false },
+      },
     },
   },
   canal: {
@@ -4560,6 +4621,22 @@ const examples = {
         },
       },
       link: "https://www.mstang.xyz/blog/13/",
+    },
+  },
+  simpleloop: {
+    1: {
+      data: {
+        param_values: { r: "5", c: "5" },
+        grid: {
+          "1,1": "black",
+          "1,3": "black",
+          "1,5": "black",
+          "3,1": "black",
+          "7,7": "black",
+        },
+        puzzle_type: "simpleloop",
+        properties: { outside: "0000", border: false },
+      },
     },
   },
   skyscrapers: {

@@ -1564,6 +1564,10 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
+  box: DirectSum(
+    IntElf(),
+    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  ),
   canal: DirectSum(
     IntElf(),
     BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
@@ -1709,6 +1713,7 @@ let elf_types = {
     InvertSolutionZOrder(IntBordersElf()),
     BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
   ),
+  simpleloop: BgColorElf({ x: ["black", "black"] }),
   skyscrapers: IntElf(),
   slither: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
   spiralgalaxies: DirectSum(SpiralGalaxiesElf, BorderElf),
