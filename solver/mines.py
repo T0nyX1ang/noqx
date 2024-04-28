@@ -9,7 +9,7 @@ from .core.solution import solver
 
 
 def solve(E: Encoding) -> List[Dict[str, str]]:
-    mine_count = E.params["m"]
+    mine_count = int(E.params["m"])
 
     solver.reset()
     solver.add_program_line(grid(E.R, E.C))
