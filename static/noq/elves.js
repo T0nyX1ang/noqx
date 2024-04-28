@@ -1617,6 +1617,7 @@ let elf_types = {
     "compress",
     "center_dot"
   ),
+  jousan: DirectSum(IntElf(1, 99), BorderElf),
   kakuro: KakuroElf,
   kurotto: DirectSum(
     IntElf(),

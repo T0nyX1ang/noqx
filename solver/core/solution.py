@@ -1,6 +1,7 @@
 """Generate solutions for the given problem."""
 
 from typing import Dict, List
+import numpy as np
 
 from clingo.control import Control
 from clingo.solving import Model
@@ -27,10 +28,9 @@ class ClingoSolver:
         for item in solution:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            if _type not in ["grid_direction", "grid_in", "grid_out", "triangle"]:
-                data = list(map(int, data))
-            else:
-                data[:2] = list(map(int, data[:2]))  # type: ignore
+            data[:2] = list(map(int, data[:2]))
+            if np.array([_type.startswith(x) for x in ["number", "slant_code"]]).any():
+                data[2] = int(data[2])
 
             if _type.startswith("vertical"):
                 r, c = data
@@ -38,9 +38,9 @@ class ClingoSolver:
             elif _type.startswith("horizontal"):
                 r, c = data
                 formatted[rcd_to_elt(int(r), int(c), Direction.TOP)] = "black"
-            elif _type.startswith("number"):
+            elif _type.startswith("number") or _type.startswith("content"):
                 r, c, num = data
-                formatted[rcd_to_elt(int(r), int(c))] = str(num)
+                formatted[rcd_to_elt(int(r), int(c))] = str(num).replace('"', "")
             elif _type.startswith("grid_"):
                 if len(data) == 3:
                     r, c, grid_direction, num = data + [""]

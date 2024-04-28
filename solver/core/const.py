@@ -33,6 +33,7 @@ PUZZLE_TYPES: List[Dict[str, Union[str, List[str]]]] = [
     {"value": "heyawake", "name": "Heyawake", "cat": "shade"},
     {"value": "hitori", "name": "Hitori", "cat": "shade"},
     {"value": "hotaru", "name": "Hotaru Beam", "cat": "loop"},
+    {"value": "jousan", "name": "Jousan", "cat": "draw"},
     {"value": "kakuro", "name": "Kakuro", "cat": "num"},
     {"value": "kurotto", "name": "Kurotto", "cat": "shade"},
     {"value": "kurodoko", "name": "Kurodoko", "cat": "shade"},
