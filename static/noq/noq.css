@@ -20,10 +20,6 @@
   border: 1px solid black;
 }
 
-#noq {
-  font: Arial;
-}
-
 #top_pane {
   display: flex;
   flex-direction: column;
@@ -102,177 +98,609 @@
   text-align: center;
 }
 
-#params_div {
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+html {
+    text-size-adjust: 100%;
 }
 
-.param_input {
-  font-size: 20px;
-  text-align: center;
-  min-width: 30px;
-  height: 30px;
-  margin: 10px;
+body {
+    margin: 0px;
+    padding: 0px;
+    color: rgb(0, 0, 0);
+    line-height: 120%;
 }
 
-.shift_click_cell {
-  z-index: 4;
-}
-.container_cell *,
-.container_border_vertical *,
-.container_border_horizontal * {
-  z-index: 3;
-}
-.solution_cell *,
-.solution_border_vertical *,
-.solution_border_horizontal * {
-  z-index: 2;
-}
-.puzzle_cell *,
-.puzzle_border_vertical *,
-.puzzle_border_horizontal * {
-  z-index: 1;
+div#main {
+    width: 80%;
+    background-color: rgb(255, 255, 255);
+    margin: 8pt auto;
+    padding-bottom: 6pt;
+    text-align: center;
 }
 
-.container_cell,
-.aux_cell,
-.shift_click_cell {
-  width: var(--dimension);
-  height: var(--dimension);
+h2#title {
+    margin: 16pt 0px 24pt;
+    text-align: center;
 }
 
-.shift_click_cell {
-  opacity: 0.15;
+.outofboard {
+    font-size: 1em;
+    line-height: 1.2;
 }
 
-.puzzle_cell,
-.solution_cell {
-  width: var(--dimension);
-  height: var(--dimension);
-  line-height: var(--dimension);
-  background-size: var(--dimension) var(--dimension);
-
-  font-size: 30px;
-  text-align: center;
-  position: absolute;
+.btn {
+    display: inline;
+    margin: 2pt;
+    padding: 2pt 4pt;
+    border-radius: 4pt;
+    border: 1pt solid gray;
+    background: linear-gradient(white, silver);
+    text-align: center;
+    vertical-align: middle;
+    font: 90% / 1.2 sans-serif;
+    cursor: default;
 }
 
-.container_border_vertical {
-  width: var(--border);
-  height: var(--dimension);
+.btn:active {
+    background: linear-gradient(rgb(175, 175, 175), rgb(204, 204, 204));
 }
 
-.container_border_horizontal {
-  width: var(--dimension);
-  height: var(--border);
+.btn:disabled {
+    color: silver;
 }
 
-.puzzle_border_vertical,
-.solution_border_vertical {
-  min-height: var(--dimension);
-  min-width: var(--border);
-  background-color: gainsboro;
-
-  position: absolute;
+.btn-ok {
+    background: linear-gradient(rgb(175, 175, 255), blue);
+    color: rgb(255, 255, 255);
 }
 
-.puzzle_border_horizontal,
-.solution_border_horizontal {
-  min-width: var(--dimension);
-  min-height: var(--border);
-  background-color: gainsboro;
-
-  position: absolute;
+.btn-ok:active {
+    background: linear-gradient(navy, blue);
 }
 
-.puzzle_dot {
-  min-width: var(--border);
-  min-height: var(--border);
-  background-color: gainsboro;
+.btn-info {
+    background: linear-gradient(rgb(204, 102, 153), rgb(153, 51, 102));
+    color: rgb(255, 255, 255);
 }
 
-.grid_row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+.btn-info:active {
+    background: linear-gradient(rgb(153, 51, 79), rgb(153, 51, 102));
 }
 
-.imp_dropdown {
-  font-size: 15px;
+.btn-warn:active {
+    background: linear-gradient(rgb(153, 153, 0), rgb(204, 204, 0));
 }
 
-.kakuro_across_clue,
-.kakuro_down_clue {
-  width: calc(var(--dimension) / 2);
-  height: calc(var(--dimension) / 2);
-  line-height: calc(var(--dimension) / 2);
-  font-size: 15px;
-  position: absolute;
-  color: white;
+.btn-danger {
+    background: linear-gradient(rgb(255, 175, 175), red);
+    color: rgb(255, 255, 255);
 }
 
-.kakuro_across_clue {
-  right: 0px;
-  top: 0px;
+.btn-danger:active {
+    background: linear-gradient(rgb(204, 0, 0), red);
 }
 
-.kakuro_down_clue {
-  left: 0px;
-  bottom: 0px;
-  text-anchor: start;
+#btnarea div#btnclear {
+    color: red;
 }
 
-.nanro_signpost {
-  left: 2px;
-  top: calc(2px - var(--dimension) / 4);
-  width: calc(var(--dimension) / 2);
-  height: calc(var(--dimension) / 2);
-  font-size: 15px;
-  position: absolute;
+div#menuboard {
+    width: 90%;
+    max-width: 560px;
+    margin: auto auto 8pt;
+    text-align: left;
+    user-select: none;
 }
 
-.tapa_clue {
-  width: calc(var(--dimension) / 2);
-  height: calc(var(--dimension) / 2);
-  font-size: 20px;
-  position: absolute;
+div#menuboard > div {
+    margin: 4pt 8pt 4pt 16pt;
 }
 
-.tapa_2L {
-  left: 2px;
-  top: calc(2px - var(--dimension) / 4);
+div#timerpanel {
+    user-select: text;
 }
-.tapa_2R {
-  right: 2px;
-  bottom: calc(2px + var(--dimension) / 4);
+
+hr.separator {
+    border-right: none;
+    border-bottom: none;
+    border-left: none;
+    border-image: initial;
+    border-top: 1px solid rgb(64, 64, 64);
+    margin: 0px;
 }
-.tapa_3L {
-  left: 0px;
-  top: calc(2px - var(--dimension) / 4);
+
+div.child {
+    display: inline;
+    padding: 0px 3pt;
+    cursor: pointer;
 }
-.tapa_3D {
-  left: calc(var(--dimension) / 4);
-  bottom: calc(2px + var(--dimension) / 4);
+
+div.childsel::before {
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+    transform: translateX(-50%);
+    font-weight: 700;
+    background-color: rgb(239, 239, 239);
+    white-space: nowrap;
+    content: attr(data-text);
 }
-.tapa_3R {
-  right: 0px;
-  top: calc(2px - var(--dimension) / 4);
+
+div.childsel {
+    position: relative;
+    color: maroon;
+    background-color: rgb(239, 239, 239);
 }
-.tapa_4U {
-  left: calc(var(--dimension) / 4);
-  top: calc(0px - 1px - var(--dimension) / 4);
+
+div#usepanel > div {
+    display: -webkit-flex;
 }
-.tapa_4R {
-  right: 0px;
-  bottom: calc(var(--dimension) / 2);
+
+div#usepanel > div > div {
+    display: inline-block;
 }
-.tapa_4D {
-  left: calc(var(--dimension) / 4);
-  bottom: calc(var(--dimension) / 4);
+
+div#usepanel > div > div:first-child {
+    white-space: nowrap;
+    margin-right: 6px;
+    display: inline-block;
 }
-.tapa_4L {
-  left: 0px;
-  bottom: calc(var(--dimension) / 2);
+
+div#usepanel > div > div > div {
+    white-space: nowrap;
+}
+
+div#checkpanel input[type="checkbox"]:disabled + span {
+    color: silver;
+}
+
+div#usepanel div.disabled {
+    color: silver;
+}
+
+div#usepanel div.disabled div.childsel {
+    color: silver;
+    font-weight: 100;
+    background-color: rgb(255, 255, 255);
+}
+
+div#variantpanel.playeronly input[type="checkbox"] {
+    display: none;
+}
+
+div#variantpanel.playeronly input[type="checkbox"]:disabled:not(:checked) + span {
+    display: none;
+}
+
+div#variantpanel input[type="checkbox"]:disabled:checked + span {
+    font-style: italic;
+    color: rgb(0, 0, 0);
+}
+
+div#variantpanel input[type="checkbox"]:disabled:not(:checked) + span {
+    color: silver;
+}
+
+div#auxeditorpanel, div#auxeditorpanel > div, div.auxeditorclose {
+    display: -webkit-flex;
+}
+
+div#auxeditorpanel div.config, .spacer {
+    flex-grow: 1;
+}
+
+div#auxeditorpanel > div > div {
+    display: inline-block;
+}
+
+div#auxeditorpanel > div > div:first-child {
+    white-space: nowrap;
+    margin-right: 6px;
+    display: inline-block;
+}
+
+div#auxeditorpanel > div > div > div {
+    margin-right: 6px;
+    white-space: nowrap;
+}
+
+div#auxeditorpanel div.childsel {
+    background-color: rgb(255, 255, 255);
+}
+
+div#quesboard {
+    margin: 16pt auto;
+    text-align: center;
+}
+
+div#divques {
+    display: inline-block;
+    position: relative;
+    cursor: default;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 8px;
+    touch-action: manipulation;
+}
+
+div#btnarea {
+    position: relative;
+    margin: 1em auto;
+}
+
+div#notifies {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+}
+
+div.notify {
+    display: none;
+    position: fixed;
+    background: rgb(247, 247, 247);
+    min-width: 240px;
+    max-width: 480px;
+    border: 2px solid gray;
+    text-align: left;
+    z-index: 61;
+}
+
+div.notify div.content {
+    padding: 8px 6px 6px 12px;
+}
+
+div.notify div.buttons {
+    margin-top: 4pt;
+    text-align: right;
+}
+
+div#notifybg {
+    display: none;
+    position: fixed;
+    background: rgb(0, 0, 0);
+    opacity: 0.2;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 60;
+    cursor: not-allowed;
+}
+
+div.popup {
+    display: none;
+    position: absolute;
+    background: rgb(239, 239, 239);
+    left: 0px;
+    top: 0px;
+    margin: 0px;
+    border: 1px solid rgb(153, 153, 153);
+    box-shadow: rgba(64, 64, 64, 0.5) 6px 6px 6px;
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 1.6;
+    z-index: 40;
+}
+
+div div.titlebar {
+    display: block;
+    background: linear-gradient(to right bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)) rgb(153, 153, 153);
+    margin: 0px;
+    padding: 6pt 12pt 6pt 8pt;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    text-align: left;
+    font-size: 1em;
+    touch-action: none;
+}
+
+div.popup form {
+    margin: 4pt;
+    padding: 0px;
+}
+
+div#about {
+    margin: 4pt 0px 2pt 4pt;
+    line-height: 1.1;
+}
+
+#nb_shape_tawa {
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+}
+
+#nb_shape_tawa tr {
+    padding-bottom: 2pt;
+}
+
+#nb_shape_tawa div {
+    display: block;
+    position: relative;
+    width: 36px;
+    height: 36px;
+}
+
+#nb_shape_tawa img {
+    position: absolute;
+    margin: 2px;
+    width: 128px;
+    height: 32px;
+    top: 0px;
+}
+
+#nb_shape_tawa #nb_shape_0 img {
+    left: 0px;
+    clip: rect(0px, 32px, 32px, 0px);
+}
+
+#nb_shape_tawa #nb_shape_1 img {
+    left: -32px;
+    clip: rect(0px, 64px, 32px, 32px);
+}
+
+#nb_shape_tawa #nb_shape_2 img {
+    left: -64px;
+    clip: rect(0px, 96px, 32px, 64px);
+}
+
+#nb_shape_tawa #nb_shape_3 img {
+    left: -96px;
+    clip: rect(0px, 128px, 32px, 96px);
+}
+
+div#keypopup {
+    background-color: silver;
+    line-height: 1;
+}
+
+div.panelbase {
+    margin: 1pt;
+}
+
+div.kpcell {
+    width: 43px;
+    height: 43px;
+    margin: 1px;
+    position: relative;
+    float: left;
+    cursor: pointer;
+    text-align: center;
+    line-height: 43px;
+}
+
+div.kpcellempty {
+    cursor: default;
+}
+
+div.kpcellvalid {
+    background-color: rgb(255, 255, 255);
+}
+
+span.kpnum {
+    font-size: 33px;
+    vertical-align: middle;
+}
+
+img.kpimg {
+    position: absolute;
+    overflow: hidden;
+}
+
+input, button, select, textarea {
+    font-size: 1em;
+    line-height: 1;
+    color: inherit;
+}
+
+input[type="button"], button {
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+
+input[type="checkbox"] {
+    width: 0.9em;
+    height: 0.9em;
+}
+
+div#hidden_element {
+    position: absolute;
+    top: 0px;
+    left: -10000px;
+}
+
+iframe#fileiopanel {
+    width: 200px;
+    height: 200px;
+}
+
+form#fileform2 {
+    width: 100px;
+    height: 100px;
+}
+
+.urlanchor {
+    display: block;
+    padding: 5px;
+    background: rgb(255, 255, 255);
+    color: rgb(31, 31, 31);
+    border: 1px solid rgb(0, 0, 0);
+    font-size: 1em;
+    line-height: 1;
+    text-decoration: none;
+    font-weight: 500;
+    width: 300px;
+    overflow-wrap: anywhere;
+}
+
+#menupanel {
+    display: block;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    height: 1.5em;
+    margin: 0px;
+    padding: 0px 0px 0px 2pt;
+    background: rgb(239, 239, 239);
+    font-size: 0.95em;
+    border-bottom: 1px solid silver;
+    user-select: none;
+}
+
+#menupanel > li {
+    position: relative;
+    float: left;
+    margin: 0px;
+    padding: 0px 4pt;
+    height: 100%;
+    list-style: none;
+    cursor: pointer;
+}
+
+#menupanel > li:hover {
+    background: rgb(255, 204, 204);
+}
+
+#menupanel > li > span {
+    color: blue;
+    line-height: 1.5;
+    font-size: 110%;
+    vertical-align: middle;
+}
+
+#menupanel > li:hover > span {
+    color: maroon;
+}
+
+#menupanel li:hover > menu {
+    display: block;
+}
+
+#menupanel menu {
+    display: none;
+    position: absolute;
+    list-style-type: none;
+    background: linear-gradient(to right bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)) rgb(204, 204, 204);
+    margin: 0px;
+    padding: 3px;
+    box-shadow: rgba(64, 64, 64, 0.5) 6px 6px 6px;
+    text-align: left;
+    cursor: default;
+}
+
+#menupanel > li > menu {
+    font-size: 0.9em;
+}
+
+#menupanel menu {
+    left: 0px;
+    top: 1.5em;
+    min-width: 132px;
+    z-index: 22;
+}
+
+#menupanel menu menu[label] {
+    left: 120px;
+    top: 0px;
+    min-width: 80px;
+    z-index: 23;
+}
+
+#menupanel menu menu {
+    left: 120px;
+    top: 0px;
+    min-width: 80px;
+    z-index: 23;
+}
+
+#menupanel menu menu[label] menu {
+    left: 72px;
+    top: 0px;
+    min-width: 80px;
+    z-index: 24;
+}
+
+#menupanel menu li {
+    display: block;
+    position: relative;
+    line-height: 1.1;
+    float: none;
+    list-style: none;
+    margin: 0px;
+    padding: 0.2em 2pt 0.2em 4pt;
+    color: rgb(0, 0, 0);
+    background: rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+#menupanel menu li:hover {
+    background: rgb(255, 204, 204);
+}
+
+#menupanel menu li > a {
+    display: inline-block;
+    width: 100%;
+}
+
+#menupanel menu li:hover > span {
+    text-decoration: underline;
+}
+
+#menupanel menu li:hover > a {
+    text-decoration: underline;
+}
+
+#menupanel menu hr {
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    height: 3px;
+    color: lime;
+}
+
+#menupanel menu span {
+    white-space: nowrap;
+}
+
+#menupanel menu a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+#menupanel menu li.disabled {
+    background: rgb(223, 223, 223);
+    color: gray;
+    cursor: default;
+}
+
+#menupanel menu li.disabled:hover {
+    background: rgb(223, 223, 223);
+}
+
+#menupanel menu li.disabled:hover > span {
+    font-weight: 100;
+    text-decoration: none;
+}
+
+#menupanel menu li.check > span, #menupanel menu li[data-value] > span {
+    color: gray;
+}
+
+#menupanel menu li.checked > span {
+    color: rgb(0, 0, 0);
+}
+
+#menupanel menu li.check > span::before, #menupanel menu li[data-value] > span::before {
+    display: inline-block;
+    padding: 0px 2pt;
+    width: 1em;
+    color: rgb(255, 255, 255);
+    content: "_";
+}
+
+#menupanel menu li.checked > span::before {
+    display: inline-block;
+    padding: 0px 2pt;
+    width: 1em;
+    color: rgb(0, 0, 0);
+    content: "+";
 }

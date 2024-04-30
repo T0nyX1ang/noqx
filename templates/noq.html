@@ -2,46 +2,87 @@
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/noq/noq.css') }}"></link>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/noq/noq.css') }}">
+</link>
+<script src='https://puzz.link/js/pzpr.js'></script>
+<script>
+  let puzzle = null;
+  pzpr.on('load', function () {
+    puzzle = new pzpr.Puzzle(document.getElementById('divques'), { type: 'editor' });
+    pzpr.connectKeyEvents(puzzle);
+    puzzle.open("{{ value }}/10/10");
+    puzzle.on('ready', function () {
+      puzzle.setCanvasSizeByCellSize(48);
+      puzzle.setMode('edit');
+    });
+    puzzle.on('adjust', function () {
+      puzzle.setCanvasSizeByCellSize(48);
+    });
+  });
+</script>
 {% endblock %}
 
 {% block title %}{{ name }} solver - Noqx{% endblock %}
 
 {% block content %}
-<div id="noq">
-  <center>
-    <b>{{ name }} solver</b>
-  </center>
-
-  <div id="top_pane">
-    <div id="buttons_div">
-      <button id="solve_button" onclick="solve_puzzle()">Solve!</button>
-      <button id="reset_button" onclick="reset_button_callback()">Reset</button>
-      <button id="controls_button" onclick="toggle_controls()">Show controls</button>
-      <button id="copy_button" onclick="copy_to_clipboard()">Copy to clipboard</button>
-    </div>
+<div id="main">
+  <h2 id="title2">{{ name }} solver</h2>
+  <div id="menuboard" class="outofboard">
+    <menu id="menupanel">
+      <li id="menu_board"><span>Board</span>
+        <menu label="Board">
+          <li data-popup="newboard" id="menu_newboard"><span>New board</span></li>
+          <hr>
+          <li id="board_expand"><span>Expand board -&gt; </span>
+            <menu label="Expand board">
+              <li id="menu_expand_top"><span>Top</span></li>
+              <li id="menu_expand_bottom"><span>Bottom</span></li>
+              <li id="menu_expand_left"><span>Left</span></li>
+              <li id="menu_expand_right"><span>Right</span></li>
+            </menu>
+          </li>
+          <li id="board_reduce"><span>Reduce board -&gt; </span>
+            <menu label="Reduce board">
+              <li id="menu_reduce_top"><span>Top</span></li>
+              <li id="menu_reduce_bottom"><span>Bottom</span></li>
+              <li id="menu_reduce_left"><span>Left</span></li>
+              <li id="menu_reduce_right"><span>Right</span></li>
+            </menu>
+          </li>
+          <li id="board_rotate"><span>Rotate board -&gt; </span>
+            <menu label="Rotate board">
+              <li id="menu_turn_left"><span>Turn left</span></li>
+              <li id="menu_turn_right"><span>Turn right</span></li>
+              <li id="menu_flip_horiz"><span>Flip horizontally</span></li>
+              <li id="menu_flip_vert"><span>Flip vertically</span></li>
+            </menu>
+          </li>
+        </menu>
+      </li>
+      <li id="menu_edit"><span>Edit</span>
+        <menu label="Edit">
+          <li id="menu_undo"><span>Undo</span></li>
+          <li id="menu_redo"><span>Redo</span></li>
+          <li id="menu_clear"><span>Clear</span></li>
+          <hr>
+          <li id="menu_editmode" class="checked"><span>Edit Mode</span></li>
+          <li id="menu_playmode" class="check"><span>Play Mode</span></li>
+      </li>
+      <li id="menu_help"><span>Help</span>
+        <menu label="Help">
+          <li class="link" data-pidlink="rules.html?"><a target="_blank"
+              href="https://puzz.link/rules.html?{{ value }}">Rules</a></li>
+        </menu>
+      </li>
+    </menu>
   </div>
 
-  <div id="controls_div"></div>
-
-  <div id="puzzle_div" style="display:flex; justify-content: center; margin: 10px;">
-    <div id="puzzle_interface">
-      <div id="header_div"></div>
-      <div id="grid_div"></div>
-    </div>
-    <div id="helper_div">
-      <div id="params_div"></div>
-      <div id="examples_div"></div>
-    </div>
+  <div id="quesboard" style="padding-top: 24px;">
+    <div id="divques"></div>
   </div>
 
-  <div id="copy_div" style="display:none"></div>
+  <br>
+  <center><a href="/">Back</a></center>
 </div>
-<script>
-  pt = "{{ value }}";
-</script>
-<script src="{{ url_for('static', path='/noq/noq.js') }}"></script>
-
-<br>
-<center><a href="/">Back</a></center>
+<script src="{{ url_for('static', path='/puzzle.js') }}"></script>
 {% endblock %}
