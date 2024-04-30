@@ -269,10 +269,8 @@ class Elf {
       se: get(`puzzle_${this.i + 2},${this.j + 2}`),
     };
   }
-  toggle_border(
-    key,
-    val // val = null, true, or false
-  ) {
+  toggle_border(key, val) {
+    // val = null, true, or false
     set_z_order([this.solution_borders[key], this.puzzle_borders[key]]);
     return toggle_border(this.puzzle_borders[key], val);
   }

@@ -132,14 +132,13 @@ let shift_click_corner = null;
 let selected_range = null; // null or an array [i_min, i_max, j_min, j_max]
 
 function toggle_border(elt, val) {
-  if (val == true) elt.style.backgroundColor = "black";
-  else if (val == false) elt.style.backgroundColor = "gainsboro";
-  else
-    elt.style.backgroundColor =
-      elt.style.backgroundColor == "black" ? "gainsboro" : "black";
+  let bgc = elt.style.backgroundColor;
+  if (val == true) bgc = "black";
+  else if (val == false) bgc = "gainsboro";
+  else bgc = bgc == "black" ? "gainsboro" : "black";
+  elt.style.backgroundColor = bgc;
 
-  if (elt.style.backgroundColor == "black") return true;
-  else return false;
+  return bgc == "black";
 }
 
 // retrieves an array of selected cells based on the value of selected_range
@@ -201,13 +200,11 @@ $(document).keydown(function (event) {
   if (NAV_KEYS.includes(event.key) && !shift && !control) {
     // move between cells
     let pos = get_id_arr(active_element);
-    let new_id = {
-      ArrowUp: `${pos[0] - 2},${pos[1]}`,
-      ArrowRight: `${pos[0]},${pos[1] + 2}`,
-      ArrowDown: `${pos[0] + 2},${pos[1]}`,
-      ArrowLeft: `${pos[0]},${pos[1] - 2}`,
-    }[event.key];
-    let new_elt = get(new_id);
+    if (event.key == "ArrowUp") pos[0] -= 2;
+    if (event.key == "ArrowRight") pos[1] += 2;
+    if (event.key == "ArrowDown") pos[0] += 2;
+    if (event.key == "ArrowLeft") pos[1] -= 2;
+    let new_elt = get(pos);
     if (new_elt != undefined && new_elt.getAttribute("hollow") != "true") {
       shift_click_corner = null;
       set_active(new_elt);
@@ -246,12 +243,7 @@ function toggle_controls(state) {
   // state = null, true, or false
   let cdiv = get("controls_div");
 
-  let val; // whether controls should be on or off
-  if (state == true) val = true;
-  else if (state == false) val = false;
-  else val = cdiv.innerHTML == "";
-
-  if (val) {
+  if (state == true || (state == null && cdiv.innerHTML == "")) {
     // show controls
     let dict = ELF_TYPES[pt].controls();
     let controls_listings = "";
@@ -280,9 +272,6 @@ let mouse_x = null;
 let mouse_y = null;
 let mouse_down = false;
 
-let captured_elt = null;
-let captured_x = null;
-let captured_y = null;
 let toggling_mode = null; // true if this mousedown is to toggle on,
 // false if this mousedown is to toggle off
 let containing_cell_id = null;
@@ -298,9 +287,6 @@ $(document).mouseup(function (event) {
   mouse_y = null;
   mouse_down = false;
 
-  captured_elt = null;
-  captured_x = null;
-  captured_y = null;
   toggling_mode = null;
 });
 
@@ -311,9 +297,6 @@ $(document).mousemove(function (event) {
 
     let key = get_captured_elt_id();
     if (key) {
-      captured_x = mouse_x;
-      captured_y = mouse_y;
-
       if (toggling_mode === null)
         // set mode (on or off)
         toggling_mode = ELVES[containing_cell_id].toggle_border(key, null);
@@ -331,18 +314,14 @@ $(document).mousemove(function (event) {
 // - grid cells are square and identical size
 // - borders have identical dimensions
 // - cell (1,1) and border (0,1) will always exist
-let sigma = 0.2; // measure of error tolerance for capturing
 function get_captured_elt_id() {
   let grid = get("grid_div");
   if (!grid.innerHTML) return null;
 
   let tl_rect = get("0,0").getBoundingClientRect();
-  let br_rect = get(`${2 * ROWS},${2 * COLS}`).getBoundingClientRect();
 
   let grid_l = tl_rect.left,
-    grid_r = br_rect.right,
-    grid_t = tl_rect.top,
-    grid_b = br_rect.bottom;
+    grid_t = tl_rect.top;
 
   let sample_cell = get("1,1");
   let cell_width = sample_cell.getBoundingClientRect().width;
@@ -354,19 +333,11 @@ function get_captured_elt_id() {
   // each cell is 1 unit x 1 unit
   let grid_mouse_x = (mouse_x - grid_l) / (cell_width + border_width),
     grid_mouse_y = (mouse_y - grid_t) / (cell_width + border_width);
-  let grid_r_relative = (grid_r - grid_l) / (cell_width + border_width),
-    grid_b_relative = (grid_b - grid_t) / (cell_width + border_width);
 
   let frac = (n) => n - Math.floor(n);
+  let between = (x, a, b) => a < x && x < b;
 
-  if (
-    !(
-      0 < grid_mouse_x &&
-      grid_mouse_x < COLS &&
-      0 < grid_mouse_y &&
-      grid_mouse_y < ROWS
-    )
-  )
+  if (!(between(grid_mouse_x, 0, COLS) && between(grid_mouse_y, 0, ROWS)))
     return null; // not in grid; nothing can be captured
   // TODO allow this to capture from slightly outside the grid?
   // (adjust to find the right elf; it's a bit annoying but it's super doable)
@@ -378,12 +349,12 @@ function get_captured_elt_id() {
   let frac_x = frac(grid_mouse_x),
     frac_y = frac(grid_mouse_y);
 
-  if (frac_x < sigma && sigma < frac_y && frac_y < 1 - sigma)
-    return "ArrowLeft";
-  if (frac_x > 1 - sigma && sigma < frac_y && frac_y < 1 - sigma)
+  let sigma = 0.2; // measure of error tolerance for capturing
+  if (frac_x < sigma && between(frac_y, sigma, 1 - sigma)) return "ArrowLeft";
+  if (frac_x > 1 - sigma && between(frac_y, sigma, 1 - sigma))
     return "ArrowRight";
-  if (frac_y < sigma && sigma < frac_x && frac_x < 1 - sigma) return "ArrowUp";
-  if (frac_y > 1 - sigma && sigma < frac_x && frac_x < 1 - sigma)
+  if (frac_y < sigma && between(frac_x, sigma, 1 - sigma)) return "ArrowUp";
+  if (frac_y > 1 - sigma && between(frac_x, sigma, 1 - sigma))
     return "ArrowDown";
 }
 
@@ -392,7 +363,6 @@ function get_captured_elt_id() {
 //////////////////
 
 function reset_button_callback() {
-  spinner_pos = null;
   get("header_div").innerHTML = "";
   get("controls_div").innerHTML = "";
   get("controls_button").innerHTML = "Show controls";
@@ -417,7 +387,6 @@ function set_unsolved() {
     current_request = null;
   }
   spinner_pos = null;
-  let solution_num, solutions, num_solutions;
 
   for (let elt_id of Object.keys(ELVES)) ELVES[elt_id].reset_solution();
 
@@ -458,7 +427,6 @@ function display_grid(param_dict) {
   // sets the value of grid_div to the default and assigns Elves
   if (param_dict === undefined) param_dict = get_param_values();
 
-  let border = PUZZLE_TYPES[pt].properties.border;
   let outside = PUZZLE_TYPES[pt].properties.outside;
   let r = param_dict.r || param_dict.n || 9; // 9 = default for Sudoku
   let c = param_dict.c || param_dict.n || 9;
@@ -482,11 +450,11 @@ function display_grid(param_dict) {
     L: outside.substring(3, 4) == "1" ? -2 : 0,
   };
 
-  let ans = "";
+  let ans = [];
   for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
-    ans += "<div class='grid_row'>";
+    ans.push("<div class='grid_row'>");
     for (let j = BOUNDS.L; j <= BOUNDS.R; ++j) {
-      let parity = 2 * ((i + 2) % 2) + ((j + 2) % 2);
+      let parity = ((i & 1) << 1) | (j & 1);
       let is_in_grid = 0 <= i && i <= 2 * r && 0 <= j && j <= 2 * c;
       let is_an_outside_clue =
         parity == 3 &&
@@ -511,15 +479,15 @@ function display_grid(param_dict) {
       if (display_settings && display_settings.no_border_lines && parity != 3)
         display_str = "visibility: hidden;"; // display=none on border elts
 
-      ans += `<div class="container_${obj} noselect" ${hollow_str} style='${color_str}; ${display_str}' id='${id_str}'>
+      ans.push(`<div class="container_${obj} noselect" ${hollow_str} style='${color_str}; ${display_str}' id='${id_str}'>
         <div class="puzzle_${obj} noselect" style='${vis_str}; ${display_str}' id='puzzle_${id_str}'></div>
         <div class="solution_${obj} noselect" style='${vis_str}; ${display_str}' id='solution_${id_str}'></div>
         <div class="shift_click_${obj}" style='${vis_str}; ${display_str}' id='shift_click_${id_str}'></div>
-        </div>`;
+        </div>`);
     }
-    ans += "</div>";
+    ans.push("</div>");
   }
-  get("grid_div").innerHTML = ans;
+  get("grid_div").innerHTML = ans.join("");
 
   // add elves to all cells (elements with i, j both odd)
   // first reset elves
