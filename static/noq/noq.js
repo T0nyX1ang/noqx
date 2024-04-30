@@ -21,6 +21,7 @@ $.getMultiScripts = function (arr, path) {
 $.getMultiScripts(SCRIPTS_TO_LOAD, "static/").done(function () {
   // process imported scripts here
 
+  while (!elf_types || !imp_types || !puzzle_types || !examples || !nav_keys);
   ELF_TYPES = elf_types;
   IMP_TYPES = imp_types;
   PUZZLE_TYPES = puzzle_types;
@@ -586,22 +587,23 @@ function display_example_buttons() {
 
 function parse_input() {
   // just shove all the data into a JSON object
-  let puzzle = {
-    param_values: get_param_values(),
-    grid: {},
-  };
+  let grid = {};
 
   for (let elf of Object.values(ELVES)) {
     let encoding = elf.encode_input();
     if (encoding != null) {
       if (is_json(encoding))
-        for (let key of Object.keys(encoding)) puzzle.grid[key] = encoding[key];
-      else puzzle.grid[elf.elt.id] = encoding;
+        for (let [key, val] of Object.entries(encoding)) grid[key] = val;
+      else grid[elf.elt.id] = encoding;
     }
   }
 
-  puzzle.puzzle_type = pt;
-  puzzle.properties = PUZZLE_TYPES[pt].properties;
+  let puzzle = {
+    param_values: get_param_values(),
+    grid: grid,
+    puzzle_type: pt,
+    properties: PUZZLE_TYPES[pt].properties,
+  };
   return JSON.stringify(puzzle);
 }
 
@@ -648,10 +650,10 @@ function spinner(start = false, timeout = 500) {
 // display solutions or error message //
 ////////////////////////////////////////
 
-let solution_num, solutions, num_solutions;
+let solution_id, solutions, num_solutions;
 
 function display_solutions(solution_str) {
-  solution_num = 0;
+  solution_id = 0;
   spinner_pos = null;
 
   solutions = JSON.parse(solution_str);
@@ -675,13 +677,13 @@ function display_solutions(solution_str) {
 }
 
 function display_next_solution() {
-  solution_num = (solution_num % num_solutions) + 1; // solutions are 1-indexed so this works correctly
-  get("solution_num").innerHTML = solution_num;
+  solution_id = (solution_id % num_solutions) + 1; // solutions are 1-indexed so this works correctly
+  get("solution_num").innerHTML = solution_id;
 
   for (let elf of Object.values(ELVES)) elf.reset_solution();
 
   // now put in this solution
-  let solution = solutions[solution_num];
+  let solution = solutions[solution_id];
   for (let elt_id of Object.keys(solution)) {
     if (ELVES[elt_id]) {
       ELVES[elt_id].load_solution(solution[elt_id]);
