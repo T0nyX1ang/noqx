@@ -345,13 +345,14 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
     }
 
     encode_input() {
-      let out2encoding = (out, id) => {
+      let out2encoding = (out, id, priority) => {
         let encoding = {};
-        if (out == null) encoding[id] = "";
-        else if (out1.constructor === {}.constructor) {
+        if (out == null) {
+          if (priority == "concat") encoding[id] = "";
+        } else if (out.constructor === {}.constructor) {
           // JSON
-          encoding = out1;
-        } else encoding[id] = out1;
+          encoding = out;
+        } else encoding[id] = out;
         return encoding;
       };
 
@@ -364,14 +365,14 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
         if (out2 !== null) return out2;
         else return out1;
       } else if (this.priority == "concat") {
-        let encoding1 = out2encoding(out1, this.elf1.elt.id);
-        let encoding2 = out2encoding(out2, this.elf2.elt.id);
+        let encoding1 = out2encoding(out1, this.elf1.elt.id, this.priority);
+        let encoding2 = out2encoding(out2, this.elf2.elt.id, this.priority);
         if (out1 != null || out2 != null)
           return add_json_objects(encoding1, encoding2);
         return null;
       } else if (this.priority == "compress") {
-        let encoding1 = out2encoding(out1, this.elf1.elt.id);
-        let encoding2 = out2encoding(out2, this.elf2.elt.id);
+        let encoding1 = out2encoding(out1, this.elf1.elt.id, this.priority);
+        let encoding2 = out2encoding(out2, this.elf2.elt.id, this.priority);
         return add_json_objects(encoding1, encoding2);
       }
     }
@@ -948,11 +949,10 @@ class NanroElf extends DirectSum(
   }
 
   encode_input() {
-    if (this.signpost_clue != 0) {
-      let encoding = super.encode_input();
-      encoding[`${this.i},${this.j}`] = `s${this.signpost_clue}`;
-      return encoding;
-    } else return super.encode_input();
+    let encoding = super.encode_input();
+    if (this.signpost_clue != 0)
+      encoding[`${this.i},${this.j}`] = `${this.signpost_clue}`;
+    return encoding;
   }
 
   load_example(str) {
