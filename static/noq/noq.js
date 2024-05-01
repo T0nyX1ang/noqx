@@ -6,6 +6,17 @@ let ELF_TYPES,
   IMPS = {};
 
 const puzzle_svg = document.getElementById("puzzle_svg");
+const [CELL_SIZE, LINE_WIDTH] = get_display_size();
+
+function get_display_size() {
+  let root = document.documentElement;
+  let computedStyle = window.getComputedStyle(root);
+  let CELL_SIZE = computedStyle.getPropertyValue("--dimension");
+  let LINE_WIDTH = computedStyle.getPropertyValue("--border");
+  CELL_SIZE = parseInt(CELL_SIZE.substring(0, CELL_SIZE.length - 2));
+  LINE_WIDTH = parseInt(LINE_WIDTH.substring(0, LINE_WIDTH.length - 2));
+  return [CELL_SIZE, LINE_WIDTH];
+}
 
 // load helper scripts, courtesy https://stackoverflow.com/questions/11803215/
 const SCRIPTS_TO_LOAD = ["noq/elves.js", "noq/data.js", "noq/imps.js"];
@@ -452,13 +463,6 @@ function display_grid(param_dict) {
     L: outside.substring(3, 4) == "1" ? -2 : 0,
   };
 
-  let root = document.documentElement;
-  let computedStyle = window.getComputedStyle(root);
-  let CELL_SIZE = computedStyle.getPropertyValue("--dimension");
-  let LINE_WIDTH = computedStyle.getPropertyValue("--border");
-  CELL_SIZE = parseInt(CELL_SIZE.substring(0, CELL_SIZE.length - 2));
-  LINE_WIDTH = parseInt(LINE_WIDTH.substring(0, LINE_WIDTH.length - 2));
-
   puzzle_svg.setAttribute("width", ROWS * CELL_SIZE + (ROWS + 1) * LINE_WIDTH);
   puzzle_svg.setAttribute("height", COLS * CELL_SIZE + (COLS + 1) * LINE_WIDTH);
   for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
@@ -470,7 +474,7 @@ function display_grid(param_dict) {
         height = i % 2 ? CELL_SIZE : LINE_WIDTH;
       let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("fill", parity == 3 ? "white" : "gainsboro");
-      rect.setAttribute("id", `cell_${i}_${j}`);
+      rect.setAttribute("id", `${i},${j}`);
       rect.setAttribute("x", x);
       rect.setAttribute("y", y);
       rect.setAttribute("width", width);
@@ -523,22 +527,22 @@ function display_grid(param_dict) {
   ELVES = {};
   for (let i = BOUNDS.U + 1; i <= BOUNDS.D - 1; i += 2)
     for (let j = BOUNDS.L + 1; j <= BOUNDS.R - 1; j += 2) {
-      let id_str = `cell_${i}_${j}`;
+      let id_str = `${i},${j}`;
       let borders = {
-        ArrowUp: get(`cell_${i - 1}_${j}`),
-        ArrowRight: get(`cell_${i}_${j + 1}`),
-        ArrowDown: get(`cell_${i + 1}_${j}`),
-        ArrowLeft: get(`cell_${i}_${j - 1}`),
+        ArrowUp: get(`${i - 1},${j}`),
+        ArrowRight: get(`${i},${j + 1}`),
+        ArrowDown: get(`${i + 1},${j}`),
+        ArrowLeft: get(`${i},${j - 1}`),
       };
       let dots = {
-        q: get(`cell_${i - 1}_${j - 1}`),
-        e: get(`cell_${i - 1}_${j + 1}`),
-        c: get(`cell_${i + 1}_${j + 1}`),
-        z: get(`cell_${i + 1}_${j - 1}`),
+        q: get(`${i - 1},${j - 1}`),
+        e: get(`${i - 1},${j + 1}`),
+        c: get(`${i + 1},${j + 1}`),
+        z: get(`${i + 1},${j - 1}`),
       };
       let self = get(id_str);
       ELVES[id_str] = new ELF_TYPES[pt](
-        (elt = get(id_str)),
+        (elt = self),
         (i = i),
         (j = j),
         (x = self.x.baseVal.value),

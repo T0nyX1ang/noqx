@@ -1,6 +1,6 @@
 let image_url = (str) =>
   str
-    ? `url('static/noq/images/${str + (/^.*\.png$/.test(str) ? "" : ".png")}')`
+    ? `static/noq/images/${str + (/^.*\.png$/.test(str) ? "" : ".png")}`
     : str;
 const nav_keys = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
 const del_keys = ["Backspace", "Delete", "Escape"];
@@ -57,19 +57,21 @@ const CLIPBOARD_SYMBOLS = {
 };
 
 function create_svg_elt(key_set, type = "text", id, options = null) {
+  let elt;
   if (type == "text") {
-    let elt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    elt.setAttribute("font-size", "var(--dimension)/3");
+    elt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    elt.setAttribute("font-size", `${CELL_SIZE * 0.8}`);
     elt.setAttribute("font-family", "Arial");
     elt.setAttribute("fill", "black");
     elt.setAttribute("id", id);
-    for (let [key, val] in Object.entries(options)) elt.setAttribute(key, val);
+    for (let [key, val] of Object.entries(options)) elt.setAttribute(key, val);
+    elt.textContent = options["textContent"];
   } else if (type == "image") {
-    let elt = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    elt.setAttribute("width", "var(--dimension)");
-    elt.setAttribute("height", "var(--dimension)");
+    elt = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    elt.setAttribute("width", `${CELL_SIZE}`);
+    elt.setAttribute("height", `${CELL_SIZE}`);
     elt.setAttribute("id", id);
-    for (let [key, val] in Object.entries(options)) elt.setAttribute(key, val);
+    for (let [key, val] of Object.entries(options)) elt.setAttribute(key, val);
   }
   console.log(id, elt);
   key_set.add(id);
@@ -167,6 +169,7 @@ class Elf {
     this.dots = dots;
     this.i = i;
     this.j = j;
+    this.id = `${i}_${j}`;
     this.x = x;
     this.y = y;
 
@@ -184,13 +187,12 @@ class Elf {
       let rg = selected_range;
       if (rg) {
         for (let i = rg[0]; i <= rg[1]; i += 2)
-          for (let j = rg[2]; j <= rg[3]; j += 2)
-            ELVES[`cell_${i}_${j}`].reset();
+          for (let j = rg[2]; j <= rg[3]; j += 2) ELVES[`${i},${j}`].reset();
       } else this.reset();
     }
   }
   load_example(str) {
-    console.log(str);
+    // console.log(str);
     if (COLORS.includes(str)) {
       this.puzzle_color = str;
       this.elt.setAttribute("fill", str);
@@ -241,7 +243,6 @@ class Elf {
       );
   }
   reset() {
-    this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
     this.puzzle_image_str = "";
     this.puzzle_color = null;
     this.elt.setAttribute("fill", "white");
@@ -259,7 +260,8 @@ class Elf {
     for (let key of this.solution_keys) puzzle_svg.removeChild(get(key));
     this.solution_keys = new Set();
     for (let [key, border] of Object.entries(this.borders))
-      border.elt.setAttribute("fill", color ? color : "gainsboro");
+      if (border.elt)
+        border.elt.setAttribute("fill", color ? color : "gainsboro");
   }
   puzzle_neighbors_() {
     return puzzle_neighbors(this.i, this.j);
@@ -338,10 +340,10 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
       return controls1;
     }
 
-    constructor(elt, borders, i, j, dots) {
-      super(elt, borders, i, j, dots, default_image_url);
-      this.elf1 = new Elf1(elt, borders, i, j, dots, default_image_url);
-      this.elf2 = new Elf2(elt, borders, i, j, dots, default_image_url);
+    constructor(elt, i, j, x, y, borders, dots) {
+      super(elt, i, j, x, y, borders, dots, default_image_url);
+      this.elf1 = new Elf1(elt, i, j, x, y, borders, dots, default_image_url);
+      this.elf2 = new Elf2(elt, i, j, x, y, borders, dots, default_image_url);
       this.priority = priority;
     }
 
@@ -456,9 +458,9 @@ class BorderElf extends Elf {
 
   encode_input() {
     let encoding = {};
-    // for (let border_id of Object.keys(this.borders))
-    //   if (this.puzzle_borders[border_id].style.backgroundColor == "black")
-    //     encoding[this.borders[border_id].id] = "black";
+    for (let border_id of Object.keys(this.borders))
+      if (this.borders[border_id].elt.fill == "black")
+        encoding[this.id] = "black";
     return encoding;
   }
 }
@@ -471,8 +473,8 @@ function ImageElf(dict, controls_dict, styles = {}) {
       return controls;
     }
 
-    constructor(elt, borders, i, j, dots, default_image_url) {
-      super(elt, borders, i, j, dots, default_image_url);
+    constructor(elt, i, j, x, y, borders, dots, default_image_url) {
+      super(elt, i, j, x, y, borders, dots, default_image_url);
       this.dict = dict;
     }
 
@@ -484,13 +486,13 @@ function ImageElf(dict, controls_dict, styles = {}) {
       if (!this.dict[key]) return false;
 
       this.key = key;
-      // this.puzzle_elt.style = "";
-      this.puzzle_elt.style.backgroundImage = image_url(this.dict[key]);
+      let options = { x: this.x, y: this.y, href: image_url(this.dict[key]) };
       if (styles[key] !== undefined) {
-        for (const [attribute, value] of Object.entries(styles[key])) {
-          this.puzzle_elt.style[attribute] = value;
-        }
+        for (const [attribute, value] of Object.entries(styles[key]))
+          options[attribute] = value;
       }
+      let id = `image_${this.i}_${this.j}`;
+      create_svg_elt(this.puzzle_keys, "image", id, options);
       return true;
     }
 
@@ -512,15 +514,24 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
       return controls;
     }
 
-    constructor(elt, borders, i, j, dots) {
-      super(elt, borders, i, j, dots, default_image_url);
+    constructor(elt, i, j, x, y, borders, dots) {
+      super(elt, i, j, x, y, borders, dots, default_image_url);
+      this.x += CELL_SIZE * 0.27;
+      this.y += CELL_SIZE * 0.8;
     }
 
     handle_input(key, modifiers) {
       super.handle_input(key, modifiers);
       if (!"1234567890".includes(key)) return;
 
-      let num = parseInt(this.puzzle_elt.innerHTML + key);
+      let id = `int_${this.i}_${this.j}`,
+        svg_elt = null,
+        num;
+      if (!(id in this.puzzle_keys)) num = parseInt(key);
+      else {
+        svg_elt = get(id);
+        num = parseInt(svg_elt.textContent + key);
+      }
 
       if (min <= num && num <= max);
       else if (min <= key && key <= max)
@@ -528,7 +539,15 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
         // restarting with this key works
         num = key;
       else return; // nothing works, so do nothing
-      this.puzzle_elt.innerHTML = num + ""; // now set the HTML
+
+      if (svg_elt) {
+        svg_elt.setAttribute("textContent", num + "");
+      } else
+        create_svg_elt(this.puzzle_keys, "text", id, {
+          x: this.x,
+          y: this.y,
+          textContent: num + "",
+        });
     }
 
     load_example(str) {
@@ -802,8 +821,8 @@ class KakuroElf extends Elf {
     return controls;
   }
 
-  constructor(elt, borders, i, j) {
-    super(elt, borders, i, j);
+  constructor(elt, i, j, x, y, borders, dots) {
+    super(elt, i, j, x, y, borders, dots);
     this.across_clue = 0;
     this.down_clue = 0;
     this.is_black = false;
@@ -923,8 +942,8 @@ class NanroElf extends DirectSum(
     return controls;
   }
 
-  constructor(elt, borders, i, j) {
-    super(elt, borders, i, j);
+  constructor(elt, i, j, x, y, borders, dots) {
+    super(elt, i, j, x, y, borders, dots);
     this.signpost_clue = 0; // signpost clue
   }
 
@@ -994,8 +1013,8 @@ class NonogramElf extends DirectSum(
     return controls;
   }
 
-  constructor(elt) {
-    super(elt);
+  constructor(elt, i, j, x, y, borders, dots) {
+    super(elt, i, j, x, y, borders, dots);
     this.clue_type = /^\-1.*$/.test(elt.id) ? "top" : "left";
 
     this.puzzle_elt.style.display = "flex";
@@ -1272,8 +1291,8 @@ class TapaElf extends Elf {
     return controls;
   }
 
-  constructor(elt) {
-    super(elt);
+  constructor(elt, i, j, x, y, borders, dots) {
+    super(elt, i, j, x, y, borders, dots);
     this.clues = [];
   }
 
