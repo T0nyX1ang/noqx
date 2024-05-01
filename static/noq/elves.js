@@ -183,26 +183,19 @@ class Elf {
 
   handle_input(key, modifiers) {
     if (del_keys.includes(key)) {
-      let rg = selected_range;
+      let rg = selected_range,
+        elves = [];
       if (rg) {
         for (let i = rg[0]; i <= rg[1]; i += 2)
-          for (let j = rg[2]; j <= rg[3]; j += 2) {
-            let elf = ELVES[`${i},${j}`];
-            this.puzzle_elt.style = "";
-            elf.puzzle_elt.style.backgroundImage = image_url(
-              this.default_image_url
-            );
-            elf.puzzle_elt.innerHTML = "";
-            elf.key = null;
-          }
-      } else {
-        this.puzzle_elt.style = "";
-        this.puzzle_elt.style.backgroundImage = image_url(
-          this.default_image_url
-        );
-        this.puzzle_image_str = "";
-        this.puzzle_elt.innerHTML = "";
-        this.key = null;
+          for (let j = rg[2]; j <= rg[3]; j += 2)
+            elves.push(ELVES[`${i},${j}`]);
+      } else elves.push(this);
+      for (let elf of elves) {
+        elf.puzzle_elt.style = "";
+        elf.puzzle_elt.style.backgroundImage = image_url(elf.default_image_url);
+        elf.puzzle_image_str = "";
+        elf.puzzle_elt.innerHTML = "";
+        elf.key = null;
       }
     }
   }
@@ -257,17 +250,8 @@ class Elf {
         this.puzzle_borders[key].style.backgroundColor; // reset solution border to puzzle border
     }
   }
-  puzzle_neighbors() {
-    return {
-      nw: get(`puzzle_${this.i - 2},${this.j - 2}`),
-      n: get(`puzzle_${this.i - 2},${this.j}`),
-      ne: get(`puzzle_${this.i - 2},${this.j + 2}`),
-      w: get(`puzzle_${this.i},${this.j - 2}`),
-      e: get(`puzzle_${this.i},${this.j + 2}`),
-      sw: get(`puzzle_${this.i + 2},${this.j - 2}`),
-      s: get(`puzzle_${this.i + 2},${this.j}`),
-      se: get(`puzzle_${this.i + 2},${this.j + 2}`),
-    };
+  puzzle_neighbors_() {
+    return puzzle_neighbors(this.i, this.j);
   }
   toggle_border(key, val) {
     // val = null, true, or false
@@ -361,6 +345,16 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
     }
 
     encode_input() {
+      let out2encoding = (out, id) => {
+        let encoding = {};
+        if (out == null) encoding[id] = "";
+        else if (out1.constructor === {}.constructor) {
+          // JSON
+          encoding = out1;
+        } else encoding[id] = out1;
+        return encoding;
+      };
+
       let out1 = this.elf1.encode_input();
       let out2 = this.elf2.encode_input();
       if (this.priority == "first") {
@@ -370,49 +364,14 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
         if (out2 !== null) return out2;
         else return out1;
       } else if (this.priority == "concat") {
-        let is_nonempty = false;
-        let encoding1 = {};
-        if (out1 == null) encoding1[this.elf1.elt.id] = "";
-        else if (out1.constructor === {}.constructor) {
-          // JSON
-          encoding1 = out1;
-          is_nonempty = true;
-        } else {
-          encoding1[this.elf1.elt.id] = out1;
-          is_nonempty = true;
-        }
-
-        let encoding2 = {};
-        if (out2 == null) encoding2[this.elf2.elt.id] = "";
-        else if (out2.constructor === {}.constructor) {
-          // JSON
-          encoding2 = out2;
-          is_nonempty = true;
-        } else {
-          encoding2[this.elf2.elt.id] = out2;
-          is_nonempty = true;
-        }
-
-        if (is_nonempty) return add_json_objects(encoding1, encoding2);
+        let encoding1 = out2encoding(out1, this.elf1.elt.id);
+        let encoding2 = out2encoding(out2, this.elf2.elt.id);
+        if (out1 != null || out2 != null)
+          return add_json_objects(encoding1, encoding2);
         return null;
       } else if (this.priority == "compress") {
-        let encoding1 = {};
-        if (out1 === null);
-        else if (out1.constructor === {}.constructor)
-          // JSON
-          encoding1 = out1;
-        else {
-          encoding1[this.elf1.elt.id] = out1;
-        }
-
-        let encoding2 = {};
-        if (out2 === null);
-        else if (out2.constructor === {}.constructor)
-          // JSON
-          encoding2 = out2;
-        else {
-          encoding2[this.elf2.elt.id] = out2;
-        }
+        let encoding1 = out2encoding(out1, this.elf1.elt.id);
+        let encoding2 = out2encoding(out2, this.elf2.elt.id);
         return add_json_objects(encoding1, encoding2);
       }
     }
@@ -686,15 +645,10 @@ function LetterElf(letterset, concat = false) {
 
     handle_input(key, modifiers) {
       super.handle_input(key, modifiers);
-      if (
-        !letterset.toLowerCase().includes(key) &
-        !letterset.toUpperCase().includes(key)
-      )
-        return;
+      letterset = letterset.toUpperCase();
+      if (!letterset.includes(key)) return;
       // now set the HTML
-      const casedKey = letterset.includes(key.toUpperCase())
-        ? key.toUpperCase()
-        : key.toLowerCase();
+      const casedKey = key.toUpperCase();
       this.puzzle_elt.innerHTML = concat
         ? this.puzzle_elt.innerHTML + casedKey
         : casedKey;
@@ -1079,7 +1033,6 @@ class NonogramElf extends DirectSum(
 
     if (["Backspace", "Delete", "Escape"].includes(key)) {
       if (this.curr_clue == "" && this.clues.length > 0) this.clues.pop();
-
       this.curr_clue = "";
     }
 
@@ -1166,14 +1119,8 @@ class SpiralGalaxiesElf extends Elf {
       return;
     }
 
-    let key0 = {
-      w: "ArrowUp",
-      a: "ArrowLeft",
-      d: "ArrowRight",
-      x: "ArrowDown",
-    }[key];
     if ("qweasdzxc".includes(key)) {
-      let neighbors = this.puzzle_neighbors();
+      let neighbors = this.puzzle_neighbors_();
       if (key == "q" && neighbors["nw"]) {
         // checks that this is in range
         toggle_background_image(this.puzzle_elt, "nw");
