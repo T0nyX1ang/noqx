@@ -56,6 +56,26 @@ const CLIPBOARD_SYMBOLS = {
   tent: "⛺",
 };
 
+function create_svg_elt(key_set, type = "text", id, options = null) {
+  if (type == "text") {
+    let elt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    elt.setAttribute("font-size", "var(--dimension)/3");
+    elt.setAttribute("font-family", "Arial");
+    elt.setAttribute("fill", "black");
+    elt.setAttribute("id", id);
+    for (let [key, val] in Object.entries(options)) elt.setAttribute(key, val);
+  } else if (type == "image") {
+    let elt = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    elt.setAttribute("width", "var(--dimension)");
+    elt.setAttribute("height", "var(--dimension)");
+    elt.setAttribute("id", id);
+    for (let [key, val] in Object.entries(options)) elt.setAttribute(key, val);
+  }
+  console.log(id, elt);
+  key_set.add(id);
+  puzzle_svg.appendChild(elt);
+}
+
 function add_json_objects(d1, d2) {
   let d = {};
   for (let key1 in d1) d[key1] = d1[key1];
@@ -140,182 +160,168 @@ class Elf {
     return { "Arrow keys/Mouse": "Select cell", Delete: "Clear cell" };
   }
 
-  constructor(elt, borders, i, j, dots, default_image_url = "") {
+  constructor(elt, i, j, x, y, borders, dots, default_image_url = "") {
+    // console.log(elt);
     this.elt = elt;
     this.borders = borders;
     this.dots = dots;
     this.i = i;
     this.j = j;
-    this.puzzle_borders = {};
-    this.solution_borders = {};
+    this.x = x;
+    this.y = y;
 
-    if (borders)
-      for (let id of Object.keys(borders)) {
-        this.puzzle_borders[id] = borders[id].querySelector(
-          ".puzzle_border_horizontal, .puzzle_border_vertical"
-        );
-        this.solution_borders[id] = borders[id].querySelector(
-          ".solution_border_horizontal, .solution_border_vertical"
-        );
-      }
-
-    this.puzzle_dots = {};
-    this.solution_dots = {};
-    if (dots)
-      for (let id of Object.keys(dots)) {
-        this.puzzle_dots[id] = dots[id].querySelector(".puzzle_dot");
-        this.solution_dots[id] = dots[id].querySelector(".solution_dot");
-      }
-
-    this.puzzle_elt = elt.querySelector(".puzzle_cell");
-    this.puzzle_elt.i = this.i;
-    this.puzzle_elt.j = this.j;
-    this.puzzle_elt.parent = this; // embed this data for convenience
-    this.default_image_url = default_image_url;
-    this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
-
-    this.solution_elt = elt.querySelector(".solution_cell");
-    this.solution_elt.i = this.i;
-    this.solution_elt.j = this.j;
+    // this.default_image_url = default_image_url;
+    this.puzzle_keys = new Set();
+    this.solution_keys = new Set();
+    this.puzzle_color = null;
+    this.solution_color = null;
 
     this.key = null;
   }
 
   handle_input(key, modifiers) {
     if (del_keys.includes(key)) {
-      let rg = selected_range,
-        elves = [];
+      let rg = selected_range;
       if (rg) {
         for (let i = rg[0]; i <= rg[1]; i += 2)
           for (let j = rg[2]; j <= rg[3]; j += 2)
-            elves.push(ELVES[`${i},${j}`]);
-      } else elves.push(this);
-      for (let elf of elves) {
-        elf.puzzle_elt.style = "";
-        elf.puzzle_elt.style.backgroundImage = image_url(elf.default_image_url);
-        elf.puzzle_image_str = "";
-        elf.puzzle_elt.innerHTML = "";
-        elf.key = null;
-      }
+            ELVES[`cell_${i}_${j}`].reset();
+      } else this.reset();
     }
   }
   load_example(str) {
-    if (COLORS.includes(str)) this.puzzle_elt.style.backgroundColor = str;
-    else if (/^[0-9\?]+$/.test(str)) this.puzzle_elt.innerHTML = str;
-    else if (/^.*\.png$/.test(str)) {
-      this.puzzle_elt.style.backgroundImage = image_url(str);
+    console.log(str);
+    if (COLORS.includes(str)) {
+      this.puzzle_color = str;
+      this.elt.setAttribute("fill", str);
+    } else if (/^.*\.png$/.test(str)) {
+      create_svg_elt(
+        (key_set = this.puzzle_keys),
+        (type = "image"),
+        (id = `image_${i}_${j}`),
+        (options = { x: this.x, y: this.y, href: image_url(str) })
+      );
       this.puzzle_image_str = str.substring(0, str.length - 4); // remove `.png` from str
-    } else this.puzzle_elt.innerHTML = str;
+    } else
+      create_svg_elt(
+        (key_set = this.puzzle_keys),
+        (type = "text"),
+        (id = `text_${i}_${j}`),
+        (options = { x: this.x, y: this.y, textContent: str })
+      );
   }
   load_solution(str) {
     if (COLORS.includes(str)) {
-      this.solution_elt.style.backgroundColor = str;
-      if (str === "black") this.solution_elt.style.color = "gray";
-      this.solution_elt.innerHTML = this.puzzle_elt.innerHTML; // retain the text
-    } else if (/^[0-9]+$/.test(str)) this.solution_elt.innerHTML = str;
-    else if (/^.+\.png$/.test(str)) {
-      let image_urls = [];
+      this.solution_color = str;
+      this.elt.setAttribute("fill", str);
+    } else if (/^.+\.png$/.test(str)) {
       let image_strs = [];
       for (let url of str.split(",")) {
-        image_urls.push(image_url(url));
+        create_svg_elt(
+          (key_set = this.solution_keys),
+          (type = "image"),
+          (id = `image_${i}_${j}`),
+          (options = { x: this.x, y: this.y, href: image_url(url) })
+        );
         image_strs.push(url.substring(0, url.length - 4)); // remove `.png` from str
       }
       this.solution_elt.style.backgroundImage = image_urls.join(",");
       this.solution_image_str = image_strs.sort().join(",");
-      if (pt === "hashi" && /^[0-9]+$/.test(this.puzzle_elt.innerHTML)) {
-        // special case for Hashi solution display
-        this.solution_elt.style.clipPath =
-          "polygon(0% 0%, 0% 100%, 20% 100%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 100%, 100% 100%, 100% 0%)";
-      }
-    } else this.solution_elt.innerHTML = str;
+      // if (pt === "hashi" && /^[0-9]+$/.test(this.puzzle_elt.innerHTML)) {
+      //   // special case for Hashi solution display
+      //   this.solution_elt.style.clipPath =
+      //     "polygon(0% 0%, 0% 100%, 20% 100%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 100%, 100% 100%, 100% 0%)";
+      // }
+    } else
+      create_svg_elt(
+        (key_set = this.solution_keys),
+        (type = "text"),
+        (id = `text_${i}_${j}`),
+        (options = { x: this.x, y: this.y, textContent: str })
+      );
   }
   reset() {
     this.puzzle_elt.style.backgroundImage = image_url(this.default_image_url);
     this.puzzle_image_str = "";
-    this.puzzle_elt.style.backgroundColor = "";
-    this.puzzle_elt.style.color = "";
-    this.puzzle_elt.innerHTML = "";
-    for (let obj of Object.values(this.puzzle_borders))
-      obj.style.backgroundColor = "";
+    this.puzzle_color = null;
+    this.elt.setAttribute("fill", "white");
+    for (let key of this.puzzle_keys) puzzle_svg.removeChild(get(key));
+    this.puzzle_keys = new Set();
+    for (let [key, border] of Object.entries(this.borders))
+      border.elt.setAttribute("fill", "gainsboro");
     this.reset_solution();
   }
   reset_solution() {
-    this.solution_elt.style.backgroundImage = "";
     this.solution_image_str = "";
-    this.solution_elt.style.backgroundColor = "";
-    this.solution_elt.style.color = "";
-    this.solution_elt.innerHTML = "";
-    for (let key of Object.keys(this.solution_borders)) {
-      this.solution_borders[key].style.backgroundColor =
-        this.puzzle_borders[key].style.backgroundColor; // reset solution border to puzzle border
-    }
+    this.solution_color = null;
+    let color = this.puzzle_color;
+    this.elt.setAttribute("fill", color ? color : "white");
+    for (let key of this.solution_keys) puzzle_svg.removeChild(get(key));
+    this.solution_keys = new Set();
+    for (let [key, border] of Object.entries(this.borders))
+      border.elt.setAttribute("fill", color ? color : "gainsboro");
   }
   puzzle_neighbors_() {
     return puzzle_neighbors(this.i, this.j);
   }
   toggle_border(key, val) {
     // val = null, true, or false
-    set_z_order([this.solution_borders[key], this.puzzle_borders[key]]);
-    return toggle_border(this.puzzle_borders[key], val);
+    // set_z_order([this.solution_borders[key], this.puzzle_borders[key]]);
+    // return toggle_border(this.puzzle_borders[key], val);
+    return;
   }
 
   generate_copy_td() {
-    let td = make_elt("TD");
-
-    // background color
-    let background_color =
-      this.solution_elt.style.backgroundColor ||
-      this.puzzle_elt.style.backgroundColor;
-    if (background_color) td.style.backgroundColor = background_color;
-
-    // borders
-    const key_to_border = {
-      ArrowLeft: "borderLeft",
-      ArrowRight: "borderRight",
-      ArrowUp: "borderTop",
-      ArrowDown: "borderBottom",
-    };
-    // first, default borders (for edges of grid, not including outside clues)
-    if (this.i == 1 && 1 <= this.j && this.j <= 2 * COLS - 1)
-      // top border
-      td.style.borderTop = "1px solid black";
-    if (this.i == 2 * ROWS - 1 && 1 <= this.j && this.j <= 2 * COLS - 1)
-      // bottom border
-      td.style.borderBottom = "1px solid black";
-    if (this.j == 1 && 1 <= this.i && this.i <= 2 * ROWS - 1)
-      // left border
-      td.style.borderLeft = "1px solid black";
-    if (this.j == 2 * COLS - 1 && 1 <= this.i && this.i <= 2 * ROWS - 1)
-      // right border
-      td.style.borderRight = "1px solid black";
-    if (this.borders)
-      for (let key of nav_keys) {
-        let border_color =
-          this.solution_borders[key].style.backgroundColor ||
-          this.puzzle_borders[key].style.backgroundColor;
-        if (COLORS.includes(border_color) && !td.style[key_to_border[key]])
-          td.style[key_to_border[key]] = `1px solid ${border_color}`;
-      }
-
-    // text content of cell
-    let contents = this.solution_elt.innerHTML || this.puzzle_elt.innerHTML;
-
-    if (CLIPBOARD_SYMBOLS[this.solution_image_str])
-      td.innerHTML = CLIPBOARD_SYMBOLS[this.solution_image_str];
-    else if (CLIPBOARD_SYMBOLS[this.puzzle_image_str])
-      td.innerHTML = CLIPBOARD_SYMBOLS[this.puzzle_image_str];
-    else if (contents) {
-      td.innerHTML = "'" + contents;
-
-      // flip text color to white, if the cell is black (for e.g. Akari, Shakashaka)
-      if (td.style.backgroundColor == "black") td.style.color = "white";
-      if (td.style.backgroundColor == "green") td.style.color = "white";
-    }
-
-    td.style.textAlign = "center";
-    // td.style.verticalAlign = 'middle'; // TODO why doesn't this work?? :(
-
-    return td;
+    // let td = make_elt("TD");
+    // // background color
+    // let background_color =
+    //   this.solution_elt.style.backgroundColor ||
+    //   this.puzzle_elt.style.backgroundColor;
+    // if (background_color) td.style.backgroundColor = background_color;
+    // // borders
+    // const key_to_border = {
+    //   ArrowLeft: "borderLeft",
+    //   ArrowRight: "borderRight",
+    //   ArrowUp: "borderTop",
+    //   ArrowDown: "borderBottom",
+    // };
+    // // first, default borders (for edges of grid, not including outside clues)
+    // if (this.i == 1 && 1 <= this.j && this.j <= 2 * COLS - 1)
+    //   // top border
+    //   td.style.borderTop = "1px solid black";
+    // if (this.i == 2 * ROWS - 1 && 1 <= this.j && this.j <= 2 * COLS - 1)
+    //   // bottom border
+    //   td.style.borderBottom = "1px solid black";
+    // if (this.j == 1 && 1 <= this.i && this.i <= 2 * ROWS - 1)
+    //   // left border
+    //   td.style.borderLeft = "1px solid black";
+    // if (this.j == 2 * COLS - 1 && 1 <= this.i && this.i <= 2 * ROWS - 1)
+    //   // right border
+    //   td.style.borderRight = "1px solid black";
+    // if (this.borders)
+    //   for (let key of nav_keys) {
+    //     let border_color = null;
+    //     // let border_color =
+    //     //   this.solution_borders[key].style.backgroundColor ||
+    //     //   this.puzzle_borders[key].style.backgroundColor;
+    //     if (COLORS.includes(border_color) && !td.style[key_to_border[key]])
+    //       td.style[key_to_border[key]] = `1px solid ${border_color}`;
+    //   }
+    // // text content of cell
+    // let contents = this.solution_elt.innerHTML || this.puzzle_elt.innerHTML;
+    // if (CLIPBOARD_SYMBOLS[this.solution_image_str])
+    //   td.innerHTML = CLIPBOARD_SYMBOLS[this.solution_image_str];
+    // else if (CLIPBOARD_SYMBOLS[this.puzzle_image_str])
+    //   td.innerHTML = CLIPBOARD_SYMBOLS[this.puzzle_image_str];
+    // else if (contents) {
+    //   td.innerHTML = "'" + contents;
+    //   // flip text color to white, if the cell is black (for e.g. Akari, Shakashaka)
+    //   if (td.style.backgroundColor == "black") td.style.color = "white";
+    //   if (td.style.backgroundColor == "green") td.style.color = "white";
+    // }
+    // td.style.textAlign = "center";
+    // // td.style.verticalAlign = 'middle'; // TODO why doesn't this work?? :(
+    // return td;
   }
 }
 
@@ -450,9 +456,9 @@ class BorderElf extends Elf {
 
   encode_input() {
     let encoding = {};
-    for (let border_id of Object.keys(this.borders))
-      if (this.puzzle_borders[border_id].style.backgroundColor == "black")
-        encoding[this.borders[border_id].id] = "black";
+    // for (let border_id of Object.keys(this.borders))
+    //   if (this.puzzle_borders[border_id].style.backgroundColor == "black")
+    //     encoding[this.borders[border_id].id] = "black";
     return encoding;
   }
 }
@@ -1251,10 +1257,10 @@ class SudokuElf extends IntElf(1, 9, "[1-9]") {
   }
 
   _border_upkeep() {
-    if ([5, 11].includes(this.i))
-      toggle_border(this.solution_borders["ArrowDown"], true);
-    if ([5, 11].includes(this.j))
-      toggle_border(this.solution_borders["ArrowRight"], true);
+    // if ([5, 11].includes(this.i))
+    //   toggle_border(this.solution_borders["ArrowDown"], true);
+    // if ([5, 11].includes(this.j))
+    //   toggle_border(this.solution_borders["ArrowRight"], true);
   }
 }
 
@@ -1467,9 +1473,9 @@ class CustomElf extends Elf {
 
   encode_input() {
     let encoding = {};
-    for (let border_id of Object.keys(this.borders))
-      if (this.puzzle_borders[border_id].style.backgroundColor == "black")
-        encoding[this.borders[border_id].id] = "black";
+    // for (let border_id of Object.keys(this.borders))
+    //   if (this.puzzle_borders[border_id].style.backgroundColor == "black")
+    //     encoding[this.borders[border_id].id] = "black";
     const innerHtml = this.puzzle_elt.innerHTML;
     encoding[`${this.i},${this.j}`] = innerHtml ? innerHtml : undefined;
     return encoding;

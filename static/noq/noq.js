@@ -518,32 +518,35 @@ function display_grid(param_dict) {
   // }
   // get("grid_div").innerHTML = ans.join("");
 
-  // // add elves to all cells (elements with i, j both odd)
-  // // first reset elves
-  // ELVES = {};
-  // for (let i = BOUNDS.U + 1; i <= BOUNDS.D - 1; i += 2)
-  //   for (let j = BOUNDS.L + 1; j <= BOUNDS.R - 1; j += 2) {
-  //     let id_str = `${i},${j}`;
-  //     let borders = {
-  //       ArrowUp: get(`${i - 1},${j}`),
-  //       ArrowRight: get(`${i},${j + 1}`),
-  //       ArrowDown: get(`${i + 1},${j}`),
-  //       ArrowLeft: get(`${i},${j - 1}`),
-  //     };
-  //     let dots = {
-  //       q: get(`${i - 1},${j - 1}`),
-  //       e: get(`${i - 1},${j + 1}`),
-  //       c: get(`${i + 1},${j + 1}`),
-  //       z: get(`${i + 1},${j - 1}`),
-  //     };
-  //     ELVES[id_str] = new ELF_TYPES[pt](
-  //       (elt = get(id_str)),
-  //       (borders = borders),
-  //       (i = i),
-  //       (j = j),
-  //       (dots = dots)
-  //     );
-  //   }
+  // add elves to all cells (elements with i, j both odd)
+  // first reset elves
+  ELVES = {};
+  for (let i = BOUNDS.U + 1; i <= BOUNDS.D - 1; i += 2)
+    for (let j = BOUNDS.L + 1; j <= BOUNDS.R - 1; j += 2) {
+      let id_str = `cell_${i}_${j}`;
+      let borders = {
+        ArrowUp: get(`cell_${i - 1}_${j}`),
+        ArrowRight: get(`cell_${i}_${j + 1}`),
+        ArrowDown: get(`cell_${i + 1}_${j}`),
+        ArrowLeft: get(`cell_${i}_${j - 1}`),
+      };
+      let dots = {
+        q: get(`cell_${i - 1}_${j - 1}`),
+        e: get(`cell_${i - 1}_${j + 1}`),
+        c: get(`cell_${i + 1}_${j + 1}`),
+        z: get(`cell_${i + 1}_${j - 1}`),
+      };
+      let self = get(id_str);
+      ELVES[id_str] = new ELF_TYPES[pt](
+        (elt = get(id_str)),
+        (i = i),
+        (j = j),
+        (x = self.x.baseVal.value),
+        (y = self.y.baseVal.value),
+        (borders = borders),
+        (dots = dots)
+      );
+    }
 }
 
 ////////////////////////////////
@@ -578,8 +581,8 @@ function load_puzzle(puzzle) {
     else if (ELVES[elt_id]) {
       ELVES[elt_id].load_example(puzzle.grid[elt_id]);
     } else {
-      set_z_order([get("solution_" + elt_id), get("puzzle_" + elt_id)]);
-      get("puzzle_" + elt_id).style.backgroundColor = "black";
+      // set_z_order([get("solution_" + elt_id), get("puzzle_" + elt_id)]);
+      // get("puzzle_" + elt_id).style.backgroundColor = "black";
     }
   }
 }
