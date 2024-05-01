@@ -463,8 +463,8 @@ function display_grid(param_dict) {
     L: outside.substring(3, 4) == "1" ? -2 : 0,
   };
 
-  puzzle_svg.setAttribute("width", ROWS * CELL_SIZE + (ROWS + 1) * LINE_WIDTH);
-  puzzle_svg.setAttribute("height", COLS * CELL_SIZE + (COLS + 1) * LINE_WIDTH);
+  puzzle_svg.setAttribute("width", COLS * CELL_SIZE + (COLS + 1) * LINE_WIDTH);
+  puzzle_svg.setAttribute("height", ROWS * CELL_SIZE + (ROWS + 1) * LINE_WIDTH);
   for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
     for (let j = BOUNDS.L; j <= BOUNDS.R; ++j) {
       let parity = ((i & 1) << 1) | (j & 1);
