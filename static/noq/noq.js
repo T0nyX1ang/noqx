@@ -586,7 +586,7 @@ function load_puzzle(puzzle) {
       ELVES[elt_id].load_example(puzzle.grid[elt_id]);
     } else {
       // set_z_order([get("solution_" + elt_id), get("puzzle_" + elt_id)]);
-      // get("puzzle_" + elt_id).style.backgroundColor = "black";
+      get(elt_id).setAttribute("fill", "black");
     }
   }
 }

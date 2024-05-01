@@ -202,7 +202,7 @@ class Elf {
       });
       this.puzzle_image_str = str.substring(0, str.length - 4); // remove `.png` from str
     } else
-      create_svg_elt(this.puzzle_elts, "text", `text_${i}_${j}`, {
+      create_svg_elt(this.puzzle_elts, "text", `text_${this.i}_${this.j}`, {
         x: this.x,
         y: this.y,
         textContent: str,
@@ -551,32 +551,6 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
   };
 }
 
-class QuestionMarkElf extends Elf {
-  static controls() {
-    let controls = super.controls();
-    controls["?"] = "Add '?' clue";
-    return controls;
-  }
-
-  handle_input(key, modifiers) {
-    super.handle_input(key, modifiers);
-    if (key == "?") {
-      this.puzzle_elt.innerHTML = "?";
-      return true;
-    }
-  }
-
-  load_example(str) {
-    if (str === "?") this.handle_input("?", null);
-    return;
-  }
-
-  encode_input() {
-    if (this.puzzle_elt.innerHTML == "?") return "?";
-    else return null;
-  }
-}
-
 // keyToColor maps key: [HTML color name, nickname]
 // resetInnerHtml = true iff shaded cells cannot have other clues in them
 function BgColorElf(
@@ -600,31 +574,32 @@ function BgColorElf(
       if (key in keyToColor) {
         const bgColor = keyToColor[key][0];
         const innerColor = keyToColor[key][1];
-        if (this.puzzle_elt.style.backgroundColor == bgColor) {
-          this.puzzle_elt.style.backgroundColor = "";
-          this.puzzle_elt.style.color = "";
+        if (this.puzzle_color == bgColor) {
+          this.puzzle_color = null;
+          this.elt.setAttribute("fill", "white");
         } else {
-          if (resetInnerHtml) {
-            this.puzzle_elt.innerHTML = "";
-            this.puzzle_elt.style.backgroundImage = "";
-          }
-          this.puzzle_elt.style.backgroundColor = bgColor;
-          this.puzzle_elt.style.color = innerColor;
+          // if (resetInnerHtml) {
+          //   this.puzzle_elt.innerHTML = "";
+          //   this.puzzle_elt.style.backgroundImage = "";
+          // }
+          this.puzzle_color = bgColor;
+          this.elt.setAttribute("fill", bgColor);
+          for (elt in Object.values(this.puzzle_elts))
+            elt.setAttribute("fill", innerColor);
         }
-      } else if (
-        resetInnerHtml &&
-        this.puzzle_elt.style.backgroundColor &&
-        !del_keys.includes(key)
-      ) {
-        this.puzzle_elt.innerHTML = "";
-        this.puzzle_elt.style.backgroundImage = "";
       }
+      // else if (
+      //   resetInnerHtml &&
+      //   this.puzzle_color &&
+      //   !del_keys.includes(key)
+      // ) {
+      //   this.puzzle_elt.innerHTML = "";
+      //   this.puzzle_elt.style.backgroundImage = "";
+      // }
     }
 
     encode_input() {
-      if (this.puzzle_elt.style.backgroundColor != "")
-        return this.puzzle_elt.style.backgroundColor;
-      return null;
+      return this.puzzle_color != "" ? this.puzzle_color : null;
     }
 
     load_example(str) {
@@ -633,7 +608,10 @@ function BgColorElf(
           .map((l) => l[0])
           .includes(str)
       ) {
-        this.puzzle_elt.style.backgroundColor = str;
+        this.puzzle_color = str;
+        this.elt.setAttribute("fill", str);
+        // set_z_order([this.elt, this.elt, this.elt, this.elt]);
+        console.log(str, this.elt);
         return true;
       }
       return false;
@@ -659,24 +637,45 @@ function LetterElf(letterset, concat = false) {
       return controls;
     }
 
+    constructor(elt, i, j, x, y, borders, dots) {
+      super(elt, i, j, x, y, borders, dots);
+      this.x += CELL_SIZE * 0.27;
+      this.y += CELL_SIZE * 0.8;
+    }
+
     handle_input(key, modifiers) {
       super.handle_input(key, modifiers);
       letterset = letterset.toUpperCase();
       if (!letterset.includes(key)) return;
       // now set the HTML
       const casedKey = key.toUpperCase();
-      this.puzzle_elt.innerHTML = concat
-        ? this.puzzle_elt.innerHTML + casedKey
-        : casedKey;
+
+      let id = `letter_${this.i}_${this.j}`;
+      if (!(id in this.puzzle_elts))
+        create_svg_elt(this.puzzle_elts, "text", id, {
+          x: this.x,
+          y: this.y,
+          textContent: "",
+        });
+      let svg_elt = this.puzzle_elts[id],
+        new_str = concat ? svg_elt.textContent + casedKey : casedKey;
+      svg_elt.textContent = new_str;
+    }
+
+    load_example(str) {
+      for (let ch of str) this.handle_input(ch, null);
+      return;
     }
 
     encode_input() {
-      return this.puzzle_elt.innerHTML
-        ? encodeURIComponent(this.puzzle_elt.innerHTML)
-        : null;
+      let id = `letter_${this.i}_${this.j}`,
+        elt = this.puzzle_elts[id];
+      return elt ? encodeURIComponent(elt) : null;
     }
   };
 }
+
+QuestionMarkElf = LetterElf("?", false);
 
 /////////////////////////////////////
 //   PUZZLE-SPECIFIC ELF CLASSES   //
