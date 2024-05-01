@@ -5,6 +5,11 @@ let ELF_TYPES,
   ELVES = {},
   IMPS = {};
 
+const CELL_SIZE = 48;
+const LINE_WIDTH = 2;
+
+const puzzle_svg = document.getElementById("puzzle_svg");
+
 // load helper scripts, courtesy https://stackoverflow.com/questions/11803215/
 const SCRIPTS_TO_LOAD = ["noq/elves.js", "noq/data.js", "noq/imps.js"];
 $.getMultiScripts = function (arr, path) {
@@ -441,81 +446,148 @@ function display_grid(param_dict) {
     return;
   }
 
-  // set global vars
-  ROWS = r;
-  COLS = c;
-  BOUNDS = {
-    U: outside.substring(0, 1) == "1" ? -2 : 0,
-    R: outside.substring(1, 2) == "1" ? 2 * COLS + 2 : 2 * COLS,
-    D: outside.substring(2, 3) == "1" ? 2 * ROWS + 2 : 2 * ROWS,
-    L: outside.substring(3, 4) == "1" ? -2 : 0,
-  };
+  puzzle_svg.setAttribute("width", c * CELL_SIZE + (c + 1) * LINE_WIDTH);
+  puzzle_svg.setAttribute("height", r * CELL_SIZE + (r + 1) * LINE_WIDTH);
 
-  let ans = [];
-  for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
-    ans.push("<div class='grid_row'>");
-    for (let j = BOUNDS.L; j <= BOUNDS.R; ++j) {
-      let parity = ((i & 1) << 1) | (j & 1);
-      let is_in_grid = 0 <= i && i <= 2 * r && 0 <= j && j <= 2 * c;
-      let is_an_outside_clue =
-        parity == 3 &&
-        !([-1, 2 * r + 1].includes(i) && [-1, 2 * c + 1].includes(j));
-      let vis_str =
-        is_in_grid || is_an_outside_clue
-          ? "visibility: inherit"
-          : "visibility: hidden";
-      let color_str =
-        !is_in_grid && is_an_outside_clue ? `background-color: gray` : "";
-      let hollow_str = !is_in_grid && !is_an_outside_clue ? `hollow=true` : "";
-      let obj = {
-        0: "dot",
-        1: "border_horizontal",
-        2: "border_vertical",
-        3: "cell",
-      }[parity];
-      let id_str = `${i},${j}`;
-
-      let display_settings = PUZZLE_TYPES[pt].display;
-      let display_str = "";
-      if (display_settings && display_settings.no_border_lines && parity != 3)
-        display_str = "visibility: hidden;"; // display=none on border elts
-
-      ans.push(`<div class="container_${obj} noselect" ${hollow_str} style='${color_str}; ${display_str}' id='${id_str}'>
-        <div class="puzzle_${obj} noselect" style='${vis_str}; ${display_str}' id='puzzle_${id_str}'></div>
-        <div class="solution_${obj} noselect" style='${vis_str}; ${display_str}' id='solution_${id_str}'></div>
-        <div class="shift_click_${obj}" style='${vis_str}; ${display_str}' id='shift_click_${id_str}'></div>
-        </div>`);
+  // draw cells
+  for (let i = 0; i < r; i++) {
+    for (let j = 0; j < c; j++) {
+      let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("id", `cell_${i}_${j}`);
+      rect.setAttribute("x", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
+      rect.setAttribute("y", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
+      rect.setAttribute("width", CELL_SIZE);
+      rect.setAttribute("height", CELL_SIZE);
+      rect.setAttribute("fill", "white");
+      puzzle_svg.appendChild(rect);
     }
-    ans.push("</div>");
   }
-  get("grid_div").innerHTML = ans.join("");
 
-  // add elves to all cells (elements with i, j both odd)
-  // first reset elves
-  ELVES = {};
-  for (let i = BOUNDS.U + 1; i <= BOUNDS.D - 1; i += 2)
-    for (let j = BOUNDS.L + 1; j <= BOUNDS.R - 1; j += 2) {
-      let id_str = `${i},${j}`;
-      let borders = {
-        ArrowUp: get(`${i - 1},${j}`),
-        ArrowRight: get(`${i},${j + 1}`),
-        ArrowDown: get(`${i + 1},${j}`),
-        ArrowLeft: get(`${i},${j - 1}`),
-      };
-      let dots = {
-        q: get(`${i - 1},${j - 1}`),
-        e: get(`${i - 1},${j + 1}`),
-        c: get(`${i + 1},${j + 1}`),
-        z: get(`${i + 1},${j - 1}`),
-      };
-      ELVES[id_str] = new ELF_TYPES[pt](
-        (elt = get(id_str)),
-        (borders = borders),
-        (i = i),
-        (j = j),
-        (dots = dots)
+  // draw horizontal lines
+  for (let i = 0; i <= r; i++) {
+    for (let j = 0; j < c; j++) {
+      let hline = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
       );
+      hline.setAttribute("id", `horizontal_${i}_${j}`);
+      hline.setAttribute("x1", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
+      hline.setAttribute("y1", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
+      hline.setAttribute("x2", (j + 1) * (CELL_SIZE + LINE_WIDTH));
+      hline.setAttribute("y2", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
+      hline.setAttribute("stroke", "gainsboro");
+      hline.setAttribute("stroke-width", LINE_WIDTH);
+      puzzle_svg.appendChild(hline);
     }
+  }
+
+  // draw vertical lines
+  for (let i = 0; i < r; i++) {
+    for (let j = 0; j <= c; j++) {
+      let vline = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+      );
+      vline.setAttribute("id", `vertical_${i}_${j}`);
+      vline.setAttribute("x1", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
+      vline.setAttribute("y1", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
+      vline.setAttribute("x2", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
+      vline.setAttribute("y2", (i + 1) * (CELL_SIZE + LINE_WIDTH));
+      vline.setAttribute("stroke", "gainsboro");
+      vline.setAttribute("stroke-width", LINE_WIDTH);
+      puzzle_svg.appendChild(vline);
+    }
+  }
+
+  // draw intersection dots
+  for (let i = 0; i <= r; i++) {
+    for (let j = 0; j <= c; j++) {
+      let dot = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      dot.setAttribute("id", `dot_${i}_${j}`);
+      dot.setAttribute("x", j * (CELL_SIZE + LINE_WIDTH));
+      dot.setAttribute("y", i * (CELL_SIZE + LINE_WIDTH));
+      dot.setAttribute("width", LINE_WIDTH);
+      dot.setAttribute("height", LINE_WIDTH);
+      dot.setAttribute("fill", "gainsboro");
+      puzzle_svg.appendChild(dot);
+    }
+  }
+
+  // // set global vars
+  // ROWS = r;
+  // COLS = c;
+  // BOUNDS = {
+  //   U: outside.substring(0, 1) == "1" ? -2 : 0,
+  //   R: outside.substring(1, 2) == "1" ? 2 * COLS + 2 : 2 * COLS,
+  //   D: outside.substring(2, 3) == "1" ? 2 * ROWS + 2 : 2 * ROWS,
+  //   L: outside.substring(3, 4) == "1" ? -2 : 0,
+  // };
+
+  // let ans = [];
+  // for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
+  //   ans.push("<div class='grid_row'>");
+  //   for (let j = BOUNDS.L; j <= BOUNDS.R; ++j) {
+  //     let parity = ((i & 1) << 1) | (j & 1);
+  //     let is_in_grid = 0 <= i && i <= 2 * r && 0 <= j && j <= 2 * c;
+  //     let is_an_outside_clue =
+  //       parity == 3 &&
+  //       !([-1, 2 * r + 1].includes(i) && [-1, 2 * c + 1].includes(j));
+  //     let vis_str =
+  //       is_in_grid || is_an_outside_clue
+  //         ? "visibility: inherit"
+  //         : "visibility: hidden";
+  //     let color_str =
+  //       !is_in_grid && is_an_outside_clue ? `background-color: gray` : "";
+  //     let hollow_str = !is_in_grid && !is_an_outside_clue ? `hollow=true` : "";
+  //     let obj = {
+  //       0: "dot",
+  //       1: "border_horizontal",
+  //       2: "border_vertical",
+  //       3: "cell",
+  //     }[parity];
+  //     let id_str = `${i},${j}`;
+
+  //     let display_settings = PUZZLE_TYPES[pt].display;
+  //     let display_str = "";
+  //     if (display_settings && display_settings.no_border_lines && parity != 3)
+  //       display_str = "visibility: hidden;"; // display=none on border elts
+
+  //     ans.push(`<div class="container_${obj} noselect" ${hollow_str} style='${color_str}; ${display_str}' id='${id_str}'>
+  //       <div class="puzzle_${obj} noselect" style='${vis_str}; ${display_str}' id='puzzle_${id_str}'></div>
+  //       <div class="solution_${obj} noselect" style='${vis_str}; ${display_str}' id='solution_${id_str}'></div>
+  //       <div class="shift_click_${obj}" style='${vis_str}; ${display_str}' id='shift_click_${id_str}'></div>
+  //       </div>`);
+  //   }
+  //   ans.push("</div>");
+  // }
+  // get("grid_div").innerHTML = ans.join("");
+
+  // // add elves to all cells (elements with i, j both odd)
+  // // first reset elves
+  // ELVES = {};
+  // for (let i = BOUNDS.U + 1; i <= BOUNDS.D - 1; i += 2)
+  //   for (let j = BOUNDS.L + 1; j <= BOUNDS.R - 1; j += 2) {
+  //     let id_str = `${i},${j}`;
+  //     let borders = {
+  //       ArrowUp: get(`${i - 1},${j}`),
+  //       ArrowRight: get(`${i},${j + 1}`),
+  //       ArrowDown: get(`${i + 1},${j}`),
+  //       ArrowLeft: get(`${i},${j - 1}`),
+  //     };
+  //     let dots = {
+  //       q: get(`${i - 1},${j - 1}`),
+  //       e: get(`${i - 1},${j + 1}`),
+  //       c: get(`${i + 1},${j + 1}`),
+  //       z: get(`${i + 1},${j - 1}`),
+  //     };
+  //     ELVES[id_str] = new ELF_TYPES[pt](
+  //       (elt = get(id_str)),
+  //       (borders = borders),
+  //       (i = i),
+  //       (j = j),
+  //       (dots = dots)
+  //     );
+  //   }
 }
 
 ////////////////////////////////
