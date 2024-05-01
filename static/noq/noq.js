@@ -5,9 +5,6 @@ let ELF_TYPES,
   ELVES = {},
   IMPS = {};
 
-const CELL_SIZE = 48;
-const LINE_WIDTH = 2;
-
 const puzzle_svg = document.getElementById("puzzle_svg");
 
 // load helper scripts, courtesy https://stackoverflow.com/questions/11803215/
@@ -446,92 +443,43 @@ function display_grid(param_dict) {
     return;
   }
 
-  puzzle_svg.setAttribute("width", c * CELL_SIZE + (c + 1) * LINE_WIDTH);
-  puzzle_svg.setAttribute("height", r * CELL_SIZE + (r + 1) * LINE_WIDTH);
+  ROWS = r;
+  COLS = c;
+  BOUNDS = {
+    U: outside.substring(0, 1) == "1" ? -2 : 0,
+    R: outside.substring(1, 2) == "1" ? 2 * COLS + 2 : 2 * COLS,
+    D: outside.substring(2, 3) == "1" ? 2 * ROWS + 2 : 2 * ROWS,
+    L: outside.substring(3, 4) == "1" ? -2 : 0,
+  };
 
-  // draw cells
-  for (let i = 0; i < r; i++) {
-    for (let j = 0; j < c; j++) {
+  let root = document.documentElement;
+  let computedStyle = window.getComputedStyle(root);
+  let CELL_SIZE = computedStyle.getPropertyValue("--dimension");
+  let LINE_WIDTH = computedStyle.getPropertyValue("--border");
+  CELL_SIZE = parseInt(CELL_SIZE.substring(0, CELL_SIZE.length - 2));
+  LINE_WIDTH = parseInt(LINE_WIDTH.substring(0, LINE_WIDTH.length - 2));
+  console.log(CELL_SIZE, LINE_WIDTH);
+
+  puzzle_svg.setAttribute("width", ROWS * CELL_SIZE + (ROWS + 1) * LINE_WIDTH);
+  puzzle_svg.setAttribute("height", COLS * CELL_SIZE + (COLS + 1) * LINE_WIDTH);
+  for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
+    for (let j = BOUNDS.L; j <= BOUNDS.R; ++j) {
+      let parity = ((i & 1) << 1) | (j & 1);
+      let x = (j >> 1) * (CELL_SIZE + LINE_WIDTH) + (j % 2 ? LINE_WIDTH : 0),
+        y = (i >> 1) * (CELL_SIZE + LINE_WIDTH) + (i % 2 ? LINE_WIDTH : 0),
+        width = j % 2 ? CELL_SIZE : LINE_WIDTH,
+        height = i % 2 ? CELL_SIZE : LINE_WIDTH;
+      console.log(x, y, width, height);
       let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("fill", parity == 3 ? "white" : "gainsboro");
       rect.setAttribute("id", `cell_${i}_${j}`);
-      rect.setAttribute("x", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
-      rect.setAttribute("y", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
-      rect.setAttribute("width", CELL_SIZE);
-      rect.setAttribute("height", CELL_SIZE);
-      rect.setAttribute("fill", "white");
+      rect.setAttribute("x", x);
+      rect.setAttribute("y", y);
+      rect.setAttribute("width", width);
+      rect.setAttribute("height", height);
       puzzle_svg.appendChild(rect);
-
-      // Add event listener for click events
-      rect.addEventListener("click", function () {
-        // Remove 'selected' class from all cells
-        let cells = document.querySelectorAll("rect");
-        cells.forEach((cell) => cell.classList.remove("selected"));
-
-        // Add 'selected' class to the clicked cell
-        this.classList.add("selected");
-      });
     }
   }
-
-  // draw horizontal lines
-  for (let i = 0; i <= r; i++) {
-    for (let j = 0; j < c; j++) {
-      let hline = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line"
-      );
-      hline.setAttribute("id", `horizontal_${i}_${j}`);
-      hline.setAttribute("x1", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
-      hline.setAttribute("y1", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
-      hline.setAttribute("x2", (j + 1) * (CELL_SIZE + LINE_WIDTH));
-      hline.setAttribute("y2", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
-      hline.setAttribute("stroke", "gainsboro");
-      hline.setAttribute("stroke-width", LINE_WIDTH);
-      puzzle_svg.appendChild(hline);
-    }
-  }
-
-  // draw vertical lines
-  for (let i = 0; i < r; i++) {
-    for (let j = 0; j <= c; j++) {
-      let vline = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line"
-      );
-      vline.setAttribute("id", `vertical_${i}_${j}`);
-      vline.setAttribute("x1", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
-      vline.setAttribute("y1", i * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH);
-      vline.setAttribute("x2", j * (CELL_SIZE + LINE_WIDTH) + LINE_WIDTH / 2);
-      vline.setAttribute("y2", (i + 1) * (CELL_SIZE + LINE_WIDTH));
-      vline.setAttribute("stroke", "gainsboro");
-      vline.setAttribute("stroke-width", LINE_WIDTH);
-      puzzle_svg.appendChild(vline);
-    }
-  }
-
-  // draw intersection dots
-  for (let i = 0; i <= r; i++) {
-    for (let j = 0; j <= c; j++) {
-      let dot = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      dot.setAttribute("id", `dot_${i}_${j}`);
-      dot.setAttribute("x", j * (CELL_SIZE + LINE_WIDTH));
-      dot.setAttribute("y", i * (CELL_SIZE + LINE_WIDTH));
-      dot.setAttribute("width", LINE_WIDTH);
-      dot.setAttribute("height", LINE_WIDTH);
-      dot.setAttribute("fill", "gainsboro");
-      puzzle_svg.appendChild(dot);
-    }
-  }
-
-  // // set global vars
-  // ROWS = r;
-  // COLS = c;
-  // BOUNDS = {
-  //   U: outside.substring(0, 1) == "1" ? -2 : 0,
-  //   R: outside.substring(1, 2) == "1" ? 2 * COLS + 2 : 2 * COLS,
-  //   D: outside.substring(2, 3) == "1" ? 2 * ROWS + 2 : 2 * ROWS,
-  //   L: outside.substring(3, 4) == "1" ? -2 : 0,
-  // };
 
   // let ans = [];
   // for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
