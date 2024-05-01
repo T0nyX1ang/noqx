@@ -56,7 +56,7 @@ const CLIPBOARD_SYMBOLS = {
   tent: "⛺",
 };
 
-function create_svg_elt(key_set, type = "text", id, options = null) {
+function create_svg_elt(elts, type = "text", id, options = null) {
   let elt;
   if (type == "text") {
     elt = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -74,7 +74,7 @@ function create_svg_elt(key_set, type = "text", id, options = null) {
     for (let [key, val] of Object.entries(options)) elt.setAttribute(key, val);
   }
   console.log(id, elt);
-  key_set.add(id);
+  elts[id] = elt;
   puzzle_svg.appendChild(elt);
 }
 
@@ -163,7 +163,6 @@ class Elf {
   }
 
   constructor(elt, i, j, x, y, borders, dots, default_image_url = "") {
-    // console.log(elt);
     this.elt = elt;
     this.borders = borders;
     this.dots = dots;
@@ -174,8 +173,8 @@ class Elf {
     this.y = y;
 
     // this.default_image_url = default_image_url;
-    this.puzzle_keys = new Set();
-    this.solution_keys = new Set();
+    this.puzzle_elts = {};
+    this.solution_elts = {};
     this.puzzle_color = null;
     this.solution_color = null;
 
@@ -192,25 +191,22 @@ class Elf {
     }
   }
   load_example(str) {
-    // console.log(str);
     if (COLORS.includes(str)) {
       this.puzzle_color = str;
       this.elt.setAttribute("fill", str);
     } else if (/^.*\.png$/.test(str)) {
-      create_svg_elt(
-        (key_set = this.puzzle_keys),
-        (type = "image"),
-        (id = `image_${i}_${j}`),
-        (options = { x: this.x, y: this.y, href: image_url(str) })
-      );
+      create_svg_elt(this.puzzle_elts, "image", `image_${i}_${j}`, {
+        x: this.x,
+        y: this.y,
+        href: image_url(str),
+      });
       this.puzzle_image_str = str.substring(0, str.length - 4); // remove `.png` from str
     } else
-      create_svg_elt(
-        (key_set = this.puzzle_keys),
-        (type = "text"),
-        (id = `text_${i}_${j}`),
-        (options = { x: this.x, y: this.y, textContent: str })
-      );
+      create_svg_elt(this.puzzle_elts, "text", `text_${i}_${j}`, {
+        x: this.x,
+        y: this.y,
+        textContent: str,
+      });
   }
   load_solution(str) {
     if (COLORS.includes(str)) {
@@ -219,12 +215,11 @@ class Elf {
     } else if (/^.+\.png$/.test(str)) {
       let image_strs = [];
       for (let url of str.split(",")) {
-        create_svg_elt(
-          (key_set = this.solution_keys),
-          (type = "image"),
-          (id = `image_${i}_${j}`),
-          (options = { x: this.x, y: this.y, href: image_url(url) })
-        );
+        create_svg_elt(this.solution_elts, "image", `image_${i}_${j}`, {
+          x: this.x,
+          y: this.y,
+          href: image_url(url),
+        });
         image_strs.push(url.substring(0, url.length - 4)); // remove `.png` from str
       }
       this.solution_elt.style.backgroundImage = image_urls.join(",");
@@ -235,19 +230,19 @@ class Elf {
       //     "polygon(0% 0%, 0% 100%, 20% 100%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 100%, 100% 100%, 100% 0%)";
       // }
     } else
-      create_svg_elt(
-        (key_set = this.solution_keys),
-        (type = "text"),
-        (id = `text_${i}_${j}`),
-        (options = { x: this.x, y: this.y, textContent: str })
-      );
+      create_svg_elt(this.solution_elts, "text", `text_${i}_${j}`, {
+        x: this.x,
+        y: this.y,
+        textContent: str,
+      });
   }
   reset() {
     this.puzzle_image_str = "";
     this.puzzle_color = null;
     this.elt.setAttribute("fill", "white");
-    for (let key of this.puzzle_keys) puzzle_svg.removeChild(get(key));
-    this.puzzle_keys = new Set();
+    for (let [key, elt] of Object.entries(this.puzzle_elts))
+      puzzle_svg.removeChild(elt);
+    this.puzzle_elts = {};
     for (let [key, border] of Object.entries(this.borders))
       border.elt.setAttribute("fill", "gainsboro");
     this.reset_solution();
@@ -257,8 +252,9 @@ class Elf {
     this.solution_color = null;
     let color = this.puzzle_color;
     this.elt.setAttribute("fill", color ? color : "white");
-    for (let key of this.solution_keys) puzzle_svg.removeChild(get(key));
-    this.solution_keys = new Set();
+    for (let [key, elt] of Object.entries(this.solution_elts))
+      puzzle_svg.removeChild(elt);
+    this.solution_elts = {};
     for (let [key, border] of Object.entries(this.borders))
       if (border.elt)
         border.elt.setAttribute("fill", color ? color : "gainsboro");
@@ -492,7 +488,7 @@ function ImageElf(dict, controls_dict, styles = {}) {
           options[attribute] = value;
       }
       let id = `image_${this.i}_${this.j}`;
-      create_svg_elt(this.puzzle_keys, "image", id, options);
+      create_svg_elt(this.puzzle_elts, "image", id, options);
       return true;
     }
 
@@ -524,14 +520,15 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
       super.handle_input(key, modifiers);
       if (!"1234567890".includes(key)) return;
 
-      let id = `int_${this.i}_${this.j}`,
-        svg_elt = null,
-        num;
-      if (!(id in this.puzzle_keys)) num = parseInt(key);
-      else {
-        svg_elt = get(id);
+      let id = `int_${this.i}_${this.j}`;
+      if (!(id in this.puzzle_elts))
+        create_svg_elt(this.puzzle_elts, "text", id, {
+          x: this.x,
+          y: this.y,
+          textContent: "",
+        });
+      let svg_elt = this.puzzle_elts[id],
         num = parseInt(svg_elt.textContent + key);
-      }
 
       if (min <= num && num <= max);
       else if (min <= key && key <= max)
@@ -540,14 +537,7 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
         num = key;
       else return; // nothing works, so do nothing
 
-      if (svg_elt) {
-        svg_elt.setAttribute("textContent", num + "");
-      } else
-        create_svg_elt(this.puzzle_keys, "text", id, {
-          x: this.x,
-          y: this.y,
-          textContent: num + "",
-        });
+      svg_elt.textContent = num + "";
     }
 
     load_example(str) {
