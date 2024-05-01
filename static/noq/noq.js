@@ -458,7 +458,6 @@ function display_grid(param_dict) {
   let LINE_WIDTH = computedStyle.getPropertyValue("--border");
   CELL_SIZE = parseInt(CELL_SIZE.substring(0, CELL_SIZE.length - 2));
   LINE_WIDTH = parseInt(LINE_WIDTH.substring(0, LINE_WIDTH.length - 2));
-  console.log(CELL_SIZE, LINE_WIDTH);
 
   puzzle_svg.setAttribute("width", ROWS * CELL_SIZE + (ROWS + 1) * LINE_WIDTH);
   puzzle_svg.setAttribute("height", COLS * CELL_SIZE + (COLS + 1) * LINE_WIDTH);
@@ -469,7 +468,6 @@ function display_grid(param_dict) {
         y = (i >> 1) * (CELL_SIZE + LINE_WIDTH) + (i % 2 ? LINE_WIDTH : 0),
         width = j % 2 ? CELL_SIZE : LINE_WIDTH,
         height = i % 2 ? CELL_SIZE : LINE_WIDTH;
-      console.log(x, y, width, height);
       let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("fill", parity == 3 ? "white" : "gainsboro");
       rect.setAttribute("id", `cell_${i}_${j}`);
