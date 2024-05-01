@@ -460,6 +460,16 @@ function display_grid(param_dict) {
       rect.setAttribute("height", CELL_SIZE);
       rect.setAttribute("fill", "white");
       puzzle_svg.appendChild(rect);
+
+      // Add event listener for click events
+      rect.addEventListener("click", function () {
+        // Remove 'selected' class from all cells
+        let cells = document.querySelectorAll("rect");
+        cells.forEach((cell) => cell.classList.remove("selected"));
+
+        // Add 'selected' class to the clicked cell
+        this.classList.add("selected");
+      });
     }
   }
 
