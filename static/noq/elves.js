@@ -244,7 +244,7 @@ class Elf {
       puzzle_svg.removeChild(elt);
     this.puzzle_elts = {};
     for (let [key, border] of Object.entries(this.borders))
-      border.elt.setAttribute("fill", "gainsboro");
+      if (border.elt) border.elt.setAttribute("fill", "gainsboro");
     this.reset_solution();
   }
   reset_solution() {
@@ -264,9 +264,7 @@ class Elf {
   }
   toggle_border(key, val) {
     // val = null, true, or false
-    // set_z_order([this.solution_borders[key], this.puzzle_borders[key]]);
-    // return toggle_border(this.puzzle_borders[key], val);
-    return;
+    return toggle_border(this.borders[key], val);
   }
 
   generate_copy_td() {

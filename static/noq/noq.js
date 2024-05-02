@@ -146,11 +146,11 @@ let shift_click_corner = null;
 let selected_range = null; // null or an array [i_min, i_max, j_min, j_max]
 
 function toggle_border(elt, val) {
-  let bgc = elt.style.backgroundColor;
+  let bgc = elt.getAttribute("fill");
   if (val == true) bgc = "black";
   else if (val == false) bgc = "gainsboro";
   else bgc = bgc == "black" ? "gainsboro" : "black";
-  elt.style.backgroundColor = bgc;
+  elt.setAttribute("fill", bgc);
 
   return bgc == "black";
 }
@@ -197,7 +197,7 @@ function handle_click(event, elt) {
   // normal-selected a cell or nothing
   else {
     shift_click_corner = null;
-    set_active(elt);
+    if (elt.id in ELVES) set_active(elt);
   }
   update_shift_click_css();
 }
@@ -329,7 +329,7 @@ $(document).mousemove(function (event) {
 // - borders have identical dimensions
 // - cell (1,1) and border (0,1) will always exist
 function get_captured_elt_id() {
-  let grid = get("grid_div");
+  let grid = get("puzzle_svg");
   if (!grid.innerHTML) return null;
 
   let tl_rect = get("0,0").getBoundingClientRect();
