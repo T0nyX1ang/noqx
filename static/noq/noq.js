@@ -463,6 +463,7 @@ function display_grid(param_dict) {
     L: outside.substring(3, 4) == "1" ? -2 : 0,
   };
 
+  puzzle_svg.innerHTML = "";
   puzzle_svg.setAttribute("width", COLS * CELL_SIZE + (COLS + 1) * LINE_WIDTH);
   puzzle_svg.setAttribute("height", ROWS * CELL_SIZE + (ROWS + 1) * LINE_WIDTH);
   for (let i = BOUNDS.U; i <= BOUNDS.D; ++i) {
@@ -479,7 +480,7 @@ function display_grid(param_dict) {
       rect.setAttribute("y", y);
       rect.setAttribute("width", width);
       rect.setAttribute("height", height);
-      if (!get(`${i},${j}`)) puzzle_svg.appendChild(rect);
+      puzzle_svg.appendChild(rect);
     }
   }
 
