@@ -4,7 +4,15 @@ let image_url = (str) =>
     : str;
 const nav_keys = ["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft"];
 const del_keys = ["Backspace", "Delete", "Escape"];
-const COLORS = ["black", "gray", "blue", "green", "yellow", "red"];
+const COLORS = {
+  black: [0, 0, 0],
+  gray: [127, 127, 127],
+  white: [255, 255, 255],
+  blue: [0, 0, 255],
+  green: [0, 255, 0],
+  yellow: [255, 255, 0],
+  red: [255, 0, 0],
+};
 const CLIPBOARD_SYMBOLS = {
   1: "│",
   "-": "─",
@@ -79,6 +87,23 @@ function create_svg_elt(elts, type = "text", id, options = null) {
   // console.log(id, elt);
   elts[id] = elt;
   puzzle_svg.appendChild(elt);
+}
+
+function change_color(elf, color, type = "puzzle") {
+  let text_elts = document.getElementsByClassName(elf.id);
+  if (!(color in COLORS)) console.error(`Color must in ${",".join(COLORS)} !!`);
+  let rgb = COLORS[color],
+    innerColor = rgb[0] + rgb[1] + rgb[2] < 256 ? "white" : "black";
+  let color_attr = type + "_color";
+  if (elf[color_attr] == color) {
+    elf[color_attr] = null;
+    elf.elt.setAttribute("fill", "white");
+    for (elt of text_elts) elt.setAttribute("fill", "black");
+  } else {
+    elf[color_attr] = color;
+    elf.elt.setAttribute("fill", color);
+    for (elt of text_elts) elt.setAttribute("fill", innerColor);
+  }
 }
 
 function add_json_objects(d1, d2) {
@@ -194,7 +219,7 @@ class Elf {
     }
   }
   load_example(str) {
-    if (COLORS.includes(str)) {
+    if (str in COLORS) {
       this.puzzle_color = str;
       this.elt.setAttribute("fill", str);
     } else if (/^.*\.png$/.test(str)) {
@@ -212,10 +237,8 @@ class Elf {
       });
   }
   load_solution(str) {
-    if (COLORS.includes(str)) {
-      this.solution_color = str;
-      this.elt.setAttribute("fill", str);
-    } else if (/^.+\.png$/.test(str)) {
+    if (str in COLORS) change_color(this, str, "solution");
+    else if (/^.+\.png$/.test(str)) {
       let image_strs = [];
       for (let url of str.split(",")) {
         create_svg_elt(this.solution_elts, "image", `image_${i}_${j}`, {
@@ -254,7 +277,8 @@ class Elf {
     this.solution_image_str = "";
     this.solution_color = null;
     let color = this.puzzle_color;
-    this.elt.setAttribute("fill", color ? color : "white");
+    change_color(this, color ? color : "white");
+    // this.elt.setAttribute("fill", color ? color : "white");
     for (let [key, elt] of Object.entries(this.solution_elts))
       puzzle_svg.removeChild(elt);
     this.solution_elts = {};
@@ -303,7 +327,7 @@ class Elf {
     //     // let border_color =
     //     //   this.solution_borders[key].style.backgroundColor ||
     //     //   this.puzzle_borders[key].style.backgroundColor;
-    //     if (COLORS.includes(border_color) && !td.style[key_to_border[key]])
+    //     if (border_color in COLORS && !td.style[key_to_border[key]])
     //       td.style[key_to_border[key]] = `1px solid ${border_color}`;
     //   }
     // // text content of cell
@@ -558,10 +582,7 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
 
 // keyToColor maps key: [HTML color name, nickname]
 // resetInnerHtml = true iff shaded cells cannot have other clues in them
-function BgColorElf(
-  keyToColor = { x: ["black", "black"] },
-  resetInnerHtml = true
-) {
+function BgColorElf(keyToColor = { x: "black" }) {
   return class extends Elf {
     static controls() {
       let controls = super.controls();
@@ -577,31 +598,9 @@ function BgColorElf(
       super.handle_input(key, modifiers);
 
       if (key in keyToColor) {
-        const bgColor = keyToColor[key][0];
-        const innerColor = keyToColor[key][1];
-        let text_elts = document.getElementsByClassName(this.id);
-        if (this.puzzle_color == bgColor) {
-          this.puzzle_color = null;
-          this.elt.setAttribute("fill", "white");
-          for (elt of text_elts) elt.setAttribute("fill", "black");
-        } else {
-          // if (resetInnerHtml) {
-          //   this.puzzle_elt.innerHTML = "";
-          //   this.puzzle_elt.style.backgroundImage = "";
-          // }
-          this.puzzle_color = bgColor;
-          this.elt.setAttribute("fill", bgColor);
-          for (elt of text_elts) elt.setAttribute("fill", innerColor);
-        }
+        const bgColor = keyToColor[key];
+        change_color(this, bgColor);
       }
-      // else if (
-      //   resetInnerHtml &&
-      //   this.puzzle_color &&
-      //   !del_keys.includes(key)
-      // ) {
-      //   this.puzzle_elt.innerHTML = "";
-      //   this.puzzle_elt.style.backgroundImage = "";
-      // }
     }
 
     encode_input() {
@@ -916,7 +915,7 @@ class KakuroElf extends Elf {
 
 class MagnetsElf extends DirectSum(
   IntBordersElf(),
-  BgColorElf({ x: ["gray", "gray"], r: ["red", "red"], b: ["blue", "blue"] })
+  BgColorElf({ x: "gray", r: "red", b: "blue" })
 ) {
   static controls() {
     let controls = super.controls();
@@ -928,7 +927,7 @@ class MagnetsElf extends DirectSum(
 
 class NanroElf extends DirectSum(
   InvertSolutionZOrder(IntBordersElf()),
-  BgColorElf({ x: ["gray", "gray"] })
+  BgColorElf({ x: "gray" })
 ) {
   static controls() {
     let controls = super.controls();
@@ -997,7 +996,7 @@ function find_elf_with_func(elf, func_name) {
 // big
 class NonogramElf extends DirectSum(
   Elf,
-  BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+  BgColorElf({ x: "black", o: "green" })
 ) {
   static controls() {
     let controls = super.controls();
@@ -1386,7 +1385,7 @@ class YajilinElf extends DirectSum(
       { "[urdl]": "Add arrow to cell" }
     )
   ),
-  BgColorElf({ x: ["gray", "black"] }, false)
+  BgColorElf({ x: "gray" })
 ) {
   handle_input(key, modifiers) {
     super.handle_input(key, modifiers);
@@ -1421,7 +1420,7 @@ class YajikazuElf extends InvertSolutionZOrder(
         { "[urdl]": "Add arrow to cell" }
       )
     ),
-    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
+    BgColorElf({ x: "gray", o: "green" })
   )
 ) {
   handle_input(key, modifiers) {
@@ -1499,12 +1498,9 @@ let elf_types = {
   lightup: AkariElf,
   aqre: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
+    BgColorElf({ x: "gray", o: "green" })
   ),
-  aquarium: DirectSum(
-    IntBordersElf(),
-    BgColorElf({ x: ["blue", "blue"], o: ["green", "green"] })
-  ),
+  aquarium: DirectSum(IntBordersElf(), BgColorElf({ x: "blue", o: "green" })),
   balance: DirectSum(IntElf(1, 99), CircleElf, (priority = "concat")),
   battleship: DirectSum(
     ImageElf(
@@ -1528,22 +1524,13 @@ let elf_types = {
     IntElf()
   ),
   binairo: IntElf(0, 1, "[0 or 1]"),
-  box: DirectSum(
-    IntElf(),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
-  ),
-  canal: DirectSum(
-    IntElf(),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
-  ),
+  box: DirectSum(IntElf(), BgColorElf({ x: "black", o: "green" })),
+  canal: DirectSum(IntElf(), BgColorElf({ x: "black", o: "green" })),
   castle: CastleWallElf,
-  cave: DirectSum(
-    IntElf(),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
-  ),
+  cave: DirectSum(IntElf(), BgColorElf({ x: "black", o: "green" })),
   chocona: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
+    BgColorElf({ x: "gray", o: "green" })
   ),
   country: InvertSolutionZOrder(IntBordersElf()),
   doppelblock: DirectSum(IntElf(), BgColorElf()),
@@ -1556,15 +1543,12 @@ let elf_types = {
   ),
   haisu: DirectSum(IntBordersElf(), LetterElf("SG"), "first"),
   hashi: DirectSum(QuestionMarkElf, IntElf(0, 8, "[0-8]"), "first"),
-  heteromino: DirectSum(BgColorElf({ x: ["gray", "gray"] }), BorderElf),
+  heteromino: DirectSum(BgColorElf({ x: "gray" }), BorderElf),
   heyawake: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
+    BgColorElf({ x: "gray", o: "green" })
   ),
-  hitori: DirectSum(
-    IntElf(),
-    BgColorElf({ x: ["black", "white"], o: ["green", "white"] }, false)
-  ),
+  hitori: DirectSum(IntElf(), BgColorElf({ x: "black", o: "green" })),
   hotaru: DirectSum(
     IntElf(),
     ImageElf(
@@ -1583,23 +1567,14 @@ let elf_types = {
   ),
   jousan: DirectSum(IntElf(1, 99), BorderElf),
   kakuro: KakuroElf,
-  kurotto: DirectSum(
-    IntElf(),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
-  ),
-  kurodoko: DirectSum(
-    IntElf(1, 99),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
-  ),
-  lits: DirectSum(
-    BorderElf,
-    BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
-  ),
+  kurotto: DirectSum(IntElf(), BgColorElf({ x: "black", o: "green" })),
+  kurodoko: DirectSum(IntElf(1, 99), BgColorElf({ x: "black", o: "green" })),
+  lits: DirectSum(BorderElf, BgColorElf({ x: "gray", o: "green" })),
   magnets: MagnetsElf,
   masyu: CircleElf,
   mines: DirectSum(
     IntElf(0, 8, "[0-8]"),
-    BgColorElf({ x: ["black", "black"], o: ["green", "green"] })
+    BgColorElf({ x: "black", o: "green" })
   ),
   moonsun: DirectSum(
     ImageElf(
@@ -1637,34 +1612,19 @@ let elf_types = {
   nanro: NanroElf,
   ncells: DirectSum(IntElf(), BorderElf),
   nonogram: NonogramElf,
-  norinori: DirectSum(
-    BorderElf,
-    BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
-  ),
+  norinori: DirectSum(BorderElf, BgColorElf({ x: "gray", o: "green" })),
   numlin: InvertSolutionZOrder(IntElf()),
   nuribou: DirectSum(
     IntElf(1, 99),
-    BgColorElf({
-      x: ["black", "black"],
-      o: ["green", "green"],
-      "?": ["yellow", "yellow"],
-    })
+    BgColorElf({ x: "black", o: "green", "?": "yellow" })
   ),
   nurikabe: DirectSum(
     IntElf(1, 99),
-    BgColorElf({
-      x: ["black", "black"],
-      o: ["green", "green"],
-      "?": ["yellow", "yellow"],
-    })
+    BgColorElf({ x: "black", o: "green", "?": "yellow" })
   ),
-  nurimisaki: DirectSum(
+  imisaki: DirectSum(
     IntElf(1, 99),
-    BgColorElf({
-      x: ["black", "black"],
-      o: ["green", "green"],
-      "?": ["yellow", "yellow"],
-    })
+    BgColorElf({ x: "black", o: "green", "?": "yellow" })
   ),
   onsen: DirectSum(
     QuestionMarkElf,
@@ -1676,34 +1636,24 @@ let elf_types = {
   shikaku: DirectSum(DirectSum(QuestionMarkElf, IntElf(), "first"), BorderElf),
   shimaguni: DirectSum(
     InvertSolutionZOrder(IntBordersElf()),
-    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
+    BgColorElf({ x: "gray", o: "green" })
   ),
   simpleloop: BgColorElf({ x: ["black", "black"] }),
   skyscrapers: IntElf(),
   slither: DirectSum(IntElf(0, 4, "[0-4]"), LetterElf("SW"), "first"),
   spiralgalaxies: DirectSum(SpiralGalaxiesElf, BorderElf),
-  starbattle: DirectSum(
-    BorderElf,
-    BgColorElf({ x: ["gray", "gray"], o: ["green", "green"] })
-  ),
+  starbattle: DirectSum(BorderElf, BgColorElf({ x: "gray", o: "green" })),
   statuepark: CircleElf,
-  stostone: DirectSum(
-    IntBordersElf(),
-    BgColorElf({ x: ["gray", "black"], o: ["green", "white"] }, false)
-  ),
+  stostone: DirectSum(IntBordersElf(), BgColorElf({ x: "gray", o: "green" })),
   sudoku: SudokuElf,
   tapa: TapaElf,
   tasquare: DirectSum(
     IntElf(1, 99),
-    BgColorElf({
-      x: ["black", "black"],
-      o: ["green", "green"],
-      "?": ["yellow", "yellow"],
-    })
+    BgColorElf({ x: "black", o: "green", "?": "yellow" })
   ),
   tatamibari: DirectSum(LetterElf("+-|"), BorderElf),
   tents: DirectSum(
-    DirectSum(IntElf(0, 99), BgColorElf({ o: ["green", "green"] })),
+    DirectSum(IntElf(0, 99), BgColorElf({ o: "green" })),
     ImageElf(
       { n: "tent", e: "tree" },
       {
