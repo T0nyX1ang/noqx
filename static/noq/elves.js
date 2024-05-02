@@ -285,11 +285,9 @@ class Elf {
     for (let [key, elt] of Object.entries(this.solution_elts))
       puzzle_svg.removeChild(elt);
     this.solution_elts = {};
-    for (let [key, border] of Object.entries(this.borders)) {
-      // console.log(border);
+    for (let [key, border] of Object.entries(this.borders))
       if (border && border.hasAttribute("puzzle-color"))
         border.setAttribute("fill", border.getAttribute("puzzle-color"));
-    }
   }
   puzzle_neighbors_() {
     return puzzle_neighbors(this.i, this.j);

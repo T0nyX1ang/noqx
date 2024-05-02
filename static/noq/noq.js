@@ -590,7 +590,7 @@ function load_puzzle(puzzle) {
     // technically don't have an elf representing them
     // (this is bad, but idk how to do it better)
     else if (ELVES[elt_id]) ELVES[elt_id].load_example(puzzle.grid[elt_id]);
-    else set_border_color(elt_id, "black");
+    else get(elt_id).setAttribute("fill", "black");
   }
 }
 
