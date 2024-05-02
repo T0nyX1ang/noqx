@@ -68,6 +68,7 @@ function create_svg_elt(elts, type = "text", id, options = null) {
     for (let [key, val] of Object.entries(options)) elt.setAttribute(key, val);
     elt.removeAttribute("textContent");
     elt.textContent = options["textContent"];
+    elt.classList.add("noselect");
   } else if (type == "image") {
     elt = document.createElementNS("http://www.w3.org/2000/svg", "image");
     elt.setAttribute("width", `${CELL_SIZE}`);
