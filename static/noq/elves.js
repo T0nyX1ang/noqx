@@ -529,6 +529,7 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
           x: this.x,
           y: this.y,
           textContent: "",
+          class: this.id,
         });
       let svg_elt = this.puzzle_elts[id];
       let num = parseInt(svg_elt.textContent + key);
@@ -578,9 +579,11 @@ function BgColorElf(
       if (key in keyToColor) {
         const bgColor = keyToColor[key][0];
         const innerColor = keyToColor[key][1];
+        let text_elts = document.getElementsByClassName(this.id);
         if (this.puzzle_color == bgColor) {
           this.puzzle_color = null;
           this.elt.setAttribute("fill", "white");
+          for (elt of text_elts) elt.setAttribute("fill", "black");
         } else {
           // if (resetInnerHtml) {
           //   this.puzzle_elt.innerHTML = "";
@@ -588,8 +591,7 @@ function BgColorElf(
           // }
           this.puzzle_color = bgColor;
           this.elt.setAttribute("fill", bgColor);
-          for (elt in Object.values(this.puzzle_elts))
-            elt.setAttribute("fill", innerColor);
+          for (elt of text_elts) elt.setAttribute("fill", innerColor);
         }
       }
       // else if (
@@ -658,6 +660,7 @@ function LetterElf(letterset, concat = false) {
           x: this.x,
           y: this.y,
           textContent: "",
+          class: this.id,
         });
       let svg_elt = this.puzzle_elts[id],
         new_str = concat ? svg_elt.textContent + casedKey : casedKey;
