@@ -94,8 +94,12 @@
   text-align: center;
 }
 
-#puzzle_input {
+.param_input {
+  font-size: 20px;
   text-align: center;
+  min-width: 30px;
+  height: 30px;
+  margin: 10px;
 }
 
 html {
@@ -131,12 +135,11 @@ h2#title {
     display: inline;
     margin: 2pt;
     padding: 2pt 4pt;
-    border-radius: 4pt;
     border: 1pt solid gray;
     background: linear-gradient(white, silver);
     text-align: center;
     vertical-align: middle;
-    font: 90% / 1.2 sans-serif;
+    font: 90% / 1.2 Arial;
     cursor: default;
 }
 

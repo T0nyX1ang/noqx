@@ -4,7 +4,7 @@
 {{ super() }}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/noq/noq.css') }}">
 </link>
-<script src='https://puzz.link/js/pzpr.js'></script>
+<script src="https://puzz.link/js/pzpr.js"></script>
 <script>
   let puzzle = null;
   pzpr.on('load', function () {
@@ -26,14 +26,28 @@
 
 {% block content %}
 <div id="main">
-  <h2 id="title2">{{ name }} solver</h2>
+  <h2 id="title2">{{ name }} Solver</h2>
   <div id="menuboard" class="outofboard">
     <menu id="menupanel">
+      <li id="menu_edit"><span>Action</span>
+        <menu label="Action">
+          <li id="menu_solve"><span>Solve</span></li>
+          <li id="menu_clear"><span>Clear</span></li>
+          <li id="menu_undo"><span>Undo</span></li>
+          <li id="menu_redo"><span>Redo</span></li>
+        </menu>
+      </li>
+      <li id="menu_mode"><span>Mode</span>
+        <menu>
+          <li id="menu_editmode" class="checked"><span>Edit Mode</span></li>
+          <li id="menu_playmode" class="check"><span>Answer Mode</span></li>
+        </menu>
+      </li>
       <li id="menu_board"><span>Board</span>
         <menu label="Board">
-          <li data-popup="newboard" id="menu_newboard"><span>New board</span></li>
+          <li id="menu_newboard"><span>New board (Not Implemented) </span></li>
           <hr>
-          <li id="board_expand"><span>Expand board -&gt; </span>
+          <li id="board_expand"><span>Expand -&gt; </span>
             <menu label="Expand board">
               <li id="menu_expand_top"><span>Top</span></li>
               <li id="menu_expand_bottom"><span>Bottom</span></li>
@@ -41,7 +55,7 @@
               <li id="menu_expand_right"><span>Right</span></li>
             </menu>
           </li>
-          <li id="board_reduce"><span>Reduce board -&gt; </span>
+          <li id="board_reduce"><span>Reduce -&gt; </span>
             <menu label="Reduce board">
               <li id="menu_reduce_top"><span>Top</span></li>
               <li id="menu_reduce_bottom"><span>Bottom</span></li>
@@ -49,7 +63,7 @@
               <li id="menu_reduce_right"><span>Right</span></li>
             </menu>
           </li>
-          <li id="board_rotate"><span>Rotate board -&gt; </span>
+          <li id="board_rotate"><span>Rotate/Flip -&gt; </span>
             <menu label="Rotate board">
               <li id="menu_turn_left"><span>Turn left</span></li>
               <li id="menu_turn_right"><span>Turn right</span></li>
@@ -59,25 +73,16 @@
           </li>
         </menu>
       </li>
-      <li id="menu_edit"><span>Edit</span>
-        <menu label="Edit">
-          <li id="menu_undo"><span>Undo</span></li>
-          <li id="menu_redo"><span>Redo</span></li>
-          <li id="menu_clear"><span>Clear</span></li>
-          <hr>
-          <li id="menu_editmode" class="checked"><span>Edit Mode</span></li>
-          <li id="menu_playmode" class="check"><span>Play Mode</span></li>
-      </li>
       <li id="menu_help"><span>Help</span>
         <menu label="Help">
-          <li class="link" data-pidlink="rules.html?"><a target="_blank"
+          <li class="link"><a target="_blank"
               href="https://puzz.link/rules.html?{{ value }}">Rules</a></li>
         </menu>
       </li>
     </menu>
   </div>
 
-  <div id="quesboard" style="padding-top: 24px;">
+  <div id="quesboard" style="padding-top: 64px;">
     <div id="divques"></div>
   </div>
 

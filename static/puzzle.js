@@ -1,3 +1,5 @@
+let puzzle_data = null;
+
 function get(elt_id) {
   return document.getElementById(elt_id);
 }
@@ -60,16 +62,25 @@ get("menu_flip_vert").addEventListener("click", function () {
   puzzle.board.operate("flipy");
 });
 
+get("menu_solve").addEventListener("click", function () {
+  console.log(puzzle.getFileData());
+  puzzle_data = puzzle.getFileData();
+});
+
+get("menu_clear").addEventListener("click", function () {
+  puzzle.setMode("edit");
+  if (puzzle_data !== null) {
+    puzzle.open(puzzle_data);
+    puzzle_data = null;
+  } else puzzle.clear();
+});
+
 get("menu_undo").addEventListener("click", function () {
   puzzle.undo();
 });
 
 get("menu_redo").addEventListener("click", function () {
   puzzle.redo();
-});
-
-get("menu_clear").addEventListener("click", function () {
-  puzzle.clear();
 });
 
 get("menu_editmode").addEventListener("click", function () {
@@ -80,6 +91,6 @@ get("menu_editmode").addEventListener("click", function () {
 
 get("menu_playmode").addEventListener("click", function () {
   puzzle.setMode("play");
-  get("menu_editmode").setAttribute("class", "");
+  get("menu_editmode").setAttribute("class", "check");
   get("menu_playmode").setAttribute("class", "checked");
 });
