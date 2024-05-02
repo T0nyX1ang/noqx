@@ -62,6 +62,12 @@ function make_elt(type, class_name, parent, innerHTML) {
   if (innerHTML !== undefined) elt.innerHTML = innerHTML;
   return elt;
 }
+function set_border_color(elt_id, color) {
+  let elt = get(elt_id);
+  if (!elt.hasAttribute("puzzle-color"))
+    elt.setAttribute("puzzle-color", elt.getAttribute("fill"));
+  elt.setAttribute("fill", color);
+}
 
 // courtesy https://stackoverflow.com/questions/2057682/
 function get_text_width(txt, margin_px = 1) {
@@ -584,7 +590,7 @@ function load_puzzle(puzzle) {
     // technically don't have an elf representing them
     // (this is bad, but idk how to do it better)
     else if (ELVES[elt_id]) ELVES[elt_id].load_example(puzzle.grid[elt_id]);
-    else get(elt_id).setAttribute("fill", "black");
+    else set_border_color(elt_id, "black");
   }
 }
 
@@ -721,10 +727,7 @@ function display_next_solution() {
     if (ELVES[elt_id]) {
       ELVES[elt_id].load_solution(solution[elt_id]);
     } // hack to allow adding black borders which aren't given an elf; TODO make this less hacky
-    else {
-      // set_z_order([get("puzzle_" + elt_id), get("solution_" + elt_id)]);
-      // get("solution_" + elt_id).style.backgroundColor = "black";
-    }
+    else set_border_color(elt_id, "black");
   }
 }
 
