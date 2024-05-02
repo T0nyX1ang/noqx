@@ -658,6 +658,7 @@ function solve_puzzle() {
         display_error_message(this.responseText);
     }
   };
+
   current_request.send();
   spinner((start = true));
 }
@@ -721,8 +722,8 @@ function display_next_solution() {
       ELVES[elt_id].load_solution(solution[elt_id]);
     } // hack to allow adding black borders which aren't given an elf; TODO make this less hacky
     else {
-      set_z_order([get("puzzle_" + elt_id), get("solution_" + elt_id)]);
-      get("solution_" + elt_id).style.backgroundColor = "black";
+      // set_z_order([get("puzzle_" + elt_id), get("solution_" + elt_id)]);
+      // get("solution_" + elt_id).style.backgroundColor = "black";
     }
   }
 }
