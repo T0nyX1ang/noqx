@@ -185,11 +185,11 @@ function update_shift_click_css() {
 }
 
 function handle_click(event, elt) {
-  if (elt && (!elt.classList || !elt.classList.contains("container_cell"))) {
-    // some elt, but not a cell
-    handle_click(event, elt.parentNode);
-    return;
-  }
+  let last_elt = elt;
+  while (elt && !(elt instanceof SVGElement))
+    (last_elt = elt), (elt = elt.parentNode);
+  if (!elt) return;
+  elt = last_elt;
 
   if (elt && event.shiftKey)
     // shift-selected a cell
@@ -225,7 +225,7 @@ $(document).keydown(function (event) {
       update_shift_click_css();
     }
   } else {
-    event.preventDefault();
+    // event.preventDefault();
     ELVES[active_element.id].handle_input(event.key, {
       shift: shift,
       control: control,

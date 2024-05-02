@@ -191,7 +191,6 @@ class Elf {
     }
   }
   load_example(str) {
-    console.log(str);
     if (COLORS.includes(str)) {
       this.puzzle_color = str;
       this.elt.setAttribute("fill", str);
@@ -384,7 +383,6 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
 
     load_example_str(str) {
       let res1 = this.elf1.load_example(str);
-      console.log(str, res1);
       if (!res1)
         // if not successful, load using elf2's rules
         this.elf2.load_example(str);
