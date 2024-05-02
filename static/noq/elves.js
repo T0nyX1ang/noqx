@@ -598,7 +598,7 @@ function BgColorElf_(keyToColor = { x: "black" }) {
     static controls() {
       let controls = super.controls();
       for (const [key, value] of Object.entries(keyToColor)) {
-        controls[key] = `Toggle ${value[0]} cell`;
+        controls[key] = `Toggle ${value} cell`;
       }
       return controls;
     }
@@ -915,18 +915,6 @@ class KakuroElf extends Elf {
     } else if (obj == "black")
       this.handle_input("x"); // simulate a press of X to blacken the cell
     else this.handle_input("Delete"); // simulate removing everything
-  }
-}
-
-class MagnetsElf extends DirectSum(
-  IntBordersElf(),
-  BgColorElf_({ x: "gray", r: "red", b: "blue" })
-) {
-  static controls() {
-    let controls = super.controls();
-    controls["+/red"] = "Clues calculated from the top and left";
-    controls["-/blue"] = "Clues calculated from on the bottom and right";
-    return controls;
   }
 }
 
@@ -1575,7 +1563,10 @@ let elf_types = {
   kurotto: DirectSum(IntElf_(), BgColorElf_({ x: "black", o: "green" })),
   kurodoko: DirectSum(IntElf_(1, 99), BgColorElf_({ x: "black", o: "green" })),
   lits: DirectSum(BorderElf, BgColorElf_({ x: "gray", o: "green" })),
-  magnets: MagnetsElf,
+  magnets: DirectSum(
+    IntBordersElf(),
+    BgColorElf_({ x: "gray", r: "red", b: "blue", "+": "red", "-": "blue" })
+  ),
   masyu: CircleElf,
   mines: DirectSum(
     IntElf_(0, 8, "[0-8]"),
