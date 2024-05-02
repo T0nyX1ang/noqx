@@ -10,7 +10,12 @@
   pzpr.on('load', function () {
     puzzle = new pzpr.Puzzle(document.getElementById('divques'), { type: 'editor' });
     pzpr.connectKeyEvents(puzzle);
-    puzzle.open("{{ value }}/10/10");
+
+    if ("{{ value }}" === "sudoku")
+      puzzle.open("sudoku/9/9");
+    else
+      puzzle.open("{{ value }}/10/10");
+
     puzzle.on('ready', function () {
       puzzle.setCanvasSizeByCellSize(48);
       puzzle.setMode('edit');
