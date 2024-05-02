@@ -479,7 +479,7 @@ function display_grid(param_dict) {
       rect.setAttribute("y", y);
       rect.setAttribute("width", width);
       rect.setAttribute("height", height);
-      puzzle_svg.appendChild(rect);
+      if (!get(`${i},${j}`)) puzzle_svg.appendChild(rect);
     }
   }
 
@@ -582,12 +582,8 @@ function load_puzzle(puzzle) {
     // hack to allow loading of borders, which
     // technically don't have an elf representing them
     // (this is bad, but idk how to do it better)
-    else if (ELVES[elt_id]) {
-      ELVES[elt_id].load_example(puzzle.grid[elt_id]);
-    } else {
-      // set_z_order([get("solution_" + elt_id), get("puzzle_" + elt_id)]);
-      get(elt_id).setAttribute("fill", "black");
-    }
+    else if (ELVES[elt_id]) ELVES[elt_id].load_example(puzzle.grid[elt_id]);
+    else get(elt_id).setAttribute("fill", "black");
   }
 }
 

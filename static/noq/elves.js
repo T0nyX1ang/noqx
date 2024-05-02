@@ -73,7 +73,7 @@ function create_svg_elt(elts, type = "text", id, options = null) {
     elt.setAttribute("id", id);
     for (let [key, val] of Object.entries(options)) elt.setAttribute(key, val);
   }
-  console.log(id, elt);
+  // console.log(id, elt);
   elts[id] = elt;
   puzzle_svg.appendChild(elt);
 }
@@ -168,7 +168,7 @@ class Elf {
     this.dots = dots;
     this.i = i;
     this.j = j;
-    this.id = `${i}_${j}`;
+    this.id = `${i},${j}`;
     this.x = x;
     this.y = y;
 
@@ -191,6 +191,7 @@ class Elf {
     }
   }
   load_example(str) {
+    console.log(str);
     if (COLORS.includes(str)) {
       this.puzzle_color = str;
       this.elt.setAttribute("fill", str);
@@ -383,6 +384,7 @@ function DirectSum(Elf1, Elf2, priority = "compress", default_image_url = "") {
 
     load_example_str(str) {
       let res1 = this.elf1.load_example(str);
+      console.log(str, res1);
       if (!res1)
         // if not successful, load using elf2's rules
         this.elf2.load_example(str);
@@ -451,6 +453,8 @@ class BorderElf extends Elf {
         this.toggle_border(key);
     }
   }
+
+  load_example() {}
 
   encode_input() {
     let encoding = {};
@@ -610,8 +614,6 @@ function BgColorElf(
       ) {
         this.puzzle_color = str;
         this.elt.setAttribute("fill", str);
-        // set_z_order([this.elt, this.elt, this.elt, this.elt]);
-        console.log(str, this.elt);
         return true;
       }
       return false;
