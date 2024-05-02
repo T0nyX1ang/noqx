@@ -199,7 +199,7 @@ function handle_click(event, elt) {
     shift_click_corner = null;
     if (elt.id in ELVES) set_active(elt);
   }
-  update_shift_click_css();
+  // update_shift_click_css();
 }
 
 $(document).click(function (event) {

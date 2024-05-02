@@ -57,14 +57,16 @@ const CLIPBOARD_SYMBOLS = {
 };
 
 function create_svg_elt(elts, type = "text", id, options = null) {
-  let elt;
+  let elt = null;
   if (type == "text") {
     elt = document.createElementNS("http://www.w3.org/2000/svg", "text");
     elt.setAttribute("font-size", `${CELL_SIZE * 0.8}`);
     elt.setAttribute("font-family", "Arial");
     elt.setAttribute("fill", "black");
     elt.setAttribute("id", id);
+    elt.setAttribute("text-anchor", "middle");
     for (let [key, val] of Object.entries(options)) elt.setAttribute(key, val);
+    elt.removeAttribute("textContent");
     elt.textContent = options["textContent"];
   } else if (type == "image") {
     elt = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -512,7 +514,7 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
 
     constructor(elt, i, j, x, y, borders, dots) {
       super(elt, i, j, x, y, borders, dots, default_image_url);
-      this.x += CELL_SIZE * 0.27;
+      this.x += CELL_SIZE * 0.5;
       this.y += CELL_SIZE * 0.8;
     }
 
@@ -527,8 +529,8 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
           y: this.y,
           textContent: "",
         });
-      let svg_elt = this.puzzle_elts[id],
-        num = parseInt(svg_elt.textContent + key);
+      let svg_elt = this.puzzle_elts[id];
+      let num = parseInt(svg_elt.textContent + key);
 
       if (min <= num && num <= max);
       else if (min <= key && key <= max)
@@ -638,7 +640,7 @@ function LetterElf(letterset, concat = false) {
 
     constructor(elt, i, j, x, y, borders, dots) {
       super(elt, i, j, x, y, borders, dots);
-      this.x += CELL_SIZE * 0.27;
+      this.x += CELL_SIZE * 0.5;
       this.y += CELL_SIZE * 0.8;
     }
 
