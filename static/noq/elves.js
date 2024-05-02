@@ -454,9 +454,9 @@ class BorderElf extends Elf {
 
   encode_input() {
     let encoding = {};
-    for (let border_id of Object.keys(this.borders))
-      if (this.borders[border_id].elt.fill == "black")
-        encoding[this.id] = "black";
+    for (let [id, border] of Object.entries(this.borders))
+      if (border.getAttribute("fill") == "black")
+        encoding[border.getAttribute("id")] = "black";
     return encoding;
   }
 }
@@ -546,7 +546,8 @@ function IntElf(min = 0, max = 99, range = "[0-9]", default_image_url = "") {
     }
 
     encode_input() {
-      return this.puzzle_elt.innerHTML ? this.puzzle_elt.innerHTML : null;
+      let elt = get(`int_${this.i}_${this.j}`);
+      return elt && elt.textContent ? elt.textContent : null;
     }
   };
 }
