@@ -65,6 +65,26 @@ get("menu_flip_vert").addEventListener("click", function () {
 get("menu_solve").addEventListener("click", function () {
   console.log(puzzle.getFileData());
   puzzle_data = puzzle.getFileData();
+
+  current_request = new XMLHttpRequest();
+  current_request.open(
+    "GET",
+    `solver/?puzzle_type=${puzzle.pid}&puzzle=${encodeURI(puzzle_data)}`
+  );
+  current_request.onreadystatechange = function () {
+    if (this.stopped) return;
+    else if (this.readyState == 4) {
+      if (this.status == 200) {
+        // solve went through correctly
+        // set_solved();
+        console.log(this.responseText);
+      } else if (this.status != 200 && this.status != 0)
+        // something went wrong
+        display_error_message(this.responseText);
+    }
+  };
+  current_request.send();
+  spinner((start = true));
 });
 
 get("menu_clear").addEventListener("click", function () {
@@ -94,3 +114,27 @@ get("menu_playmode").addEventListener("click", function () {
   get("menu_editmode").setAttribute("class", "check");
   get("menu_playmode").setAttribute("class", "checked");
 });
+
+let spinner_pos = null;
+const spinner_values = [
+  "Solving.&nbsp;&nbsp;",
+  "Solving..&nbsp;",
+  "Solving...",
+];
+
+function spinner(start = false, timeout = 500) {
+  if (!start && spinner_pos == null) return;
+
+  if (start) spinner_pos = 0;
+
+  get("header_div").innerHTML = spinner_values[spinner_pos];
+  spinner_pos = (spinner_pos + 1) % spinner_values.length;
+  setTimeout(spinner, timeout);
+}
+
+function display_error_message(error_str) {
+  spinner_pos = null; // stop the spinner
+
+  error = JSON.parse(error_str);
+  get("header_div").innerHTML = error.detail || "An unknown error occurred";
+}
