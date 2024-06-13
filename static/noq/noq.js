@@ -701,3 +701,20 @@ function display_error_message(error_str) {
   error = JSON.parse(error_str);
   get("header_div").innerHTML = error.detail || "An unknown error occurred";
 }
+
+///////////////////////////////////////
+// import from / export to puzz.link //
+///////////////////////////////////////
+
+function export_to_puzzlink() {}
+
+function import_from_puzzlink() {
+  let name = prompt(
+    "Please enter the saved file from puzz.link (notice: click SAVE FILE AS instead of EXPORT URL!):"
+  );
+  if (name !== null) {
+    console.log("你好，" + name + "！");
+  } else {
+    console.log("用户取消了输入。");
+  }
+}
