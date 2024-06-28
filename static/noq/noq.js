@@ -6,7 +6,12 @@ let ELF_TYPES,
   IMPS = {};
 
 // load helper scripts, courtesy https://stackoverflow.com/questions/11803215/
-const SCRIPTS_TO_LOAD = ["noq/elves.js", "noq/data.js", "noq/imps.js"];
+const SCRIPTS_TO_LOAD = [
+  "noq/elves.js",
+  "noq/data.js",
+  "noq/imps.js",
+  "noq/puzzlink_convert.js",
+];
 $.getMultiScripts = function (arr, path) {
   let _arr = $.map(arr, function (x) {
     return $.getScript((path || "") + x);
@@ -706,11 +711,28 @@ function display_error_message(error_str) {
 // import from / export to puzz.link //
 ///////////////////////////////////////
 
-function export_to_puzzlink() {}
+function export_to_puzzlink() {
+  let board = JSON.parse(parse_input());
+  let converter = new FileIO();
+  let solution = solutions ? solutions[solution_id] : {};
+  let datastr = converter.fileencode(board, solution);
+  // console.log(datastr);
+  datastr = datastr.replace(/\n/g, "/");
+  let url = "https://puzz.link/p?type=editor&" + encodeURI(datastr);
+
+  const tempInput = document.createElement("input");
+  tempInput.value = url;
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand("copy");
+  document.body.removeChild(tempInput);
+
+  alert("URL copied!\n" + url);
+}
 
 function import_from_puzzlink() {
   let name = prompt(
-    "Please enter the saved file from puzz.link (notice: click SAVE FILE AS instead of EXPORT URL!):"
+    "Please enter the saved file from puzz.link (notice: click SAVE FILE AS instead of EXPORT URL in puzz.link!):"
   );
   if (name !== null) {
     console.log("你好，" + name + "！");
