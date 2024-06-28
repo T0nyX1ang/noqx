@@ -731,12 +731,15 @@ function export_to_puzzlink() {
 }
 
 function import_from_puzzlink() {
-  let name = prompt(
+  let url = prompt(
     "Please enter the saved file from puzz.link (notice: click SAVE FILE AS instead of EXPORT URL in puzz.link!):"
   );
-  if (name !== null) {
-    console.log("你好，" + name + "！");
-  } else {
-    console.log("用户取消了输入。");
+  let converter = new FileIO();
+  let [board, solution] = converter.filedecode(url, pt);
+  console.log(board);
+  console.log(solution);
+  load_puzzle(board);
+  if (solution != {}) {
+    display_solutions(JSON.stringify({ 1: solution, num_solutions: 1 }));
   }
 }

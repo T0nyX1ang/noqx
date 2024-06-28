@@ -25,59 +25,85 @@ class FileIO {
 
     this.UNDECIDED_NUM_XML = -1;
   }
-  //---------------------------------------------------------------------------
-  // fio.filedecode()  decode from file
-  //---------------------------------------------------------------------------
-  filedecode(datastr) {
-    var puzzle = this.puzzle,
-      bd = puzzle.board,
-      pzl = pzpr.parser.parseFile(datastr, puzzle.pid); // wwwwww
-    var filetype = (this.currentType = pzl.type);
-
-    bd.initBoardSize(pzl.cols, pzl.rows);
-
-    this.filever = pzl.filever;
-    if (filetype !== pzl.FILE_PBOX_XML) {
-      this.lineseek = 0;
-      this.dataarray = pzl.body.split("\n");
-    } else {
-      this.xmldoc = pzl.body;
-    }
-
-    // メイン処理
-    switch (filetype) {
-      case pzl.FILE_PZPR:
-        this.decodeData();
-        if ((this.readLine() || "").match(/TrialData/)) {
-          this.lineseek--;
-          this.decodeTrial();
-        }
-        break;
-
-      case pzl.FILE_PBOX:
-        this.kanpenOpen();
-        break;
-
-      case pzl.FILE_PBOX_XML:
-        this.kanpenOpenXML();
-        break;
-    }
-
-    puzzle.metadata.update(pzl.metadata);
-    if (pzl.history && filetype === pzl.FILE_PZPR) {
-      puzzle.opemgr.decodeHistory(pzl.history);
-    }
-
-    bd.rebuildInfo();
-
-    this.dataarray = null;
-  }
 
   static puzzlink_convert_processes(name) {
     let puzzlink_convert_processes = {
       aqre: ["aqre", ["AreaRoom", "CellQnum", "CellAns"]],
     };
     return puzzlink_convert_processes[name];
+  }
+  //---------------------------------------------------------------------------
+  // fio.filedecode()  decode from file
+  //---------------------------------------------------------------------------
+  filedecode(datastr, pt) {
+    if (datastr.includes("://puzz.link")) {
+      datastr = decodeURIComponent(datastr);
+      datastr = datastr.split("type=editor&pzprv3/")[1];
+      datastr = datastr.replace(/\//g, "\n");
+    }
+    this.dataarray = datastr.split("\n");
+
+    let puzzle_type = this.readLine();
+    if (pt != puzzle_type)
+      console.error("Puzzle type inconsistent!", pt, puzzle_type);
+
+    let board = { ...puzzle_types[pt] };
+    board.param_values = board.params;
+    delete board.params;
+    board.rows = board.param_values.r = this.readLine();
+    board.cols = board.param_values.c = this.readLine();
+    board.grid = {};
+    this.board = board;
+    this.solution = {};
+
+    const [name1, funcname_seq] =
+      FileIO.puzzlink_convert_processes(puzzle_type);
+    for (let func_name of funcname_seq) {
+      let func = this["decode" + func_name].bind(this);
+      this.decoding_ans = func_name.toLowerCase().includes("ans");
+      func();
+    }
+
+    delete this.board.rows, this.board.cols;
+    this.dataarray = null;
+    return [this.board, this.solution];
+    // bd.initBoardSize(pzl.cols, pzl.rows);
+
+    // this.filever = pzl.filever;
+    // if (filetype !== pzl.FILE_PBOX_XML) {
+    //   this.lineseek = 0;
+    //   this.dataarray = pzl.body.split("\n");
+    // } else {
+    //   this.xmldoc = pzl.body;
+    // }
+
+    // // メイン処理
+    // switch (filetype) {
+    //   case pzl.FILE_PZPR:
+    //     this.decodeData();
+    //     if ((this.readLine() || "").match(/TrialData/)) {
+    //       this.lineseek--;
+    //       this.decodeTrial();
+    //     }
+    //     break;
+
+    //   case pzl.FILE_PBOX:
+    //     this.kanpenOpen();
+    //     break;
+
+    //   case pzl.FILE_PBOX_XML:
+    //     this.kanpenOpenXML();
+    //     break;
+    // }
+
+    // puzzle.metadata.update(pzl.metadata);
+    // if (pzl.history && filetype === pzl.FILE_PZPR) {
+    //   puzzle.opemgr.decodeHistory(pzl.history);
+    // }
+
+    // bd.rebuildInfo();
+
+    // this.dataarray = null;
   }
 
   //---------------------------------------------------------------------------
@@ -92,11 +118,8 @@ class FileIO {
     let name = board.puzzle_type;
 
     const [name1, funcname_seq] = FileIO.puzzlink_convert_processes(name);
-    // console.log(board);
-    // console.log(solution);
     for (let func_name of funcname_seq) {
       let func = this["encode" + func_name].bind(this);
-      // console.log("encode" + func_name);
       this.encoding_ans = func_name.toLowerCase().includes("ans");
       func();
     }
@@ -104,7 +127,7 @@ class FileIO {
       `pzprv3\n${name}\n${board.rows}\n${board.cols}\n` + this.datastr;
     return result;
 
-    var pzl = new pzpr.parser.FileData("", puzzle.pid);
+    let pzl = new pzpr.parser.FileData("", puzzle.pid);
 
     this.currentType = filetype =
       filetype || pzl.FILE_PZPR; /* type===pzl.FILE_AUTO(0)もまとめて変換する */
@@ -139,18 +162,13 @@ class FileIO {
   }
 
   getItemList(rows) {
-    var item = [],
+    let item = [],
       line;
-    for (var i = 0; i < rows; i++) {
+    for (let i = 0; i < rows; i++) {
       if (!(line = this.readLine())) {
         continue;
       }
-      var array1 = line.split(" ");
-      for (var c = 0; c < array1.length; c++) {
-        if (array1[c] !== "") {
-          item.push(array1[c]);
-        }
-      }
+      item.push(line.split(" "));
     }
     return item;
   }
@@ -175,20 +193,15 @@ class FileIO {
   // fio.decodeCellExCell()  配列で、個別文字列から個別セル/ExCellの設定を行う
   //---------------------------------------------------------------------------
   decodeObj(func, group, startbx, startby, endbx, endby) {
-    var bx = startbx,
-      by = startby,
-      step = 2;
-    var item = this.getItemList((endby - startby) / step + 1);
-    for (var i = 0; i < item.length; i++) {
-      func.call(this, this.board.getObjectPos(group, bx, by), item[i]);
-
-      bx += step;
-      if (bx > endbx) {
-        bx = startbx;
-        by += step;
-      }
-      if (by > endby) {
-        break;
+    let step = 2;
+    let item = this.getItemList((endby - startby) / step + 1);
+    for (let by = startby; by <= endby; by += step) {
+      for (let bx = startbx; bx <= endbx; bx += step) {
+        func.call(
+          this,
+          `${by},${bx}`,
+          item[(by - startby) / step][(bx - startbx) / step]
+        );
       }
     }
   }
@@ -213,7 +226,7 @@ class FileIO {
     );
   }
   decodeBorder(func, hasborder) {
-    var puzzle = this.puzzle,
+    let puzzle = this.puzzle,
       bd = puzzle.board;
     if (!hasborder) {
       hasborder = bd.hasborder;
@@ -283,7 +296,7 @@ class FileIO {
     );
   }
   encodeBorder(func, hasborder) {
-    var puzzle = this.puzzle,
+    let puzzle = this.puzzle,
       bd = puzzle.board;
     if (!hasborder) {
       hasborder = bd.hasborder;
@@ -319,11 +332,12 @@ class FileIO {
   // fio.encodeCellQnum() 問題数字のエンコードを行う
   //---------------------------------------------------------------------------
   decodeCellQnum() {
-    this.decodeCell(function (cell, ca) {
-      if (ca === "-") {
+    this.decodeCell(function (coord, ca) {
+      let grid = this.decoding_ans ? this.solution : this.board.grid;
+      /*if (ca === "-") {
         cell.qnum = -2;
-      } else if (ca !== ".") {
-        cell.qnum = +ca;
+      } else*/ if (ca !== ".") {
+        grid[coord] = "" + ca;
       }
     });
   }
@@ -402,7 +416,7 @@ class FileIO {
         cell.qdir = 0;
         cell.qnum = -3;
       } else if (ca !== ".") {
-        var inp = ca.split(",");
+        let inp = ca.split(",");
         cell.qdir = inp[0] !== "0" ? +inp[0] : 0;
         cell.qnum = inp[1] !== "-" ? +inp[1] : -2;
       }
@@ -413,8 +427,8 @@ class FileIO {
       if (cell.qnum === -3) {
         return "# ";
       } else if (cell.qnum !== -1) {
-        var ca1 = cell.qdir !== 0 ? "" + cell.qdir : "0";
-        var ca2 = cell.qnum !== -2 ? "" + cell.qnum : "-";
+        let ca1 = cell.qdir !== 0 ? "" + cell.qdir : "0";
+        let ca2 = cell.qnum !== -2 ? "" + cell.qnum : "-";
         return [ca1, ",", ca2, " "].join("");
       } else {
         return ". ";
@@ -426,12 +440,13 @@ class FileIO {
   // fio.encodeCellAns() 黒マス白マスのエンコードを行う
   //---------------------------------------------------------------------------
   decodeCellAns() {
-    this.decodeCell(function (cell, ca) {
+    this.decodeCell(function (coord, ca) {
+      let grid = this.decoding_ans ? this.solution : this.board.grid;
       if (ca === "#") {
-        cell.qans = 1;
-      } else if (ca === "+") {
+        grid[coord] = "black";
+      } /*else if (ca === "+") {
         cell.qsub = 1;
-      }
+      }*/
     });
   }
   encodeCellAns() {
@@ -506,7 +521,7 @@ class FileIO {
   }
   encodeCellAnumsub() {
     this.encodeCell(function (cell) {
-      var ca = ".";
+      let ca = ".";
       if (cell.anum !== -1) {
         ca = "" + cell.anum;
       } else if (cell.qsub === 1) {
@@ -531,19 +546,19 @@ class FileIO {
   // fio.getCellSnum() 補助数字のエンコードを行う (encodeCellAnumsubで内部的に使用)
   //---------------------------------------------------------------------------
   setCellSnum(cell, ca) {
-    var snumtext = ca.substring(ca.indexOf("[") + 1, ca.indexOf("]"));
-    var list = snumtext.split(/,/);
-    for (var i = 0; i < list.length; ++i) {
+    let snumtext = ca.substring(ca.indexOf("[") + 1, ca.indexOf("]"));
+    let list = snumtext.split(/,/);
+    for (let i = 0; i < list.length; ++i) {
       cell.snum[i] = !!list[i] ? +list[i] : -1;
     }
     return ca.substr(0, ca.indexOf("["));
   }
   getCellSnum(cell) {
-    var list = [];
-    for (var i = 0; i < cell.snum.length; ++i) {
+    let list = [];
+    for (let i = 0; i < cell.snum.length; ++i) {
       list[i] = cell.snum[i] !== -1 ? "" + cell.snum[i] : "";
     }
-    var snumtext = list.join(",");
+    let snumtext = list.join(",");
     return snumtext !== ",,," ? "[" + snumtext + "]" : "";
   }
   decodeCellSnum() {
@@ -553,12 +568,12 @@ class FileIO {
   }
   encodeCellSnum(isforce) {
     if (!isforce) {
-      var found = false;
-      var cells = this.board.cell;
+      let found = false;
+      let cells = this.board.cell;
 
-      for (var c = 0; c < cells.length && !found; c++) {
-        var cell = cells[c];
-        for (var i = 0; i < cell.snum.length; ++i) {
+      for (let c = 0; c < cells.length && !found; c++) {
+        let cell = cells[c];
+        for (let i = 0; i < cell.snum.length; ++i) {
           if (cell.snum[i] !== -1) {
             found = true;
           }
@@ -569,7 +584,7 @@ class FileIO {
       }
     }
     this.encodeCell(function (cell) {
-      var ca = this.getCellSnum(cell);
+      let ca = this.getCellSnum(cell);
       if (ca) {
         return ca + " ";
       }
@@ -669,7 +684,7 @@ class FileIO {
   }
   decodeBorderArrowAns() {
     this.decodeBorder(function (border, ca) {
-      var lca = ca.charAt(ca.length - 1);
+      let lca = ca.charAt(ca.length - 1);
       if (lca >= "a" && lca <= "z") {
         if (lca === "u") {
           border.qsub = 11;
@@ -695,7 +710,7 @@ class FileIO {
   }
   encodeBorderArrowAns() {
     this.encodeBorder(function (border) {
-      var ca = "";
+      let ca = "";
       if (border.qsub === 2) {
         ca += "" + (-1 - border.line);
       } else if (border.line > 0) {
@@ -740,8 +755,21 @@ class FileIO {
   decodeAreaRoom() {
     this.readLine();
     this.rdata2Border(true, this.getItemList(this.board.rows));
-
-    this.board.roommgr.rebuild();
+  }
+  //---------------------------------------------------------------------------
+  // fio.rdata2Border() 入力された配列から境界線を入力する
+  //---------------------------------------------------------------------------
+  rdata2Border(isques, rdata) {
+    let r = this.board.rows,
+      c = this.board.cols;
+    for (let i = 0; i < r; i++)
+      for (let j = 0; j < c; j++) {
+        let grid = this.decoding_ans ? this.solution : this.board.grid;
+        if (j + 1 < c && rdata[i][j] != rdata[i][j + 1])
+          grid[`${i * 2 + 1},${j * 2 + 2}`] = "black";
+        if (i + 1 < r && rdata[i][j] != rdata[i + 1][j])
+          grid[`${i * 2 + 2},${j * 2 + 1}`] = "black";
+      }
   }
   encodeAreaRoom() {
     let board = this.board;
@@ -796,25 +824,11 @@ class FileIO {
     }
   }
   //---------------------------------------------------------------------------
-  // fio.rdata2Border() 入力された配列から境界線を入力する
-  //---------------------------------------------------------------------------
-  rdata2Border(isques, rdata) {
-    var bd = this.board;
-    for (var id = 0; id < bd.border.length; id++) {
-      var border = bd.border[id],
-        cell1 = border.sidecell[0],
-        cell2 = border.sidecell[1];
-      var isdiff =
-        !cell1.isnull && !cell2.isnull && rdata[cell1.id] !== rdata[cell2.id];
-      border[isques ? "ques" : "qans"] = isdiff ? 1 : 0;
-    }
-  }
-  //---------------------------------------------------------------------------
   // fio.decodeCellQnum51() [＼]のデコードを行う
   // fio.encodeCellQnum51() [＼]のエンコードを行う
   //---------------------------------------------------------------------------
   decodeCellQnum51() {
-    var bd = this.board;
+    let bd = this.board;
     bd.disableInfo(); /* mv.set51cell()用 */
     this.decodeCellExCell(function (obj, ca) {
       if (ca === ".") {
@@ -826,7 +840,7 @@ class FileIO {
           obj.qnum = +ca;
         }
       } else if (obj.group === "cell") {
-        var inp = ca.split(",");
+        let inp = ca.split(",");
         obj.set51cell();
         obj.qnum = +inp[0];
         obj.qnum2 = +inp[1];
@@ -855,15 +869,15 @@ class FileIO {
   // fio.encodeDotFile() Encodes Cross/Cell/Border values and empty cells (ques===7)
   //---------------------------------------------------------------------------
   decodeDotFile() {
-    var bd = this.board,
+    let bd = this.board,
       s = 0,
       data = "";
-    for (var i = 0, rows = 2 * bd.rows - 1; i < rows; i++) {
+    for (let i = 0, rows = 2 * bd.rows - 1; i < rows; i++) {
       data += this.readLine();
     }
     bd.disableInfo();
-    for (var s = 0; s < data.length; ++s) {
-      var dot = bd.dots[s],
+    for (let s = 0; s < data.length; ++s) {
+      let dot = bd.dots[s],
         ca = data.charAt(s),
         num = +ca;
       if (num >= 1 && num <= 9) {
@@ -877,12 +891,12 @@ class FileIO {
     bd.enableInfo();
   }
   encodeDotFile() {
-    var bd = this.board,
+    let bd = this.board,
       s = 0;
-    for (var by = 1; by <= 2 * bd.rows - 1; by++) {
-      var data = "";
-      for (var bx = 1; bx <= 2 * bd.cols - 1; bx++) {
-        var dot = bd.dots[s];
+    for (let by = 1; by <= 2 * bd.rows - 1; by++) {
+      let data = "";
+      for (let bx = 1; bx <= 2 * bd.cols - 1; bx++) {
+        let dot = bd.dots[s];
         if (dot.getDot() >= 1 && dot.getDot() <= 9) {
           data += dot.getDot();
         } else if (dot.piece.ques === 7) {
@@ -906,8 +920,8 @@ class FileIO {
     this.decodeCell(function (cell, ca) {
       if (ca !== ".") {
         cell.qnums = [];
-        var array = ca.split(/,/);
-        for (var i = 0; i < array.length; i++) {
+        let array = ca.split(/,/);
+        for (let i = 0; i < array.length; i++) {
           cell.qnums.push(array[i] !== "-" ? +array[i] : -2);
         }
       }
@@ -916,8 +930,8 @@ class FileIO {
   encodeQnums() {
     this.encodeCell(function (cell) {
       if (cell.qnums.length > 0) {
-        var array = [];
-        for (var i = 0; i < cell.qnums.length; i++) {
+        let array = [];
+        for (let i = 0; i < cell.qnums.length; i++) {
           array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
         }
         return array.join(",") + " ";
@@ -932,18 +946,18 @@ class FileIO {
   // fio.encodePieceBank() Encode piece bank preset/custom
   //---------------------------------------------------------------------------
   decodePieceBank() {
-    var bank = this.board.bank;
-    var head = this.readLine();
+    let bank = this.board.bank;
+    let head = this.readLine();
     if (isNaN(head)) {
-      for (var i = 0; i < bank.presets.length; i++) {
+      for (let i = 0; i < bank.presets.length; i++) {
         if (bank.presets[i].shortkey === head) {
           bank.initialize(bank.presets[i].constant);
           break;
         }
       }
     } else {
-      var pieces = [];
-      for (var i = 0; i < +head; i++) {
+      let pieces = [];
+      for (let i = 0; i < +head; i++) {
         pieces.push(this.readLine());
       }
 
@@ -951,13 +965,13 @@ class FileIO {
     }
   }
   encodePieceBank() {
-    var bank = this.board.bank;
+    let bank = this.board.bank;
 
-    var pieces = bank.pieces.map(function (p) {
+    let pieces = bank.pieces.map(function (p) {
       return p.serialize();
     });
 
-    for (var i = 0; i < bank.presets.length; i++) {
+    for (let i = 0; i < bank.presets.length; i++) {
       if (!bank.presets[i].constant) {
         continue;
       }
@@ -968,19 +982,19 @@ class FileIO {
     }
 
     this.writeLine("" + pieces.length);
-    for (var i = 0; i < pieces.length; i++) {
+    for (let i = 0; i < pieces.length; i++) {
       this.writeLine(pieces[i]);
     }
   }
   decodePieceBankQcmp() {
-    var nums = (this.readLine() || "").split(" ");
-    var count = Math.min(nums.length, this.board.bank.pieces.length);
-    for (var i = 0; i < count; i++) {
+    let nums = (this.readLine() || "").split(" ");
+    let count = Math.min(nums.length, this.board.bank.pieces.length);
+    for (let i = 0; i < count; i++) {
       this.board.bank.pieces[i].qcmp = +nums[i];
     }
   }
   encodePieceBankQcmp() {
-    var data = this.board.bank.pieces
+    let data = this.board.bank.pieces
       .map(function (piece) {
         return piece.qcmp + " ";
       })
@@ -989,14 +1003,14 @@ class FileIO {
   }
 
   // decodeFlags() {
-  //     var flags = this.readLine().split(",");
-  //     for (var i = 0; i < flags.length; i++) {
+  //     let flags = this.readLine().split(",");
+  //     for (let i = 0; i < flags.length; i++) {
   //         this.puzzle.setConfig(flags[i], true);
   //     }
   // }
   // encodeFlags(flagnames) {
-  //     var flags = [];
-  //     for (var i = 0; i < flagnames.length; i++) {
+  //     let flags = [];
+  //     for (let i = 0; i < flagnames.length; i++) {
   //         if (this.puzzle.getConfig(flagnames[i])) {
   //             flags.push(flagnames[i]);
   //         }
@@ -1042,10 +1056,10 @@ class FileIO {
   // // fio.createXMLNode()  指定されたattributeを持つXMLのノードを作成する
   // //---------------------------------------------------------------------------
   // decodeCellXMLBoard(func) {
-  //     var nodes = this.xmldoc.querySelectorAll("board number");
-  //     for (var i = 0; i < nodes.length; i++) {
-  //         var node = nodes[i];
-  //         var cell = this.board.getc(
+  //     let nodes = this.xmldoc.querySelectorAll("board number");
+  //     for (let i = 0; i < nodes.length; i++) {
+  //         let node = nodes[i];
+  //         let cell = this.board.getc(
   //             +node.getAttribute("c") * 2 - 1,
   //             +node.getAttribute("r") * 2 - 1
   //         );
@@ -1055,10 +1069,10 @@ class FileIO {
   //     }
   // }
   // encodeCellXMLBoard(func) {
-  //     var boardnode = this.xmldoc.querySelector("board");
-  //     var bd = this.board;
-  //     for (var i = 0; i < bd.cell.length; i++) {
-  //         var cell = bd.cell[i],
+  //     let boardnode = this.xmldoc.querySelector("board");
+  //     let bd = this.board;
+  //     for (let i = 0; i < bd.cell.length; i++) {
+  //         let cell = bd.cell[i],
   //             val = func(cell);
   //         if (val !== null) {
   //             boardnode.appendChild(
@@ -1084,26 +1098,26 @@ class FileIO {
   //     this.encodeCellXMLrow_com(func, "answer", "arow");
   // }
   // decodeCellXMLrow_com(func, parentnodename, targetnodename) {
-  //     var rownodes = this.xmldoc.querySelectorAll(
+  //     let rownodes = this.xmldoc.querySelectorAll(
   //         parentnodename + " " + targetnodename
   //     );
-  //     var ADJ = this.PBOX_ADJUST;
-  //     for (var b = 0; b < rownodes.length; b++) {
-  //         var bx = 1 - ADJ,
+  //     let ADJ = this.PBOX_ADJUST;
+  //     for (let b = 0; b < rownodes.length; b++) {
+  //         let bx = 1 - ADJ,
   //             by = +rownodes[b].getAttribute("row") * 2 - 1 - ADJ;
-  //         var nodes = rownodes[b].childNodes;
-  //         for (var i = 0; i < nodes.length; i++) {
+  //         let nodes = rownodes[b].childNodes;
+  //         for (let i = 0; i < nodes.length; i++) {
   //             if (nodes[i].nodeType !== 1) {
   //                 continue;
   //             }
-  //             var name = nodes[i].nodeName,
+  //             let name = nodes[i].nodeName,
   //                 n = nodes[i].getAttribute("n") || 1;
   //             if (name === "z") {
   //                 name = "n0";
   //             } else if (name === "n") {
   //                 name = "n" + +nodes[i].getAttribute("v");
   //             }
-  //             for (var j = 0; j < n; j++) {
+  //             for (let j = 0; j < n; j++) {
   //                 func(this.board.getobj(bx, by), name);
   //                 bx += 2;
   //             }
@@ -1111,15 +1125,15 @@ class FileIO {
   //     }
   // }
   // encodeCellXMLrow_com(func, parentnodename, targetnodename) {
-  //     var boardnode = this.xmldoc.querySelector(parentnodename);
-  //     var ADJ = this.PBOX_ADJUST;
-  //     var bd = this.board;
-  //     for (var by = 1 - ADJ; by <= bd.maxby; by += 2) {
-  //         var rownode = this.createXMLNode(targetnodename, {
+  //     let boardnode = this.xmldoc.querySelector(parentnodename);
+  //     let ADJ = this.PBOX_ADJUST;
+  //     let bd = this.board;
+  //     for (let by = 1 - ADJ; by <= bd.maxby; by += 2) {
+  //         let rownode = this.createXMLNode(targetnodename, {
   //             row: (((by + ADJ) / 2) | 0) + 1
   //         });
-  //         for (var bx = 1 - ADJ; bx <= bd.maxbx; bx += 2) {
-  //             var piece = bd.getobj(bx, by),
+  //         for (let bx = 1 - ADJ; bx <= bd.maxbx; bx += 2) {
+  //             let piece = bd.getobj(bx, by),
   //                 nodename = func(piece),
   //                 node;
   //             if (nodename.match(/n(\d\d+)/) || nodename.match(/n(\-\d+)/)) {
@@ -1136,9 +1150,9 @@ class FileIO {
   // }
 
   // createXMLNode(name, attrs) {
-  //     var node = this.xmldoc.createElement(name);
+  //     let node = this.xmldoc.createElement(name);
   //     if (!!attrs) {
-  //         for (var i in attrs) {
+  //         for (let i in attrs) {
   //             node.setAttribute(i, attrs[i]);
   //         }
   //     }
@@ -1221,8 +1235,8 @@ class FileIO {
   //   // fio.encodeCellQnum_XMLBoard() pencilbox XML用問題用数字のエンコードを行う
   //   //---------------------------------------------------------------------------
   //   decodeCellQnum_XMLBoard() {
-  //     var minnum = this.board.cell[0].getminnum() > 0 ? 1 : 0;
-  //     var undecnum = this.UNDECIDED_NUM_XML;
+  //     let minnum = this.board.cell[0].getminnum() > 0 ? 1 : 0;
+  //     let undecnum = this.UNDECIDED_NUM_XML;
   //     this.decodeCellXMLBoard(function (cell, val) {
   //       if (val === undecnum) {
   //         cell.qnum = -2;
@@ -1232,10 +1246,10 @@ class FileIO {
   //     });
   //   }
   //   encodeCellQnum_XMLBoard() {
-  //     var minnum = this.board.cell[0].getminnum() > 0 ? 1 : 0;
-  //     var undecnum = this.UNDECIDED_NUM_XML;
+  //     let minnum = this.board.cell[0].getminnum() > 0 ? 1 : 0;
+  //     let undecnum = this.UNDECIDED_NUM_XML;
   //     this.encodeCellXMLBoard(function (cell) {
-  //       var val = null;
+  //       let val = null;
   //       if (cell.qnum === -2) {
   //         val = undecnum;
   //       } else if (cell.qnum >= minnum) {
@@ -1250,7 +1264,7 @@ class FileIO {
   //   // fio.encodeCellQnum_XMLBoard() pencilbox XML用問題用数字(browタイプ)のエンコードを行う
   //   //---------------------------------------------------------------------------
   //   decodeCellQnum_XMLBoard_Brow() {
-  //     var undecnum = this.UNDECIDED_NUM_XML;
+  //     let undecnum = this.UNDECIDED_NUM_XML;
   //     this.decodeCellXMLBrow(function (cell, name) {
   //       if (name === "n" + undecnum) {
   //         cell.qnum = -2;
@@ -1260,7 +1274,7 @@ class FileIO {
   //     });
   //   }
   //   encodeCellQnum_XMLBoard_Brow() {
-  //     var undecnum = this.UNDECIDED_NUM_XML;
+  //     let undecnum = this.UNDECIDED_NUM_XML;
   //     this.encodeCellXMLBrow(function (cell) {
   //       if (cell.qnum === -2) {
   //         return "n" + undecnum;
@@ -1300,7 +1314,7 @@ class FileIO {
   //   // fio.encodeAreaRoom_XMLBoard() pencilbox XML用問題用不定形部屋のエンコードを行う
   //   //---------------------------------------------------------------------------
   //   decodeAreaRoom_XMLBoard() {
-  //     var rdata = [];
+  //     let rdata = [];
   //     this.decodeCellXMLBrow(function (cell, name) {
   //       rdata.push(+name.substr(1));
   //     });
@@ -1308,14 +1322,14 @@ class FileIO {
   //     this.board.roommgr.rebuild();
   //   }
   //   encodeAreaRoom_XMLBoard() {
-  //     var bd = this.board;
+  //     let bd = this.board;
   //     bd.roommgr.rebuild();
-  //     var rooms = bd.roommgr.components;
+  //     let rooms = bd.roommgr.components;
   //     this.xmldoc
   //       .querySelector("board")
   //       .appendChild(this.createXMLNode("areas", { N: rooms.length }));
   //     this.encodeCellXMLBrow(function (cell) {
-  //       var roomid = rooms.indexOf(cell.room);
+  //       let roomid = rooms.indexOf(cell.room);
   //       return "n" + (roomid > 0 ? roomid : -1);
   //     });
   //   }
@@ -1350,8 +1364,8 @@ class FileIO {
   //   //---------------------------------------------------------------------------
   //   decodeBorderLine_XMLAnswer() {
   //     this.decodeCellXMLArow(function (cell, name) {
-  //       var val = 0;
-  //       var bdh = cell.adjborder.bottom,
+  //       let val = 0;
+  //       let bdh = cell.adjborder.bottom,
   //         bdv = cell.adjborder.right;
   //       if (name.charAt(0) === "n") {
   //         val = +name.substr(1);
@@ -1379,9 +1393,9 @@ class FileIO {
   //   }
   //   encodeBorderLine_XMLAnswer() {
   //     this.encodeCellXMLArow(function (cell) {
-  //       var val = 0,
+  //       let val = 0,
   //         nodename = "";
-  //       var bdh = cell.adjborder.bottom,
+  //       let bdh = cell.adjborder.bottom,
   //         bdv = cell.adjborder.right;
   //       if (bdh.line === 1) {
   //         val += 1;
