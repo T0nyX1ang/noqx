@@ -257,7 +257,7 @@ class FileIO {
       let data = "";
       for (let bx = startbx; bx <= endbx; bx += step) {
         let grid = this.encoding_ans ? this.solution : this.board.grid;
-        data += func.call(this, grid[`${bx},${by}`]);
+        data += func.call(this, grid[`${by},${bx}`]);
       }
       this.writeLine(data);
     }
