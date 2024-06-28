@@ -435,8 +435,8 @@ class FileIO {
     });
   }
   encodeCellAns() {
-    this.encodeCell(function (num) {
-      if (num === 1) {
+    this.encodeCell(function (cell) {
+      if (typeof cell === "string") {
         //cell.qans, 不知道是啥
         return "# ";
       } /*else if (cell.qsub === 1) {

@@ -717,8 +717,8 @@ function export_to_puzzlink() {
   let solution = solutions ? solutions[solution_id] : {};
   let datastr = converter.fileencode(board, solution);
   // console.log(datastr);
-  datastr = datastr.replace(/\n/g, "/");
-  let url = "https://puzz.link/p?type=editor&" + encodeURI(datastr);
+  let url = "https://puzz.link/p?type=editor&" + encodeURIComponent(datastr);
+  url = url.replace(/%0A/g, "/");
 
   const tempInput = document.createElement("input");
   tempInput.value = url;
