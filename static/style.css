@@ -1,120 +1,53 @@
-h2 {
-  margin-left: -10px;
-  margin-bottom: 15px;
-  margin-top: 0px;
+body {
+  margin: 0;
 }
 
-html * {
-  font-family: Arial;
+#iframe {
+    display: block;
+    border: none;
+    width: 100vw;
+    height: 100vh;
 }
 
-.section {
-  margin: auto;
-  width: 70%;
-  padding: 5px;
+.left {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
 }
 
-.puz {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  border-spacing: 10px;
+.right {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
 }
 
-.puz tr {
-  padding-bottom: 10px;
-}
-.puz td {
-  vertical-align: bottom;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-left: 15px;
-  margin-right: 15px;
-  margin-bottom: 25px;
-  padding: 5px;
+.bottom-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 15px;
+  transform: translateX(-50%);
+  font-size: 10pt;
+  text-align: center;
 }
 
-.row > .smallhalfrow {
-  width: 200px;
-  margin-right: 15px;
-}
-
-.row > .largehalfrow {
-  margin-left: 15px;
-  margin-top: -20px;
-  width: 60%;
-}
-
-.figure {
+select,
+button {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 5px;
-  width: min(90%, 200px);
-}
-
-.caption {
-  font-size: 0.8em;
-  font-style: italic;
+  font-size: 24px;
+  margin-bottom: 10px;
+  width: 400px;
+  height: 45px;
   text-align: center;
+  cursor: pointer;
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
+textarea {
+  display: none;
+  font-size: 24px;
+  margin-bottom: 10px;
+  width: 444px;
+  height: 30px;
   text-align: center;
-  width: 50%;
-  margin: auto;
-}
-
-.header div {
-  margin: auto;
-}
-
-.header li {
-  display: inline;
-  margin-left: 10px;
-  margin-right: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-.header hr {
-  margin-top: -10px;
-  margin-bottom: 25px;
-}
-
-.header .active::before {
-  content: "[";
-}
-
-.header .active::after {
-  content: "]";
-}
-
-#typegroups {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.typegroup {
-  border: 1px solid black;
-  margin: 10px;
-  padding: 10px;
-  min-width: 25%;
-}
-
-a.rules {
-  color: #303030;
-  text-decoration: none;
-  font-size: x-small;
-  vertical-align: super;
+  resize: none;
+  vertical-align: middle;
 }

@@ -4,37 +4,16 @@ import argparse
 import traceback
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from solver import run_solver
-from solver.core.const import CATEGORIES, PUZZLE_TYPES
 
 app = FastAPI(title="noqx", description="An extended logic puzzle solver.")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-
-
-@app.get("/", response_class=HTMLResponse)
-async def root_page(request: Request):
-    """The root endpoint of the server."""
-    context = {"types": PUZZLE_TYPES, "cats": CATEGORIES}
-    return templates.TemplateResponse(request=request, name="index.html", context=context)
-
-
-@app.get("/{puzzle_type}", response_class=HTMLResponse)
-async def puzzle_page(request: Request, puzzle_type: str):
-    """The puzzle endpoint of the server."""
-    for _pt_dict in PUZZLE_TYPES:
-        if _pt_dict["value"] == puzzle_type:
-            context = {"name": _pt_dict["name"], "value": _pt_dict["value"]}
-            return templates.TemplateResponse(request=request, name="noq.html", context=context)
-
-        if "aliases" in _pt_dict and puzzle_type in _pt_dict["aliases"]:
-            return RedirectResponse(url=f"/{_pt_dict['value']}")
+app.mount("/penpa-edit", StaticFiles(directory="penpa-edit/docs", html=True), name="penpa-edit")
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
 @app.get("/solver/", response_class=HTMLResponse)
