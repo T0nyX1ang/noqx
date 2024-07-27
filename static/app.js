@@ -11,6 +11,7 @@ window.onload = function () {
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
   const solveButton = document.getElementById("solve");
+  // TODO add a reset button
 
   let foundGrid = null;
   let foundUrl = null;
@@ -65,10 +66,8 @@ window.onload = function () {
         })
           .then(async (response) => {
             let body = await response.json();
-            if (response.status == 400) {
+            if (response.status == 400 || response.status == 500) {
               alert(body.detail);
-            } else if (response.status == 500) {
-              alert("An unknown error occurred.");
             } else if (response.status == 503) {
               alert("The server is too busy. Please try again later.");
             } else {

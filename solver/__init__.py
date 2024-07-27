@@ -6,7 +6,8 @@ from types import ModuleType
 from typing import Dict, List
 
 from .core.const import PUZZLE_TYPES
-from .core.encoding import Encoding, decode, encode
+from .core.encoding import Encoding, decode
+from .core.penpa import encode
 
 modules: Dict[str, ModuleType] = {}
 for pt in PUZZLE_TYPES:

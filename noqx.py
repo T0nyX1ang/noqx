@@ -29,7 +29,6 @@ def list_puzzles_api():
 def solver_api(puzzle_type: str = Body(), puzzle: str = Body()):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
     try:
-        print(puzzle_type, puzzle)
         return run_solver(puzzle_type, puzzle)
     except ValueError as err:
         print(traceback.format_exc())
