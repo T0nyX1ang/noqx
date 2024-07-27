@@ -9,23 +9,10 @@ body {
     height: 100vh;
 }
 
-.left {
-  position: fixed;
-  left: 10px;
-  bottom: 10px;
-}
-
 .right {
   position: fixed;
   right: 10px;
   bottom: 10px;
-}
-
-.bottom-banner {
-  position: fixed;
-  left: 50%;
-  bottom: 15px;
-  transform: translateX(-50%);
   font-size: 10pt;
   text-align: center;
 }

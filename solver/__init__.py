@@ -9,9 +9,8 @@ from .core.const import PUZZLE_TYPES
 from .core.encoding import Encoding, decode, encode
 
 modules: Dict[str, ModuleType] = {}
-for pt_dict in PUZZLE_TYPES:
-    value: str = pt_dict["value"]  # type: ignore
-    modules[value] = importlib.import_module(f"solver.{value}")  # load module
+for pt in PUZZLE_TYPES:
+    modules[pt] = importlib.import_module(f"solver.{pt}")  # load module
 
 
 def run_solver(puzzle_type: str, puzzle_content: str) -> str:

@@ -4,22 +4,32 @@ import argparse
 import traceback
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import Body, FastAPI, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from solver import run_solver
+from solver.core.const import PUZZLE_TYPES
 
 app = FastAPI(title="noqx", description="An extended logic puzzle solver.")
+api_app = FastAPI(title="noqx API", description="API for noqx.")
 
 app.mount("/penpa-edit", StaticFiles(directory="penpa-edit/docs", html=True), name="penpa-edit")
+app.mount("/api", api_app, name="api")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
-@app.get("/solver/", response_class=HTMLResponse)
-def solver(puzzle_type: str, puzzle: str):  # clingo might be incompatible with asyncio
+@api_app.get("/list/", response_class=JSONResponse)
+def list_puzzles_api():
+    """List the available puzzles."""
+    return PUZZLE_TYPES
+
+
+@api_app.post("/solve/", response_class=HTMLResponse)
+def solver_api(puzzle_type: str = Body(), puzzle: str = Body()):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
     try:
+        print(puzzle_type, puzzle)
         return run_solver(puzzle_type, puzzle)
     except ValueError as err:
         print(traceback.format_exc())
