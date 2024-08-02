@@ -3,11 +3,13 @@
 import json
 
 from base64 import b64decode
+from enum import Enum
 from functools import reduce
 from typing import Optional, Tuple
 from zlib import decompress
 
 
+Direction = Enum("Direction", "LEFT TOP")
 PENPA_PREFIX = "m=edit&p="
 PENPA_ABBREVIATIONS = [
     ['"qa"', "z9"],
@@ -101,6 +103,27 @@ class Puzzle:
                 self.number[coord] = int(num_data[0])
             # TODO: handle non-number texts
         print(self.number)
+
+        self.edge = set()
+        for r in range(self.rows):  # initialize border edges
+            self.edge.add((r, 0, Direction.LEFT))
+            self.edge.add((r, self.cols, Direction.LEFT))
+        for c in range(self.cols):  # initialize border edges
+            self.edge.add((0, c, Direction.TOP))
+            self.edge.add((self.rows, c, Direction.TOP))
+        for index, _ in board["edge"].items():
+            if "," not in index:  # helper(x) edges
+                # TODO handle helper(x) edges
+                continue
+
+            index_1, index_2 = map(int, index.split(","))
+            coord_1, _ = self.index_to_coord(index_1)
+            coord_2, _ = self.index_to_coord(index_2)
+            if coord_1[0] == coord_2[0]:  # row equal, horizontal line
+                self.edge.add((coord_2[0] + 1, coord_2[1], Direction.TOP))
+            elif coord_1[1] == coord_2[1]:  # col equal, vertical line
+                self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
+        print(self.edge)
 
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
