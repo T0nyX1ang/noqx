@@ -125,6 +125,12 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
         print(self.edge)
 
+        self.cage = []
+        for indices in board["killercages"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.cage.append(coord_indices)
+        print(self.cage)
+
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
         real_rows = self.rows + self.top_rows + self.bottom_rows + 4
@@ -132,9 +138,11 @@ class Puzzle:
         category, index = divmod(index, real_rows * real_cols)
         return (index // real_rows - 2, index % real_cols - 2), category
 
-    def coord_to_index(self):
+    def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
-        return
+        real_rows = self.rows + self.top_rows + self.bottom_rows + 4
+        real_cols = self.cols + self.left_cols + self.right_cols + 4
+        return (category * real_rows * real_cols) + (coord[0] + 2) * real_cols + coord[1] + 2
 
 
 def encode(data: str):
