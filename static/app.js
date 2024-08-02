@@ -46,6 +46,7 @@ window.onload = function () {
       });
 
       exampleSelect.addEventListener("change", () => {
+        solveButton.disabled = false;
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;

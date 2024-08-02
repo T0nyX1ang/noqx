@@ -11,8 +11,8 @@ body {
 
 .left {
   position: fixed;
-  left: 30px;
-  bottom: 10px;
+  left: 10px;
+  top: 40px;
   font-size: 10pt;
   text-align: center;
 }
