@@ -9,9 +9,9 @@ body {
     height: 100vh;
 }
 
-.right {
+.left {
   position: fixed;
-  right: 30px;
+  left: 30px;
   bottom: 10px;
   font-size: 10pt;
   text-align: center;
