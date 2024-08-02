@@ -129,7 +129,23 @@ class Puzzle:
         for indices in board["killercages"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
             self.cage.append(coord_indices)
-        print(self.cage)
+
+        self.arrows = []
+        for indices in board["arrows"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.arrows.append(coord_indices)
+
+        self.thermo = []
+        for indices in board["thermo"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.thermo.append(coord_indices)
+
+        self.nobulbthermo = []
+        for indices in board["nobulbthermo"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.nobulbthermo.append(coord_indices)
+
+        print(board)
 
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
