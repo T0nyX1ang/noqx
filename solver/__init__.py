@@ -13,7 +13,7 @@ for pt in PUZZLE_TYPES:
     modules[pt] = importlib.import_module(f"solver.{pt}")  # load module
 
 
-def run_solver(puzzle_type: str, puzzle_content: str) -> Dict[str, str]:
+def run_solver(puzzle_type: str, puzzle_content: str) -> Dict[str, List[str]]:
     """Run the solver."""
     module = modules[puzzle_type]
 
@@ -25,4 +25,4 @@ def run_solver(puzzle_type: str, puzzle_content: str) -> Dict[str, str]:
     solutions: List[str] = module.solve(puzzle)
     stop = time.time()
     print(f"[Stats] {str(puzzle_type)} solver took {stop - start} seconds")
-    return {"url": solutions[0]}  # return the first solution
+    return {"url": solutions}  # return the first solution

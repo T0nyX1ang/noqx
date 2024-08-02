@@ -15,8 +15,11 @@ window.onload = function () {
   // TODO add a reset button
 
   let foundUrl = null;
-  let puzzle_type = null;
-  let puzzle_content = null;
+  let puzzleType = null;
+  let puzzleContent = null;
+  let Swal = iframe.contentWindow.Swal;
+  let solutionList = null;
+  let solutionPointer = -1;
 
   fetch("/api/list").then((response) => {
     response.json().then((body) => {
@@ -28,12 +31,12 @@ window.onload = function () {
       }
 
       typeSelect.addEventListener("change", () => {
-        puzzle_type = typeSelect.value;
-        if (puzzle_type !== "") {
+        puzzleType = typeSelect.value;
+        if (puzzleType !== "") {
           for (let i = exampleSelect.options.length - 1; i > 0; i--)
             exampleSelect.remove(i); // remove all options except the first one
 
-          for (let i = 0; i < body[puzzle_type].examples.length; i++) {
+          for (let i = 0; i < body[puzzleType].examples.length; i++) {
             const exampleOption = document.createElement("option");
             exampleOption.value = i;
             exampleOption.text = `Example ${i + 1}`;
@@ -44,63 +47,105 @@ window.onload = function () {
 
       exampleSelect.addEventListener("change", () => {
         if (exampleSelect.value !== "") {
-          puzzle_content = body[puzzle_type].examples[exampleSelect.value];
-          imp(puzzle_content);
+          solutionList = null;
+          solutionPointer = -1;
+          puzzleContent = body[puzzleType].examples[exampleSelect.value];
+          imp(puzzleContent);
         }
       });
 
       solveButton.addEventListener("click", () => {
         if (!typeSelect.value) {
-          alert("Choose a puzzle type to solve as.");
+          Swal.fire({
+            icon: "question",
+            title: "Select a puzzle type",
+            text: "Choose a puzzle type to solve as.",
+          });
           return;
         }
-        solveButton.textContent = "Solving...";
-        solveButton.disabled = true;
-        puzzle_content = exp();
-        fetch("/api/solve", {
-          method: "POST",
-          body: JSON.stringify({
-            puzzle_type: puzzle_type,
-            puzzle: puzzle_content,
-          }),
-          headers: { "Content-type": "application/json" },
-        })
-          .then(async (response) => {
-            let body = await response.json();
-            if (response.status === 400 || response.status === 500) {
-              alert(body.detail);
-            } else if (response.status === 503) {
-              alert("The server is too busy. Please try again later.");
-            } else {
-              if (body.url === null) {
-                alert(
-                  foundGrid ? "No other solution found." : "No solution found."
-                );
-                return;
+
+        if (solutionPointer === -1) {
+          puzzleContent = exp();
+          solveButton.textContent = "Solving...";
+          solveButton.disabled = true;
+          fetch("/api/solve", {
+            method: "POST",
+            body: JSON.stringify({
+              puzzle_type: puzzleType,
+              puzzle: puzzleContent,
+            }),
+            headers: { "Content-type": "application/json" },
+          })
+            .then(async (response) => {
+              let body = await response.json();
+              if (response.status === 400 || response.status === 500) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: body.detail,
+                });
+              } else if (response.status === 503) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "The server is too busy. Please try again later.",
+                });
+              } else {
+                console.log(body);
+                solutionList = body.url;
+                solutionPointer = 0;
+                if (solutionList.length === 0) {
+                  Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "No solution found.",
+                  });
+                  return;
+                }
+                iframe.contentWindow.load(solutionList[solutionPointer]);
+                foundUrl = exp();
               }
-              iframe.contentWindow.load(body.url);
-              foundUrl = exp();
-            }
-          })
-          .catch((e) => {
-            alert("Unexpected error: " + e);
-          })
-          .finally(() => {
-            exampleSelect.value = "";
-            solveButton.textContent = "Solve";
-            solveButton.disabled = false;
-          });
+            })
+            .catch((e) => {
+              Swal.fire({
+                icon: "question",
+                title: "Unexpected error",
+                text: e,
+              });
+            })
+            .finally(() => {
+              exampleSelect.value = "";
+              solveButton.textContent = `Solution (${solutionPointer + 1}/${
+                solutionList.length === 10 ? "10+" : solutionList.length
+              })`;
+              solveButton.disabled = solutionList.length === 1;
+            });
+        } else {
+          solutionPointer++;
+          if (solutionPointer >= solutionList.length) {
+            solutionPointer = 0;
+          }
+          solveButton.textContent = `Solution (${solutionPointer + 1}/${
+            solutionList.length === 10 ? "10+" : solutionList.length
+          })`;
+          iframe.contentWindow.load(solutionList[solutionPointer]);
+          foundUrl = exp();
+        }
       });
 
       resetButton.addEventListener("click", () => {
-        if (foundUrl) {
+        if (foundUrl && puzzleContent !== null) {
+          imp(puzzleContent);
           foundUrl = null;
-          imp(puzzle_content);
         } else {
-          puzzle_content = null;
-          iframe.contentWindow.pu.reset_board(); // contains reset of undo/redo
+          iframe.contentWindow.pu.reset_board();
           iframe.contentWindow.pu.redraw();
         }
+        puzzleContent = null;
+        solutionList = [];
+        solutionPointer = -1;
+        solveButton.textContent = "Solve";
+        solveButton.disabled = false;
       });
     });
   });
@@ -111,9 +156,8 @@ window.onload = function () {
 
   setInterval(() => {
     if (solveButton.textContent !== "Solving..." && exp() !== foundUrl) {
-      foundGrid = null;
       foundUrl = null;
       solveButton.textContent = "Solve";
     }
-  }, 1000);
+  }, 500);
 };
