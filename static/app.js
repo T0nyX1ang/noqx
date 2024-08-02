@@ -91,9 +91,7 @@ window.onload = function () {
                   text: "The server is too busy. Please try again later.",
                 });
               } else {
-                console.log(body);
                 solutionList = body.url;
-                solutionPointer = 0;
                 if (solutionList.length === 0) {
                   Swal.fire({
                     icon: "error",
@@ -102,6 +100,7 @@ window.onload = function () {
                   });
                   return;
                 }
+                solutionPointer = 0;
                 iframe.contentWindow.load(solutionList[solutionPointer]);
                 foundUrl = exp();
               }
