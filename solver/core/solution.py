@@ -1,11 +1,11 @@
 """Generate solutions for the given problem."""
 
-from typing import Dict, List
+from typing import List, Optional
 
 from clingo.control import Control
 from clingo.solving import Model
 
-from .encoding import Direction, rcd_to_elt
+from .penpa import Direction, Puzzle, Solution
 
 MAX_SOLUTIONS_TO_FIND = 10
 
@@ -17,70 +17,37 @@ class ClingoSolver:
         """Initialize a solver."""
         self.clingo_instance: Control = Control()
         self.program: str = ""
-        self.solutions: List[Dict[str, str]] = []
+        self.puzzle: Optional[Puzzle] = None
+        self.solutions: List[str] = []
+
+    def register_puzzle(self, puzzle: Puzzle):
+        """Register the puzzle to the solution."""
+        self.puzzle = puzzle
+        print("[Solver] Puzzle registered.")
 
     def store_solutions(self, model: Model):
         """Get the solution."""
-        solution = tuple(str(model).split())  # raw solution converted from clingo
-        formatted: Dict[str, str] = {}
+        if self.puzzle is None:
+            raise ValueError("Puzzle not registered.")
 
-        for item in solution:
+        solution_data = tuple(str(model).split())  # raw solution converted from clingo
+        solution = Solution(self.puzzle)
+
+        for item in solution_data:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            data[:2] = list(map(int, data[:2]))
-            if _type not in ["grid_direction", "grid_in", "grid_out", "triangle"]:
-                data = list(map(int, data))
-            else:
-                data[:2] = list(map(int, data[:2]))  # type: ignore
+            r, c = data[:2]  # ensure the first two elements of data is the row and column
 
             if _type.startswith("vertical"):
-                r, c = data
-                formatted[rcd_to_elt(int(r), int(c), Direction.LEFT)] = "black"
+                solution.edge.add((int(r), int(c), Direction.LEFT))
             elif _type.startswith("horizontal"):
-                r, c = data
-                formatted[rcd_to_elt(int(r), int(c), Direction.TOP)] = "black"
+                solution.edge.add((int(r), int(c), Direction.TOP))
             elif _type.startswith("number") or _type.startswith("content"):
-                r, c, num = data
-                formatted[rcd_to_elt(int(r), int(c))] = str(num).replace('"', "")
-            elif _type.startswith("grid_"):
-                if len(data) == 3:
-                    r, c, grid_direction, num = data + [""]
-                else:
-                    r, c, grid_direction, num = data
-                    num = "_2" if num == "2" else ""
-                grid_direction = grid_direction.replace('"', "")
-                out = "_out" if _type == "grid_out" else ""
-                if not formatted.get(rcd_to_elt(int(r), int(c))):
-                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}{out}{num}.png"
-                else:
-                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}{out}{num}.png"
-            elif _type == "triangle":
-                r, c, sign = data
-                sign = str(sign).replace('"', "")
-                dat2png = {
-                    "ul": "top-left.png",
-                    "ur": "top-right.png",
-                    "dl": "bottom-left.png",
-                    "dr": "bottom-right.png",
-                }
-                formatted[rcd_to_elt(int(r), int(c))] = dat2png[sign]
-            elif _type == "slant_code":
-                r, c, code = data
-                code = int(code)
-                sign = ""
-                sign += "tl" if code & 1 else ""
-                sign += "tr" if code >> 1 & 1 else ""
-                sign += "br" if code >> 3 & 1 else ""
-                sign += "bl" if code >> 2 & 1 else ""
-                if sign:
-                    formatted[rcd_to_elt(int(r), int(c))] = sign + ".png"
-            elif len(data) == 2:  # color
-                r, c = data
-                formatted[rcd_to_elt(int(r), int(c))] = _type.replace("color", "")
-            else:  # debug only
-                print(data)
+                solution.number[(int(r), int(c))] = int(data[2])
+            elif _type == "gray":
+                solution.surface[(int(r), int(c))] = 8
 
-        self.solutions.append(formatted)
+        self.solutions.append(str(solution))
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
@@ -90,6 +57,7 @@ class ClingoSolver:
         """Reset the program."""
         self.clingo_instance = Control()
         self.program = ""
+        self.puzzle = None
         self.solutions = []
 
     def solve(self):

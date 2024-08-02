@@ -11,9 +11,9 @@ window.onload = function () {
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
   const solveButton = document.getElementById("solve");
+  const resetButton = document.getElementById("solver_reset");
   // TODO add a reset button
 
-  let foundGrid = null;
   let foundUrl = null;
   let puzzle_type = null;
   let puzzle_content = null;
@@ -56,19 +56,20 @@ window.onload = function () {
         }
         solveButton.textContent = "Solving...";
         solveButton.disabled = true;
+        puzzle_content = exp();
         fetch("/api/solve", {
           method: "POST",
           body: JSON.stringify({
             puzzle_type: puzzle_type,
-            puzzle: exp(),
+            puzzle: puzzle_content,
           }),
           headers: { "Content-type": "application/json" },
         })
           .then(async (response) => {
             let body = await response.json();
-            if (response.status == 400 || response.status == 500) {
+            if (response.status === 400 || response.status === 500) {
               alert(body.detail);
-            } else if (response.status == 503) {
+            } else if (response.status === 503) {
               alert("The server is too busy. Please try again later.");
             } else {
               if (body.url === null) {
@@ -78,7 +79,6 @@ window.onload = function () {
                 return;
               }
               iframe.contentWindow.load(body.url);
-              foundGrid = body.grid;
               foundUrl = exp();
             }
           })
@@ -86,10 +86,21 @@ window.onload = function () {
             alert("Unexpected error: " + e);
           })
           .finally(() => {
-            solveButton.textContent =
-              exp() === foundUrl ? "Find another solution" : "Solve";
+            exampleSelect.value = "";
+            solveButton.textContent = "Solve";
             solveButton.disabled = false;
           });
+      });
+
+      resetButton.addEventListener("click", () => {
+        if (foundUrl) {
+          foundUrl = null;
+          imp(puzzle_content);
+        } else {
+          puzzle_content = null;
+          iframe.contentWindow.pu.reset_board(); // contains reset of undo/redo
+          iframe.contentWindow.pu.redraw();
+        }
       });
     });
   });

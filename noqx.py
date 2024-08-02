@@ -5,7 +5,6 @@ import traceback
 
 import uvicorn
 from fastapi import Body, FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from solver import run_solver
@@ -19,13 +18,13 @@ app.mount("/api", api_app, name="api")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
-@api_app.get("/list/", response_class=JSONResponse)
+@api_app.get("/list/")
 def list_puzzles_api():
     """List the available puzzles."""
     return PUZZLE_TYPES
 
 
-@api_app.post("/solve/", response_class=HTMLResponse)
+@api_app.post("/solve/")
 def solver_api(puzzle_type: str = Body(), puzzle: str = Body()):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
     try:

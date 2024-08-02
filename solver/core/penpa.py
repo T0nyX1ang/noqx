@@ -1,13 +1,11 @@
 """Encoding for penpa-edit frontend."""
 
 import json
-
-from base64 import b64decode
+from base64 import b64encode, b64decode
 from enum import Enum
 from functools import reduce
-from typing import Optional, Tuple
-from zlib import decompress
-
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from zlib import compress, decompress
 
 Direction = Enum("Direction", "LEFT TOP")
 PENPA_PREFIX = "m=edit&p="
@@ -25,7 +23,7 @@ PENPA_ABBREVIATIONS = [
     ['"number"', "zN"],
     ['"symbol"', "zY"],
     ['"special"', "zP"],
-    ['"board"', "zB"],
+    ['"self.board"', "zB"],
     ['"command_redo"', "zR"],
     ['"command_undo"', "zU"],
     ['"command_replay"', "z8"],
@@ -50,51 +48,54 @@ class Puzzle:
 
     def __init__(self, content: str):
         """Initialize the encoding of the puzzle."""
-        self.content = content
-        self.__parts = decompress(b64decode(self.content[len(PENPA_PREFIX) :]), -15).decode().split("\n")
+        self.parts = decompress(b64decode(content[len(PENPA_PREFIX) :]), -15).decode().split("\n")
 
         self.cell_shape: Optional[str] = None
-        self.cols: int = 0
-        self.rows: int = 0
-        self.top_rows: int = 0
-        self.bottom_rows: int = 0
-        self.left_cols: int = 0
-        self.right_cols: int = 0
+        self.col: int = 0
+        self.row: int = 0
+        self.top_row: int = 0
+        self.bottom_row: int = 0
+        self.left_col: int = 0
+        self.right_col: int = 0
         self._init_size()
 
-        self._init_board()
-
-    def __str__(self) -> str:
-        """Return the encoded puzzle."""
-        return self.content  # TODO encode the puzzle dynamically
+        self.board: Dict[str, Any] = {}
+        self.surface: Dict[Tuple[int, int], int] = {}
+        self.number: Dict[Tuple[int, int], Union[int, List[int]]] = {}
+        self.edge: Set[Tuple[int, int, Direction]] = set()
+        self.cage: List[List[Tuple[int, int]]] = []
+        self.arrows: List[List[Tuple[int, int]]] = []
+        self.thermo: List[List[Tuple[int, int]]] = []
+        self.nobulbthermo: List[List[Tuple[int, int]]] = []
+        self._unpack_board()
 
     def _init_size(self):
         """Initialize the size of the puzzle."""
-        header = self.__parts[0].split(",")
+        header = self.parts[0].split(",")
 
         if header[0] in ("square", "sudoku", "kakuro"):
             self.cell_shape = "square"
-            self.top_rows, self.bottom_rows, self.left_cols, self.right_cols = json.loads(self.__parts[1])
-            self.rows = int(header[2]) - self.top_rows - self.bottom_rows
-            self.cols = int(header[1]) - self.left_cols - self.right_cols
+            self.top_row, self.bottom_row, self.left_col, self.right_col = json.loads(self.parts[1])
+            self.row = int(header[2]) - self.top_row - self.bottom_row
+            self.col = int(header[1]) - self.left_col - self.right_col
         else:
             raise ValueError("Unsupported cell shape. Current only supported square shape.")
 
-        margin = (self.top_rows, self.bottom_rows, self.left_cols, self.right_cols)
-        print(f"Puzzle size initialized. Size: {self.rows}x{self.cols}. Margin: {margin}.")
+        margin = (self.top_row, self.bottom_row, self.left_col, self.right_col)
+        print(f"[Puzzle] Size initialized. Size: {self.row}x{self.col}. Margin: {margin}.")
 
-    def _init_board(self):
+    def _unpack_board(self):
         """Initialize the content of the puzzle."""
-        board = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.__parts[3]))
+        self.board = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[3]))
 
         self.surface = {}
-        for index, _ in board["surface"].items():
+        for index, color in self.board["surface"].items():
             coord, _ = self.index_to_coord(int(index))
-            self.surface[coord] = "gray"  # fix color to gray
-        print(self.surface)
+            self.surface[coord] = int(color)
+        print("[Puzzle] Surface unpacked.")
 
         self.number = {}
-        for index, num_data in board["number"].items():
+        for index, num_data in self.board["number"].items():
             coord, _ = self.index_to_coord(int(index))
             # num_data: number, color, subtype
             if num_data[2] == "4":  # for tapa-like puzzles
@@ -102,16 +103,10 @@ class Puzzle:
             elif num_data[2] != "7":  # neglect candidates
                 self.number[coord] = int(num_data[0])
             # TODO: handle non-number texts
-        print(self.number)
+        print("[Puzzle] Number unpacked.")
 
         self.edge = set()
-        for r in range(self.rows):  # initialize border edges
-            self.edge.add((r, 0, Direction.LEFT))
-            self.edge.add((r, self.cols, Direction.LEFT))
-        for c in range(self.cols):  # initialize border edges
-            self.edge.add((0, c, Direction.TOP))
-            self.edge.add((self.rows, c, Direction.TOP))
-        for index, _ in board["edge"].items():
+        for index, _ in self.board["edge"].items():
             if "," not in index:  # helper(x) edges
                 # TODO handle helper(x) edges
                 continue
@@ -123,45 +118,65 @@ class Puzzle:
                 self.edge.add((coord_2[0] + 1, coord_2[1], Direction.TOP))
             elif coord_1[1] == coord_2[1]:  # col equal, vertical line
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
-        print(self.edge)
+        print("[Puzzle] Edge unpacked.")
 
         self.cage = []
-        for indices in board["killercages"]:
+        for indices in self.board["killercages"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
             self.cage.append(coord_indices)
 
         self.arrows = []
-        for indices in board["arrows"]:
+        for indices in self.board["arrows"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
             self.arrows.append(coord_indices)
 
         self.thermo = []
-        for indices in board["thermo"]:
+        for indices in self.board["thermo"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
             self.thermo.append(coord_indices)
 
         self.nobulbthermo = []
-        for indices in board["nobulbthermo"]:
+        for indices in self.board["nobulbthermo"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
             self.nobulbthermo.append(coord_indices)
-
-        print(board)
+        print("[Puzzle] Sudoku unpacked.")
 
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
-        real_rows = self.rows + self.top_rows + self.bottom_rows + 4
-        real_cols = self.cols + self.left_cols + self.right_cols + 4
-        category, index = divmod(index, real_rows * real_cols)
-        return (index // real_rows - 2, index % real_cols - 2), category
+        real_row = self.row + self.top_row + self.bottom_row + 4
+        real_col = self.col + self.left_col + self.right_col + 4
+        category, index = divmod(index, real_row * real_col)
+        return (index // real_row - 2, index % real_col - 2), category
+
+
+class Solution:
+    """Solution of a puzzle."""
+
+    def __init__(self, puzzle: Puzzle):
+        """Initialize the solution."""
+        self.puzzle: Puzzle = puzzle
+        self.parts = puzzle.parts
+        self.board = puzzle.board
+
+        self.surface: Dict[Tuple[int, int], int] = {}
+        self.number: Dict[Tuple[int, int], Union[int, List[int]]] = {}
+        self.edge: Set[Tuple[int, int, Direction]] = set()
+
+    def __str__(self):
+        """Return the solution as a string."""
+        self._pack_board()
+        self.parts[4] = reduce(lambda s, abbr: s.replace(abbr[0], abbr[1]), PENPA_ABBREVIATIONS, json.dumps(self.board))
+        return PENPA_PREFIX + b64encode(compress("\n".join(self.parts).encode())[2:-4]).decode()
+
+    def _pack_board(self):
+        """Pack the solution into penpa format."""
+        for coord, color in self.surface.items():
+            index = self.coord_to_index(coord)
+            self.board["surface"][f"{index}"] = color
+        print("[Solution] Surface packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
-        real_rows = self.rows + self.top_rows + self.bottom_rows + 4
-        real_cols = self.cols + self.left_cols + self.right_cols + 4
-        return (category * real_rows * real_cols) + (coord[0] + 2) * real_cols + coord[1] + 2
-
-
-def encode(data: str):
-    """Encode the given data."""
-    puzzle = Puzzle(data)
-    return puzzle
+        real_row = self.puzzle.row + self.puzzle.top_row + self.puzzle.bottom_row + 4
+        real_col = self.puzzle.col + self.puzzle.left_col + self.puzzle.right_col + 4
+        return (category * real_row * real_col) + (coord[0] + 2) * real_col + coord[1] + 2

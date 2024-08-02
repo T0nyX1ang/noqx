@@ -1,19 +1,20 @@
 """The Aqre solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.encoding import Encoding
-from .core.helper import full_bfs, mark_and_extract_clues
+from .core.penpa import Puzzle
+from .core.helper import full_bfs
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
 from .core.shape import avoid_rect
 from .core.solution import solver
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
     solver.add_program_line(grid_color_connected(color="gray"))
@@ -22,14 +23,20 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(avoid_rect(4, 1, color="not gray"))
     solver.add_program_line(avoid_rect(1, 4, color="not gray"))
 
-    clues, rules = mark_and_extract_clues(E.clues, shaded_color="gray", safe_color="green")
-    areas = full_bfs(E.R, E.C, E.edges, clues)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.number)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
-            solver.add_program_line(count(clues[rc], color="gray", _type="area", _id=i))
+            data = puzzle.number[rc]
+            assert isinstance(data, int)
+            solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 
-    solver.add_program_line(rules)
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f"gray({r}, {c}).")
+        else:  # safe color (others)
+            solver.add_program_line(f"not gray({r}, {c}).")
+
     solver.add_program_line(display(item="gray"))
     solver.solve()
 
