@@ -2,7 +2,7 @@
 
 from typing import Iterable, List, Optional, Tuple, Union
 
-from .encoding import tag_encode, target_encode
+from .helper import tag_encode, target_encode
 
 
 def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:

@@ -2,7 +2,7 @@
 
 from typing import Iterable, Optional, Tuple, Union
 
-from .encoding import target_encode
+from .helper import target_encode
 
 
 def display(item: str = "black", size: int = 2) -> str:

@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple, Union
 
-from .encoding import tag_encode, target_encode
+from .helper import tag_encode, target_encode
 
 
 def adjacent(_type: Union[int, str] = 4) -> str:

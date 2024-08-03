@@ -14,7 +14,7 @@ def mark_and_extract_clues(
     """
     Mark clues to the solver and extract the clues that are not color-relevant.
 
-    Recommended to use it before performing a bfs on a grid.
+    Recommended to use it before performing a bfs on a grid. (deprecation warning)
     """
     clues = {}  # remove color-relevant clues here
     rule = ""
@@ -59,6 +59,30 @@ def extract_initial_edges(edges: Set[Tuple[int, int, Direction]]) -> str:
         elif d == Direction.TOP:
             rule += f"horizontal_line({r}, {c}).\n"
     return rule.strip()
+
+
+def tag_encode(name: str, *data: Union[str, int, None]) -> str:
+    """Encode a valid tag predicate without spaces or hyphens."""
+    tag_data = [name]
+    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
+        if d is not None:
+            tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
+
+    return "_".join(tag_data)
+
+
+def reverse_op(op: str) -> str:
+    """Return the reverse of the given operator."""
+    op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+    return op_rev_dict[op]
+
+
+def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
+    """Encode a target number for comparison."""
+    if isinstance(target, int):
+        return ("!=", target)
+
+    return (reverse_op(target[0]), target[1])
 
 
 def full_bfs(
