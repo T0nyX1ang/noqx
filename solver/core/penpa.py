@@ -147,7 +147,7 @@ class Puzzle:
         real_row = self.row + self.top_row + self.bottom_row + 4
         real_col = self.col + self.left_col + self.right_col + 4
         category, index = divmod(index, real_row * real_col)
-        return (index // real_row - 2, index % real_col - 2), category
+        return (index // real_row - 2 - self.top_row, index % real_col - 2 - self.left_col), category
 
 
 class Solution:
@@ -178,6 +178,7 @@ class Solution:
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
-        real_row = self.puzzle.row + self.puzzle.top_row + self.puzzle.bottom_row + 4
-        real_col = self.puzzle.col + self.puzzle.left_col + self.puzzle.right_col + 4
-        return (category * real_row * real_col) + (coord[0] + 2) * real_col + coord[1] + 2
+        puzzle = self.puzzle
+        real_row = puzzle.row + puzzle.top_row + puzzle.bottom_row + 4
+        real_col = puzzle.col + puzzle.left_col + puzzle.right_col + 4
+        return (category * real_row * real_col) + (coord[0] + 2 + puzzle.top_row) * real_col + coord[1] + 2 + puzzle.left_col
