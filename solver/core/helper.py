@@ -34,6 +34,22 @@ def mark_and_extract_clues(
     return clues, rule.strip()
 
 
+def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
+    """Extract two symbols from a set."""
+    if len(symbol_set) == 2:
+        symbol_1 = list(symbol_set)[0]
+        symbol_2 = list(symbol_set)[1]
+    elif len(symbol_set) == 1:
+        symbol_1 = list(symbol_set)[0]
+        symbol_2 = "circle_M__1" if symbol_1 == "circle_M__2" else "circle_M__2"
+    elif len(symbol_set) == 0:
+        symbol_1 = "circle_M__1"
+        symbol_2 = "circle_M__2"
+    else:
+        raise ValueError("At most two symbols are allowed.")
+    return symbol_1, symbol_2
+
+
 def extract_initial_edges(edges: Set[Tuple[int, int, Direction]]) -> str:
     """Extract the initial edges to the solver."""
     rule = ""

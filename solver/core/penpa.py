@@ -63,6 +63,7 @@ class Puzzle:
         self.board: Dict[str, Any] = {}
         self.surface: Dict[Tuple[int, int], int] = {}
         self.number: Dict[Tuple[int, int], Union[int, List[int]]] = {}
+        self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
         self.arrows: List[List[Tuple[int, int]]] = []
@@ -105,6 +106,13 @@ class Puzzle:
                 self.number[coord] = int(num_data[0])
             # TODO: handle non-number texts
         print("[Puzzle] Number unpacked.")
+
+        self.symbol = {}
+        for index, (style, shape, _) in self.board["symbol"].items():
+            coord, _ = self.index_to_coord(int(index))
+            symbol_name = f"{shape}__{style}"
+            self.symbol[coord] = symbol_name
+        print("[Puzzle] Symbol unpacked.")
 
         self.edge = set()
         for index, _ in self.board["edge"].items():
@@ -161,6 +169,7 @@ class Solution:
 
         self.surface: Dict[Tuple[int, int], int] = {}
         self.number: Dict[Tuple[int, int], Union[int, List[int]]] = {}
+        self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
 
     def __str__(self):
@@ -175,6 +184,12 @@ class Solution:
             index = self.coord_to_index(coord)
             self.board["surface"][f"{index}"] = color
         print("[Solution] Surface packed.")
+
+        for coord, symbol_name in self.symbol.items():
+            index = self.coord_to_index(coord)
+            shape, style = symbol_name.split("__")
+            self.board["symbol"][f"{index}"] = [int(style), shape, 1]
+        print("[Solution] Symbol packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""

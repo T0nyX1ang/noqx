@@ -40,12 +40,18 @@ class ClingoSolver:
 
             if _type.startswith("vertical"):
                 solution.edge.add((int(r), int(c), Direction.LEFT))
+
             elif _type.startswith("horizontal"):
                 solution.edge.add((int(r), int(c), Direction.TOP))
+
             elif _type.startswith("number") or _type.startswith("content"):
                 solution.number[(int(r), int(c))] = int(data[2])
+
             elif _type == "gray":
                 solution.surface[(int(r), int(c))] = 8
+
+            else:
+                solution.symbol[(int(r), int(c))] = str(_type)
 
         self.solutions.append(str(solution))
 
