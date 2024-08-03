@@ -1,9 +1,9 @@
 """The Aquarium solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.solution import solver
 
@@ -18,29 +18,32 @@ def area_gravity(color: str = "black") -> str:
     return target.replace("not not ", "")
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c(color="blue"))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(shade_c(color="gray"))
 
-    areas = full_bfs(E.R, E.C, E.edges)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(area_gravity(color="blue"))
+        solver.add_program_line(area_gravity(color="gray"))
 
-    for c, num in E.top.items():
-        solver.add_program_line(count(int(num), color="blue", _type="col", _id=c))
+    for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.number.items()):  # filter top number
+        assert isinstance(num, int)
+        solver.add_program_line(count(int(num), color="gray", _type="col", _id=c))
 
-    for r, num in E.left.items():
-        solver.add_program_line(count(int(num), color="blue", _type="row", _id=r))
+    for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.number.items()):  # filter left number
+        assert isinstance(num, int)
+        solver.add_program_line(count(int(num), color="gray", _type="row", _id=r))
 
-    for (r, c), clue in E.clues.items():
-        if clue == "blue":
-            solver.add_program_line(f"blue({r}, {c}).")
-        elif clue == "green":
-            solver.add_program_line(f"not blue({r}, {c}).")
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f"gray({r}, {c}).")
+        else:  # safe color (others)
+            solver.add_program_line(f"not gray({r}, {c}).")
 
-    solver.add_program_line(display(item="blue"))
+    solver.add_program_line(display(item="gray"))
     solver.solve()
 
     return solver.solutions
