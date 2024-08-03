@@ -30,11 +30,11 @@ def solve(puzzle: Puzzle) -> List[str]:
         solver.add_program_line(area_gravity(color="gray"))
 
     for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.number.items()):  # filter top number
-        assert isinstance(num, int)
+        assert isinstance(num, int), "TOP clue must be an integer."
         solver.add_program_line(count(int(num), color="gray", _type="col", _id=c))
 
     for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.number.items()):  # filter left number
-        assert isinstance(num, int)
+        assert isinstance(num, int), "LEFT clue must be an integer."
         solver.add_program_line(count(int(num), color="gray", _type="row", _id=r))
 
     for (r, c), color_code in puzzle.surface.items():

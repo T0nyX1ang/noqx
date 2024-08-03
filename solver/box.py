@@ -1,9 +1,9 @@
 """The Box solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import display, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.solution import solver
 
 
@@ -17,30 +17,35 @@ def count_box_row(target: int, r: int, color: str = "black") -> str:
     return f":- #sum {{ N: box_row(C, N), {color}({r}, C) }} != {target}."
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
 
-    for (r, c), color in E.clues.items():
-        if color == "black":
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"black({r}, {c}).")
-        elif color == "green":
+        else:  # safe color (others)
             solver.add_program_line(f"not black({r}, {c}).")
 
-    for c in range(E.C):
-        target = int(E.bottom[c]) if c in E.bottom else c + 1
+    for c in range(puzzle.col):
+        target = puzzle.number.get((puzzle.row, c))
+        assert isinstance(target, int), "BOTTOM clue must be an integer."
         solver.add_program_line(f"box_row({c}, {target}).")
 
-    for r, num in E.left.items():
-        solver.add_program_line(count_box_row(int(num), r, color="black"))
+    for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.number.items()):
+        assert isinstance(num, int), "LEFT clue must be an integer."
+        solver.add_program_line(count_box_row(num, r, color="black"))
 
-    for r in range(E.R):
-        target = int(E.right[r]) if r in E.right else r + 1
+    for r in range(puzzle.row):
+        target = puzzle.number.get((r, puzzle.col))
+        assert isinstance(target, int), "RIGHT clue must be an integer."
         solver.add_program_line(f"box_col({r}, {target}).")
 
-    for c, num in E.top.items():
-        solver.add_program_line(count_box_col(int(num), c, color="black"))
+    for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.number.items()):
+        assert isinstance(num, int), "TOP clue must be an integer."
+        solver.add_program_line(count_box_col(num, c, color="black"))
 
     solver.add_program_line(display())
     solver.solve()

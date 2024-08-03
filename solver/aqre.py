@@ -28,7 +28,7 @@ def solve(puzzle: Puzzle) -> List[str]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
             data = puzzle.number[rc]
-            assert isinstance(data, int)
+            assert isinstance(data, int), "Clue must be an integer."
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 
     for (r, c), color_code in puzzle.surface.items():

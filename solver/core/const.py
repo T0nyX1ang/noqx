@@ -40,8 +40,22 @@ PUZZLE_TYPES: Dict[str, Dict[str, Union[str, List[str]]]] = {
             "m=edit&p=7VjNT/tGEL3nr6j2vAfvh+OPG6XQC9BSqBCyIuQEQyKcmNpOqRzlf2d2HCk4+6JKSD8VqSjxaPI8mX27M2/jTfPXOq8LqQP3NrEMpKJXlMR8xaHiK9i9bhdtWaQ/yZN1O69qcqT87fxcPuVlU4yyXdRktOmStLuW3a9pJpSQQtOlxER21+mmu0zFrFpOF0J2N3RfSEU3LvpITe7Z3r3j+8477UEVkH+188m9J7ctVm3Tf/w9zbpbKdxIP/NXnSuW1d+F2DFxn/vRCZiWb/Md1qwfq5f1LkpNtrI7YardDWBp9iyd27N0HmDpyDuWs0U9K4uHi88RzVta92a+eEV0k8l2S0v+BxF+SDPH/c+9G+/dm3RD9oqtYnufbsQ4ojSaBusJXjJlMU4IVYdoFKLYKIaxMEOsUYbYwljHzEMTl9fLoAKFYZcZwHDSKoCclXK5AWwwjHNrN3M/2gQw2sC5K4MJWjykdYXx4RAPGeKlCscYxrnHsL5qjHNHLrc/HW4dPzrBSRLXlF4SzQ0B4CPRsIc1bgiNK681XFitj0TDomkNF1YbPB0LlaO5IQCMp4MbQoewDDpy0X4S3hsAjJnEeMgYJ0ng5E0AF9awuH1YwWYzuGgGy9Vw0QAMi2Zw0Qyr2I+2UDuGSwxgWEuD5WoiuD0aFqAPx0dgKBITYyYJTGIDuLAW19JiuVosQItraTWcvNWwIayBtbS4OtY6JgDGubEuLd5M7Ri2j8WbqY0wwQgvFZarxQ1h8c+2jfHkcftYVrEHh3jrDflnFMCw2UIuMYAhwVCDydPj0Dk/FGm2t/TMJDvD9he2AduQ7QXHnLG9Y3vK1rIdc0zknro+/Vz2g+hkYf+A/++v8DvuO+7/FzcZZeK0Wr5WzaItBB1lRVOVD826fspndDjjky6dvwhbrZfToh5AZVW9lovVMG7xvKrqAt5yYPH4jOKnVf14kP0tL8sB0J/dB1C/ow2gtqYz5IfPeV1XbwNkmbfzAfDhvDnIRCftIYE2H1LMX/KD0Zb7OW9H4h/BV2Zoqe33/wT/wf8EbvmDr/ar9NXocOdWNZQ9wUD5hEKF73BP5IR7cnYD+oomFIia0ENdE+RLm0BP3YQdEbjLeqhxx+pQ5m4oT+luqI9izyajdw=="
         ],
     },
-    "box": {"name": "Box", "cat": "shade", "aliases": [], "examples": []},
-    "canal": {"name": "Canal View", "cat": "shade", "aliases": ["canalview"], "examples": []},
+    "box": {
+        "name": "Box",
+        "cat": "shade",
+        "aliases": [],
+        "examples": [
+            "m=edit&p=7ZVNc5s+EMbv/hQZnXVAvBm4pWnSS+o2f6eTyTBMBjskYQJWKuPmP3j83bO7giBeeuihrQ8dzM76xyPpEdKK7fddqjIuBP6cgFscMu56Pt1C2HRbzXWdV0UWnfDTXfUkFSScf7m44A9psc1mMbaEK5nt6zCqr3j9KYqZYJzZcAuW8Poq2tefo3rB6yU8YtwBdqlFNqTnXXpDzzE701BYkC+aHNJbSNe5WhfZ3aUmX6O4vuYMx/lArTFlpfyRscYH/l/LcpUjWKUVTGb7lL80T7a7e/m8a7QiOfD6VNtdtnZxlMYuOm/sYqrtYjZhF2fxm+2GyeEAr/0/MHwXxej9W5cGXbqM9hAX0Z45DjX1wIxeHOa4SGzHIB4SxzKIP9LMRyQgYvYcDjWuNSKCiG8Q6lngy2yIpwnjfgN8m4DbSeZEYMO1krluY7gJiMDQrSTUvUCjViIsQtBvqxHWyI0QhKDnd5FNzYw5CKcl7xr9wuBFdiI907kh8qhZT6TnGhgif9yTnm1oiAK9zibR62wSvc4moXU256/fmjnZgNbZnFpA62zOI6R1Nk2HtM7vDmE3CtqTtxQvKNoUr2HL8tqh+JGiRdGjeEmac4o3FM8ouhR90sxx0/9SWfwBO7Eb6HPSuObHRZJZzJY79ZCuMzhsFrtylamThVRlWjA43dlWFnfb5nlEhz8cR8A2pOyhQsqXIt/0dfnjRqps8hHC7P5xSr+S6n7Q+2taFD2gP2c9pE/dHqoUHKnG/1Qp+dojZVo99YBx/PZ6yjZV30CV9i2mz+lgtLKb82HG/md0xw5+dv99Ov/SpxOXwDq2k+LY7NDulWqy9AFPVD/QySpv+KjQgY9KGgccVzXQicIGOqxtQOPyBjiqcGA/KXLsdVjn6GpY6jjUqNpxKLPg42T2Bg=="
+        ],
+    },
+    "canal": {
+        "name": "Canal View",
+        "cat": "shade",
+        "aliases": ["canalview"],
+        "examples": [
+            "m=edit&p=7ZVBc5s6EMfv/hQZnXVAEsSYW5omvbhuU+dNJsMwGeyQhAlYeTJuOnj83bO7kCIEPfTQNoeMzM76p9XqD2KX7f+71GRcSPypkHtcwPBnPl1qGtDlteMyr4osOuInu+pBG3A4/3J+zu/SYptN4jYqmezrWVRf8PpTFDPBOJNwCZbw+iLa15+jesHrJUwxroDNmyAJ7lnnXtE8eqcNFB74i9YH9xrcdW7WRXYzb8jXKK4vOcN9PtBqdFmpv2es1YH/17pc5QhWaQU3s33In9qZ7e5WP+7aWJEceH3SyF2+ysVdWrmovJWLbiMXvRG5eBd/WO4sORzgsX8DwTdRjNr/69ywc5fRHuwi2jPl41I4GdGcDVMzBH4HfA+BskDw+nBaMKWIYwsoBNMOCI9CQptMnbRCkBQrrxCuFiFdMUKSGjtGDWIUxQQ2OXZX+cJ5EMIP3bsIKI+dOZRuntDVI4WrRwqKsR6YFKTH2l1K0vNzFRyXoEO7JntOVpK9hDPltSL7kaxHNiA7p5gzsldkT8n6ZI8pZopvxW+9N39BTqx8akLDEbxzHMkkZsuduUvXGfSCxa5cZeZooU2ZFgyaL9vq4mbbzkfUm6FbANtQZA8VWj8V+aYfl99vtMlGpxBmt/dj8Sttbp3sz2lR9EDztemhpin2UGWg41n/U2P0c4+UafXQA1Z37GXKNlVfQJX2JaaPqbNb2d3zYcJ+MLpihV/F9y/bP/qy4RF4b61PvTU59PZqM1r6gEeqH+holbd8UOjAByWNGw6rGuhIYQN1axvQsLwBDioc2C+KHLO6dY6q3FLHrQbVjlvZBR8nkxc="
+        ],
+    },
     "castle": {"name": "Castle Wall", "cat": "loop", "aliases": ["castlewall"], "examples": []},
     "cave": {"name": "Cave (Corral)", "cat": "shade", "aliases": [], "examples": []},
     "chocona": {"name": "Chocona", "cat": "shade", "aliases": [], "examples": []},

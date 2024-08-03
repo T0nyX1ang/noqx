@@ -40,7 +40,6 @@ class ClingoSolver:
 
             if _type.startswith("vertical"):
                 solution.edge.add((int(r), int(c), Direction.LEFT))
-
             elif _type.startswith("horizontal"):
                 solution.edge.add((int(r), int(c), Direction.TOP))
 
@@ -49,6 +48,8 @@ class ClingoSolver:
 
             elif _type == "gray":
                 solution.surface[(int(r), int(c))] = 8
+            elif _type == "black":
+                solution.surface[(int(r), int(c))] = 4
 
             else:
                 solution.symbol[(int(r), int(c))] = str(_type)
