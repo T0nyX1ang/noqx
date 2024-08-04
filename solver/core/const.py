@@ -80,7 +80,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
         "parameters": [{"name": "Product", "type": "checkbox", "default": False}],
     },
-    "chocona": {"name": "Chocona", "cat": "shade", "examples": []},
+    "chocona": {
+        "name": "Chocona",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZdb9tGEHzXrwj4fA88Hr/f3MTui6s2tYsgEASDtplYCGWmlNQUNPzfM7Ncmh9SURRF0RQoJJHD0d7u7O3t8Xa/HoqmNNbn16UGd3xCm8ovSGP5+fq53uyrMn9lzg77h7oBMObHiwvzoah25WKlVuvFU5vl7VvTfp+vPOsZL8DPemvTvs2f2h/y9ty0V/jLMym4y84oADwf4Dv5n+h1R1ofeKkY8D3g3aa5q8qby475KV+118ZjnO9kNKG3rX8rPdXB57t6e7shcVvskczuYfNZ/9kd7utPB7W162fTnnVyl71cRlG5bpBL2MklOiGXWfzDcrP18zOm/WcIvslX1P7LANMBXuVPuC7zJ8/5HIrK2K42ngtIRCMiJOGPiJREOBChEMxWiWhOxG4WJU5mURIJO4qSSNiRjySeWaRCjCysb2derT8PbP25Nmsl0niUzci4EROIvFHOtpuWsU0YzZlZ2phyKxP/Xq4Xcg3keo26mNbJ9Y1cfblGcr0Um3OUK3CZCULULEA7BejKHtvA4LnDoQ8eUyE2yYCtgw0mnjgCjpCC4NAEMaaFOEa3x0hf+GjAoYU9EhQb+Bzbp5gc4hQaMtWQYewLjo2znU7cjQu6uLgbx8VEjD3HuS4W7sZFmLoea44O+Q44gp/Ov7MWuNMm2KqeDD57nCLHTDWnyD3V3Kk57WKJTao5ptDPBSYYcX2N60M/F4zEclOscys6X3ACrDkG0BN2enBHjqqfPrl0BVN/nwtz1Dnh2B6Tt33unFuNZRHLqR8HP1yQEgvzPMZsT8HwE6qfEH7iPkfmpT6Jfc3Rx1irY/FWcNwqJBZycVov2vj9HKJ2bEDFQaZrNcP6zPp8MfbFBj59rVfCWmi9EtSL24Fg1CtR+whrj/uGYKxJzUtwoms+Qawx7uvOta3zjztsVFvIvtAeCdhrGgtzjueB575J7Nhr6hNz+6KBWOccd/B9T2Fsr585JmqTwIY7nPQUc+wx+i7WHGPEijUX1AvPqgH2WseAb2uti/Bal8BSs2KHuE7jEnP/Fp8YG/b9zn2AfrDxvJPt57VcQ7nGsi0lfJn8pdfN398B/1TOChXh2WX6if573Hqx8q4OzYfirsSr/vz+Y/lqWTfbosLT8rC9LZv+GSctb1dXNzu1zuUghqMBuEexnFBVXX+uNo9Tu83Hx7opT/5FskT4E/a3dXM/8/6lqKoJ0R0tJ1R3AppQ+wbHm9Fz0TT1lwmzLfYPE2J0FJp4Kh/3UwH7Yiqx+FTMom2HnJ8X3u+e/FaOR+D/j7H/0jGWJfC/td3lW5Mjq7duTrY+6BPdD/Zklyt/1Ojgj1qaAY+7GuyJxgY7721Qx+0N8qjDwf1Bk9PrvM+pat7qDHXU7Qw1bvjVevEV",
+            }
+        ],
+    },
     "country": {"name": "Country Road", "cat": "loop", "aliases": ["countryroad"], "examples": []},
     "doppelblock": {"name": "Doppelblock", "cat": "num", "examples": []},
     "easyas": {"name": "Easy As", "cat": "num", "examples": []},
@@ -89,7 +97,18 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "haisu": {"name": "Haisu", "cat": "loop", "examples": []},
     "hashi": {"name": "Hashiwokakero (Bridges)", "cat": "loop", "aliases": ["bridges"], "examples": []},
     "heteromino": {"name": "Heteromino", "cat": "region", "examples": []},
-    "heyawake": {"name": "Heyawake", "cat": "shade", "examples": []},
+    "heyawake": {
+        "name": "Heyawake",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7VXfT9swEH7vX4H87Ic4dn6+MVb2wroxmBCKKpSWABVpw9J2TKn6v/OdfdCmDdqkaRqTpjb25+98vu8cnzP/tszrQiqP/jqW6PEzKraPH4f28fh3PlmURXogD5eLu6oGkPLT8bG8yct50ct41rC3apK0OZXNhzQTSkjh41FiKJvTdNV8TJu+bM5gEjIGd+Im+YD9DbywdkJHjlQe8IAx4CXgeFKPy+LqxDGf06w5l4LivLPeBMW0+l4I1kHjcTUdTYgY5QskM7+bPLBlvryu7pc8Vw3Xsjl8Xa7ukktkh1ya8IflJsP1Gtv+BYKv0oy0f93AeAPP0pUwoUhjKYLYdklgO+Ur1xtHq8BDD48BPDRwJiLodu/R+mbhyzAku9kMdduKeJl+GSrP35qNCCpdob207bFtfdueQ7JstG3f29azbWDbEzunD3W+UdIPkIaPk2YMMNRZHEk/RFqEgwA4YYyDHUEE4RC+EfuGCQ47tBOOfDr4jOEbs2+spZ9EjEOpPaRucQLMvkkktXJxYQc2jDWw84Vdat/FhR3YaYZdas2+fgDs4sIutXGaYQdmX424gYsLO7DTDDswa8Yc37BO4wHzntC+8ZrogVm/QY7Gabb7ybHQA/OeGFwMhveB9pmOjcXYW7O1VzGvE2OdmNeJaT9ZJ+WrnnNHjorzpRz1c77IS5M2vPAL+9qPbGtsG9rjENH5/sUKcKf690/eT+Vk2l2n7V/w73HDXibOlvVNPi5w+/Svb4uDQVVP8xKjwXI6KurnMS5/Ma/KqznPTu23AbcVuJmd2aLKqnooJ7P2vMntrKqLThORBcJ3zB9V9fXO6o95WbYI97VrUe5SblGLGjfu1jiv6+qxxUzzxV2L2LqdWysVs0VbwCJvS8zv851o003O6574Iexj70/z/8v6l76s9Aq8t3a7vDU59vRWdWfpg+6ofrCdVc78XqGD3ytpCrhf1WA7Chvsbm2D2i9vkHsVDu6VIqdVd+ucVO2WOoXaq3YKtV3w2bD3BA==",
+            },
+            {
+                "data": "m=edit&p=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"
+            },
+        ],
+    },
     "hitori": {"name": "Hitori", "cat": "shade", "examples": []},
     "hotaru": {"name": "Hotaru Beam", "cat": "loop", "examples": []},
     "jousan": {"name": "Jousan", "cat": "draw", "examples": []},
