@@ -3,16 +3,16 @@ body {
 }
 
 #iframe {
-    display: block;
-    border: none;
-    width: 100vw;
-    height: 100vh;
+  display: block;
+  border: none;
+  width: 100vw;
+  height: 100vh;
 }
 
 .left {
   position: fixed;
   left: 10px;
-  top: 40px;
+  top: 30px;
   font-size: 10pt;
   text-align: center;
 }
@@ -21,23 +21,26 @@ select,
 button {
   display: block;
   font-size: 16px;
-  margin-bottom: 10px;
+  margin: 10px auto;
   width: 150px;
   height: 25px;
   text-align: center;
   cursor: pointer;
   padding: 2px 5px;
   text-decoration: none;
+  border: 2px solid #000;
   border-radius: 4px;
 }
 
-textarea {
+fieldset {
   display: none;
-  font-size: 24px;
+  font-size: 16px;
   margin-bottom: 10px;
-  width: 444px;
-  height: 30px;
+  margin: 10px auto;
+  width: 136px;
   text-align: center;
-  resize: none;
-  vertical-align: middle;
+  padding: 2px 5px;
+  text-decoration: none;
+  border: 2px solid #000;
+  border-radius: 4px;
 }

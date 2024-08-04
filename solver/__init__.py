@@ -3,7 +3,7 @@
 import importlib
 import time
 from types import ModuleType
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .core.const import PUZZLE_TYPES
 from .core.penpa import Puzzle
@@ -13,7 +13,7 @@ for pt in PUZZLE_TYPES:
     modules[pt] = importlib.import_module(f"solver.{pt}")  # load module
 
 
-def run_solver(puzzle_type: str, puzzle_content: str) -> Dict[str, List[str]]:
+def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
     """Run the solver."""
     module = modules[puzzle_type]
 
@@ -21,7 +21,7 @@ def run_solver(puzzle_type: str, puzzle_content: str) -> Dict[str, List[str]]:
         raise NotImplementedError("Solver not implemented.")
 
     start = time.time()
-    puzzle: Puzzle = Puzzle(puzzle_content)
+    puzzle: Puzzle = Puzzle(puzzle_content, param)
     solutions: List[str] = module.solve(puzzle)
     stop = time.time()
     print(f"[Stats] {str(puzzle_type)} solver took {stop - start} seconds")

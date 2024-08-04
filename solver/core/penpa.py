@@ -47,8 +47,9 @@ PENPA_ABBREVIATIONS = [
 class Puzzle:
     """The encoding for general puzzles."""
 
-    def __init__(self, content: str):
+    def __init__(self, content: str, param: Optional[Dict[str, Any]] = None):
         """Initialize the encoding of the puzzle."""
+        self.param = param if param is not None else {}
         self.parts = decompress(b64decode(content[len(PENPA_PREFIX) :]), -15).decode().split("\n")
 
         self.cell_shape: Optional[str] = None

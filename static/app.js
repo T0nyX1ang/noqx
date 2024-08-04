@@ -6,6 +6,25 @@ function imp(penpa) {
   iframe.contentWindow.load(penpa);
 }
 
+function make_param(type, name, value) {
+  let paramDiv = document.createElement("div");
+
+  let paramLabel = document.createElement("label");
+  paramLabel.for = `param_${name}`;
+  paramLabel.textContent = `${name} `;
+
+  let paramInput = document.createElement("input");
+  paramInput.type = type;
+  paramInput.id = `param_${name}`;
+
+  if (type === "checkbox") paramInput.checked = value;
+  else paramInput.value = value;
+
+  paramDiv.appendChild(paramLabel);
+  paramDiv.appendChild(paramInput);
+  return paramDiv;
+}
+
 window.onload = function () {
   const iframe = document.getElementById("iframe");
   const exampleSelect = document.getElementById("example");
@@ -13,6 +32,7 @@ window.onload = function () {
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const readmeButton = document.getElementById("readme");
+  const parameterBox = document.getElementById("parameter_box");
 
   let foundUrl = null;
   let puzzleType = null;
@@ -20,6 +40,7 @@ window.onload = function () {
   let Swal = iframe.contentWindow.Swal;
   let solutionList = null;
   let solutionPointer = -1;
+  let puzzleParameters = {};
 
   fetch("/api/list").then((response) => {
     response.json().then((body) => {
@@ -33,6 +54,24 @@ window.onload = function () {
       typeSelect.addEventListener("change", () => {
         puzzleType = typeSelect.value;
         if (puzzleType !== "") {
+          if (body[puzzleType].parameters) {
+            parameterBox.style.display = "block";
+
+            for (let i = 0; i < body[puzzleType].parameters.length; i++) {
+              const parameter = body[puzzleType].parameters[i];
+              const paramDiv = make_param(
+                parameter.type,
+                parameter.name,
+                parameter.default
+              );
+              parameterBox.appendChild(paramDiv);
+            }
+          } else {
+            parameterBox.style.display = "none"; // hide parameter box if no parameters
+            while (parameterBox.firstChild) {
+              parameterBox.removeChild(parameterBox.lastChild);
+            }
+          }
           for (let i = exampleSelect.options.length - 1; i > 0; i--)
             exampleSelect.remove(i); // remove all options except the first one
 
@@ -50,8 +89,19 @@ window.onload = function () {
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;
-          puzzleContent = body[puzzleType].examples[exampleSelect.value];
+          puzzleContent = body[puzzleType].examples[exampleSelect.value].data;
           imp(puzzleContent);
+
+          if (body[puzzleType].examples[exampleSelect.value].config) {
+            // load example config
+            for (const [key, value] of Object.entries(
+              body[puzzleType].examples[exampleSelect.value].config
+            )) {
+              const paramInput = document.getElementById(`param_${key}`);
+              if (paramInput.type === "checkbox") paramInput.checked = value;
+              else paramInput.value = value;
+            }
+          }
         }
       });
 
@@ -69,11 +119,26 @@ window.onload = function () {
           puzzleContent = exp();
           solveButton.textContent = "Solving...";
           solveButton.disabled = true;
+
+          if (body[puzzleType].parameters) {
+            for (let i = 0; i < body[puzzleType].parameters.length; i++) {
+              const parameter = body[puzzleType].parameters[i];
+              const paramInput = document.getElementById(
+                `param_${parameter.name}`
+              );
+
+              if (paramInput.type === "checkbox")
+                puzzleParameters[parameter.name] = paramInput.checked;
+              else puzzleParameters[parameter.name] = paramInput.value;
+            }
+          }
+
           fetch("/api/solve", {
             method: "POST",
             body: JSON.stringify({
               puzzle_type: puzzleType,
               puzzle: puzzleContent,
+              param: puzzleParameters,
             }),
             headers: { "Content-type": "application/json" },
           })
@@ -83,7 +148,7 @@ window.onload = function () {
                 Swal.fire({
                   icon: "error",
                   title: "Oops...",
-                  text: body.detail,
+                  text: body.detail || "Unknown error.",
                 });
               } else if (response.status === 503) {
                 Swal.fire({
@@ -151,7 +216,7 @@ window.onload = function () {
       readmeButton.addEventListener("click", () => {
         Swal.fire({
           icon: "info",
-          title: "Noqx - Extended logic puzzle solver",
+          title: "Noqx",
           html: '<a href="https://github.com/T0nyX1ang/noqx">Noqx</a> by <a href="https://github.com/T0nyX1ang/">T0nyX1ang</a> and <a href="https://github.com/zhuyaoyu/">zyy</a> using <a href="https://github.com/potassco/clingo">clingo</a> <br> Original <a href="https://noq.solutions">Noq</a> project by <a href="https://github.com/jenna-h/">Jenna</a> and <a href="https://mstang.xyz">Michael</a> using <a href="https://github.com/danyq/claspy">claspy</a> <br> General layout and encoding by <a href="https://github.com/kevinychen/nikoli-puzzle-solver">nikoli-puzzle-solver</a> <br>',
           footer: "Licensed under GPL-3",
         });

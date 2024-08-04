@@ -2,6 +2,7 @@
 
 import argparse
 import traceback
+from typing import Any, Dict
 
 import uvicorn
 from fastapi import Body, FastAPI, HTTPException
@@ -25,10 +26,12 @@ def list_puzzles_api():
 
 
 @api_app.post("/solve/")
-def solver_api(puzzle_type: str = Body(), puzzle: str = Body()):  # clingo might be incompatible with asyncio
+def solver_api(
+    puzzle_type: str = Body(), puzzle: str = Body(), param: Dict[str, Any] = Body()
+):  # clingo might be incompatible with asyncio
     """The solver endpoint of the server."""
     try:
-        return run_solver(puzzle_type, puzzle)
+        return run_solver(puzzle_type, puzzle, param)
     except ValueError as err:
         print(traceback.format_exc())
         raise HTTPException(status_code=400, detail=str(err)) from err
