@@ -26,7 +26,7 @@ def solve(puzzle: Puzzle) -> List[str]:
         else:  # safe color (others)
             solver.add_program_line(f"not black({r}, {c}).")
 
-    for (r, c), num in puzzle.number.items():
+    for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue must be an integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
 

@@ -63,7 +63,7 @@ class Puzzle:
 
         self.board: Dict[str, Any] = {}
         self.surface: Dict[Tuple[int, int], int] = {}
-        self.number: Dict[Tuple[int, int], Union[int, List[int]]] = {}
+        self.text: Dict[Tuple[int, int], Union[int, str, List[int]]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
@@ -97,16 +97,15 @@ class Puzzle:
             self.surface[coord] = int(color)
         print("[Puzzle] Surface unpacked.")
 
-        self.number = {}
+        self.text = {}
         for index, num_data in self.board["number"].items():
             coord, _ = self.index_to_coord(int(index))
             # num_data: number, color, subtype
-            if num_data[2] == "4":  # for tapa-like puzzles
-                self.number[coord] = list(map(int, list(num_data[0])))
-            elif num_data[2] != "7":  # neglect candidates
-                self.number[coord] = int(num_data[0])
-            # TODO: handle non-number texts
-        print("[Puzzle] Number unpacked.")
+            if num_data[2] == "4":  # for tapa-like puzzles, convert to List[int]
+                self.text[coord] = list(map(int, list(num_data[0])))
+            elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
+                self.text[coord] = int(num_data[0]) if str.isdigit(num_data[0]) else num_data[0]
+        print("[Puzzle] Number/Text unpacked.")
 
         self.symbol = {}
         for index, (style, shape, _) in self.board["symbol"].items():
@@ -169,7 +168,7 @@ class Solution:
         self.board = copy.deepcopy(puzzle.board)
 
         self.surface: Dict[Tuple[int, int], int] = {}
-        self.number: Dict[Tuple[int, int], Union[int, List[int]]] = {}
+        self.text: Dict[Tuple[int, int], Union[int, str, List[int]]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
 

@@ -30,20 +30,20 @@ def solve(puzzle: Puzzle) -> List[str]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     for c in range(puzzle.col):
-        target = puzzle.number.get((puzzle.row, c))
+        target = puzzle.text.get((puzzle.row, c))
         assert isinstance(target, int), "BOTTOM clue must be an integer."
         solver.add_program_line(f"box_row({c}, {target}).")
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.number.items()):
+    for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.text.items()):
         assert isinstance(num, int), "LEFT clue must be an integer."
         solver.add_program_line(count_box_row(num, r, color="black"))
 
     for r in range(puzzle.row):
-        target = puzzle.number.get((r, puzzle.col))
+        target = puzzle.text.get((r, puzzle.col))
         assert isinstance(target, int), "RIGHT clue must be an integer."
         solver.add_program_line(f"box_col({r}, {target}).")
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.number.items()):
+    for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.text.items()):
         assert isinstance(num, int), "TOP clue must be an integer."
         solver.add_program_line(count_box_col(num, c, color="black"))
 
