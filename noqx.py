@@ -32,7 +32,7 @@ def solver_api(
     """The solver endpoint of the server."""
     try:
         return run_solver(puzzle_type, puzzle, param)
-    except ValueError as err:
+    except AssertionError as err:
         print(traceback.format_exc())
         raise HTTPException(status_code=400, detail=str(err)) from err
     except Exception as err:

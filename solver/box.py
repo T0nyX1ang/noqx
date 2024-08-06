@@ -34,7 +34,7 @@ def solve(puzzle: Puzzle) -> List[str]:
         assert isinstance(target, int), "BOTTOM clue must be an integer."
         solver.add_program_line(f"box_row({c}, {target}).")
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.text.items()):
+    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):
         assert isinstance(num, int), "LEFT clue must be an integer."
         solver.add_program_line(count_box_row(num, r, color="black"))
 
@@ -43,7 +43,7 @@ def solve(puzzle: Puzzle) -> List[str]:
         assert isinstance(target, int), "RIGHT clue must be an integer."
         solver.add_program_line(f"box_col({r}, {target}).")
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.text.items()):
+    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):
         assert isinstance(num, int), "TOP clue must be an integer."
         solver.add_program_line(count_box_col(num, c, color="black"))
 

@@ -24,5 +24,6 @@ def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> 
     puzzle: Puzzle = Puzzle(puzzle_content, param)
     solutions: List[str] = module.solve(puzzle)
     stop = time.time()
-    print(f"[Stats] {str(puzzle_type)} solver took {stop - start} seconds")
+    print(f"[Solver] {str(puzzle_type).capitalize()} puzzle solved.")
+    print(f"[Stats] {str(puzzle_type).capitalize()} solver took {stop - start} seconds")
     return {"url": solutions}  # return the first solution

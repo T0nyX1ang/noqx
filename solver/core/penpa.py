@@ -44,6 +44,14 @@ PENPA_ABBREVIATIONS = [
 ]
 
 
+def int_or_str(data: Union[int, str]) -> Union[int, str]:
+    """Convert the string to integer if possible."""
+    try:
+        return int(data)
+    except ValueError:
+        return str(data)
+
+
 class Puzzle:
     """The encoding for general puzzles."""
 
@@ -104,7 +112,7 @@ class Puzzle:
             if num_data[2] == "4":  # for tapa-like puzzles, convert to List[int]
                 self.text[coord] = list(map(int, list(num_data[0])))
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
-                self.text[coord] = int(num_data[0]) if str.isdigit(num_data[0]) else num_data[0]
+                self.text[coord] = int_or_str(num_data[0])
         print("[Puzzle] Number/Text unpacked.")
 
         self.symbol = {}

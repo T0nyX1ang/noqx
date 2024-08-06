@@ -29,11 +29,11 @@ def solve(puzzle: Puzzle) -> List[str]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_gravity(color="gray"))
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1, puzzle.text.items()):  # filter top number
+    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
         assert isinstance(num, int), "TOP clue must be an integer."
         solver.add_program_line(count(num, color="gray", _type="col", _id=c))
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1, puzzle.text.items()):  # filter left number
+    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
         assert isinstance(num, int), "LEFT clue must be an integer."
         solver.add_program_line(count(num, color="gray", _type="row", _id=r))
 

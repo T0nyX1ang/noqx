@@ -28,12 +28,12 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
         ).replace("not not ", "")
         return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
 
-    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
+    raise AssertionError("Invalid line type, must be one of 'row', 'col'.")
 
 
 def solve(puzzle: Puzzle) -> List[str]:
     if not (puzzle.row % 2 == 0 and puzzle.col % 2 == 0):
-        raise ValueError("# rows and # columns must both be even!")
+        raise AssertionError("# rows and # columns must both be even!")
 
     symbol_1, symbol_2 = extract_two_symbols(set(puzzle.symbol.values()))
 
