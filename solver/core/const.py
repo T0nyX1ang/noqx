@@ -224,14 +224,31 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "ripple": {"name": "Ripple Effect", "cat": "num", "aliases": ["rippleeffect"], "examples": []},
     "shakashaka": {"name": "Shakashaka", "cat": "var", "examples": []},
     "shikaku": {"name": "Shikaku", "cat": "region", "examples": []},
-    "shimaguni": {"name": "Shimaguni (Islands)", "cat": "shade", "aliases": ["islands"], "examples": []},
+    "shimaguni": {
+        "name": "Shimaguni (Islands)",
+        "cat": "shade",
+        "aliases": ["islands"],
+        "examples": [
+            {
+                "data": "m=edit&p=7Zddb9tGE4Xv/SsCXrXAXvBjlx+6S/M6vUndN3WKIBCMgLYVR4hkppTUFDL83/Ps7lnLshUURQskF4Eg8nA4OzPkzDlarf7Y9OPMFM4Upalak5uCT523xnbWNC4P3/R5NV8vZpMn5ulm/X4YAcb8+vy5edcvVrOjqbzOjm623WT70mx/nkyzIjNZybfIzsz25eRm+8tke2y2p9zKTIvtRXQqgcc7+Drc9+hZNBY5+EQY+AZ4MR8vFrO3L6Ll/5Pp9pXJfJ6fwmoPs+Xw5yxTHf76Yliez73hvF/zMKv384+6s9pcDh828i3Obs32aSz39EC51aFyvfHrlNud3d7y2n+j4LeTqa/99x1sd/B0csPxZHKTFXnN2pJmh9ZkRZlzbe9dl1xX965brv1w+GuCFCHUm3B8Ho5lOL4ik9lW4fi/cMzD0YXji+BzTAFV2ZjKUkRpwB2YBB5XDKIrhC24Eq7BTrgFNxFb1tZa6wpTNTxIwKxttNaxttHaumLQebiAqaFVDTUxW8VscnAnTD2d6mmI2Slma43NE+7AqqHLwVrblcYWWttVYOWFW7bQ2s6BbcA2x15Gu81rcKzZ5g041mkL4pcxPvGMrWJ84oFjfOKBFafEv5J/WRhr4/shD1j+JTVY1UBfrPpCHnB8LvIY67SWHln1iNhg+Vh8avlYfGr5WOqpVY8lV61clly1clk0p47v39JTq56SE6z66a9Vf8kJln+NTyOfmryt8tbkapWr5n22ep/02qrXxAYrV0M9neppsHeyt4VxufK2JVjxWwdW/LYBa23bghW/q40rlLfDXkQ78cCxZpdXxnnCBWzB8V25nPhljE88cIzv0GdXKk5B/CrGdwX2Snb67tR3R9+d+k4MsPzptVOvXclaq7VwzYlrDq45cY0YYMWkp049JQZY/vTUqafwG14nnnq+iyP0Gt6Km/DRxWcMnE0c95xNHKen8HbHX80PZ3DitQMnLrNWsxS43CT+en0QBz2vkz54Xid9aIjTKE7jdUNx6HvVJr57DVEN6EClueK805OWtUlPmI1KM8Z5py1oxZ22oBV32oI+oAvivtcTzVvO/OfibM6cS384g+9pSJ7WMv9pJr2epJn0eiK94nynV5zRIs251xlpV9AZ6VXQk1J2ryeaW8477WLG0BHpg9elxHfW2qQJXnMS9/HXnATuJ52pvZ4ovud10hBm4E5DmAF4Luz1RM/leZ20wnO5TfylhqQP9NSqp5x3WuG1PWkF/bLqF2c0QXG8zqt3nuO2S3z3GhJrQCfQgcRrrxuJ1/Bd/QocV48Cx9UXh4Yn3QgcT7pR4FMknw4dSLwmV9IQtP1ONzzH/Y934DK5KuWqsFfJTpykD57j6hFnsGKi584mvhNfvxdBB4Ke8MP+Ovy8PwtHG451+Nlv/PbjH21Q/v0O42/LmfKkfkPzpQ974u93/4u7Z0fT7HQzvusvZmxejy+vZk9OhnHZL7g62SzPZ2O65r9DthoWb1fynoS/Fmx2sV0Hzz3TYhg+LubX+37zq+thnB285Y0z0h/wPx/GywfRP/WLxZ4h/lnaM8U9/Z5pPbJhv3fdj+Pwac+y7Nfv9wz3Nvd7kWbX6/0C1v1+if2H/kG25e6Zb4+yv7LwDft4+/2P2Vf6Y+ZbkH9r6vetlROmdxgPUh/zAfZjPchy2R8RHfsjSvuEj1mN9QCxsT7kNqbH9Mb4iOHYvkByH/Uhz31VD6nuUz1iu091n/DTjPjL/mpzPX/yw3y16K8vVz9mZ0efAQ==",
+            }
+        ],
+    },
     "simpleloop": {"name": "Simple Loop", "cat": "loop", "examples": []},
     "skyscrapers": {"name": "Skyscrapers", "cat": "num", "examples": []},
     "slither": {"name": "Slitherlink", "cat": "loop", "aliases": ["slitherlink"], "examples": []},
     "spiralgalaxies": {"name": "Spiral Galaxies", "cat": "region", "examples": []},
     "starbattle": {"name": "Star Battle", "cat": "var", "examples": []},
     "statuepark": {"name": "Statue Park", "cat": "var", "examples": []},
-    "stostone": {"name": "Stostone", "cat": "shade", "examples": []},
+    "stostone": {
+        "name": "Stostone",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZNb9tGEL3rVwQ874HcD+6SNze1e3HVpHYRBIRgUDYTC6HMlKKagob/e97szkKixKIoekgKFJJWj8O3s498M0vuft/XfSOyTGSpUE6kAkhokwudOWEy638pf243Q9uUr8TFfnjsegAhfrm6Eh/qdtcsKmatFs9jUY5vxfhTWSVZIhKJX5asxPi2fB5/LsdLMd7gVCIcYteBJAEvD/CdP0/odQhmKfCSMeB7wPtNf982d9ch8qasxluR0Do/+NkEk233R5OwDjq+77brDQXW9YCL2T1uPvOZ3f6h+7RnbrZ6EeNFkLuckavm5FLw28gtVi8vuO2/QvBdWZH23w7QHeBN+YxxWT4nucZUA6/JGcQyf+a9H6/8KP14i4liVH780Y+pH40frz3nEvmkLITUSCrht1LAjrEGLgLWwCbiXMg8Y+yAFWPkIXGETQacMwbHMieXwJYxclrOmSOn45wWHMccCz2O9VjwHfMt+EXkW2DJGBoK1uCgoWANzgqVMsc5YNbjCmDmFxkw8wsJzBoKDczrFrlQWVgX+YADB/mAg07kAw58lRqhZMoYc2WcCz0y6EFu4KAB+YRSHEcbKxV0Ih8wcyT6XRnG0KyCZiWxlua1FLRp1gZPFXuKHMCsTWEtw2sp5DecXyOecxz+KvYX84CZA38V+4scwLyWgQbLGuC1Yq/BxR7F154jv+P8lvaucC2+xnTEBjjWD3xknb6WYh0aqrewFv4PNZlT7TGf6i3Wp0XcxjqhOoxx1JjlGqAas6zBQoM91IMsmF+AzzXmvU7ZC/Ka6wc1gho48jHWg8Q9kXw/JXyJvkvkkdFTqpnoKdVM9BFzYz0ocKLvChwVOVQ/0Wuqn+g1vIu1oXHPNXuhoVNHr6kGmGPAMcwx0GZYG/lrou9Y10R/qQZYW47r8nWCDead32Ze+1H7Mffbj6Vd7R/te/9+p/tbORXuMD1ETz+02f7no6tFldzs+w/1fYPn0OXDx+bVsuu3dYuj5X67bvp4jNeAZNe1dztml/4tAc8txJ48cxJqu+5zu3ma8jYfn7q+mT1FwQbLz/DXXf9wkv1L3baTQHjvmYTC43kSGno8e4+O677vvkwi23p4nASOntOTTM3TMBUw1FOJ9af6ZLXt4ZpfFsmfif9Vit7P/n/H+kbvWGRB+r3tON+bHF+9XT/b+gjPdD+is13O8bNGR/yspWnB865GdKaxET3tbYTO2xvBsw5H7C+anLKe9jmpOm11Wuqs22mp44avkt3Q4YvQavEV"
+            }
+        ],
+    },
     "sudoku": {"name": "Sudoku", "cat": "num", "examples": []},
     "tapa": {"name": "Tapa", "cat": "shade", "examples": []},
     "tasquare": {"name": "Tasquare", "cat": "shade", "examples": []},
