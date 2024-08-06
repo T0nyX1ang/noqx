@@ -155,7 +155,7 @@ class Puzzle:
         real_row = self.row + self.top_row + self.bottom_row + 4
         real_col = self.col + self.left_col + self.right_col + 4
         category, index = divmod(index, real_row * real_col)
-        return (index // real_row - 2 - self.top_row, index % real_col - 2 - self.left_col), category
+        return (index // real_col - 2 - self.top_row, index % real_col - 2 - self.left_col), category
 
 
 class Solution:
