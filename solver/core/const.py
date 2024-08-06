@@ -199,8 +199,27 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "nurikabe": {"name": "Nurikabe", "cat": "shade", "examples": []},
-    "nurimisaki": {"name": "Nurimisaki", "cat": "shade", "examples": []},
+    "nurikabe": {
+        "name": "Nurikabe",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7VVBb5w8EL3vr4h89gED2QUuVZomvaTbppsqihCKvBuSoMA6NdB8YrX/PTMDKTZQfeqhUQ4RYjTzZjx+xjy7/FlLnXIRcuFyL+AOF/As5g73Q5+HTkCv0z0XWZWn0QE/qqt7pcHh/OvpKb+VeZnO4q4qme2aMGrOefM5iplgnLnwCpbw5jzaNV+iZsmbFaQY9wE7a4tccE9695Ly6B23oHDAX3Y+uFfgbjK9ydPrsxb5FsXNBWc4z0cajS4r1K+UdTww3qhinSGwlhUsprzPHrtMWd+oh7qrFcmeN0ct3dUEXa+ni25LF71/Rjd/VFNEw2S/hw/+HaheRzGy/tG7Qe+uoh3YZbRjfghDD2GXaU9YeAih9zsUjoDYNWIfYt+I53YsXGTyARb1gnjeEPEdu6ePPc140HOBHAxOAY5fGDEuwcjTGox+YWD1c2lNRizs/q7A8UbexfmM/AL79f3dANdsxnbec/ALzI14kBe4/pc8bIugzbkie0rWJXsBe8cbj+wnsg7ZQ7JnVHNC9pLsMVmf7JxqFrj7f/V/vAKd2A/omPm/B3/S96o3XJXMYraq9a3cpHA2LetineqDpdKFzBlcA6xU+XXZ5SO6JeD0AmxLlRaUK/WYZ1u7LrvbKp1OphBMb+6m6tdK3wy6P8k8t4D23rOg9ni2oErD2WvEUmv1ZCGFrO4twLhWrE7ptrIJVNKmKB/kYLaiX/N+xv5j9NKx5L/fsa9+x+LHd97aSfrW6NB/q/Sk6AGe0D2gk/ru8JHEAR+JGScc6xnQCUkDOlQ1QGNhAzjSNmB/kDd2HSocWQ1FjlONdI5TmVKP2bbW2YNcpyyZPQM=",
+            }
+        ],
+    },
+    "nurimisaki": {
+        "name": "Nurimisaki",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZXBb5swFMbv+Ssin33AhhDg1nXNLlm2LpmqCqHISWiDAnFmYJ2I8r/32TAltulhh1U5VMRPj58f9hfMZ5e/aiZSTEby5wbYwQQu3wlUIwHcQ/t7LbIqT6MhvqmrLReQYPxtMsFPLC/TQdxVJYNjE0bNPW6+RDEiCCMKjaAEN/fRsfkaNTPczKELYQ/YtC2ikN6d0wfVL7PbFhIH8lmXQ/oI6ToT6zxdTlvyPYqbBUZynk/qaZmigv9OUadD3q95scokWLEK/ky5zQ5dT1lv+K7uaklyws1NK3feI9c9y5VpK1dm/01ufuB9QsPkdIIX/gOkLqNYqv55ToNzOo+OEGfREfmOfHSIsN+uCvJdE/gmCA0wpgYgZGwSatXQkUXMgYklhow9kwSmPhIGBqGOOQ4l5jjUJRYxFVLXVEg9a+TAmj20Rg6t2UPzjbmOvjKwXkSt2qOKExWpigtYVNy4Kn5W0VFxpOJU1dyp+KDirYqeir6qGcvP4p8+nHeQE3vt/vPWBbvUR+919yaDGM1r8cTWKWxXs7pYpWI446JgOYKTAZU8X5Zdf6QODtjQgO1VpYZyzg95ttfrsuc9F2lvl4Tp5rmvfsXFxhj9heW5BtqjUEPtjq2hSsB2fHHPhOAvGilYtdXAxUmjjZTuK11AxXSJbMeM2Yrzfz4N0B+kWuzCi/c+jt13P3bly3eubQ+9Njnqu+Wi1/SAe3wPtNffHbcsDtwys5zQ9jPQHksDNV0NyDY2QMvbwN6wtxzVdLhUZZpcTmX5XE51afUY7WuRFVnJdhlKBq8=",
+            },
+            {
+                "data": "m=edit&p=7VbfT9swEH7vX4H87If4R9o0b4zBXlg3ViaEogqlJUBEUjMnGVOq/u/cOYHETiZtDyAeUNTT3efL3WfHX+3iVxXrhHJOmU9FQD3K4Almkk69gLIZb43XPudpmSXhAT2syjulwaH028kJvYmzIplEbdZqsqvnYX1G6y9hRBihhMOPkRWtz8Jd/TWsF7RewhChErDTJomDe9y5F2YcvaMGZB74i9YH9xLcTao3WXJ12iDfw6g+pwT7fDJvo0ty9TshLQ+MNypfpwis4xImU9ylD+1IUV2r+6rNZas9rQ8bussRuqKji25DF71Xo5s9qDGi89V+Dwv+A6hehRGy/tm5Qecuwx3YRbgjfoCvHhA6bb4KCWYAiJdwzp3xue8AjE1dhA9yOFa1EOEWZgKpdJ2Z70EMm+85nmHVXhwM+s4FIPwl5gzf6CpyLq0KfMCKS0T8Xjy3K0yxQz/GcavCbFAzwHnYCM694yE8dy0Ec6sIbncW3J29EMxFJOb03vHd7yJ8e35iMB8R4Jr1EenZqyiZu4UkRyZdVWnW3c6wmUmBfZ9rwtZkZoNeGntiLDf2HPYvrYWxn431jPWNPTU5x8ZeGHtkrDR2anJmqID/0sgb0Il8af5s/+3xP3I/cl8/dzWJyLLSN/EmgbNmUeXrRB8slM7jjMCxTgqVXRXteGhOfTiNANuaTAvKlHrI0q2dl95ulU5GhxBMrm/H8tdKXzvVH+Mss4DmJmNBzXFrQaWGs7QXx1qrRwvJ4/LOAnrXBKtSsi1tAmVsU4zvY6db3s15PyF/iPnBXyKDi8XHnemt70y4+N57OxXeGx2zb5UeFT3AI7oHdFTfLT6QOOADMWPDoZ4BHZE0oK6qARoKG8CBtgH7i7yxqqtwZOWKHFsNdI6t+lKPyLbSaZ4W8X1KVpMn",
+            },
+        ],
+    },
     "onsen": {"name": "Onsen-Meguri", "cat": "loop", "examples": []},
     "ripple": {"name": "Ripple Effect", "cat": "num", "aliases": ["rippleeffect"], "examples": []},
     "shakashaka": {"name": "Shakashaka", "cat": "var", "examples": []},

@@ -24,12 +24,9 @@ def solve(puzzle: Puzzle) -> List[str]:
 
     for (r, c), num in puzzle.text.items():
         solver.add_program_line(f"not black({r}, {c}).")
-        if num == "":  # empty string case
-            continue
-
-        assert isinstance(num, int), "Clue must be an integer."
-        solver.add_program_line(grid_src_color_connected((r, c), color="black"))
-        solver.add_program_line(count_reachable_src(num + 1, (r, c), color="black"))
+        if isinstance(num, int):
+            solver.add_program_line(grid_src_color_connected((r, c), color="black"))
+            solver.add_program_line(count_reachable_src(num + 1, (r, c), color="black"))
 
     solver.add_program_line(display())
     solver.solve()
