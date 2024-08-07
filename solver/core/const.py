@@ -93,7 +93,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "country": {"name": "Country Road", "cat": "loop", "aliases": ["countryroad"], "examples": []},
-    "doppelblock": {"name": "Doppelblock", "cat": "num", "examples": []},
+    "doppelblock": {
+        "name": "Doppelblock",
+        "cat": "num",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZVfb9o8FMbv+RSVr33hxAFC7rqu7IaXroOpqqIIGUhL1ARTJ1knI757j0+y5S96tYuxXUwmRyc/H9uPneQhfc2FCukEGncpoxY07jK8XMf8WNmWURaH3hW9zrOdVJBQejed0icRp+HAt3AsCwZHPfH0PdWfPJ9YhBIbLosEVN97R/2fp+dUL6CLUAfYrCiyIb2t0gfsN9lNAS0G+bzMIX2EdBOpTRyuZgX57Pl6SYlZ5wOONilJ5LeQlDrM/UYm68iAtchgM+kuOpQ9ab6VL3lZawUnqq/Py+WVXJMWck3WI9fs4jfLnQSnExz7FxC88nyj/WuVulW68I4Q596RcGaGuqCleDaEWzgXPKufxDHEZjUybBOnGDWqyBBH8QqMxi3g4tLWpCITjsSpiMVGiMY1BCMA1Yu4jXp+ENiahRt8xDjFaGNcwv6p5hg/YmQYhxhnWHOL8QHjDUYH4whrxuYEf+mMLyDHd2z8XKs2uux9MPDJIldPYhPCeznPk3WoruZSJSImYAQklfEqLfs99Al4c4HtsbKBYikPcbRv1kXPe6nC3i4Dw+1zX/1aqm1r9jcRxw1QuF4DFR9oA2UKvr7avVBKvjVIIrJdA9S+1MZM4T5rCshEU6J4Ea3VkmrPpwH5TvDyORy8889l/5DLmkfA/jYf+B85vl5Qzqi+o+SQr8RqI2MCf9T0DL+4enzZpep1CsA9ZgG01xRK3vEF4B0HMAt2TQBojw8AbVsBoK4bAOwYArAznmBmbduCUdV2BrNUxxzMUnV/8Il4hb0Eg3c=",
+            }
+        ],
+    },
     "easyas": {"name": "Easy As", "cat": "num", "examples": []},
     "fillomino": {"name": "Fillomino", "cat": "num", "examples": []},
     "gokigen": {"name": "Gokigen (Slant)", "cat": "draw", "examples": []},
@@ -229,7 +237,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "onsen": {"name": "Onsen-Meguri", "cat": "loop", "examples": []},
-    "ripple": {"name": "Ripple Effect", "cat": "num", "aliases": ["rippleeffect"], "examples": []},
+    "ripple": {
+        "name": "Ripple Effect",
+        "cat": "num",
+        "aliases": ["rippleeffect"],
+        "examples": [
+            {
+                "data": "m=edit&p=7ZdPb9tGEMXv/hQBz3sQyV3+0S1NnV5St2lSBIEgBLJDJ0Jky6XlppDh757fLN+Klq2gQIG2OQSSdp+Gw5kh983j8vqPm0Xfuby0b9m4icv5hLKIv9z7+Jvo83q5WXXTJ+7pzebjugc498vz5+58sbrujmbymh/dbtvp9qXb/jSdZXnmsoJfns3d9uX0dvvzdHvstq84lLkc24vBqQAej/BNPG7o2WDMJ+ATYeBb4NmyP1t1714Mll+ns+1rl1meH+LZBrOL9Z9dpjrs/9n64nRphtPFhou5/ri80pHrm/frTzfyzed3bvv06+WWh8o144FyzeFfLred391x23+j4HfTmdX++wibEb6a3jKexDGP49s4Po9jEcfXuLptGccf4ziJY4jji+hzPL3NyknjyiJk08JlZZ6DG+HKlWUp3IKrARfYvewF53qdW+Dj5VPCwjARDuBCmHODzvUFuBX2rqxyYXyq5FODvTDxK8UP1FmpzkCuWrkCPrV8qgm4FiZXrVwVuRrlqqitUW0VuRrlqojTKE5NnEZxanxa+dRce6trb/Bp5dNQW6vaGvK2ytt45yfK2wSw8jYVWNfb1GDFb/HP5d/in8u/xSdPPg14qIHY4CEvscFDXmI7Xwz3h9jgISaxwfJHNXwpnxyfMvmQtxzy+py85ZCXeODheokHVhz44MUHDx+8+EA8sHxK4gfFhw9efPBwwIsDxAArL3zw4oOHD158IB5YueCGFzeIDVauwH2odB/giRdPfCB+rfhww4sb5HG+kQ888eIJecDJn3oa1QNnvDhDHrBqgDNenPE19TSqpyZXo1zwx4s/5ATLH854cYbYLogzxAMrV9OClQtuBHHDtxVYtcGNIG4EOBDEgTDBvxj8OQ885MLXHhYDZn2D1hdfsDhc0C/FPR0oxPmCvki6YZqgmFETxCtmsPgMH0rlYh51xnRDHGMGq788/l7+phtJf0w3kv6YbnjVY7ohvjGDk85QT9KlQD3iIfo06pLpRtKiynQm6QM+SZfgyU6XTE/EQ/QJnDSHvOJeWXPfki7V+CRdMg1JumQaknTJdEMcYx51CT6gHTsN2WkUGrLTKHhSim9la/qjOC1xknbBjaRLUQcSf+ADWjBqgnQm9n7SFp4FOz2BA14cYB71xHo/6QnrvtMT04GkJ6y717ozj9pimpC0pTTNUUyPj0+9jz3piemA1jf2vp41sfeTtljvB50bTH/Ud6YDQX3Euu/0h3Xf6Y/1u9Y09nvSFuvrpCHWy0lDatMBXTvPgp1uWF8n3WBNd7ph+p+0wvQ/aYVpfpt6HLueKdbXO31oTQdSX9Oz0gpmsHqZZwH9P+qANCTqgDSEGax+Z92D1p151BDTh1z+7A1CnvzRJXGDGZz0hNqS5pie6LnDLP1hA/ImbkOexdHHsYrbk9r2Of/xTuhvy5nBTNtWH/qE70f+yZH50Sw7fv+he3Ky7i8WK/bEJzcXp12f/vMSkl2vV++ub/rzxRlb6viOwq4Z22X03DOt1uur1fJy32/54XLddwcPmbEj/QH/03X//kH0z4vVas8wvHXtmYaXgz3Tpmfnf+//ou/Xn/csF4vNxz3DvbeEvUjd5Wa/gM1iv8TFp8WDbBfjNd8dZX9l8TfjPdH57294/9Mbni3B5FtTt2+tnMjedX+w9TEf6H6sB7tc9keNjv1RS1vCx12N9UBjY33Y25getzfGRx2O7StNblEf9rlV9bDVLdWjbrdU9xt+lvXLq6tV96Q7P+/ONtn86As=",
+            }
+        ],
+    },
     "shakashaka": {
         "name": "Shakashaka",
         "cat": "var",
@@ -251,7 +268,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "simpleloop": {"name": "Simple Loop", "cat": "loop", "examples": []},
-    "skyscrapers": {"name": "Skyscrapers", "cat": "num", "examples": []},
+    "skyscrapers": {
+        "name": "Skyscrapers",
+        "cat": "num",
+        "examples": [
+            {
+                "data": "m=edit&p=7VTBcpswEL37KzI664AA24Rbmsa9uG7TuJPJMIxHtknMGCxXQNPi8b9nd6EBGXLooa0PHdDO7tsV+yT0lH0rpI64EPg6Hrc4eNwdjmgIYdOw6mce50nkX/CrIt8oDQ7nnyYT/iiTLBoEOBOecHAoL/3ylpcf/IAJxpkNQ7CQl7f+ofzolzNe3kGKQS0vp1WRDe5N495THr3rChQW+LPaB/cB3FWsV0m0mFbIZz8o55xhn3c0G12Wqu8Rq3lgvFLpMkZgKXNYTLaJ93UmK9ZqW9S1Ijzy8uptuk5DF92KLno9dHEVf5iuHR6PsO1fgPDCD5D718b1GvfOP4Cd+QfmuDDVhf9Ff4Y5IwjHTehBOHwNXcsIRzaEzmvojY25l5iFc1OHQmDaa2Ib863YxXyrfoh5OHu/Ym9oMBXUriEjvMtWe1idoDU+kJ2QtcnOYQt46ZB9T9YiOyQ7pZobsvdkr8m6ZEdUM8ZN/K1t/gt0Ahf30nxwN84ICQcBmxXpMtIXM6VTmTC4I1imkkVW6Ee5ghNPVwgcasB2VGlAiVL7JN6ZdfHTTumoN4VgtH7qq18qvT75+rNMEgOoLkUDqrRrQLkGYbZiqbV6NpBU5hsDaInY+FK0y00CuTQpyq086ZY2az4O2A9Gg0Tp/r+A/9EFjL/AOrf74dzo0OlVulf6APeoH9Beldd4R+iAdySNDbuqBrRH2ICeahugrrwB7CgcsDdEjl891TmyOpU6tuqoHVu1BR+wbPszW2m5j3TGwsEL",
+            }
+        ],
+    },
     "slither": {"name": "Slitherlink", "cat": "loop", "aliases": ["slitherlink"], "examples": []},
     "spiralgalaxies": {"name": "Spiral Galaxies", "cat": "region", "examples": []},
     "starbattle": {"name": "Star Battle", "cat": "var", "examples": []},

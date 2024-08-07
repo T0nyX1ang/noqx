@@ -1,9 +1,9 @@
 """The Ripple Effect solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, display, fill_num, grid, unique_num
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.solution import solver
 
@@ -15,17 +15,19 @@ def ripple_constraint() -> str:
     return row + "\n" + col
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
 
-    areas = full_bfs(E.R, E.C, E.edges)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i))
 
-    for (r, c), clue in E.clues.items():
-        solver.add_program_line(f"number({r}, {c}, {clue}).")
+    for (r, c), num in puzzle.text.items():
+        assert isinstance(num, int), "Clue should be integer."
+        solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(unique_num(color="grid", _type="area"))
     solver.add_program_line(ripple_constraint())
