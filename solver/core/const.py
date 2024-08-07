@@ -123,7 +123,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "hotaru": {"name": "Hotaru Beam", "cat": "loop", "examples": []},
     "jousan": {"name": "Jousan", "cat": "draw", "examples": []},
-    "kakuro": {"name": "Kakuro", "cat": "num", "examples": []},
+    "kakuro": {
+        "name": "Kakuro",
+        "cat": "num",
+        "examples": [
+            {
+                "data": "m=edit&p=7VjNb9s2FL/7ryh01kEkJUr0reuaXTpvXTMUhWEUSuI2RuQok+11UJD/vY/vkbRIvVwGFCuGwrbA34/k+/oQLd21d6ehz4W2X9XkRS7go0uNv6ox+Cvc53J37LbLF/nL0/G2H2CQ579dXOSf2u6wXazdqs3icTTL8W0+/rJcZyLLMwk/kW3y8e3ycfx1Oa7y8R1MZbkA7g0tkjB8fR6+x3k7ekWkKGC8cmMYfoAhGU/49+V6vMwzq+Un3GuH2b7/e5s5Kyy+7vdXO0tctUdw5XC7e3Azh9NNf3dya8XmKR9fPm+sOhtrh2SsHTHGWh++qbFm8/QEIf8DzP24XFvL/zwPm/Pw3fIRriu8iuVjJuq6tCLKLC9BJsDGQu1hIy2UoIGwKVBhFTDuFmG9we3SONwIWn/GtL72WKJ81QSsERcel8bisFxXuF153BD25jQNbj9jU0+3G7LGG2PAzCksSdgZky3eN6NFFAujKTbedlOjMtDhMcZCuPWyALMn87JQiEGrx5QJaBTCZLyPDWCS5+yTQkb2AkZ7vX1S1KTP2Q8Y5btgSLBvkniAKF15a0DdJDhSUuh8YqWkxARnpCYc5mtaH+YNORtgZIsqorxJRZkRPhSqxNCXXpqCIEWYQu+VK4o8xMdhqlqvrSTXQKbDJB3S4TElNqwn24M1VYGBV15dRdb7opWVszZAqvGAXZ0EcQ2a4+tIVq7HfN60qxtvrnY95NfriuSF+SrqQamTOtBUB8E97ZoozMdNJGuq02B/TXUa1tekP4SvJv1efE3iQiU0LvpevGvxYE5TRclqqJCCd42LltdmKBnBWgP1P9lu1PQOII2LRcDku3NNFQW1uBOuClhoMc7DHfMD3DExmzIPt3K4tWellSoSzkYp5ay2lLPhSTmrNuVsVFPOxiLhMHwpZ91KOetHyjF+VIwfFeNHxfiBlZFweNdMOWYv5j3lGD+wmlOO0YsnWcoxerH7Uo7RIQpGoCiYCIqCSZ3Ak29Gctuh/OakYkIhsNhTEgt2RnKKuHISXJ0ILtmCy7bg0i00txJbc0Zyirj0wl8HjmQKFQ52jmRkSi7FdBKmJJdNyWUTTkqGhGN3TnKJk1zi4MTiSM4jrsMllyOp2ZWcIs2Ut+RaVXKJk1ziZMNpx1t/Shounlw2FZdNBccwQ3LbuRQrLpsK/gkwJBM6+h8zIxnfFXdMKK5hFXcAqPldHI6zC3wMkHi9hOeDfFR4/RmvBV4rvL7BNa/x+h6vr/Ba4lXjmto+YfyLZxA6V7+ROetS4sPs85/qx/z/eX6zWGer0/5qO7xY9cO+7eDp+d1t+7DN4BVFdui7j4fT8Km9hodufIMBz9XA3eOOiOr6/qHb3cfrdp/v+2HLTllye/OZW3/VDzeJ9C9t10XE4a9TO8Sbr3fDdRdTxwHeDUxwOwz9l4jZt8fbiJi8R4gkbe+PsQHHNjaxvWsTbfuzz0+L7J8Mf2sFYS9/vP/5D97/2PAX39sd+HszByu3H9i2B5rpfGDZDnf8rMmBn7WzVTjvaGCZpgY27Wug5q0N5Ky7gXumwa3UtMetVWmbW1WzTreqps0eKnmz+Ao="
+            }
+        ],
+    },
     "kurodoko": {
         "name": "Kurodoko",
         "cat": "shade",

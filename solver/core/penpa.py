@@ -69,6 +69,7 @@ class Puzzle:
         self.board: Dict[str, Any] = {}
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str, List[Union[int, str]]]] = {}
+        self.sudoku: Dict[Tuple[int, int], Dict[int, Union[int, str]]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
@@ -134,6 +135,16 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
         print("[Puzzle] Edge unpacked.")
 
+        self.sudoku = {}
+        for index, num_data in self.board["sudoku"].items():
+            coord, category = self.index_to_coord(int(index) // 4)
+            num_direction = (category - 1) * 4 + int(index) % 4
+            if self.sudoku.get(coord) is None:
+                self.sudoku[coord] = {}
+                self.sudoku[coord][num_direction] = int_or_str(num_data[0])
+            else:
+                self.sudoku[coord][num_direction] = int_or_str(num_data[0])
+
         self.cage = []
         for indices in self.board["killercages"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
@@ -173,7 +184,7 @@ class Solution:
         self.board = copy.deepcopy(puzzle.board)
 
         self.surface: Dict[Tuple[int, int], int] = {}
-        self.text: Dict[Tuple[int, int], Union[int, str, List[Union[int, str]]]] = {}
+        self.text: Dict[Tuple[int, int], Union[int, str]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
 
@@ -189,6 +200,12 @@ class Solution:
             index = self.coord_to_index(coord)
             self.board["surface"][f"{index}"] = color
         print("[Solution] Surface packed.")
+
+        for coord, text in self.text.items():
+            index = self.coord_to_index(coord)
+            if not self.puzzle.board["number"].get(f"{index}"):  # avoid overwriting the original stuff
+                self.board["number"][f"{index}"] = [str(text), 2, "1"]
+        print("[Solution] Number/Text packed.")
 
         for coord, symbol_name in self.symbol.items():
             index = self.coord_to_index(coord)
