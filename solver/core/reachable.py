@@ -12,7 +12,7 @@ def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]
 
 
 def grid_color_connected(
-    color: str = "black", adj_type: Union[int, str] = 4, initial_cells: Optional[List[Tuple[int, int]]] = None
+    color: str = "black", adj_type: Union[int, str] = 4, initial_cell: Optional[Tuple[int, int]] = None
 ) -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
@@ -22,10 +22,11 @@ def grid_color_connected(
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
-    if not initial_cells:
+    if not initial_cell:
         initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
     else:
-        initial = "\n".join(f"{tag}({r}, {c})." for r, c in initial_cells)
+        r, c = initial_cell
+        initial = f"{tag}({r}, {c}) :- {color}({r}, {c})."
 
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."

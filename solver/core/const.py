@@ -245,13 +245,29 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "cat": "shade",
         "examples": [
             {
-                "data": "m=edit&p=7VZNb9tGEL3rVwQ874HcD+6SNze1e3HVpHYRBIRgUDYTC6HMlKKagob/e97szkKixKIoekgKFJJWj8O3s498M0vuft/XfSOyTGSpUE6kAkhokwudOWEy638pf243Q9uUr8TFfnjsegAhfrm6Eh/qdtcsKmatFs9jUY5vxfhTWSVZIhKJX5asxPi2fB5/LsdLMd7gVCIcYteBJAEvD/CdP0/odQhmKfCSMeB7wPtNf982d9ch8qasxluR0Do/+NkEk233R5OwDjq+77brDQXW9YCL2T1uPvOZ3f6h+7RnbrZ6EeNFkLuckavm5FLw28gtVi8vuO2/QvBdWZH23w7QHeBN+YxxWT4nucZUA6/JGcQyf+a9H6/8KP14i4liVH780Y+pH40frz3nEvmkLITUSCrht1LAjrEGLgLWwCbiXMg8Y+yAFWPkIXGETQacMwbHMieXwJYxclrOmSOn45wWHMccCz2O9VjwHfMt+EXkW2DJGBoK1uCgoWANzgqVMsc5YNbjCmDmFxkw8wsJzBoKDczrFrlQWVgX+YADB/mAg07kAw58lRqhZMoYc2WcCz0y6EFu4KAB+YRSHEcbKxV0Ih8wcyT6XRnG0KyCZiWxlua1FLRp1gZPFXuKHMCsTWEtw2sp5DecXyOecxz+KvYX84CZA38V+4scwLyWgQbLGuC1Yq/BxR7F154jv+P8lvaucC2+xnTEBjjWD3xknb6WYh0aqrewFv4PNZlT7TGf6i3Wp0XcxjqhOoxx1JjlGqAas6zBQoM91IMsmF+AzzXmvU7ZC/Ka6wc1gho48jHWg8Q9kXw/JXyJvkvkkdFTqpnoKdVM9BFzYz0ocKLvChwVOVQ/0Wuqn+g1vIu1oXHPNXuhoVNHr6kGmGPAMcwx0GZYG/lrou9Y10R/qQZYW47r8nWCDead32Ze+1H7Mffbj6Vd7R/te/9+p/tbORXuMD1ETz+02f7no6tFldzs+w/1fYPn0OXDx+bVsuu3dYuj5X67bvp4jNeAZNe1dztml/4tAc8txJ48cxJqu+5zu3ma8jYfn7q+mT1FwQbLz/DXXf9wkv1L3baTQHjvmYTC43kSGno8e4+O677vvkwi23p4nASOntOTTM3TMBUw1FOJ9af6ZLXt4ZpfFsmfif9Vit7P/n/H+kbvWGRB+r3tON+bHF+9XT/b+gjPdD+is13O8bNGR/yspWnB865GdKaxET3tbYTO2xvBsw5H7C+anLKe9jmpOm11Wuqs22mp44avkt3Q4YvQavEV"
+                "data": "m=edit&p=7VZNb9tGEL3rVwQ874HcD+6SNze1e3HVpHYRBIRgUDYTC6HMlKKagob/e97szkKixKIoekgKFJJWj8O3s498M0vuft/XfSOyTGSpUE6kAkhokwudOWEy638pf243Q9uUr8TFfnjsegAhfrm6Eh/qdtcsKmatFs9jUY5vxfhTWSVZIhKJX5asxPi2fB5/LsdLMd7gVCIcYteBJAEvD/CdP0/odQhmKfCSMeB7wPtNf982d9ch8qasxluR0Do/+NkEk233R5OwDjq+77brDQXW9YCL2T1uPvOZ3f6h+7RnbrZ6EeNFkLuckavm5FLw28gtVi8vuO2/QvBdWZH23w7QHeBN+YxxWT4nucZUA6/JGcQyf+a9H6/8KP14i4liVH780Y+pH40frz3nEvmkLITUSCrht1LAjrEGLgLWwCbiXMg8Y+yAFWPkIXGETQacMwbHMieXwJYxclrOmSOn45wWHMccCz2O9VjwHfMt+EXkW2DJGBoK1uCgoWANzgqVMsc5YNbjCmDmFxkw8wsJzBoKDczrFrlQWVgX+YADB/mAg07kAw58lRqhZMoYc2WcCz0y6EFu4KAB+YRSHEcbKxV0Ih8wcyT6XRnG0KyCZiWxlua1FLRp1gZPFXuKHMCsTWEtw2sp5DecXyOecxz+KvYX84CZA38V+4scwLyWgQbLGuC1Yq/BxR7F154jv+P8lvaucC2+xnTEBjjWD3xknb6WYh0aqrewFv4PNZlT7TGf6i3Wp0XcxjqhOoxx1JjlGqAas6zBQoM91IMsmF+AzzXmvU7ZC/Ka6wc1gho48jHWg8Q9kXw/JXyJvkvkkdFTqpnoKdVM9BFzYz0ocKLvChwVOVQ/0Wuqn+g1vIu1oXHPNXuhoVNHr6kGmGPAMcwx0GZYG/lrou9Y10R/qQZYW47r8nWCDead32Ze+1H7Mffbj6Vd7R/te/9+p/tbORXuMD1ETz+02f7no6tFldzs+w/1fYPn0OXDx+bVsuu3dYuj5X67bvp4jNeAZNe1dztml/4tAc8txJ48cxJqu+5zu3ma8jYfn7q+mT1FwQbLz/DXXf9wkv1L3baTQHjvmYTC43kSGno8e4+O677vvkwi23p4nASOntOTTM3TMBUw1FOJ9af6ZLXt4ZpfFsmfif9Vit7P/n/H+kbvWGRB+r3tON+bHF+9XT/b+gjPdD+is13O8bNGR/yspWnB865GdKaxET3tbYTO2xvBsw5H7C+anLKe9jmpOm11Wuqs22mp44avkt3Q4YvQavEV",
             }
         ],
     },
     "sudoku": {"name": "Sudoku", "cat": "num", "examples": []},
-    "tapa": {"name": "Tapa", "cat": "shade", "examples": []},
-    "tasquare": {"name": "Tasquare", "cat": "shade", "examples": []},
+    "tapa": {
+        "name": "Tapa",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZbRT9s+EMff+1cgP/shtpM0ycvEj8FeWDdWJoSiCrklQEVad2k6plT93zmf81tsJ5s2TUI8oKin68d3vq9dX53tt52sCsoZZSEVCQ0oeDQRMY3G4DPGjQna53JZl0V2RI939YOqwKH009kZvZPlthjlbdRstG/SrLmgzYcsJ4xQwuHDyIw2F9m++Zg1E9pMYYjQENi5CeLgnnbuFY5r78RAFoA/AT8EH9xrcBfLalEWN+eGfM7y5pISXec/zNYuWanvBWl16O8LtZovNZjLGhazfVhu2pHt7lY97tpYNjvQ5tjInQ7IFZ1c7Rq52vPltuv5d7nlRg0JTWeHA2z4F5B6k+Va9dfOTTp3mu3BTrI9iWKd+g5UUNhMmC9KNIAf6X+QIBAdSJkHWCCQ2IhhFpwXi3FM5NyqxkTLbBQiclJjU9OuEGOYW2Hsi2dpX1qKS7YIDwyx8niQ+rq4GBtdNsIoWEOHor56HmGYtWwe41y2hhhj7Kyxv888MQosUSLAcroNfhJcjB3DMMZWKRjO5BCzYBuJyJ8pxDRrISIy+2sRszR7niTwsxLMsvdI9I6ZSLG8Q9yp4QgzPMjXaM/QcrSXcM5pI9C+RxugjdCeY8wp2iu0J2hDtDHGjHWn/FUvvYCcPIL/4D98orfIt8jfPbNRTqa76k4uCrhLJrvVvKiOJqpayZLAtU22qrzZtuMZ3upw2wBbY6SDSqU25XLtxi3v16oqBoc0LG7vh+Lnqrr1Zn+SZekA86biIHOdOqiu4K60vsuqUk8OWcn6wQHWa4AzU7GuXQG1dCXKR+lVW3VrPozID4KfXMDGh2/vRC/+TqQ3P3ht/+avTQ6eW1UNNj3ggb4HOtjfLe+1OPBeM+uC/X4GOtDSQP2uBtRvbIC93gb2i/bWs/odrlX5Ta5L9fpcl7JbPSe13EgyGz0D",
+            }
+        ],
+    },
+    "tasquare": {
+        "name": "Tasquare",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7Zffb9s2EMff/VcEfOaDSFGyrLeua/aSpWudoQgEw5AdtTEqR55sr4OC/O+9O6qjSN6wDciKPQSGiONHp+Pxx30tHX87130jtZIqk2khEwmWLNJc5kkhdTqnKxl/N7tT25QX8tX5dN/1YEj59vJSfqzbYzOrRq/V7HFYlMM7OfxUVkIJKTRcSqzk8K58HH4uh1s5LOGWkAbYlXXSYL5x5ge6j9ZrC1UC9vVog3kLpk1+fWXJL2U13EiB4/xAT6Mp9t3vjRjzwP622292CDb1CSZzvN8dxjvH8133+Tz6qtWTHF7ZdJdMuqlLF02bLlpMuvmzpNseOi7RxerpCRb8PaS6LivM+ldnFs5clo/QXpePIkvx0QvIwu6KyBYByJMQ5ADMn925Du4vsgCoJHRRCcYoXF8p6GvX1/PwCYOJulGVQY/JE1nh93P0V3iCR1CE81BFMGiBITyPBXpMiVboMwmrNQI3E53iXKd9XI2F6xtMww2qTTREbnAI148WWBcYcxKjCFdLL8LJ6kXok9IeuChpgjufuj7ticsjVf6Kpwr93Y6kKcbzRjBIJhEynNlkhCzKKQ9XI6XT5pE5PuWimmAeJsEdcXkZFa6fUeGhNyo8s4Zm5xHtx4ECUlRGt9/KCLhX1baWIkoFFVO7VgGlvY8oVVhEbZkxmI1sSy7GVHkxpvJjMO9NxRhjW5MRpspkMJ8gVWmMqVQjPNZrhKlqY0zFy2B2vW0pM5jPZCzrEPM7bEucwex623JnMOttC5/B7Gn9JgMR5mNT2cSYtCHGo0CEmHSCwfyQpBkM5mOP6hFgKyIMZs+JlRQGs+fbiguD2aWyMhNgUJlL0hpN7Q38i8shpfZHahNqM2qvyOcNtR+ofU2toTYnnzm+B/yrN4Wp3P1H6VQZqvg/+2Uvni+ez+O5mlViee4/1tsG3qmvz/tN019cd/2+bqG/vK8PjYDPGHHs2vVx9CvpKweKFNgDPeGhtusO7e7B99t9euj6hr2FsLn7xPlvuv4uiP6lblsPWKnw0HbXb1sfnXr4dpj0677vvnhkX5/uPTD5LPIiNQ8nP4FT7adYf66D0fZuzk8z8Yegi14Gzcs34nf/RsTFT/5v+v836VRwDHIlh7dSHM7rer3toD5h1Z6Jf/fZUll0PaspgBlZAcrKx8gjBQEeaQUOGMsFUEYxgIaiASjWDYCRdAD7C/XAqKGAYFahhuBQkYzgUFMlqcSpHuezmn0F",
+            }
+        ],
+    },
     "tatamibari": {"name": "Tatamibari", "cat": "region", "examples": []},
     "tents": {"name": "Tents", "cat": "var", "examples": []},
     "tapaloop": {
@@ -261,8 +277,25 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [],
     },
     "yajilin": {"name": "Yajilin", "cat": "loop", "examples": []},
-    "yajikazu": {"name": "Yajisan-Kazusan", "cat": "shade", "aliases": ["yk", "yajisan-kazusan"], "examples": []},
-    "yinyang": {"name": "Yin-Yang", "cat": "shade", "examples": []},
+    "yajikazu": {
+        "name": "Yajisan-Kazusan",
+        "cat": "shade",
+        "aliases": ["yk", "yajisan-kazusan"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VVNb5tMEL77V0R7aqWttAvYxtzSNOkldZvaVRQhC60dkvAGm5SPNy2W/3tmho3YBXrooW1UVYjx7LPz8ex6Zii+ViqPufT4jLs+F1zCM54KWAjuS59eoZ9lUqZxcMSPq/Iuy0Hh/OPZGb9RaRGPQm21Gu3rWVBf8Pp9EDKHcXolW/H6ItjXH4J6zusFbDEuATsHTTLugHraqpe0j9pJA0oB+rwJiG5XoG6SfJPG0XmDfArCeskZ5nlL3qiybfZ/zJoQtN5k23WCwFqVcJjiLnnQO0V1nd1X2lauDrw+bugunun6LV23pYtqQxe1Ll2K9cvpzlaHA1z7ZyAcBSFy/9Kqfqsugj3IebBnnoOuXuQCG/yHIKI3RsiJ8IafoRkliPAUGhoLhIRpNfF6jhOK5Zrhp9PGyog1pfCe6ei7PccZOdqQ5mU4SiF7xKSgaI7pKiXZOZEwscmAnU5rxnP8vp1DXGzMpUuSNjbAxR3I6w7k8CheB9PnsDDytS5UTvS9m+edai6mnU8VYdv5dDbjDqB6JNXQFckzkg7JJZQYr12S70gKkmOS52RzSvKS5AlJj+SEbKZYpD9Vxr+BTghTEWfi8DP+u/dWo5AtqvxGbWIYO/Nqu47zo3mWb1XKYM6zIkujQu8H9BmAwQTYjiwtKM2yhzTZ2XbJ7S7L48EtBOPr2yH7dZZfd6I/qjS1gOa7ZkHN/LWgMofhaqxVnmePFrJV5Z0FGIPYihTvSptAqWyK6l51sm3bMx9G7BujN3Th4r1/H9E/9BHFv0C8tBn00uhQ9Wb5YOsDPND9gA52ucZ7jQ54r6UxYb+rAR1obEC7vQ1Qv70B7HU4YD9ocoza7XNk1W11TNXrdkxlNnzIvqv/kntVV0evUCvU7g2u4Pc1W42eAA==",
+            }
+        ],
+    },
+    "yinyang": {
+        "name": "Yin-Yang",
+        "cat": "shade",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZVNb9pAEIbv/Ipqz1vJa2M+fEtp6IWkTUMVRZaFFnDAiu2l/iiNEf89M2NLxHiqSpWiRlUFHg2Ph5nXsO9u/r3UWSiVwrczkpaETPbdAV1K2XRZzWseFXHovZMXZbE1GSRSfp5O5YOO87DnN1VB71CNvepGVp88XyghhQ2XEoGsbrxDdeWJlUmWkZDVLdwXUsGNWV1pQ3p5Su/oPmaTGioL8usmh/Qe0lWUreJwMavJF8+v5lLgsA/0bUxFYn6EohGDn2sBAJbxftuwvFybx7KpUsFRVhe/Ueuc1GJaq8WMUYsP8Wpqx8HxCD/6V9C78HyU/u2Ujk7prXeAeE1RUbz3DsIZQhsbxtTSrkiacG2WDjg66LOU7TsYc3RksZSdNmY7KIsdp6wRj/kmSvGY/TGUcnnMylaKF2hjtepghxfYd9jqPj/S5QW6vBIXR3Z7D/mHH2LvbvWI6Q0LbUrLzaY4h9UoK4fiR4oWRZfijGouKd5RnFDsUxxQzRDX8x+v+FeS4zuwWTIv99+lQc8XE5PsTB4VoYCNX+QmXuRl9qBXsIXRuQB7FbC0TJZh1kKxMbs4Stt10SY1WcjeQhiuN1z90mTrs+57HcctUJ90LVSv0RYqMthpX3zWWWb2LZLoYtsCS13AqZhvo127U5gWbQGFbkvUj/psWnJ65mNP/BR0+Q6eyP9P1b9yquIfYL21neatyaG1azLW+IAZ7wNlPd7wjs2BdwyNA7ueBsrYGui5swF1zQ2w429gv7A4dj13Oao6NzqO6ngdR720uy+eovT9k043Iug9Aw==",
+            }
+        ],
+    },
 }
 
 # pylint: skip-file

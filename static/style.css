@@ -20,7 +20,7 @@ body {
 select,
 button {
   display: block;
-  font-size: 16px;
+  font-size: 14px;
   margin: 10px auto;
   width: 150px;
   height: 25px;

@@ -44,7 +44,7 @@ class ClingoSolver:
                 solution.edge.add((int(r), int(c), Direction.TOP))
 
             elif _type.startswith("number") or _type.startswith("content"):
-                solution.number[(int(r), int(c))] = int(data[2])
+                solution.text[(int(r), int(c))] = int(data[2])
 
             elif _type == "gray":
                 solution.surface[(int(r), int(c))] = 8

@@ -46,10 +46,7 @@ PENPA_ABBREVIATIONS = [
 
 def int_or_str(data: Union[int, str]) -> Union[int, str]:
     """Convert the string to integer if possible."""
-    try:
-        return int(data)
-    except ValueError:
-        return str(data)
+    return int(data) if isinstance(data, int) or data.isdigit() else data
 
 
 class Puzzle:
@@ -71,7 +68,7 @@ class Puzzle:
 
         self.board: Dict[str, Any] = {}
         self.surface: Dict[Tuple[int, int], int] = {}
-        self.text: Dict[Tuple[int, int], Union[int, str, List[int]]] = {}
+        self.text: Dict[Tuple[int, int], Union[int, str, List[Union[int, str]]]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
@@ -110,7 +107,7 @@ class Puzzle:
             coord, _ = self.index_to_coord(int(index))
             # num_data: number, color, subtype
             if num_data[2] == "4":  # for tapa-like puzzles, convert to List[int]
-                self.text[coord] = list(map(int, list(num_data[0])))
+                self.text[coord] = list(map(int_or_str, list(num_data[0])))
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
                 self.text[coord] = int_or_str(num_data[0])
         print("[Puzzle] Number/Text unpacked.")
@@ -176,7 +173,7 @@ class Solution:
         self.board = copy.deepcopy(puzzle.board)
 
         self.surface: Dict[Tuple[int, int], int] = {}
-        self.text: Dict[Tuple[int, int], Union[int, str, List[int]]] = {}
+        self.text: Dict[Tuple[int, int], Union[int, str, List[Union[int, str]]]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
 
