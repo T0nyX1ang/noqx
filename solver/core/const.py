@@ -222,7 +222,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "onsen": {"name": "Onsen-Meguri", "cat": "loop", "examples": []},
     "ripple": {"name": "Ripple Effect", "cat": "num", "aliases": ["rippleeffect"], "examples": []},
-    "shakashaka": {"name": "Shakashaka", "cat": "var", "examples": []},
+    "shakashaka": {
+        "name": "Shakashaka",
+        "cat": "var",
+        "examples": [
+            {
+                "data": "m=edit&p=7VhLb9tGEL7rVxh73gOXr6V4S127F1dpGhdBQAgCLTOxEMp0KakpaPi/Z14xZyUFKXIwGkCQtDvfPHZHOw9pufl7V/eNTSJ6FzayDl/OFzJ4l/MQyet6tW2b8sy+2m3vuh4Ia19fXtoPdbtpJpVozSePw7Qc3tjht7IysbH0cWZuhzfl4/B7Oczs8BZExqbAuwLKGRsDeTGS70iO1DkzXQT0jGkP5Hsgl6t+2TaLK5AC54+yGq6twX1+IWskzbr7pzFsRnjZrW9WyNjc1Z9qYW52t92nnai5+ZMdXpGnon3E3WR0F0l2F6kXd3c6f3qCE/8THF6UFfr+10gWI/m2fDQ+M2VqTeFpctmU5zzlWcTOC79IZGb9OJe5cDKzXTxlvXha0Jw4licx85M05jkXuaybFDnNacrrpuJPmrM8lf1S2T+LWD/zvF4m62Rf5VPeN4+YnyeCE/YzFz/ynGcfs9zHbO8TtvMJ7+MT9sdnkczsv/c8F2JfCL8Qvwvxu/Aifz521pvG7M80ZeyiiBWBkAhETkIUpRKDSA7JRTl7AwQqQ2RnEtkqtp4LjSJcJc+QIq3EFPHKjZjMNUZ9hfGkA4zrj5gyQ2PMELUfZYrGmDFaHzNHYcogjTGTNMZIYs08MzC1tAI5PG5IqaYwpZzSp9TTGEMZ4D19OoBxPUpNjTFFK3M2ekjJqlagpNUYk1dhSmKNMZlVSCmpNaYjGT2gJFf2lOxKn5JeyzH5tRyLIMDhCVFRBBgjMO5PRRKcAJWLsqCy0XjvzKmMNMZyCnCYtFRewY5UaEqDCk6XARVelWoGrqkKhwpRZz4VZLAGpZI2wQINTLBQnzWgYF35CON7Gi9pjGm8hk5th4TGX2mMaMxovCKdCxrf0XhOY0pjTjoee/1//DXgzvEC7lRe/ln80Cs72Z5sT7Yn25Ptyfbntp1PKvN213+olw3c5Ga79U3Tn826fl23gM+79UO3WW0bAzdos+naxUZ0S7pgw70PePdkFbDarntoV/eh3urjfdc3R0XIbG4/HtO/6frbvdU/120bMPixQcDim23A2vZwbVW47vvuc8BZ19u7gHFTb+HxwuZu9RCu1NxvQwe2degi3Iz3dluP3/lpYv419IG/YA7u8KfHEy/+eAJPP/q//S39jjsV5AFc42xlMoi0/Jd/2C3qxbKDcoUD/KoxvP6G4Cc0vfgRU3ic8B1T1Ng3ffF4U2fo+qNtFdhHOitwj3ZQ4R80UeAftEvc8LBjAvdI0wTuft8E1mHrBOZB9wTeNxoorrrfQ9Gr/TaKWx10UtxKN1Mpda73+eQL",
+            }
+        ],
+    },
     "shikaku": {"name": "Shikaku", "cat": "region", "examples": []},
     "shimaguni": {
         "name": "Shimaguni (Islands)",

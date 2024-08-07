@@ -46,6 +46,9 @@ class ClingoSolver:
             elif _type.startswith("number") or _type.startswith("content"):
                 solution.text[(int(r), int(c))] = int(data[2])
 
+            elif _type == "triangle":
+                solution.symbol[(int(r), int(c))] = f"tri__{data[2]}"
+
             elif _type == "gray":
                 solution.surface[(int(r), int(c))] = 8
             elif _type == "black":
