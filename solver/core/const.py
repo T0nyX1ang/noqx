@@ -300,7 +300,26 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "sudoku": {"name": "Sudoku", "cat": "num", "examples": []},
+    "sudoku": {
+        "name": "Sudoku",
+        "cat": "num",
+        "examples": [
+            {
+                "data": "m=edit&p=7VXRTtswFH3vVyA/+yF2EjfJG2OwF9aNwYRQVKG0BKhIG5a2Y0rVf+fcG0OctNM0TdN4mNK6pyfOOdf3+sbL9U35sJYxLj+SnlS4/MjjbxTQx7PXxWxV5MmBPFyv7ssKQMpPJyfyNiuW+SC1s8aDTR0n9ZmsPySpUEIKja8SY1mfJZv6Y1KPZH2OW0IqcKfNJA143MJLvk/oqCGVBzyyGPAKcDqrpkV+fdown5O0vpCCfN7x0wTFvPyeCxsH/Z+W88mMiEm2wmKW97NHe6dJg52rxltZH/bCpXBsuH4bLsEmXEJ7wqXH/nK48Xi7Rdq/IODrJKXYv7YwauF5ssE4SjbC919W2tRG+AERfksEhgjU7pUYEjFsiZAfCRwi7M9gDeMQcc/FeETEDsEukUNEvTgMa4QtETPhPKI8VnUiU57qrVd5fV3lsY4Ti1K6Z6UU581ZgFKcBddd73hp1nHnNOl2vXxO3muuUCfF1bri8YRHzeMFiilrn8f3PHo8hjye8pxj1FhFRipKjoZiHEtNywHGr9QadoR1KLWPVBBG++sQwRMOldQGQRI2gdRD1IXwcCh1jPQSjvGS8JAQ0o+g71l9D/rK6ivoa6uvoR9Y/QD6tIHYC/pUd/aCfmT18QLScaOPX3hhO7EOxW957QNbHQ0dd136Zb4Btvoa+m48uskPfpEH6+vD17dxGsqDXZeBr7G+Br5ufoz1NfA11tfA110XbWXG8KVdzBi+Q/JF0S65dEc8BjwaLumQuve3+vvPd88vw0mRPToq3Ct8W8x4kIrRej7Jq4NRWc2zQuBwEsuyuF6uq9tsilctn114m4Jb8MwOVZTlYzFbdOfN7hZlle+9RWR+c7dv/qSsbnrqT1lRdIjlt3VWdR9uDo0OtapwIjj/s6oqnzrMPFvddwjn9Ogo5YtVN4BV1g0xe8h6bvN2zduB+CH4m/pId/D/5P9HJz+VwHtr74e3Fg7v3rLa2/qg93Q/2L1dbvmdRge/09JkuNvVYPc0Nth+b4PabW+QOx0O7idNTqr9Pqeo+q1OVjvdTlZuw6fjwTM=",
+            },
+            {
+                "data": "m=edit&p=7VbLbuM2FN37KwKuuRBJiXrs0jTpJnUnkxRBIBiB7CiJEdlKZbsZyPC/59wrOnrYg2IwKJpFIZs+OiLPffGKXm0eypeNjHGZSHpS4TKRx9/Ip48CS/zNfF3kyYk83ayfywpAyj8uLuRjVqzyUUpzcE1G2zpO6itZ/5akQgkpNL5KTGR9lWzr35N6LOtrPBJSgbtsJmnA8xbe8nNCZw2pPOCxw4B3gLN5NSvy+8uG+ZKk9Y0UZOcXXk1QLMq/c+H8oPtZuZjOiZhmawSzep6/uidNGtxcNdnJ+nTgLrnj3DWtuwQbdwkdcZeW/cvuxpPdDmn/Cofvk5R8/7OFUQuvky3GcbIVRu0jbWojTECEbQmfZ6B2H4QmIu4QIRF+h4iICFsiYFHTIeKBqGWisyT0Bn6ErBG0RGyGBJuNOsRQVHkHjBqqKM2WewynoBOx0naQNqU5CR3jyrByj+E5HzoogeJC3PF4waPm8QZ1krXh8VcePR4DHi95zjnKpyIrFYWpoRjHUisUBxi/UmtkjLAOpDbIDWF0tg4QDuFASW39Bltf6hDuEQ5DqWMkgXCM/vcQCOlH0Pecvgd95fQV9LXT19CnHUPYh37g9APoW6dvoR85fbxbNBWSbRnYQmJZh/x3vDbATkdDpxsXFYKxBXb6Gvpdf3STH/wiD86ugV3a++wP5cHFZWHXOrsWdrv5sc6uhV3r7FrY7cZlnV0Lu7SnGcMubWfOoUG9MB/1QcGwQMEJugFoIuMbLhmW843B+gA+8U1ATjmBJpN7gQgC8V4gDpDLvYCHV3eMABs78NhDVI0duKkQCt/4yAnlrbGDRPhwurGD6IO9QEgh7wUiCIROwHgQiFgA2/OWN+kZjz6PljdvSK+gH3pJ/Xyf/KM7KRJB5133Cj4XMxmlYrxZTPPqZFxWi6wQOGHFqizuV5vqMZvhvOADGEcCuCXP7FFFWb4W82V/3vxpWVb50UdE5g9Px+ZPy+phoP6WFUWPWP21yar+4ubk61HrCsda5z6rqvKtxyyy9XOP6ByBPaV8ue47sM76LmYv2cDaoo15NxLfBH9TtKj0///78h/9faESeJ/t/fDZ3OHdW1ZHWx/0ke4He7TLHX/Q6OAPWpoMHnY12CONDXbY26AO2xvkQYeD+06Tk+qwz8mrYauTqYNuJ1Pdhk8no3c=",
+            },
+            {
+                "data": "m=edit&p=7VVNb9s4FLz7VwQ88yBSEvVxy6ZJL6m3abIIAsEIZEdJjMhWVrY3hQz/98x7YmpKVlEUxaI5FLKp8YicGZJ69GpzVz1tZILLj6UnFS4/9vgbB/Tx7HU1X5dFeiSPN+vHqgaQ8u+zM3mfl6tilNlek9G2SdLmQjYf00woIYXGV4mJbC7SbfMpbcayucQjIRW487aTBjzdw2t+TuikJZUHPLYY8AZwNq9nZXF73jKf06y5koJ8/uLRBMWi+q8QNgf9nlWL6ZyIab7GZFaP82f7pF0G21dNdrI57sWlODauv49LsI1LaCAuDfuf4yaT3Q7L/gWBb9OMsv+zh/EeXqZbtON0K3xFQ7Ezqt0b4YdvU7dE4BPhO0TUGxLykMAhkt4Q5TFjHEaxbOgwmqNELsPC7iifR8Uuw2m+jcK0FE/uhtszbjW3V5i7bHxuP3DrcRtye859TrEkKjZSJQisoZgkUivNGHepKRJhHUrtxy1GtegQ4QmHSmoTtNgEUkeIRziKpE68FieoKQ8TIf0Y+p7V96CvrL6Cvrb6GvqB1Q+gH1r9EPrG6hvox1Yf9aqTVh93eBmrQ/ktr31gq6Oh485Lv/U3wFZfQ9/No9v1wR3rYH19+NL7xHloHey8DHyN9TXwddfHWF8DX2N9DXzdeRnra+BrrK+Bb0S+2LRr3roTbgNuDW9pRC/7T5XDr789P4yTYfXoZHWv8H0xk1EmxpvFtKiPxlW9yEuBs1ysqvJ2tanv8xlOJj7qcfiAW3LPDlVW1XM5X3b7zR+WVV0MPiKyuHsY6j+t6rue+ktelh1i9e8mr7uD2zO2Q61rHKDO77yuq5cOs8jXjx3COWw7SsVy3Q2wzrsR86e857bYz3k3El8FfzMfyx38+aP8TX+UtAXeezsf3lscfnurerD0QQ9UP9jBKrf8QaGDPyhpMjysarADhQ22X9ugDssb5EGFg/tOkZNqv84pVb/Uyeqg2snKLfhsMnoF",
+            },
+        ],
+        "parameters": {
+            "diagonal": {"name": "Diagonal", "type": "checkbox", "default": False},
+            "untouch": {"name": "Untouch", "type": "checkbox", "default": False},
+            "antiknight": {"name": "Antiknight", "type": "checkbox", "default": False},
+        },
+    },
     "tapa": {
         "name": "Tapa",
         "cat": "shade",
