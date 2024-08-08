@@ -20,8 +20,6 @@ function make_param(id, type, name, value) {
   if (type === "checkbox") paramInput.checked = value;
   else paramInput.value = value;
 
-  if (type === "text") paramInput.size = 5;
-
   paramDiv.appendChild(paramLabel);
   paramDiv.appendChild(paramInput);
   return paramDiv;
@@ -62,12 +60,16 @@ window.onload = function () {
           }
 
           if (body[puzzleType].parameters) {
-            parameterBox.style.display = "block";
+            let legendElement = document.createElement("legend");
+            legendElement.textContent = "Parameters";
+            parameterBox.appendChild(legendElement);
 
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
               const paramDiv = make_param(k, v.type, v.name, v.default);
               parameterBox.appendChild(paramDiv);
             }
+
+            parameterBox.style.display = "block";
           }
           for (let i = exampleSelect.options.length - 1; i > 0; i--)
             exampleSelect.remove(i); // remove all options except the first one
