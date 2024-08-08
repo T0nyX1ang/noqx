@@ -41,10 +41,10 @@ def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
         symbol_2 = list(symbol_set)[1]
     elif len(symbol_set) == 1:
         symbol_1 = list(symbol_set)[0]
-        symbol_2 = "circle_M__1" if symbol_1 == "circle_M__2" else "circle_M__2"
+        symbol_2 = "circle_M__1__0" if symbol_1 == "circle_M__2__0" else "circle_M__2__0"
     elif len(symbol_set) == 0:
-        symbol_1 = "circle_M__1"
-        symbol_2 = "circle_M__2"
+        symbol_1 = "circle_M__1__0"
+        symbol_2 = "circle_M__2__0"
     else:
         raise ValueError("At most two symbols are allowed.")
     return symbol_1, symbol_2

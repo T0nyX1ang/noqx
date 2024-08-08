@@ -117,8 +117,8 @@ class Puzzle:
 
         self.symbol = {}
         for index, (style, shape, _) in self.board["symbol"].items():
-            coord, _ = self.index_to_coord(int(index))
-            symbol_name = f"{shape}__{style}"
+            coord, category = self.index_to_coord(int(index))
+            symbol_name = f"{shape}__{style}__{category}"
             self.symbol[coord] = symbol_name
         print("[Puzzle] Symbol unpacked.")
 
@@ -215,8 +215,8 @@ class Solution:
         print("[Solution] Number/Text packed.")
 
         for coord, symbol_name in self.symbol.items():
-            index = self.coord_to_index(coord)
-            shape, style = symbol_name.split("__")
+            shape, style, category = symbol_name.split("__")
+            index = self.coord_to_index(coord, category=int(category))
             self.board["symbol"][f"{index}"] = [int(style), shape, 1]
         print("[Solution] Symbol packed.")
 
@@ -231,7 +231,8 @@ class Solution:
 
             index_1 = self.coord_to_index(coord_1, category=1)
             index_2 = self.coord_to_index(coord_2, category=1)
-            self.board["edge"][f"{index_1},{index_2}"] = 2
+            if not self.puzzle.board["edge"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
+                self.board["edge"][f"{index_1},{index_2}"] = 3
         print("[Solution] Edge packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
