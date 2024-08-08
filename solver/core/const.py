@@ -131,7 +131,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "hashi": {
         "name": "Hashiwokakero (Bridges)",
         "cat": "loop",
-        "aliases": ["bridges"],
+        "aliases": ["bridges", "hashiwokakero"],
         "examples": [],
     },
     "heteromino": {
@@ -406,7 +406,19 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "tentaisho": {"name": "Tentaisho (Spiral Galaxies)", "cat": "region", "aliases": ["spiralgalaxies"], "examples": []},
+    "tentaisho": {
+        "name": "Tentaisho (Spiral Galaxies)",
+        "cat": "region",
+        "aliases": ["spiralgalaxies"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VZbb5tMEH33r4j2eR9Ylpt5S9O0L6nT1KkiC1nW2iGxFex1uTQVlv97Zmb55ACLWqnq5ZMqzMxwGGbPDstZF18qladcOPiTEQcPhyciOt0ooNNpjttNmaXxGT+vyrXOIeD8esIfVFako6RJmo8O9Tiub3j9Pk6Yyzidgs15fRMf6g9xPeP1FG4x7gF2BZFg3IXw8hTe0X2MLgwoHIgnTQzhDMLVJl9l6WI6NdDHOKlvOcOB3tDjGLKt/poy8xxdr/R2uUFgqUqYTLHe7Js7RXWvn6omV8yPvD7v8MVRGr7yxBdDwxcjC1+cxs/zTe8f06Ja2siO58cjdP0T0F3ECTL/fAqjUziNDywQLPY4C1zjpHEeubBxY3JRRG5sUoRjnhBOaLwIGm+yhWsKC/mfb/Jl87w0xYWH+UBmEh/ACrIzICYBTwRM+NQlaBzzoYwFDhyA3T7sW+EIOFmKRDhkP1tIexUhYco23Ee8X15gd235Edbv50vPPleJ78WCe+4ATjwteIT5fT6+O9D6gT74A132Q3ubAxfnZXlZA/0MBuYbhLAibXhk71vo2HmGApawDQ/xfXXrwPJ8R4vUJXsLnxKvJdm3ZB2yPtkryrkke0f2gqxHNqCcED/GH/xc+9/JL6KTSKP87cP//2HzUcKmVf6gVilI5SWI5tlE51uVwdV0rfYpgw2KFTpbFE1WTPsXSCpgu2q7TPMWlGm9zza7dt7mcafz1HoLQdRqS/5S5/ed6s8qy1qA2ZBbkFmOLajMYU94da3yXD+3kK0q1y3g1X7XqpTuyjaBUrUpqifVGW17mvNxxL4xOhOJfxz+7f5/ZvfHN+D8baLyHToJ9FaEgtfXnO2rhVqsNHyl0LqhG7+dP612nVulAmCLWgBqVYUG7wkD4D0JwAH7KgCoRQgA7WoBQH05ALCnCIANiAJW7eoCsupKAw7VUwcc6rVAJPPRCw==",
+            },
+            {
+                "data": "m=edit&p=7Vjfb9tGDH73X1Ho+R7Eu9PPt6zL9tK565yhCAwjkBO1MSpHmWyvg4L87+VRBhxZHzFgw7A+BIIJ+iPF+8Q78nTa/XGoutpQYaw1LjexIb6yNDZ55g353A0iPl5Xm31Tl2/MxWF/33asGPN+bj5Vza6eLY9Oq9lTX5T9B9P/XC4jGxn5UbQy/Yfyqf+l7K9Nv2BTZDxj71ijyFhWL0/qR7EH7e0AUsz6/Kizes3q7aa7beqbxWKAfi2X/ZWJwkA/yO1Bjbbtn3U03Cf/b9vtehOAdbXnh9ndbx6Plt3hrv1yOPrS6tn0Fzpfd+Ib1IFv0ADf8Bj/nm9997neHdaIbLF6fuas/8Z0b8plYP77Sc1P6qJ8YjkXSSKvy6fIFxyGeKQTPWYcJZZhO4Uz6J0mEM5CEAA7GDsLsadwjmNTjKkQKbjFo5IP8QGeKP4ppklpjsdVHosKj/2LFPrbmBQ8TCDAKfhP41tS4tsY+1ucH+vx81pZUMA/UfyVtWNz7O8czoNzIZ8ID3EAnmCeLsWL1mWYp8sVPgp/H+N15SnkH+GYp7d4fr3F/L1T8Azz9xleJz7DDcPnwR80EsJ5S2RdAVzmEbQYrZl47J9J/U7xIsfrvChwPimOtQakzDBRjFNBJLWHelOijGFzpUu4WBncEa4DcsrCoKFCgMHL1KGWKb0U3eFwcslL10SGTKHrC7wDUSITDg1KElMtJalkFxkK5QHTAq9+ypW2TYWy/qmQ+UB3WCVXhaQEGvAdNlY2MTbglWjjVN1m8JNbUhoaGxRWZJXBh70YGrRNTl5IkKFQQlmn3GGVRsIGvIPwzqikxCoTZZ3UBwjlHArFr2g/yYuaFXnF73GmdyJ/FBmLTES+E59LkR9FvhXpRabik4U3wX/8rvgf0Vn6XA4ef3clr16vXq9e+FrNltHi0H2qbms+I17yafHNvO22VcP/FvfVYx3xyTzatc3N7uhVysGdz5KMPRy267obQU3bPjabh7Hf5vND29XQFMBwSAX+67a7O4v+tWqaETB8ixhBQyscQfuOD8Mv/ldd134dIdtqfz8CXhz0R5Hqh/2YwL4aU6y+VGejbU/P/DyL/orkt+SPJPxp4PWzx//y2SPMQPy9bWjfGx1ZvG0HK59hUPyMwiI/4pM6Z3xS0WHAaVEzCuqa0fPSZmha3QxOCpwxpcZD1PMyD6zOKz0MNSn2MNTLel+uZt8A",
+            },
+        ],
+    },
     "tents": {"name": "Tents", "cat": "var", "examples": []},
     "tapaloop": {
         "name": "Tapa-Like Loop",
