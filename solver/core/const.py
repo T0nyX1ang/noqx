@@ -211,7 +211,21 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "magnets": {"name": "Magnets", "cat": "var", "examples": []},
     "masyu": {"name": "Masyu", "cat": "loop", "examples": []},
-    "mines": {"name": "Minesweeper", "cat": "var", "aliases": ["minesweeper"], "examples": []},
+    "mines": {
+        "name": "Minesweeper",
+        "cat": "var",
+        "aliases": ["minesweeper"],
+        "examples": [
+            {
+                "data": "m=edit&p=7ZRBb5swFMfv+RSVzz5gIClw67pmlyxb105VhVDkJG6DCnFnYJ2I8t37/KADG3bYYVEPE+Lp8fPD7x+T/yt+VFwJGsDlBdShDC7Pd/F2nRBvp71u0zIT0Rm9qMqdVJBQ+mU+pw88K8QkbquSyaEOo/qa1p+imDBCiQs3Iwmtr6ND/Tmql7S+gSVCA2CLpsiF9KpL73BdZ5cNZA7kyzaH9B7STao2mVgtGvI1iutbSnSfD/i2TkkufwrS6tDPG5mvUw3WvIQfU+zS53alqLbyqWprWXKk9YUl1+/kep1cnTZydfav5ObpXhRjSsPkeIQT/wZaV1GsZX/v0qBLb6IDxGV0IO65ftUBGc1nIV7w9qtb4Ds2cK1XfN8CM6zovTLDij6wu5yjDr8HsGLagQB1wN/nDYTYpQ88S0eIe/QrQg28DjAHd+31ZQ5uaxBbPWPM6sQY9v5dA6fL8IzvMc4xuhhv4RPQ2sP4EaODcYpxgTVXGO8wXmL0Mc6w5lx/xL/6zCeQE7szHBfdNT3tczKJyU2lHvhGgDWWVb4W6mwpVc4zAmOIFDJbFe16hFMKzANsj5UGyqR8zsBjBkwf91KJ0SUNxfZxrH4t1dba/YVnmQGaqWugZjwYqFTg/d4zV0q+GCTn5c4AvbFm7CT2pSmg5KZE/sStbnrktOA4Ib8I3rEHB+//n/Gnn/H69J33NgLemxz840o16nrAI8YHOmrwlg88DnzgZt1waGigI54Gatsa0NDZAAfmBvYHf+tdbYtrVbbLdauB0XWrvtfjZPIK",
+                "config": {"mine_count": 10},
+            },
+            {
+                "data": "m=edit&p=7VZfT9tADH/vp0D3fA+5S9qkeWMM9sLKWJkQiqoqLQEq0oYl7ZhS9btjO4E7X4MmHoZ4QG0s++c/57NzzlW/N2mZSdXHvx9JTyr4DbyIHhWBDM/z72KxzrP4QB5u1ndFCYyUZycn8ibNq6yXtFaT3rYexvW5rL/FiVBCCg2PEhNZn8fb+ntcj2U9BpWQEWCnjZEG9tiwl6RH7qgBlQf8qOWBvQJ2vijneTY9bZAfcVJfSIHrfCFvZMWy+JOJNg+U58VytkBglq5hM9Xd4qHVVJvr4n7T2qrJTtaHTrqBSdc36SLbpIvc/0p3uVhlVVemw8luBxX/CblO4wTT/mXYyLDjeAt0FG9F0AfXANpMTRHBkIkDD0TfiJqLAxD1ixiisfEN0diIkc9FXNf4RiGLPIxAHLyIysPQ8Fq+yAHzVp5jr3jeSitHxmQsf43ZWHof/S29z3eqfFzPbEYFGN/SB078AP2t+AH6W/vpY9kt+wH6W/YhL54KefVU6OQXYjktOXLqQc2w9U49ne4opz1qyGXt8f1rxV8UrTC+2a9WPD+t+P61dvy140/9weH0LPO3WPtOfB/jW/59/j7pPq5ny7yems6BFZ8OgiU7/dFOfzT1w4ofYf8t/ZC/b3rI+6HpPBjZp/Ng6uMrrL9Z31d2PeCkKzrvV0RPiGqiFzAOZO0T/UrUI9oneko2x0QviR4RDYgOyCbEgfKmkfMO6SRB8+l67Yed+NR+aO2kl4jxprxJ5xl86Eab5SwrD0ZFuUxzAZcKURX5tGr1Md054FMI2IosGZQXxUMOX0wGLm5XRZl1qhDMrm+77GdFee1Ef0zznAHNLYpBzceeQesSvuSWnJZl8ciQZbq+Y4B1SWGRstWaJ7BOeYrpfeqshheIFtj1xF9BDw2U4PPG9v43Nqy+99GG6D/SSeorGWhZn0nxsJmm03mRU2U6cShnJw5vyJvsoUWv2L97degcFWXnEAK4Yw4B2jlvWnxv5AC+N1xwwf35AmjHiAHUnTIA7Q8aAPdmDWCvjBuM6k4czModOrjU3tzBpezRk0x6Tw==",
+            },
+        ],
+        "parameters": {"mine_count": {"name": "Mines", "type": "number", "default": ""}},
+    },
     "moonsun": {"name": "Moon-or-Sun", "cat": "loop", "examples": []},
     "nagare": {"name": "Nagareru-Loop", "cat": "loop", "aliases": ["nagareru"], "examples": []},
     "nanro": {
