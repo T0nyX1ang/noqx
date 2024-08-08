@@ -74,14 +74,14 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [
             {
                 "data": "m=edit&p=7ZXBbptAEIbvfopoz3tgwWDglqZJL6nb1KmiCCEL2yRBAW+6QFNh+d0zMxCxLPTQQ9uoqmxG429ndn68zFB+qxOVciHw6/jc4uDxuevRJYRNl9V9rrMqT8MTflpXD1KBw/mniwt+l+RlOou6qHh2aIKwueLNhzBignFmwyVYzJur8NB8DJslb1awxPgc2GUbZIN73rs3tI7eWQuFBf6y88G9BXebqW2eri9b8jmMmmvOsM47ykaXFfJ7yjod+Hsri02GYJNUcDPlQ/bUrZT1Tj7WXayIj7w5beWuXuVilU6u08tFt5WL3oRcvIvfLDeIj0f427+A4HUYofavvev37io8gF2GB+bYmBqAlvZsmDNHsOjB3ELgaYBSXA34RorrGRGemeJRFW3TBVXR9lhQihYR0KY6MMvCI2rcjLDNJGGPslxTnHBJnU48kicsHZkChUdbCzz2V7Sg+o5G/FGaT9V8jQTmnyGCYRYcnqAjvCV7QdYmew0nzBuH7HuyFlmX7CXFnJO9IXtGdk7Wo5gFPiO/9BT9ATmRAyNo4uP+uzSeRWxVq7tkm0KvL+tik6qTpVRFkjMYrqyU+brs1kOavTANgO0pcoByKZ/ybD+My+73UqWTSwjT3f1U/EaqnbH7c5LnA9C+TQaoHXoDVCmYaNrvRCn5PCBFUj0MgDb9Bjul+2oooEqGEpPHxKhW9Pd8nLEfjK7Iwbfe/zfXX3pz4RFYb23yvDU59PRKNdn6gCe6H+hkl3d81OjARy2NBcddDXSisYGavQ1o3N4ARx0O7CdNjruafY6qzFbHUqNux1J6w0fx7AU=",
-                "config": {"Product": False},
+                "config": {"product": False},
             },
             {
                 "data": "m=edit&p=7ZXfb5swEMff81dUfvYDBkIob13X7CXL1jVTVSEUOQltUCHuDKwTUf733h1smB972MO2TpoIl8vHZ98Z53vkX0qpYy4s/Dg+h2+4XOHTbfse3VZzrZIijYMzflEWe6XB4fzDfM7vZZrHk7CJiibH6jyornn1LgiZYJzZcAsW8eo6OFbvg2rJqxsYYtwFtqiDbHCvWveWxtG7rKGwwF82Prh34G4TvU3j9aImH4OwWnGGed7QbHRZpr7GrKkDf29VtkkQbGQBm8n3yVMzkpc79Vg2sSI68eqiVy5macp12nLRrctFb6Rc3MVvLvc8Op3gsX+CgtdBiLV/bl2/dW+CI9hlcGSOi1NnUEt9NswlAEf1HUxtBG4LPKcHZjRFeAbxkPgGOO/N8QWCqQH6U4RFc2wjRgjKZCQSkBVzG/UKQfPMIJuSCXMlp78r4dK2hGWgKc0z1/aI/KgSHqKgR3lHdk7WJruCJ80rh+xbshbZKdkFxVyRvSV7SdYl61HMDM/ql07zD5QTOnVr6F7Tf49Fk5DdlPpebmNQ0rLMNrE+WyqdyZRB62K5Std5Mx5QZwOtATtQZAelSj2lyaEblzwclI5HhxDGu4ex+I3Su97qzzJNO6Du1R1Ut5QOKjT0C+O31Fo9d0gmi30HGL2ls1J8KLoFFLJbonyUvWxZu+fThH1jdIcOvlP+vxf+0nsBj8B6bf3ktZVD/16lR6UPeET9QEdV3vCB0IEPJI0Jh6oGOiJsoH1tAxrKG+BA4cB+InJcta9zrKovdUw1UDumMgUfRpMX",
-                "config": {"Product": True},
+                "config": {"product": True},
             },
         ],
-        "parameters": [{"name": "Product", "type": "checkbox", "default": False}],
+        "parameters": {"product": {"name": "Product", "type": "checkbox", "default": False}},
     },
     "chocona": {
         "name": "Chocona",
@@ -108,10 +108,10 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [
             {
                 "data": "m=edit&p=7ZXPb5swFMfv+Ssqn33AQBPg1nVtL122rqmqCqGKpLRFhbgzsE5E+d/73gMN27DDDttymIifHh/844ud76P61qQq40Lgzwu4wyHj/vGcmhAuNae/VnldZNERP2nqZ6kg4fzz+Tl/TIsqm8U4Eq5ktmvDqL3i7UUUM8E4c6EJlvD2Ktq1n6J2ydtreMS4D+yy6+RCejakt/Qcs9MOCgfyZZ9DegfpJlebIru/7MiXKG5XnOE6H2g0pqyU3zPW68D7jSzXOYJ1WsPLVM/5a/+kah7kS9P3FcmetyeWXJTTy/UGuZh2cjGbkIvD/rDcMNnvYdu/guD7KEbtN0MaDOl1tIO4jHbM83HoCWjpzoZ5cwQ3GljYIEBwPQDfQbDSgLABzaGBhQ0CApqO0EVwMQDh2GOEsKUJdzSqk69NLDox+qj5iAS0LQahfdHeWowki4B2xiChrSekzdJnDmm3fo6CgxF0PHcUzym6FFdwerz1KH6k6FA8pnhJfc4o3lI8pehTnFOfBZ7/b/1D/oKc2A+6kqFdi8MiySxmy6ZcZ+poKVWZFgzKG6tkcV816jHdgFmp+oEfgW2pp4EKKV+LfGv2y5+2UmWTjxBmD09T/ddSPVizv6VFYYCunhuoKzsGqhXUFO0+VUq+GaRM62cDaPXHmCnb1qaAOjUlpi+ptVo5vPN+xn4warGH353/345/9O3AI3AOrT4cmhz690o1aX3AE+4HOunyno+MDnxkaVxw7GqgE8YGansb0NjeAEcOB/YLk+Osts9RlW11XGrkdlxKN3yczN4B",
-                "config": {"Letters": "AUGST"},
+                "config": {"letters": "AUGST"},
             }
         ],
-        "parameters": [{"name": "Letters", "type": "text", "default": "ABC"}],
+        "parameters": {"letters": {"name": "Letters", "type": "text", "default": "ABC"}},
     },
     "fillomino": {"name": "Fillomino", "cat": "num", "examples": []},
     "gokigen": {"name": "Gokigen (Slant)", "cat": "draw", "examples": []},

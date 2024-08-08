@@ -6,7 +6,7 @@ function imp(penpa) {
   iframe.contentWindow.load(penpa);
 }
 
-function make_param(type, name, value) {
+function make_param(id, type, name, value) {
   let paramDiv = document.createElement("div");
 
   let paramLabel = document.createElement("label");
@@ -15,7 +15,7 @@ function make_param(type, name, value) {
 
   let paramInput = document.createElement("input");
   paramInput.type = type;
-  paramInput.id = `param_${name}`;
+  paramInput.id = `param_${id}`;
 
   if (type === "checkbox") paramInput.checked = value;
   else paramInput.value = value;
@@ -56,22 +56,17 @@ window.onload = function () {
       typeSelect.addEventListener("change", () => {
         puzzleType = typeSelect.value;
         if (puzzleType !== "") {
+          parameterBox.style.display = "none"; // hide parameter box if no parameters
+          while (parameterBox.firstChild) {
+            parameterBox.removeChild(parameterBox.lastChild);
+          }
+
           if (body[puzzleType].parameters) {
             parameterBox.style.display = "block";
 
-            for (let i = 0; i < body[puzzleType].parameters.length; i++) {
-              const parameter = body[puzzleType].parameters[i];
-              const paramDiv = make_param(
-                parameter.type,
-                parameter.name,
-                parameter.default
-              );
+            for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
+              const paramDiv = make_param(k, v.type, v.name, v.default);
               parameterBox.appendChild(paramDiv);
-            }
-          } else {
-            parameterBox.style.display = "none"; // hide parameter box if no parameters
-            while (parameterBox.firstChild) {
-              parameterBox.removeChild(parameterBox.lastChild);
             }
           }
           for (let i = exampleSelect.options.length - 1; i > 0; i--)
@@ -123,15 +118,11 @@ window.onload = function () {
           solveButton.disabled = true;
 
           if (body[puzzleType].parameters) {
-            for (let i = 0; i < body[puzzleType].parameters.length; i++) {
-              const parameter = body[puzzleType].parameters[i];
-              const paramInput = document.getElementById(
-                `param_${parameter.name}`
-              );
-
+            for (const [k, _] of Object.entries(body[puzzleType].parameters)) {
+              const paramInput = document.getElementById(`param_${k}`);
               if (paramInput.type === "checkbox")
-                puzzleParameters[parameter.name] = paramInput.checked;
-              else puzzleParameters[parameter.name] = paramInput.value;
+                puzzleParameters[k] = paramInput.checked;
+              else puzzleParameters[k] = paramInput.value;
             }
           }
 

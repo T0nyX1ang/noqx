@@ -48,7 +48,7 @@ def solve(puzzle: Puzzle) -> List[str]:
         assert isinstance(num, int), "Clue must be an integer."
         solver.add_program_line(f"not black({r}, {c}).")
         solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
-        if puzzle.param["Product"]:
+        if puzzle.param["product"]:
             solver.add_program_line(cave_product_rule(num, (r, c), color="not black"))
         else:
             solver.add_program_line(count_reachable_src(num, (r, c), main_type="bulb", color="not black"))
