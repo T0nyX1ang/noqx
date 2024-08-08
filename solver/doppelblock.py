@@ -38,7 +38,9 @@ def solve(puzzle: Puzzle) -> List[str]:
         else:  # safe color (others)
             solver.add_program_line(f"not black({r}, {c}).")
 
-    for (r, c), num in puzzle.text.items():
+    for (r, c), num in filter(
+        lambda x: x[0][0] < n and x[0][0] >= 0 and x[0][1] < n and x[0][1] >= 0, puzzle.text.items()
+    ):  # filter center number
         assert isinstance(num, int), "Clue should be integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
