@@ -102,8 +102,8 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "easyas": {
-        "name": "Easy As",
+    "easyasabc": {
+        "name": "Easy As ABC",
         "cat": "num",
         "examples": [
             {
@@ -196,7 +196,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "lightup": {"name": "Light Up (Akari)", "cat": "var", "aliases": ["akari"], "examples": []},
+    "lightup": {"name": "Akari (Light Up)", "cat": "var", "aliases": ["akari"], "examples": []},
     "lits": {
         "name": "LITS",
         "cat": "shade",
