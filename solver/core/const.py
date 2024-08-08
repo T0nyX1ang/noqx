@@ -113,11 +113,36 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
         "parameters": {"letters": {"name": "Letters", "type": "text", "default": "ABC"}},
     },
-    "fillomino": {"name": "Fillomino", "cat": "num", "examples": []},
+    "fillomino": {
+        "name": "Fillomino",
+        "cat": "num",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZNb9s8DL7nVxQ662DJcWL71nXtLl3et2uHojCCwkndNqgTd/5YBwf576XIBKYl9zAM2HooHBP0I4p8RIaSqh9NWmZSBebnh9KTCp6JF+KrQviG9/Bcreo8i4/kcVM/FiUoUv53dibv07zKRsneaj7atlHcXsj2S5wILSS+SsxlexFv269xO5PtJQwJqQA7B00JqUE97dRrHDfaCYHKA32210G9AXW5Kpd5dntOyP9x0l5JYeJ8wtlGFeviZyZoGn4vi/ViZYBFWsNiqsfV836kau6Kp2Zvq+Y72R6/Tdfv6BqV6BptgK5ZxR/Tze4esqpZDHGN5rsd5PwbsL2NE0P8e6eGnXoZb0HO4q0Y68MyqTAiQCDogIlngJABaAGVPABTtJgwAC18BoQGmHZAaFuEgQHGDMApjFhkM43QgoVVHhJhTpTnW1yVh4FYZOWhHz5LoR8+S6ENy4rSyrbR9hKUxlk8lh/ZNk4B1Bj98FjB1J5FReHRnaqoCfrh+ZkiwsqgqDCcoVMZRaXhsyIXQT8suqZa9BCsBfOsFfrhNpRnlg1NeWbZ0L7NUPt25jXlmdtQnjkSIEPFEqTpz88dBY5rKganSMXgrqkYLEF64iyMmoT1laby8FhOeTSVh6eMGoUjkZN6Kg+L5VN52Np9agPG0LeKATuGwn3jBuUZSo3yCrYV2fooP6P0UAYoz9HmFOU1yhOUY5QTtJmajem3tq6/QCcZ0yH41gNH5cfo+x6djxJxCgfm0awo12kOh+asWS+y8vANVxRRFflt1ZT36RIOXLzBwLEK2AYte1BeFM/5atO3Wz1sijIbHDKgOa8H7BdFeWd5f0nzvAfQnawH0dWhB9Ul3AvYd1qWxUsPWaf1Yw9gV56ep2xT9wnUaZ9i+pRa0dbdmncj8Uvgm/iQ/PHH/e9f3P9M/r33tpW+Nzr41y3Kwb4HeKD1AR1s8T3udDngTj+bgG5LAzrQ1YDajQ2Q29sAOu0N2BsdbrzaTW5Y2X1uQjmtbkLxbk/mo1c=",
+            },
+            {
+                "data": "m=edit&p=7VRBc5s8EL37V2R01gEBtjG3NLV7Sd2mSSeTYRiPbJOYCVj5BHzp4PF/z+5CDQJy6KGtDx3Bzr6nRVqteJv9V0gd8RkMx+MWFzAcz6LXc/Gx6nEX50nkX/DLIt8pDQ7nXxYL/iiTLBoFdVQ4OpQzv7zh5Sc/YDbj9AoW8vLGP5Sf/XLJy1uYYlwAdw2eYNwGd9649zSP3lVFCgv8Ze2D+wDuJtabJFpdV8xXPyjvOMN9PtDX6LJU/R+x6jPCG5WuYyTWMofDZLv4pZ7Jiq16LupYER55efl+uk6TLrpVuugNpIun+M3pzsLjEcr+DRJe+QHm/r1xvca99Q9gl/6BuS58KvCq6WqYO0Y8a/AEsHuCY4St6YnVwR7g6QlOcfXxCXrCjPamJp5huHeCwsLVJy2Mq7fihbA7hI1EGzvdADov/tw14eCJ7BpDUQSV5oHsgqxN9g4qx0uH7EeyFtkx2WuKmZO9J3tF1iU7oZgp1v6XbucPpBPYWG9z4IWdEROOAjbfPkUXS6VTmcB/vyzSdaR/Ymg0LFPJKiv0o9yAbKgPgTKA21OkQSVKvSTx3oyLn/ZKR4NTSEaw/UD8WultZ/VXmSQGUXVVg6oagEHlGtTdwlJr9Wowqcx3BtHqBMZK0T43E8ilmaJ8lp3d0ubMxxH7wegNHCi++6+L/6UujldgnVu3OLd06O9VelD6QA+oH9hBldd8T+jA9ySNG/ZVDeyAsIHtahuovryB7CkcuHdEjqt2dY5ZdaWOW/XUjlu1BR+Eozc=",
+            },
+        ],
+        "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": True}},
+    },
     "gokigen": {"name": "Gokigen (Slant)", "cat": "draw", "examples": []},
     "haisu": {"name": "Haisu", "cat": "loop", "examples": []},
-    "hashi": {"name": "Hashiwokakero (Bridges)", "cat": "loop", "aliases": ["bridges"], "examples": []},
-    "heteromino": {"name": "Heteromino", "cat": "region", "examples": []},
+    "hashi": {
+        "name": "Hashiwokakero (Bridges)",
+        "cat": "loop",
+        "aliases": ["bridges"],
+        "examples": [],
+    },
+    "heteromino": {
+        "name": "Heteromino",
+        "cat": "region",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZdPb9tGEMXv/hQBzzxw/5O8pandi+s2tYsgEASDtplYiGSmlNQUMvzds9z5CTIlFWgPbVPAkLS7nJ2ZnbdvZqld/rZu+jbXbviaMi9yFT9VWaaf1UX6bT9Xs9W8rV/lr9er+66Pgzz/6ews/9DMl+3JBK3pyeOmqjdv880P9STTWZ5+Kpvmm7f14+bHenOZby7jVJbbKDuPI5XlOg5Pd8N3aX4YvRGhKuL4gnEcvo/D21l/O2+vz0Xycz3ZXOXZsM53yXoYZovu9zYTs/R82y1uZoPgpllFMMv72Wdmluu77tMaXTV9yjevJdzTI+GaXbjDUMIdRkfCHVD8w+FW06enuO2/xICv68kQ+6+7YbkbXtaPmS+z2uaZr1IXlHRaOiOdTV0lc5XMVS51qvD04kCpgl7UlOZZi7XSW7n4Vho/WuJQGj8GO4OdYR0TpLfM2+0zdk6CVQ6/DjuHnsefJw5PHB47NkIF7AJxlehX4kcXItdK9LRCDl6txZ8GnwaXNjyDQxvkVvxrK/Foiz34tGU9J/Frhz54NTi1Qw882mMfiAs8OrBuyTx86krmTSHrmELWMYX4M/BqlMRp1FYu6xv4NeA3Wvwb+DWGeYO9QY99MeyHgV9jiQOcBh4NOA18Gvg0njjAbchvQ2YbktmA35SsUxIP+2FK7CrkFXbsk2V/bCHzln2x7IdVYm/ZDwt+Sx5Y9sGC08K/hX8L/9ayHnlgyXPrsCPPLfxb9sOC35LPlpK2AXmJHnltwW/Jb1eIf0eeO+rbUd8O/h14nZI4nEJPSzwOvA6+HTw78t+B11n04dnBswOPg1/nsQefg08XkIPDlazLceXA5cHlObc8vHnweHB4+PPw58ljz7nkyUsPbx4cHt489eqpU++YB5f3+AGf5xzynLkeXB6+PPnq4cuTpx58vuIAJx9DIfMBfAF8gToNnFMBfgK4AjwFeApGcARwBnAGcAZwBvIybF8k6fyM75iL+jG2KrXvU3uWWp3aq/giyjcmtd+ntkitS+150jlN7bvUvkmtTa1POmF4lf3Fl92/Fs7Eyz+nv/NxLxYvFi8WLxb/D4vpySS7XPcfmts2XkFO7z62ry66ftHMs3jjy5bd/HrJbJ0uhPGKEmUP68VN249E8677PJ89jPVmHx+6vj06NQjbuNwR/Zuuv9vz/qWZz0cCueKORHITG4lWfbxmPXtu+r77MpIsmtX9SPDsSjby1D6sxgGsmnGIzadmb7XFDvPTSfZHln4TE7fdvlyn/6Pr9EBB8a39z/jWwknZ2/W70l/1a3I6SrfFPxIerXHkB2Ue5QcFPSx3WNNReqSso3S/sqPosLij8KC+o+xPSnzwul/lQ1T7hT4sdVDrw1LPy30yPfkK",
+            }
+        ],
+    },
     "heyawake": {
         "name": "Heyawake",
         "cat": "shade",
@@ -201,7 +226,21 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "ncells": {"name": "N Cells", "cat": "region", "aliases": ["fivecells", "fourcells"], "examples": []},
+    "ncells": {
+        "name": "N Cells",
+        "cat": "region",
+        "aliases": ["fivecells", "fourcells"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VVPb5swFL/nU1Q++4DDnyTcui7ZJcvWNVNVIRQ5CW1QIc4MrBNRvnufH3SxDT3ssKqaJsTj8fPP74/t91z8qLhMKHMoY9QdU/jC47Ex9fyAjlwPX6d9lmmZJeEFvazKnZCgUPplNqP3PCuSQdSy4sGxnoT1Na0/hREZEoovIzGtr8Nj/TmsF7S+gSFCGWBz0BihQ1CnZ/UWx5V21YDMAX3R6qDegbpJ5SZLVvMG+RpG9ZIS5ecDzlYqycXPhDTT8H8j8nWqgDUvIZlilx7akaLaiseq5bL4ROvL18N1z+EqtQlXaX8t3Owg+gKdxKcTLPg3CHUVRirq72d1fFZvwiPIRXgkXvCSY7MrxBspADbpNzBWgKsBE2uK71hTfGYBATK0KYFvMUae5WWMbjUGc4aWEea4HQ6aMTjoSTPMHDtl5tg5M4YcHRliTrod106KuXZWzOvE06yebse3F5j5yNHtNAuoc4JOPEFnfQJzfWDLGW78HcoZyiHKJZwLWrsoP6J0UPoo58iZorxFeYXSQxkgZ6RO1h+dvTcIJ3KbFmY+/r+BxYOITLcPycVCyJxn0A8WVb5O5Ms/tF5SiGxVVPKeb6CRYGeGjgHYHpkGlAlxyNK9yUsf9kImvUMKTMB9D38t5Nay/sSzzACau8aAmpZoQKWEfqf9cynFk4HkvNwZgNbKDUvJvjQDKLkZIn/klrf8nPNpQH4RfCNX3Yn/77U3v9fU4jvvrcO8t3Dw3ArZW/QA99Q9oL313eKdEge8U8zKYbeeAe0paUDtqgaoW9gAdmobsFfKW1m1K1xFZRe5ctWpc+VKL/UoHjwD",
+            },
+            {
+                "data": "m=edit&p=7ZbfbpswFMbv8xSVr30B5k+Au65Ld9PRde1UVQhFTkpbVIgzB9bJUd69xweqFJtqqiZF01QRjg4/G5/PjvM5m58tlwV1Q/3xIupQF67QD/EOohhvp7+uyqYqkiN63DYPQkJC6fnpKb3j1aaYZH2vfLJVcaIuqPqSZIQRirdLcqoukq36mqiUqktoItQFdgaZSyiDdLZPr7FdZycddB3I0z6H9AbSZSmXVTE/68i3JFNXlOg6n/BtnZJa/CpI9xo+L0W9KDVY8AYms3ko133Lpr0Vj23f1813VB13cmcjcr29XJ12cnU2IlfP4u/lVmsxJjTOdztY8O8gdZ5kWvWPfRrt08tkCzFNtsSPX+bYfSsk8A0QWiAwgOtMTeIyi1hvMc8kfmiSwLGINc7UqjW19ERWrcgaJ4pMEpt9mDUvxsxazDM1M9+szqxVZtYs2NRcDWZpZrFZy3PMWp5jzsuzZuFZK+8FrkWG1WEDubiNbjCeYmQYr2CXUeVh/IzRwRhgPMM+M4zXGE8w+hhD7DPV+/RdO/kAcjKfoSG+fQUf7f9zez7JyOz2vjhKhax5BQ6ctvWikC/PcNiRjajmm1be8SVYN56F4NHAVthzgCoh1lW5GvYr71dCFqNNGhZQfqT/QshbY/QnXlUD0J3uA9QdQgPUSDhhXj1zKcXTgNS8eRiAV4fnYKRi1QwFNHwokT9yo1q9n/NuQn4TvDMPFt//+Cdx8H8SevGdf82F/yAnU5fUj6k6p2Tdzvl8KeB3Cqv2Nr95J081776B/mgc62C+ePBlwt+TkKNmBHjEj4CO+k7PLesBbpmMLmj7DNARqwFqug0g23AAWp4D7A3b0aOazqNVmeajS1n+o0u9tqAsnzwD",  # a bit slow to calculate
+                "config": {"region_size": 4},
+            },
+        ],
+        "parameters": {"region_size": {"name": "Region Size", "type": "number", "default": 5}},
+    },
     "nonogram": {
         "name": "Nonogram",
         "cat": "shade",
@@ -277,7 +316,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "shikaku": {"name": "Shikaku", "cat": "region", "examples": []},
+    "shikaku": {
+        "name": "Shikaku",
+        "cat": "region",
+        "examples": [
+            {
+                "data": "m=edit&p=7VbNT9tKEL/nr0B73oP3w583oKEXmlcKTwhZUeQEAxFOTG2nVI7yvzMzzmN3HVdqD/RxQJZXM7/52N+sd7xbf99kVc6l5kJzFXGPC3hi3+N+6PFQC3q9/XO1bIo8OeLHm+ahrEDg/J+zM36XFXU+Svde09G2jZP2grefk5RJxukVbMrbi2TbfknaCW8vwcS4AOwcJMG4BHFsxGuyo3TagcIDedLJIYg3IC6W1aLIZ+ddoq9J2l5xhvOcUDSKbFX+yFkXRvqiXM2XCMyzBoqpH5ZPe0u9uS0fN3tfMd3x9rijOx6gqwxdFDu6KL0V3fz2Pq838yGu8XS3gzX/BmxnSYrE/zViZMTLZAvjJNmywMNQH6h1H4aFMQDBqxqFaDfmWIIeGVWjOTB24Qni4tmQAkhbeuTmFALnjI0uMcBMIiQGGE5CIQkroUZ/ZfQAWVn5QizSig/RbsWHmN/SI6zBt3Scz4qP/H7VEVZgZYiRkYmQnrts0qMMJoEUtJA2gAtvZfBdztJ3Z5Shy1GGGG/Zox6jCGu2GPU+rIyRoZAW4G4M5SEhE6Cku8iKPqKJVxrtlr8OnEVWvvvRFRVo6UFv16gQGZqvrCKcwFSs+ltXxZhBwL9sD2iBU9qAxBCraK3cnaUVFm2K1FTUawD0lKDOuoHO6nal4NbvZXaCPzKwn5GXpPEKWpK3isZPNHo0+jSek8+YxmsaT2nUNAbkE2JT/1Hb20TfiE7qR3SA/P7jf/h/+P89/+koZWM4So8mZbXKCjhOJ5vVPK/+0+HywuqymNWb6i5bwFFMdxs4cAFbk6cDFWX5VCzXrt/yfl1W+aAJQTzJB/znZXXby/6cFYUDdLc1B+ouFQ7UVHBjsPSsqspnB1llzYMDWJchJ1O+blwCTeZSzB6z3mwrU/NuxH4yeuFvKrj+uBn+HzdDXH/vvR0U740Obd2yGux7gAdaH9DBFt/jB10O+EE/44SHLQ3oQFcD2m9sgA57G8CD9gbsFx2OWftNjqz6fY5THbQ6TmV3ezodvQA=",
+            }
+        ],
+    },
     "shimaguni": {
         "name": "Shimaguni (Islands)",
         "cat": "shade",
@@ -299,7 +346,6 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "slither": {"name": "Slitherlink", "cat": "loop", "aliases": ["slitherlink"], "examples": []},
-    "spiralgalaxies": {"name": "Spiral Galaxies", "cat": "region", "examples": []},
     "starbattle": {"name": "Star Battle", "cat": "var", "examples": []},
     "statuepark": {"name": "Statue Park", "cat": "var", "examples": []},
     "stostone": {
@@ -351,7 +397,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "tatamibari": {"name": "Tatamibari", "cat": "region", "examples": []},
+    "tatamibari": {
+        "name": "Tatamibari",
+        "cat": "region",
+        "examples": [
+            {
+                "data": "m=edit&p=7VTBbptAEL37K6K9diuxYLuYS5Wmdi+u2zSuogihaG2TGAW86QJNhet/z8xA612ghx7a+lCtGT0eszOPxW/yL6XUMZ/A8nzucAHL8x26/CH+nGYtkyKNgzN+XhZbpQFw/mE243cyzeNB2GRFg301CapLXr0LQuYyTpdgEa8ug331PqgWvLqCR4wL4OaABOMuwOkRXtNzRBc1KRzAiwYDvAG4TvQ6jW/nNfMxCKslZ9jnDe1GyDL1NWb1Nrpfq2yVILGSBbxMvk0emyd5uVEPZZMrogOvzmu50x653lEuwlouoj8lN97cx3m56tM6iQ4HOPNPoPY2CFH45yP0j/Aq2ENcBHvm+rj1OwipPwzzHCReGoSLxGuDGCLxwiDGrRqjdsaYahgZPnUxivrtLT4JMzKEQ22MFCHam0Qt1mIox2gtarlmZa99CGJI+n7WgcMSdGQ3FGcUXYpLOFFeeRTfUnQojijOKWdK8ZriBcUhxTHlvMJv8ltf7S/ICV2f3G+u0Wkx0SBkU/DC2ULpTKbgh0WZrWL94x6mD8tVepuX+k6uwUs0nMAxwO0o06JSpR7TZGfnJfc7pePeR0iiFXvyV0pvWtWfZJpaRD1qLaqeChZVaLC8cS+1Vk8Wk8liaxHGNLMqxbvCFlBIW6J8kK1u2fGdDwP2jdEVenD4w/+j/V+Mdjx/59RGxanJob+u0r2+B7rH+sD2WrzhOy4HvuNnbNi1NLA9rga2bWygut4GsmNv4H7hcKzaNjmqavscW3Wsjq1Mt4fR4Bk=",
+            }
+        ],
+    },
+    "tentaisho": {"name": "Tentaisho (Spiral Galaxies)", "cat": "region", "aliases": ["spiralgalaxies"], "examples": []},
     "tents": {"name": "Tents", "cat": "var", "examples": []},
     "tapaloop": {
         "name": "Tapa-Like Loop",

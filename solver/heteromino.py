@@ -1,10 +1,10 @@
 """The Heteromino solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import display, edge, grid
-from .core.encoding import Encoding, tag_encode
-from .core.helper import extract_initial_edges
+from .core.penpa import Puzzle
+from .core.helper import extract_initial_edges, tag_encode
 from .core.neighbor import adjacent
 from .core.shape import OMINOES, all_shapes, general_shape
 from .core.solution import solver
@@ -24,21 +24,21 @@ def avoid_adj_same_omino(color: str = "black") -> str:
     return constraint
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
-    shaded = len(E.clues)
-    if (E.R * E.C - shaded) % 3 != 0:
-        raise ValueError("The grid cannot be divided into 3-ominoes!")
+def solve(puzzle: Puzzle) -> List[str]:
+    shaded = len(puzzle.surface)
+    assert (puzzle.row * puzzle.col - shaded) % 3 == 0, "The grid cannot be divided into 3-ominoes!"
 
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(edge(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(extract_initial_edges(E.edges))
+    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
 
     if shaded == 0:
         solver.add_program_line("black(-1, -1).")
 
-    for (r, c), _ in E.clues.items():
+    for (r, c), _ in puzzle.surface.items():
         solver.add_program_line(f"black({r}, {c}).")
         solver.add_program_line(f"vertical_line({r}, {c}).")
         solver.add_program_line(f"vertical_line({r}, {c + 1}).")

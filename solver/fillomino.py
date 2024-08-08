@@ -1,10 +1,10 @@
 """Solve Fillomino puzzles."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import display, edge, grid
-from .core.encoding import Encoding, tag_encode
-from .core.helper import extract_initial_edges
+from .core.penpa import Puzzle
+from .core.helper import extract_initial_edges, tag_encode
 from .core.neighbor import adjacent
 from .core.reachable import grid_src_color_connected, count_reachable_src
 from .core.solution import solver
@@ -59,16 +59,18 @@ def fillomino_filtered(fast: bool = True) -> str:
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(edge(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(extract_initial_edges(E.edges))
+    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
     solver.add_program_line(fillomino_constraint())
 
-    for (r, c), num in E.clues.items():
+    for (r, c), num in puzzle.text.items():
+        assert isinstance(num, int), "Clue should be an integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
         solver.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
         solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
@@ -79,7 +81,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
             solver.add_program_line(f"vertical_line({r}, {c + 1}).")
             solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
 
-    solver.add_program_line(fillomino_filtered())
+    solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
     solver.add_program_line(display(item="vertical_line", size=2))
     solver.add_program_line(display(item="horizontal_line", size=2))
     solver.add_program_line(display(item="number", size=3))

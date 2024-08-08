@@ -1,10 +1,10 @@
 """The Tatamibari solver."""
 
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from .core.common import display, edge, grid
-from .core.encoding import Encoding, reverse_op, tag_encode
-from .core.helper import extract_initial_edges
+from .core.penpa import Puzzle
+from .core.helper import extract_initial_edges, reverse_op, tag_encode
 from .core.neighbor import adjacent
 from .core.reachable import bulb_src_color_connected
 from .core.shape import all_rect_region
@@ -37,19 +37,17 @@ def tatamibari_global_constraint() -> str:
     return rule
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
-    if len(E.clues) == 0:
-        raise ValueError("Please provide at least one clue.")
-
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(edge(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(all_rect_region())
-    solver.add_program_line(f":- {{ upleft(R, C) }} != {len(E.clues)}.")
-    solver.add_program_line(extract_initial_edges(E.edges))
+    solver.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
+    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
 
-    for (r, c), clue in E.clues.items():
+    for (r, c), clue in puzzle.text.items():
         solver.add_program_line(f"clue({r}, {c}).")
         solver.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
 
