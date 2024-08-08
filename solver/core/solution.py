@@ -44,7 +44,10 @@ class ClingoSolver:
                 solution.edge.add((int(r), int(c), Direction.TOP))
 
             elif _type.startswith("number") or _type.startswith("content"):
-                solution.text[(int(r), int(c))] = int(data[2])
+                if self.puzzle.puzzle_type == "easyas":  # convert penpa number to letter
+                    solution.text[(int(r), int(c))] = self.puzzle.param["Letters"][int(data[2]) - 1]
+                else:
+                    solution.text[(int(r), int(c))] = int(data[2])
 
             elif _type == "triangle":
                 solution.symbol[(int(r), int(c))] = f"tri__{data[2]}"

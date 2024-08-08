@@ -20,6 +20,8 @@ function make_param(type, name, value) {
   if (type === "checkbox") paramInput.checked = value;
   else paramInput.value = value;
 
+  if (type === "text") paramInput.size = 5;
+
   paramDiv.appendChild(paramLabel);
   paramDiv.appendChild(paramInput);
   return paramDiv;

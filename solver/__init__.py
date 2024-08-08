@@ -21,7 +21,7 @@ def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> 
         raise NotImplementedError("Solver not implemented.")
 
     start = time.time()
-    puzzle: Puzzle = Puzzle(puzzle_content, param)
+    puzzle: Puzzle = Puzzle(puzzle_type, puzzle_content, param)
     solutions: List[str] = module.solve(puzzle)
     stop = time.time()
     print(f"[Solver] {str(puzzle_type).capitalize()} puzzle solved.")

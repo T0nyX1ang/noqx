@@ -52,8 +52,9 @@ def int_or_str(data: Union[int, str]) -> Union[int, str]:
 class Puzzle:
     """The encoding for general puzzles."""
 
-    def __init__(self, content: str, param: Optional[Dict[str, Any]] = None):
+    def __init__(self, _type: str, content: str, param: Optional[Dict[str, Any]] = None):
         """Initialize the encoding of the puzzle."""
+        self.puzzle_type = _type
         self.param = param if param is not None else {}
         self.parts = decompress(b64decode(content[len(PENPA_PREFIX) :]), -15).decode().split("\n")
 
