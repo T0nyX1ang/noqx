@@ -91,10 +91,11 @@ window.onload = function () {
 
           if (body[puzzleType].examples[exampleSelect.value].config) {
             // load example config
-            for (const [key, value] of Object.entries(
-              body[puzzleType].examples[exampleSelect.value].config
-            )) {
-              const paramInput = document.getElementById(`param_${key}`);
+            for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
+              const value =
+                body[puzzleType].examples[exampleSelect.value].config[k] ||
+                v.default;
+              const paramInput = document.getElementById(`param_${k}`);
               if (paramInput.type === "checkbox") paramInput.checked = value;
               else paramInput.value = value;
             }
