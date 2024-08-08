@@ -50,7 +50,7 @@ def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
     return symbol_1, symbol_2
 
 
-def extract_initial_edges(edges: Set[Tuple[int, int, Direction]]) -> str:
+def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[Tuple[int, int, Direction]]) -> str:
     """Extract the initial edges to the solver."""
     rule = ""
     for r, c, d in edges:
@@ -58,6 +58,13 @@ def extract_initial_edges(edges: Set[Tuple[int, int, Direction]]) -> str:
             rule += f"vertical_line({r}, {c}).\n"
         elif d == Direction.TOP:
             rule += f"horizontal_line({r}, {c}).\n"
+
+    for r, c, d in helper_x:
+        if d == Direction.LEFT:
+            rule += f"not vertical_line({r}, {c}).\n"
+        elif d == Direction.TOP:
+            rule += f"not horizontal_line({r}, {c}).\n"
+
     return rule.strip()
 
 

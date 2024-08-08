@@ -73,6 +73,7 @@ class Puzzle:
         self.sudoku: Dict[Tuple[int, int], Dict[int, Union[int, str]]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
+        self.helper_x: Set[Tuple[int, int, Direction]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
         self.arrows: List[List[Tuple[int, int]]] = []
         self.thermo: List[List[Tuple[int, int]]] = []
@@ -122,9 +123,14 @@ class Puzzle:
         print("[Puzzle] Symbol unpacked.")
 
         self.edge = set()
+        self.helper_x = set()
         for index, _ in self.board["edge"].items():
             if "," not in index:  # helper(x) edges
-                # TODO handle helper(x) edges
+                coord, category = self.index_to_coord(int(index))
+                if category == 2:
+                    self.helper_x.add((coord[0] + 1, coord[1], Direction.TOP))
+                elif category == 3:
+                    self.helper_x.add((coord[0], coord[1] + 1, Direction.LEFT))
                 continue
 
             index_1, index_2 = map(int, index.split(","))
@@ -213,6 +219,20 @@ class Solution:
             shape, style = symbol_name.split("__")
             self.board["symbol"][f"{index}"] = [int(style), shape, 1]
         print("[Solution] Symbol packed.")
+
+        for r, c, direction in self.edge:
+            coord_1 = (r - 1, c - 1)
+            if direction == Direction.TOP:
+                coord_2 = (r - 1, c)
+            elif direction == Direction.LEFT:
+                coord_2 = (r, c - 1)
+            else:
+                raise AssertionError("Unsupported edge direction.")
+
+            index_1 = self.coord_to_index(coord_1, category=1)
+            index_2 = self.coord_to_index(coord_2, category=1)
+            self.board["edge"][f"{index_1},{index_2}"] = 2
+        print("[Solution] Edge packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
