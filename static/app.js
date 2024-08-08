@@ -91,16 +91,13 @@ window.onload = function () {
           puzzleContent = body[puzzleType].examples[exampleSelect.value].data;
           imp(puzzleContent);
 
-          if (body[puzzleType].examples[exampleSelect.value].config) {
-            // load example config
-            for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
-              const value =
-                body[puzzleType].examples[exampleSelect.value].config[k] ||
-                v.default;
-              const paramInput = document.getElementById(`param_${k}`);
-              if (paramInput.type === "checkbox") paramInput.checked = value;
-              else paramInput.value = value;
-            }
+          for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
+            const config =
+              body[puzzleType].examples[exampleSelect.value].config;
+            const value = config && config[k] ? config[k] : v.default;
+            const paramInput = document.getElementById(`param_${k}`);
+            if (paramInput.type === "checkbox") paramInput.checked = value;
+            else paramInput.value = value;
           }
         }
       });
