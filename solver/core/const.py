@@ -360,7 +360,17 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "slither": {"name": "Slitherlink", "cat": "loop", "aliases": ["slitherlink"], "examples": []},
-    "starbattle": {"name": "Star Battle", "cat": "var", "examples": []},
+    "starbattle": {
+        "name": "Star Battle",
+        "cat": "var",
+        "examples": [
+            {
+                "data": "m=edit&p=7VhNbxs3EL3rVwR75mFJ7pJc3dLU7sV1msZFYAiCsbaVWIjkTVdSU6zh/5435ND6IoF+oEEPgqTV03A4MxzNI2d39fum7WdCWnprJ0oh8TKu8h+lSv+Jr6v5ejEbvxKvN+uHrgcQ4u35ufjYLlaz0YRm4jUdPQ3NeHgnhp/Gk0IVwn9kMRXDu/HT8PN4OBPDewwVwkF2ASQLoQDPtvCDHyf0JghlCXzJGPAa8G7e3y1mNxdB8st4MlyJgvz84GcTLJbdH7MiTPO/77rl7ZwEq3Xbs2y1ue8+b1hLTp/F8NoHysqJaHUqWhImoiWF/yzaZvr8jHz/inhvxhMK/bctdFv4fvyE6+X4qagdTdWIwv8pkEo/dk1jDcYUXHhvigbP/aDy1yvYEoP21x/9tfTX2l8vvM4ZzFSuEbUsizFMVU0JLBnXwIaxAbYe1yX0ddCvpQLWjKGvg34tHTDiI6ygX7O+roBrxtCvWb+CXxP81hX0LevX0LGsUyMGyzEY+HXs18JmwzYtdBrWsYih4RhsI0zJNh0oUyrGCpjtNJBLljeglGSbWLuJa28sMP4Tjx0w229gXwX7poQdFezAD3CwDz/AFWPYV8G+kZBrliOHhnNoJPzq4Nco2KzYpsLciudq6NSsoxEb1QvhCn4N+62gb1gf+TScT8wDZv0a8TuOH7k1nFtjaGvhuQa+HPuysNOwHeTWcm4Ncms5twa5tZxb2p5syXacAw55s8iV5VxZ5MRyTiz2N6tDbFZpYauQH4u1W1671aWwdagZqxGDCTFAF5h1qho4xGlr6FvWN/Dr2C/WaHmN1sCvY78W+g3rOy1cyTFgLY7XYsEdx9yx4I5j7niOsBx8Aua6Io4wp8AnYK4l4kjklNbAwZfnSOQU1giebDkSOYW1gA+Md7hDvLCRFzs8Io5EHhFHLNcw/jvwgTFicBwD7QmcB+LFC9doT4hcAxci18AzcCro+zqP/zv2CtT6traZU+DTC4/AIfCC56od7lDNR75gDzE64h2+UJ1HXlCd896C7y1HaviifTPWeeQI1XnkiMFcrhlf55EvyBVqnWsYcTqOk/aQyBd/FMc6B7+4lgz20sgXcAX1z3WF/SFyBN/AXGPEhVhjqCUbawx5AzeYC5jL+fG8iNwhXujIC3CN92HPi8gd4kLkjgHmvddzIXIHfAcftlyI3CFe83qJCy/cIV479oWaCdzBIfPBHzVv/LXyV+OPIEuH3ek4PB2Hp+PwdByejsPTcXg6Dp9HE7jhW/PkC7f+p9H/9+h0NCneb/qP7d0MDwEuN8vbWf/qsuuX7aLA45Zi1S1uVjw+9k9j0LRA9ug190SLrvuymD/u680/PXb9LDlEwtn9p5T+bdffH1j/2i4We4LwfGlPFJ6D7InWPR5y7Pxu+777uidZtuuHPcFtu8azqNXD/Mu+pdnjej8A6t32bH9uD7wtt2t+HhV/Fv4z0Uh8dXqW9b2fZVHuy7/Vwu+27P+sQ/+3dxST4Vpgzx7eiuLL5qa9uesWPjFeLg/kSGFSjiwn7bBcooFJDqChSjo4kkcHLufgcAA1kB7IhlSx60yoUmcWLdG5JAcanbNkMhPqvyjnvyenL9EzJQdsJq3o0TNJyq05tzaFlis9gN4kPYCbpuSARkebHqgyUSn0YOkZaIbSM3Bnk56BNi9jKrfAXPEr3L1mkngYLle/RG+enoHGNWMqk8RjH3EglyuV/c9zuVJoU9MzcO+RSUlmgQodYybtuSrJ8VXbjHONjjk9UGfWoXGPlllHZts5HogzcuGq3JancgUnXW4gsdt+90PHNyddn+zsIE40d5AmmziWH/VxkB91bOTwuGmDNNG3QXrYukF03L1BeNTAQZbp4cjqYRtHUR12cuTqqJkjV7v93GQ6+gY=",
+                "config": {"stars": 3},
+            }
+        ],
+        "parameters": {"stars": {"name": "Stars", "type": "number", "default": 2}},
+    },
     "statuepark": {"name": "Statue Park", "cat": "var", "examples": []},
     "stostone": {
         "name": "Stostone",
