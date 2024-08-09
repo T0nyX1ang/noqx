@@ -47,7 +47,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "balance": {"name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"], "examples": []},
+    "balance": {
+        "name": "Balance Loop",
+        "cat": "loop",
+        "aliases": ["balanceloop"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VZRT9swEH7vr6j87Ic4Sds0b4zBXrpuDCaEogilJUBEUjM3HShV/zt354TWdnjYAxOTptTX8+fz3fUun931r02mci48/AQRh294QhHR8KMxDa99Loq6zOMhP9rU91KBwvm301N+m5XrfJC0Vulg20zj5ow3X+KE+YzTECzlzVm8bb7GzYw357DEuABsBlrIuA/qCahCq5e0jtqxBoUH+lzrY1CvQF0Walnm1zPt6HucNBecYZxPtBtVVsnfOdPbaL6U1aJAoCxW+XMLrjc38mHTmol0x5ujNzKF9RAzaVMNXlNFrSdV/AXvl+o03e2g2j8g2es4wbx/7tVor57HW5DzeMvCEW4dwq/QLWHhFIAQeq6nI3M67sw7YBJY+ydosd8wiaz1yKP1bjq1pp27br/wfMuB8MwIQtjzie3DN4MIv/P5ahGghRElGJt7Qms+6nZoH1BOQUW96orqQ8MOm6wrC9YmSgV2UKqzg1KxHb9UcdcWC+/YUvUdlJrgohjN8asb4hjrrrjW1JweGHvkwtQo1zf1y7WmprnW1DkXpga6MPXR8g1tPKVm+iQvgDS8CUh+JumRHJGckc0JyUuSxyRDkmOymSDt/oiYh+/TO6WTBPpwN5/Rv4elg4TN4EgczqWqshIOxvmmWuSqm8MFxNayvF5v1G22hCOV7ic4OgFbkaUBlVI+4glrgMXdSqq8dwnB/Oauz34h1Y3l/SkrSwPQN64B6XfRgGoFJ//BPFNKPhlIldX3BrDIarid1/fFo+kpX9VmAnVmppg9ZFa0av+bdwP2zGgkAf4z+H+7/93bHSvvfbSj5KOlQy+tVL2MB7iH9ID2krvFHX4D7jAZA7pkBrSHz4DalAbIZTWADrEBe4Pb6NWmN2ZlMxxDOSTHUIc8T9LBCw==",
+            }
+        ],
+    },
     "battleship": {
         "name": "Battleship",
         "cat": "var",
