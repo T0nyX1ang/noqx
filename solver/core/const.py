@@ -13,6 +13,16 @@ CATEGORIES: Dict[str, str] = {
 
 
 PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
+    "akari": {
+        "name": "Akari (Light Up)",
+        "cat": "var",
+        "aliases": ["akari"],
+        "examples": [
+            {
+                "data": "m=edit&p=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",
+            }
+        ],
+    },
     "aqre": {
         "name": "Aqre",
         "cat": "shade",
@@ -38,7 +48,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "balance": {"name": "Balance Loop", "cat": "loop", "aliases": ["balanceloop"], "examples": []},
-    "battleship": {"name": "Battleship", "cat": "var", "examples": []},
+    "battleship": {
+        "name": "Battleship",
+        "cat": "var",
+        "examples": [
+            {
+                "data": "m=edit&p=7VVBb9s6DL7nVxQ662DFjuP41va1u3R569qhCAyjUFK3MWpHneKsg4P895K0W8uydthhWwcMjgnmI0V+okR6+3UndcaFwJ8fcY+DxoNJSK8QY3q99rnOqyKLj/jxrlorDQrn/5+f83tZbLNRImi1l4729SyuL3n9IU6YYJyN4RUs5fVlvK8/xvWc11dgYlwAdtE4jUE969QbsqN22oDCA33e6qAuQF3KCvhs1/nT7UmDfoqT+pozzHVCEVBlpfqWsZYL/l+pcpkj0AVoLdvdnXrctb4iPfD6uKG8cFD2O8qoNpRRc1DGnfwGyrP0cIDyfwbSt3GC/L90atSpV/Ee5DzeM9/HpT5wac6I+cHr9l+BCQJwhm9AaANTBDwDiBAIDGBmLQk8K0sgLB7B2F5CWYygoe0xJQ8j6Iw8DGLCIxdjjRiTjxFWNNsxwoiJnUmEA5+IfN42AOUVVOQFFDnEioV8ePoswvI7LcLDmvlOE62aOk0zrKPDBEzOic+Y5DXcA177JP8j6ZGckLwgnzOSNyRPSQYkQ/KZ4k36qbtmluQX0UmCiAZY/4FB9rdh6Shh8125zPTRXOlSFtDtV2v5lDEYr2yritvtTt/LFQwJmr4wBwDb0IoeVCj1VOSbvl/+sFE6c5oQzO4eXP5Lpe+s6M+yKHpA8z3pQatcr4o+VGmYZcZ/qbV67iGlrNY9wJh7vUjZpuoTqGSfonyUVray2/NhxL4zeqHT4Lv379v1h79deBTee5sq740O3WKlnSMAYMcUANTZ7S0+aHjAB62NCYfdDaijwQG1exygYZsDOOh0wH7Q7BjV7ndkZbc8php0PaYyGz9JRy8=",
+            }
+        ],
+    },
     "binairo": {
         "name": "Binairo",
         "cat": "shade",
@@ -196,7 +214,6 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "lightup": {"name": "Akari (Light Up)", "cat": "var", "aliases": ["akari"], "examples": []},
     "lits": {
         "name": "LITS",
         "cat": "shade",
