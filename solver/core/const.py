@@ -226,7 +226,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "magnets": {"name": "Magnets", "cat": "var", "examples": []},
+    "magnets": {
+        "name": "Magnets",
+        "cat": "var",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZNb6RGEL3Pr1hx7gPdzfdt49i5OJNs1tFqhUYWtll7ZBgcYLIRlv/7viqqPQNDFEVRNnuIGJrHm+qq6lddQPfbvmhLpX362UThiiPQCZ8mifj05bja9lWZvVFv9/1D0wIo9dPFhfpUVF25ymkmjs3qeUiz4Z0afshyT3vKMzi1t1HDu+x5+DEb1mp4j7882KrhcjQygOcH+IH/J3Q2ktoHXgsG/Ah4u21vq/L6cmR+zvLhSnkU5zueTdCrm99LT/Kg+9umvtkSURf3u7LvhO72d83jXgz15kUNbzlXsV9I2B4SJjgmTGghYVrHv5lwunl5geq/IOXrLKfsfz3A5ADfZ88Y19mzZw1NRWH0WBrPBkTYIyJyajgimU0JeMoREVoiggMRz6MkekZo35/F1X46C6wNRz5mbDyfFc6z0xF7njDzdHTES3jNGOJolugjjxc8Gh6voKAaLI/f8+jzGPJ4yTbnENYEvjIBlmmw7wMNjKCEDdrJYeLDcMRhqEyEJROOYPOKU7QeBCWcWGVSLJlwipZ8xTEwFs44UVaP/q3WRxh9rcd8mDdjXFyVtWMsxgb1ZhwBj/5xVVbWAn/wM+aD66sNxTWp5JymylJBycanuJDX2QvmtSQOB8CiQwIdnJ8Y+jieMO0jxoYeR2KPPCUWaxgKH0KfWPgYtXCxiA8l5xC6xa5GyMfxAfwHojnxtMMJW6qp4AA502ZjP1i75Ib1QZORxxW6CU/YOJ2hjxV94NOKT8ZWdLaoEXUn+6S6yFzCWmqksXYtNdKokZvrU92lvqS/73jSX+wJ+xLXp5o6PZGnLzon0CeRNQI7P2RjEqlRQrUWraguscNUX9EzRl2cPeFYYpFNLHrG0DOWWkfQ2fEh9j+1sNM5dH0Bm0jyibA3qKm5LrQHxAYa4l54rMXZW6qpqzXsA8knwN5gHk38gVv5jMeAx4hbPKZH6N96yP7zp8lfppNjFfLalSP+uvebVe6d392Xb9ZNWxcVXk7rfX1Ttof7s6Z+arptX3r4MPC6prru9u2n4hYvOf5uwKsM3I5nTaiqaZ6q7W5qt73fNW25+BeRJVJZsL9p2ruZ989FVU2I8UtoQo2v6wnVt3gXH90Xbdt8njB10T9MiJuix1dT97B9mnoqd/00gb6Yplg8FrNo9WHNLyvvD4/P3NIX2/9fXf/NVxdVwP/WHgvfWjq8eZt2sfNBLzQ/2MUmF/6kz8GfdDQFPG1qsAt9DXbe2qBOuxvkSYOD+5MeJ6/zNqes5p1OoU6anUId93u+WX0B",
+            },
+        ],
+    },
     "masyu": {"name": "Masyu", "cat": "loop", "examples": []},
     "mines": {
         "name": "Minesweeper",
@@ -388,7 +396,23 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
         "parameters": {"stars": {"name": "Stars", "type": "number", "default": 2}},
     },
-    "statuepark": {"name": "Statue Park", "cat": "var", "examples": []},
+    "statuepark": {
+        "name": "Statue Park",
+        "cat": "var",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZZPb5tMEIfv/hTVnvewy/LHcEvzJr0kaVOniiKEIuyQGAV7U8DNKyx/98wMVA7e6aVV1RwizGj4MZ55jGd2ab5v8rqQ2sOPmUolNRx+7NNpooBONRxXZVsVyQd5tGmXtgZHys+np/I+r5pikg5R2WTbxUl3KbtPSSq0kMKDU4tMdpfJtjtPxMKu5qWQ3QzuCzmFG2d9pAfuyd69pvvoHfeiVuBfDD64N+AuynpRFbdnvfIlSbsrKbDYR/o2umJlfxRigMHrHgCEefW8HLRmc2cfN0OUznayOyLabvYTFPMPoGYPim4Pih4Divx/Dpq38OibZfnE4cbZbgdP/SsA3yYpsn/bu9O9O0u2YC/IarI3yVaYANJoKNYDnhOyMBGrTkH1HDXmYn3NqoZVfS6vz5IFmNeJDVnekOWNWLKIJYtYsoitFrPPQSu2nFZsPa3Yglqxz0IrFkQrnkRjtJvb8ICGBzQ8IN9Gmu8jzbeM5ntGB0jilgx5wJAH5DtEhzxJpNgkfJPoCJO40TH/TGKeJGabVfNd5fFd5fFd5XHtA/N/SquAR/YKFgnZGbL/kVVkA7JnFHNC9prsMVmfbEgxES4zv70Q/SWc1Pi0qblH8K7jkU1SMdvU9/migM3l2K6ebFO2hYCNXDS2um2Gewnt87D1gLberOZFPZIqa5+qcj2OKx/Wti7YWygWdw9c/NzWdwfZn/OqGgn9m8tI6nt7JLU1bJ+vrvO6ts8jZZW3y5HwaqsdZSrW7RigzceI+WN+UG21/827ifhf0JkafMN6f0v6N29J+A+ot7ZEvTUcal5bs5MPMjP8oLJDPujOnIPuTDQWdIcaVGauQT0cbZDc6QbRGXDQfjHjmPVwzJHqcNKxlDPsWOr1vKfZ5AU=",
+                "config": {"shapeset": "pento"},
+            }
+        ],
+        "parameters": {
+            "shapeset": {
+                "name": "Shape Set",
+                "type": "select",
+                "default": {"tetro": "Tetrominoes", "pento": "Pentominoes", "double_tetro": "Double Tetrominoes"},
+            }
+        },
+    },
     "stostone": {
         "name": "Stostone",
         "cat": "shade",
@@ -460,7 +484,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "tents": {"name": "Tents", "cat": "var", "examples": []},
+    "tents": {
+        "name": "Tents",
+        "cat": "var",
+        "examples": [
+            {
+                "data": "m=edit&p=7VbfT9swEH7vX4H87IfYaX40b4zBXlgZgwmhqKrcEmhFWnf5MaZU/d+5u3RKHRtNTALtATk53X0+++7s+HPKn7UqMi4CfPyYe1xAC72YXhGDDe+fdr2s8iw54sd1tdAFKJxfnJ3xe5WX2SDFkdAmg20zSppL3nxJUiYYZxJewSa8uUy2zdekGfPmCroY+PLmvHWSoJ526g31o3bSgsIDfbzXQb0FtcrWVdma35K0ueYMg3yioaiylf6VsX0SaM/1arZEYD+SwLK+04/13k1Mdrw5fjlNv0sT1TZN1BxpYvZvlOZostvBMn+HRKdJijn/6NS4U6+SLchxsmVDAUMl7A/tBBtKMP3OHJpmCCZuZmsGntEb4FQHpjlVMDICiQCnPrBH6N7ZMo4OhkOyglK+hZRDjAN4t34s9G0I45lQZA+MAwsaxRYkPKy0jzn8hMNPYmF9DIvvYT4W3MOGDowWsoc5lkQ41kREjrhxu6kGNnJhdlzp2bVJ344rHbVJ+vJ6WGSvn3TsmowccR21ycjeXhnZtcnI3ksZOeqN+/nBJ3lGH6YkeQ3Hizc+yc8kPZIByXPyOSV5Q/KE5JBkSD4RHtBXHeHDs/FG6aRhy/+uFn30/EvPZJCycb2aZcXRWBcrlQOdXy3UJmNwT7JS59OyLu7VHC4AukaB6AFb0wgDyrXe5Mu16bd8WOsic3YhmN09uPxnurjrzf6k8twA2h8DA5ovi3luQlUB99SBrYpCPxnISlULA5ipCn4iysVyY84EJ81MoFJmiupR9aKtupp3A/ab0Ut3yfDjJ+SdfkJwyb3/jcf+kk7a3PLQ580FZ5t6qqZzDacS1uyV+LtXRR+9LpyMAbCDNAB1ksMet/gBcIsJMKBNBoA6+ADQPiUAZLMCgBYxAPYCN+CsfXrArPoMgaEsksBQhzyRTgbP",
+            }
+        ],
+    },
     "tapaloop": {
         "name": "Tapa-Like Loop",
         "cat": "loop",
