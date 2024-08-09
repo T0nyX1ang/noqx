@@ -74,6 +74,7 @@ class Puzzle:
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.helper_x: Set[Tuple[int, int, Direction]] = set()
+        self.line: Set[Tuple[int, int, Direction]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
         self.arrows: List[List[Tuple[int, int]]] = []
         self.thermo: List[List[Tuple[int, int]]] = []
@@ -142,6 +143,8 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
         print("[Puzzle] Edge unpacked.")
 
+        self.line = set()  # TODO implement line unpacking
+
         self.sudoku = {}
         for index, num_data in self.board["sudoku"].items():
             coord, category = self.index_to_coord(int(index) // 4)
@@ -194,6 +197,7 @@ class Solution:
         self.text: Dict[Tuple[int, int], Union[int, str]] = {}
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
+        self.line: Set[Tuple[int, int, str]] = set()
 
     def __str__(self):
         """Return the solution as a string."""
@@ -234,6 +238,21 @@ class Solution:
             if not self.puzzle.board["edge"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.board["edge"][f"{index_1},{index_2}"] = 3
         print("[Solution] Edge packed.")
+
+        for r, c, direction in self.line:
+            index_1 = self.coord_to_index((r, c), category=0)
+            if direction == "r":
+                index_2 = self.coord_to_index((r, c), category=3)
+            elif direction == "d":
+                index_2 = self.coord_to_index((r, c), category=2)
+            elif direction == "l":
+                index_2 = self.coord_to_index((r, c - 1), category=3)
+            elif direction == "u":
+                index_2 = self.coord_to_index((r - 1, c), category=2)
+            else:
+                raise AssertionError("Unsupported line direction.")
+            self.board["line"][f"{index_1},{index_2}"] = 3
+        print("[Solution] Line packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
