@@ -22,8 +22,11 @@ input {
   text-align: center;
 }
 
-select,
-button {
+#readme,
+#type,
+#example,
+#solve,
+#solver_reset {
   display: block;
   font-size: 14px;
   margin: 10px auto;
@@ -37,7 +40,7 @@ button {
   border-radius: 4px;
 }
 
-fieldset {
+#parameter_box {
   display: none;
   font-size: 14px;
   margin-bottom: 10px;
@@ -48,4 +51,9 @@ fieldset {
   text-decoration: none;
   border: 2px solid #000;
   border-radius: 4px;
+}
+
+#param_shapeset {
+  width: 40px;
+  text-align: center;
 }

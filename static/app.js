@@ -13,12 +13,24 @@ function make_param(id, type, name, value) {
   paramLabel.for = `param_${name}`;
   paramLabel.textContent = `${name} `;
 
-  let paramInput = document.createElement("input");
-  paramInput.type = type;
-  paramInput.id = `param_${id}`;
+  let paramInput = null;
+  if (type !== "select") {
+    paramInput = document.createElement("input");
+    paramInput.type = type;
+    paramInput.id = `param_${id}`;
 
-  if (type === "checkbox") paramInput.checked = value;
-  else paramInput.value = value;
+    if (type === "checkbox") paramInput.checked = value;
+    else paramInput.value = value;
+  } else {
+    paramInput = document.createElement("select");
+    paramInput.id = `param_${id}`;
+    for (const [k, v] of Object.entries(value)) {
+      let option = document.createElement("option");
+      option.value = k;
+      option.text = v;
+      paramInput.appendChild(option);
+    }
+  }
 
   paramDiv.appendChild(paramLabel);
   paramDiv.appendChild(paramInput);
