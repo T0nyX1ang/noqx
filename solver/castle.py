@@ -42,12 +42,15 @@ def solve(puzzle: Puzzle) -> List[str]:
 
     for (r, c), color_code in puzzle.surface.items():
         solver.add_program_line(f"not castle({r}, {c}).")
-        if color_code == 8:
+        if color_code == 4:
             solver.add_program_line(f"black({r}, {c}).")
-        elif color_code in [1, 3, 4]:  # shaded color (DG, GR, LG)
+        elif color_code in [1, 3, 8]:  # shaded color (DG, GR, LG)
             solver.add_program_line(f"gray({r}, {c}).")
 
     for (r, c), clue in puzzle.text.items():
+        if isinstance(clue, str) and len(clue) == 0:
+            continue
+
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
         num, d = clue.split("_")
         assert num.isdigit() and d.isdigit(), "Invalid arrow or number clue."
