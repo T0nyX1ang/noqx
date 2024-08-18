@@ -94,7 +94,19 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "castle": {"name": "Castle Wall", "cat": "loop", "aliases": ["castlewall"], "examples": []},
+    "castle": {
+        "name": "Castle Wall",
+        "cat": "loop",
+        "aliases": ["castlewall"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VTfT9swEH7vX4H87Ic4P0rxGzDYS9eNwYRQFEVpMRCR1MxNBkrV/527s0uapJOmPTAepijn8+fL3Wc7361+1plRfAJPGHGPC3hCL6LX947o9dxzlVeFkgf8uK4etAGH86/n5/wuK1ZqFLuoZLRujmRzwZvPMmaCcebDK1jCmwu5br7IZsabS1hiPARsaoN8cM9a95rW0Tu1oPDAn4EPyQS4N+Bmxujn9E7XRt3eq/TEfvBNxs0VZ1jvhLKgy0r9SzHHB+cLXc5zBOZZBZtaPeRPbmVV3+rH2sWKZMOb4x5trO9oBy1tdC1t9PbQxt0i7UVuFoVKp39Ft8iX6mUf06Nks4GT/w5cUxkj7R+tO2ndS7lm/pjJkLMgoCH0mAw4G8MMh8gOEALD4aEdJjQIz8YIAZ/Al0LAcghJZy4pMEkD2CneORDEAjGLUqC3hbAYRuHZbCGK6kDIJWYB5tpCE/eh10LCI8xP8Z94w1y2XQzpIg+8hDcMqCMG+SwG2xByDfaG7DlZn+wVHB1vArKfyHpkI7JTijkje032lGxIdkwxh3j4f3g99jzfgU7sj0nu7RO97zwZxeyyNnfZQsEvPYVf+2CmTZkVMJvV5VyZ7RyaClvpIl25aEk9ByQA2JIiO1Ch9RMqhcnK1A7L75faqHalF44tpAPa+Lk2t73kz1lRdADbQjuQ1XgHqgwIeGdO3auDlFn10AF2elMnk1pWXQJV1qWYPWa9amW7582IvTB64wCb/f+G/e8aNt6C+Gh94aPRoR9Ym73iB3iP/gHdK3SHD7QO+EDVWHAobED3aBvQvrwBGiocwIHIAfuNzjFrX+rIqq92LDUQPJba1XycjF4B"
+            },
+            {
+                "data": "m=edit&p=7VXLbts6EN37KwKuuTBNyQ/tkjTpxnWbGxdBIBiG7DCJEdnMpaUmkOF/zzxUWKRcoOiizSKQNRwfHQ4Phxxy+3+ZOSNVD39RLLtSwRMPY3r1gN9u/UxXRW6SE3laFo/WgSPl18tLeZ/lW9NJa9ass6tGSXUlq89JKpSQogevEjNZXSW76ktSTWR1DZ+EjAAbM6kH7sXBvaHv6J0zqLrgT8CHYArcW3Az5+zL/N6Wztw9mPkZd/iWpNVUChzvjKKgK9b2hxG1Hvy/tOvFCoFFVsCkto+r5/rLtryzT2XNVbO9rE4D2Th+LVsfZKPLstE7Ihtni7KXK7fMzXz8R3Lz1ca8HlM6mu33kPn/QOs8SVH294M7PLjXyU7oSCSRFDrmps/NgJshNyNqoi43ipseN5objhJxlJiZfQ42ZOaIgynFVKWZpCJmqT7T1KDmjZjXU8gDsRMUC/FhhnMNGcS9BBNHxZBSDwL1IQuChiyYVSp0E8IZBh1xtiELhIYQZCHsCPJDiNR7IjBTCOGWqCHMWiq6TQgzGLAwmxi+AVFmUVgTwyyHPMx4EI6yH/bFlQgxXJWgL62QNwaslkp2YG/JXpLtkZ3CzpOVJvuJbJdsTHZMnAuyN2TPyUZk+8QZ4N79zd3N2+YvyEl1RKdl+4k/cHxmnVRcl+4+Wxo4scZwcp1MrFtnOfyblOuFcT//w50htjafb2t2QlcKnHCAbYjpQbm1z3gQiqRwZY2tHjbWmcOXgI43hAcyf2HdXRD8JctzD+A70oP4CPegwsH53PhPl5OHrLPi0QMaV48XyWwKX0CR+RKzpywYbX2Y874jXgW9qYb7WH/cx//uPsZVUO/t3HpvcmgDW3e0+AE+Uv+AHi30Gm/VOuCtqsYB24UN6JHaBjQsb4DaFQ5gq8gB+0WdY9Sw1FFVWO04VKvgcahmzaezzhs="
+            },
+        ],
+    },
     "cave": {
         "name": "Cave (Corral)",
         "cat": "shade",
