@@ -48,6 +48,10 @@ def solve(puzzle: Puzzle) -> List[str]:
             solver.add_program_line(f"gray({r}, {c}).")
 
     for (r, c), clue in puzzle.text.items():
+        if (r, c) not in puzzle.surface:
+            solver.add_program_line(f"white({r}, {c}).")
+            solver.add_program_line(f"not castle({r}, {c}).")
+
         if isinstance(clue, str) and len(clue) == 0:
             continue
 
@@ -55,10 +59,6 @@ def solve(puzzle: Puzzle) -> List[str]:
         num, d = clue.split("_")
         assert num.isdigit() and d.isdigit(), "Invalid arrow or number clue."
         solver.add_program_line(wall_length(r, c, int(d), int(num)))
-
-        if (r, c) not in puzzle.surface:
-            solver.add_program_line(f"white({r}, {c}).")
-            solver.add_program_line(f"not castle({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
