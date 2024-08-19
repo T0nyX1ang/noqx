@@ -100,10 +100,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "aliases": ["castlewall"],
         "examples": [
             {
-                "data": "m=edit&p=7Zbfb9s2EMff/VcUfOaDSOr3W9Yle/GydclQFIJhKInaGJWjTrbXQkH+937veLJ+2MMGFBg6YLBFnT4k775H8STt/jiUbaVNQH+XapzxC03Kh01jPgL53W72dZW/0heH/WPTwtD6l6sr/b6sd9WikFGrxXOX5d0b3f2UF8oorSwOo1a6e5M/dz/n3Y3ubtCldAi29IMszMvBfMv9ZL320ASwr2HDmYH5Dub9pr2vq/XSk1/zorvViuL8wLPJVNvmz0qJDrq+b7Z3GwJ35R7J7B43n6Rnd3hoPh5krFm96O7Cy12ekesGuWR6uWTN5Uo+3yy33jxVX84pzVYvL1jx36B1nRck+/fBTAfzJn9WLla50ypMVR5qlVi+ShI+pRnDLOSTMRgDaqzzZxd47iJ/jjDcwe21uKUMDN1q6CP/0LaGukRQjOmE6O71CJ5miBThDq/dCEEdodEoUioTe/ekmkYFAzKBObJ+pglY6SQmZzqLwFnPhPAKzMLyasxZyIo5++NcWq1hhbBsJn9G+47bK24tt7e4Wbpz3P7IbcBtxO2Sx1xiya1JtHXI0MIjVarD0rENThmR7czAbaZtiKyYB7CxYj2nzMgO3cBDzI2QHdsWNlau56H4jKIRx5OCbjLb0BCLNuK0ImTHiNvzCLFi4VEIWzQTj0RDTH56jhxpe7ANzYnkQpxWl+wEOnueIFYqfhJoTiUX4oloSBH3yJELbSy2oTmTXIgnkmOKuD1PESvrOTRnkgvxVDRk5KfniXa0I9lOYUsu4LhmG/0DzzLtjPfjAjyajeRCPPAa0H/kLghh934i2D4X5oHPEf0DN4hle25h+1yYG68B/SMeayf7xGGPOdl7zI3PEf0Dt4gl+8RhjznZe8ytaMC+OvIQc+W+O+wxJ3uPeSg+sU88RxG85VJ4zW3IbcwlktDT7h8+D/3j69ur8W/lFFgZeq9Of9F/j60Whbo5tO/L+wrvoiXeSa+um3Zb1ri6fPgwuro+bO+qtr/GN4HaNfV6J3Nz/mTAmwzsiUdOUN00n+iFN4GbD09NW53tIlgh/Jnxd037MPP+uazrCfAfQRPk39UTtG/xIh5dl23bfJ6Qbbl/nIDRN8bEU/W0nwrYl1OJ5cdyFm075PyyUF8UH4Wjj7X/P7j+/Q8uWv3ge3vMfG9yeOM27dmqBz5T+KBnC1z4SY2Dn1QzBTwtaNAzNQ06L2ug08oGPClusL+ob/I6L3FSNa9yCnVS6BRqXOvFavEV",
-            },
-            {
-                "data": "m=edit&p=7ZZNb9tGEIbv/hXBnvfA/SBF8pamdi+q29QugoAQBNpmEiGSmVJSE8jwf887s7P8kFSgaIAih0ASNXx2dubdWY6027/2dddo4+jtcp1og1fqLH+M9/xJ5HW72q2b8oV+ud99aDsYWv92daXf1ettc1GJ1+Li6VCUh9f68EtZKaO0svgYtdCH1+XT4dfycKMPNxhS2oPNg5OFeTmYb3icrFcBmgT2NWwEMzDfwrxfdffrZjkP5PeyOtxqRXl+4tlkqk37d6NEB93ft5u7FYG7eofFbD+sPsnIdv/QftyLr1k868PLIHce5VIWkesGuWQGuWQdy5X1fLPc9eqx+XJOabF4fkbF/4DWZVmR7D8HMx/Mm/JJuUyVXitv+WsWvvKEv4owZlwevtOATRG8bBK4NcHPevlOaRzxryV+pfzSKT2jbYdWylWp2RhRXlpwfz/rZxlBpKlSbjyL9B3FNqSJN6YHxRGwKQE7jm2cCcFpm3rGkWZLPF19dKrAWKdJWWhGTv3EzBFLl8mIzVhFOkkQVmQmQqi0xDA35uAyk7gxMyx4mMh7ICvonWg/aKWjFfDeTBJgn0z5hOtbvl7x1fL1Fo+JPji+/szXhK8pX+fsc0l7nMy0s16VVsPOYaPEbIOTerKtHzj9sDisnm1wKn/kRuK4ZOAePBN//Pa4bMS9+Gfw7zk0ZJLLF7BRiMg9doL904GnBrboTC1s8SFOBWN/ihnnYl15zAueSy7iMU4OnZHPoIEe1mjTzrMP4hfRH/pz0V8gTuRFpr3BEyXcS33ABjuxsIM2n4DbEJ95EuZifMTJDnq8SWDjKY7ciI9F3sit0Z7agW3EdJKLuA31wfiIw/Zh7d4iJj2IkVvx8enAndc+DWv3DlxqztxJnBQ6M9FDdvRHzb3UHPNgS3zsy2CjJlJznyGm1Jl5JjVE/XuOPfKyX8wLyUs8xqF9iTxH3kJy5U6nifgQz6X+RTHiM9gxbw5b1giOe7Yx3vPUwN8F/9TAX2rC3Ig/atVzCw0+5ErRd6kP62IufYpx4WjiN9zKr/jqqaHpYaTF4eeFHsBoo+ih2NGmjTKYlPEvwoz+Vv7lH0/4e/j2H59T9UdyKpfxAebcK/0x8l9GFheVutl37+r7BsePOY4hL67bblOvcXf58H50d73f3DVdvMcxUG3b9XIrc0s+JeLwAvbInhO0bttPdMaZwNX7x7Zrzg4RbJD+jP9d2z0cRf9cr9cTEM69ExSOZxO063D2Gt3XXdd+npBNvfswAaNj5SRS87ibCtjVU4n1x/oo22ZY8/OF+qL4U+GkjnPzjzP2/37Gpuon39sP3vcmhx/ctjvb9cBnGh/0bIMLP+lx8JNupoSnDQ16pqdBj9sa6LSzAU+aG+wf+puiHrc4qTruckp10uiUatzr1eLiKw==",
+                "data": "m=edit&p=7ZdNb9tGE8fv/hQBz3vgvvHtlqZOL66fps6DICAEQ3aURIhkppTUBDL83fOf2RmTlBS0gIEih0AQ+d/fDndnZ2dW1Oav3bxfGFsYa42vTG4sPkUoTIhgeajTJZfP6+V2tWiemee77ceuhzDmfy9fmvfz1WZx1orV7Ox+Xzf7V2b/W9NmNjOZw9dmM7N/1dzvf2/2V2Z/ha7MBLCLZOQgzwf5hvtJvUjQ5tCXoiHfQt4u+9vV4voikT+adv/aZDTPL/w0yWzd/b3IxA9q33brmyWBm/kWi9l8XH6Wns3uXfdpJ7Z29mD2z5O7lyfc9YO7JJO7pE64S6t4srur5d3i6ylP69nDAyL+J3y9blpy+/+DrAZ51dxnocoab7IiZE3AreZWWfKt9nyzeWpaa+UOY74Ld3gKD1tfpHbAndrRyV3sZVhbpclshbnpXueJ63x15LuzaTznpO2TnfMYl+5B7pHssJ5LWU+buWsKOKUZYkNrI+QzUyqCx4LUqsQkbebHD5K/tA3arjAPmSB5FZHLiPkYcbjIbDQ4h47s8jFjvw7sDqa0jo3ysVscb1mjLohjf+A+7wMN9mhEG0IPwouByQTjFaSFx8lgtGmTwWj3JoC2ceJ7Cs7UJ9rbsZHL2Uk7NuKNb7MwYZQENNgogs6JC4+AMmQKeMUjQDlDQ4+Hofxps3KYDrlkm3tc3/L1JV8dX1+jdMze8/VXvuZ8jXy9YJtz5KF3pfEBcXQGuoKGr6zByW/SgWxUe+MLBIx1gEa8lQfRBdkox5iFPltDIymUB9EF2YiOGLOUZ2OERjyVR9El2SgvoBEY1vCTckJ5FF2SjegCY1bybAFOxaK8EF2RjejSGV9jM1hjXZQsykvRNdmIrvALRLnCuoSWecHRZo3+gde5CRbpwNpCowKFo53sLdko99A6b4CWWIGjLfZkoxxzUZ6yhj9UucLRFnuyUd/wrEvjhxzjU2Erz0U7slFeQaf9DXkNnfaReS4aefXIbTTBp/jzvHQgKBc/0T9wBx3E3sGeDgvlTnQgG30WMYwSN++g094xpyojHclGOdYSZb0e66VzRrkXHclGNXyQfAvItyB5xVzyDf0DRy2ESsYvMD6dT8qlRtA/4hhT8wR1Eej4Ui51hP4RR8wriW2JPKHTTXkpuoJWjrwNks8B+Rwkb5lLPqN/xOGz5lWJONPBqFxqEP0DR+3EXHUBLbECR5s1+gdeQ1sdB/aaA+BoJ3vkhvKInIySezwOnbfKZV70j3gJneIZkZNRcpV5Lhpn3cBr6BTPiLqLdFQrlzpF/8Dx+hl9yrdoHXSKLXMrGrn3yB10EHsHezrolTvRgWz0WaxRzr3oER/6EVAuNYJ+4TjU3/DR/oKvga8FH/klvUv9y7et9I7y9F+Xf3SnDY7f27//iT/7n9I/O2uzq13/fn67wBv4Bd7En112/Xq+Quv83YdR63K3vln02sY/oWzTra438mzDf5Tw/g52x5YTtOq6z/SaP4HLD3ddvzjZRXCB6U/Y33T9u4PRv8xXqwlIf/4mKP1DmaBtj78fo/a877svE7Kebz9OwOif1WSkxd126sB2PnVx/ml+MNt6WPPDWfY142/rsSnh59/M//5vJkU//9GOvx/NHU7crj9Z9cAnCh/0ZIELP6px8KNqpgmPCxr0RE2DHpY10HFlAx4VN9h36ptGPSxx8uqwymmqo0Knqca13s7OvgE=",
             },
         ],
     },
@@ -131,7 +128,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "country": {"name": "Country Road", "cat": "loop", "aliases": ["countryroad"], "examples": []},
+    "country": {
+        "name": "Country Road",
+        "cat": "loop",
+        "aliases": ["countryroad"],
+        "examples": [
+            {
+                "data": "m=edit&p=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",
+            }
+        ],
+    },
     "doppelblock": {
         "name": "Doppelblock",
         "cat": "num",
@@ -256,7 +262,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "masyu": {"name": "Masyu", "cat": "loop", "examples": []},
+    "masyu": {
+        "name": "Masyu",
+        "cat": "loop",
+        "aliases": ["mashu"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VddT+M6EH3vr0B+9kNs5/uNy8K+dLmXhRVCUYXSEmhF2rBpekGp+t8ZTyq1qQ/Sar/EA6oymp5Mx2c8PfFk+X2V14XUSqpAmlh6kjwZm1CGXiy1ifjytp+rWVMW6ZE8XjXTqiZHyn/PzuR9Xi6LQbaNGg3WbZK2F7L9nGZCC8mXEiPZXqTr9kva3sj2km4JqQgbkqeE1OSe7txrvm+9kw5UHvnnW5/cG3Ins3pSFrfDDvkvzdorKew6//CvrSvm1f+F6H7G3yfVfDyzwDhvqJjldPa0vbNc3VWPq22sGm1ke9zRHQK6ZkfXuh1d6wG6topfplvOFsULYpqMNhva8a/E9TbNLO1vOzfeuZfpmuw5W8X2Jl2LUFEaRevscxOhgWhEqHbQGMVGGsVGNoMTG0MOsc3goj5EYV7lwTKUZxk73JSXwGhlYTfaeBgOYBKDk/iwchVY3m50EOJo2AAV4HJC2BgV2XLc6AgnSXDxCeadwJ5p3B2N26AVLF5ru4POktq8AUOCGjeNHnwQ9mHxOsBV4qZp3B0d4misMc1Nc5lglWncS411pllobu7YEgQwXvKNzicw2ijbBie30bB4YyBBY+AOGgM1b1iAAIZVGtalmzuEfx/DG+sm4R10o7GkTIJz4x30Pbik78ElfQXL8RXYbzotzvjM0Gyv6EiRrWH7ia3HNmA75JhTttdsT9j6bEOOieyh9NPH1h+ikwWax58f+QQfkR+RvydyNMjEkMa7o/OqnuclDXmX0/ypEDRIi2VV3i5X9X0+obGQ52wa/whbrObjou5BZVU92SmxB84eFlVdwFsWLO4eUPy4qu8Osj/nZdkDujeHHtQ9MXpQU9P0uvc9r+vquYfM82baA/YG816mYtH0CTR5n2L+mB+sNt/VvBmIF8FXZmjT/Y+3lL//lmJ333tvD/33Rof/uFUNVU8wED6hUOBb3NE44Y6a7YKuoAkFmib0UNYEucom0BE3YW/o22Y9lLhldahyu5QjdLvUvtaz0eAV",
+            }
+        ],
+    },
     "mines": {
         "name": "Minesweeper",
         "cat": "var",
@@ -272,7 +287,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
         "parameters": {"mine_count": {"name": "Mines", "type": "number", "default": ""}},
     },
-    "moonsun": {"name": "Moon-or-Sun", "cat": "loop", "examples": []},
+    "moonsun": {
+        "name": "Moon-or-Sun",
+        "cat": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7VhNb9tGEL37VwQ874H7SVK3NLV7cd2mThEYgmDQthILkUSXkppAhv973syOIMmcoIAPhQ+BpN2n4ejtfO6KXP2zafupsZHevjalsXilsuaPrfEdn93rw2w9n47emLeb9X3XAxjzx9mZ+dTOV9OTsWhNTh63zWj73mx/G40LVxj+2GJitu9Hj9vfR9srs73EpcJYyM6BbGEc4OkefuTrhN5loS2BLwQDXgGuNsvrRdcts+TP0Xj7wRS0zi/8a4LFovt3WuSf8ffbbnEzI8FNu4Yzq/vZg1xZbe66LxvRtZMns32bzT1XzPV7cwlmcwkp5pIXZO7trL+dT6/PX2TufLacftMsbSZPT4j4X7D1ejQms//ew3oPL0ePGC94tDxejR6L4EBjifIglEUIkLqBNGrSSAxDKTEMeGOj6aZS001W1fWqblKltcpANgx0a9XeWvW4Vnkb8mIorTTeRmdQLbOlmiJrKT6KWCdxapasUx20To2ndeSMok3eDLW9GhDriVsRqyGxen3aoJaBjeSOIlaTYLkah2IuPEWsL5nUVrGVHiouqCFJrcek0Z1vdEsaPZeNnksuQUWsdqgr1Vy6UuV2XJpDbaumwXFpDsVe7Uin14nzai5d0O3Wy8dFNfNO3+EcF9tQzLuZIta5KzUNrtYjyDvPUFuvE8d1MiRp9MBynSjaarw9F8SAxJeq3V6vE1+q7vhSrUFvFbtxip3xWeZ4/ICjzmw9j7/yWPIYeTxnnVOcer72JtC+ilV8nYCRS8JNCYzlGUPHZh3omuDgG+MIDFsYN8DwgrCFjhcdZ02g2mMcgJEKxjUw2oCwh04UnYB1aTtijHWTrBtgW8q2hYC16EgjnLAW1Qhj2EPHF2Pw18JfWxMpTYwDsNhQV8BICDCum0gnBmNvIvUiY+jQIUDYJhN9tiE66FOrMXYmhmwDdIFFx0cT6fhn3ABnm6FrIjUHY+jQzkk4wrYq2wZd4Gx/hI9RfITMRCpQwvAriV+QmWTzupABZ9uS9Sb57EuyFXD+LWQmUZczxm+phwlHcFaZEzJgiSflgv4MMaY87nKBmIfMyTna5TRUwJKjQLne5RS52+U6Uq4ld1g30PbCGDmNkqMIHokb5n1tRKoB4UngoV2FMXikZjiPpcS2pLxLXlC3+7wjX6XEmXJNncgY8Zf6x4zakDhb8EicMQMf1AZt64zBY4XHgmdXVxY8TniofqSPMO/rjfIuPmLe1wl8jOIjZmDRp9qgA5kx/N3VUoKd0i+YgcXOBDuT2FmBpxKeCjy72qvAI3nHDCw8FXgq4anAI/WZEJ8k8cEMLHVlUUuyb2AGzvxck7SHMQ77ukU8k8QTM7DwU91KPDEf1DbWlXhiBpZ1Ec8k8cQMLOs6rMv7FTa/j7wFvuMx8Jh4a6zoHuHFdxEv24X/05wxdkW6G/3RC/esP6++7quTk3FxjjvXNxddv2jnuH89vft88O3yvn2YFnhiUKy6+fVq039qb3H/yw8UcNJDttwsbqb9kWjedQ90O3wknH1edv1UvUTCKZZV9G+6/u4Z+9d2Pj8S5EckR6J8J38kWve4TT/43vZ99/VIsmjX90eCgycQR0zT5frYgHV7bGL7pX222mLv89NJ8a3gz9gjBeHn45j//3EMRb98bdvpazOHC7fr1a6HWGl8SNUGF/mgxyEfdDMtOGxoSJWehvR5W0M07GwIB80N2Q/6m1iftzhZ9bzLaalBo9NSh70+npx8Bw=="
+            }
+        ],
+    },
     "nagare": {"name": "Nagareru-Loop", "cat": "loop", "aliases": ["nagareru"], "examples": []},
     "nanro": {
         "name": "Nanro",
@@ -356,7 +379,18 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
-    "onsen": {"name": "Onsen-Meguri", "cat": "loop", "examples": []},
+    "onsen": {
+        "name": "Onsen-Meguri",
+        "cat": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZdb9s2FH33ryj0zAfxQxSlt65L9uJl65qhKAwjUBK1MSpHnWyvhYL8955LXkqWrWEYCgwdMNiiDo8uL4/EcyXu/jhUXS1kSn/tBM74Gen8oZz1R8q/682+qcsX4uVh/9B2AEL8cnkp3lfNrl6sOGq9eOqLsn8t+p/KVaIS4Q+ZrEX/unzqfy77C9G/waVESHBLIJkIBXgxwrf+OqFXgZQp8BVjwHeAd5vurqlvloH5tVz11yKheX7wowkm2/bPOgnDfP+u3d5uiLit9riZ3cPmE1/ZHe7bjweOletn0b8McpczcvUol2CQS2hGLt3FN8ttNo/1lzmlxfr5GU/8N2i9KVck+/cRuhG+KZ/QXpVPiU4xVAsbFiXRDl01dDOJrhy6loLHrssnXakpehwsMzvJLW121Mf80qt459tL3yrfXkOk6LVvf/Rt6tvMt0sfcwHtSmqhFEQo2EpmwAXjXCgS43EBrANW4A3zCrxhXitgiCVspFAZhHqM/BnnN3A/3T/hDHNZnitDzpxz2hTYMEaenPNYzOV4rhwxjmNyzOt43twA4+l7jPyO8zvEFBzjoKdgPQ7xBcejKnXK2pwDVgEX4CXzRQ7MOgvEyBCjUwkcdGIccJgL44RWQSfGAXOMRIyKMRo46NHSAAc9yAcc9COf0GQyjzGv5nkV4sltHiNec7xCvOF4rJfm9UJu4Di2AA7PU2toM6wN66h5HZFD6Iz1Yx01ryOuCx3XkTzA2nAePYOc8MTojegfTZ7heOQfvESeYW04j74i/xhea4P1Yp04H/kNvjLRY+RPXlODN6458ljGfAY+izz0xHsh79noQ+ixrMdCj2U9Fnks57HIEz1M/sw5D/kz+jknD3Me8moePYz7ij53iHEcQ16NPievRp+TVx3fuyNvRz/TFyX6Gdqi/+Hh0f/QVkQPQ1sxelgVHFPAD+x/nIHZM+RVyT4hr8roZ/ht8DnVSPQw1Uj0MNUIexLegM8YIyb6Ft/IwbfwxuBb+GHwKvwweBXrHvyJF9hb/xp75VvjW+tfbzm9of/RO/zb36R/K2eFJ0B7gekv++9x68UqWeLr+eKq7bZVg2/oxf2Ho97VYXtbd7GP3Uuya5ub3aF7X93hW+w3N/jmgnv0kROqadtP9GmekJsPj21Xz14issb0M/G3bXd/kv1z1TQTImzXJlTYVUyofYctw1G/6rr284TZVvuHCXG0G5pkqh/3UwH7aiqx+lidzLYd7/l5kXxJ/IE9ALaV/28N//2tIT399Ht7uXxvcrxx22626kHPFD7Y2QJn/qzGwZ9VM014XtBgZ2oa7GlZgzqvbJBnxQ3uL+qbsp6WOKk6rXKa6qzQaarjWl+tF18B",
+            },
+            {
+                "data": "m=edit&p=7ZdBb9tGE4bv/hUBz3vgktwlqVuaz+nFn9s0KYJAEALZURIjspXKchPI8H/PM8t3JctSUBQBCh8CSeSr0ezscIfzaHn91810OXM+2LvuXOk8r1h26eM7vvPJr1cXq/ls9MQ9vVl9XCwRzv32/Ll7P51fz47G8poc3a770fqFW/86GhdV4dLHFxO3fjG6Xf9/tD5265f8VDiP7QTlC1chj7fydfrd1LPB6Ev0qTTyDfL8Ynk+n709GSy/j8brV66weX5Jo00Wl4u/Z8UwLH0/X1yeXZjhbLriYq4/XnzWL9c37xafbuTrJ3du/XRI9+RAuvU2XZNDuqYOpGtX8cPpzi+uZl8PZdpP7u5Y8T/I9e1obGn/uZXdVr4c3XI8Hd0Wvo829knh4lCXovL7lnbHwlCfArxJx+fpWKXjK+K7dZ2O/0vHMh1DOp4kn2OmrbvaNWVVjCqHjuiQdFN611SlND7V4NOULZrEku7R3aB9ie4HXaHrrCvXNF66QdfSxGkUp+rQXJrpmrGNxtaMDRpbM1fQXA0+QT4NuUXl1pB/VP4N8aPiB/yj/APX1eq6AvO2mjfi08on4tPJJ5JDpxwic3WaKwZ0I828neZtidMpTkucXnFa5uo1F83b9PJh/YPWv2H9Q17/rkNn/x6ta+9LtMb2+Hv59/jb7YEOZeNCNaxzKPGpBh98XaiHnIPHXmd7ix7WKnji1IpDHYPqSDwXmiHPQB2D6hioXVDtiO1CkL1mrqC5auYKmqtmrqC5qGNQHUPjXYjDWhEbrbmoaVBNie1CK3vA3mY769MO60MMtGJSu6DahUhunXJr0X3W5NkrT2oUVCNioBWTegXVK3QVEFZMahdVu9A1aMXssXvZ+4BWfGoUVSN8XVRPRXonqncY52I9xGcceogZqVdUvSI1iqpRpEZRNYrUKKpGxEMP+TPORdWCcehh/SN/LTEoDv0V1V+RukTVJVKXqLoQDy1/ahFVC+KhlRvrH3MfGUPyvV3SR1ofGIPODDHm6D43tuT7nD86+LLljFcfGWe8+tETX+vMGa34nj7VmnNGq0eMP+oFzluOVeRQKQfWDQZt+aP154xWTONPZlpjXMo8QWutEk9i5gZxouJEfDJ/jA9aw6Ylh8wiY0VeQ2NF5g/3HryQ5loyczpjka4Fbmz4Ax82zOHey8yBNzAk88H4o/uTusCLLTdUF9izYU5gPTNzEk/sTyozxKtfjBuVeqSir3Wfc95yyRiSuWQM0f2fuJFZZNzILDJu1IrPfbvhEvctHNkyJDPKuJG5FIxLmss4kHnSkk+bOWBsuceBzBDr/cyQjvjiv/U+Pb/p/aBacEYrf2N1r7E9Y/vMBObN/IEVG/70xiXFgRvBtgRJcy2ZS8Z51REObfiTGKK+4LzhT2KI6sUZrd43nmQWUTuYsmWLzyyCCdoDwCq0WFQTv1Z8emTDKONJZpExRD2SGJK5ZNzILDJuZP7wXzwwh43J67Q9eZaOTTrGtG1pbdP0r7ZVP75D+sd0xlypbc+/92IT//PXx/3r5GhcnLCVf3K6WF5O52zoj999uPft9ObybLbM33mUKq4X87fXN8v303MeDNKTFg8A2K6S545pvlh8tueEHePFh6vFcnbwJzPOmP6A/9li+e5B9C/T+XzHMDw77piGR5wd02rJ88u979PlcvFlx3I5XX3cMdx7NNuJNLta7Sawmu6mOP00fTDb5faa746Kr0X6jGtK0fx8Tv3vn1Nt9cvHhtXHlk66cRfLg12P+UDjYz3Y4LLv9Tj2vW62CfcbGuuBnsb6sK0x7Xc2xr3mxvad/raoD1vcsnrY5TbVXqPbVPd7fTw5+gY=",
+            },
+        ],
+    },
     "ripple": {
         "name": "Ripple Effect",
         "cat": "num",
@@ -405,7 +439,19 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "slither": {"name": "Slitherlink", "cat": "loop", "aliases": ["slitherlink"], "examples": []},
+    "slitherlink": {
+        "name": "Slitherlink",
+        "cat": "loop",
+        "aliases": ["slither"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VZRT9swEH7vr0B+9oPtJG2SN8bKXlg3BhNCUYXSEqAirZmbDJSq/53zJR32pbCHadOkTWlOly93n8/nfHbX3+rcFDyBK4y44BKuMBJ4x6H9ie46X1RlkR7ww7q60wYczj8dH/ObvFwXg6yLmg42TZI2p7z5kGYsYJxJuBWb8uY03TQf02bCmzN4xbgE7AQ8CAjAHbeuAvcC31vwqI0U4E7a9zbrEtz5wszL4uqkzficZs05Z3aYd5hiXbbU3wvWpuHzXC9nCwvM8grmsr5bPHRv1vW1vq+7WDnd8uawrXb8drXWfataW9svV1tc3xZP+wpNptst9PsLlHqVZrbqry/uWboBO0k3TMU2HtZC2tUAEpXsZtoBgbTAGePxDggoENGUIQFC5FAOoCxwYRuyQ5DVzRlRAEv1crBWp/iIVhJhJW4EsrokEdI6tUXI6oYMBQkZ0vkMkdbpybBHMqIkI+yBC2ALvBycj0MbY44zwTikEXTGCV2uBEndYRK6Xgn2xAV605GCfhdS0BWTgn5dUvSJJDZGOEESqf0g2iwpcV4egtwuopDaI1J06aSiH41U2A8/rTe3oFdRKwwPoesnA/qhyIAKToZ+Q0CpEvV6ifYYrUJ7DnLmTYD2PVqBNkJ7gjFjtBdoj9CGaIcYM0Ib77aG17eMHyHO7vHbK9sOMhXjseNe0d+FTAcZG8M2fDDRZpmXsBlP6uWsMLtnOPbYWpdX69rc5HPYxvFUhO0asBVGelCp9UO5WPlxi9uVNsXeVxa0pwBLK1N74TNtrgn5Y16WHtAe8R7UnkceVBk4bJzn3Bj96CHLvLrzAOcY9ZiKVeUXUOV+ifl9TkZbvkx5O2BPDO9McRXByfr/P8Uf/k9hmy9+/s/in961WsFrs1fzAO+RPaB75d3hrcJ9vCdmO2Bfz4DukTSgVNUA9YUNYE/bgL0ib8tKFW6roiK3Q/V0bodypZ5NB88=",
+            },
+            {
+                "data": "m=edit&p=7VdNj9tGDL37Vyx0noPmQ5+3NPX2snWbZosgMIyF7FWyRmQrle0m0GL/e0jKqUhaPQQFghRYGB4MOSTnUW+erTn8daq62rjE2MT43MTGwqfIc5PGuXFZQt/4/LndHpu6vDIvTseHtoOJMb9dX5t3VXOoZ8tz1Gr22Bdl/8r0v5TLyEcmsvB10cr0r8rH/teyX5j+NSxFxoLvBmYQ4GA6H6dvaB1nLwenjWG+OM9h+hamm223aeq7m8Hze7nsb02E+/xE2TiNdu3fdTSkkb1pd+stOtbVEZo5PGw/nlcOp/v2w+kca1dPpn8xwJ1PwPUjXJwOcHE2ARe7+M9w6/v39ecppMXq6Qme+B+A9a5cIuw/x2k+Tl+XjzAuysco9ZCKREM6VEsTMP0/ZmbFaobBbLUAE4/IYOYYzExcHYOLWJQqZKkiFblFJldzYdoYd3LMDiLbxrILG8vqNpbQrHXKRnCsvpOPwTpcZ/Uc1mPxXuHz2A631f4B+2P1E9VPovCniJfbGM/qZ/isua3yiTi2X67iFZM2x/oMby7psbnih6hn9QrEy23kh9uIj+Ur+l2M+LiN8WO+U/w5i3jH/pzD/LEf5yQe5xA/Wye+uC35cgHxs/Wg4hN5flwiz6Mj0bF4xZ9LsR7DT3yyfJIly8+wHx6v8GWqP8W/I/5Z/VzhzyU/TvHviE9Wn/gbbR/Lfj3pc9zfW9mPV/rzxBeLJ77Yupfn13t5PrxX8UGeZ5/I/j3xx20dL/n0iaqfYj9snfTKbdVfqvCmUj+e+Gf9E/+sXqbwEZ/seRJ/rJ7Sqy/k+fOkx9EOscQfiC9uy+cVrDxfgX4/WT0nz0dQv5+B9MfqEX/MDmp/4pPtR/rk66qfIP+4QiLPV1D6DcQ/X1f4Unl+guI/EJ9sP6XfkMn/h0D6ZHYu9RVIf19t+CO39Hf+lsZrGh2Nt/Bvb3pP4880xjQmNN5QzJzGNzS+pDHQmFJMhu8L3/RG8R3gLNPhzfRbPvBO+5zxnPF/zFjNltEc3vivFm23qxp471+cduu6+2rDHSs6tM3d4dS9qzZwY6ArGNwMwLenSOFq2vZjs93LuO37fdvVk0voxAvHRPy67e5V9U9V0wjHcKkUruHuI1zHDi42zK66rv0kPLvq+CAc7M4mKtX7owRwrCTE6kOldtuNPT/Nos8RfekHPDxfYL//BRaffvyj/en8aHDo4LbdpOrBPSF88E4K/Oy/0Dj4L9SMG14KGrwTmgavljW4LpUNzgtxg+9f9I1VtcQRlVY5bnUhdNyKa325mn0B",
+            },
+        ],
+    },
     "starbattle": {
         "name": "Star Battle",
         "cat": "var",

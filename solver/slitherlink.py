@@ -1,9 +1,9 @@
 """The Slitherlink solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.loop import separate_item_from_loop, single_loop
 from .core.neighbor import adjacent, count_adjacent_edges
 from .core.reachable import grid_color_connected
@@ -17,9 +17,10 @@ def convert_direction_to_edge() -> str:
     return rule.strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R + 1, E.C + 1))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="slither"))
     solver.add_program_line(fill_path(color="slither"))
@@ -30,7 +31,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(adjacent(_type="edge"))
 
     flag = False
-    for (r, c), clue in E.clues.items():
+    for (r, c), clue in puzzle.text.items():
         if clue == "W":
             flag = True
             solver.add_program_line(f"wolf({r}, {c}).")
@@ -38,6 +39,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
             flag = True
             solver.add_program_line(f"sheep({r}, {c}).")
         else:
+            assert isinstance(clue, int), "Clue should be an integer or wolf/sheep."
             solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
     if flag:

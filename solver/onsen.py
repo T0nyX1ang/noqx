@@ -28,8 +28,6 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
 
     An area fact, a grid direction fact and an area border fact should be defined first.
     """
-    mutual = "area_border(A, R, C, D), grid_direction(R, C, D)"
-
     rule = f"onsen({_id}, {r}, {c}).\n"
     rule += f"onsen({_id}, R, C) :- grid(R, C), adj_loop(R, C, R1, C1), onsen({_id}, R1, C1).\n"
 
@@ -42,13 +40,19 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
             f":- area(A, R, C), onsen({_id}, R, C), {anch}, #count {{ R1, C1: area(A, R1, C1), onsen({_id}, R1, C1) }} != N."
         )
 
+    rule += ":- onsen_loop(R, C), not onsen(_, R, C).\n"
+    return rule.strip()
+
+
+def onsen_global_rule() -> str:
+    """Generates global ruleS for an Onsen-Meguri puzzle."""
+    mutual = "area_border(A, R, C, D), grid_direction(R, C, D)"
+
     # any area, go through border at least twice
-    rule += f":- area(A, _, _), #count {{ R, C, D: grid(R, C), {mutual} }} < 2.\n"
+    rule = f":- area(A, _, _), #count {{ R, C, D: grid(R, C), {mutual} }} < 2.\n"
 
     # any area, any onsen area, go through border at most twice
     rule += f":- area(A, _, _), onsen(O, _, _), #count {{ R, C, D: onsen(O, R, C), {mutual} }} > 2.\n"
-
-    rule += ":- onsen_loop(R, C), not onsen(_, R, C).\n"
     return rule.strip()
 
 
@@ -77,6 +81,7 @@ def solve(puzzle: Puzzle) -> List[str]:
 
                 onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
 
+    solver.add_program_line(onsen_global_rule())
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 

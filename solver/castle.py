@@ -52,7 +52,7 @@ def solve(puzzle: Puzzle) -> List[str]:
             solver.add_program_line(f"white({r}, {c}).")
             solver.add_program_line(f"not castle({r}, {c}).")
 
-        if isinstance(clue, str) and len(clue) == 0:
+        if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue or space (for compatibility)
             continue
 
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
