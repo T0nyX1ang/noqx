@@ -1,9 +1,9 @@
 """The Numberlink solver."""
 
-from typing import Dict, List
+from typing import Dict, List, Tuple, Union
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.loop import single_loop
 from .core.neighbor import adjacent
 from .core.reachable import avoid_unknown_src, grid_src_color_connected
@@ -20,10 +20,11 @@ def no_2x2_path() -> str:
     return f":- { ', '.join(f'reachable_grid_src_adj_loop_numlin(R0, C0, R + {r}, C + {c})' for r, c in points) }."
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
-    locations = {}
-    for (r, c), n in E.clues.items():
-        locations[n] = locations.get(n, []) + [(r, c)]
+def solve(puzzle: Puzzle) -> List[str]:
+    locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
+    for (r, c), clue in puzzle.text.items():
+        assert isinstance(clue, (int, str)), "Invalid clue."
+        locations[clue] = locations.get(clue, []) + [(r, c)]
 
     # check that puzzle makes sense
     assert len(locations) > 0, "Error: The grid is empty!"
@@ -32,15 +33,16 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
         assert len(pair) >= 2, f"Error: There is only one occurrence of {n}."
 
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
 
-    if E.params["visit_all"]:
+    if puzzle.param["visit_all"]:
         solver.add_program_line("numlin(R, C) :- grid(R, C).")
     else:
         solver.add_program_line(shade_c(color="numlin"))
 
-    if E.params["no_2x2"]:
+    if puzzle.param["no_2x2"]:
         solver.add_program_line(no_2x2_path())
 
     solver.add_program_line(fill_path(color="numlin"))

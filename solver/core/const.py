@@ -345,7 +345,24 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "numlin": {"name": "Numberlink", "cat": "loop", "aliases": ["numberlink"], "examples": []},
+    "numlin": {
+        "name": "Numberlink",
+        "cat": "loop",
+        "aliases": ["numberlink"],
+        "examples": [
+            {
+                "data": "m=edit&p=7ZTPb9owFMfv/BWVzz7kB3SQG6VlF8bWlamqoggZcEvUBHdOslZG/O997yVV4iSTNk3aepgMTy8fP9tfx/4m+14ILfkImj/mDnehed6Y/kMHf29tFeeJDM74tMj3SkPC+ef5nN+LJJODsKqKBkczCcw1Nx+DkLmMMw/+Lou4uQ6O5lNgltzcQBfjLrBFWeRBelWnt9SP2ayErgP5ssohvYN0G+ttIteLknwJQrPiDNe5oNGYslT9kKzSgc9blW5iBBuRw2ayffxU9WTFTj0WVa0bnbiZktxqSI9mv9aMaakZsx7NuJU/1pzEB/nSJ3cSnU7w2r+C4HUQovZvdTqu05vgCHEZHJnn4NApyCjPhvkELhrAQ3DZABMEsxoMaUijYkSgUTFyW5Oe28uCGJck3VGcU/QorkAxNz7FS4oOxRHFBdVcUbylOKM4pHhONR9wz7/1Vv6CnNArDYZt9GtZNAjZAk7+bKl0KhI4/2WRbqR+ewbDsUwl66zQ92ILN4f8CDcE2IEqLZQo9YQXyYLxw0Fp2duFUO4e+uo3Su9asz+LJLFA+XWxUOkBC+UaLnjjWWitni2SinxvgYaBrZnkIbcF5MKWKB5Fa7W03vNpwF4Y/UMfXv7w/9fsH33N8Aic9+be9yaHbq/SvdYH3ON+oL0ur3jH6MA7lsYFu64G2mNsoG1vA+raG2DH4cB+YnKcte1zVNW2Oi7VcTsu1TR8GA1eAQ==",
+                "config": {"visit_all": False, "no_2x2": False},
+            },
+            {
+                "data": "m=edit&p=7VdNT+NMDL73V6A5zyEzk+8by8Jeut3lhRVCUYXSEqAibXjTdEGp+t+xnSyepNkDWglxqNJa9hN7/IxnLDnr/zdpmUnt48+E0pEKHwesRhjjNsJpn8tFlWfxkTzeVA9FCYqUP87O5F2ar7NR0npNR9s6iutzWX+LE6GEFBr+SkxlfR5v6+9xPZH1BbwSUgE2bpw0qKesXtF71E4aUDmgT1od1GtQ54tynmc34wb5GSf1pRSY5wtFoyqWxe9MtDzQnhfL2QKBWVrBZtYPi6f2zXpzWzxuWl813cn6uKE7HqBrmC6qDV3UBujiLv6Zbr5YZS9DTKPpbgcV/w+43sQJ0v7FasjqRbwFOYm3Qjk+xGo8bDoWAEIAlGHAKARCBlwHAY8BD0O0ZsA3AFgRISaB+9Pa2sH3KmDAoyUtD98FIGI7QNvKqUPMySmMQgdewGhizfsyBnPCRX6zI7B5QeN5vYCAKsN2hAtobIwGcB2NEWwTBcUp3F4K18dd8q7dkFIyaTcKAODSe3Q4lq2pbmy7lJHL5FEG28YFrEJ7Qe90PeLAnH1FdeNd+hoduAy+IdJWhIu7VJZHREl5iUBR5dgjMOjBrAKXkloOHq5p3crAJ968syDCEOs0Ajqet2sK11vRJb8meUZSk7yEHpC1IfmVpEPSIzkmn1OSVyRPSLokffIJsIve1WcfQCfxsX7vffB2HmIOMYeYQ8whhp7pKBFjmLCOJkW5THOYsyab5Swr/9gw04p1kd+sN+VdOocJjUZemMQAW5FnB8qL4gkHtg64uF8VZTb4CsHs9n7If1aUt73Vn9M87wDNIN+BmlmzA1UlDJKWnZZl8dxBlmn10AGsGbmzUraqugSqtEsxfUx72Za8591IvAj605zjHj4YPv6DAavvfLZx5rPRoYtblINdD/BA4wM62OAtvtfjgO91Mybcb2hAB3oa0H5bA7Tf2QDuNTdgf+lvXLXf4siq3+WYaq/RMZXd68l09Ao=",
+            },
+        ],
+        "parameters": {
+            "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": True},
+            "no_2x2": {"name": "No 2x2 path", "type": "checkbox", "default": True},
+        },
+    },
     "nuribou": {
         "name": "Nuribou",
         "cat": "shade",

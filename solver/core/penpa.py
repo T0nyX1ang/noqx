@@ -94,7 +94,7 @@ class Puzzle:
             raise ValueError("Unsupported cell shape. Current only supported square shape.")
 
         margin = (self.top_row, self.bottom_row, self.left_col, self.right_col)
-        print(f"[Puzzle] Size initialized. Size: {self.row}x{self.col}. Margin: {margin}.")
+        print(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {margin}.")
 
     def _unpack_board(self):
         """Initialize the content of the puzzle."""
