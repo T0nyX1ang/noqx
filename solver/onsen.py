@@ -1,9 +1,9 @@
 """The Onsen-Meguri solver."""
 
-from typing import Dict, Iterable, List, Tuple
+from typing import Iterable, List, Tuple, Union
 
 from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.loop import single_loop
 from .core.neighbor import adjacent
@@ -22,7 +22,7 @@ def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
     return rule
 
 
-def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
+def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) -> str:
     """
     Generates a rule for an Onsen-Meguri puzzle.
 
@@ -37,7 +37,7 @@ def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
         num = int(target)
         rule += f":- area(A, R, C), onsen({_id}, R, C), #count {{ R1, C1: area(A, R1, C1), onsen({_id}, R1, C1) }} != {num}."
     else:
-        anch = f"#count {{ R1, C1: area({_id}, R1, C1), onsen({_id}, R1, C1) }} = N"  # set anchor number for clue
+        anch = f"#count {{ R1, C1: area({area_id}, R1, C1), onsen({_id}, R1, C1) }} = N"  # set anchor number for clue
         rule += (
             f":- area(A, R, C), onsen({_id}, R, C), {anch}, #count {{ R1, C1: area(A, R1, C1), onsen({_id}, R1, C1) }} != N."
         )
@@ -52,25 +52,30 @@ def onsen_rule(target: int, _id: int, r: int, c: int) -> str:
     return rule.strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="onsen_loop"))
     solver.add_program_line(fill_path(color="onsen_loop"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(single_loop(color="onsen_loop"))
 
-    areas = full_bfs(E.R, E.C, E.edges)
+    onsen_id = 0
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_border(i, ar))
 
         for rc in ar:
-            if rc in E.clues:
+            if rc in puzzle.text:
                 r, c = rc
+                data = puzzle.text[rc]
                 solver.add_program_line(f"onsen_loop({r}, {c}).")
-                solver.add_program_line(onsen_rule(E.clues[rc], i, r, c))
+                solver.add_program_line(onsen_rule(data if isinstance(data, int) else "?", onsen_id, i, r, c))
+
+                onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
