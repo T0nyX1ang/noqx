@@ -1,7 +1,7 @@
 """The Tapa solver."""
 
 import itertools
-from typing import List, Union
+from typing import List, Union, Tuple
 
 from .core.common import display, grid, shade_c
 from .core.penpa import Puzzle
@@ -42,7 +42,7 @@ def parse_shading(shading: List[bool]) -> List[int]:
     return sorted(clue)
 
 
-def generate_patterns(pattern: List[Union[int, str]]):
+def generate_patterns(pattern: List[Union[int, str]]) -> List[Tuple[int]]:
     """Generate patterns given numbers and '?'."""
     result = [pattern]
     num_max = 9 - len(pattern) * 2
@@ -51,14 +51,14 @@ def generate_patterns(pattern: List[Union[int, str]]):
             old_result = result
             result = []
             for patt in old_result:
-                new_patt = []
+                new_patt: List[List[int]] = []
                 for num in range(1, num_max + 1):
                     tmp = patt.copy()
                     tmp[i] = num
-                    new_patt.append(tmp)
+                    new_patt.append(tmp)  # type: ignore
                 result.extend(new_patt)
-    result = [tuple(sorted(patt)) for patt in result if sum(patt) + len(patt) <= 8]  # type: ignore
-    return list(set(result))
+    new_result: List[Tuple[int]] = [tuple(sorted(patt)) for patt in result if sum(patt) + len(patt) <= 8]  # type: ignore
+    return list(set(new_result))
 
 
 def color_to_num(r: int, c: int, color: str = "black") -> str:
@@ -80,12 +80,12 @@ def tapa_rules() -> str:
     return "\n".join(valid_tapa)
 
 
-def valid_tapa_pattern(r: int, c: int, patterns: list) -> str:
+def valid_tapa_pattern(r: int, c: int, patterns: List[Tuple[int]]) -> str:
     "Generate valid tapa patterns."
     valid_pattern, num_str, num_constrain = [], [], []
     for i, (dr, dc) in enumerate(((0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1))):
         num_str.append(f"N{i}")
-        num_constrain.append(f"num({r+dr}, {c+dc}, N{i})")
+        num_constrain.append(f"num({r + dr}, {c + dc}, N{i})")
     num_str = ", ".join(num_str)
     num_constrain = ", ".join(num_constrain)
     for pattern in patterns:
