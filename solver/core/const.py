@@ -564,9 +564,31 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "name": "Tapa-Like Loop",
         "cat": "loop",
         "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like"],
-        "examples": [],
+        "examples": [
+            {
+                "data": "m=edit&p=7ZVPT6RMEIfv8ylMn/tA04ADF+O6upfZ2XV1YwwhpmdEJcK028CrYTLf3aqCCX89bN5k12wMQ6V4urrrBz1Vnf8qlYm58PAn59ziAi7P8eh25z7dVnNdJkUaBwf8uCwetAGH829nZ/xOpXk8C5uoaLat/KA659WXIGSCcWbDLVjEq/NgW30NqiWvLmCIcQFsUQfZ4J627hWNo3dSQ2GBvwTfqaddg7tOzDqNbxY1+R6E1SVnmOcTzUaXZfq/mDU68Hmts1WCYKUKeJn8IXlqRvLyVj+WTayIdrw6ruUuJuTKVi66tVz0JuTiW/xvuWmyifXLlFQ/2u3gk/8AsTdBiLp/tu68dS+CLdhlsGWei1MdiTo5KIQVfYFIStiqPRLWnMLwg++R7SA6OjrqMCknmEdT7e5yziEyW4oudK16cgf5tbpOWtsap7VhmdFytk2SB1DuZ3enH9L0AaPMPTSfQP44h7SauE6gFGPV0qXv3CLYEUH7ck32jKxN9hK2jVeS7GeyFlmX7IJiTslekT0h65D1KOYQN/63/hp/QE7o2NRj3r7cj/F/eTyahWwB3exgqU2mUmhpyzJbxWb/DOcHy3V6k5fmTq2hG9LxAk0P2IYieyjV+gmbYw8m9xtt4skhhPHt/VT8SpvbwerPKk17oD4we6ju6z1UGGjanWdljH7ukUwVDz3QOY96K8Wboi+gUH2J6lENsmXtO+9m7IXRHUr4+M7H4fwXDmf8/NZ768PvTQ79c7WZLHvAE5UPdLLCGz4qcuCjcsaE44oGOlHUQId1DWhc2gBH1Q3sjQLHVYc1jqqGZY6pRpWOqbrFHrJCPak0eaTex6LZKw==",
+                "config": {"visit_all": True},
+            },
+            {
+                "data": "m=edit&p=7ZZRb9owEMff+RSVn/0Q2yFA3rqu3Qtj69qpqqKoMjRtowbcmbBWQXz3ns8w7DidNE3a+oBCTpdf/mf/E3yY5Y+V1AVlA/MRQxpRBkcyjPHkPMJzd1yWdVWkR/R4VT8oDQmlX87O6J2slkUv26ry3roZpc05bT6lGWGEEg4nIzltztN18zltJrS5gFuEMmBjK+KQnu7TK7xvshMLWQT5BPLYll1DOiv1rCpuxpZ8TbPmkhIzzwesNimZq58F2fow1zM1n5YGTGUND7N8KJ+2d5arW/W42mpZvqHNsbU77rAr9nZNau2arMOueYq/tluVi0K9dFkd5ZsNvPJvYPYmzYzv7/t0uE8v0jXESbomcd+UwrfCKPiD8eKhAWIP+qylGGCJcCQDrOEOGbaLWIQa843tCAs0LEbiImGHdlFs6zyEhc78bIAi5iE7uocGqAInvxiPguF5FPjiEVa6BF6I74GLJCCjdlUSVCVY5U2WYJn7MHxkVS6xYzsiEfH2UILbOlfFbaGrErbQVfXb1kUSihK7mlw0DOpGts4ldkXtCCxNhgv0GuMZRo7xEtYvbQTGjxgjjH2MY9ScYrzCeIIxxpigZmA64I965B/YyeIYf2x/d/QPioPi7SPvZWQMG8PRROm5rGB3mKzm00LvrmErJktV3SxX+k7OYGPBnRr2D2ALVHqoUurJ7DMeLO8XShedtwwsbu+79FOlb1ujP8uq8oD97+Ehu0V6qNaw/znXUmv17JG5rB884Gzt3kjFovYN1NK3KB9la7b5/pk3PfJC8MwEvPz48D/nP/zPMa8/em+/5O/NDq5cpTvbHnBH5wPt7PAtD5oceNDOZsKwo4F2NDXQdl8DClsbYNDdwN5ocDNqu8eNq3abm6mCTjdTuc2ekVo+yap8xN8+kvdeAQ==",  # a bit slow example
+            },
+        ],
+        "parameters": {
+            "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False},
+        },
     },
-    "yajilin": {"name": "Yajilin", "cat": "loop", "examples": []},
+    "yajilin": {
+        "name": "Yajilin",
+        "cat": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZTRb5swEMbf81dEfvYDhiRLeZm6rtlLlq1LpqpCCDmJ26BC3BlYK6L877072MCBPkyTqk6aCJfLj7P9mfi77EchjeLCwY835fAN10hM6XanE7qd+lrFeaL8IT8v8p02kHD+ZTbjtzLJ1CCoq8LBoTzzyytefvIDJhhnLtyChby88g/lZ7+c83IJjxgXwOZVkQvpZZNe03PMLiooHMgXkMNkOOwG0k1sNomK5hX56gflijNc5wONxpSl+qditQ78vdHpOkawljlsJtvFD/WTrNjq+6KuFeGRl+cvy/UauZhWcjHrkYu7+Gu5SbxXT31Kz8LjEd74N9Aa+QHK/t6k0yZd+geIC//APAeHvgcZ+NfAfGNBc0Wou0YTD5EXeQ2a0jDRRmduVdUaKBwa6Ub4P/1iYtxlXj3WabHRqKprswmN/a0W9iBoJzcUZxRdiivYKC89ih8pOhTHFOdUc0nxmuIFxRHFCdW8w1f1Ry/zFeQEXmVK+xr/eywcBGxZmFu5UXCQ53CghzOjMF8U6VqZ4UKbVCYMGgjLdBJlda1P/QWOPbA9VVoo0foB3WHB+G6vjep9hFBt7/rq19psT2Z/lEligapjWqgytoVyA65t/ZbG6EeLpDLfWaDVkKyZ1D63BeTSlijv5clqabPn44A9MboDDzv7/+78+t0Z377z1trKW5NDB1ebXtcD7jE+0F6D17zjceAdN+OCXUMD7fE00FNbA+o6G2DH3MBe8DfOempxVHXqclyqY3Rcqu31IBw8Aw==",
+            },
+            {
+                "data": "m=edit&p=7VZNT+M8EL73VyCffYg/+pHcWF7YS7e7vGWFUBRVaQlQkTZsmi4oVf87M2O3tZuw0molxAGlHk2ePJ55JvHYXf1ap2XGRR9/asADLuDqDTQNKQMau+tqXuVZdMJP19VDUYLD+feLC36X5qusE1tW0tnUYVRf8vprFDPBOJMwBEt4fRlt6m9RPeb1GB4xrgEbGpIE9/zgXtNz9M4MKALwR+BDMAHuDbizeTnLs8nQID+iuL7iDPN8odnoskXxO2NWB97PisV0jsA0raCY1cP8yT5ZrW+Lx7XlimTL61Mjd7iTi1msXHWQi66Ri96xXFvPP8vN58vspU1pmGy38Mb/B62TKEbZPw/u4OCOow3YUbRhocSpeqJACH4ciBj2EQpcSAiiqQlWs8eI1/UwRTzpzVXEEx6vL0w8/IB7rGfmBg42IJ7weKEyc11eOGjklQHxtMuTomviuZgMGvGkJJ50NUtTh6dZaluvhxHPz9sNG3XInjaYq7lneQ6mdnU4WlRA9XrfSEn7XpwcStr34mKaeF5tSlveXjMsD0GL5IbsBVlJ9grWEK8V2f/IBmS7ZIfEOSd7TfaMrCbbI04fV+FfrdN3kBNrTfvdn67uJ+OT8faVdGI2Xpd36SyD3XkIu/TJqCgXaQ53o/VimpW7ezgX2arIJyvLjujYhN0csCUxPSgviifc9D1wfr8syqz1EYLZ7X0bf1qUt0fRn9M89wDzR8CDzHnlQVUJh5Fzn5Zl8ewhi7R68ADnnPUiZcvKF1ClvsT0MT3KtjjUvO2wF0YjVvAZ9Oefjvf/04FvP/hoW/pHk0MLtyhbux7glsYHtLXBLd7occAb3YwJmw0NaEtPA3rc1gA1OxvARnMD9kZ/Y9TjFkdVx12OqRqNjqncXo+Tzis=",
+            },
+        ],
+    },
     "yajikazu": {
         "name": "Yajisan-Kazusan",
         "cat": "shade",
