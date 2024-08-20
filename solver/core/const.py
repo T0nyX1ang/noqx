@@ -219,7 +219,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "jousan": {"name": "Jousan", "cat": "draw", "examples": []},
+    "juosan": {
+        "name": "Juosan",
+        "cat": "draw",
+        "examples": [
+            {
+                "data": "m=edit&p=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",
+            }
+        ],
+    },
     "kakuro": {
         "name": "Kakuro",
         "cat": "num",

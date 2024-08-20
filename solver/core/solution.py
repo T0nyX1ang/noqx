@@ -87,11 +87,14 @@ class ClingoSolver:
                 else:
                     solution.line.add((int(r), int(c), grid_direction))
 
-            elif _type.startswith("number") or _type.startswith("content"):
+            elif _type.startswith("number"):
                 if self.puzzle.puzzle_type == "easyasabc":  # convert penpa number to letter
                     solution.text[(int(r), int(c))] = self.puzzle.param["letters"][int(data[2]) - 1]
                 else:
                     solution.text[(int(r), int(c))] = int(data[2])
+
+            elif _type.startswith("content"):
+                solution.text[(int(r), int(c))] = str(data[2]).replace('"', "")
 
             elif _type == "triangle":
                 solution.symbol[(int(r), int(c))] = f"tri__{data[2]}"
