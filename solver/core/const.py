@@ -181,7 +181,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "gokigen": {"name": "Gokigen (Slant)", "cat": "draw", "examples": []},
+    "gokigen": {
+        "name": "Gokigen (Slant)",
+        "cat": "draw",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZNb9s8DL7nVwQ+6+APSY5969rsvXR517VDURhB4aRua9SJOsdZBwf57yXpYBYV77DDtgIbDBP8EvlQymNl82Wb14UItAhCEU2ELwJ4tNRCJlJIndDrH56rsqmKdCxOts2jqUER4v+ZuM+rTTHKcCE889GuTdL2QrT/pZkXeuLwzkV7ke7aD2k7E+0lhDzIFe05aIEnQlCnXT6q1xRH7bSLBz7os07XoN6AuizrZVXcnneFPqZZeyU87POOVqPqrczXwuuWkb00q0WJjkXewCybx/L5ENls78zT9pAbzPeiPengTgfgRj1cVDu4qA3AxSl+Mdxkvt/Dtn8CwLdphtg/9+qkVy/THchZuvMiLWFtKLSA9VAu0hpsOPnv9oTHY9+xQ54fO/UmEdjSshXYkWXHjp1wOwkcG+vZNq8nfY5HBjhPj0eGfL0Msb+VH+F8VjzC/nbc6SedfhL79fNKiftnxRXWt21cb9VTfP+ldvBqvl/ASm7HiNeaN3bwTrCfFZ9gPzvOz1smiNeaJ3HwJhyv8jle5XO8yuf1VcDxqgDxWnbI91dF/DyVdPpJPq+S/HyV5PulFP99KeXUU0494otVj/hi4SG++L1NfLHyHb4oxhcgZUDUvCH5nmRI8gqYK9qI5BlJn6QieU45U5LXJE9JSpKacmLk/k99HX4DnExH3XUx+MR/b2w+yrzp3UMxPivzB7POK/jez7arRVGPZ6ZegQ0XrLcx1e1mW9/nS7gu6P6FGwF8a8pkrsqY56pc87zyYW3qYjCEzgIADOQvTH3nVH/Jq4o5uj8UzNVdfMzV1HCrWXZe1+aFeVZ588gc1g3IKhXrhgNocg4xf8qdbqt+5v3I++bRC2QPhPz37+UP/XvBI/Df2lfqrcGhX6+pB6kP7gH2g3eQ5Qf/EdHBf0RpbHjMavAOEBu8LrfBdUxvcB4xHHw/IDlWdXmOqFyqY6sjtmMrm/DZfPQK",
+            }
+        ],
+    },
     "haisu": {"name": "Haisu", "cat": "loop", "examples": []},
     "hashi": {
         "name": "Hashiwokakero (Bridges)",

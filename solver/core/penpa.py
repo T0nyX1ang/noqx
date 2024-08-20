@@ -135,8 +135,9 @@ class Puzzle:
                 continue
 
             index_1, index_2 = map(int, index.split(","))
-            coord_1, _ = self.index_to_coord(index_1)
-            coord_2, _ = self.index_to_coord(index_2)
+            coord_1, c1 = self.index_to_coord(index_1)
+            coord_2, c2 = self.index_to_coord(index_2)
+            print(coord_1, c1, coord_2, c2)
             if coord_1[0] == coord_2[0]:  # row equal, horizontal line
                 self.edge.add((coord_2[0] + 1, coord_2[1], Direction.TOP))
             elif coord_1[1] == coord_2[1]:  # col equal, vertical line
@@ -240,17 +241,31 @@ class Solution:
         print("[Solution] Edge packed.")
 
         for r, c, direction in self.line:
-            index_1 = self.coord_to_index((r, c), category=0)
-            if direction.startswith("r"):
-                index_2 = self.coord_to_index((r, c), category=3)
-            elif direction.startswith("d"):
-                index_2 = self.coord_to_index((r, c), category=2)
-            elif direction.startswith("l"):
-                index_2 = self.coord_to_index((r, c - 1), category=3)
-            elif direction.startswith("u"):
-                index_2 = self.coord_to_index((r - 1, c), category=2)
+            if self.puzzle.puzzle_type == "gokigen":  # special case for gokigen
+                if direction == "ul":
+                    index_1 = self.coord_to_index((r - 1, c - 1), category=0)
+                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
+                elif direction == "ur":
+                    index_1 = self.coord_to_index((r - 1, c), category=0)
+                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
+                elif direction == "dl":
+                    index_1 = self.coord_to_index((r, c - 1), category=0)
+                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
+                elif direction == "dr":
+                    index_1 = self.coord_to_index((r, c), category=0)
+                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
             else:
-                raise AssertionError("Unsupported line direction.")
+                index_1 = self.coord_to_index((r, c), category=0)
+                if direction.startswith("r"):
+                    index_2 = self.coord_to_index((r, c), category=3)
+                elif direction.startswith("d"):
+                    index_2 = self.coord_to_index((r, c), category=2)
+                elif direction.startswith("l"):
+                    index_2 = self.coord_to_index((r, c - 1), category=3)
+                elif direction.startswith("u"):
+                    index_2 = self.coord_to_index((r - 1, c), category=2)
+                else:
+                    raise AssertionError("Unsupported line direction.")
 
             if self.puzzle.puzzle_type == "hashi":
                 self.board["line"][f"{index_1},{index_2}"] = 3 if direction.endswith("_1") else 30
