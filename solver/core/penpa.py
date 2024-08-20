@@ -241,17 +241,21 @@ class Solution:
 
         for r, c, direction in self.line:
             index_1 = self.coord_to_index((r, c), category=0)
-            if direction == "r":
+            if direction.startswith("r"):
                 index_2 = self.coord_to_index((r, c), category=3)
-            elif direction == "d":
+            elif direction.startswith("d"):
                 index_2 = self.coord_to_index((r, c), category=2)
-            elif direction == "l":
+            elif direction.startswith("l"):
                 index_2 = self.coord_to_index((r, c - 1), category=3)
-            elif direction == "u":
+            elif direction.startswith("u"):
                 index_2 = self.coord_to_index((r - 1, c), category=2)
             else:
                 raise AssertionError("Unsupported line direction.")
-            self.board["line"][f"{index_1},{index_2}"] = 3
+
+            if self.puzzle.puzzle_type == "hashi":
+                self.board["line"][f"{index_1},{index_2}"] = 3 if direction.endswith("_1") else 30
+            else:
+                self.board["line"][f"{index_1},{index_2}"] = 3
         print("[Solution] Line packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:

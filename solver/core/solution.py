@@ -80,8 +80,12 @@ class ClingoSolver:
             elif _type.startswith("horizontal"):
                 solution.edge.add((int(r), int(c), Direction.TOP))
 
-            elif _type == "grid_direction":
-                solution.line.add((int(r), int(c), str(data[2]).replace('"', "")))  # TODO: hashi direction
+            elif _type.startswith("grid"):
+                grid_direction = str(data[2]).replace('"', "")
+                if self.puzzle.puzzle_type == "hashi":
+                    solution.line.add((int(r), int(c), f"{grid_direction}_{data[3]}"))
+                else:
+                    solution.line.add((int(r), int(c), grid_direction))
 
             elif _type.startswith("number") or _type.startswith("content"):
                 if self.puzzle.puzzle_type == "easyasabc":  # convert penpa number to letter

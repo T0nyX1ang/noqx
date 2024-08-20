@@ -1,15 +1,16 @@
-"""The Hotaru Beam solver."""
+"""The Firefly (Hotaru Beam) solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import direction, display, fill_path, grid
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.loop import directed_loop
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
 from .core.solution import solver
 
-drdc = {"l": (0, -1), "r": (0, 1), "u": (-1, 0), "d": (1, 0)}
+drdc = {"1": (0, 1), "2": (1, 0), "3": (0, -1), "4": (-1, 0)}
+dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
 
 
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
@@ -26,30 +27,37 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     rule += f'bend(R, C) :- {color}(R, C), grid_in(R, C, "d"), not grid_out(R, C, "u").\n'
     rule += f":- #count{{ R, C: grid(R, C), reachable({r}, {c}, R, C), bend(R, C) }} != {num}.\n"
 
-    rule += "hotaru_all(R, C) :- hotaru(R, C).\n"
-    rule += "hotaru_all(R, C) :- dead_end(R, C).\n"
+    rule += "firefly_all(R, C) :- firefly(R, C).\n"
+    rule += "firefly_all(R, C) :- dead_end(R, C).\n"
     return rule
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line("{ hotaru(R, C) } :- grid(R, C), not dead_end(R, C).")
-    solver.add_program_line(fill_path(color="hotaru", directed=True))
+    solver.add_program_line("{ firefly(R, C) } :- grid(R, C), not dead_end(R, C).")
+    solver.add_program_line(fill_path(color="firefly", directed=True))
     solver.add_program_line(adjacent(_type="loop_directed"))
-    solver.add_program_line(directed_loop(color="hotaru"))
-    solver.add_program_line(grid_color_connected(color="hotaru_all", adj_type="loop_directed"))
+    solver.add_program_line(directed_loop(color="firefly"))
+    solver.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
 
-    for (r, c), clue in E.clues.items():
-        if isinstance(clue, list):
-            num = int(clue[0])
-            clue = clue[1]
-            dr, dc = drdc[clue]
-            solver.add_program_line(restrict_num_bend(r + dr, c + dc, num, color="hotaru"))
+    # warning: incompatible encoding with penpa+/puzz.link
+    for (r, c), symbol_name in puzzle.symbol.items():
+        shape, style, _ = symbol_name.split("__")
+        if shape != "firefly":
+            continue
+
+        dr, dc = drdc[style]
+        clue = puzzle.text.get((r, c))
+
+        if isinstance(clue, int):
+            solver.add_program_line(restrict_num_bend(r + dr, c + dc, clue, color="firefly"))
+
         solver.add_program_line(f"dead_end({r}, {c}).")
-        solver.add_program_line(f'grid_out({r}, {c}, "{clue}").')
-        solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{clue}".')
+        solver.add_program_line(f'grid_out({r}, {c}, "{dict_dir[style]}").')
+        solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
     solver.add_program_line(display(item="grid_in", size=3))
     solver.add_program_line(display(item="grid_out", size=3))

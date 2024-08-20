@@ -171,6 +171,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
         "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": True}},
     },
+    "firefly": {
+        "name": "Hotaru Beam (Firefly)",
+        "cat": "loop",
+        "aliases": ["hotaru", "hotarubeam"],
+        "examples": [
+            {
+                "data": "m=edit&p=7ZRPb9pMEMbvfIpoz3vwP0ziW5pCL5Q2hSpCloUWWIIVm6Vru8lrxHfPzNiVWds95JVa5VBZOxp+Ozv7eNnH2Y9CaMl9eNxrbnEbHsf3adieR8Oqn0WcJzK44rdFvlcaEs6/TCZ8J5JMDsK6KhqcypugvOflpyBkDuP1iHh5H5zKz0G55OUcphi3gU0hsxl3IB036QPNY3ZXQduCfFbnkC4h3cVa7pL/qrqvQVguOMNtPtBiTFmqfkpWraLfG5WuYwRrkcO7ZPv4WM9kxVY9FXWtHZ15eVupHfeodRu1mFZqMetRi+JQ7SbWm0SuplWjN8qV20f50qf0Jjqf4cC/gdZVEKLs70163aTz4ARxFpyY6+JSF2RwaAD9XB+B1QCfgNeAkYNg+AtAI5vaLaGdM4I5lxt/RrWH14bYtl3p91WSgDYkESYECRMS4lBcwKvy0qX4kaJFcUhxSjVjig8U7yh6FH2qGeFhvek4L8/iD8kJHYdcWT3D/59Hg5BN44O8mimdigSu06xI11I3v+d7cZQMHMwylayyQu/EBi4kGRwuHrADrTBQotQxgbYGjB8PSsveKYR4n3vq10pvW92fRZIYoPpgGaiyloFyDb65+C20Vs8GSUW+N8DFJ8HoJA+5KSAXpkTxJFq7pc07nwfshdGAu29z79/n8a9/HvHwrffm6vcmh+6t0r2mB9zje6C9/q55x+LAO2bGDbt+BtpjaaBtVwPqGhtgx9vAfmNv7Np2OKpqmxy36vgct7q0ehgNXgE=",
+            }
+        ],
+    },
     "gokigen": {"name": "Gokigen (Slant)", "cat": "draw", "examples": []},
     "haisu": {"name": "Haisu", "cat": "loop", "examples": []},
     "hashi": {
@@ -209,7 +219,6 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "hotaru": {"name": "Hotaru Beam", "cat": "loop", "examples": []},
     "jousan": {"name": "Jousan", "cat": "draw", "examples": []},
     "kakuro": {
         "name": "Kakuro",
@@ -296,7 +305,16 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "nagare": {"name": "Nagareru-Loop", "cat": "loop", "aliases": ["nagareru"], "examples": []},
+    "nagare": {
+        "name": "Nagareru-Loop",
+        "cat": "loop",
+        "aliases": ["nagareru"],
+        "examples": [
+            {
+                "data": "m=edit&p=7VdNb9tGEL37VwQ888D94OctTuNeXLeJXRgGIRi0zcRCJNOlpCag4f+enZmnSBQnaHtoEaCGxP14Ozv7drRvqF39sWn6NrYJfV0RJ7EJn7ws+ClSw0+Cz8V8vWirV/Hrzfq+60Mjjn89OYk/NItVe1TDanb0NJTV8C4efq7qyEYxnlk8vKuehl+q4SoezsNQFPuAnYaWiWIbmm93zUsep9YbAU0S2mdoh+ZVaDZ9332+Pr4+Fsvfqnq4iCNa6JinUzNadn+2kczj/m23vJkTcNOsw25W9/NHjKw2d92nDWzN7DkeXgvf0y1fWhh83Y4vNYUvtRS+RI743s7720V7fSqO/iHd9u5j+0VjWs6en0PI3weu11VNtH/fNYtd87x6itI8qnwcZYarXHpFKpX0ykSqgiuTiKlJxMgkpdTGSW0tapltLMaduDEO4w72Dn4c7D3sfCY1GJoc83LMyzGeg1eOdQqMF8AL4KWsYxMZt+BtjaxnrezLWtiBv7Xix4Kn9ZjvvdSp8LI5+uBlEUsLXraAHYLrwMMlMs8hns6gb7Z98eOM+HFW+DrwdYi3s/DngPttjfkp5oGvy7BOJnwd4uRKjJcYLzFeyrhPZNwjbt7IOh6/vwdvbyRuHvw84ukRT+/gDzx9in4GvxnmZZiXA89hj3PgEWePY+pL6afglxrhn4JPijimHK+ggrPqKZSGy6ugCPJXm/hbLrlkuUb0M9bpDpYUw+JQrCmImjU5cROYNVXnEy+sIRUnPwpOZ1Rhw9rS7Elrmj39Jvv2W56kyf1tbe3pzGv+SZv7+93iBfmfhoe1qNizJhX/rFENp1yjxNmSNpR9WcpF+3H4hh/43+J0JjX7jPar4JQbNJ7fiRtrXokD5wANp5yg4rRfDafjqeEU52ncOKcovzvnGA2n3KKcK1cQz2k8HWlWwTnXKDw5tyj+OdcofDinKHH2ma5Hzi2aH3qnKOeWc4/Gk945ynlIE/38cE6a+Al56YSzk+XyIry848Fx+ROXCZcpl6ds85bLSy7fcOm5zNgmp9f/3/yDME2Q/xKdOpV/mn/9SV/sXuz+f3azozo63/Qfmts2/Ok/nT+0r866ftksQu/8vnlso3DPilbd4noFq4qvYeFyELCHzfKm7UfQouseF8HNCJx/fOj6Vh0ikO4civ1N198deP/cLBYjQC6WI0iuPyNo3Ye7zV6fM+EIWTbr+xGwd20beWof1mMC62ZMsfnUHKy23O35+Sj6EvETErIJF9OXS+x/f4ml8Cc/2pvqR6PDJ7frVdkHWFF+QFWFA5+IPOATOdOCU0UHVBF1QA91HaCptAM4UXfAviNw8nqocWJ1KHNaaqJ0Wmpf7PXs6Cs=",  # unsolvable now
+            }
+        ],
+    },
     "nanro": {
         "name": "Nanro",
         "cat": "num",
@@ -446,7 +464,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "simpleloop": {"name": "Simple Loop", "cat": "loop", "examples": []},
+    "simpleloop": {
+        "name": "Simple Loop",
+        "cat": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7VbRT9s+EH7vX4H87AfHsdMkb4wf7KVjY2VCKIpQWgJEpDVz04FS9X/nfGdU0uSnTZqEkIbS3J0/n32f3X52Vz/XhS25FO4TxlzwAJ5xEuMb6wBf4Z/zqqnL9IAfrps7YyHg/OvJCb8p6lU5ynxWPtq0Sdqe8fZzmjHJOL4By3l7lm7aL2k75e0UuhhXgE0gChiXEB7vwgvsd9ERgYGA+NTHEF5COK/svC6vJoR8S7P2nDNX5xOOdiFbmF8lo2HYnpvFrHLArGhgMau76sH3rNbX5n7tc4N8y9tDojt5oeuqeLrhjq4Lia6LBui6Vfw13bpalk9DTJN8u4Ud/w5cr9LM0f6xC+NdOE03TCuWKs50jC6S6JIAXSAE+UCTl9QdSN9WCfnIt8ch+djjiccTaktB80pBedLPJyOqE/r+UIzJhzQu1B7XEfn4xVOe8uNUSPWUpnlVRHVU5PPGPm9M41VMi1cJrV4L7yXlac9P43phw07TDdgA7SXaE7QS7TnsKm9DtP+hFWg12gnmHKO9QHuEVqGNMGfsvpc//ObejE6m6QT4/aM/8j7y/r28fJSx6dreFPMSTuMJnMoHp8YuiprBvcdWpr5a+d4Ur0U4rQFbrhez0nag2pgHd6h3wOp2aWw52OXA8vp2KH9m7PXe7I9FXXcAuug7EN1HHaixcNm8ahfWmscOsiiauw7w6h7tzFQumy6BpuhSLO6LvWqL3Zq3I/bE8M1C2Hb18afi7f9UuN0X7+2Cem908Idr7KDqAR4QPqCDAvd4T+OA99TsCvYFDeiApgHdlzVAfWUD2BM3YP+jbzfrvsQdq32Vu1I9obtSr7We5aNn",
+            }
+        ],
+    },
     "skyscrapers": {
         "name": "Skyscrapers",
         "cat": "num",
