@@ -13,6 +13,15 @@ drdc = {"1": (0, 1), "2": (1, 0), "3": (0, -1), "4": (-1, 0)}
 dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
 
 
+def convert_direction_to_edge() -> str:
+    """Convert (directed) grid direction fact to edge fact."""
+    rule = 'horizontal_line(R, C) :- grid_out(R, C, "r").\n'
+    rule += 'horizontal_line(R, C) :- grid_in(R, C, "r").\n'
+    rule += 'vertical_line(R, C) :- grid_out(R, C, "d").\n'
+    rule += 'vertical_line(R, C) :- grid_in(R, C, "d").\n'
+    return rule.strip()
+
+
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     """
     Generate a rule to restrict the number of bends in the path.
@@ -35,13 +44,14 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
 def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
     solver.register_puzzle(puzzle)
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("{ firefly(R, C) } :- grid(R, C), not dead_end(R, C).")
     solver.add_program_line(fill_path(color="firefly", directed=True))
     solver.add_program_line(adjacent(_type="loop_directed"))
     solver.add_program_line(directed_loop(color="firefly"))
     solver.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
+    solver.add_program_line(convert_direction_to_edge())
 
     # warning: incompatible encoding with penpa+/puzz.link
     for (r, c), symbol_name in puzzle.symbol.items():
@@ -53,14 +63,14 @@ def solve(puzzle: Puzzle) -> List[str]:
         clue = puzzle.text.get((r, c))
 
         if isinstance(clue, int):
-            solver.add_program_line(restrict_num_bend(r + dr, c + dc, clue, color="firefly"))
+            solver.add_program_line(restrict_num_bend(r + dr + 1, c + dc + 1, clue, color="firefly"))
 
-        solver.add_program_line(f"dead_end({r}, {c}).")
-        solver.add_program_line(f'grid_out({r}, {c}, "{dict_dir[style]}").')
-        solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
+        solver.add_program_line(f"dead_end({r + 1}, {c + 1}).")
+        solver.add_program_line(f'grid_out({r + 1}, {c + 1}, "{dict_dir[style]}").')
+        solver.add_program_line(f'{{ grid_in({r + 1}, {c + 1}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
-    solver.add_program_line(display(item="grid_in", size=3))
-    solver.add_program_line(display(item="grid_out", size=3))
+    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="vertical_line", size=2))
     solver.solve()
 
     return solver.solutions
