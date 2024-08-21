@@ -190,7 +190,18 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
-    "haisu": {"name": "Haisu", "cat": "loop", "examples": []},
+    "haisu": {
+        "name": "Haisu",
+        "cat": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7VZRb9s2EH73ryj0zAeSEilRb12X9MXL1iVDUQhGICdqY1SOOtleCwX57/2OOsKmrGEYCgx5GGQTH0/3kd/d8Uzv/jzUfSMcnrQQUig8aSH9t8joI/m52ezbpnwlXh/2D10PIMSvl5fiY93umkXFXqvF0+DK4Z0Y3pZVohKRaHxVshLDu/Jp+KUcLsRwjVeJULAtRycNeHGE7/17Qm9Go5LAV4wBPwDebfq7trldjpbfymq4EQnt85NnE0y23V9Nwjpoftdt1xsyrOs9gtk9bL7wm93hvvt8YF+1ehbD61HuckZuepRLcJRLaEYuRfHDctvNY/NtTqlbPT8j479D621Zkew/jrA4wuvyCeNV+ZSklqhvIWMsS5JpGPRxmsVTcj+ZFtE0j7l5zC3iqZtM45WVlpN5vLbSMV3pCT8l/+Q6BIZwlQ/6gx8v/aj9eIOciCH1489+lH40flx6nwukSrlcaAVZGiu6AlgxdsDYDlhLBQxpHmtgwzgDzkespNA6ZQx/CsVj+OjgY4CRXcI6FZrq5LEFdoyhJxv1wBd41KM19FAZCafYK+O9UnAz5qbgGuai0bVhbgquYW4GrmFuBp2GdWaIy3BcGbQZ1paBa5lrwLXMNeBa5hpwLXMNuJa5Btosa7PIQ855sMhDznmw0FmwTou9Ct4rh0/BPjnichxXDn/H/vj50o71FNBDp89j6HGjHqov6nqsqeR1JLiS16H6ylBrcCWvKRGLDHWkuof6wh7OA9VUcbwK8YbzQPUNZ0DTGeD8aDoDoe7Qk4Z60RlgLtUx5dgNuKEuBtxQF0s5Zz2W8hxyC649yW3IP+UzZ24O/1ALymcefCj/rKegurC9gD3k31HOOW+Ocs55c5Rz1uOg2ecfTfbet9obP2Z+tL4Fc/rR+lc/az/e7f8op0LH0eV4+piXZVktqmSJq+LVVddv6xYXxsX9p5PZ1WG7bvowx1Wd7Lr2dnfoP9Z3uHj8TY4LBrZH7xmZ2q77QvdQZNx8euz6ZvYVGRtsP+O/7vr7yepf67aNDOP/ksg0XqGRad/jfjyZ133ffY0s23r/EBlOrv5opeZxHwvY17HE+nM92W17jPl5kXxL/LdKUYrs//9B//3/IMq+fGk/Gy9Njj+4XT/b9TDPND6ssw3O9rMeh/2sm2nD84aGdaanYZ22NUznnQ3jWXPD9jf9TatOW5xUTbuctjprdNrqtNer1eI7",
+            },
+            {
+                "data": "m=edit&p=7VZdT+tGEH3Pr0D7vA9er7/Wb5QCL2laClcIRRFygoEIJ6ZOckGO8t85szuu48TV1RVShaoqyvrM8Wb2zPHOOqu/NlmVS6WlkTqRnlT4hNpHAKzct/nczNdFnp7I0836uawApPz94kI+ZsUqH4x51mSwrU1aX8n6Mh0LJaTw8VViIuurdFv/ltYjWV/jlpAK3NBN8gHPW3hr7xM6c6TygEeMAe8AZ/NqVuT3Q8f8kY7rGylonV/srwmKRfk9F6yD4lm5mM6JmGZrFLN6nr/yndXmoXzZ8Fw12cn61Mkd9sjVrVyCTi6hHrlUxaflFvNl/t6n1Ex2Ozj+J7Tep2OS/a2FSQuv0y3GUboVgY+fajxm+1BEpBDSU3dhTGF7Nw4Q+m0YIgzbMO6EyuveVj4tFe3FEeK4jbVdmzYdE8FBgjChMi9hWcPElEJcNwxqUrayOzte2NG34w0Kl7W246929OwY2nFo55zDDz/wpB+iEh9bNfCBDeNA+uQO4RBzIp4TxtInXyw2wJBEONLSTzzGITCqtxjzE54fI6fhnHEErBknwCiecAINhjUkgdQezzfoSo95A141fATMeUwMzGsZtLRy2pADGGYSRrNr7XSCA3brgpM6cDWCkzp0+sFJHbmc4ICdBnA4JZwGcMCNDwpeNbWjloi1kT+cB1dgrpe8iprfwpPGZ/Ik5npj+Nx4a5DfcH6DnKapF3kM54En8IJrJx+aelEj+wafgLl2hXobr2Jgfqa4AnOeGD7E7CG0adaGK52WDuPU/NuTBJ7zHsAV2PmAKzD7Sc83YQ0J1rUeYmPe2u15ZsfAjpHdtjF180/1++c75Idyxpp6vP9DzfwfujMZjMUQZ/HJqKwWWYET+fzhaS8abRbTvGpivAvFqizuV5vqMZvhZLevSpzg4JZ2ZocqyvKVDvoOOX9allXee4vIHMv3zJ+W1cNB9resKDqEe/d3KPeO6lDrCi+gvTirqvKtwyyy9XOH2Hu3djLly3VXwDrrSsxesoPVFm3Nu4F4F/Zr30/B/380/v0/GuS+99WOn68mx27csurtetA9jQ+2t8GZP+px8EfdTAseNzTYnp4Ge9jWoI47G+RRc4P7h/6mrIctTqoOu5yWOmp0Wmq/18eTwQc=",
+            },
+        ],
+    },
     "hashi": {
         "name": "Hashiwokakero (Bridges)",
         "cat": "loop",
