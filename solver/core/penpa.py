@@ -141,9 +141,9 @@ class Puzzle:
                 self.edge.add((coord_2[0] + 1, coord_2[1], Direction.TOP))
             elif coord_1[1] == coord_2[1]:  # col equal, vertical line
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
-            elif coord_1[0] - coord_2[0] == 1 and coord_2[1] - coord_1[1] == 1:  # diag_up
+            elif coord_1[0] - coord_2[0] == 1 and coord_2[1] - coord_1[1] == 1:  # upwards diagonal line
                 self.edge.add((coord_2[0], coord_2[1], Direction.DIAG_UP))
-            elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # diag_down
+            elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.DIAG_DOWN))
         print("[Puzzle] Edge unpacked.")
 
