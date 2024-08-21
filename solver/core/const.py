@@ -195,7 +195,11 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "name": "Hashiwokakero (Bridges)",
         "cat": "loop",
         "aliases": ["bridges", "hashiwokakero"],
-        "examples": [],
+        "examples": [
+            {
+                "data": "m=edit&p=7VZPb9pKEL/zKaI978G7axvbtzRNeqGkafIURRZChjgBxeA8Ay+VEd89M2PyvLM4qvpHaQ8RYjT/dua3g/1jVv9usiqXKpBaSRNJTyr4hF4kIxNKbfr09fafq/m6yJMjebxZz8oKFCnPz87kXVas8l66zxr1tnWc1Bey/pSkwggpNH1Hsr5ItvXnpB7K+hJCQirwDUBTQmpQT1v1muKonTRO5YE+bPQQ1BtQp/NqWuTjQVPoS5LWV1Jgnw90GlWxKP/LRXOM7Gm5mMzRMcnWcJnVbP64j6w2t+XDZp+rRjtZHzdwBx1wDcLZ4zX/40WtAy9e45fxzjLA2gU1Hu12MPKvAHacpIj7n1aNWvUy2YIcJlvhe3j0CAYpoQDU8zU4TGv6YOrWDHk0YmaAxdrkgJcKsFRrRphsmcYBEvVZPObpSivWS2k8b8cDbhss57e2j+etuO/2Vz6esDoQftvGy1t2iBVZhZDfWIV4gmX0Y9cTOfeKOQrt8bhW/N5a8Xtq5XbQNCmrguH3gpfcPUEPidUjcDAEOGt2InBQ02wsVH0HQ9/Jj91fQ8fYo80wHj6JdoZRHKWhyfAMPGPV0Px5NZqjMIajNuagIs3K6unjtIE0X2xnUibgv5aJ+OwNPfSWHbvPlImdF9K5g6+d91djfnsHX+MMbJs/xb7BelbcYD07jvVaREAjisjkhuQZSU3yCrhG1obkR5IeyYDkgHJOSV6TPCHpkwwpp49s9UN89gZwUr/5Y3ztE7xH36O/PzrqpWIwX+ZHw7JaZAX8+w83i0levdiwaolVWYxXm+oum8LeQJsY7AfgW1ImcxVl+VhAOeac3y/LKu8MoTO/ve/Kn5TVrVP9KSsK5mh2S+ZqNiDmWlew3lh2VlXlE/MssvWMOazVjVXKl2sOYJ1xiNlD5nRbtHfe9cQ3QV+gUiX99z32D+yxOH7vb2P/78BJYbLwnyphm5T1uRSPm3E2npbwusLsmqCRsFP/VLC77JtPgF6WsupkGnB3kA14O0ll7z/gFfAfMAg2PCQR8HbwCHhdKgHXIZuA84BQwPcKp2BVl1YQlcss2OqAXLCVzS/pqPcM",
+            }
+        ],
     },
     "heteromino": {
         "name": "Heteromino",
