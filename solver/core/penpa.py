@@ -8,39 +8,39 @@ from functools import reduce
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from zlib import compress, decompress
 
-Direction = Enum("Direction", "LEFT TOP")
+Direction = Enum("Direction", "LEFT TOP DIAG_UP DIAG_DOWN")
 PENPA_PREFIX = "m=edit&p="
 PENPA_ABBREVIATIONS = [
-    ['"qa"', "z9"],
-    ['"pu_q"', "zQ"],
-    ['"pu_a"', "zA"],
-    ['"grid"', "zG"],
-    ['"edit_mode"', "zM"],
-    ['"surface"', "zS"],
-    ['"line"', "zL"],
-    ['"edge"', "zE"],
-    ['"wall"', "zW"],
-    ['"cage"', "zC"],
-    ['"number"', "zN"],
-    ['"symbol"', "zY"],
-    ['"special"', "zP"],
-    ['"self.board"', "zB"],
-    ['"command_redo"', "zR"],
-    ['"command_undo"', "zU"],
-    ['"command_replay"', "z8"],
-    ['"sudoku"', "z1"],
-    ['"freeline"', "zF"],
-    ['"freeedge"', "z2"],
-    ['"thermo"', "zT"],
-    ['"arrows"', "z3"],
-    ['"direction"', "zD"],
-    ['"squareframe"', "z0"],
-    ['"polygon"', "z5"],
-    ['"deleteedge"', "z4"],
-    ['"killercages"', "z6"],
-    ['"nobulbthermo"', "z7"],
-    ['"__a"', "z_"],
-    ["null", "zO"],
+    ('"qa"', "z9"),
+    ('"pu_q"', "zQ"),
+    ('"pu_a"', "zA"),
+    ('"grid"', "zG"),
+    ('"edit_mode"', "zM"),
+    ('"surface"', "zS"),
+    ('"line"', "zL"),
+    ('"edge"', "zE"),
+    ('"wall"', "zW"),
+    ('"cage"', "zC"),
+    ('"number"', "zN"),
+    ('"sudoku"', "z1"),
+    ('"symbol"', "zY"),
+    ('"special"', "zP"),
+    ('"board"', "zB"),
+    ('"command_redo"', "zR"),
+    ('"command_undo"', "zU"),
+    ('"command_replay"', "z8"),
+    ('"freeline"', "zF"),
+    ('"freeedge"', "z2"),
+    ('"thermo"', "zT"),
+    ('"arrows"', "z3"),
+    ('"direction"', "zD"),
+    ('"squareframe"', "z0"),
+    ('"polygon"', "z5"),
+    ('"deleteedge"', "z4"),
+    ('"killercages"', "z6"),
+    ('"nobulbthermo"', "z7"),
+    ('"__a"', "z_"),
+    ("null", "zO"),
 ]
 
 
@@ -135,13 +135,16 @@ class Puzzle:
                 continue
 
             index_1, index_2 = map(int, index.split(","))
-            coord_1, c1 = self.index_to_coord(index_1)
-            coord_2, c2 = self.index_to_coord(index_2)
-            print(coord_1, c1, coord_2, c2)
+            coord_1, _ = self.index_to_coord(index_1)
+            coord_2, _ = self.index_to_coord(index_2)
             if coord_1[0] == coord_2[0]:  # row equal, horizontal line
                 self.edge.add((coord_2[0] + 1, coord_2[1], Direction.TOP))
             elif coord_1[1] == coord_2[1]:  # col equal, vertical line
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.LEFT))
+            elif coord_1[0] - coord_2[0] == 1 and coord_2[1] - coord_1[1] == 1:  # diag_up
+                self.edge.add((coord_2[0], coord_2[1], Direction.DIAG_UP))
+            elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # diag_down
+                self.edge.add((coord_2[0], coord_2[1] + 1, Direction.DIAG_DOWN))
         print("[Puzzle] Edge unpacked.")
 
         self.line = set()  # TODO implement line unpacking
@@ -231,8 +234,11 @@ class Solution:
                 coord_2 = (r - 1, c)
             elif direction == Direction.LEFT:
                 coord_2 = (r, c - 1)
-            else:
-                raise AssertionError("Unsupported edge direction.")
+            elif direction == Direction.DIAG_UP:
+                coord_1 = (r, c - 1)
+                coord_2 = (r - 1, c)
+            elif direction == Direction.DIAG_DOWN:
+                coord_2 = (r, c)
 
             index_1 = self.coord_to_index(coord_1, category=1)
             index_2 = self.coord_to_index(coord_2, category=1)
@@ -241,31 +247,17 @@ class Solution:
         print("[Solution] Edge packed.")
 
         for r, c, direction in self.line:
-            if self.puzzle.puzzle_type == "gokigen":  # special case for gokigen
-                if direction == "ul":
-                    index_1 = self.coord_to_index((r - 1, c - 1), category=0)
-                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
-                elif direction == "ur":
-                    index_1 = self.coord_to_index((r - 1, c), category=0)
-                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
-                elif direction == "dl":
-                    index_1 = self.coord_to_index((r, c - 1), category=0)
-                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
-                elif direction == "dr":
-                    index_1 = self.coord_to_index((r, c), category=0)
-                    index_2 = self.coord_to_index((r - 1, c - 1), category=1)
+            index_1 = self.coord_to_index((r, c), category=0)
+            if direction.startswith("r"):
+                index_2 = self.coord_to_index((r, c), category=3)
+            elif direction.startswith("d"):
+                index_2 = self.coord_to_index((r, c), category=2)
+            elif direction.startswith("l"):
+                index_2 = self.coord_to_index((r, c - 1), category=3)
+            elif direction.startswith("u"):
+                index_2 = self.coord_to_index((r - 1, c), category=2)
             else:
-                index_1 = self.coord_to_index((r, c), category=0)
-                if direction.startswith("r"):
-                    index_2 = self.coord_to_index((r, c), category=3)
-                elif direction.startswith("d"):
-                    index_2 = self.coord_to_index((r, c), category=2)
-                elif direction.startswith("l"):
-                    index_2 = self.coord_to_index((r, c - 1), category=3)
-                elif direction.startswith("u"):
-                    index_2 = self.coord_to_index((r - 1, c), category=2)
-                else:
-                    raise AssertionError("Unsupported line direction.")
+                raise AssertionError("Unsupported line direction.")
 
             if self.puzzle.puzzle_type == "hashi":
                 self.board["line"][f"{index_1},{index_2}"] = 3 if direction.endswith("_1") else 30

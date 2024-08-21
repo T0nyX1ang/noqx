@@ -75,12 +75,17 @@ class ClingoSolver:
             data = _data.split(",")
             r, c = data[:2]  # ensure the first two elements of data is the row and column
 
-            if _type == "edge_left":
-                solution.edge.add((int(r), int(c), Direction.LEFT))
-            elif _type == "edge_top":
-                solution.edge.add((int(r), int(c), Direction.TOP))
+            if _type.startswith("edge_"):
+                if _type == "edge_left":
+                    solution.edge.add((int(r), int(c), Direction.LEFT))
+                elif _type == "edge_top":
+                    solution.edge.add((int(r), int(c), Direction.TOP))
+                elif _type == "edge_diag_up":
+                    solution.edge.add((int(r), int(c), Direction.DIAG_UP))
+                elif _type == "edge_diag_down":
+                    solution.edge.add((int(r), int(c), Direction.DIAG_DOWN))
 
-            elif _type.startswith("grid"):
+            elif _type.startswith("grid_"):
                 grid_direction = str(data[2]).replace('"', "")
                 if self.puzzle.puzzle_type == "hashi":
                     solution.line.add((int(r), int(c), f"{grid_direction}_{data[3]}"))

@@ -32,6 +32,13 @@ def no_loop() -> str:
     return rule.strip()
 
 
+def convert_direction_to_edge() -> str:
+    """Convert (diagonal) grid direction fact to edge fact."""
+    rule = 'edge_diag_down(R, C) :- grid_direction(R, C, "dr").\n'
+    rule += 'edge_diag_up(R, C) :- grid_direction(R + 1, C, "ur").\n'
+    return rule.strip()
+
+
 def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -40,12 +47,14 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(fill_path(color="grid"))
     solver.add_program_line(slant_rule())
     solver.add_program_line(no_loop())
+    solver.add_program_line(convert_direction_to_edge())
 
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be an integer."
         solver.add_program_line(f":- #count{{ D: grid_direction({r + 1}, {c + 1}, D) }} != {num}.")
 
-    solver.add_program_line(display(item="grid_direction", size=3))
+    solver.add_program_line(display(item="edge_diag_down", size=2))
+    solver.add_program_line(display(item="edge_diag_up", size=2))
     solver.solve()
 
     return solver.solutions

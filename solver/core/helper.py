@@ -58,6 +58,10 @@ def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[
             rule += f"edge_left({r}, {c}).\n"
         elif d == Direction.TOP:
             rule += f"edge_top({r}, {c}).\n"
+        elif d == Direction.DIAG_UP:
+            rule += f"edge_diag_up({r}, {c}).\n"
+        elif d == Direction.DIAG_DOWN:
+            rule += f"edge_diag_down({r}, {c}).\n"
 
     for r, c, d in helper_x:
         if d == Direction.LEFT:
