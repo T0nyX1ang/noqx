@@ -45,8 +45,8 @@ def solve(puzzle: Puzzle) -> List[str]:
 
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
     solver.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
-    solver.add_program_line(display(item="vertical_line", size=2))
-    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
 
     return solver.solutions

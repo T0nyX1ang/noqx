@@ -17,8 +17,8 @@ def avoid_adj_same_omino(color: str = "black") -> str:
     An split by edge rule, an omino rule should be defined first.
     """
     t_be = tag_encode("belong_to_shape", "omino", 3, color)
-    constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), horizontal_line(R + 1, C).\n"
-    constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), vertical_line(R, C + 1).\n"
+    constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge_top(R + 1, C).\n"
+    constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge_left(R, C + 1).\n"
     constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
     constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
     return constraint
@@ -40,18 +40,18 @@ def solve(puzzle: Puzzle) -> List[str]:
 
     for (r, c), _ in puzzle.surface.items():
         solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(f"vertical_line({r}, {c}).")
-        solver.add_program_line(f"vertical_line({r}, {c + 1}).")
-        solver.add_program_line(f"horizontal_line({r}, {c}).")
-        solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
+        solver.add_program_line(f"edge_left({r}, {c}).")
+        solver.add_program_line(f"edge_left({r}, {c + 1}).")
+        solver.add_program_line(f"edge_top({r}, {c}).")
+        solver.add_program_line(f"edge_top({r + 1}, {c}).")
 
     for i, o_shape in enumerate(OMINOES[3].values()):
         solver.add_program_line(general_shape("omino_3", i, o_shape, color="not black", adj_type="edge"))
 
     solver.add_program_line(all_shapes("omino_3", color="not black"))
     solver.add_program_line(avoid_adj_same_omino(color="not black"))
-    solver.add_program_line(display(item="vertical_line", size=2))
-    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
 
     return solver.solutions

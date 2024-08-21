@@ -38,8 +38,8 @@ def solve(puzzle: Puzzle) -> List[str]:
         assert isinstance(num, int), "Clue should be integer."
         solver.add_program_line(count_adjacent_edges(num, (r, c)))
 
-    solver.add_program_line(display(item="vertical_line", size=2))
-    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
 
     return solver.solutions

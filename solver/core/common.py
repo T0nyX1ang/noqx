@@ -45,12 +45,12 @@ def edge(rows: int, cols: int) -> str:
     """
     fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
-    fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
-    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C).\n"
-    fact += f"vertical_line(0..{rows - 1}, 0).\n"
-    fact += f"vertical_line(0..{rows - 1}, {cols}).\n"
-    fact += f"horizontal_line(0, 0..{cols - 1}).\n"
-    fact += f"horizontal_line({rows}, 0..{cols - 1})."
+    fact += "{ edge_left(R, C) } :- vertical_range(R, C).\n"
+    fact += "{ edge_top(R, C) } :- horizontal_range(R, C).\n"
+    fact += f"edge_left(0..{rows - 1}, 0).\n"
+    fact += f"edge_left(0..{rows - 1}, {cols}).\n"
+    fact += f"edge_top(0, 0..{cols - 1}).\n"
+    fact += f"edge_top({rows}, 0..{cols - 1})."
     return fact
 
 

@@ -15,10 +15,10 @@ dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
 
 def convert_direction_to_edge() -> str:
     """Convert (directed) grid direction fact to edge fact."""
-    rule = 'horizontal_line(R, C) :- grid_out(R, C, "r").\n'
-    rule += 'horizontal_line(R, C) :- grid_in(R, C, "r").\n'
-    rule += 'vertical_line(R, C) :- grid_out(R, C, "d").\n'
-    rule += 'vertical_line(R, C) :- grid_in(R, C, "d").\n'
+    rule = 'edge_top(R, C) :- grid_out(R, C, "r").\n'
+    rule += 'edge_top(R, C) :- grid_in(R, C, "r").\n'
+    rule += 'edge_left(R, C) :- grid_out(R, C, "d").\n'
+    rule += 'edge_left(R, C) :- grid_in(R, C, "d").\n'
     return rule.strip()
 
 
@@ -69,8 +69,8 @@ def solve(puzzle: Puzzle) -> List[str]:
         solver.add_program_line(f'grid_out({r + 1}, {c + 1}, "{dict_dir[style]}").')
         solver.add_program_line(f'{{ grid_in({r + 1}, {c + 1}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
-    solver.add_program_line(display(item="horizontal_line", size=2))
-    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
     solver.solve()
 
     return solver.solutions

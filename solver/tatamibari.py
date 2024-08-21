@@ -27,10 +27,10 @@ def tatamibari_global_constraint() -> str:
     """Generate a global constraint for tatamibari."""
 
     no_rect_adjacent_by_point = [
-        "vertical_line(R, C + 1)",
-        "vertical_line(R + 1, C + 1)",
-        "horizontal_line(R + 1, C)",
-        "horizontal_line(R + 1, C + 1)",
+        "edge_left(R, C + 1)",
+        "edge_left(R + 1, C + 1)",
+        "edge_top(R + 1, C)",
+        "edge_top(R + 1, C + 1)",
     ]
     rule = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
 
@@ -61,8 +61,8 @@ def solve(puzzle: Puzzle) -> List[str]:
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
     solver.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(tatamibari_global_constraint())
-    solver.add_program_line(display(item="vertical_line", size=2))
-    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
 
     return solver.solutions

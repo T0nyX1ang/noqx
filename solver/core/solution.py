@@ -75,9 +75,9 @@ class ClingoSolver:
             data = _data.split(",")
             r, c = data[:2]  # ensure the first two elements of data is the row and column
 
-            if _type.startswith("vertical"):
+            if _type == "edge_left":
                 solution.edge.add((int(r), int(c), Direction.LEFT))
-            elif _type.startswith("horizontal"):
+            elif _type == "edge_top":
                 solution.edge.add((int(r), int(c), Direction.TOP))
 
             elif _type.startswith("grid"):

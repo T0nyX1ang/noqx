@@ -12,8 +12,8 @@ from .core.solution import solver
 
 def convert_direction_to_edge() -> str:
     """Convert grid direction fact to edge fact."""
-    rule = 'horizontal_line(R, C) :- grid_direction(R, C, "r").\n'
-    rule += 'vertical_line(R, C) :- grid_direction(R, C, "d").\n'
+    rule = 'edge_top(R, C) :- grid_direction(R, C, "r").\n'
+    rule += 'edge_left(R, C) :- grid_direction(R, C, "d").\n'
     return rule.strip()
 
 
@@ -45,8 +45,8 @@ def solve(puzzle: Puzzle) -> List[str]:
     if flag:
         solver.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
 
-    solver.add_program_line(display(item="horizontal_line", size=2))
-    solver.add_program_line(display(item="vertical_line", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
     solver.solve()
 
     return solver.solutions

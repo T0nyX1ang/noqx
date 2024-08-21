@@ -55,15 +55,15 @@ def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[
     rule = ""
     for r, c, d in edges:
         if d == Direction.LEFT:
-            rule += f"vertical_line({r}, {c}).\n"
+            rule += f"edge_left({r}, {c}).\n"
         elif d == Direction.TOP:
-            rule += f"horizontal_line({r}, {c}).\n"
+            rule += f"edge_top({r}, {c}).\n"
 
     for r, c, d in helper_x:
         if d == Direction.LEFT:
-            rule += f"not vertical_line({r}, {c}).\n"
+            rule += f"not edge_left({r}, {c}).\n"
         elif d == Direction.TOP:
-            rule += f"not horizontal_line({r}, {c}).\n"
+            rule += f"not edge_top({r}, {c}).\n"
 
     return rule.strip()
 

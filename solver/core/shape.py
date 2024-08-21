@@ -247,26 +247,26 @@ def all_rect_region() -> str:
 
     A grid rule and an edge rule should be defined first.
     """
-    upleft = "upleft(R, C) :- grid(R, C), vertical_line(R, C), horizontal_line(R, C)."
-    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), vertical_line(R, C), not horizontal_line(R, C).\n"
-    left += "left(R, C) :- grid(R, C), left(R - 1, C), vertical_line(R, C), not horizontal_line(R, C)."
-    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), horizontal_line(R, C), not vertical_line(R, C).\n"
-    up += "up(R, C) :- grid(R, C), up(R, C - 1), horizontal_line(R, C), not vertical_line(R, C)."
+    upleft = "upleft(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C)."
+    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
+    left += "left(R, C) :- grid(R, C), left(R - 1, C), edge_left(R, C), not edge_top(R, C)."
+    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
+    up += "up(R, C) :- grid(R, C), up(R, C - 1), edge_top(R, C), not edge_left(R, C)."
     remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C)."
 
     constraint = ":- grid(R, C), { upleft(R, C); left(R, C); up(R, C); remain(R, C) } != 1.\n"
-    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not vertical_line(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not horizontal_line(R + 1, C).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not vertical_line(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not horizontal_line(R + 1, C)."
+    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not edge_left(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not edge_top(R + 1, C).\n"
+    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not edge_left(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not edge_top(R + 1, C)."
 
-    rect = ":- grid(R, C), left(R, C), remain(R, C + 1), vertical_line(R, C + 1).\n"
-    rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), vertical_line(R, C + 1).\n"
-    rect += ":- grid(R, C), up(R, C), remain(R + 1, C), horizontal_line(R + 1, C).\n"
-    rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), horizontal_line(R + 1, C)."
+    rect = ":- grid(R, C), left(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
+    rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
+    rect += ":- grid(R, C), up(R, C), remain(R + 1, C), edge_top(R + 1, C).\n"
+    rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), edge_top(R + 1, C)."
 
     data = upleft + "\n" + left + "\n" + up + "\n" + remain + "\n" + constraint + "\n" + rect
     return data

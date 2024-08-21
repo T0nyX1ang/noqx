@@ -95,8 +95,8 @@ def grid_src_color_connected(
         propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C)."
+        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge_left(R, C + 1).\n"
+        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge_top(R + 1, C)."
         return initial + "\n" + propagation + "\n" + constraint
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -191,10 +191,10 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
         propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}(R, C, R, C + 1), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}(R, C, R + 1, C), horizontal_line(R + 1, C).\n"
-        constraint += f":- {tag}(R, C + 1, R, C), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}(R + 1, C, R, C), horizontal_line(R + 1, C)."
+        constraint = f":- {tag}(R, C, R, C + 1), edge_left(R, C + 1).\n"
+        constraint += f":- {tag}(R, C, R + 1, C), edge_top(R + 1, C).\n"
+        constraint += f":- {tag}(R, C + 1, R, C), edge_left(R, C + 1).\n"
+        constraint += f":- {tag}(R + 1, C, R, C), edge_top(R + 1, C)."
         return initial + "\n" + propagation + "\n" + constraint
 
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."

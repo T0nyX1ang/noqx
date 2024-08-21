@@ -15,8 +15,8 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
     r, c = (glxr - 1) // 2, (glxc - 1) // 2
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1)."
-    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), horizontal_line(R, C), not horizontal_line({glxr} - R, {glxc} - C - 1).\n"
-    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), vertical_line(R, C), not vertical_line({glxr} - R - 1, {glxc} - C).\n"
+    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), edge_top(R, C), not edge_top({glxr} - R, {glxc} - C - 1).\n"
+    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), edge_left(R, C), not edge_left({glxr} - R - 1, {glxc} - C).\n"
     return rule.strip()
 
 
@@ -38,18 +38,18 @@ def solve(puzzle: Puzzle) -> List[str]:
 
         if category == "1":
             solver.add_program_line(galaxy_constraint(r * 2 + 2, c * 2 + 2))
-            solver.add_program_line(f"not horizontal_line({r + 1}, {c}).")
-            solver.add_program_line(f"not horizontal_line({r + 1}, {c + 1}).")
-            solver.add_program_line(f"not vertical_line({r}, {c + 1}).")
-            solver.add_program_line(f"not vertical_line({r + 1}, {c + 1}).")
+            solver.add_program_line(f"not edge_top({r + 1}, {c}).")
+            solver.add_program_line(f"not edge_top({r + 1}, {c + 1}).")
+            solver.add_program_line(f"not edge_left({r}, {c + 1}).")
+            solver.add_program_line(f"not edge_left({r + 1}, {c + 1}).")
 
         if category == "2":
             solver.add_program_line(galaxy_constraint(r * 2 + 2, c * 2 + 1))
-            solver.add_program_line(f"not horizontal_line({r + 1}, {c}).")
+            solver.add_program_line(f"not edge_top({r + 1}, {c}).")
 
         if category == "3":
             solver.add_program_line(galaxy_constraint(r * 2 + 1, c * 2 + 2))
-            solver.add_program_line(f"not vertical_line({r}, {c + 1}).")
+            solver.add_program_line(f"not edge_left({r}, {c + 1}).")
 
     assert len(reachables) > 0, "Please provide at least one clue."
 
@@ -59,17 +59,17 @@ def solve(puzzle: Puzzle) -> List[str]:
 
     for (r, c), _ in puzzle.surface.items():
         solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(f"vertical_line({r}, {c}).")
-        solver.add_program_line(f"vertical_line({r}, {c + 1}).")
-        solver.add_program_line(f"horizontal_line({r}, {c}).")
-        solver.add_program_line(f"horizontal_line({r + 1}, {c}).")
+        solver.add_program_line(f"edge_left({r}, {c}).")
+        solver.add_program_line(f"edge_left({r}, {c + 1}).")
+        solver.add_program_line(f"edge_top({r}, {c}).")
+        solver.add_program_line(f"edge_top({r + 1}, {c}).")
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
     solver.add_program_line(f":- grid(R, C), not black(R, C), {spawn_points}.")
 
-    solver.add_program_line(display(item="vertical_line", size=2))
-    solver.add_program_line(display(item="horizontal_line", size=2))
+    solver.add_program_line(display(item="edge_left", size=2))
+    solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
 
     return solver.solutions
