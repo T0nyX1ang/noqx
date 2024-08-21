@@ -25,7 +25,7 @@ def yajilin_count(target: int, src_cell: Tuple[int, int], arrow_direction: int, 
     if arrow_direction in [0, 3]:  # up, down
         return f":- #count {{ R1 : {color}(R1, {src_c}), R1 {op} {src_r} }} != {target}."
 
-    raise ValueError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
+    raise AssertionError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
 
 
 def solve(puzzle: Puzzle) -> List[str]:

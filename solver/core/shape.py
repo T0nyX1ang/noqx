@@ -54,7 +54,7 @@ def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[i
     if _type == 8:
         return shape_4 + shape_x
 
-    raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
+    raise AssertionError("Invalid type, must be one of 4, 8, 'x'.")
 
 
 def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
@@ -122,7 +122,7 @@ def general_shape(
     """
 
     if not deltas:
-        raise ValueError("Shape coordinates must be provided.")
+        raise AssertionError("Shape coordinates must be provided.")
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
@@ -183,7 +183,7 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
     if _type == "area":
         return f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C, _, _)."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+    raise AssertionError("Invalid type, must be one of 'grid', 'area'.")
 
 
 def count_shape(
@@ -208,7 +208,7 @@ def count_shape(
     if _type == "area":
         return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+    raise AssertionError("Invalid type, must be one of 'grid', 'area'.")
 
 
 def all_rect(color: str = "black", square: bool = False) -> str:

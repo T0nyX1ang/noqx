@@ -65,7 +65,7 @@ class ClingoSolver:
     def store_solutions(self, model: Model):
         """Get the solution."""
         if self.puzzle is None:
-            raise ValueError("Puzzle not registered.")
+            raise PermissionError("Puzzle not registered.")
 
         solution_data = tuple(str(model).split())  # raw solution converted from clingo
         solution = Solution(self.puzzle)

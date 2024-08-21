@@ -25,7 +25,7 @@ def wall_length(r: int, c: int, d: int, num: int) -> str:
     if d == 3:
         return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
 
-    raise ValueError("Invalid direction.")
+    raise AssertionError("Invalid direction.")
 
 
 def solve(puzzle: Puzzle) -> List[str]:

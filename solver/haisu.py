@@ -65,8 +65,7 @@ def haisu_count() -> str:
 
 
 def solve(puzzle: Puzzle) -> List[str]:
-    if not ("S" in puzzle.text.values() and "G" in puzzle.text.values()):
-        raise ValueError("S and G squares must be provided.")
+    assert "S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided."
 
     solver.reset()
     solver.register_puzzle(puzzle)

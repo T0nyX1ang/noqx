@@ -46,7 +46,7 @@ def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
         symbol_1 = "circle_M__1__0"
         symbol_2 = "circle_M__2__0"
     else:
-        raise ValueError("At most two symbols are allowed.")
+        raise AssertionError("At most two symbols are allowed.")
     return symbol_1, symbol_2
 
 
@@ -169,18 +169,17 @@ def full_bfs(
         for room in clue_to_room:
             if (r, c) in room:
                 return room
-
-        raise ValueError("Cell not found in any room.")
+        raise AssertionError("Cell not found in any room.")
 
     # check that there are no stranded edges
     for r, c, d in borders:
         if d == Direction.LEFT and c < cols:
             room = get_room(r, c)
             if (r, c - 1) in room:
-                raise ValueError("There is a dead-end edge.")
+                raise AssertionError("There is a dead-end edge.")
         elif d == Direction.TOP and r < rows:
             room = get_room(r, c)
             if (r - 1, c) in room:
-                raise ValueError("There is a dead-end edge.")
+                raise AssertionError("There is a dead-end edge.")
 
     return clue_to_room

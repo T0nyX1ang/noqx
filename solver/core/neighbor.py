@@ -48,7 +48,7 @@ def adjacent(_type: Union[int, str] = 4) -> str:
         adj += "adj_loop_directed(R0, C0, R, C) :- adj_loop_directed(R, C, R0, C0)."
         return adj
 
-    raise ValueError("Invalid adjacent type.")
+    raise AssertionError("Invalid adjacent type.")
 
 
 def avoid_adjacent_color(color: str = "black", adj_type: Union[int, str] = 4) -> str:

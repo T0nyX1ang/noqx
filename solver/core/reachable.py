@@ -7,8 +7,7 @@ from .helper import tag_encode, target_encode
 
 def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
     """Validate any matching type."""
-    if _type not in target_type:
-        raise ValueError(f"Invalid type '{_type}'.")
+    assert _type in target_type, f"Invalid type '{_type}'."
 
 
 def grid_color_connected(
@@ -124,7 +123,7 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     elif adj_type == "edge":
         bulb_constraint = f"adj_{adj_type}(R, C, R1, C1), (R - {r}) * (C - {c}) == 0"
     else:
-        raise ValueError("Invalid adjacent type, must be one of '4', 'edge'.")
+        raise AssertionError("Invalid adjacent type, must be one of '4', 'edge'.")
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {bulb_constraint}."
     return initial + "\n" + propagation
@@ -149,7 +148,7 @@ def count_reachable_src(
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
-        raise ValueError("Invalid main type, must be one of 'grid', 'bulb'.")
+        raise AssertionError("Invalid main type, must be one of 'grid', 'bulb'.")
 
     src_r, src_c = src_cell
 

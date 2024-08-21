@@ -91,7 +91,7 @@ class Puzzle:
             self.row = int(header[2]) - self.top_row - self.bottom_row
             self.col = int(header[1]) - self.left_col - self.right_col
         else:
-            raise ValueError("Unsupported cell shape. Current only supported square shape.")
+            raise NotImplementedError("Unsupported cell shape. Current only supported square shape.")
 
         margin = (self.top_row, self.bottom_row, self.left_col, self.right_col)
         print(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {margin}.")

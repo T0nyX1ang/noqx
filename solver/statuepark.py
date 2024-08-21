@@ -19,7 +19,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     elif shapeset == "double_tetro":
         omino_num, omino_count_type = 4, 2
     else:
-        raise ValueError("Shape set not supported.")
+        raise AssertionError("Shape set not supported.")
 
     solver.reset()
     solver.register_puzzle(puzzle)
