@@ -1,43 +1,50 @@
 """The Sudoku solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, display, fill_num, grid, unique_num
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.neighbor import adjacent
 from .core.solution import solver
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
+    assert puzzle.row == puzzle.col, "Doppelblock puzzles must be square."
+    n = puzzle.row
+
+    sep = {9: (3, 3), 8: (2, 4), 6: (2, 3), 4: (2, 2)}
+
     solver.reset()
-    solver.add_program_line(grid(9, 9))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(n, n))
     solver.add_program_line(adjacent(_type="x"))
 
-    for i in range(9):
-        for j in range(9):
-            area_id = (i // 3) * 3 + (j // 3)
+    seg_i, seg_j = sep[n]
+    for i in range(n):
+        for j in range(n):
+            area_id = (i // seg_i) * (n // seg_j) + (j // seg_j)
             solver.add_program_line(area(area_id, [(i, j)]))
 
-    solver.add_program_line(fill_num(_range=range(1, 10)))
+    solver.add_program_line(fill_num(_range=range(1, n + 1)))
     solver.add_program_line(unique_num(_type="row", color="grid"))
     solver.add_program_line(unique_num(_type="col", color="grid"))
     solver.add_program_line(unique_num(_type="area", color="grid"))
 
-    for (r, c), num in E.clues.items():
+    for (r, c), num in filter(
+        lambda x: x[0][0] < n and x[0][0] >= 0 and x[0][1] < n and x[0][1] >= 0, puzzle.text.items()
+    ):  # filter center number
+        assert isinstance(num, int), "Clue should be integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    if E.params["Diagonal"]:  # diagonal rule
-        for i in range(9):
-            solver.add_program_line(f"area(10, {i}, {i}).")
-            solver.add_program_line(f"area(11, {i}, {8 - i}).")
+    if puzzle.param["diagonal"]:  # diagonal rule
+        for i in range(n):
+            solver.add_program_line(f"area({n + 1}, {i}, {i}).")
+            solver.add_program_line(f"area({n + 2}, {i}, {8 - i}).")
 
-    if E.params["Untouch"]:  # untouch rule
+    if puzzle.param["untouch"]:  # untouch rule
         solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_x(R, C, R1, C1).")
 
-    if E.params["Nonconsecutive"]:  # untouch rule
-        solver.add_program_line(":- number(R, C, N), number(R1, C1, N1), adj_x(R, C, R1, C1), |N - N1| = 1.")
-
-    if E.params["Antiknight"]:  # antiknight rule
+    if puzzle.param["antiknight"]:  # antiknight rule
         solver.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 2, |C - C1| = 1.")
         solver.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 2.")
         solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_knight(R, C, R1, C1).")

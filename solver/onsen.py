@@ -1,9 +1,9 @@
 """The Onsen-Meguri solver."""
 
-from typing import Dict, Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union
 
 from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.loop import single_loop
 from .core.neighbor import adjacent
@@ -56,9 +56,10 @@ def onsen_global_rule() -> str:
     return rule.strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="onsen_loop"))
     solver.add_program_line(fill_path(color="onsen_loop"))
@@ -66,18 +67,19 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(single_loop(color="onsen_loop"))
 
     onsen_id = 0
-    areas = full_bfs(E.R, E.C, E.edges)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_border(i, ar))
 
         for rc in ar:
-            if rc in E.clues:
+            if rc in puzzle.text:
                 r, c = rc
-                data = E.clues[rc]
+                data = puzzle.text[rc]
                 solver.add_program_line(f"onsen_loop({r}, {c}).")
                 solver.add_program_line(onsen_rule(data if isinstance(data, int) else "?", onsen_id, i, r, c))
-                onsen_id += 1
+
+                onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
 
     solver.add_program_line(onsen_global_rule())
     solver.add_program_line(display(item="grid_direction", size=3))

@@ -1,39 +1,41 @@
 """The Star Battle solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.solution import solver
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
-    num_stars = int(E.params["stars"])
+def solve(puzzle: Puzzle) -> List[str]:
+    assert puzzle.param["stars"].isdigit(), "Invalid star count."
+    num_stars = int(puzzle.param["stars"])
 
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c(color="gray"))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(shade_c(color="star__2__0"))
 
     solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(avoid_adjacent_color(color="gray", adj_type=8))
+    solver.add_program_line(avoid_adjacent_color(color="star__2__0", adj_type=8))
 
-    solver.add_program_line(count(num_stars, color="gray", _type="row"))
-    solver.add_program_line(count(num_stars, color="gray", _type="col"))
+    solver.add_program_line(count(num_stars, color="star__2__0", _type="row"))
+    solver.add_program_line(count(num_stars, color="star__2__0", _type="col"))
 
-    areas = full_bfs(E.R, E.C, E.edges)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count(num_stars, color="gray", _type="area", _id=i))
+        solver.add_program_line(count(num_stars, color="star__2__0", _type="area", _id=i))
 
-    for (r, c), clue in E.clues.items():
-        if clue == "gray":
-            solver.add_program_line(f"gray({r}, {c}).")
-        elif clue == "green":
-            solver.add_program_line(f"not gray({r}, {c}).")
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f"star__2__0({r}, {c}).")
+        else:  # safe color (others)
+            solver.add_program_line(f"not star__2__0({r}, {c}).")
 
-    solver.add_program_line(display(item="gray"))
+    solver.add_program_line(display(item="star__2__0"))
     solver.solve()
 
     return solver.solutions

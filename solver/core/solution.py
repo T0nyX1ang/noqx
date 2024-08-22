@@ -1,13 +1,50 @@
 """Generate solutions for the given problem."""
 
-from typing import Dict, List
+from typing import List, Optional
 
 from clingo.control import Control
 from clingo.solving import Model
 
-from .encoding import Direction, rcd_to_elt
+from .penpa import Direction, Puzzle, Solution
 
 MAX_SOLUTIONS_TO_FIND = 10
+
+
+def battleship_refine(solution: Solution) -> Solution:
+    """Refine the battleship solution."""
+    for (r, c), _ in solution.symbol.items():
+        has_top_neighbor = (r - 1, c) in solution.symbol
+        has_left_neighbor = (r, c - 1) in solution.symbol
+        has_bottom_neighbor = (r + 1, c) in solution.symbol
+        has_right_neighbor = (r, c + 1) in solution.symbol
+
+        fleet_name = solution.symbol[(r, c)].split("__")[0]
+
+        # center part
+        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+            solution.symbol[(r, c)] = f"{fleet_name}__1__0"
+
+        # middle part
+        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
+            solution.symbol[(r, c)] = f"{fleet_name}__2__0"
+
+        # left part
+        elif {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
+            solution.symbol[(r, c)] = f"{fleet_name}__3__0"
+
+        # top part
+        elif {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+            solution.symbol[(r, c)] = f"{fleet_name}__4__0"
+
+        # right part
+        elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
+            solution.symbol[(r, c)] = f"{fleet_name}__5__0"
+
+        # bottom part
+        elif {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+            solution.symbol[(r, c)] = f"{fleet_name}__6__0"
+
+    return solution
 
 
 class ClingoSolver:
@@ -17,69 +54,69 @@ class ClingoSolver:
         """Initialize a solver."""
         self.clingo_instance: Control = Control()
         self.program: str = ""
-        self.solutions: List[Dict[str, str]] = []
+        self.puzzle: Optional[Puzzle] = None
+        self.solutions: List[str] = []
+
+    def register_puzzle(self, puzzle: Puzzle):
+        """Register the puzzle to the solution."""
+        self.puzzle = puzzle
+        print("[Solver] Puzzle registered.")
 
     def store_solutions(self, model: Model):
         """Get the solution."""
-        solution = tuple(str(model).split())  # raw solution converted from clingo
-        formatted: Dict[str, str] = {}
+        if self.puzzle is None:
+            raise PermissionError("Puzzle not registered.")
 
-        for item in solution:
+        solution_data = tuple(str(model).split())  # raw solution converted from clingo
+        solution = Solution(self.puzzle)
+
+        for item in solution_data:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
-            data[:2] = list(map(int, data[:2]))
 
-            if _type.startswith("number") or _type.startswith("slant_code"):
-                data[2] = int(data[2])
+            r, c = data[:2]  # ensure the first two elements of data is the row and column
 
-            if _type.startswith("vertical"):
-                r, c = data
-                formatted[rcd_to_elt(int(r), int(c), Direction.LEFT)] = "black"
-            elif _type.startswith("horizontal"):
-                r, c = data
-                formatted[rcd_to_elt(int(r), int(c), Direction.TOP)] = "black"
-            elif _type.startswith("number") or _type.startswith("content"):
-                r, c, num = data
-                formatted[rcd_to_elt(int(r), int(c))] = str(num).replace('"', "")
+            if _type.startswith("edge_"):
+                if _type == "edge_left":
+                    solution.edge.add((int(r), int(c), Direction.LEFT))
+                elif _type == "edge_top":
+                    solution.edge.add((int(r), int(c), Direction.TOP))
+                elif _type == "edge_diag_up":
+                    solution.edge.add((int(r), int(c), Direction.DIAG_UP))
+                elif _type == "edge_diag_down":
+                    solution.edge.add((int(r), int(c), Direction.DIAG_DOWN))
+
             elif _type.startswith("grid_"):
-                if len(data) == 3:
-                    r, c, grid_direction, num = data + [""]
+                grid_direction = str(data[2]).replace('"', "")
+                if self.puzzle.puzzle_type == "hashi":
+                    solution.line.add((int(r), int(c), f"{grid_direction}_{data[3]}"))
                 else:
-                    r, c, grid_direction, num = data
-                    num = "_2" if num == "2" else ""
-                grid_direction = grid_direction.replace('"', "")
-                out = "_out" if _type == "grid_out" else ""
-                if not formatted.get(rcd_to_elt(int(r), int(c))):
-                    formatted[rcd_to_elt(int(r), int(c))] = f"{grid_direction}{out}{num}.png"
-                else:
-                    formatted[rcd_to_elt(int(r), int(c))] += f",{grid_direction}{out}{num}.png"
-            elif _type == "triangle":
-                r, c, sign = data
-                sign = str(sign).replace('"', "")
-                dat2png = {
-                    "ul": "top-left.png",
-                    "ur": "top-right.png",
-                    "dl": "bottom-left.png",
-                    "dr": "bottom-right.png",
-                }
-                formatted[rcd_to_elt(int(r), int(c))] = dat2png[sign]
-            elif _type == "slant_code":
-                r, c, code = data
-                code = int(code)
-                sign = ""
-                sign += "tl" if code & 1 else ""
-                sign += "tr" if code >> 1 & 1 else ""
-                sign += "br" if code >> 3 & 1 else ""
-                sign += "bl" if code >> 2 & 1 else ""
-                if sign:
-                    formatted[rcd_to_elt(int(r), int(c))] = sign + ".png"
-            elif len(data) == 2:  # color
-                r, c = data
-                formatted[rcd_to_elt(int(r), int(c))] = _type.replace("color", "")
-            else:  # debug only
-                print(data)
+                    solution.line.add((int(r), int(c), grid_direction))
 
-        self.solutions.append(formatted)
+            elif _type.startswith("number"):
+                if self.puzzle.puzzle_type == "easyasabc":  # convert penpa number to letter
+                    solution.text[(int(r), int(c))] = self.puzzle.param["letters"][int(data[2]) - 1]
+                else:
+                    solution.text[(int(r), int(c))] = int(data[2])
+
+            elif _type.startswith("content"):
+                solution.text[(int(r), int(c))] = str(data[2]).replace('"', "")
+
+            elif _type == "triangle":
+                solution.symbol[(int(r), int(c))] = f"tri__{data[2]}"
+
+            elif _type == "gray":
+                solution.surface[(int(r), int(c))] = 8
+            elif _type == "black":
+                solution.surface[(int(r), int(c))] = 4
+
+            else:
+                solution.symbol[(int(r), int(c))] = str(_type)
+
+        if self.puzzle.puzzle_type == "battleship":
+            solution = battleship_refine(solution)  # refine the battleship solution
+
+        self.solutions.append(str(solution))
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
@@ -89,6 +126,7 @@ class ClingoSolver:
         """Reset the program."""
         self.clingo_instance = Control()
         self.program = ""
+        self.puzzle = None
         self.solutions = []
 
     def solve(self):

@@ -2,7 +2,7 @@
 
 from typing import Iterable, Optional, Tuple, Union
 
-from .encoding import target_encode
+from .helper import target_encode
 
 
 def display(item: str = "black", size: int = 2) -> str:
@@ -45,12 +45,12 @@ def edge(rows: int, cols: int) -> str:
     """
     fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
-    fact += "{ vertical_line(R, C) } :- vertical_range(R, C).\n"
-    fact += "{ horizontal_line(R, C) } :- horizontal_range(R, C).\n"
-    fact += f"vertical_line(0..{rows - 1}, 0).\n"
-    fact += f"vertical_line(0..{rows - 1}, {cols}).\n"
-    fact += f"horizontal_line(0, 0..{cols - 1}).\n"
-    fact += f"horizontal_line({rows}, 0..{cols - 1})."
+    fact += "{ edge_left(R, C) } :- vertical_range(R, C).\n"
+    fact += "{ edge_top(R, C) } :- horizontal_range(R, C).\n"
+    fact += f"edge_left(0..{rows - 1}, 0).\n"
+    fact += f"edge_left(0..{rows - 1}, {cols}).\n"
+    fact += f"edge_top(0, 0..{cols - 1}).\n"
+    fact += f"edge_top({rows}, 0..{cols - 1})."
     return fact
 
 
@@ -105,7 +105,7 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: Union[int, str] = 
     if _type == "area":
         return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- area({_id}, R, C)."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
+    raise AssertionError("Invalid type, must be one of 'grid', 'area'.")
 
 
 def unique_num(color: str = "black", _type: str = "row") -> str:
@@ -124,7 +124,7 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     if _type == "area":
         return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
-    raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
+    raise AssertionError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
 def count(
@@ -152,4 +152,4 @@ def count(
     if _type == "area":
         return f":- #count {{ R, C : area({_id}, R, C), {color}(R, C) }} {rop} {num}."
 
-    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
+    raise AssertionError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")

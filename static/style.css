@@ -1,120 +1,59 @@
-h2 {
-  margin-left: -10px;
-  margin-bottom: 15px;
-  margin-top: 0px;
+body {
+  margin: 0;
 }
 
-html * {
-  font-family: Arial;
-}
-
-.section {
-  margin: auto;
-  width: 70%;
-  padding: 5px;
-}
-
-.puz {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  border-spacing: 10px;
-}
-
-.puz tr {
-  padding-bottom: 10px;
-}
-.puz td {
-  vertical-align: bottom;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-left: 15px;
-  margin-right: 15px;
-  margin-bottom: 25px;
-  padding: 5px;
-}
-
-.row > .smallhalfrow {
-  width: 200px;
-  margin-right: 15px;
-}
-
-.row > .largehalfrow {
-  margin-left: 15px;
-  margin-top: -20px;
-  width: 60%;
-}
-
-.figure {
+#iframe {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 5px;
-  width: min(90%, 200px);
+  border: none;
+  width: 100vw;
+  height: 100vh;
 }
 
-.caption {
-  font-size: 0.8em;
-  font-style: italic;
+.left {
+  position: fixed;
+  left: 10px;
+  top: 30px;
+  font-size: 10pt;
   text-align: center;
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
+input {
+  width: 30px;
   text-align: center;
-  width: 50%;
-  margin: auto;
 }
 
-.header div {
-  margin: auto;
-}
-
-.header li {
-  display: inline;
-  margin-left: 10px;
-  margin-right: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-.header hr {
-  margin-top: -10px;
-  margin-bottom: 25px;
-}
-
-.header .active::before {
-  content: "[";
-}
-
-.header .active::after {
-  content: "]";
-}
-
-#typegroups {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.typegroup {
-  border: 1px solid black;
-  margin: 10px;
-  padding: 10px;
-  min-width: 25%;
-}
-
-a.rules {
-  color: #303030;
+#readme,
+#type,
+#example,
+#solve,
+#solver_reset {
+  display: block;
+  font-size: 14px;
+  margin: 10px auto;
+  width: 150px;
+  height: 25px;
+  text-align: center;
+  cursor: pointer;
+  padding: 2px 5px;
   text-decoration: none;
-  font-size: x-small;
-  vertical-align: super;
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+
+#parameter_box {
+  display: none;
+  font-size: 14px;
+  margin-bottom: 10px;
+  margin: 10px auto;
+  width: 136px;
+  text-align: center;
+  padding: 2px 5px;
+  text-decoration: none;
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+
+#param_shapeset {
+  width: 40px;
+  text-align: center;
 }

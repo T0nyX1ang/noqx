@@ -1,9 +1,9 @@
 """The Hashi solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import direction, display, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.reachable import grid_color_connected
 from .core.solution import solver
 
@@ -46,17 +46,18 @@ def hashi_bridge() -> str:
     return rule + adj.strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lrud"))
     solver.add_program_line(shade_c(color="hashi"))
     solver.add_program_line(hashi_bridge())
     solver.add_program_line(grid_color_connected(color="hashi", adj_type="loop"))
 
-    for (r, c), clue in E.clues.items():
+    for (r, c), num in puzzle.text.items():
         solver.add_program_line(f"hashi({r}, {c}).")
-        solver.add_program_line(f"number({r}, {c}, {clue if isinstance(clue, int) else -1}).")
+        solver.add_program_line(f"number({r}, {c}, {num if isinstance(num, int) else -1}).")
 
     solver.add_program_line(display(item="grid_direction", size=4))
     solver.solve()

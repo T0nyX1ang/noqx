@@ -1,13 +1,15 @@
 """The Balance Loop solver."""
 
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding, reverse_op
+from .core.penpa import Puzzle
+from .core.helper import reverse_op
 from .core.loop import single_loop, loop_sign
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
 from .core.solution import solver
+
 
 def balance_rule(color: str = "black") -> str:
     """
@@ -59,9 +61,10 @@ def count_balance(target: int, src_cell: Tuple[int, int], color: str = "black", 
     return constraint.strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="balance"))
     solver.add_program_line(fill_path(color="balance"))
@@ -72,16 +75,22 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(balance_rule(color="black"))
     solver.add_program_line(balance_rule(color="white"))
 
-    for (r, c), (clue, color) in E.clues.items():
+    for (r, c), symbol_name in puzzle.symbol.items():
         solver.add_program_line(f"balance({r}, {c}).")
-        if color == "b":
-            solver.add_program_line(f"black({r}, {c}).")
-            if clue != "":
-                solver.add_program_line(count_balance(int(clue), (r, c), color="black"))
-        elif color == "w":
+        if symbol_name == "circle_L__1__0":
             solver.add_program_line(f"white({r}, {c}).")
-            if clue != "":
-                solver.add_program_line(count_balance(int(clue), (r, c), color="white"))
+            num = puzzle.text.get((r, c))
+            if isinstance(num, int):
+                solver.add_program_line(count_balance(num, (r, c), color="white"))
+
+        elif symbol_name == "circle_L__2__0":
+            solver.add_program_line(f"black({r}, {c}).")
+            num = puzzle.text.get((r, c))
+            if isinstance(num, int):
+                solver.add_program_line(count_balance(num, (r, c), color="black"))
+
+        else:
+            raise AssertionError("Invalid symbol found.")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
