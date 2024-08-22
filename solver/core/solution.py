@@ -1,7 +1,6 @@
 """Generate solutions for the given problem."""
 
 from typing import Dict, List
-import numpy as np
 
 from clingo.control import Control
 from clingo.solving import Model
@@ -29,7 +28,8 @@ class ClingoSolver:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
             data[:2] = list(map(int, data[:2]))
-            if np.array([_type.startswith(x) for x in ["number", "slant_code"]]).any():
+
+            if _type.startswith("number") or _type.startswith("slant_code"):
                 data[2] = int(data[2])
 
             if _type.startswith("vertical"):

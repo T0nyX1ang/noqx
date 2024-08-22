@@ -79,14 +79,14 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(adj_before())
     solver.add_program_line(haisu_count())
 
-    clue_index = {}
+    s_index = []
     areas = full_bfs(E.R, E.C, E.edges)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_border(i, ar))
         for r, c in ar:
-            if (r, c) in E.clues:
-                clue_index[(r, c)] = i
+            if E.clues.get((r, c)) == "S":
+                s_index = ar
 
     for (r, c), clue in E.clues.items():
         if clue == "S":
@@ -96,7 +96,7 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
 
     for (r, c), clue in E.clues.items():
         if clue not in ("S", "G"):
-            solver.add_program_line(f"num({r}, {c}, {clue}).")
+            solver.add_program_line(f"num({r}, {c}, {clue - 1 if (r, c) in s_index else clue}).")
 
     solver.add_program_line(display(item="grid_in", size=3))
     solver.add_program_line(display(item="grid_out", size=3))

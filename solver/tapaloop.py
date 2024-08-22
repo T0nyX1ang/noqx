@@ -1,7 +1,7 @@
 """The Tapa-like Loop solver."""
 
 import itertools
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from .core.common import direction, display, fill_path, grid
 from .core.encoding import Encoding
@@ -27,7 +27,7 @@ def single_shape(*shape_d: str):
     return str_to_sign[shape_str]
 
 
-def parse_shape_clue(inner: tuple[str], outer: tuple[str]):
+def parse_shape_clue(inner: Tuple[str], outer: Tuple[str]):
     """
     Returns the shape of surroundings. Orders are in the `direction` array.
     """
@@ -115,7 +115,7 @@ def tapa_rules() -> str:
     return "\n".join(valid_tapa)
 
 
-def valid_tapa_pattern(r: int, c: int, clue: list) -> str:
+def valid_tapa_pattern(r: int, c: int, clue: List[str]) -> str:
     valid_pattern, num_str, num_constrain = [], [], []
     for i, (dr, dc, d) in enumerate(direc + direc_outer):
         num_str.append(f"E{i}")
