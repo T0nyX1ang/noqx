@@ -73,10 +73,16 @@ def parse_shape_clue(
     return shapes, sorted(clues)
 
 
+def grid_direc_to_num(r: int, c: int) -> str:
+    """Convert grid direction to numbers."""
+    constraint = f"grid_direc_num(R, C, D, 0) :- -1 <= R, R <= {r}, -1 <= C, C <= {c}, not grid(R, C), direction(D).\n"
+    constraint += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not grid_direction(R, C, D).\n"
+    constraint += "grid_direc_num(R, C, D, 1) :- grid(R, C), grid_direction(R, C, D)."
+    return constraint
+
+
 def generate_patterns(pattern: List[Union[int, str]]) -> List[Tuple[int]]:
-    """
-    Generate patterns given numbers and "?"
-    """
+    """Generate patterns given numbers and '?'."""
     result = [pattern]
     num_max = 8 - len(pattern)
     for i, patt in enumerate(pattern):
@@ -95,9 +101,7 @@ def generate_patterns(pattern: List[Union[int, str]]) -> List[Tuple[int]]:
 
 
 def tapa_rules() -> str:
-    """
-    Generate tapa rules and grid shapes.
-    """
+    """Generate tapa rules and grid shapes."""
     valid_tapaloop = []
     n_clue = 0
     for inner in itertools.product([1, 0], repeat=8):
@@ -145,13 +149,6 @@ def valid_tapaloop_pattern(r: int, c: int, clue: List[Union[int, str]]) -> str:
         valid_pattern = f"not valid_tapaloop({clue_num}, {num_str})"
         constraint = f":- {valid_pattern}, {num_constrain}."
     return constraint.strip()
-
-
-def grid_direc_to_num(r: int, c: int) -> str:
-    constraint = f"grid_direc_num(R, C, D, 0) :- -1 <= R, R <= {r}, -1 <= C, C <= {c}, not grid(R, C), direction(D).\n"
-    constraint += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not grid_direction(R, C, D).\n"
-    constraint += "grid_direc_num(R, C, D, 1) :- grid(R, C), grid_direction(R, C, D)."
-    return constraint
 
 
 def solve(puzzle: Puzzle) -> List[str]:
