@@ -1,9 +1,9 @@
 """The Masyu solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.loop import single_loop, loop_sign
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
@@ -40,9 +40,10 @@ def masyu_white_rule() -> str:
     return white_rule
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="masyu"))
     solver.add_program_line(fill_path(color="masyu"))
@@ -53,12 +54,12 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(masyu_black_rule())
     solver.add_program_line(masyu_white_rule())
 
-    for (r, c), clue in E.clues.items():
+    for (r, c), symbol_name in puzzle.symbol.items():
         solver.add_program_line(f"masyu({r}, {c}).")
-        if clue == "b":
-            solver.add_program_line(f"black({r}, {c}).")
-        elif clue == "w":
+        if symbol_name == "circle_L__1__0":
             solver.add_program_line(f"white({r}, {c}).")
+        elif symbol_name == "circle_L__2__0":
+            solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

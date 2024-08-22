@@ -8,7 +8,12 @@ a = Analysis(
     ["noqx.py"],
     pathex=[],
     binaries=[],
-    datas=[("./static/*", "./static"), ("./templates/*", "./templates")],
+    datas=[
+      ("./static/noq/*", "./static/noq"),
+      ("./static/style.css", "./static"),
+      ("./templates/*", "./templates"),
+      ("./LICENSE", "./")
+    ],
     hiddenimports=[
         "noqx",
         "solver.aqre",

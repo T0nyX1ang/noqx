@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple, Union
 
-from .encoding import tag_encode, target_encode
+from .helper import tag_encode, target_encode
 
 
 def adjacent(_type: Union[int, str] = 4) -> str:
@@ -29,8 +29,8 @@ def adjacent(_type: Union[int, str] = 4) -> str:
         return res
 
     if _type == "edge":
-        adj = "adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not vertical_line(R, C + 1).\n"
-        adj += "adj_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), not horizontal_line(R + 1, C).\n"
+        adj = "adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not edge_left(R, C + 1).\n"
+        adj += "adj_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), not edge_top(R + 1, C).\n"
         adj += "adj_edge(R, C, R1, C1) :- adj_edge(R1, C1, R, C)."
         return adj
 
@@ -48,7 +48,7 @@ def adjacent(_type: Union[int, str] = 4) -> str:
         adj += "adj_loop_directed(R0, C0, R, C) :- adj_loop_directed(R, C, R0, C0)."
         return adj
 
-    raise ValueError("Invalid adjacent type.")
+    raise AssertionError("Invalid adjacent type.")
 
 
 def avoid_adjacent_color(color: str = "black", adj_type: Union[int, str] = 4) -> str:
@@ -105,8 +105,8 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
     """
     src_r, src_c = src_cell
     rop, num = target_encode(target)
-    v_1 = f"vertical_line({src_r}, {src_c})"
-    v_2 = f"vertical_line({src_r}, {src_c + 1})"
-    h_1 = f"horizontal_line({src_r}, {src_c})"
-    h_2 = f"horizontal_line({src_r + 1}, {src_c})"
+    v_1 = f"edge_left({src_r}, {src_c})"
+    v_2 = f"edge_left({src_r}, {src_c + 1})"
+    h_1 = f"edge_top({src_r}, {src_c})"
+    h_2 = f"edge_top({src_r + 1}, {src_c})"
     return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."

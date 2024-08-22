@@ -1,9 +1,10 @@
 """The Binario solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import count, display, grid, shade_c
-from .core.encoding import Encoding
+from .core.helper import extract_two_symbols
+from .core.penpa import Puzzle
 from .core.shape import avoid_rect
 from .core.solution import solver
 
@@ -27,34 +28,37 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
         ).replace("not not ", "")
         return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
 
-    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
+    raise AssertionError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
-    if not (E.R % 2 == 0 and E.C % 2 == 0):
-        raise ValueError("# rows and # columns must both be even!")
+def solve(puzzle: Puzzle) -> List[str]:
+    if not (puzzle.row % 2 == 0 and puzzle.col % 2 == 0):
+        raise AssertionError("# rows and # columns must both be even!")
+
+    symbol_1, symbol_2 = extract_two_symbols(set(puzzle.symbol.values()))
 
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c())
-    solver.add_program_line(count(E.R // 2, color="black", _type="row"))
-    solver.add_program_line(count(E.C // 2, color="black", _type="col"))
-    solver.add_program_line(unique_linecolor(colors=["black", "not black"], _type="row"))
-    solver.add_program_line(unique_linecolor(colors=["black", "not black"], _type="col"))
-    solver.add_program_line(avoid_rect(1, 3, color="black"))
-    solver.add_program_line(avoid_rect(1, 3, color="not black"))
-    solver.add_program_line(avoid_rect(3, 1, color="black"))
-    solver.add_program_line(avoid_rect(3, 1, color="not black"))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(shade_c(color=symbol_1))
+    solver.add_program_line(f"{symbol_2}(R, C) :- grid(R, C), not {symbol_1}(R, C).")
+    solver.add_program_line(count(puzzle.row // 2, color=symbol_1, _type="row"))
+    solver.add_program_line(count(puzzle.col // 2, color=symbol_1, _type="col"))
+    solver.add_program_line(unique_linecolor(colors=[symbol_1, f"not {symbol_1}"], _type="row"))
+    solver.add_program_line(unique_linecolor(colors=[symbol_1, f"not {symbol_1}"], _type="col"))
+    solver.add_program_line(avoid_rect(1, 3, color=symbol_1))
+    solver.add_program_line(avoid_rect(1, 3, color=f"not {symbol_1}"))
+    solver.add_program_line(avoid_rect(3, 1, color=symbol_1))
+    solver.add_program_line(avoid_rect(3, 1, color=f"not {symbol_1}"))
 
-    for (r, c), num in E.clues.items():
-        if num == 1:
-            solver.add_program_line(f"black({r}, {c}).")
-        elif num == 0:
-            solver.add_program_line(f"not black({r}, {c}).")
+    for (r, c), symbol_name in puzzle.symbol.items():
+        if symbol_name == symbol_1:
+            solver.add_program_line(f"{symbol_1}({r}, {c}).")
         else:
-            raise ValueError(f"Invalid clue: {num}")
+            solver.add_program_line(f"not {symbol_1}({r}, {c}).")
 
-    solver.add_program_line(display())
+    solver.add_program_line(display(item=symbol_1))
+    solver.add_program_line(display(item=symbol_2))
     solver.solve()
 
     return solver.solutions

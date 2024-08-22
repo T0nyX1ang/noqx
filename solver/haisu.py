@@ -1,9 +1,9 @@
 """The Haisu solver."""
 
-from typing import Dict, Iterable, List, Tuple
+from typing import Iterable, List, Tuple
 
 from .core.common import area, direction, display, fill_path, grid
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.loop import directed_loop
 from .core.solution import solver
@@ -23,10 +23,10 @@ def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
 
 def adj_before() -> str:
     """Generate a rule to constrain adjacent connectivity."""
-    adj = 'adj_before(R, C-1, R, C) :- grid(R, C), grid_in(R, C, "l").\n'
-    adj += 'adj_before(R-1, C, R, C) :- grid(R, C), grid_in(R, C, "u").\n'
-    adj += 'adj_before(R, C+1, R, C) :- grid(R, C), grid_in(R, C, "r").\n'
-    adj += 'adj_before(R+1, C, R, C) :- grid(R, C), grid_in(R, C, "d").\n'
+    adj = 'adj_before(R, C - 1, R, C) :- grid(R, C), grid_in(R, C, "l").\n'
+    adj += 'adj_before(R - 1, C, R, C) :- grid(R, C), grid_in(R, C, "u").\n'
+    adj += 'adj_before(R, C + 1, R, C) :- grid(R, C), grid_in(R, C, "r").\n'
+    adj += 'adj_before(R + 1, C, R, C) :- grid(R, C), grid_in(R, C, "d").\n'
     return adj.strip()
 
 
@@ -43,12 +43,10 @@ def connected_directed_path(color: str = "white") -> str:
 
 
 def haisu_rules() -> str:
-    """
-    Generate constriants for haisu.
-    """
-    rule = "clue(R, C) :- num(R, C, _).\n"
+    """Generate constriants for haisu."""
+    rule = "clue(R, C) :- number(R, C, _).\n"
     rule += "clue_area(A) :- clue(R, C), area(A, R, C).\n"
-    rule += "area_max_num(A, N) :- clue_area(A), #max { N0 : area(A, R, C), num(R, C, N0) } = N.\n"
+    rule += "area_max_num(A, N) :- clue_area(A), #max { N0 : area(A, R, C), number(R, C, N0) } = N.\n"
     rule += "area_possible_num(A, 0..N) :- clue_area(A), area_max_num(A, N).\n"
     return rule.strip()
 
@@ -58,18 +56,18 @@ def haisu_count() -> str:
     rule = "haisu_count(R, C, A, 0) :- path_start(R, C), clue_area(A).\n"
     rule += "area_in(A, R, C) :- area_border(A, R, C, D), grid_in(R, C, D).\n"
     rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N), not area_in(A, R, C).\n"
-    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N-1), area_in(A, R, C).\n"
+    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N - 1), area_in(A, R, C).\n"
     rule += ":- clue_area(A), grid(R, C), haisu_count(R, C, A, N1), haisu_count(R, C, A, N2), N1 < N2.\n"
-    rule += ":- num(R, C, N), area(A, R, C), not haisu_count(R, C, A, N).\n"
+    rule += ":- number(R, C, N), area(A, R, C), not haisu_count(R, C, A, N).\n"
     return rule.strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
-    if not ("S" in E.clues.values() and "G" in E.clues.values()):
-        raise ValueError("S and G squares must be provided.")
+def solve(puzzle: Puzzle) -> List[str]:
+    assert "S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided."
 
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("haisu(R, C) :- grid(R, C).")
     solver.add_program_line(fill_path(color="haisu", directed=True))
@@ -79,24 +77,24 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(adj_before())
     solver.add_program_line(haisu_count())
 
-    clue_index = {}
-    areas = full_bfs(E.R, E.C, E.edges)
+    s_index = []
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_border(i, ar))
-        for r, c in ar:
-            if (r, c) in E.clues:
-                clue_index[(r, c)] = i
 
-    for (r, c), clue in E.clues.items():
+        for r, c in ar:
+            if puzzle.text.get((r, c)) == "S":
+                s_index = ar
+
+    for (r, c), clue in puzzle.text.items():
         if clue == "S":
             solver.add_program_line(f"path_start({r}, {c}).")
         elif clue == "G":
             solver.add_program_line(f"path_end({r}, {c}).")
-
-    for (r, c), clue in E.clues.items():
-        if clue not in ("S", "G"):
-            solver.add_program_line(f"num({r}, {c}, {clue}).")
+        else:
+            assert isinstance(clue, int), "Clue should be an integer."
+            solver.add_program_line(f"number({r}, {c}, {clue - 1 if (r, c) in s_index else clue}).")  # special case
 
     solver.add_program_line(display(item="grid_in", size=3))
     solver.add_program_line(display(item="grid_out", size=3))

@@ -3,7 +3,7 @@
 import random
 from typing import Any, Dict, FrozenSet, Optional, Set, Tuple, Union
 
-from .encoding import Direction
+from .penpa import Direction
 
 
 def mark_and_extract_clues(
@@ -14,7 +14,7 @@ def mark_and_extract_clues(
     """
     Mark clues to the solver and extract the clues that are not color-relevant.
 
-    Recommended to use it before performing a bfs on a grid.
+    Recommended to use it before performing a bfs on a grid. (deprecation warning)
     """
     clues = {}  # remove color-relevant clues here
     rule = ""
@@ -34,15 +34,66 @@ def mark_and_extract_clues(
     return clues, rule.strip()
 
 
-def extract_initial_edges(edges: Set[Tuple[int, int, Direction]]) -> str:
+def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
+    """Extract two symbols from a set."""
+    if len(symbol_set) == 2:
+        symbol_1 = list(symbol_set)[0]
+        symbol_2 = list(symbol_set)[1]
+    elif len(symbol_set) == 1:
+        symbol_1 = list(symbol_set)[0]
+        symbol_2 = "circle_M__1__0" if symbol_1 == "circle_M__2__0" else "circle_M__2__0"
+    elif len(symbol_set) == 0:
+        symbol_1 = "circle_M__1__0"
+        symbol_2 = "circle_M__2__0"
+    else:
+        raise AssertionError("At most two symbols are allowed.")
+    return symbol_1, symbol_2
+
+
+def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[Tuple[int, int, Direction]]) -> str:
     """Extract the initial edges to the solver."""
     rule = ""
     for r, c, d in edges:
         if d == Direction.LEFT:
-            rule += f"vertical_line({r}, {c}).\n"
+            rule += f"edge_left({r}, {c}).\n"
         elif d == Direction.TOP:
-            rule += f"horizontal_line({r}, {c}).\n"
+            rule += f"edge_top({r}, {c}).\n"
+        elif d == Direction.DIAG_UP:
+            rule += f"edge_diag_up({r}, {c}).\n"
+        elif d == Direction.DIAG_DOWN:
+            rule += f"edge_diag_down({r}, {c}).\n"
+
+    for r, c, d in helper_x:
+        if d == Direction.LEFT:
+            rule += f"not edge_left({r}, {c}).\n"
+        elif d == Direction.TOP:
+            rule += f"not edge_top({r}, {c}).\n"
+
     return rule.strip()
+
+
+def tag_encode(name: str, *data: Union[str, int, None]) -> str:
+    """Encode a valid tag predicate without spaces or hyphens."""
+    tag_data = [name]
+    for d in data:  # recommended data sequence: *_type, src_r, src_c, color
+        if d is not None:
+            tag_data.append(str(d).replace("-", "_").replace(" ", "_"))
+
+    return "_".join(tag_data)
+
+
+def reverse_op(op: str) -> str:
+    """Return the reverse of the given operator."""
+    op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
+    return op_rev_dict[op]
+
+
+def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
+    """Encode a target number for comparison."""
+    if isinstance(target, int):
+        return ("!=", target)
+
+    return (reverse_op(target[0]), target[1])
 
 
 def full_bfs(
@@ -118,18 +169,17 @@ def full_bfs(
         for room in clue_to_room:
             if (r, c) in room:
                 return room
-
-        raise ValueError("Cell not found in any room.")
+        raise AssertionError("Cell not found in any room.")
 
     # check that there are no stranded edges
     for r, c, d in borders:
         if d == Direction.LEFT and c < cols:
             room = get_room(r, c)
             if (r, c - 1) in room:
-                raise ValueError("There is a dead-end edge.")
+                raise AssertionError("There is a dead-end edge.")
         elif d == Direction.TOP and r < rows:
             room = get_room(r, c)
             if (r - 1, c) in room:
-                raise ValueError("There is a dead-end edge.")
+                raise AssertionError("There is a dead-end edge.")
 
     return clue_to_room

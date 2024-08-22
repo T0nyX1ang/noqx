@@ -1,10 +1,10 @@
 """The Lits solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, display, grid, shade_c
-from .core.encoding import Encoding, tag_encode
-from .core.helper import full_bfs
+from .core.penpa import Puzzle
+from .core.helper import full_bfs, tag_encode
 from .core.neighbor import adjacent, area_adjacent
 from .core.reachable import grid_color_connected
 from .core.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_shape
@@ -21,15 +21,16 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
     return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, _, _, T, _), {tag}(A1, _, _, T, _)."
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c("gray"))
     solver.add_program_line(adjacent())
     solver.add_program_line(grid_color_connected(color="gray"))
     solver.add_program_line(avoid_rect(2, 2, color="gray"))
 
-    areas = full_bfs(E.R, E.C, E.edges)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
@@ -42,10 +43,10 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(area_adjacent(color="gray"))
     solver.add_program_line(avoid_adjacent_same_omino(4, color="gray"))
 
-    for (r, c), clue in E.clues.items():
-        if clue == "gray":
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"gray({r}, {c}).")
-        elif clue == "green":
+        else:  # safe color (others)
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

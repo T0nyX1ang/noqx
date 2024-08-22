@@ -1,9 +1,9 @@
 """The Moon-or-Sun solver."""
 
-from typing import Dict, List
+from typing import List
 
 from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.helper import full_bfs
 from .core.loop import pass_area_once, single_loop
 from .core.neighbor import adjacent, area_adjacent
@@ -30,9 +30,10 @@ def moon_sun_area() -> str:
     return (rule + constraint).strip()
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="moon_sun"))
     solver.add_program_line(fill_path(color="moon_sun"))
@@ -40,13 +41,13 @@ def solve(E: Encoding) -> List[Dict[str, str]]:
     solver.add_program_line(grid_color_connected(color="moon_sun", adj_type="loop"))
     solver.add_program_line(single_loop(color="moon_sun"))
 
-    for (r, c), clue in E.clues.items():
-        if clue == "m":
+    for (r, c), symbol_name in puzzle.symbol.items():
+        if symbol_name == "sun_moon__1__0":
             solver.add_program_line(f"moon({r}, {c}).")
-        elif clue == "s":
+        elif symbol_name == "sun_moon__2__0":
             solver.add_program_line(f"sun({r}, {c}).")
 
-    areas = full_bfs(E.R, E.C, E.edges)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     assert len(areas) % 2 == 0, "The number of areas should be even."
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))

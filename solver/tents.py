@@ -1,10 +1,10 @@
 """The Tents solver."""
 
 import itertools
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 from .core.common import count, display, grid, shade_c
-from .core.encoding import Encoding
+from .core.penpa import Puzzle
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.solution import solver
 
@@ -27,38 +27,36 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
     return rules + "\n" + constraints
 
 
-def solve(E: Encoding) -> List[Dict[str, str]]:
+def solve(puzzle: Puzzle) -> List[str]:
     solver.reset()
-    solver.add_program_line(grid(E.R, E.C))
-    solver.add_program_line(shade_c())
+    solver.register_puzzle(puzzle)
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(shade_c(color="tents__2__0"))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(avoid_adjacent_color(color="black", adj_type=8))
+    solver.add_program_line(avoid_adjacent_color(color="tents__2__0", adj_type=8))
+
+    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
+        assert isinstance(num, int), "TOP clue must be an integer."
+        solver.add_program_line(count(num, color="tents__2__0", _type="col", _id=c))
+
+    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
+        assert isinstance(num, int), "LEFT clue must be an integer."
+        solver.add_program_line(count(num, color="tents__2__0", _type="row", _id=r))
 
     all_trees: List[Tuple[int, int]] = []
-    for (r, c), clue in E.clues.items():
-        if clue == "e":
+    for (r, c), symbol_name in puzzle.symbol.items():
+        if symbol_name == "tents__1__0":
             all_trees.append((r, c))
-            solver.add_program_line(f"not black({r}, {c}).")
-        elif clue == "n":
-            solver.add_program_line(f"black({r}, {c}).")
-        elif clue == "green":
-            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(f"not tents__2__0({r}, {c}).")
+        elif symbol_name == "tents__2__0":
+            solver.add_program_line(f"tents__2__0({r}, {c}).")
+        else:
+            solver.add_program_line(f"not tents__2__0({r}, {c}).")
 
-    for c, num in E.top.items():
-        solver.add_program_line(count(int(num), color="black", _type="col", _id=c))
-
-    for r, num in E.left.items():
-        solver.add_program_line(count(int(num), color="black", _type="row", _id=r))
-
-    solver.add_program_line(identical_adjacent_map(all_trees, color="black", adj_type=4))
-    solver.add_program_line(count(len(all_trees), color="black", _type="grid"))
-    solver.add_program_line(display(item="black"))
+    solver.add_program_line(identical_adjacent_map(all_trees, color="tents__2__0", adj_type=4))
+    solver.add_program_line(count(len(all_trees), color="tents__2__0", _type="grid"))
+    solver.add_program_line(display(item="tents__2__0"))
     solver.solve()
-
-    for solution in solver.solutions:
-        for rc, color in solution.items():
-            if color == "black":
-                solution[rc] = "tent.png"
 
     return solver.solutions

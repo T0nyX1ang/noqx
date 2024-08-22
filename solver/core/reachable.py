@@ -2,17 +2,16 @@
 
 from typing import Iterable, List, Optional, Tuple, Union
 
-from .encoding import tag_encode, target_encode
+from .helper import tag_encode, target_encode
 
 
 def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
     """Validate any matching type."""
-    if _type not in target_type:
-        raise ValueError(f"Invalid type '{_type}'.")
+    assert _type in target_type, f"Invalid type '{_type}'."
 
 
 def grid_color_connected(
-    color: str = "black", adj_type: Union[int, str] = 4, initial_cells: Optional[List[Tuple[int, int]]] = None
+    color: str = "black", adj_type: Union[int, str] = 4, initial_cell: Optional[Tuple[int, int]] = None
 ) -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
@@ -22,10 +21,11 @@ def grid_color_connected(
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
-    if not initial_cells:
+    if not initial_cell:
         initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
     else:
-        initial = "\n".join(f"{tag}({r}, {c})." for r, c in initial_cells)
+        r, c = initial_cell
+        initial = f"{tag}({r}, {c}) :- {color}({r}, {c})."
 
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
@@ -94,8 +94,8 @@ def grid_src_color_connected(
         propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), horizontal_line(R + 1, C)."
+        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge_left(R, C + 1).\n"
+        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge_top(R + 1, C)."
         return initial + "\n" + propagation + "\n" + constraint
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -123,7 +123,7 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     elif adj_type == "edge":
         bulb_constraint = f"adj_{adj_type}(R, C, R1, C1), (R - {r}) * (C - {c}) == 0"
     else:
-        raise ValueError("Invalid adjacent type, must be one of '4', 'edge'.")
+        raise AssertionError("Invalid adjacent type, must be one of '4', 'edge'.")
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {bulb_constraint}."
     return initial + "\n" + propagation
@@ -148,7 +148,7 @@ def count_reachable_src(
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
-        raise ValueError("Invalid main type, must be one of 'grid', 'bulb'.")
+        raise AssertionError("Invalid main type, must be one of 'grid', 'bulb'.")
 
     src_r, src_c = src_cell
 
@@ -190,10 +190,10 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
         propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}(R, C, R, C + 1), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}(R, C, R + 1, C), horizontal_line(R + 1, C).\n"
-        constraint += f":- {tag}(R, C + 1, R, C), vertical_line(R, C + 1).\n"
-        constraint += f":- {tag}(R + 1, C, R, C), horizontal_line(R + 1, C)."
+        constraint = f":- {tag}(R, C, R, C + 1), edge_left(R, C + 1).\n"
+        constraint += f":- {tag}(R, C, R + 1, C), edge_top(R + 1, C).\n"
+        constraint += f":- {tag}(R, C + 1, R, C), edge_left(R, C + 1).\n"
+        constraint += f":- {tag}(R + 1, C, R, C), edge_top(R + 1, C)."
         return initial + "\n" + propagation + "\n" + constraint
 
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
