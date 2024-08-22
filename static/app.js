@@ -162,6 +162,8 @@ window.onload = function () {
                   icon: "error",
                   title: "Oops...",
                   text: body.detail || "Unknown error.",
+                  footer:
+                    "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
                 });
               } else {
                 solutionList = body.url;
@@ -169,7 +171,9 @@ window.onload = function () {
                   Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "No solution found or time limit exceeded (30 seconds).",
+                    text: "No solution found or time limit exceeded.",
+                    footer:
+                      "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
                   });
                   return;
                 }
@@ -183,6 +187,8 @@ window.onload = function () {
                 icon: "question",
                 title: "Unexpected error",
                 text: e,
+                footer:
+                  "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
               });
             })
             .finally(() => {
