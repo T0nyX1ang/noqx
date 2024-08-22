@@ -73,6 +73,7 @@ class ClingoSolver:
         for item in solution_data:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
+
             r, c = data[:2]  # ensure the first two elements of data is the row and column
 
             if _type.startswith("edge_"):

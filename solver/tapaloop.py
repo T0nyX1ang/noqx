@@ -2,6 +2,7 @@
 
 import itertools
 from typing import List, Tuple, Union, Optional
+
 from .core.common import direction, display, fill_path, grid
 from .core.penpa import Puzzle
 from .core.loop import single_loop
