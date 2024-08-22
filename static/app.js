@@ -3,7 +3,7 @@ function exp() {
 }
 
 function imp(penpa) {
-  iframe.contentWindow.load(penpa);
+  iframe.contentWindow.import_url(penpa);
 }
 
 function make_param(id, type, name, value) {
@@ -39,6 +39,7 @@ function make_param(id, type, name, value) {
 
 window.onload = function () {
   const iframe = document.getElementById("iframe");
+  const urlBase = "./penpa-edit/#";
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
   const solveButton = document.getElementById("solve");
@@ -100,8 +101,12 @@ window.onload = function () {
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;
-          puzzleContent = body[puzzleType].examples[exampleSelect.value].data;
-          imp(puzzleContent);
+
+          let exampleData = body[puzzleType].examples[exampleSelect.value];
+          puzzleContent = exampleData.url
+            ? exampleData.url
+            : `${urlBase}${exampleData.data}`;
+          imp(puzzleContent, exampleData.url !== undefined);
 
           if (body[puzzleType].parameters) {
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
@@ -202,7 +207,7 @@ window.onload = function () {
 
       resetButton.addEventListener("click", () => {
         if (foundUrl && puzzleContent !== null) {
-          imp(puzzleContent);
+          imp(`${urlBase}${puzzleContent}`);
           foundUrl = null;
         } else {
           iframe.contentWindow.pu.reset_board();
