@@ -158,19 +158,13 @@ window.onload = function () {
                   title: "Oops...",
                   text: body.detail || "Unknown error.",
                 });
-              } else if (response.status === 503) {
-                Swal.fire({
-                  icon: "error",
-                  title: "Oops...",
-                  text: "The server is too busy. Please try again later.",
-                });
               } else {
                 solutionList = body.url;
                 if (solutionList.length === 0) {
                   Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "No solution found.",
+                    text: "No solution found or time limit exceeded (30 seconds).",
                   });
                   return;
                 }

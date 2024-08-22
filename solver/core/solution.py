@@ -8,6 +8,7 @@ from clingo.solving import Model
 from .penpa import Direction, Puzzle, Solution
 
 MAX_SOLUTIONS_TO_FIND = 10
+TIMEOUT_LIMIT = 30
 
 
 def battleship_refine(solution: Solution) -> Solution:
@@ -137,7 +138,11 @@ class ClingoSolver:
         self.clingo_instance.configuration.solve.models = MAX_SOLUTIONS_TO_FIND  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
-        self.clingo_instance.solve(on_model=self.store_solutions)
+        with self.clingo_instance.solve(
+            on_model=self.store_solutions, async_=True
+        ) as handle:  # pylint: disable=not-context-manager
+            handle.wait(TIMEOUT_LIMIT)
+            handle.cancel()
 
 
 solver = ClingoSolver()
