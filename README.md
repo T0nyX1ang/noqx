@@ -10,6 +10,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Change the backend from Django to FastAPI (See issue [#31](https://github.com/T0nyX1ang/noqx/issues/31)).
 
+- Change the frontend from Noq native to penpa-edit. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
+
 ## How to run locally
 
 ### Use PDM with a virtual environment (Recommended)
