@@ -12,20 +12,18 @@ from .core.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[str]:
-    R, C = puzzle.row, puzzle.col
     solver.reset()
     solver.register_puzzle(puzzle)
-    solver.add_program_line(grid(R, C))
+    solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="gray", grid_size=(R, C)))
-    # solver.add_program_line(grid_color_connected(color="gray"))
+    solver.add_program_line(grid_color_connected(color="gray", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(4, 1, color="gray"))
     solver.add_program_line(avoid_rect(1, 4, color="gray"))
     solver.add_program_line(avoid_rect(4, 1, color="not gray"))
     solver.add_program_line(avoid_rect(1, 4, color="not gray"))
 
-    areas = full_bfs(R, C, puzzle.edge, puzzle.text)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:

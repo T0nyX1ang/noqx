@@ -28,9 +28,11 @@ def grid_color_connected(
         if grid_size is None:
             initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
         else:
-            # seems useless for loops (e.g. tapa-like loop)
+            # propagation from the middle of the grid to increase the speed
             R, C = grid_size
-            initial = f"{tag}(R, C) :- (_, R, C) = #min{{ (|R1-{R // 2}|+|C1-{C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+            initial = (
+                f"{tag}(R, C) :- (_, R, C) = #min{{ (|R1-{R // 2}|+|C1-{C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+            )
     else:
         r, c = initial_cell
         initial = f"{tag}({r}, {c}) :- {color}({r}, {c})."

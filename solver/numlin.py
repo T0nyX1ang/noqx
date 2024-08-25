@@ -6,8 +6,9 @@ from .core.common import direction, display, fill_path, grid, shade_c
 from .core.penpa import Puzzle
 from .core.loop import single_loop
 from .core.neighbor import adjacent
-from .core.reachable import avoid_unknown_src, grid_src_color_connected
+from .core.helper import tag_encode
 from .core.solution import solver
+
 
 def no_2x2_path() -> str:
     """
@@ -48,15 +49,15 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(single_loop(color="numlin", path=True))
 
-    for id, (n, pair) in enumerate(locations.items()):
+    for _id, (n, pair) in enumerate(locations.items()):
         r0, c0 = pair[0]
         r1, c1 = pair[1]
-        solver.add_program_line(f"link_end({id}, {r0}, {c0}).")
-        solver.add_program_line(f"link_end({id}, {r1}, {c1}).")
-        
-    tag = "reachable_grid_src_adj_loop_numlin"
-    solver.add_program_line(f"numlin(R, C) :- link_end(_, R, C).")
-    solver.add_program_line(f"dead_end(R, C) :- link_end(_, R, C).")
+        solver.add_program_line(f"link_end({_id}, {r0}, {c0}).")
+        solver.add_program_line(f"link_end({_id}, {r1}, {c1}).")
+
+    tag = tag_encode("reachable", "grid", "src", "adj", "loop", "numlin")
+    solver.add_program_line("numlin(R, C) :- link_end(_, R, C).")
+    solver.add_program_line("dead_end(R, C) :- link_end(_, R, C).")
     solver.add_program_line(f"{tag}(ID, R, C) :- link_end(ID, R, C).")
     solver.add_program_line(f"{tag}(ID, R, C) :- {tag}(ID, R1, C1), link_end(ID, _, _), grid(R, C), adj_loop(R, C, R1, C1).")
 
