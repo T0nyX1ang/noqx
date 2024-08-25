@@ -38,12 +38,12 @@ def solve(puzzle: Puzzle) -> List[str]:
     if shaded == 0:
         solver.add_program_line("black(-1, -1).")
 
-    for (r, c), _ in puzzle.surface.items():
+    for (r, c), num in puzzle.surface.items():
         solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(f"edge_left({r}, {c}).")
-        solver.add_program_line(f"edge_left({r}, {c + 1}).")
-        solver.add_program_line(f"edge_top({r}, {c}).")
-        solver.add_program_line(f"edge_top({r + 1}, {c}).")
+        for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
+            prefix = "not " if ((r1, c1), num) in puzzle.surface.items() else ""
+            direc = "left" if c1 != c else "top"
+            solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
     for i, o_shape in enumerate(OMINOES[3].values()):
         solver.add_program_line(general_shape("omino_3", i, o_shape, color="not black", adj_type="edge"))
