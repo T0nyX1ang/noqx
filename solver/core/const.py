@@ -400,7 +400,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "aliases": ["numberlink"],
         "examples": [
             {
-                "data": "m=edit&p=7ZTPb9owFMfv/BWVzz7kB3SQG6VlF8bWlamqoggZcEvUBHdOslZG/O997yVV4iSTNk3aepgMTy8fP9tfx/4m+14ILfkImj/mDnehed6Y/kMHf29tFeeJDM74tMj3SkPC+ef5nN+LJJODsKqKBkczCcw1Nx+DkLmMMw/+Lou4uQ6O5lNgltzcQBfjLrBFWeRBelWnt9SP2ayErgP5ssohvYN0G+ttIteLknwJQrPiDNe5oNGYslT9kKzSgc9blW5iBBuRw2ayffxU9WTFTj0WVa0bnbiZktxqSI9mv9aMaakZsx7NuJU/1pzEB/nSJ3cSnU7w2r+C4HUQovZvdTqu05vgCHEZHJnn4NApyCjPhvkELhrAQ3DZABMEsxoMaUijYkSgUTFyW5Oe28uCGJck3VGcU/QorkAxNz7FS4oOxRHFBdVcUbylOKM4pHhONR9wz7/1Vv6CnNArDYZt9GtZNAjZAk7+bKl0KhI4/2WRbqR+ewbDsUwl66zQ92ILN4f8CDcE2IEqLZQo9YQXyYLxw0Fp2duFUO4e+uo3Su9asz+LJLFA+XWxUOkBC+UaLnjjWWitni2SinxvgYaBrZnkIbcF5MKWKB5Fa7W03vNpwF4Y/UMfXv7w/9fsH33N8Aic9+be9yaHbq/SvdYH3ON+oL0ur3jH6MA7lsYFu64G2mNsoG1vA+raG2DH4cB+YnKcte1zVNW2Oi7VcTsu1TR8GA1eAQ==",
+                "data": "m=edit&p=7ZTPb5swFMfv+Ssqn33gR9Kl3NK02yVj65qpqhCKnMRtUCHuDKyVo/zvfe9BBwYmbZq09TA5eXp8/Gx/jf0l/1YKLfkEmj/lDnehed6U/mMHf69tmRSpDE74rCx2SkPC+aeQ34k0l6OoLopHB3MWmCtuPgQRcxlnHvxdFnNzFRzMx8CE3FxDF+MusEVV5EF62aQ31I/ZvIKuA3lY55DeQrpJ9CaVq0VFPgeRWXKG65zTaExZpr5LVuvA543K1gmCtShgL/kueax78nKrHsq61o2P3MxIbj1kQLPfaMa00ozZgGbcyh9rTpO9fB6SexYfj/Dav4DgVRCh9q9NOm3S6+AAMQwOzHNx6AxkVGfDfAfBeQt4CC5a4AzBvAFjGtKqmBBoVUxoldakp1TxY1kQ45KkW4rvKXoUl6CYG5/iBUWH4oTigmouKd5QnFMcUzylmne45996K39BTuRV/sI2+bUsHkVsASd/EiqdiRTOPyyztdSvz2A4lqt0lZf6Tmzg5pAf4YYA21OlhVKlHvEiWTC53ystB7sQyu39UP1a6W1n9ieRphaoPi4WqjxgoULDBW89C63Vk0UyUews0DKwNZPcF7aAQtgSxYPorJY1ez6O2DOjf+TDyx///5r9o68ZHoHz1tz71uTQ7VV60PqAB9wPdNDlNe8ZHXjP0rhg39VAB4wNtOttQH17A+w5HNhPTI6zdn2OqrpWx6V6bsel2oaP4tEL",
                 "config": {"visit_all": False, "no_2x2": False},
             },
             {
