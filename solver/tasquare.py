@@ -20,7 +20,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="not black"))
+    solver.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(all_rect(color="black", square=True))
 
     for (r, c), color_code in puzzle.surface.items():

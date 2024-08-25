@@ -27,7 +27,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c("gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="gray"))
+    solver.add_program_line(grid_color_connected(color="gray", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(2, 2, color="gray"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)

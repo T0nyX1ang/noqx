@@ -26,7 +26,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="not gray"))
+    solver.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
 
     solver.add_program_line(all_shapes(f"omino_{omino_num}", color="gray"))
     for i, o_shape in enumerate(OMINOES[omino_num].values()):
