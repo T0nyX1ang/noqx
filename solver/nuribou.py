@@ -55,9 +55,9 @@ def solve(puzzle: Puzzle) -> List[str]:
         # if clue != "?":
         #     solver.add_program_line(f":- {{ {tag}({id}, R, C) }} != 1.")
 
-    solver.add_program_line(different_area_connected(tag))
+    solver.add_program_line(different_area_connected(tag, color="not black"))
     solver.add_program_line("not black(R, C) :- clue(_, R, C).")
-    # solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(_, R, C).")
+    solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(_, R, C).")
     solver.add_program_line(grid_branch_color_connected(color="black"))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))
