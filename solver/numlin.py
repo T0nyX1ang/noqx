@@ -57,7 +57,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     tag = "reachable_grid_src_adj_loop_numlin"
     solver.add_program_line(f"numlin(R, C) :- link_end(_, R, C).")
     solver.add_program_line(f"dead_end(R, C) :- link_end(_, R, C).")
-    solver.add_program_line(f"{tag}(ID, R, C) :- link_end(ID, R, C).\n")
+    solver.add_program_line(f"{tag}(ID, R, C) :- link_end(ID, R, C).")
     solver.add_program_line(f"{tag}(ID, R, C) :- {tag}(ID, R1, C1), link_end(ID, _, _), grid(R, C), adj_loop(R, C, R1, C1).")
 
     solver.add_program_line(f":- grid(R, C), numlin(R, C), not {tag}(_, R, C).")
