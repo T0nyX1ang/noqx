@@ -7,6 +7,7 @@ from .core.penpa import Puzzle
 from .core.loop import single_loop
 from .core.neighbor import adjacent
 from .core.helper import tag_encode
+from .core.reachable import different_area_connected
 from .core.solution import solver
 
 
@@ -52,17 +53,15 @@ def solve(puzzle: Puzzle) -> List[str]:
     for _id, (n, pair) in enumerate(locations.items()):
         r0, c0 = pair[0]
         r1, c1 = pair[1]
-        solver.add_program_line(f"link_end({_id}, {r0}, {c0}).")
-        solver.add_program_line(f"link_end({_id}, {r1}, {c1}).")
+        solver.add_program_line(f"clue({_id}, {r0}, {c0}).")
+        solver.add_program_line(f"clue({_id}, {r1}, {c1}).")
 
+    solver.add_program_line("numlin(R, C) :- clue(_, R, C).")
+    solver.add_program_line("dead_end(R, C) :- clue(_, R, C).")
     tag = tag_encode("reachable", "grid", "src", "adj", "loop", "numlin")
-    solver.add_program_line("numlin(R, C) :- link_end(_, R, C).")
-    solver.add_program_line("dead_end(R, C) :- link_end(_, R, C).")
-    solver.add_program_line(f"{tag}(ID, R, C) :- link_end(ID, R, C).")
-    solver.add_program_line(f"{tag}(ID, R, C) :- {tag}(ID, R1, C1), link_end(ID, _, _), grid(R, C), adj_loop(R, C, R1, C1).")
+    solver.add_program_line(different_area_connected(tag))
 
     solver.add_program_line(f":- grid(R, C), numlin(R, C), not {tag}(_, R, C).")
-    solver.add_program_line(f":- grid(R, C), numlin(R, C), {tag}(ID, R, C), {tag}(ID1, R, C), ID < ID1.")
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 

@@ -10,7 +10,7 @@ from .core.reachable import (
     avoid_unknown_src,
     count_reachable_src,
     grid_branch_color_connected,
-    grid_src_color_connected,
+    different_area_connected,
 )
 from .core.shape import all_rect
 from .core.solution import solver
@@ -47,20 +47,22 @@ def solve(puzzle: Puzzle) -> List[str]:
         all_src.append((r, c))
     assert len(all_src) > 0, "No clues found."
 
-    for (r, c), clue in puzzle.text.items():
+    tag = "reachable_grid_src_adj_4_not_black"
+    for id, ((r, c), clue) in enumerate(puzzle.text.items()):
         assert isinstance(clue, int) or (isinstance(clue, str) and clue == "?"), "Clue must be an integer or '?'."
-        current_excluded = [src for src in all_src if src != (r, c)]
-        solver.add_program_line(f"not black({r}, {c}).")
-        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color="not black"))
+        solver.add_program_line(f"clue({id}, {r}, {c}).")
+        
+        # if clue != "?":
+        #     solver.add_program_line(f":- {{ {tag}({id}, R, C) }} != 1.")
 
-        if clue != "?":
-            solver.add_program_line(count_reachable_src(clue, (r, c), color="not black"))
-
-    solver.add_program_line(avoid_unknown_src(color="not black"))
+    solver.add_program_line(different_area_connected(tag))
+    solver.add_program_line("not black(R, C) :- clue(_, R, C).")
+    # solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(_, R, C).")
     solver.add_program_line(grid_branch_color_connected(color="black"))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))
     solver.add_program_line(display(item="black"))
+    print(solver.program)
     solver.solve()
 
     return solver.solutions
