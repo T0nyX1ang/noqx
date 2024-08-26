@@ -18,7 +18,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(unique_num(color="not black", _type="col"))
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent_color())
-    solver.add_program_line(grid_color_connected(color="not black", initial_cell=(0, 0)))
+    solver.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
