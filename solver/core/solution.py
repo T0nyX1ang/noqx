@@ -104,7 +104,8 @@ class ClingoSolver:
                 solution.text[(int(r), int(c))] = str(data[2]).replace('"', "")
 
             elif _type == "triangle":
-                solution.symbol[(int(r), int(c))] = f"tri__{data[2]}"
+                shaka_dict = {'"ul"': "1", '"ur"': "4", '"dl"': "2", '"dr"': "3"}
+                solution.symbol[(int(r), int(c))] = f"tri__{shaka_dict[data[2]]}__0"
 
             elif _type == "gray":
                 solution.surface[(int(r), int(c))] = 8
