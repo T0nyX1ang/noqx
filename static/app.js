@@ -3,7 +3,7 @@ function exp() {
 }
 
 function imp(penpa) {
-  iframe.contentWindow.load(penpa);
+  iframe.contentWindow.import_url(penpa);
 }
 
 function make_param(id, type, name, value) {
@@ -39,6 +39,7 @@ function make_param(id, type, name, value) {
 
 window.onload = function () {
   const iframe = document.getElementById("iframe");
+  const urlBase = "./penpa-edit/#";
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
   const solveButton = document.getElementById("solve");
@@ -100,8 +101,12 @@ window.onload = function () {
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;
-          puzzleContent = body[puzzleType].examples[exampleSelect.value].data;
-          imp(puzzleContent);
+
+          let exampleData = body[puzzleType].examples[exampleSelect.value];
+          puzzleContent = exampleData.url
+            ? exampleData.url
+            : `${urlBase}${exampleData.data}`;
+          imp(puzzleContent, exampleData.url !== undefined);
 
           if (body[puzzleType].parameters) {
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
@@ -157,6 +162,8 @@ window.onload = function () {
                   icon: "error",
                   title: "Oops...",
                   text: body.detail || "Unknown error.",
+                  footer:
+                    "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
                 });
               } else {
                 solutionList = body.url;
@@ -164,7 +171,9 @@ window.onload = function () {
                   Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "No solution found or time limit exceeded (30 seconds).",
+                    text: "No solution found or time limit exceeded.",
+                    footer:
+                      "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
                   });
                   return;
                 }
@@ -178,6 +187,8 @@ window.onload = function () {
                 icon: "question",
                 title: "Unexpected error",
                 text: e,
+                footer:
+                  "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
               });
             })
             .finally(() => {
@@ -202,7 +213,7 @@ window.onload = function () {
 
       resetButton.addEventListener("click", () => {
         if (foundUrl && puzzleContent !== null) {
-          imp(puzzleContent);
+          imp(`${urlBase}${puzzleContent}`);
           foundUrl = null;
         } else {
           iframe.contentWindow.pu.reset_board();
