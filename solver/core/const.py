@@ -107,10 +107,8 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "name": "Cave (Corral)",
         "cat": "shade",
         "examples": [
-            {
-                "url": "https://puzz.link/p?cave/11/11/9g7k6g5g7m5g5g6k7g6u6g7o9o6g7u5g5kag6gbm3g6g8k7g6",
-                "config": {"product": False},
-            },
+            {"url": "https://puzz.link/p?cave/11/11/9g7k6g5g7m5g5g6k7g6u6g7o9o6g7u5g5kag6gbm3g6g8k7g6"},
+            {"url": "https://puzz.link/p?cave/10/10/l.j2h2h2h.h.h.q2i2h2g.l.k.h.h.g2h2i.i.j2h2j.i.i"},
             {
                 "url": "https://puzz.link/p?cave/10/10/j7k2m4l4l-10g8h4g58x56gch6gfl4lam2k8j",
                 "config": {"product": True},
