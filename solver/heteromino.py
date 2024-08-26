@@ -38,10 +38,11 @@ def solve(puzzle: Puzzle) -> List[str]:
     if shaded == 0:
         solver.add_program_line("black(-1, -1).")
 
-    for (r, c), num in puzzle.surface.items():
+    for (r, c), color_code in puzzle.surface.items():
         solver.add_program_line(f"black({r}, {c}).")
+
         for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
-            prefix = "not " if ((r1, c1), num) in puzzle.surface.items() else ""
+            prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
             direc = "left" if c1 != c else "top"
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
