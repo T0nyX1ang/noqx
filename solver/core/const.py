@@ -453,7 +453,10 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [
             {
                 "url": "https://puzz.link/p?ripple/13/13/i2aonbatddnfdjqt6qafrlvfl9egl450fvjbt3t9lfu2072jfj8pvgojecbvcvu0zzzzzzzzo",
-            }
+            },
+            {
+                "url": "https://puzz.link/p?ripple/10/10/2gpr9dbqk5bqmcr9186cbi7sg3fuk1bsa26s....h......g1j...n..n.z.n..n...j6g......h..../",
+            },
         ],
     },
     "shakashaka": {

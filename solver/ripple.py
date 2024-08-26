@@ -20,16 +20,25 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-    for i, ar in enumerate(areas):
-        solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i))
-
+    flag = False
     for (r, c), num in puzzle.text.items():
+        if num == "?":
+            solver.add_program_line(f"black({r}, {c}).")
+            flag = True
+            continue
+
         assert isinstance(num, int), "Clue should be integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    solver.add_program_line(unique_num(color="grid", _type="area"))
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+    for i, ar in enumerate(areas):
+        solver.add_program_line(area(_id=i, src_cells=ar))
+        if flag:
+            solver.add_program_line(f"{{ number(R, C, (1..{len(ar)})) }} = 1 :- area({i}, R, C), not black(R, C).")
+        else:
+            solver.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i))
+
+    solver.add_program_line(unique_num(color="not black" if flag else "grid", _type="area"))
     solver.add_program_line(ripple_constraint())
     solver.add_program_line(display(item="number", size=3))
     solver.solve()
