@@ -99,19 +99,11 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
 def full_bfs(
     rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
 ) -> Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]]:
-    """
-    Given puzzle dimensions (rows, cols), a list of border coordinates,
-    and (optionally) a dictionary mapping clue cells to values,
-
-    Returns:
-            a dictionary mapping a frozenset of the (r, c) coordinates of the room
-            to the clue cell in that room (if a room has no clue cells, it gets ignored).
-    """
+    """Generate a dict of rooms with their unique clue."""
     # initially, all cells are unexplored
     unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}
 
     # build a set of rooms
-    # (if there are clues, we need this for stranded-edge checks)
     clue_to_room: Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]] = {}
 
     # --- HELPER METHOD FOR full_bfs---
@@ -163,23 +155,5 @@ def full_bfs(
         # run bfs on that grid_color_connected component
         clue, room = bfs(start_cell)
         clue_to_room[room] = clue
-
-    def get_room(r: int, c: int) -> FrozenSet[Tuple[int, int]]:
-        """Given a cell, return the room that it belongs to."""
-        for room in clue_to_room:
-            if (r, c) in room:
-                return room
-        raise AssertionError("Cell not found in any room.")
-
-    # check that there are no stranded edges
-    for r, c, d in borders:
-        if d == Direction.LEFT and c < cols:
-            room = get_room(r, c)
-            if (r, c - 1) in room:
-                raise AssertionError("There is a dead-end edge.")
-        elif d == Direction.TOP and r < rows:
-            room = get_room(r, c)
-            if (r - 1, c) in room:
-                raise AssertionError("There is a dead-end edge.")
 
     return clue_to_room
