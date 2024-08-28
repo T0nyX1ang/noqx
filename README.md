@@ -18,6 +18,12 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Install [PDM](https://pdm-project.org/latest/) first.
 
+- Clone this project recursively and switch to `master` branch.
+
+```bash
+    git clone https://github.com/T0nyX1ang/noqx.git --recursive
+```
+
 - Install dependencies with PDM:
 
 ```bash
@@ -36,6 +42,12 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 ```bash
     pip install -r requirements.txt
+```
+
+- Clone this project recursively and switch to `master` branch.
+
+```bash
+    git clone https://github.com/T0nyX1ang/noqx.git --recursive
 ```
 
 - Run locally (based on your system):
@@ -63,10 +75,11 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Install [PDM](https://pdm-project.org/latest/) first.
 
-- Clone this project and switch to `dev` branch.
+- Clone this project recursively and switch to `dev` branch.
 
 ```bash
-    git clone https://github.com/T0nyX1ang/noqx.git
+    git clone https://github.com/T0nyX1ang/noqx.git --recursive
+    git checkout dev
 ```
 
 - Install dependencies with PDM:

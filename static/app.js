@@ -40,6 +40,8 @@ function make_param(id, type, name, value) {
 window.onload = function () {
   const iframe = document.getElementById("iframe");
   const urlBase = "./penpa-edit/#";
+  const issueMessage =
+    "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.";
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
   const ruleButton = document.getElementById("rules");
@@ -174,8 +176,7 @@ window.onload = function () {
                   icon: "error",
                   title: "Oops...",
                   text: body.detail || "Unknown error.",
-                  footer:
-                    "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
+                  footer: issueMessage,
                 });
               } else {
                 solutionList = body.url;
@@ -184,8 +185,7 @@ window.onload = function () {
                     icon: "error",
                     title: "Oops...",
                     text: "No solution found or time limit exceeded.",
-                    footer:
-                      "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
+                    footer: issueMessage,
                   });
                   return;
                 }
@@ -199,8 +199,7 @@ window.onload = function () {
                 icon: "question",
                 title: "Unexpected error",
                 text: e,
-                footer:
-                  "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.",
+                footer: issueMessage,
               });
             })
             .finally(() => {
@@ -239,12 +238,7 @@ window.onload = function () {
       });
 
       readmeButton.addEventListener("click", () => {
-        Swal.fire({
-          icon: "info",
-          title: "Noqx",
-          html: '<a href="https://github.com/T0nyX1ang/noqx">Noqx</a> by <a href="https://github.com/T0nyX1ang/">T0nyX1ang</a> and <a href="https://github.com/zhuyaoyu/">zyy</a> using <a href="https://github.com/potassco/clingo">clingo</a> <br> Original <a href="https://noq.solutions">Noq</a> project by <a href="https://github.com/jenna-h/">Jenna</a> and <a href="https://mstang.xyz">Michael</a> using <a href="https://github.com/danyq/claspy">claspy</a> <br> General layout and encoding by <a href="https://github.com/kevinychen/nikoli-puzzle-solver">nikoli-puzzle-solver</a> <br>',
-          footer: "Licensed under GPL-3",
-        });
+        window.open("https://github.com/T0nyX1ang/noqx");
       });
     });
   });
