@@ -1,37 +1,10 @@
 """Helper functions for generation solvers and rules."""
 
 import random
-from typing import Any, Dict, FrozenSet, Optional, Set, Tuple, Union
+from collections import deque
+from typing import Any, Dict, Optional, Set, Tuple, Union, Iterator
 
 from .penpa import Direction
-
-
-def mark_and_extract_clues(
-    original_clues: Dict[Tuple[int, int], Any],
-    shaded_color: str = "black",
-    safe_color: str = "green",
-) -> Tuple[Dict[Tuple[int, int], int], str]:
-    """
-    Mark clues to the solver and extract the clues that are not color-relevant.
-
-    Recommended to use it before performing a bfs on a grid. (deprecation warning)
-    """
-    clues = {}  # remove color-relevant clues here
-    rule = ""
-    for (r, c), clue in original_clues.items():
-        if isinstance(clue, list):
-            if clue[1] == shaded_color:
-                rule += f"{shaded_color}({r}, {c}).\n"
-            elif clue[1] == safe_color:
-                rule += f"not {shaded_color}({r}, {c}).\n"
-            clues[(r, c)] = int(clue[0])
-        elif clue == shaded_color:
-            rule += f"{shaded_color}({r}, {c}).\n"
-        elif clue == safe_color:
-            rule += f"not {shaded_color}({r}, {c}).\n"
-        else:
-            clues[(r, c)] = int(clue)
-    return clues, rule.strip()
 
 
 def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
@@ -97,63 +70,48 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
 
 
 def full_bfs(
-    rows: int, cols: int, borders: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
-) -> Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]]:
+    rows: int, cols: int, edges: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
+) -> Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]]:
     """Generate a dict of rooms with their unique clue."""
-    # initially, all cells are unexplored
     unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}
+    clue_to_room: Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]] = {}
 
-    # build a set of rooms
-    clue_to_room: Dict[FrozenSet[Tuple[int, int]], Optional[Tuple[int, int]]] = {}
+    def get_neighbors(r: int, c: int) -> Iterator[Tuple[int, int]]:
+        """Get the neighbors of a cell."""
+        if (r, c, Direction.LEFT) not in edges:
+            yield (r, c - 1)
 
-    # --- HELPER METHOD FOR full_bfs---
-    def bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], FrozenSet[Tuple[int, int]]]:
-        # find the clue cell in this room
+        if (r, c + 1, Direction.LEFT) not in edges:
+            yield (r, c + 1)
+
+        if (r, c, Direction.TOP) not in edges:
+            yield (r - 1, c)
+
+        if (r + 1, c, Direction.TOP) not in edges:
+            yield (r + 1, c)
+
+    def single_bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], Tuple[Tuple[int, int], ...]]:
         clue_cell = None
-        # keep track of which cells are in this grid_color_connected component
         connected_component = {start_cell}
-
-        # the start cell has now been explored
         unexplored_cells.remove(start_cell)
 
-        # bfs!
-        frontier = {start_cell}
-        while frontier:
-            new_frontier = set()
-            for r, c in frontier:
-                # build a set of coordinates that are not divided by borders
-                neighbors = set()
-                if (r, c, Direction.LEFT) not in borders:
-                    neighbors.add((r, c - 1))
+        queue = deque([start_cell])  # make a deque for BFS
+        while queue:
+            r, c = queue.popleft()
+            for neighbor in get_neighbors(r, c):
+                if neighbor in unexplored_cells:
+                    connected_component.add(neighbor)
+                    unexplored_cells.remove(neighbor)
+                    queue.append(neighbor)
 
-                if (r, c + 1, Direction.LEFT) not in borders:
-                    neighbors.add((r, c + 1))
-
-                if (r, c, Direction.TOP) not in borders:
-                    neighbors.add((r - 1, c))
-
-                if (r + 1, c, Direction.TOP) not in borders:
-                    neighbors.add((r + 1, c))
-
-                # for each neighbor that is a valid grid cell and not in this grid_color_connected component
-                for neighbor in neighbors:
-                    if neighbor in unexplored_cells:
-                        connected_component.add(neighbor)
-                        unexplored_cells.remove(neighbor)
-                        new_frontier.add(neighbor)
-
-                # find the clue cell
                 if clues and (r, c) in clues:
                     clue_cell = (r, c)
 
-            frontier = new_frontier
-        return clue_cell, frozenset(connected_component)
+        return clue_cell, tuple(connected_component)
 
     while len(unexplored_cells) != 0:
-        # get a random start cell
-        start_cell = random.choice(tuple(unexplored_cells))
-        # run bfs on that grid_color_connected component
-        clue, room = bfs(start_cell)
+        start_cell = random.choice(tuple(unexplored_cells))  # get a random start cell
+        clue, room = single_bfs(start_cell)
         clue_to_room[room] = clue
 
     return clue_to_room
