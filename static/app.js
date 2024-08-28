@@ -50,6 +50,25 @@ window.onload = function () {
   const readmeButton = document.getElementById("readme");
   const parameterBox = document.getElementById("parameter_box");
 
+  const categoryName = {
+    shade: "Shading",
+    loop: "Loop / Path",
+    region: "Region Division",
+    num: "Number",
+    var: "Variety",
+    draw: "Drawing",
+  };
+
+  const choices_type = new Choices(typeSelect, {
+    itemSelectText: "",
+    searchFields: ["label", "value", "customProperties.aliases"],
+    searchResultLimit: 5,
+  });
+  let puzzleTypeDict = {};
+  for (const [k, v] of Object.entries(categoryName)) {
+    puzzleTypeDict[k] = { label: v, choices: [] };
+  }
+
   let foundUrl = null;
   let puzzleType = null;
   let puzzleContent = null;
@@ -61,14 +80,14 @@ window.onload = function () {
   fetch("/api/list").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
-        let categorySelect = document.getElementById(`type_${pvalue.category}`);
-        const typeOption = document.createElement("option");
-        typeOption.value = ptype;
-        typeOption.text = pvalue.name;
-        categorySelect.append(typeOption);
+        typeOption = {
+          value: ptype,
+          label: pvalue.name,
+          customProperties: { aliases: pvalue.aliases },
+        };
+        puzzleTypeDict[pvalue.category].choices.push(typeOption);
       }
-
-      const choices_type = new Choices(typeSelect, { itemSelectText: "" });
+      choices_type.setChoices(Object.values(puzzleTypeDict));
 
       typeSelect.addEventListener("change", () => {
         ruleButton.disabled = false;
