@@ -50,6 +50,31 @@ window.onload = function () {
   const readmeButton = document.getElementById("readme");
   const parameterBox = document.getElementById("parameter_box");
 
+  const categoryName = {
+    shade: "- Shading -",
+    loop: "- Loop / Path -",
+    region: "- Area Division -",
+    num: "- Number -",
+    var: "- Variety -",
+    draw: "- Drawing -",
+  };
+
+  const choicesType = new Choices(typeSelect, {
+    itemSelectText: "",
+    searchFields: ["label", "value", "customProperties.aliases"],
+    searchResultLimit: 5,
+    searchPlaceholderValue: "Type to search",
+  });
+  let puzzleTypeDict = {};
+  for (const [k, v] of Object.entries(categoryName)) {
+    puzzleTypeDict[k] = { label: v, choices: [] };
+  }
+
+  const choicesExample = new Choices(exampleSelect, {
+    itemSelectText: "",
+    searchEnabled: false,
+  });
+
   let foundUrl = null;
   let puzzleType = null;
   let puzzleContent = null;
@@ -61,12 +86,14 @@ window.onload = function () {
   fetch("/api/list").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
-        let categorySelect = document.getElementById(`type_${pvalue.category}`);
-        const typeOption = document.createElement("option");
-        typeOption.value = ptype;
-        typeOption.text = pvalue.name;
-        categorySelect.append(typeOption);
+        typeOption = {
+          value: ptype,
+          label: pvalue.name,
+          customProperties: { aliases: pvalue.aliases },
+        };
+        puzzleTypeDict[pvalue.category].choices.push(typeOption);
       }
+      choicesType.setChoices(Object.values(puzzleTypeDict));
 
       typeSelect.addEventListener("change", () => {
         ruleButton.disabled = false;
@@ -89,15 +116,11 @@ window.onload = function () {
 
             parameterBox.style.display = "block";
           }
-          for (let i = exampleSelect.options.length - 1; i > 0; i--)
-            exampleSelect.remove(i); // remove all options except the first one
 
-          for (let i = 0; i < body[puzzleType].examples.length; i++) {
-            const exampleOption = document.createElement("option");
-            exampleOption.value = i;
-            exampleOption.text = `Example ${i + 1}`;
-            exampleSelect.add(exampleOption);
-          }
+          choicesExample.clearChoices();
+          let exampleList = [{ value: "", label: "Choose Example", selected: true }];
+          exampleList.push(...body[puzzleType].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
+          choicesExample.setChoices(exampleList);
         }
       });
 
@@ -108,17 +131,13 @@ window.onload = function () {
           solutionPointer = -1;
 
           let exampleData = body[puzzleType].examples[exampleSelect.value];
-          puzzleContent = exampleData.url
-            ? exampleData.url
-            : `${urlBase}${exampleData.data}`;
+          puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
           imp(puzzleContent, exampleData.url !== undefined);
 
           if (body[puzzleType].parameters) {
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
-              const config =
-                body[puzzleType].examples[exampleSelect.value].config;
-              const value =
-                config && config[k] !== undefined ? config[k] : v.default;
+              const config = body[puzzleType].examples[exampleSelect.value].config;
+              const value = config && config[k] !== undefined ? config[k] : v.default;
               const paramInput = document.getElementById(`param_${k}`);
               if (paramInput.type === "checkbox") paramInput.checked = value;
               else paramInput.value = value;
@@ -129,11 +148,7 @@ window.onload = function () {
 
       ruleButton.addEventListener("click", () => {
         if (ruleButton.disabled || !puzzleType) return;
-        window.open(
-          `https://puzz.link/rules.html?${
-            puzzleType !== "ncells" ? puzzleType : "fivecells"
-          }`
-        );
+        window.open(`https://puzz.link/rules.html?${puzzleType !== "ncells" ? puzzleType : "fivecells"}`);
       });
 
       solveButton.addEventListener("click", () => {
@@ -154,8 +169,7 @@ window.onload = function () {
           if (body[puzzleType].parameters) {
             for (const [k, _] of Object.entries(body[puzzleType].parameters)) {
               const paramInput = document.getElementById(`param_${k}`);
-              if (paramInput.type === "checkbox")
-                puzzleParameters[k] = paramInput.checked;
+              if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
               else puzzleParameters[k] = paramInput.value;
             }
           }
@@ -203,7 +217,7 @@ window.onload = function () {
               });
             })
             .finally(() => {
-              exampleSelect.value = "";
+              choicesExample.setChoiceByValue("");
               solveButton.textContent = `Solution (${solutionPointer + 1}/${
                 solutionList.length === 10 ? "10+" : solutionList.length
               })`;
@@ -243,9 +257,7 @@ window.onload = function () {
     });
   });
 
-  iframe.contentWindow.document.addEventListener("click", () =>
-    iframe.contentWindow.focus()
-  );
+  iframe.contentWindow.document.addEventListener("click", () => iframe.contentWindow.focus());
 
   setInterval(() => {
     if (solveButton.textContent !== "Solving..." && exp() !== foundUrl) {

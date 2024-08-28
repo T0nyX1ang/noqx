@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "akari": {
-        "name": "Akari (Light Up)",
+        "name": "Akari",
         "category": "var",
         "aliases": ["akari"],
         "examples": [
@@ -98,8 +98,9 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "cave": {
-        "name": "Cave (Corral, Bag)",
+        "name": "Cave",
         "category": "shade",
+        "aliases": ["corral", "bag"],
         "examples": [
             {"url": "https://puzz.link/p?cave/11/11/9g7k6g5g7m5g5g6k7g6u6g7o9o6g7u5g5kag6gbm3g6g8k7g6"},
             {"url": "https://puzz.link/p?cave/10/10/l.j2h2h2h.h.h.q2i2h2g.l.k.h.h.g2h2i.i.j2h2j.i.i"},
@@ -166,7 +167,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": True}},
     },
     "firefly": {
-        "name": "Hotaru Beam (Firefly)",
+        "name": "Hotaru Beam",
         "category": "loop",
         "aliases": ["hotaru", "hotarubeam"],
         "examples": [
@@ -176,7 +177,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "gokigen": {
-        "name": "Gokigen (Slant)",
+        "name": "Gokigen",
         "category": "draw",
         "examples": [
             {
@@ -194,7 +195,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "hashi": {
-        "name": "Hashiwokakero (Bridges)",
+        "name": "Hashiwokakero",
         "category": "loop",
         "aliases": ["bridges", "hashiwokakero"],
         "examples": [
@@ -472,7 +473,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "shimaguni": {
-        "name": "Shimaguni (Islands)",
+        "name": "Shimaguni",
         "category": "shade",
         "aliases": ["islands"],
         "examples": [
@@ -591,7 +592,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "tentaisho": {
-        "name": "Tentaisho (Spiral Galaxies)",
+        "name": "Tentaisho",
         "category": "region",
         "aliases": ["spiralgalaxies"],
         "examples": [

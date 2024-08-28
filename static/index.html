@@ -7,8 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Noqx: extended logic puzzle solver." />
-  <link rel="stylesheet" type="text/css" href=style.css>
-  </link>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <link rel="stylesheet" type="text/css" href="./choices.alter.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </head>
 
 <body>
@@ -16,17 +17,12 @@
 
   <div class="left">
     <button id="readme">README</button>
-    <select id="type" style="text-align-last: center; -ms-text-align-last: center; -moz-text-align-last: center;">
+    <select id="type">
       <option value="" disabled selected>Puzzle type</option>
-      <optgroup id="type_shade" label="Shading" style="text-align: left;"></optgroup>
-      <optgroup id="type_loop" label="Loop / Path" style="text-align: left;"></optgroup>
-      <optgroup id="type_region" label="Region Division" style="text-align: left;"></optgroup>
-      <optgroup id="type_num" label="Number" style="text-align: left;"></optgroup>
-      <optgroup id="type_var" label="Variety" style="text-align: left;"></optgroup>
-      <optgroup id="type_draw" label="Drawing" style="text-align: left;"></optgroup>
     </select>
+
     <select id="example">
-      <option value="" selected>Example puzzle</option>
+      <option value="" selected>Choose Example</option>
     </select>
     <button id="rules" disabled>Show Rules</button>
     <button id="solve">Solve</button>
