@@ -58,10 +58,11 @@ window.onload = function () {
   fetch("/api/list").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
+        let categorySelect = document.getElementById(`type_${pvalue.category}`);
         const typeOption = document.createElement("option");
         typeOption.value = ptype;
         typeOption.text = pvalue.name;
-        typeSelect.add(typeOption);
+        categorySelect.append(typeOption);
       }
 
       typeSelect.addEventListener("change", () => {

@@ -2,20 +2,11 @@
 
 from typing import Any, Dict
 
-CATEGORIES: Dict[str, str] = {
-    "shade": "Shading",
-    "loop": "Loop / Path",
-    "region": "Region division",
-    "num": "Number",
-    "var": "Variety",
-    "draw": "Drawing",
-}
-
 
 PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "akari": {
         "name": "Akari (Light Up)",
-        "cat": "var",
+        "category": "var",
         "aliases": ["akari"],
         "examples": [
             {
@@ -25,7 +16,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "aqre": {
         "name": "Aqre",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?aqre/18/18/aba2qqg6mi2nhodt6jfc57m8qt96l6a1828b1j6ucn7p5bspeseknpl0od86h00o00svvhe3e41s3g8r2gr3v9u0241vvvrufs3gf3soc0m1g21c3o3k3sn000s0g1g1g22g11g2g22g1g2212g1g1112233355g555355g3g3g355",
@@ -40,7 +31,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "aquarium": {
         "name": "Aquarium",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "data": "m=edit&p=7VZPb+O2E73nUyx05kEk9YfSbbtNeknTbpNisTCMQEm0G2PtaCvb3R8U5Lvvm+HQomQXPxRF0S1Q2Kaen98MZ8gZmtvf9k3fKq3pbZ1KFZDK8oI/Whv+pPK6We3Wbf1Kvd7vHrseQKmfLi7Uh2a9bc8Wmq3T5dnzUNXDWzX8UC8SnajE4KOTpRre1s/Dj/VwroZr/JQoDe7Siwzg+Qjf8e+E3nhSp8BXggHfA96v+vt1e3vpmZ/rxXCjEprnO7YmmGy639tE4qDv993mbkXEXbNDMtvH1Wf5Zbt/6D7tRauXL2p47cO9PhGuHcMl6MMldCJcyuJvDrdavrxg2X9BwLf1gmL/dYRuhNf1M8ar+jmxlkwzxOL3JrEZETYi8rmimBPl3MQRkUdENSOylIgqIvRcYYgoI2I+S8GKKI6SFaiyQFSsiJzqdC7RZu5F+3Riq5w1LmIK1kTRaceaQ0ZYXs2L/J7HCx4NjzfYAzVYHr/nMeUx5/GSNefYGuNKZRyW0qB1nAPGKhIusykusUOEi3TErlKmwiITrlJlU8/jCYwNZB6tHnBZQI89YJzDj/CFAUayzCMeWlK2NbD1PJ7AEmdlR1wi5gr1FWzLoIHPAw9NKbkUlEvIi+JHKbIefBXyQo4BF4jThRyBK4nZ6REXyMtJXhXlKLlAb7W3xRPYa/AEDjlmyMXHg6eyxseDJ7Csp4Ef4+di24BNoSzVNOEMPJVzsKVuIGzhkxqBNYjhoAfOxX8O/7n4xElsc1nzHH4K8VPAj5PYHHgntg62TmwdbF1kG/svJYYS8wZbmquUeEr6Sxj9ZKnn8VSZDnwO3vvBE3yIAXNVEmflJjjTvgYy/LMEbCvUUuXrxDrUmOwXYycahxoL+WJPDxraU9l3izrB9xFLDeAJLHsBfRZqgPY66KmGpfYs1bnUqkUv2CJgaArRoG6t1K1FPU9wsNXIS0teKWwFU1/ju9QD/NN5zBiaTPQZNFmoGcwVYzqdua6QY8CaalXySqHRoYapniO9kTVJsYYBG6wPHfDsn+pN+JxqMsKF+EEP2kL06LXDOhOmQ5Ixci8kl5zWLcK5rGGO3POQO/R05HI8tCbROUPHNWOsiRG9gZ/Qm7i7jP0FzD5xoL7jY/UNjxmPBR+3Jf0h/qm/zL9+sv/fcBbYcbp/TV+4h/3buOXZIrne9x+a+xbXlfOHj+2rq67fNGt8u9pv7to+fMdtMdl269utqGu+TOJ6A+6JlRNq3XWf16unqW718anr25M/Edli+hP6u65/mHn/0qzXE8JfjyeUv8VNqF2PK1r0ven77suE2TS7xwkRXecmntqn3TSAXTMNsfnUzGbbjDm/nCX/S/izsHSN/+8q/g9dxWkL0m/tdPnWwuHq7fqTrQ/6RPeDPdnlwh81OvijlqYJj7sa7InGBjvvbVDH7Q3yqMPB/UGTk9d5n1NU81anqY66naaKG36xPPsK",
@@ -49,7 +40,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "balance": {
         "name": "Balance Loop",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["balanceloop"],
         "examples": [
             {"url": "https://puzz.link/p?balance/10/10/q1i8k8k0i1g8h1g9k9h0j1h8k8g0h9g0i1k9k9i0q"},
@@ -58,7 +49,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "battleship": {
         "name": "Battleship",
-        "cat": "var",
+        "category": "var",
         "examples": [
             {
                 "data": "m=edit&p=7VVBb9s6DL7nVxQ662DFjuP41va1u3R569qhCAyjUFK3MWpHneKsg4P895K0W8uydthhWwcMjgnmI0V+okR6+3UndcaFwJ8fcY+DxoNJSK8QY3q99rnOqyKLj/jxrlorDQrn/5+f83tZbLNRImi1l4729SyuL3n9IU6YYJyN4RUs5fVlvK8/xvWc11dgYlwAdtE4jUE969QbsqN22oDCA33e6qAuQF3KCvhs1/nT7UmDfoqT+pozzHVCEVBlpfqWsZYL/l+pcpkj0AVoLdvdnXrctb4iPfD6uKG8cFD2O8qoNpRRc1DGnfwGyrP0cIDyfwbSt3GC/L90atSpV/Ee5DzeM9/HpT5wac6I+cHr9l+BCQJwhm9AaANTBDwDiBAIDGBmLQk8K0sgLB7B2F5CWYygoe0xJQ8j6Iw8DGLCIxdjjRiTjxFWNNsxwoiJnUmEA5+IfN42AOUVVOQFFDnEioV8ePoswvI7LcLDmvlOE62aOk0zrKPDBEzOic+Y5DXcA177JP8j6ZGckLwgnzOSNyRPSQYkQ/KZ4k36qbtmluQX0UmCiAZY/4FB9rdh6Shh8125zPTRXOlSFtDtV2v5lDEYr2yritvtTt/LFQwJmr4wBwDb0IoeVCj1VOSbvl/+sFE6c5oQzO4eXP5Lpe+s6M+yKHpA8z3pQatcr4o+VGmYZcZ/qbV67iGlrNY9wJh7vUjZpuoTqGSfonyUVray2/NhxL4zeqHT4Lv379v1h79deBTee5sq740O3WKlnSMAYMcUANTZ7S0+aHjAB62NCYfdDaijwQG1exygYZsDOOh0wH7Q7BjV7ndkZbc8php0PaYyGz9JRy8=",
@@ -67,7 +58,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "binairo": {
         "name": "Binairo",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "data": "m=edit&p=7VjNT/tGEL3nr6j2vAfvh+OPG6XQC9BSqBCyIuQEQyKcmNpOqRzlf2d2HCk4+6JKSD8VqSjxaPI8mX27M2/jTfPXOq8LqQP3NrEMpKJXlMR8xaHiK9i9bhdtWaQ/yZN1O69qcqT87fxcPuVlU4yyXdRktOmStLuW3a9pJpSQQtOlxER21+mmu0zFrFpOF0J2N3RfSEU3LvpITe7Z3r3j+8477UEVkH+188m9J7ctVm3Tf/w9zbpbKdxIP/NXnSuW1d+F2DFxn/vRCZiWb/Md1qwfq5f1LkpNtrI7YardDWBp9iyd27N0HmDpyDuWs0U9K4uHi88RzVta92a+eEV0k8l2S0v+BxF+SDPH/c+9G+/dm3RD9oqtYnufbsQ4ojSaBusJXjJlMU4IVYdoFKLYKIaxMEOsUYbYwljHzEMTl9fLoAKFYZcZwHDSKoCclXK5AWwwjHNrN3M/2gQw2sC5K4MJWjykdYXx4RAPGeKlCscYxrnHsL5qjHNHLrc/HW4dPzrBSRLXlF4SzQ0B4CPRsIc1bgiNK681XFitj0TDomkNF1YbPB0LlaO5IQCMp4MbQoewDDpy0X4S3hsAjJnEeMgYJ0ng5E0AF9awuH1YwWYzuGgGy9Vw0QAMi2Zw0Qyr2I+2UDuGSwxgWEuD5WoiuD0aFqAPx0dgKBITYyYJTGIDuLAW19JiuVosQItraTWcvNWwIayBtbS4OtY6JgDGubEuLd5M7Ri2j8WbqY0wwQgvFZarxQ1h8c+2jfHkcftYVrEHh3jrDflnFMCw2UIuMYAhwVCDydPj0Dk/FGm2t/TMJDvD9he2AduQ7QXHnLG9Y3vK1rIdc0zknro+/Vz2g+hkYf+A/++v8DvuO+7/FzcZZeK0Wr5WzaItBB1lRVOVD826fspndDjjky6dvwhbrZfToh5AZVW9lovVMG7xvKrqAt5yYPH4jOKnVf14kP0tL8sB0J/dB1C/ow2gtqYz5IfPeV1XbwNkmbfzAfDhvDnIRCftIYE2H1LMX/KD0Zb7OW9H4h/BV2Zoqe33/wT/wf8EbvmDr/ar9NXocOdWNZQ9wUD5hEKF73BP5IR7cnYD+oomFIia0ENdE+RLm0BP3YQdEbjLeqhxx+pQ5m4oT+luqI9izyajdw==",
@@ -76,7 +67,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "box": {
         "name": "Box",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "data": "m=edit&p=7ZVNc5s+EMbv/hQZnXVAvBm4pWnSS+o2f6eTyTBMBjskYQJWKuPmP3j83bO7giBeeuihrQ8dzM76xyPpEdKK7fddqjIuBP6cgFscMu56Pt1C2HRbzXWdV0UWnfDTXfUkFSScf7m44A9psc1mMbaEK5nt6zCqr3j9KYqZYJzZcAuW8Poq2tefo3rB6yU8YtwBdqlFNqTnXXpDzzE701BYkC+aHNJbSNe5WhfZ3aUmX6O4vuYMx/lArTFlpfyRscYH/l/LcpUjWKUVTGb7lL80T7a7e/m8a7QiOfD6VNtdtnZxlMYuOm/sYqrtYjZhF2fxm+2GyeEAr/0/MHwXxej9W5cGXbqM9hAX0Z45DjX1wIxeHOa4SGzHIB4SxzKIP9LMRyQgYvYcDjWuNSKCiG8Q6lngy2yIpwnjfgN8m4DbSeZEYMO1krluY7gJiMDQrSTUvUCjViIsQtBvqxHWyI0QhKDnd5FNzYw5CKcl7xr9wuBFdiI907kh8qhZT6TnGhgif9yTnm1oiAK9zibR62wSvc4moXU256/fmjnZgNbZnFpA62zOI6R1Nk2HtM7vDmE3CtqTtxQvKNoUr2HL8tqh+JGiRdGjeEmac4o3FM8ouhR90sxx0/9SWfwBO7Eb6HPSuObHRZJZzJY79ZCuMzhsFrtylamThVRlWjA43dlWFnfb5nlEhz8cR8A2pOyhQsqXIt/0dfnjRqps8hHC7P5xSr+S6n7Q+2taFD2gP2c9pE/dHqoUHKnG/1Qp+dojZVo99YBx/PZ6yjZV30CV9i2mz+lgtLKb82HG/md0xw5+dv99Ov/SpxOXwDq2k+LY7NDulWqy9AFPVD/QySpv+KjQgY9KGgccVzXQicIGOqxtQOPyBjiqcGA/KXLsdVjn6GpY6jjUqNpxKLPg42T2Bg==",
@@ -85,7 +76,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "canal": {
         "name": "Canal View",
-        "cat": "shade",
+        "category": "shade",
         "aliases": ["canalview"],
         "examples": [
             {
@@ -95,7 +86,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "castle": {
         "name": "Castle Wall",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["castlewall"],
         "examples": [
             {
@@ -107,8 +98,8 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "cave": {
-        "name": "Cave (Corral)",
-        "cat": "shade",
+        "name": "Cave (Corral, Bag)",
+        "category": "shade",
         "examples": [
             {"url": "https://puzz.link/p?cave/11/11/9g7k6g5g7m5g5g6k7g6u6g7o9o6g7u5g5kag6gbm3g6g8k7g6"},
             {"url": "https://puzz.link/p?cave/10/10/l.j2h2h2h.h.h.q2i2h2g.l.k.h.h.g2h2i.i.j2h2j.i.i"},
@@ -121,7 +112,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "chocona": {
         "name": "Chocona",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?aqre/26/22/885kcco5lc912qccuksc8u9k8cdbs24ujt2ctre2ifbuagd77ah6bbjpubmjvt7n57t4gldt0oa6t0gi3uci41s4icrs32ar3j7cqhjpkk2lik3g3302fuitovkgv3g7tge73ifv7jejuc0r4v3ei4e1o79r01jpqune0kg1ov1f300bf783vukb00fg2mvvvggs0tvovs0g3frku1s0tg7v270064a13422432332444724242322633942221232249322222423462242621324325398321344611532442412253236225",  # aqre layout is the same with chocona, hack to make it work
@@ -130,7 +121,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "country": {
         "name": "Country Road",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["countryroad"],
         "examples": [
             {
@@ -140,7 +131,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "doppelblock": {
         "name": "Doppelblock",
-        "cat": "num",
+        "category": "num",
         "examples": [
             {
                 "data": "m=edit&p=7ZVfb9o8FMbv+RSVr33hxAFC7rqu7IaXroOpqqIIGUhL1ARTJ1knI757j0+y5S96tYuxXUwmRyc/H9uPneQhfc2FCukEGncpoxY07jK8XMf8WNmWURaH3hW9zrOdVJBQejed0icRp+HAt3AsCwZHPfH0PdWfPJ9YhBIbLosEVN97R/2fp+dUL6CLUAfYrCiyIb2t0gfsN9lNAS0G+bzMIX2EdBOpTRyuZgX57Pl6SYlZ5wOONilJ5LeQlDrM/UYm68iAtchgM+kuOpQ9ab6VL3lZawUnqq/Py+WVXJMWck3WI9fs4jfLnQSnExz7FxC88nyj/WuVulW68I4Q596RcGaGuqCleDaEWzgXPKufxDHEZjUybBOnGDWqyBBH8QqMxi3g4tLWpCITjsSpiMVGiMY1BCMA1Yu4jXp+ENiahRt8xDjFaGNcwv6p5hg/YmQYhxhnWHOL8QHjDUYH4whrxuYEf+mMLyDHd2z8XKs2uux9MPDJIldPYhPCeznPk3WoruZSJSImYAQklfEqLfs99Al4c4HtsbKBYikPcbRv1kXPe6nC3i4Dw+1zX/1aqm1r9jcRxw1QuF4DFR9oA2UKvr7avVBKvjVIIrJdA9S+1MZM4T5rCshEU6J4Ea3VkmrPpwH5TvDyORy8889l/5DLmkfA/jYf+B85vl5Qzqi+o+SQr8RqI2MCf9T0DL+4enzZpep1CsA9ZgG01xRK3vEF4B0HMAt2TQBojw8AbVsBoK4bAOwYArAznmBmbduCUdV2BrNUxxzMUnV/8Il4hb0Eg3c=",
@@ -149,7 +140,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "easyasabc": {
         "name": "Easy As ABC",
-        "cat": "num",
+        "category": "num",
         "examples": [
             {
                 "data": "m=edit&p=7ZXPb5swFMfv+Ssqn33AQBPg1nVtL122rqmqCqGKpLRFhbgzsE5E+d/73gMN27DDDttymIifHh/844ud76P61qQq40Lgzwu4wyHj/vGcmhAuNae/VnldZNERP2nqZ6kg4fzz+Tl/TIsqm8U4Eq5ktmvDqL3i7UUUM8E4c6EJlvD2Ktq1n6J2ydtreMS4D+yy6+RCejakt/Qcs9MOCgfyZZ9DegfpJlebIru/7MiXKG5XnOE6H2g0pqyU3zPW68D7jSzXOYJ1WsPLVM/5a/+kah7kS9P3FcmetyeWXJTTy/UGuZh2cjGbkIvD/rDcMNnvYdu/guD7KEbtN0MaDOl1tIO4jHbM83HoCWjpzoZ5cwQ3GljYIEBwPQDfQbDSgLABzaGBhQ0CApqO0EVwMQDh2GOEsKUJdzSqk69NLDox+qj5iAS0LQahfdHeWowki4B2xiChrSekzdJnDmm3fo6CgxF0PHcUzym6FFdwerz1KH6k6FA8pnhJfc4o3lI8pehTnFOfBZ7/b/1D/oKc2A+6kqFdi8MiySxmy6ZcZ+poKVWZFgzKG6tkcV816jHdgFmp+oEfgW2pp4EKKV+LfGv2y5+2UmWTjxBmD09T/ddSPVizv6VFYYCunhuoKzsGqhXUFO0+VUq+GaRM62cDaPXHmCnb1qaAOjUlpi+ptVo5vPN+xn4warGH353/345/9O3AI3AOrT4cmhz690o1aX3AE+4HOunyno+MDnxkaVxw7GqgE8YGansb0NjeAEcOB/YLk+Osts9RlW11XGrkdlxKN3yczN4B",
@@ -160,7 +151,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "fillomino": {
         "name": "Fillomino",
-        "cat": "num",
+        "category": "num",
         "examples": [
             {
                 "url": "http://pzv.jp/p.html?fillomino/13/13/i3j3k3h1g3g1h3k3j3k3j3j331g1g3h1g31j3p3j1j3p3j13g1h3g1g133j3j3k3j3k3h1g3g1h3k3j3i",
@@ -176,7 +167,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "firefly": {
         "name": "Hotaru Beam (Firefly)",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["hotaru", "hotarubeam"],
         "examples": [
             {
@@ -186,7 +177,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "gokigen": {
         "name": "Gokigen (Slant)",
-        "cat": "draw",
+        "category": "draw",
         "examples": [
             {
                 "url": "http://pzv.jp/p.html?gokigen/40/25/hbg1bha6ah66bcbh7c98d8cdjdk672817chc717die62b8dcg8c26di32ck3d287271617262bg31222c88e2bddcc3bkdeg87dc777228ddg1cehdch6cb2cb122b73d3c26b31377c7e71cc8clbg8bh317677c6d7b63716eh26d2b8c9ch31c7ddj28277d77bg732cg27c61cg83268871ci626b8681cieicg2ddjdi6277226ch8d3d7dgec2cg73dd63622d3cb172b62667cc1c66d37226263c7cdg8d7bg7273cg78cb9c77cg22dg061661668dge71b778c76bgcg717c7cd376677173bgdg81b9dc8dgch231ch8ce897cg7b631682cgcckcjdg318277cg4ceh6166cgb6cc268173cgeg2173c27d367328cgc267di6bi7bg77dg769cg78d8d22ba656776bgb1bibajb",
@@ -195,7 +186,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "haisu": {
         "name": "Haisu",
-        "cat": "loop",
+        "category": "loop",
         "examples": [
             {"url": "https://puzz.link/p?haisu/7/7/335594i94i94g07u003v00n1g3m3i2i3i2m2g1n"},
             {"url": "https://puzz.link/p?haisu/9/9/199103msp7vvv4pre00bs6poj0068sr1ugp2g2g2g2u2g2k2k2g2u2g2g2g2p"},
@@ -204,7 +195,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "hashi": {
         "name": "Hashiwokakero (Bridges)",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["bridges", "hashiwokakero"],
         "examples": [
             {
@@ -217,7 +208,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "heteromino": {
         "name": "Heteromino",
-        "cat": "region",
+        "category": "region",
         "examples": [
             {
                 "data": "m=edit&p=7ZdPb9tGEMXv/hQBzzxw/5O8pandi+s2tYsgEASDtplYiGSmlNQUMvzds9z5CTIlFWgPbVPAkLS7nJ2ZnbdvZqld/rZu+jbXbviaMi9yFT9VWaaf1UX6bT9Xs9W8rV/lr9er+66Pgzz/6ews/9DMl+3JBK3pyeOmqjdv880P9STTWZ5+Kpvmm7f14+bHenOZby7jVJbbKDuPI5XlOg5Pd8N3aX4YvRGhKuL4gnEcvo/D21l/O2+vz0Xycz3ZXOXZsM53yXoYZovu9zYTs/R82y1uZoPgpllFMMv72Wdmluu77tMaXTV9yjevJdzTI+GaXbjDUMIdRkfCHVD8w+FW06enuO2/xICv68kQ+6+7YbkbXtaPmS+z2uaZr1IXlHRaOiOdTV0lc5XMVS51qvD04kCpgl7UlOZZi7XSW7n4Vho/WuJQGj8GO4OdYR0TpLfM2+0zdk6CVQ6/DjuHnsefJw5PHB47NkIF7AJxlehX4kcXItdK9LRCDl6txZ8GnwaXNjyDQxvkVvxrK/Foiz34tGU9J/Frhz54NTi1Qw882mMfiAs8OrBuyTx86krmTSHrmELWMYX4M/BqlMRp1FYu6xv4NeA3Wvwb+DWGeYO9QY99MeyHgV9jiQOcBh4NOA18Gvg0njjAbchvQ2YbktmA35SsUxIP+2FK7CrkFXbsk2V/bCHzln2x7IdVYm/ZDwt+Sx5Y9sGC08K/hX8L/9ayHnlgyXPrsCPPLfxb9sOC35LPlpK2AXmJHnltwW/Jb1eIf0eeO+rbUd8O/h14nZI4nEJPSzwOvA6+HTw78t+B11n04dnBswOPg1/nsQefg08XkIPDlazLceXA5cHlObc8vHnweHB4+PPw58ljz7nkyUsPbx4cHt489eqpU++YB5f3+AGf5xzynLkeXB6+PPnq4cuTpx58vuIAJx9DIfMBfAF8gToNnFMBfgK4AjwFeApGcARwBnAGcAZwBvIybF8k6fyM75iL+jG2KrXvU3uWWp3aq/giyjcmtd+ntkitS+150jlN7bvUvkmtTa1POmF4lf3Fl92/Fs7Eyz+nv/NxLxYvFi8WLxb/D4vpySS7XPcfmts2XkFO7z62ry66ftHMs3jjy5bd/HrJbJ0uhPGKEmUP68VN249E8677PJ89jPVmHx+6vj06NQjbuNwR/Zuuv9vz/qWZz0cCueKORHITG4lWfbxmPXtu+r77MpIsmtX9SPDsSjby1D6sxgGsmnGIzadmb7XFDvPTSfZHln4TE7fdvlyn/6Pr9EBB8a39z/jWwknZ2/W70l/1a3I6SrfFPxIerXHkB2Ue5QcFPSx3WNNReqSso3S/sqPosLij8KC+o+xPSnzwul/lQ1T7hT4sdVDrw1LPy30yPfkK",
@@ -226,7 +217,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "heyawake": {
         "name": "Heyawake",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "data": "m=edit&p=7VXfT9swEH7vX4H87Ic4dn6+MVb2wroxmBCKKpSWABVpw9J2TKn6v/OdfdCmDdqkaRqTpjb25+98vu8cnzP/tszrQiqP/jqW6PEzKraPH4f28fh3PlmURXogD5eLu6oGkPLT8bG8yct50ct41rC3apK0OZXNhzQTSkjh41FiKJvTdNV8TJu+bM5gEjIGd+Im+YD9DbywdkJHjlQe8IAx4CXgeFKPy+LqxDGf06w5l4LivLPeBMW0+l4I1kHjcTUdTYgY5QskM7+bPLBlvryu7pc8Vw3Xsjl8Xa7ukktkh1ya8IflJsP1Gtv+BYKv0oy0f93AeAPP0pUwoUhjKYLYdklgO+Ur1xtHq8BDD48BPDRwJiLodu/R+mbhyzAku9kMdduKeJl+GSrP35qNCCpdob207bFtfdueQ7JstG3f29azbWDbEzunD3W+UdIPkIaPk2YMMNRZHEk/RFqEgwA4YYyDHUEE4RC+EfuGCQ47tBOOfDr4jOEbs2+spZ9EjEOpPaRucQLMvkkktXJxYQc2jDWw84Vdat/FhR3YaYZdas2+fgDs4sIutXGaYQdmX424gYsLO7DTDDswa8Yc37BO4wHzntC+8ZrogVm/QY7Gabb7ybHQA/OeGFwMhveB9pmOjcXYW7O1VzGvE2OdmNeJaT9ZJ+WrnnNHjorzpRz1c77IS5M2vPAL+9qPbGtsG9rjENH5/sUKcKf690/eT+Vk2l2n7V/w73HDXibOlvVNPi5w+/Svb4uDQVVP8xKjwXI6KurnMS5/Ma/KqznPTu23AbcVuJmd2aLKqnooJ7P2vMntrKqLThORBcJ3zB9V9fXO6o95WbYI97VrUe5SblGLGjfu1jiv6+qxxUzzxV2L2LqdWysVs0VbwCJvS8zv851o003O6574Iexj70/z/8v6l76s9Aq8t3a7vDU59vRWdWfpg+6ofrCdVc78XqGD3ytpCrhf1WA7Chvsbm2D2i9vkHsVDu6VIqdVd+ucVO2WOoXaq3YKtV3w2bD3BA==",
@@ -238,7 +229,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "hitori": {
         "name": "Hitori",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?hitori/11/10/2b17123259583b698a764b75327b56287428b368ab69a141532195317984768731362985b5428b475297b8725853b14931a6964a4131b6",
@@ -247,7 +238,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "juosan": {
         "name": "Juosan",
-        "cat": "draw",
+        "category": "draw",
         "examples": [
             {
                 "url": "https://puzz.link/p?juosan/21/12/4ql08qtg9qt59ul5bunltnn9tntd72ta72h636h5b641bm04vmcvjo0fu1vo3s6fhuv1u0gf7fvpjo0fvjro0fs3vu0tvvgg33g42554342h553444g2g24211g121g2221341225h121g252442224465g25g1g2425g273",
@@ -256,7 +247,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "kakuro": {
         "name": "Kakuro",
-        "cat": "num",
+        "category": "num",
         "examples": [
             {
                 "url": "https://puzz.link/p?kakuro/15/15/m-dm.ffl-7l9-mQjmIBmbam-anWZs.jSpBjo.7goP4lJ9m..nAjo74lf-.lUUrF9l7-qHNq-clKTrO4l.-clgIoibn.JbmHglfgo.gOo7NpA-.s7Hnb-m-fm-7m-7m-hl-4l.-Dm-Em46BfgJjhSK79acVZD"
@@ -265,12 +256,12 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "kurodoko": {
         "name": "Kurodoko",
-        "cat": "shade",
+        "category": "shade",
         "examples": [{"url": "https://puzz.link/p?kurodoko/10/10/3h2h5h3r3j6h2n5z8n2h3j4r6h2h5h2"}],
     },
     "kurotto": {
         "name": "Kurotto",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "data": "m=edit&p=7VXPb5w8EL3vXxH57APm17Lc0jT5Lun2S5MqihCK2A1JUGCdGmgqVvu/Z2ZsFQxU6qVtKlUsM+PnwfPAfrP1lzZTORcO/ryIg4fLFxHdbhTS7ZjrqmjKPD7ix23zKBUEnH88O+P3WVnni8RkpYt9t4q7C979FydMMM5cuAVLeXcR77sPcbfm3SVMMe4Ddq6TXAhP+/Ca5jE60aBwIF7rOITwBsJtobZlfnsOs4D8HyfdFWdY5x09jSGr5NecGR443spqUyCwyRp4mfqxeDYzdXsnn1qTK9ID745HdLGKoev1dDHUdDGaoYtv8YvprtLDAT77JyB8GyfI/XMfRn14Ge+Zt2Sxz1ngaCe088iFxvnahdrpB5Z6tDSjFblIr7JytdOPCxe8Cz6EWRfKrrEsYAmLYPf0YWBegEA4ACIEXGeAQBFAcMsNsoRC+gwYIAL+kOL3iBDAPmHeAAmAur2yCOA1AIKj+R0Kae0+C4iLeA/2huwZWZfsFXxO3nlk35N1yAZkzynnlOw12ROyPtmQcpa4IT+5ZfoL/gY6iaf1b1/B34eli4Rdtuo+2+Ygl3VbbXJ1tJaqykoG/YnVsrytzXxM7QsEBdiOMi2olPK5LHZ2XvGwkyqfnUIwv3uYy99IdTda/SUrSwvQDdmCdN+woEZBUxiMM6Xki4VUWfNoAYMGYq2U7xqbQJPZFLOnbFSt6t/5sGDfGN2Jh38c/5r/H2r+uAXOW+snb40OnV6pZqUP8Iz6AZ1VucEnQgd8ImksOFU1oDPCBnSsbYCm8gZwonDAfiByXHWsc2Q1ljqWmqgdSw0Fn6SLVw==",
@@ -282,7 +273,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "lits": {
         "name": "LITS",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?lits/24/24/0000000o01lnmg5dvc0dntsq94ia94i814i914i976i94i294i294i8t4i90ci94ki94s294j094ia14i9pki944i94o1mregamtm0rddc00010002002dhm02i14080044vvvk6001os0001vvvq1g00a4000sfvvvsc003p80073fvvq700080000g3vvu100021g0087vvv8114102295g296oo",
@@ -291,7 +282,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "magnets": {
         "name": "Magnets",
-        "cat": "var",
+        "category": "var",
         "examples": [
             {
                 "data": "m=edit&p=7VZNb6RGEL3Pr1hx7gPdzfdt49i5OJNs1tFqhUYWtll7ZBgcYLIRlv/7viqqPQNDFEVRNnuIGJrHm+qq6lddQPfbvmhLpX362UThiiPQCZ8mifj05bja9lWZvVFv9/1D0wIo9dPFhfpUVF25ymkmjs3qeUiz4Z0afshyT3vKMzi1t1HDu+x5+DEb1mp4j7882KrhcjQygOcH+IH/J3Q2ktoHXgsG/Ah4u21vq/L6cmR+zvLhSnkU5zueTdCrm99LT/Kg+9umvtkSURf3u7LvhO72d83jXgz15kUNbzlXsV9I2B4SJjgmTGghYVrHv5lwunl5geq/IOXrLKfsfz3A5ADfZ88Y19mzZw1NRWH0WBrPBkTYIyJyajgimU0JeMoREVoiggMRz6MkekZo35/F1X46C6wNRz5mbDyfFc6z0xF7njDzdHTES3jNGOJolugjjxc8Gh6voKAaLI/f8+jzGPJ4yTbnENYEvjIBlmmw7wMNjKCEDdrJYeLDcMRhqEyEJROOYPOKU7QeBCWcWGVSLJlwipZ8xTEwFs44UVaP/q3WRxh9rcd8mDdjXFyVtWMsxgb1ZhwBj/5xVVbWAn/wM+aD66sNxTWp5JymylJBycanuJDX2QvmtSQOB8CiQwIdnJ8Y+jieMO0jxoYeR2KPPCUWaxgKH0KfWPgYtXCxiA8l5xC6xa5GyMfxAfwHojnxtMMJW6qp4AA502ZjP1i75Ib1QZORxxW6CU/YOJ2hjxV94NOKT8ZWdLaoEXUn+6S6yFzCWmqksXYtNdKokZvrU92lvqS/73jSX+wJ+xLXp5o6PZGnLzon0CeRNQI7P2RjEqlRQrUWraguscNUX9EzRl2cPeFYYpFNLHrG0DOWWkfQ2fEh9j+1sNM5dH0Bm0jyibA3qKm5LrQHxAYa4l54rMXZW6qpqzXsA8knwN5gHk38gVv5jMeAx4hbPKZH6N96yP7zp8lfppNjFfLalSP+uvebVe6d392Xb9ZNWxcVXk7rfX1Ttof7s6Z+arptX3r4MPC6prru9u2n4hYvOf5uwKsM3I5nTaiqaZ6q7W5qt73fNW25+BeRJVJZsL9p2ruZ989FVU2I8UtoQo2v6wnVt3gXH90Xbdt8njB10T9MiJuix1dT97B9mnoqd/00gb6Yplg8FrNo9WHNLyvvD4/P3NIX2/9fXf/NVxdVwP/WHgvfWjq8eZt2sfNBLzQ/2MUmF/6kz8GfdDQFPG1qsAt9DXbe2qBOuxvkSYOD+5MeJ6/zNqes5p1OoU6anUId93u+WX0B",
@@ -300,7 +291,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "masyu": {
         "name": "Masyu",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["mashu"],
         "examples": [
             {
@@ -310,7 +301,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "mines": {
         "name": "Minesweeper",
-        "cat": "var",
+        "category": "var",
         "aliases": ["minesweeper"],
         "examples": [
             {
@@ -325,7 +316,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "moonsun": {
         "name": "Moon-or-Sun",
-        "cat": "loop",
+        "category": "loop",
         "examples": [
             {
                 "url": "http://pzv.jp/p.html?moonsun/15/15/928i4h492940i814g28h2h25248g0h01208g0h01200000000vvv0000003vvs00000fvvg0000vvv0000001800jn33l000f6ig100109inb6i4003a3f00600fclh01i0910032f31ii290003631lk5ai100"
@@ -334,7 +325,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "nagare": {
         "name": "Nagareru-Loop",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["nagareru"],
         "examples": [
             {
@@ -344,7 +335,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "nanro": {
         "name": "Nanro",
-        "cat": "num",
+        "category": "num",
         "examples": [
             {
                 "url": "https://puzz.link/p?nanro/11/11/9bdcljmcpj6cpj6dpl6mqi46tt8qpltbdmqnljb2nnc4i3g2l23l2n2n2n2n2i3i2n3n3n3n2l43l2g3i",
@@ -356,7 +347,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "ncells": {
         "name": "N Cells",
-        "cat": "region",
+        "category": "region",
         "aliases": ["fivecells", "fourcells"],
         "examples": [
             {
@@ -371,7 +362,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "nonogram": {
         "name": "Nonogram",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "data": "m=edit&p=7ZRBb5swFMfv+RSVzz5ASBriy9R1zS5dti6ZqgqhyEncBhXizsA6EeW7970HaWLDDjts62EivDx+fvb7Y/iTfy+lUXwERxByj/twBN6AznMPf4djnhSpEmf8oiw22kDC+efJhN/LNFe9KIAKOOPerhqL6oZXH0XEfMZZH06fxby6Ebvqk6imvJrBEOMBsOu6qA/p1TG9pXHMLmvoe5BPmxzSO0hXiVmlanFdky8iquacYZ/3NBtTlukfijU68Hqls2WCYCkLuJl8kzw1I3m51o9lU+vHe15d1HJnB7nYpZGLyhu5mNZyMeuQi3fxh+WO4/0etv0rCF6ICLV/O6bhMZ2JHcSp2LEgxKnvQEv9bFgwdsDAc4F/2JwDcKcM3SlDd8qwjwBeiFfg6hi6i47cRUMCJ4uGbpcxgZMpY2r7CmAPfNqJO4oTin2Kc9goXgUUP1D0KA4pXlPNFcVbipcUBxTPqWaEW/1bD+MvyInAxehrn4fd/3EvYrPS3MuVghdsWmZLZc6m2mQyZeBolut0kTfjggwPryCwLVVaKNX6KU22dl3ysNVGdQ4hVOuHrvqlNmtn9WeZphaoP18Wqp1mocKAjU6upTH62SKZLDYWOLGctZLaFraAQtoS5aN0umXHe9732E9GJ3wwfT74/7n8R59LfATeW/PpW5NDb682ndYH3OF+oJ0ub3jL6MBblsaGbVcD7TA2UNfbgNr2BthyOLBfmBxXdX2OqlyrY6uW27HVqeGjuPcC",
@@ -383,7 +374,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "norinori": {
         "name": "Norinori",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "http://pzv.jp/p.html?norinori/20/10/ahkcfeorctdhkqdffmk9jprqnqd57ea6us16ok4jboec2oku7ck43rbqseje3kc16cvv8f7i7f",
@@ -392,7 +383,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "numlin": {
         "name": "Numberlink",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["numberlink"],
         "examples": [
             {
@@ -410,7 +401,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "nuribou": {
         "name": "Nuribou",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?nuribou/13/13/1j.l1g3o3m7zi2i2v4h.m.h3v2i2zi.m3o3g1l4j1",
@@ -422,12 +413,12 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "nurikabe": {
         "name": "Nurikabe",
-        "cat": "shade",
+        "category": "shade",
         "examples": [{"url": "https://puzz.link/p?nurikabe/19/12/g5zw3k2h4g4k.v.h2i2g4z3n7j3k2h4h4k3i4j3zzk2i2k2p6j2k6k"}],
     },
     "nurimisaki": {
         "name": "Nurimisaki",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?nurimisaki/15/15/v.h.h.h.h.zr.j.h.i.zk.l.q.m.j.l.r.i.i.i.zr.h.h.h.h.v",
@@ -439,7 +430,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "onsen": {
         "name": "Onsen-Meguri",
-        "cat": "loop",
+        "category": "loop",
         "examples": [
             {
                 "url": "http://pzv.jp/p.html?onsen/10/10/akkh92j6mt9pjvfti91svv1vvovv3g3f04ti3m2n1j1x1zq2v3n3",
@@ -451,7 +442,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "ripple": {
         "name": "Ripple Effect",
-        "cat": "num",
+        "category": "num",
         "aliases": ["rippleeffect"],
         "examples": [
             {
@@ -464,7 +455,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "shakashaka": {
         "name": "Shakashaka",
-        "cat": "var",
+        "category": "var",
         "examples": [
             {
                 "url": "https://puzz.link/p?shakashaka/30/30/kcodzzzgchbjbgbgbgbzzzobmcclbhblbobr.zkbncczzpbobgbgbscvczzu.lbgbgbobzgddkcsbzzndibiddbjbkcw.ztbzpbhbgbgbgb.zwbzgczzhegdobycgdlbhdx",
@@ -473,7 +464,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "shikaku": {
         "name": "Shikaku",
-        "cat": "region",
+        "category": "region",
         "examples": [
             {
                 "url": "https://puzz.link/p?shikaku/24/14/h5x6i.j8g6lag4j.l9i8j6i4l3z9g6i4i4h56h6i4i6j8h4n3h6zn4j4r6j4g6j8i8hci6j8q6h2r8k5l8k8j.l9j4l.lataock36kck",
@@ -482,7 +473,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "shimaguni": {
         "name": "Shimaguni (Islands)",
-        "cat": "shade",
+        "category": "shade",
         "aliases": ["islands"],
         "examples": [
             {
@@ -492,7 +483,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "simpleloop": {
         "name": "Simple Loop",
-        "cat": "loop",
+        "category": "loop",
         "examples": [
             {
                 "url": "https://puzz.link/p?simpleloop/20/20/124000044004i000200120018l001000000200000084000080220000o00g000080020h224008400p",
@@ -501,12 +492,12 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "skyscrapers": {
         "name": "Skyscrapers",
-        "cat": "num",
+        "category": "num",
         "examples": [{"url": "https://puzz.link/p?skyscrapers/9/9/g4g7g5g5i4g5g7i3g2g8g6i7g8g2h"}],
     },
     "slitherlink": {
         "name": "Slitherlink",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["slither"],
         "examples": [
             {
@@ -519,7 +510,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "starbattle": {
         "name": "Star Battle",
-        "cat": "var",
+        "category": "var",
         "examples": [
             {
                 "url": "https://puzz.link/p?starbattle/15/15/3/31g94h1gk30glmiuum28c52kl8mh0i10o51gh4i1go2h84a4802gt5hah8la6046hc9aign1ga18424a42h8",
@@ -530,7 +521,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "statuepark": {
         "name": "Statue Park",
-        "cat": "var",
+        "category": "var",
         "examples": [
             {
                 "data": "m=edit&p=7ZZPb5tMEIfv/hTVnvewy/LHcEvzJr0kaVOniiKEIuyQGAV7U8DNKyx/98wMVA7e6aVV1RwizGj4MZ55jGd2ab5v8rqQ2sOPmUolNRx+7NNpooBONRxXZVsVyQd5tGmXtgZHys+np/I+r5pikg5R2WTbxUl3KbtPSSq0kMKDU4tMdpfJtjtPxMKu5qWQ3QzuCzmFG2d9pAfuyd69pvvoHfeiVuBfDD64N+AuynpRFbdnvfIlSbsrKbDYR/o2umJlfxRigMHrHgCEefW8HLRmc2cfN0OUznayOyLabvYTFPMPoGYPim4Pih4Divx/Dpq38OibZfnE4cbZbgdP/SsA3yYpsn/bu9O9O0u2YC/IarI3yVaYANJoKNYDnhOyMBGrTkH1HDXmYn3NqoZVfS6vz5IFmNeJDVnekOWNWLKIJYtYsoitFrPPQSu2nFZsPa3Yglqxz0IrFkQrnkRjtJvb8ICGBzQ8IN9Gmu8jzbeM5ntGB0jilgx5wJAH5DtEhzxJpNgkfJPoCJO40TH/TGKeJGabVfNd5fFd5fFd5XHtA/N/SquAR/YKFgnZGbL/kVVkA7JnFHNC9prsMVmfbEgxES4zv70Q/SWc1Pi0qblH8K7jkU1SMdvU9/migM3l2K6ebFO2hYCNXDS2um2Gewnt87D1gLberOZFPZIqa5+qcj2OKx/Wti7YWygWdw9c/NzWdwfZn/OqGgn9m8tI6nt7JLU1bJ+vrvO6ts8jZZW3y5HwaqsdZSrW7RigzceI+WN+UG21/827ifhf0JkafMN6f0v6N29J+A+ot7ZEvTUcal5bs5MPMjP8oLJDPujOnIPuTDQWdIcaVGauQT0cbZDc6QbRGXDQfjHjmPVwzJHqcNKxlDPsWOr1vKfZ5AU=",
@@ -547,12 +538,12 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "stostone": {
         "name": "Stostone",
-        "cat": "shade",
+        "category": "shade",
         "examples": [{"url": "https://puzz.link/p?stostone/11/10/4c5d8ltltlvkv2sktihi30js7o01g614fkvootg0l5t"}],
     },
     "sudoku": {
         "name": "Sudoku",
-        "cat": "num",
+        "category": "num",
         "examples": [
             {
                 "url": "https://puzz.link/p?sudoku/9/9/k13m27h476h39h825zg841h29h538h18m96k",
@@ -574,7 +565,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "tapa": {
         "name": "Tapa",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?tapa/21/14/j.g2zk3h3maltblhc4kaehc1zhalhblo2talh3kakhaeziadgajpc1j.m3g1g3qaer4g2majh1gadq2q.g3s1n.ha7j3l3g1",
@@ -583,7 +574,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "tasquare": {
         "name": "Tasquare",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?tasquare/21/15/g.k..k4k.x.h.i8j2q.u4i2l2jar.2l.h.zhak8i8h9j2.x1m.n2g.h.l.j2h3g1k2g4r.o1i3h.i.j.l1zj2g4i..g.i.h./",
@@ -592,7 +583,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "tatamibari": {
         "name": "Tatamibari",
-        "cat": "region",
+        "category": "region",
         "examples": [
             {
                 "data": "m=edit&p=7VTBbptAEL37K6K9diuxYLuYS5Wmdi+u2zSuogihaG2TGAW86QJNhet/z8xA612ghx7a+lCtGT0eszOPxW/yL6XUMZ/A8nzucAHL8x26/CH+nGYtkyKNgzN+XhZbpQFw/mE243cyzeNB2GRFg301CapLXr0LQuYyTpdgEa8ug331PqgWvLqCR4wL4OaABOMuwOkRXtNzRBc1KRzAiwYDvAG4TvQ6jW/nNfMxCKslZ9jnDe1GyDL1NWb1Nrpfq2yVILGSBbxMvk0emyd5uVEPZZMrogOvzmu50x653lEuwlouoj8lN97cx3m56tM6iQ4HOPNPoPY2CFH45yP0j/Aq2ENcBHvm+rj1OwipPwzzHCReGoSLxGuDGCLxwiDGrRqjdsaYahgZPnUxivrtLT4JMzKEQ22MFCHam0Qt1mIox2gtarlmZa99CGJI+n7WgcMSdGQ3FGcUXYpLOFFeeRTfUnQojijOKWdK8ZriBcUhxTHlvMJv8ltf7S/ICV2f3G+u0Wkx0SBkU/DC2ULpTKbgh0WZrWL94x6mD8tVepuX+k6uwUs0nMAxwO0o06JSpR7TZGfnJfc7pePeR0iiFXvyV0pvWtWfZJpaRD1qLaqeChZVaLC8cS+1Vk8Wk8liaxHGNLMqxbvCFlBIW6J8kK1u2fGdDwP2jdEVenD4w/+j/V+Mdjx/59RGxanJob+u0r2+B7rH+sD2WrzhOy4HvuNnbNi1NLA9rga2bWygut4GsmNv4H7hcKzaNjmqavscW3Wsjq1Mt4fR4Bk=",
@@ -601,7 +592,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "tentaisho": {
         "name": "Tentaisho (Spiral Galaxies)",
-        "cat": "region",
+        "category": "region",
         "aliases": ["spiralgalaxies"],
         "examples": [
             {
@@ -614,12 +605,12 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "tents": {
         "name": "Tents",
-        "cat": "var",
+        "category": "var",
         "examples": [{"data": "https://puzz.link/p?tents/13/13/23g3g1i333g2j2g2j3i1517617151695114b322hi33g00100100e"}],
     },
     "tapaloop": {
         "name": "Tapa-Like Loop",
-        "cat": "loop",
+        "category": "loop",
         "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like"],
         "examples": [
             {
@@ -636,7 +627,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "yajilin": {
         "name": "Yajilin",
-        "cat": "loop",
+        "category": "loop",
         "examples": [
             {
                 "url": "https://puzz.link/p?yajilin/10/10/0.p31g23l21g33f42g42l13g12p0./",
@@ -648,7 +639,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "yajikazu": {
         "name": "Yajisan-Kazusan",
-        "cat": "shade",
+        "category": "shade",
         "aliases": ["yk", "yajisan-kazusan"],
         "examples": [
             {
@@ -658,7 +649,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     },
     "yinyang": {
         "name": "Yin-Yang",
-        "cat": "shade",
+        "category": "shade",
         "examples": [
             {
                 "url": "https://puzz.link/p?yinyang/11/11/02000620ik00i0i00i8kiq030061206j002100600",
