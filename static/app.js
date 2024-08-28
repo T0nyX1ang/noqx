@@ -68,6 +68,8 @@ window.onload = function () {
         categorySelect.append(typeOption);
       }
 
+      const choices_type = new Choices(typeSelect, { itemSelectText: "" });
+
       typeSelect.addEventListener("change", () => {
         ruleButton.disabled = false;
         puzzleType = typeSelect.value;
