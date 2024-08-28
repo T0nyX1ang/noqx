@@ -60,6 +60,7 @@
   display: block;
   width: 100%;
   font-size: 14px;
+  text-indent: -10px;
 }
 
 .choices__list {
@@ -76,7 +77,6 @@
 .choices__list[aria-expanded] .choices__item {
   position: relative;
   font-size: 14px;
-  text-align: center;
   padding: 2.5px 0;
 }
 
@@ -136,9 +136,8 @@
 .choices__heading {
   font-weight: 600;
   font-size: 14px;
-  text-align: left;
   color: gray;
-  padding: 2.5px 0 2.5px 10%;
+  padding: 2.5px 0;
 }
 
 .choices__input {
