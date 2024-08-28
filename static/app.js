@@ -42,6 +42,7 @@ window.onload = function () {
   const urlBase = "./penpa-edit/#";
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
+  const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const readmeButton = document.getElementById("readme");
@@ -66,6 +67,7 @@ window.onload = function () {
       }
 
       typeSelect.addEventListener("change", () => {
+        ruleButton.disabled = false;
         puzzleType = typeSelect.value;
         if (puzzleType !== "") {
           parameterBox.style.display = "none"; // hide parameter box if no parameters
@@ -121,6 +123,15 @@ window.onload = function () {
             }
           }
         }
+      });
+
+      ruleButton.addEventListener("click", () => {
+        if (ruleButton.disabled || !puzzleType) return;
+        window.open(
+          `https://puzz.link/rules.html?${
+            puzzleType !== "ncells" ? puzzleType : "fivecells"
+          }`
+        );
       });
 
       solveButton.addEventListener("click", () => {
