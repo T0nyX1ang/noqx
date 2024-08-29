@@ -11,9 +11,8 @@ body {
 
 .left {
   position: fixed;
-  left: 10px;
+  left: 6px;
   top: 30px;
-  font-size: 10pt;
   text-align: center;
 }
 
@@ -25,13 +24,14 @@ input {
 #readme,
 #type,
 #example,
+#rules,
 #solve,
 #solver_reset {
   display: block;
   font-size: 14px;
   margin: 10px auto;
   width: 150px;
-  height: 25px;
+  height: 27px;
   text-align: center;
   cursor: pointer;
   padding: 2px 5px;

@@ -17,7 +17,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="gray"))
+    solver.add_program_line(grid_color_connected(color="gray", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(4, 1, color="gray"))
     solver.add_program_line(avoid_rect(1, 4, color="gray"))
     solver.add_program_line(avoid_rect(4, 1, color="not gray"))
@@ -28,6 +28,10 @@ def solve(puzzle: Puzzle) -> List[str]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
             data = puzzle.text[rc]
+
+            if data == "?":
+                continue
+
             assert isinstance(data, int), "Clue must be an integer."
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 

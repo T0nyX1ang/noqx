@@ -3,7 +3,7 @@ function exp() {
 }
 
 function imp(penpa) {
-  iframe.contentWindow.load(penpa);
+  iframe.contentWindow.import_url(penpa);
 }
 
 function make_param(id, type, name, value) {
@@ -39,12 +39,41 @@ function make_param(id, type, name, value) {
 
 window.onload = function () {
   const iframe = document.getElementById("iframe");
+  const urlBase = "./penpa-edit/#";
+  const issueMessage =
+    "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.";
   const exampleSelect = document.getElementById("example");
   const typeSelect = document.getElementById("type");
+  const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const readmeButton = document.getElementById("readme");
   const parameterBox = document.getElementById("parameter_box");
+
+  const categoryName = {
+    shade: "- Shading -",
+    loop: "- Loop / Path -",
+    region: "- Area Division -",
+    num: "- Number -",
+    var: "- Variety -",
+    draw: "- Drawing -",
+  };
+
+  const choicesType = new Choices(typeSelect, {
+    itemSelectText: "",
+    searchFields: ["label", "value", "customProperties.aliases"],
+    searchResultLimit: 5,
+    searchPlaceholderValue: "Type to search",
+  });
+  let puzzleTypeDict = {};
+  for (const [k, v] of Object.entries(categoryName)) {
+    puzzleTypeDict[k] = { label: v, choices: [] };
+  }
+
+  const choicesExample = new Choices(exampleSelect, {
+    itemSelectText: "",
+    searchEnabled: false,
+  });
 
   let foundUrl = null;
   let puzzleType = null;
@@ -57,13 +86,17 @@ window.onload = function () {
   fetch("/api/list").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
-        const typeOption = document.createElement("option");
-        typeOption.value = ptype;
-        typeOption.text = pvalue.name;
-        typeSelect.add(typeOption);
+        typeOption = {
+          value: ptype,
+          label: pvalue.name,
+          customProperties: { aliases: pvalue.aliases },
+        };
+        puzzleTypeDict[pvalue.category].choices.push(typeOption);
       }
+      choicesType.setChoices(Object.values(puzzleTypeDict));
 
       typeSelect.addEventListener("change", () => {
+        ruleButton.disabled = false;
         puzzleType = typeSelect.value;
         if (puzzleType !== "") {
           parameterBox.style.display = "none"; // hide parameter box if no parameters
@@ -83,15 +116,11 @@ window.onload = function () {
 
             parameterBox.style.display = "block";
           }
-          for (let i = exampleSelect.options.length - 1; i > 0; i--)
-            exampleSelect.remove(i); // remove all options except the first one
 
-          for (let i = 0; i < body[puzzleType].examples.length; i++) {
-            const exampleOption = document.createElement("option");
-            exampleOption.value = i;
-            exampleOption.text = `Example ${i + 1}`;
-            exampleSelect.add(exampleOption);
-          }
+          choicesExample.clearChoices();
+          let exampleList = [{ value: "", label: "Choose Example", selected: true }];
+          exampleList.push(...body[puzzleType].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
+          choicesExample.setChoices(exampleList);
         }
       });
 
@@ -100,21 +129,26 @@ window.onload = function () {
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;
-          puzzleContent = body[puzzleType].examples[exampleSelect.value].data;
-          imp(puzzleContent);
+
+          let exampleData = body[puzzleType].examples[exampleSelect.value];
+          puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
+          imp(puzzleContent, exampleData.url !== undefined);
 
           if (body[puzzleType].parameters) {
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
-              const config =
-                body[puzzleType].examples[exampleSelect.value].config;
-              const value =
-                config && config[k] !== undefined ? config[k] : v.default;
+              const config = body[puzzleType].examples[exampleSelect.value].config;
+              const value = config && config[k] !== undefined ? config[k] : v.default;
               const paramInput = document.getElementById(`param_${k}`);
               if (paramInput.type === "checkbox") paramInput.checked = value;
               else paramInput.value = value;
             }
           }
         }
+      });
+
+      ruleButton.addEventListener("click", () => {
+        if (ruleButton.disabled || !puzzleType) return;
+        window.open(`https://puzz.link/rules.html?${puzzleType !== "ncells" ? puzzleType : "fivecells"}`);
       });
 
       solveButton.addEventListener("click", () => {
@@ -135,8 +169,7 @@ window.onload = function () {
           if (body[puzzleType].parameters) {
             for (const [k, _] of Object.entries(body[puzzleType].parameters)) {
               const paramInput = document.getElementById(`param_${k}`);
-              if (paramInput.type === "checkbox")
-                puzzleParameters[k] = paramInput.checked;
+              if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
               else puzzleParameters[k] = paramInput.value;
             }
           }
@@ -157,6 +190,7 @@ window.onload = function () {
                   icon: "error",
                   title: "Oops...",
                   text: body.detail || "Unknown error.",
+                  footer: issueMessage,
                 });
               } else {
                 solutionList = body.url;
@@ -164,7 +198,8 @@ window.onload = function () {
                   Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "No solution found or time limit exceeded (30 seconds).",
+                    text: "No solution found or time limit exceeded.",
+                    footer: issueMessage,
                   });
                   return;
                 }
@@ -178,10 +213,11 @@ window.onload = function () {
                 icon: "question",
                 title: "Unexpected error",
                 text: e,
+                footer: issueMessage,
               });
             })
             .finally(() => {
-              exampleSelect.value = "";
+              choicesExample.setChoiceByValue("");
               solveButton.textContent = `Solution (${solutionPointer + 1}/${
                 solutionList.length === 10 ? "10+" : solutionList.length
               })`;
@@ -202,7 +238,7 @@ window.onload = function () {
 
       resetButton.addEventListener("click", () => {
         if (foundUrl && puzzleContent !== null) {
-          imp(puzzleContent);
+          imp(`${urlBase}${puzzleContent}`);
           foundUrl = null;
         } else {
           iframe.contentWindow.pu.reset_board();
@@ -216,19 +252,12 @@ window.onload = function () {
       });
 
       readmeButton.addEventListener("click", () => {
-        Swal.fire({
-          icon: "info",
-          title: "Noqx",
-          html: '<a href="https://github.com/T0nyX1ang/noqx">Noqx</a> by <a href="https://github.com/T0nyX1ang/">T0nyX1ang</a> and <a href="https://github.com/zhuyaoyu/">zyy</a> using <a href="https://github.com/potassco/clingo">clingo</a> <br> Original <a href="https://noq.solutions">Noq</a> project by <a href="https://github.com/jenna-h/">Jenna</a> and <a href="https://mstang.xyz">Michael</a> using <a href="https://github.com/danyq/claspy">claspy</a> <br> General layout and encoding by <a href="https://github.com/kevinychen/nikoli-puzzle-solver">nikoli-puzzle-solver</a> <br>',
-          footer: "Licensed under GPL-3",
-        });
+        window.open("https://github.com/T0nyX1ang/noqx");
       });
     });
   });
 
-  iframe.contentWindow.document.addEventListener("click", () =>
-    iframe.contentWindow.focus()
-  );
+  iframe.contentWindow.document.addEventListener("click", () => iframe.contentWindow.focus());
 
   setInterval(() => {
     if (solveButton.textContent !== "Solving..." && exp() !== foundUrl) {

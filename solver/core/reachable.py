@@ -11,7 +11,7 @@ def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]
 
 
 def grid_color_connected(
-    color: str = "black", adj_type: Union[int, str] = 4, initial_cell: Optional[Tuple[int, int]] = None
+    color: str = "black", adj_type: Union[int, str] = 4, grid_size: Optional[Tuple[int, int]] = None
 ) -> str:
     """
     Generate a constraint to check the reachability of {color} cells.
@@ -21,11 +21,14 @@ def grid_color_connected(
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
-    if not initial_cell:
+    if grid_size is None:
         initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
     else:
-        r, c = initial_cell
-        initial = f"{tag}({r}, {c}) :- {color}({r}, {c})."
+        # propagation from the middle of the grid to increase the speed
+        R, C = grid_size
+        initial = (
+            f"{tag}(R, C) :- (_, R, C) = #min{{ (|R1 - {R // 2}| + |C1 - {C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+        )
 
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."

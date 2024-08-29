@@ -7,8 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Noqx: extended logic puzzle solver." />
-  <link rel="stylesheet" type="text/css" href=style.css>
-  </link>
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <link rel="stylesheet" type="text/css" href="./choices.alter.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </head>
 
 <body>
@@ -19,9 +20,11 @@
     <select id="type">
       <option value="" disabled selected>Puzzle type</option>
     </select>
+
     <select id="example">
-      <option value="" selected>Example puzzle</option>
+      <option value="" selected>Choose Example</option>
     </select>
+    <button id="rules" disabled>Show Rules</button>
     <button id="solve">Solve</button>
     <button id="solver_reset">Reset</button>
     <fieldset id="parameter_box"></fieldset>

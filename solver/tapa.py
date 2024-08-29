@@ -104,7 +104,7 @@ def solve(puzzle: Puzzle) -> List[str]:
     solver.add_program_line(color_to_num(puzzle.row, puzzle.col, color="black"))
     solver.add_program_line(tapa_rules())
     solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="black"))
+    solver.add_program_line(grid_color_connected(color="black", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
 
     for (r, c), color_code in puzzle.surface.items():

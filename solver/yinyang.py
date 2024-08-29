@@ -34,8 +34,8 @@ def solve(puzzle: Puzzle) -> List[str]:
             solver.add_program_line(f"not {symbol_1}({r}, {c}).")
             symbol_2_initial.append((r, c))
 
-    solver.add_program_line(grid_color_connected(color=symbol_1, initial_cell=symbol_1_initial[0]))
-    solver.add_program_line(grid_color_connected(color=f"not {symbol_1}", initial_cell=symbol_2_initial[0]))
+    solver.add_program_line(grid_color_connected(color=symbol_1, grid_size=(puzzle.row, puzzle.col)))
+    solver.add_program_line(grid_color_connected(color=f"not {symbol_1}", grid_size=(puzzle.row, puzzle.col)))
 
     solver.add_program_line(display(item=symbol_1))
     solver.add_program_line(display(item=symbol_2))

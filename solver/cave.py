@@ -45,9 +45,13 @@ def solve(puzzle: Puzzle) -> List[str]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
         solver.add_program_line(f"not black({r}, {c}).")
         solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
+
+        if num == "?":  # question mark case
+            continue
+
+        assert isinstance(num, int), "Clue must be an integer."
         if puzzle.param["product"]:
             solver.add_program_line(cave_product_rule(num, (r, c), color="not black"))
         else:

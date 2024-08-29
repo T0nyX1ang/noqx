@@ -57,12 +57,13 @@ def solve(puzzle: Puzzle) -> List[str]:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
 
-    for (r, c), _ in puzzle.surface.items():
+    for (r, c), color_code in puzzle.surface.items():
         solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(f"edge_left({r}, {c}).")
-        solver.add_program_line(f"edge_left({r}, {c + 1}).")
-        solver.add_program_line(f"edge_top({r}, {c}).")
-        solver.add_program_line(f"edge_top({r + 1}, {c}).")
+
+        for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
+            prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
+            direc = "left" if c1 != c else "top"
+            solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)

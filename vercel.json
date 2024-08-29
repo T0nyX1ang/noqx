@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "noqx.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "noqx.py"
+    }
+  ]
+}
