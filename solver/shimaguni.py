@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent, area_adjacent, avoid_area_adjacent
 from .core.reachable import area_color_connected
@@ -21,7 +21,7 @@ def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str
     return f":- area_adj_{adj_type}(A, A1), A < A1, {size_count}, {size1_count}, N = N1."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

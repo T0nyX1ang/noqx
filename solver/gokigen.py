@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import direction, display, fill_path, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 
@@ -39,7 +39,7 @@ def convert_direction_to_edge() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))

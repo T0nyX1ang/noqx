@@ -11,43 +11,6 @@ MAX_SOLUTIONS_TO_FIND = 10
 TIMEOUT_LIMIT = 30
 
 
-def battleship_refine(solution: Solution) -> Solution:
-    """Refine the battleship solution."""
-    for (r, c), _ in solution.symbol.items():
-        has_top_neighbor = (r - 1, c) in solution.symbol
-        has_left_neighbor = (r, c - 1) in solution.symbol
-        has_bottom_neighbor = (r + 1, c) in solution.symbol
-        has_right_neighbor = (r, c + 1) in solution.symbol
-
-        fleet_name = solution.symbol[(r, c)].split("__")[0]
-
-        # center part
-        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__1__0"
-
-        # middle part
-        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
-            solution.symbol[(r, c)] = f"{fleet_name}__2__0"
-
-        # left part
-        elif {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__3__0"
-
-        # top part
-        elif {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__4__0"
-
-        # right part
-        elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__5__0"
-
-        # bottom part
-        elif {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__6__0"
-
-    return solution
-
-
 class ClingoSolver:
     """A solver using clingo."""
 
@@ -56,7 +19,7 @@ class ClingoSolver:
         self.clingo_instance: Control = Control()
         self.program: str = ""
         self.puzzle: Optional[Puzzle] = None
-        self.solutions: List[str] = []
+        self.solutions: List[Solution] = []
 
     def register_puzzle(self, puzzle: Puzzle):
         """Register the puzzle to the solution."""
@@ -115,10 +78,7 @@ class ClingoSolver:
             else:
                 solution.symbol[(int(r), int(c))] = str(_type)
 
-        if self.puzzle.puzzle_type == "battleship":
-            solution = battleship_refine(solution)  # refine the battleship solution
-
-        self.solutions.append(str(solution))
+        self.solutions.append(solution)
 
     def add_program_line(self, line: str):
         """Add a line to the program."""

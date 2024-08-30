@@ -3,7 +3,7 @@
 from typing import Dict, List, Tuple, Union
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.loop import single_loop
 from .core.neighbor import adjacent
 from .core.helper import tag_encode
@@ -20,7 +20,7 @@ def no_2x2_path() -> str:
     return f":- { ', '.join(f'reachable_grid_src_adj_loop_numlin(ID, R + {r}, C + {c})' for r, c in points) }."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
     for (r, c), clue in puzzle.text.items():
         assert isinstance(clue, (int, str)), "Invalid clue."

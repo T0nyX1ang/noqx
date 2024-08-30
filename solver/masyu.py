@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.loop import single_loop, loop_sign
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
@@ -40,7 +40,7 @@ def masyu_white_rule() -> str:
     return white_rule
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

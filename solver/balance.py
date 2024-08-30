@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import reverse_op
 from .core.loop import single_loop, loop_sign
 from .core.neighbor import adjacent
@@ -61,7 +61,7 @@ def count_balance(target: int, src_cell: Tuple[int, int], color: str = "black", 
     return constraint.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

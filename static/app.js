@@ -64,6 +64,7 @@ window.onload = function () {
     searchFields: ["label", "value", "customProperties.aliases"],
     searchResultLimit: 5,
     searchPlaceholderValue: "Type to search",
+    shouldSort: false,
   });
   let puzzleTypeDict = {};
   for (const [k, v] of Object.entries(categoryName)) {
@@ -192,13 +193,24 @@ window.onload = function () {
                   text: body.detail || "Unknown error.",
                   footer: issueMessage,
                 });
+                return;
+              } else if (response.status === 504) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Time limit exceeded.",
+                  footer: issueMessage,
+                });
+                foundUrl = null;
+                solveButton.textContent = "Solve";
+                return;
               } else {
                 solutionList = body.url;
                 if (solutionList.length === 0) {
                   Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "No solution found or time limit exceeded.",
+                    text: "No solution found.",
                     footer: issueMessage,
                   });
                   return;

@@ -104,8 +104,8 @@ def full_bfs(
                     unexplored_cells.remove(neighbor)
                     queue.append(neighbor)
 
-                if clues and (r, c) in clues:
-                    clue_cell = (r, c)
+            if clues and (r, c) in clues:
+                clue_cell = (r, c)
 
         return clue_cell, tuple(connected_component)
 

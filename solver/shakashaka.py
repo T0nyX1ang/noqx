@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import display, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent
 from .core.solution import solver
 
@@ -68,7 +68,7 @@ def shade_shaka() -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

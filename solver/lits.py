@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import area, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs, tag_encode
 from .core.neighbor import adjacent, area_adjacent
 from .core.reachable import grid_color_connected
@@ -21,7 +21,7 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int 
     return f":- area_adj_{adj_type}_{color}(A, A1), A < A1, {tag}(A, _, _, T, _), {tag}(A1, _, _, T, _)."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

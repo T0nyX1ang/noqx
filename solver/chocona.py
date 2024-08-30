@@ -3,14 +3,14 @@
 from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent
 from .core.shape import all_rect
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

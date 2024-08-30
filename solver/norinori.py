@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent
 from .core.solution import solver
@@ -18,7 +18,7 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

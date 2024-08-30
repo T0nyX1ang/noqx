@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import display, edge, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import extract_initial_edges, tag_encode
 from .core.neighbor import adjacent
 from .core.shape import OMINOES, all_shapes, general_shape
@@ -24,7 +24,7 @@ def avoid_adj_same_omino(color: str = "black") -> str:
     return constraint
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     shaded = len(puzzle.surface)
     assert (puzzle.row * puzzle.col - shaded) % 3 == 0, "The grid cannot be divided into 3-ominoes!"
 

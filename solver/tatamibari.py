@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from .core.common import display, edge, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import extract_initial_edges, reverse_op, tag_encode
 from .core.neighbor import adjacent
 from .core.reachable import bulb_src_color_connected
@@ -37,7 +37,7 @@ def tatamibari_global_constraint() -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 
@@ -17,7 +17,7 @@ def count_box_row(target: int, r: int, color: str = "black") -> str:
     return f":- #sum {{ N: box_row(C, N), {color}({r}, C) }} != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

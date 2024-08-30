@@ -1,6 +1,5 @@
 """Encoding for penpa-edit frontend."""
 
-import copy
 import json
 from base64 import b64encode, b64decode
 from enum import Enum
@@ -195,7 +194,7 @@ class Solution:
         """Initialize the solution."""
         self.puzzle: Puzzle = puzzle
         self.parts = puzzle.parts
-        self.board = copy.deepcopy(puzzle.board)
+        self.board = {"surface": {}, "number": {}, "sudoku": {}, "symbol": {}, "squareframe": [], "line": {}, "edge": {}}
 
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str]] = {}

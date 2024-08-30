@@ -3,7 +3,7 @@
 from typing import Iterable, List, Tuple, Union
 
 from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.loop import single_loop
 from .core.neighbor import adjacent
@@ -56,7 +56,7 @@ def onsen_global_rule() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

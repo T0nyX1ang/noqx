@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import display, edge, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import extract_initial_edges, tag_encode
 from .core.neighbor import adjacent
 from .core.reachable import grid_src_color_connected
@@ -20,7 +20,7 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

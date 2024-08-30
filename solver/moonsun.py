@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.loop import pass_area_once, single_loop
 from .core.neighbor import adjacent, area_adjacent
@@ -30,7 +30,7 @@ def moon_sun_area() -> str:
     return (rule + constraint).strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

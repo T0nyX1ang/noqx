@@ -3,12 +3,12 @@
 from typing import List
 
 from .core.common import count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     mine_count = puzzle.param["mine_count"]
 
     solver.reset()

@@ -3,13 +3,13 @@
 from typing import List
 
 from .core.common import display, grid, shade_c, unique_num
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.reachable import grid_color_connected
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

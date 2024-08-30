@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import direction, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.reachable import grid_color_connected
 from .core.solution import solver
 
@@ -46,7 +46,7 @@ def hashi_bridge() -> str:
     return rule + adj.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
