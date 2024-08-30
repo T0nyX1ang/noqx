@@ -193,13 +193,22 @@ window.onload = function () {
                   text: body.detail || "Unknown error.",
                   footer: issueMessage,
                 });
+                return;
+              } else if (response.status === 504) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Time limit exceeded.",
+                  footer: issueMessage,
+                });
+                return;
               } else {
                 solutionList = body.url;
                 if (solutionList.length === 0) {
                   Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "No solution found or time limit exceeded.",
+                    text: "No solution found.",
                     footer: issueMessage,
                   });
                   return;

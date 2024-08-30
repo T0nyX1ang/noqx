@@ -35,6 +35,8 @@ def solver_api(
     except AssertionError as err:
         print(traceback.format_exc())
         raise HTTPException(status_code=400, detail=str(err)) from err
+    except TimeoutError as err:
+        raise HTTPException(status_code=504, detail=str(err)) from err
     except Exception as err:
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(err)) from err
