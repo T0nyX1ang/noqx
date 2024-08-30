@@ -64,6 +64,7 @@ window.onload = function () {
     searchFields: ["label", "value", "customProperties.aliases"],
     searchResultLimit: 5,
     searchPlaceholderValue: "Type to search",
+    shouldSort: false,
   });
   let puzzleTypeDict = {};
   for (const [k, v] of Object.entries(categoryName)) {
