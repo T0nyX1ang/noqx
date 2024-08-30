@@ -3,13 +3,13 @@
 from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     assert puzzle.param["stars"].isdigit(), "Invalid star count."
     num_stars = int(puzzle.param["stars"])
 

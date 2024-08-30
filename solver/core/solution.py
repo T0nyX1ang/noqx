@@ -56,7 +56,7 @@ class ClingoSolver:
         self.clingo_instance: Control = Control()
         self.program: str = ""
         self.puzzle: Optional[Puzzle] = None
-        self.solutions: List[str] = []
+        self.solutions: List[Solution] = []
 
     def register_puzzle(self, puzzle: Puzzle):
         """Register the puzzle to the solution."""
@@ -118,7 +118,7 @@ class ClingoSolver:
         if self.puzzle.puzzle_type == "battleship":
             solution = battleship_refine(solution)  # refine the battleship solution
 
-        self.solutions.append(str(solution))
+        self.solutions.append(solution)
 
     def add_program_line(self, line: str):
         """Add a line to the program."""

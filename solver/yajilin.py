@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from .core.common import direction, display, fill_path, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.loop import single_loop
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.reachable import grid_color_connected
@@ -28,7 +28,7 @@ def yajilin_count(target: int, src_cell: Tuple[int, int], arrow_direction: int, 
     raise AssertionError("Invalid direction, must be one of 'l', 'r', 'u', 'd'.")
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

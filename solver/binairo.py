@@ -4,7 +4,7 @@ from typing import List
 
 from .core.common import count, display, grid, shade_c
 from .core.helper import extract_two_symbols
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.shape import avoid_rect
 from .core.solution import solver
 
@@ -31,7 +31,7 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
     raise AssertionError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     if not (puzzle.row % 2 == 0 and puzzle.col % 2 == 0):
         raise AssertionError("# rows and # columns must both be even!")
 

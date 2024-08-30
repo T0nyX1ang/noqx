@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.reachable import grid_color_connected
 from .core.solution import solver
@@ -27,7 +27,7 @@ def yajikazu_count(target: int, src_cell: Tuple[int, int], arrow_direction: int,
     raise AssertionError("Invalid direction.")
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

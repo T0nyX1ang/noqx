@@ -3,7 +3,7 @@
 from typing import Dict, List, Tuple, Union
 
 from .core.common import display, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 
@@ -63,7 +63,7 @@ def nono_col(row: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "b
     return "\n".join(constraints)
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     top_clues = {}
     for c in range(puzzle.col):
         top_clues[c] = tuple(clue for (r1, c1), clue in puzzle.text.items() if r1 <= -1 and c1 == c)

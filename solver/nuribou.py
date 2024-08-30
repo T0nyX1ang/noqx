@@ -5,7 +5,7 @@ from typing import List
 from .core.common import display, grid, shade_c
 from .core.helper import tag_encode
 from .core.neighbor import adjacent
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.reachable import (
     avoid_unknown_src,
     count_reachable_src,
@@ -27,7 +27,7 @@ def noribou_strip_different(color: str = "black") -> str:
     return same_rc + "\n" + constraint
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

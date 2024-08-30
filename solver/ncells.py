@@ -4,7 +4,7 @@ from typing import List
 
 from .core.common import display, edge, grid
 from .core.helper import extract_initial_edges, tag_encode
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent_edges
 from .core.reachable import grid_branch_color_connected
 from .core.solution import solver
@@ -21,7 +21,7 @@ def count_reachable_edge(target: int) -> str:
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     size = int(puzzle.param["region_size"])
     assert puzzle.row * puzzle.col % size == 0, "It's impossible to divide grid into regions of this size!"
 

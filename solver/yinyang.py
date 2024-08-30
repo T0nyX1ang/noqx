@@ -4,14 +4,14 @@ from typing import List, Tuple
 
 from .core.common import display, grid, shade_c
 from .core.helper import extract_two_symbols
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
 from .core.shape import avoid_rect
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     symbol_set = set(puzzle.symbol.values())
     symbol_1, symbol_2 = extract_two_symbols(symbol_set)
 

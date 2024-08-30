@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent, avoid_area_adjacent
 from .core.reachable import area_color_connected
@@ -21,7 +21,7 @@ def valid_stostone(color: str = "black") -> str:
     return f":- {below_C}, {below_C1}, BC != BC1."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     assert puzzle.row % 2 == 0, "The stostone grid must have an even # rows."
 
     solver.reset()

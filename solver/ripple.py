@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import area, display, fill_num, grid, unique_num
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.solution import solver
 
@@ -15,7 +15,7 @@ def ripple_constraint() -> str:
     return row + "\n" + col
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

@@ -4,7 +4,7 @@ import itertools
 from typing import List, Tuple, Union, Optional
 
 from .core.common import direction, display, fill_path, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.loop import single_loop
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
@@ -152,7 +152,7 @@ def valid_tapaloop_pattern(r: int, c: int, clue: List[Union[int, str]]) -> str:
     return constraint.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

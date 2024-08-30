@@ -3,7 +3,7 @@
 from typing import List
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.loop import separate_item_from_loop, single_loop
 from .core.neighbor import adjacent, count_adjacent_edges
 from .core.reachable import grid_color_connected
@@ -17,7 +17,7 @@ def convert_direction_to_edge() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))

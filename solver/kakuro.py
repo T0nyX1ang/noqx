@@ -3,11 +3,11 @@
 from typing import List, Tuple
 
 from .core.common import area, display, fill_num, grid, unique_num
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     # Find sections and their corresponding clues
     # 'sum' is 0 when the clue is blank; this is because we need to check every run for duplicates.
     sums: List[Tuple[int, List[Tuple[int, int]]]] = []

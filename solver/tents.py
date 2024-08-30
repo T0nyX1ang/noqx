@@ -4,7 +4,7 @@ import itertools
 from typing import List, Tuple
 
 from .core.common import count, display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, avoid_adjacent_color
 from .core.solution import solver
 
@@ -27,7 +27,7 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
     return rules + "\n" + constraints
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

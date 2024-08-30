@@ -3,7 +3,7 @@
 from typing import Iterable, List, Tuple
 
 from .core.common import area, direction, display, fill_path, grid
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.loop import directed_loop
 from .core.solution import solver
@@ -62,7 +62,7 @@ def haisu_count() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     assert "S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided."
 
     solver.reset()

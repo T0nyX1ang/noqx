@@ -3,12 +3,12 @@
 from typing import List
 
 from .core.common import area, display, fill_num, grid, unique_num
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     assert puzzle.row == puzzle.col, "Doppelblock puzzles must be square."
     n = puzzle.row
 

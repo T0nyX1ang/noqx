@@ -3,14 +3,14 @@
 from typing import List
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent
 from .core.reachable import grid_color_connected
 from .core.shape import OMINOES, all_shapes, count_shape, general_shape
 from .core.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     shapeset = puzzle.param["shapeset"]
     if shapeset == "tetro":
         omino_num, omino_count_type = 4, 1

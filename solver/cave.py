@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.helper import tag_encode
 from .core.neighbor import adjacent
 from .core.reachable import (
@@ -29,7 +29,7 @@ def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "blac
     return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))

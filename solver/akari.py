@@ -4,7 +4,7 @@ from typing import List
 
 from .core.common import display, grid
 from .core.helper import tag_encode
-from .core.penpa import Puzzle
+from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent
 from .core.solution import solver
 
@@ -24,7 +24,7 @@ def lightup(color: str = "black") -> str:
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
 
-def solve(puzzle: Puzzle) -> List[str]:
+def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
