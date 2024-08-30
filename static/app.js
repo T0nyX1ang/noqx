@@ -201,6 +201,8 @@ window.onload = function () {
                   text: "Time limit exceeded.",
                   footer: issueMessage,
                 });
+                foundUrl = null;
+                solveButton.textContent = "Solve";
                 return;
               } else {
                 solutionList = body.url;
