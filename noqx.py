@@ -6,11 +6,10 @@ from typing import Any, Dict
 
 import uvicorn
 from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
-from starlette.exceptions import HTTPException
-from starlette.responses import JSONResponse
-from starlette.requests import Request
 
 from solver import run_solver
 from solver.core.const import PUZZLE_TYPES
@@ -31,12 +30,9 @@ async def solver_api(request: Request) -> JSONResponse:
         return JSONResponse(run_solver(puzzle_type, puzzle, param))
     except AssertionError as err:
         print(traceback.format_exc())
-        raise HTTPException(status_code=400, detail=str(err)) from err
+        return JSONResponse({"detail": str(err)}, status_code=400)
     except TimeoutError as err:
-        raise HTTPException(status_code=504, detail=str(err)) from err
-    except Exception as err:
-        print(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(err)) from err
+        return JSONResponse({"detail": str(err)}, status_code=504)
 
 
 parser = argparse.ArgumentParser(description="noqx startup settings.")
