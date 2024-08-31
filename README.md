@@ -60,13 +60,13 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Additional Usage
 
 ```text
-    usage: noqx.py [-h] [-H HOST] [-p PORT] [-r] [-l LOG_LEVEL]
+    usage: noqx.py [-h] [-H HOST] [-p PORT] [-d] [-l LOG_LEVEL]
 
     optional arguments:
       -h, --help            show this help message and exit
       -H HOST, --host HOST  The host to run the server on.
       -p PORT, --port PORT  The port to run the server on.
-      -r, --reload          Whether to reload the server on changes.
+      -d, --debug           Whether to enable debug mode.
       -l LOG_LEVEL, --log-level LOG_LEVEL
                             The log level of the server.
 ```
