@@ -47,7 +47,6 @@ window.onload = function () {
   const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
-  const readmeButton = document.getElementById("readme");
   const parameterBox = document.getElementById("parameter_box");
 
   const categoryName = {
@@ -262,10 +261,6 @@ window.onload = function () {
         solutionPointer = -1;
         solveButton.textContent = "Solve";
         solveButton.disabled = false;
-      });
-
-      readmeButton.addEventListener("click", () => {
-        window.open("https://github.com/T0nyX1ang/noqx");
       });
     });
   });
