@@ -84,7 +84,7 @@ window.onload = function () {
   let solutionPointer = -1;
   let puzzleParameters = {};
 
-  fetch("/api/list").then((response) => {
+  fetch("/api/list/").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
         typeOption = {
@@ -175,7 +175,7 @@ window.onload = function () {
             }
           }
 
-          fetch("/api/solve", {
+          fetch("/api/solve/", {
             method: "POST",
             body: JSON.stringify({
               puzzle_type: puzzleType,
