@@ -193,6 +193,7 @@ window.onload = function () {
                   text: body.detail || "Unknown error.",
                   footer: issueMessage,
                 });
+                solveButton.textContent = "Solve";
                 return;
               } else if (response.status === 504) {
                 Swal.fire({
@@ -233,7 +234,7 @@ window.onload = function () {
               solveButton.textContent = `Solution (${solutionPointer + 1}/${
                 solutionList.length === 10 ? "10+" : solutionList.length
               })`;
-              solveButton.disabled = solutionList.length === 1;
+              solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
             });
         } else {
           solutionPointer++;
@@ -249,7 +250,7 @@ window.onload = function () {
       });
 
       resetButton.addEventListener("click", () => {
-        if (foundUrl && puzzleContent !== null) {
+        if (puzzleContent !== null) {
           imp(`${urlBase}${puzzleContent}`);
           foundUrl = null;
         } else {
@@ -272,7 +273,7 @@ window.onload = function () {
   iframe.contentWindow.document.addEventListener("click", () => iframe.contentWindow.focus());
 
   setInterval(() => {
-    if (solveButton.textContent !== "Solving..." && exp() !== foundUrl) {
+    if (solveButton.textContent !== "Solving..." && foundUrl !== null && exp() !== foundUrl) {
       foundUrl = null;
       solveButton.textContent = "Solve";
     }
