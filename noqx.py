@@ -12,7 +12,7 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from solver import run_solver
-from solver.core.const import PUZZLE_TYPES
+from solver.core.const import PUZZLE_TYPES, logger
 
 
 async def list_puzzles_api(_: Request) -> JSONResponse:
@@ -29,17 +29,16 @@ async def solver_api(request: Request) -> JSONResponse:
         param: Dict[str, Any] = body["param"]
         return JSONResponse(run_solver(puzzle_type, puzzle, param))
     except AssertionError as err:
-        print(traceback.format_exc())
+        logger.error(traceback.format_exc())
         return JSONResponse({"detail": str(err)}, status_code=400)
     except TimeoutError as err:
         return JSONResponse({"detail": str(err)}, status_code=504)
 
 
 parser = argparse.ArgumentParser(description="noqx startup settings.")
-parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="The host to run the server on.")
-parser.add_argument("-p", "--port", default=8000, type=int, help="The port to run the server on.")
-parser.add_argument("-d", "--debug", action="store_true", help="Whether to enable debug mode.")
-parser.add_argument("-l", "--log-level", default="info", type=str, help="The log level of the server.")
+parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="the host to run the server on.")
+parser.add_argument("-p", "--port", default=8000, type=int, help="the port to run the server on.")
+parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 args = parser.parse_args()
 
 routes = [
@@ -58,4 +57,4 @@ routes = [
 app = Starlette(debug=args.debug, routes=routes)
 
 if __name__ == "__main__":
-    uvicorn.run(app="noqx:app", host=args.host, port=args.port, reload=args.debug, log_level=args.log_level)
+    uvicorn.run(app="noqx:app", host=args.host, port=args.port, reload=args.debug, log_level="debug" if args.debug else "info")
