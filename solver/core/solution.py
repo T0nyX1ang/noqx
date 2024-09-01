@@ -5,6 +5,7 @@ from typing import List, Optional
 from clingo.control import Control
 from clingo.solving import Model
 
+from .const import logger
 from .penpa import Direction, Puzzle, Solution
 
 MAX_SOLUTIONS_TO_FIND = 10
@@ -24,7 +25,7 @@ class ClingoSolver:
     def register_puzzle(self, puzzle: Puzzle):
         """Register the puzzle to the solution."""
         self.puzzle = puzzle
-        print("[Solver] Puzzle registered.")
+        logger.debug("[Solver] Puzzle registered.")
 
     def store_solutions(self, model: Model):
         """Get the solution."""
