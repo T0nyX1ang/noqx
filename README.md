@@ -2,13 +2,19 @@
 
 Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
+## Current Maintainers
+
+- [@T0nyX1ang](https://github.com/T0nyX1ang): backend, frontend, bug fixes
+
+- [@zhuyaoyu](https://github.com/zhuyaoyu): (huge) solver optimizations, bug fixes
+
 ## Current development status
 
 - Remove redundant codes and formatting codes.
 
 - New solver backend with new UI design (See issue [#2](https://github.com/T0nyX1ang/noqx/issues/2))
 
-- Change the backend from Django to FastAPI (See issue [#31](https://github.com/T0nyX1ang/noqx/issues/31)).
+- Change the backend from Django to Starlette with Uvicorn (See issue [#31](https://github.com/T0nyX1ang/noqx/issues/31), [#50](https://github.com/T0nyX1ang/noqx/issues/50)).
 
 - Change the frontend from Noq native to penpa-edit. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
 
