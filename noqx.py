@@ -13,6 +13,7 @@ from starlette.staticfiles import StaticFiles
 
 from solver import run_solver
 from solver.core.const import PUZZLE_TYPES, logger
+from solver.core.solution import Config
 
 
 async def list_puzzles_api(_: Request) -> JSONResponse:
@@ -39,7 +40,9 @@ parser = argparse.ArgumentParser(description="noqx startup settings.")
 parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="the host to run the server on.")
 parser.add_argument("-p", "--port", default=8000, type=int, help="the port to run the server on.")
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
+parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 args = parser.parse_args()
+Config.time_limit = args.time_limit
 
 routes = [
     Mount("/penpa-edit", StaticFiles(directory="penpa-edit/docs", html=True), name="penpa-edit"),

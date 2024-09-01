@@ -73,6 +73,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
       -H HOST, --host HOST  the host to run the server on.
       -p PORT, --port PORT  the port to run the server on.
       -d, --debug           whether to enable debug mode with auto-reloading.
+      -tl TIME_LIMIT, --time_limit TIME_LIMIT
+                            time limit in seconds (default = 30).
 ```
 
 ## How to contribute

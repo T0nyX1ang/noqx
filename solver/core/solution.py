@@ -1,6 +1,7 @@
 """Generate solutions for the given problem."""
 
 from typing import List, Optional
+from dataclasses import dataclass
 
 from clingo.control import Control
 from clingo.solving import Model
@@ -8,8 +9,13 @@ from clingo.solving import Model
 from .const import logger
 from .penpa import Direction, Puzzle, Solution
 
-MAX_SOLUTIONS_TO_FIND = 10
-TIMEOUT_LIMIT = 30
+
+@dataclass
+class Config:
+    """Configuration for the solver."""
+
+    time_limit: int = 30
+    max_solutions_to_find: int = 10
 
 
 class ClingoSolver:
@@ -97,13 +103,13 @@ class ClingoSolver:
         self.clingo_instance.configuration.sat_prepro = 2
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
         self.clingo_instance.configuration.asp.eq = 1  # type: ignore
-        self.clingo_instance.configuration.solve.models = MAX_SOLUTIONS_TO_FIND  # type: ignore
+        self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
         with self.clingo_instance.solve(  # pylint: disable=not-context-manager
             on_model=self.store_solutions, async_=True
         ) as handle:
-            handle.wait(TIMEOUT_LIMIT)
+            handle.wait(Config.time_limit)
             handle.cancel()
 
 
