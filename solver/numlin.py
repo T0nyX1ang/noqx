@@ -1,5 +1,6 @@
 """The Numberlink solver."""
 
+from math import log2
 from typing import Dict, List, Tuple, Union
 
 from .core.common import direction, display, fill_path, grid, shade_c
@@ -31,7 +32,7 @@ def clue_bit(r: int, c: int, id: int, nbit: int) -> str:
     return rule.strip()
 
 
-def different_area_connected(tag: str, color: str="grid"):
+def different_area_connected(tag: str, color: str = "grid"):
     tag_decoded = tag.split("_")
     adj_type = tag_decoded[tag_decoded.index("adj") + 1]
     rule = f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
@@ -57,9 +58,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
-    from math import log2
+
     nbit = int(log2(len(locations.items()))) + 1
-    solver.add_program_line(f"bitrange(0..{nbit-1}).")
+    solver.add_program_line(f"bitrange(0..{nbit - 1}).")
 
     if puzzle.param["visit_all"]:
         solver.add_program_line("numlin(R, C) :- grid(R, C).")
@@ -76,8 +77,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for _id, (n, pair) in enumerate(locations.items()):
         r0, c0 = pair[0]
         r1, c1 = pair[1]
-        solver.add_program_line(clue_bit(r0, c0, _id+1, nbit))
-        solver.add_program_line(clue_bit(r1, c1, _id+1, nbit))
+        solver.add_program_line(clue_bit(r0, c0, _id + 1, nbit))
+        solver.add_program_line(clue_bit(r1, c1, _id + 1, nbit))
 
     solver.add_program_line("numlin(R, C) :- clue_bit(R, C, _).")
     solver.add_program_line("dead_end(R, C) :- clue_bit(R, C, _).")
