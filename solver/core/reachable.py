@@ -209,12 +209,3 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
     propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     return initial + "\n" + propagation
-
-
-def different_area_connected(tag: str, color: str="grid"):
-    tag_decoded = tag.split("_")
-    adj_type = tag_decoded[tag_decoded.index("adj") + 1]
-    rule = f"{tag}(ID, R, C) :- clue(ID, R, C).\n"
-    rule += f"{tag}(ID, R, C) :- {tag}(ID, R1, C1), clue(ID, _, _), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
-    rule += f":- grid(R, C), {tag}(ID, R, C), {tag}(ID1, R, C), ID < ID1."
-    return rule

@@ -10,7 +10,6 @@ from .core.reachable import (
     avoid_unknown_src,
     count_reachable_src,
     grid_branch_color_connected,
-    different_area_connected,
 )
 from .core.shape import all_rect
 from .core.solution import solver
@@ -25,6 +24,15 @@ def noribou_strip_different(color: str = "black") -> str:
     count2 = f"#count {{ R2, C2: {tag}(R1, C1, R2, C2), same_rc(R1, C1, R2, C2) }} = CC2"
     constraint = f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), {count1}, {count2}, CC1 = CC2."
     return same_rc + "\n" + constraint
+
+
+def different_area_connected(tag: str, color: str="grid"):
+    tag_decoded = tag.split("_")
+    adj_type = tag_decoded[tag_decoded.index("adj") + 1]
+    rule = f"{tag}(R, C, ID) :- clue(R, C, ID).\n"
+    rule += f"{tag}(R, C, ID) :- {tag}(R1, C1, ID), clue(_, _, ID), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f":- grid(R, C), {tag}(R, C, ID), {tag}(R, C, ID1), ID < ID1."
+    return rule
 
 
 def solve(puzzle: Puzzle) -> List[str]:
