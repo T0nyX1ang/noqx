@@ -11,16 +11,19 @@ from .core.helper import tag_encode
 from .core.solution import solver
 
 
-def no_2x2_path(nbit: int) -> str:
+def no_2x2_path() -> str:
     """
     Generate a rule that no 2x2 path is allowed.
 
     A reachable path rule should be defined first.
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    rule = f"bit_feat(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'reachable_grid_src_adj_loop_bit(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    rule += f"bit_feat(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'not reachable_grid_src_adj_loop_bit(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    rule += f":- grid(R, C), #count{{ B: bitrange(B), bit_feat(R, C, B) }} = {nbit}.\n"
+    rule = f"bit_same(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'reachable_grid_src_adj_loop_bit(R + {r}, C + {c}, B)' for r, c in points) }.\n"
+    rule += f"bit_no(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'not reachable_grid_src_adj_loop_bit(R + {r}, C + {c}, B)' for r, c in points) }.\n"
+    rule += "bit_same(R, C, B) :- bit_no(R, C, B).\n"
+    rule += "no_2x2(R, C) :- grid(R, C), bitrange(B), not bit_same(R, C, B).\n"
+    rule += "no_empty(R, C) :- grid(R, C), bitrange(B), not bit_no(R, C, B).\n"
+    rule += ":- grid(R, C), no_empty(R, C), not no_2x2(R, C).\n"
     return rule.strip()
 
 
@@ -34,7 +37,8 @@ def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
 
 def different_area_connected(color: str = "grid", adj_type: str = "loop") -> str:
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, "bit")
-    rule = f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
+    rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), bitrange(B).\n"
+    rule += f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
     rule += f"not {tag}(R, C, B) :- grid(R, C), bitrange(B), clue_bit(R, C, _), not clue_bit(R, C, B).\n"
     rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), bitrange(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
     rule += f"not {tag}(R, C, B) :- not {tag}(R1, C1, B), bitrange(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
@@ -67,7 +71,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(shade_c(color="numlin"))
 
     if puzzle.param["no_2x2"]:
-        solver.add_program_line(no_2x2_path(nbit))
+        solver.add_program_line(no_2x2_path())
 
     solver.add_program_line(fill_path(color="numlin"))
     solver.add_program_line(adjacent(_type="loop"))
