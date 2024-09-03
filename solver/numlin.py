@@ -11,15 +11,18 @@ from .core.helper import tag_encode
 from .core.solution import solver
 
 
-def no_2x2_path() -> str:
+def no_2x2_path_bit() -> str:
     """
-    Generate a rule that no 2x2 path is allowed.
+    Generate a rule that no 2x2 path (bit version) is allowed.
 
     A reachable path rule should be defined first.
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    rule = f"bit_same(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'reachable_grid_src_adj_loop_bit(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    rule += f"bit_no(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'not reachable_grid_src_adj_loop_bit(R + {r}, C + {c}, B)' for r, c in points) }.\n"
+    tag = tag_encode("reachable", "grid", "src", "adj", "loop", "bit")
+    rule = f"bit_same(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'{tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
+    rule += (
+        f"bit_no(R, C, B) :- grid(R, C), bitrange(B), { ', '.join(f'not {tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
+    )
     rule += "bit_same(R, C, B) :- bit_no(R, C, B).\n"
     rule += "no_2x2(R, C) :- grid(R, C), bitrange(B), not bit_same(R, C, B).\n"
     rule += "no_empty(R, C) :- grid(R, C), bitrange(B), not bit_no(R, C, B).\n"
@@ -28,6 +31,7 @@ def no_2x2_path() -> str:
 
 
 def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
+    """Assign clues with bit ids instead of numerical ids."""
     rule = ""
     for i in range(nbit):
         if _id >> i & 1:
@@ -52,10 +56,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         locations[clue] = locations.get(clue, []) + [(r, c)]
 
     # check that puzzle makes sense
-    assert len(locations) > 0, "Error: The grid is empty!"
+    assert len(locations) > 0, "The grid cannot be empty!"
     for n, pair in locations.items():
-        assert len(pair) <= 2, f"Error: There are more than two occurrences of {n}."
-        assert len(pair) >= 2, f"Error: There is only one occurrence of {n}."
+        assert len(pair) <= 2, f"There are more than two occurrences of {n}."
+        assert len(pair) >= 2, f"There is only one occurrence of {n}."
 
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -71,7 +75,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(shade_c(color="numlin"))
 
     if puzzle.param["no_2x2"]:
-        solver.add_program_line(no_2x2_path())
+        solver.add_program_line(no_2x2_path_bit())
 
     solver.add_program_line(fill_path(color="numlin"))
     solver.add_program_line(adjacent(_type="loop"))
