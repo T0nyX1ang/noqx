@@ -47,7 +47,6 @@ window.onload = function () {
   const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
-  const readmeButton = document.getElementById("readme");
   const parameterBox = document.getElementById("parameter_box");
 
   const categoryName = {
@@ -84,7 +83,7 @@ window.onload = function () {
   let solutionPointer = -1;
   let puzzleParameters = {};
 
-  fetch("/api/list").then((response) => {
+  fetch("/api/list/").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
         typeOption = {
@@ -175,7 +174,7 @@ window.onload = function () {
             }
           }
 
-          fetch("/api/solve", {
+          fetch("/api/solve/", {
             method: "POST",
             body: JSON.stringify({
               puzzle_type: puzzleType,
@@ -193,6 +192,7 @@ window.onload = function () {
                   text: body.detail || "Unknown error.",
                   footer: issueMessage,
                 });
+                solveButton.textContent = "Solve";
                 return;
               } else if (response.status === 504) {
                 Swal.fire({
@@ -233,7 +233,7 @@ window.onload = function () {
               solveButton.textContent = `Solution (${solutionPointer + 1}/${
                 solutionList.length === 10 ? "10+" : solutionList.length
               })`;
-              solveButton.disabled = solutionList.length === 1;
+              solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
             });
         } else {
           solutionPointer++;
@@ -249,7 +249,7 @@ window.onload = function () {
       });
 
       resetButton.addEventListener("click", () => {
-        if (foundUrl && puzzleContent !== null) {
+        if (puzzleContent !== null) {
           imp(`${urlBase}${puzzleContent}`);
           foundUrl = null;
         } else {
@@ -262,17 +262,13 @@ window.onload = function () {
         solveButton.textContent = "Solve";
         solveButton.disabled = false;
       });
-
-      readmeButton.addEventListener("click", () => {
-        window.open("https://github.com/T0nyX1ang/noqx");
-      });
     });
   });
 
   iframe.contentWindow.document.addEventListener("click", () => iframe.contentWindow.focus());
 
   setInterval(() => {
-    if (solveButton.textContent !== "Solving..." && exp() !== foundUrl) {
+    if (solveButton.textContent !== "Solving..." && foundUrl !== null && exp() !== foundUrl) {
       foundUrl = null;
       solveButton.textContent = "Solve";
     }

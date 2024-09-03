@@ -7,6 +7,8 @@ from functools import reduce
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from zlib import compress, decompress
 
+from .const import logger
+
 Direction = Enum("Direction", "LEFT TOP DIAG_UP DIAG_DOWN")
 PENPA_PREFIX = "m=edit&p="
 PENPA_ABBREVIATIONS = [
@@ -93,7 +95,7 @@ class Puzzle:
             raise NotImplementedError("Unsupported cell shape. Current only supported square shape.")
 
         margin = (self.top_row, self.bottom_row, self.left_col, self.right_col)
-        print(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {margin}.")
+        logger.debug(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {margin}.")
 
     def _unpack_board(self):
         """Initialize the content of the puzzle."""
@@ -103,7 +105,7 @@ class Puzzle:
         for index, color in self.board["surface"].items():
             coord, _ = self.index_to_coord(int(index))
             self.surface[coord] = int(color)
-        print("[Puzzle] Surface unpacked.")
+        logger.debug("[Puzzle] Surface unpacked.")
 
         self.text = {}
         for index, num_data in self.board["number"].items():
@@ -113,14 +115,14 @@ class Puzzle:
                 self.text[coord] = list(map(int_or_str, list(num_data[0])))
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
                 self.text[coord] = int_or_str(num_data[0])
-        print("[Puzzle] Number/Text unpacked.")
+        logger.debug("[Puzzle] Number/Text unpacked.")
 
         self.symbol = {}
         for index, (style, shape, _) in self.board["symbol"].items():
             coord, category = self.index_to_coord(int(index))
             symbol_name = f"{shape}__{style}__{category}"
             self.symbol[coord] = symbol_name
-        print("[Puzzle] Symbol unpacked.")
+        logger.debug("[Puzzle] Symbol unpacked.")
 
         self.edge = set()
         self.helper_x = set()
@@ -144,7 +146,7 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1], Direction.DIAG_UP))
             elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.DIAG_DOWN))
-        print("[Puzzle] Edge unpacked.")
+        logger.debug("[Puzzle] Edge unpacked.")
 
         self.line = set()  # TODO implement line unpacking
 
@@ -177,7 +179,7 @@ class Puzzle:
         for indices in self.board["nobulbthermo"]:
             coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
             self.nobulbthermo.append(coord_indices)
-        print("[Puzzle] Sudoku unpacked.")
+        logger.debug("[Puzzle] Sudoku unpacked.")
 
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
@@ -213,19 +215,19 @@ class Solution:
         for coord, color in self.surface.items():
             index = self.coord_to_index(coord)
             self.board["surface"][f"{index}"] = color
-        print("[Solution] Surface packed.")
+        logger.debug("[Solution] Surface packed.")
 
         for coord, text in self.text.items():
             index = self.coord_to_index(coord)
             if not self.puzzle.board["number"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.board["number"][f"{index}"] = [str(text), 2, "1"]
-        print("[Solution] Number/Text packed.")
+        logger.debug("[Solution] Number/Text packed.")
 
         for coord, symbol_name in self.symbol.items():
             shape, style, category = symbol_name.split("__")
             index = self.coord_to_index(coord, category=int(category))
             self.board["symbol"][f"{index}"] = [int(style), shape, 1]
-        print("[Solution] Symbol packed.")
+        logger.debug("[Solution] Symbol packed.")
 
         for r, c, direction in self.edge:
             coord_1 = (r - 1, c - 1)
@@ -243,7 +245,7 @@ class Solution:
             index_2 = self.coord_to_index(coord_2, category=1)
             if not self.puzzle.board["edge"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.board["edge"][f"{index_1},{index_2}"] = 3
-        print("[Solution] Edge packed.")
+        logger.debug("[Solution] Edge packed.")
 
         for r, c, direction in self.line:
             index_1 = self.coord_to_index((r, c), category=0)
@@ -262,7 +264,7 @@ class Solution:
                 self.board["line"][f"{index_1},{index_2}"] = 3 if direction.endswith("_1") else 30
             else:
                 self.board["line"][f"{index_1},{index_2}"] = 3
-        print("[Solution] Line packed.")
+        logger.debug("[Solution] Line packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""

@@ -1,7 +1,9 @@
 """Constant definitions for the site."""
 
+import logging
 from typing import Any, Dict
 
+logger = logging.getLogger("uvicorn.error")
 
 PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "akari": {
