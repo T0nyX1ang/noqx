@@ -45,7 +45,6 @@ args = parser.parse_args()
 Config.time_limit = args.time_limit
 
 routes = [
-    Mount("/penpa-edit", StaticFiles(directory="penpa-edit/docs", html=True), name="penpa-edit"),
     Mount(
         "/api",
         name="api",
