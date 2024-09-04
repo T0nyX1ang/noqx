@@ -16,7 +16,7 @@ body {
   text-align: center;
 }
 
-input {
+.param_input {
   width: 30px;
   text-align: center;
 }

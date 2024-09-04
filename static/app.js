@@ -1,9 +1,9 @@
 function exp() {
-  return iframe.contentWindow.pu.maketext().split("#")[1];
+  return pu.maketext().split("#")[1];
 }
 
 function imp(penpa) {
-  iframe.contentWindow.import_url(penpa);
+  import_url(penpa);
 }
 
 function make_param(id, type, name, value) {
@@ -17,6 +17,7 @@ function make_param(id, type, name, value) {
   if (type !== "select") {
     paramInput = document.createElement("input");
     paramInput.type = type;
+    paramInput.className = "param_input";
     paramInput.id = `param_${id}`;
 
     if (type === "checkbox") paramInput.checked = value;
@@ -37,8 +38,7 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
-window.onload = function () {
-  const iframe = document.getElementById("iframe");
+$(document).ready(function () {
   const urlBase = "./penpa-edit/#";
   const issueMessage =
     "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.";
@@ -78,7 +78,6 @@ window.onload = function () {
   let foundUrl = null;
   let puzzleType = null;
   let puzzleContent = null;
-  let Swal = iframe.contentWindow.Swal;
   let solutionList = null;
   let solutionPointer = -1;
   let puzzleParameters = {};
@@ -216,7 +215,7 @@ window.onload = function () {
                   return;
                 }
                 solutionPointer = 0;
-                iframe.contentWindow.load(solutionList[solutionPointer]);
+                load(solutionList[solutionPointer]);
                 foundUrl = exp();
               }
             })
@@ -243,7 +242,7 @@ window.onload = function () {
           solveButton.textContent = `Solution (${solutionPointer + 1}/${
             solutionList.length === 10 ? "10+" : solutionList.length
           })`;
-          iframe.contentWindow.load(solutionList[solutionPointer]);
+          load(solutionList[solutionPointer]);
           foundUrl = exp();
         }
       });
@@ -253,8 +252,8 @@ window.onload = function () {
           imp(`${urlBase}${puzzleContent}`);
           foundUrl = null;
         } else {
-          iframe.contentWindow.pu.reset_board();
-          iframe.contentWindow.pu.redraw();
+          pu.reset_board();
+          pu.redraw();
         }
         puzzleContent = null;
         solutionList = [];
@@ -265,7 +264,7 @@ window.onload = function () {
     });
   });
 
-  iframe.contentWindow.document.addEventListener("click", () => iframe.contentWindow.focus());
+  document.addEventListener("click", () => focus());
 
   setInterval(() => {
     if (solveButton.textContent !== "Solving..." && foundUrl !== null && exp() !== foundUrl) {
@@ -273,4 +272,4 @@ window.onload = function () {
       solveButton.textContent = "Solve";
     }
   }, 200);
-};
+});
