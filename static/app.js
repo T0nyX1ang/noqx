@@ -82,6 +82,9 @@ $(document).ready(function () {
   let solutionPointer = -1;
   let puzzleParameters = {};
 
+  let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
+  puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
+
   fetch("/api/list/").then((response) => {
     response.json().then((body) => {
       for (const [ptype, pvalue] of Object.entries(body)) {
