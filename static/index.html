@@ -1015,7 +1015,7 @@
         <input type="button" id="address_edit" value="Editing URL" />
         <input type="button" id="address_solve" value="Solving URL" style="display: none;" />
         <input type="button" id="address_clone" value="Clone URL" style="display: none;" />
-        <!--For Competitive Solving-->
+        <!-- Disable Competitive Solving -->
         <input type="button" id="address_comp" value="Contest-Mode URL" style="display: none;" />
         <input type="button" id="expansion_replay" value="Replay URL" style="display:none;" /> <br />
         <input type="button" id="expansion" value="URL with Answer Check / Advanced Options" style="display: none;" />
@@ -1058,27 +1058,27 @@
             <label class="label" id="or_tmp_lb">Any of the constraints</label>
           </div>
           <div id="answersetting">
-            <span><label id="sol_surface_lb">Shading - DG (Dark Grey), GR, LG, BL (Black):</label></span>
+            <span><label id="sol_surface_lb">Shading - DG (Dark Grey), GR, LG, BL (Black):</label></span><br>
             <span><label id="sol_number_lb">Number - Normal, L, M, S - Green, Blue, Red <br> Sudoku
                 - Normal, Centre - Green, Blue, Red:</label></span>
-            <span><label id="sol_loopline_lb">Line - Green, Double:</label></span>
-            <span><label id="sol_ignoreloopline_lb">Line - Ignore Given Line Segments:</label></span>
-            <span><label id="sol_or_loopline_lb">Line - Green, Double:</label></span>
-            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
-            <span><label id="sol_ignoreborder_lb">Edge - Ignore Edges on Grid Border / Givens:</label></span>
-            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
-            <span><label id="sol_wall_lb">Wall - Green:</label></span>
-            <span><label id="sol_square_lb">Shape - Shape - Square - Option 2:</label></span>
-            <span><label id="sol_circle_lb">Shape - Shape - Circle - M size - Options 1 & 2:</label></span>
-            <span><label id="sol_tri_lb">Shape - Shape - Corner triangle - Options 1 to 4:</label></span>
-            <span><label id="sol_arrow_lb">Shape - Arrow - Small - Options 1 to 8:</label></span>
-            <span><label id="sol_math_lb">Shape - Number - Math - Black, Green - Options 2 & 3:</label></span>
+            <span><label id="sol_loopline_lb">Line - Green, Double:</label></span><br>
+            <span><label id="sol_ignoreloopline_lb">Line - Ignore Given Line Segments:</label></span><br>
+            <span><label id="sol_or_loopline_lb">Line - Green, Double:</label></span><br>
+            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span><br>
+            <span><label id="sol_ignoreborder_lb">Edge - Ignore Edges on Grid Border / Givens:</label></span><br>
+            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span><br>
+            <span><label id="sol_wall_lb">Wall - Green:</label></span><br>
+            <span><label id="sol_square_lb">Shape - Shape - Square - Option 2:</label></span><br>
+            <span><label id="sol_circle_lb">Shape - Shape - Circle - M size - Options 1 & 2:</label></span><br>
+            <span><label id="sol_tri_lb">Shape - Shape - Corner triangle - Options 1 to 4:</label></span><br>
+            <span><label id="sol_arrow_lb">Shape - Arrow - Small - Options 1 to 8:</label></span><br>
+            <span><label id="sol_math_lb">Shape - Number - Math - Black, Green - Options 2 & 3:</label></span><br>
             <span><label id="sol_battleship_lb">Shape - Special 1 - Battleship - Black - Options 1
-                to 6 <br> and Curvy Black - Options 1 to 4:</label></span>
-            <span><label id="sol_tent_lb">Shape - Special 1 - Tent - Option 2:</label></span>
-            <span><label id="sol_star_lb">Shape - Special 1 - Star - Options 1 to 3:</label></span>
-            <span><label id="sol_akari_lb">Shape - Special 2 - Lightbulb - Option 3:</label></span>
-            <span><label id="sol_mine_lb">Shape - Special 2 - Minesweeper - Option 4:</label></span>
+                to 6 <br> and Curvy Black - Options 1 to 4:</label></span><br>
+            <span><label id="sol_tent_lb">Shape - Special 1 - Tent - Option 2:</label></span><br>
+            <span><label id="sol_star_lb">Shape - Special 1 - Star - Options 1 to 3:</label></span><br>
+            <span><label id="sol_akari_lb">Shape - Special 2 - Lightbulb - Option 3:</label></span><br>
+            <span><label id="sol_mine_lb">Shape - Special 2 - Minesweeper - Option 4:</label></span><br>
           </div>
           <h5 id="custom_lb">Custom Message</h5>
           <textarea class="text_area" rows="1" cols="50"
@@ -1157,7 +1157,7 @@
         <textarea class="text_area" rows="1" cols="81" id="urlstring" value=""></textarea>
       </div>
       <div class="nb_button">
-        <input type="button" id="load_url" value="Load URL" onclick="import_url();" />
+        <input type="button" id="load_url" value="Load URL" onclick="imp();" />
       </div>
     </div>
   </div>

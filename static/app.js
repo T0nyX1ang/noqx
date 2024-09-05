@@ -3,7 +3,18 @@ function exp() {
 }
 
 function imp(penpa) {
-  import_url(penpa);
+  const urlstring = penpa || document.getElementById("urlstring").value;
+
+  if (urlstring && urlstring.includes("m=solve")) {
+    Swal.fire({
+      icon: "error",
+      title: "Import error",
+      text: "SOLVER/CONTEST mode is not supported in noqx. Please export in EDIT mode.",
+    });
+    return;
+  }
+
+  import_url(urlstring);
 }
 
 function make_param(id, type, name, value) {
