@@ -18,7 +18,7 @@ from solver.core.solution import Config
 
 async def root_redirect(_: Request) -> RedirectResponse:
     """Redirect root page to penpa-edit page."""
-    return RedirectResponse(url="/penpa-edit")
+    return RedirectResponse(url="/penpa-edit/")
 
 
 async def list_puzzles_api(_: Request) -> JSONResponse:
