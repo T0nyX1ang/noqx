@@ -1,4 +1,10 @@
 function exp() {
+  // clear every information created by penpa itself
+  document.getElementById("saveinfotitle").value = "";
+  document.getElementById("saveinfoauthor").value = "";
+  document.getElementById("saveinfosource").value = "";
+  document.getElementById("saveinforules").value = "";
+
   return pu.maketext().split("#")[1];
 }
 
