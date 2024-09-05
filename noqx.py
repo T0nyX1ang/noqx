@@ -7,13 +7,18 @@ from typing import Any, Dict
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from solver import run_solver
 from solver.core.const import PUZZLE_TYPES, logger
 from solver.core.solution import Config
+
+
+async def root_redirect(_: Request) -> RedirectResponse:
+    """Redirect root page to penpa-edit page."""
+    return RedirectResponse(url="/penpa-edit")
 
 
 async def list_puzzles_api(_: Request) -> JSONResponse:
@@ -53,7 +58,8 @@ routes = [
             Route("/solve/", endpoint=solver_api, methods=["POST"]),
         ],
     ),
-    Mount("/", StaticFiles(directory="static", html=True), name="static"),
+    Mount("/penpa-edit/", StaticFiles(directory="static", html=True), name="static"),
+    Route("/", root_redirect),
 ]
 
 app = Starlette(debug=args.debug, routes=routes)
