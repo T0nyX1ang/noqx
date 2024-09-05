@@ -51,7 +51,7 @@ coll = COLLECT(
     exe,
     a.binaries,
     a.zipfiles,
-    a.datas + Tree("./penpa-edit/docs", prefix="./penpa-edit/docs"),
+    a.datas,
     strip=False,
     upx=True,
     upx_exclude=[],
