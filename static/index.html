@@ -36,7 +36,8 @@
   <script type="text/javascript" src="https://swaroopg92.github.io/penpa-edit/js/libs/gif.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
-  <script type="text/javascript" src="./identity.js"></script>
+
+  <script type="text/javascript" src="./penpa_const.js"></script>
   <script type="text/javascript" src="https://swaroopg92.github.io/penpa-edit/js/settings.js"></script>
   <script type="text/javascript" src="https://swaroopg92.github.io/penpa-edit/js/interface.js"></script>
   <script type="text/javascript" src="https://swaroopg92.github.io/penpa-edit/js/conflicts.js"></script>
@@ -67,7 +68,8 @@
   <header id="header">
     <span id="title">Setter Mode</span>
     <span id="version-info"><a href="http://github.com/T0nyX1ang/noqx" target="_blank">Noqx</a> &copy; 2023-2024 /
-      <a href="https://github.com/swaroopg92/penpa-edit" target="_blank">Penpa+</a> &copy; 2020-2024 </span>
+      <a href="https://github.com/swaroopg92/penpa-edit" target="_blank">Penpa+</a> &copy; 2020-2024
+      <button id="page_help" style="display: none;">Help</button> </span>
   </header>
 
   <div class="left">
@@ -96,7 +98,7 @@
           <button id="saveimage">Screenshot</button>
           <button id="savetext">Share</button>
           <a id="download_link"></a>
-          <button id="duplicate" onclick="duplicate();">Clone</button>
+          <button id="duplicate" onclick="duplicate();" style="display: none;">Clone</button>
           <button id="input_sudoku">I/O Sudoku</button>
           <button id="input_url">Load</button>
           <button id="page_settings">Settings</button>
@@ -150,7 +152,6 @@
             <span class="tab" id="tab_selection">
               <select id="mode_choices" multiple size="0"></select>
             </span>
-            <!-- <button id="toggle_panel_visibility" onclick="panel_toggle();">👁️</button> -->
           </div>
           <hr size="1" noshade>
           <div id="submode_button">
@@ -1012,12 +1013,12 @@
       </div>
       <div class="nb_button">
         <input type="button" id="address_edit" value="Editing URL" />
-        <input type="button" id="address_solve" value="Solving URL" />
-        <input type="button" id="address_clone" value="Clone URL" />
+        <input type="button" id="address_solve" value="Solving URL" style="display: none;" />
+        <input type="button" id="address_clone" value="Clone URL" style="display: none;" />
         <!--For Competitive Solving-->
-        <input type="button" id="address_comp" value="Contest-Mode URL" />
+        <input type="button" id="address_comp" value="Contest-Mode URL" style="display: none;" />
         <input type="button" id="expansion_replay" value="Replay URL" style="display:none;" /> <br />
-        <input type="button" id="expansion" value="URL with Answer Check / Advanced Options" />
+        <input type="button" id="expansion" value="URL with Answer Check / Advanced Options" style="display: none;" />
       </div>
       <div id="modal-save-body">
         <textarea class="text_area" readonly rows="1" cols="50" id="savetextarea"></textarea>
@@ -1357,8 +1358,8 @@
               </td>
               <td>
                 <select name="theme_mode" id="theme_mode_opt">
-                  <option value="1" selected="selected" id="lb_settings_display_theme_light">Light
-                  </option>
+                  <option value="1" selected="selected" id="lb_settings_display_theme_light">Light</option>
+                  <option value="2" disabled id="lb_settings_display_theme_dark">Dark</option>
                 </select>
               </td>
             </tr>
@@ -1368,8 +1369,10 @@
               </td>
               <td>
                 <select name="responsive_settings" id="responsive_settings_opt">
-                  <option value="1" selected="selected" id="lb_settings_display_layout_classic">
-                    Classic</option>
+                  <option value="1" selected="selected" id="lb_settings_display_layout_classic">Classic</option>
+                  <option value="2" disabled id="lb_settings_display_layout_flex_left">Flex (Tools Left)</option>
+                  <option value="3" disabled id="lb_settings_display_layout_flex_right">Flex (Tools Right)</option>
+                  <option value="4" disabled id="lb_settings_display_layout_streaming1">Streaming 1 (beta)</option>
                 </select>
               </td>
             </tr>
@@ -1380,6 +1383,7 @@
               <td>
                 <select name="language" id="language_opt">
                   <option value="EN" selected="selected">English</option>
+                  <option value="JP">日本語</option>
                 </select>
               </td>
             </tr>
@@ -1584,54 +1588,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-  </div>
-  <div id="modal-keys" class="modal">
-    <div id="modal-keys-content" class="modal-content modal-content-wide">
-      <h3 class="modal-header">Keyboard Shortcuts</h3>
-      <div class="modal-inner-wrapper">
-        <div>
-          <ul>
-            <li><kbd>Ctrl</kbd> + <kbd>Z</kbd>: Undo</li>
-            <li><kbd>Ctrl</kbd> + <kbd>Y</kbd>: Redo</li>
-            <li><kbd>Ctrl</kbd> + <kbd>D</kbd>: Clone</li>
-            <li><kbd>Ctrl</kbd> + <kbd>I</kbd>: To copy the previous number/alphabet/symbol from Number mode
-              with PANEL: ON</li>
-            <li><kbd>Ctrl</kbd> + <kbd>Space</kbd>: Delete numbers and symbols at the same time</li>
-            <li><kbd>Shift</kbd> + <kbd>Space</kbd>: Enter a space (Works in "Number" Mode => "L", "M", "S"
-              and Long" SubMode options only)</li>
-            <li><kbd>F2</kbd>: Problem mode</li>
-            <li><kbd>F3</kbd>: Solution mode</li>
-            <li><kbd>F4</kbd>: Hide/Show Timer</li>
-            <li><kbd>Tab</kbd> or <kbd>Enter</kbd>: Cycle Input Tools</li>
-            <li><kbd>?</kbd>: Show keyboard shortcuts</li>
-          </ul>
-        </div>
-        <div>
-          <h5 class="modal-subheader">In Sudoku Mode</h5>
-          <ul>
-            <li><kbd>Z</kbd>: Normal Submode*</li>
-            <li><kbd>X</kbd>: Corner Submode*</li>
-            <li><kbd>C</kbd>: Centre Submode*</li>
-            <li><kbd>V</kbd>: Shading (Surface Mode)*</li>
-            <li><kbd>Shift</kbd>: For Temporary Corner Submode</li>
-            <li><kbd>Shift</kbd> + <kbd>Delete</kbd>: Deletes only corner pencil marks from the selected
-              cells</li>
-            <li><kbd>Ctrl</kbd> - For Temporary Centre Submode / Selecting Multiple Cells/ Deselecting
-              selected cells</li>
-            <li><kbd>Ctrl</kbd> + <kbd>Delete</kbd>: Deletes only centre pencil marks from the selected
-              cells</li>
-            <li><kbd>Delete</kbd>: To delete all the contents of the cell</li>
-            <li><kbd>Space</kbd>: To delete only the selected submode contents. (E.g. If the cell contains
-              both centre and corner pencil marks, and if the current submode selection is "Corner
-              submode", the pressing Spacebar would delete only the corner pencil marks)</li>
-          </ul>
-          <p class="modal-footnote">* These can be disabled from Settings.</p>
-          <h5 class="modal-subheader">In Surface Mode</h5>
-          <p>Use number keys <kbd>0</kbd> - <kbd>9</kbd> to quickly switch between styles. For styles 11 and
-            12, press <kbd>1</kbd> and the second digit in quick succession.</p>
-        </div>
       </div>
     </div>
   </div>
