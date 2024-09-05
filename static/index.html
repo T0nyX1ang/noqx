@@ -1053,211 +1053,33 @@
         <div class="nb_button">
           <div>
             <input type="radio" name="constraints" value="and" id=and_tmp checked="checked" />
-            <label for="and_tmp_lb" class="label" id="and_tmp_lb">All constraints</label>
+            <label class="label" id="and_tmp_lb">All constraints</label>
             <input type="radio" name="constraints" value="or" id="or_tmp" />
-            <label for="or_tmp_lb" class="label" id="or_tmp_lb">Any of the constraints</label>
+            <label class="label" id="or_tmp_lb">Any of the constraints</label>
           </div>
-          <table id="answersetting">
-            <tr>
-              <td>
-                <span><label id="sol_surface_lb">Shading - DG (Dark Grey), GR, LG, BL
-                    (Black):</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_surface" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_surface" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_number_lb">Number - Normal, L, M, S - Green, Blue, Red <br> Sudoku
-                    - Normal, Centre - Green, Blue, Red:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_number" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_number" class="solcheck_or">
-              </td>
-            </tr>
-            <tr class="solcheck_show_and">
-              <td>
-                <span><label id="sol_loopline_lb">Line - Green, Double:</label></span>
-              </td>
-              <td>
-                <input type="checkbox" name="solution" id="sol_loopline" class="solcheck">
-              </td>
-            </tr>
-            <tr class="solcheck_show_and">
-              <td>
-                <span><label id="sol_ignoreloopline_lb">Line - Ignore Given Line
-                    Segments:</label></span>
-              </td>
-              <td>
-                <input type="checkbox" name="solution" id="sol_ignoreloopline" class="solcheck">
-              </td>
-            </tr>
-            <tr class="solcheck_show_or">
-              <td>
-                <span><label id="sol_or_loopline_lb">Line - Green, Double:</label></span>
-              </td>
-              <td>
-                <input type="checkbox" name="solution_or" id="sol_or_loopline" class="solcheck_or">
-              </td>
-            </tr>
-            <tr class="solcheck_show_and">
-              <td>
-                <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
-              </td>
-              <td>
-                <input type="checkbox" name="solution" id="sol_loopedge" class="solcheck">
-              </td>
-            </tr>
-            <tr class="solcheck_show_and">
-              <td>
-                <span><label id="sol_ignoreborder_lb">Edge - Ignore Edges on Grid Border /
-                    Givens:</label></span>
-              </td>
-              <td>
-                <input type="checkbox" name="solution" id="sol_ignoreborder" class="solcheck">
-              </td>
-            </tr>
-            <tr class="solcheck_show_or">
-              <td>
-                <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
-              </td>
-              <td>
-                <input type="checkbox" name="solution_or" id="sol_or_loopedge" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_wall_lb">Wall - Green:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_wall" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_wall" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_square_lb">Shape - Shape - Square - Option 2:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_square" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_square" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_circle_lb">Shape - Shape - Circle - M size - Options 1 &
-                    2:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_circle" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_circle" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_tri_lb">Shape - Shape - Corner triangle - Options 1 to
-                    4:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_tri" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_tri" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_arrow_lb">Shape - Arrow - Small - Options 1 to 8:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_arrow" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_arrow" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_math_lb">Shape - Number - Math - Black, Green - Options 2 &
-                    3:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_math" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_math" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_battleship_lb">Shape - Special 1 - Battleship - Black - Options 1
-                    to 6 <br> and Curvy Black - Options 1 to 4:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_battleship" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_battleship" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_tent_lb">Shape - Special 1 - Tent - Option 2:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_tent" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_tent" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_star_lb">Shape - Special 1 - Star - Options 1 to 3:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_star" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_star" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_akari_lb">Shape - Special 2 - Lightbulb - Option 3:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_akari" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_akari" class="solcheck_or">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><label id="sol_mine_lb">Shape - Special 2 - Minesweeper - Option 4:</label></span>
-              </td>
-              <td class="solcheck_show_and">
-                <input type="checkbox" name="solution" id="sol_mine" class="solcheck">
-              </td>
-              <td class="solcheck_show_or">
-                <input type="checkbox" name="solution_or" id="sol_or_mine" class="solcheck_or">
-              </td>
-            </tr>
-          </table>
+          <div id="answersetting">
+            <span><label id="sol_surface_lb">Shading - DG (Dark Grey), GR, LG, BL (Black):</label></span>
+            <span><label id="sol_number_lb">Number - Normal, L, M, S - Green, Blue, Red <br> Sudoku
+                - Normal, Centre - Green, Blue, Red:</label></span>
+            <span><label id="sol_loopline_lb">Line - Green, Double:</label></span>
+            <span><label id="sol_ignoreloopline_lb">Line - Ignore Given Line Segments:</label></span>
+            <span><label id="sol_or_loopline_lb">Line - Green, Double:</label></span>
+            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
+            <span><label id="sol_ignoreborder_lb">Edge - Ignore Edges on Grid Border / Givens:</label></span>
+            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
+            <span><label id="sol_wall_lb">Wall - Green:</label></span>
+            <span><label id="sol_square_lb">Shape - Shape - Square - Option 2:</label></span>
+            <span><label id="sol_circle_lb">Shape - Shape - Circle - M size - Options 1 & 2:</label></span>
+            <span><label id="sol_tri_lb">Shape - Shape - Corner triangle - Options 1 to 4:</label></span>
+            <span><label id="sol_arrow_lb">Shape - Arrow - Small - Options 1 to 8:</label></span>
+            <span><label id="sol_math_lb">Shape - Number - Math - Black, Green - Options 2 & 3:</label></span>
+            <span><label id="sol_battleship_lb">Shape - Special 1 - Battleship - Black - Options 1
+                to 6 <br> and Curvy Black - Options 1 to 4:</label></span>
+            <span><label id="sol_tent_lb">Shape - Special 1 - Tent - Option 2:</label></span>
+            <span><label id="sol_star_lb">Shape - Special 1 - Star - Options 1 to 3:</label></span>
+            <span><label id="sol_akari_lb">Shape - Special 2 - Lightbulb - Option 3:</label></span>
+            <span><label id="sol_mine_lb">Shape - Special 2 - Minesweeper - Option 4:</label></span>
+          </div>
           <h5 id="custom_lb">Custom Message</h5>
           <textarea class="text_area" rows="1" cols="50"
             placeholder="Custom Congratulation Message on answer check pop up" id="custom_message"></textarea>
