@@ -14,6 +14,7 @@ body {
   left: 6px;
   top: 30px;
   text-align: center;
+  z-index: 99999999; /* wtf, there is an item with z-index: 99999993 */
 }
 
 .param_input {
