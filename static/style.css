@@ -14,9 +14,10 @@ body {
   left: 6px;
   top: 30px;
   text-align: center;
+  z-index: 99999999; /* wtf, there is an item with z-index: 99999993 */
 }
 
-input {
+.param_input {
   width: 30px;
   text-align: center;
 }
@@ -31,7 +32,7 @@ input {
   font-size: 14px;
   margin: 10px auto;
   width: 150px;
-  height: 27px;
+  height: 24px;
   text-align: center;
   cursor: pointer;
   padding: 2px 5px;
