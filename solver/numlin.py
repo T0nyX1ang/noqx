@@ -39,14 +39,29 @@ def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
     return rule.strip()
 
 
-def grid_bit_color_connected(color: str = "grid", adj_type: str = "loop") -> str:
+def grid_bit_color_connected(nbit: int, color: str = "grid", adj_type: Union[int, str] = "loop") -> str:
     """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
+    if type(adj_type) is int:
+        adj_type = str(adj_type)
     tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
-    rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), bitrange(B).\n"
+    rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), {color}(R, C), bitrange(B).\n"
     rule += f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
-    rule += f"not {tag}(R, C, B) :- grid(R, C), bitrange(B), clue_bit(R, C, _), not clue_bit(R, C, B).\n"
-    rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), bitrange(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f"not {tag}(R, C, B) :- grid(R, C), {color}(R, C), bitrange(B), clue_bit(R, C, _), not clue_bit(R, C, B).\n"
+    rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), grid(R, C), bitrange(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f"not {tag}(R, C, B) :- not {tag}(R1, C1, B), grid(R, C), grid(R1, C1), bitrange(B), {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
     return rule.strip()
+
+
+def num_binary_range(num):
+    """Generate a rule restricting number represented by bits between 0 and num."""
+    nbit = int(log2(num)) + 1
+    rule = f"bitrange(0..{nbit - 1}).\n"
+    bit_str, bit_constraint_str = [], []
+    for i in range(nbit):
+        bit_str.append(f"B{i}")
+        bit_constraint_str.append(f"B{i}")
+    rule += f"num_constraint_bit({bit_str}) :- {bit_str}.\n"
+    return rule.strip(), nbit
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -66,8 +81,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
 
-    nbit = int(log2(len(locations.items()))) + 1
-    solver.add_program_line(f"bitrange(0..{nbit - 1}).")
+    rule, nbit = num_binary_range(len(locations.items()))
+    solver.add_program_line(rule)
 
     if puzzle.param["visit_all"]:
         solver.add_program_line("numlin(R, C) :- grid(R, C).")
@@ -90,7 +105,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     tag = tag_encode("reachable", "grid", "bit", "adj", "loop")
     solver.add_program_line("numlin(R, C) :- clue_bit(R, C, _).")
     solver.add_program_line("dead_end(R, C) :- clue_bit(R, C, _).")
-    solver.add_program_line(grid_bit_color_connected(adj_type="loop"))
+    solver.add_program_line(grid_bit_color_connected(nbit=nbit, adj_type="loop"))
     solver.add_program_line(f":- grid(R, C), numlin(R, C), not {tag}(R, C, _).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
