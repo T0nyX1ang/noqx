@@ -1,12 +1,12 @@
 """The Nuribou solver."""
 
-from typing import List
+from typing import List, Union
 
 from .core.common import display, grid, shade_c
 from .core.helper import tag_encode
 from .core.neighbor import adjacent
 from .core.penpa import Puzzle, Solution
-from .core.reachable import clue_bit, num_binary_range, grid_bit_color_connected
+from .core.reachable import clue_bit, num_binary_range, grid_bit_color_connected, avoid_unknown_src_bit
 from .core.shape import all_rect
 from .core.solution import solver
 
@@ -32,7 +32,7 @@ def noribou_strip_different(color: str = "black") -> str:
     return rule.strip()
 
 
-def count_reachable_bit(clue, _id, nbit, color):
+def count_reachable_bit(clue: int, _id: int, nbit: int, color: str = "grid") -> str:
     tag = tag_encode("reachable", "grid", "bit", "adj", 4)
     id_str = []
     for i in range(nbit):
@@ -42,7 +42,7 @@ def count_reachable_bit(clue, _id, nbit, color):
     return f":- #count{{ R, C: grid(R, C), {color}(R, C), {id_str} }} != {clue}."
 
 
-def connected_to_clue(color, adj_type):
+def connected_to_clue(color: str = "grid", adj_type: Union[int, str] = 4) -> str:
     rule = "connected_to_clue(R, C) :- grid(R, C), clue(R, C).\n"
     rule += f"connected_to_clue(R, C) :- grid(R, C), {color}(R, C), connected_to_clue(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
     rule += f":- grid(R, C), {color}(R, C), not connected_to_clue(R, C).\n"
@@ -85,8 +85,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         xid = (1 << nbit) - xid if xid < (1 << nbit - 1) else (1 << nbit) + 1 - xid
 
     solver.add_program_line(connected_to_clue(color="not black", adj_type=4))
-    tag = tag_encode("reachable", "grid", "bit", "adj", 4)
-    solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(R, C, _).")
+    solver.add_program_line(avoid_unknown_src_bit(color="not black", adj_type=4))
     solver.add_program_line(grid_bit_color_connected(nbit=nbit, color="not black", adj_type=4))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))

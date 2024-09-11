@@ -6,7 +6,7 @@ from .core.common import direction, display, fill_path, grid, shade_c
 from .core.penpa import Puzzle, Solution
 from .core.loop import single_loop
 from .core.neighbor import adjacent
-from .core.reachable import clue_bit, num_binary_range, grid_bit_color_connected
+from .core.reachable import clue_bit, num_binary_range, grid_bit_color_connected, avoid_unknown_src_bit
 from .core.helper import tag_encode
 from .core.solution import solver
 
@@ -68,11 +68,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(clue_bit(r0, c0, _id + 1, nbit))
         solver.add_program_line(clue_bit(r1, c1, _id + 1, nbit))
 
-    tag = tag_encode("reachable", "grid", "bit", "adj", "loop")
     solver.add_program_line("numlin(R, C) :- clue(R, C).")
     solver.add_program_line("dead_end(R, C) :- clue(R, C).")
     solver.add_program_line(grid_bit_color_connected(nbit=nbit, adj_type="loop"))
-    solver.add_program_line(f":- grid(R, C), not {tag}(R, C, _).")
+    solver.add_program_line(avoid_unknown_src_bit(adj_type="loop"))
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

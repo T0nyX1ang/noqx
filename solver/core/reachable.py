@@ -233,3 +233,9 @@ def num_binary_range(num):
     rule = f"bit_range(0..{nbit - 1}).\n"
     rule += "binary(0..1).\n"
     return rule.strip(), nbit
+
+
+def avoid_unknown_src_bit(color: str = "grid", adj_type: Union[int, str] = 4) -> str:
+    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
+    return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _)."
