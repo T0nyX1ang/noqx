@@ -6,24 +6,9 @@ from .core.common import display, grid, shade_c
 from .core.helper import tag_encode
 from .core.neighbor import adjacent
 from .core.penpa import Puzzle, Solution
-from .core.reachable import (
-    grid_branch_color_connected,
-)
 from .numlin import clue_bit, num_binary_range, grid_bit_color_connected
 from .core.shape import all_rect
 from .core.solution import solver
-
-
-# def noribou_strip_different(color: str = "black") -> str:
-#     """Generate a rule to ensure that no two adjacent cells are shaded."""
-#     tag = tag_encode("reachable", "grid", "branch", "adj", 4, color)
-#     same_rc = "same_rc(R, C, R1, C1) :- grid(R, C), grid(R1, C1), R1 = R.\n"
-#     same_rc += "same_rc(R, C, R1, C1) :- grid(R, C), grid(R1, C1), C1 = C.\n"
-#     count1 = f"#count {{ R2, C2: {tag}(R, C, R2, C2), same_rc(R, C, R2, C2) }} = CC1"
-#     count2 = f"#count {{ R2, C2: {tag}(R1, C1, R2, C2), same_rc(R1, C1, R2, C2) }} = CC2"
-#     constraint = f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), {count1}, {count2}, CC1 = CC2.\n"
-#     constraint += ":- grid(R, C), remain(R, C)."
-#     return same_rc + constraint.strip()
 
 
 def noribou_strip_different(color: str = "black") -> str:
@@ -87,8 +72,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     rule, nbit = num_binary_range(len(puzzle.text.items()))
     solver.add_program_line(rule)
 
+    clue_list = list(puzzle.text.items())
+    clue_list = sorted(clue_list, key=lambda x: x[0][0] + x[0][1])
     xid = 1
-    for (r, c), clue in puzzle.text.items():
+    for (r, c), clue in clue_list:
         assert isinstance(clue, int) or (isinstance(clue, str) and clue == "?"), "Clue must be an integer or '?'."
         solver.add_program_line(f"not black({r}, {c}).")
 
@@ -101,12 +88,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     tag = tag_encode("reachable", "grid", "bit", "adj", 4)
     solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(R, C, _).")
     solver.add_program_line(grid_bit_color_connected(nbit=nbit, color="not black", adj_type=4))
-    solver.add_program_line(grid_branch_color_connected(color="black"))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))
     solver.add_program_line(display(item="black"))
-    # solver.add_program_line(display(item="len_strip", size=3))
-    print(solver.program)
     solver.solve()
 
     return solver.solutions
