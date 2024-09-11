@@ -609,7 +609,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "tents": {
         "name": "Tents",
         "category": "var",
-        "examples": [{"data": "https://puzz.link/p?tents/13/13/23g3g1i333g2j2g2j3i1517617151695114b322hi33g00100100e"}],
+        "examples": [{"url": "https://puzz.link/p?tents/13/13/23g3g1i333g2j2g2j3i1517617151695114b322hi33g00100100e"}],
     },
     "tapaloop": {
         "name": "Tapa-Like Loop",
