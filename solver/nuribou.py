@@ -6,7 +6,7 @@ from .core.common import display, grid, shade_c
 from .core.helper import tag_encode
 from .core.neighbor import adjacent
 from .core.penpa import Puzzle, Solution
-from .numlin import clue_bit, num_binary_range, grid_bit_color_connected
+from .core.reachable import clue_bit, num_binary_range, grid_bit_color_connected
 from .core.shape import all_rect
 from .core.solution import solver
 

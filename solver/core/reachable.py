@@ -1,6 +1,7 @@
 """Utility for reachable things and connectivity tests."""
 
 from typing import Iterable, List, Optional, Tuple, Union
+from math import log2
 
 from .helper import tag_encode, target_encode
 
@@ -202,3 +203,33 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
     propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     return initial + "\n" + propagation
+
+
+def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
+    """Assign clues with bit ids instead of numerical ids."""
+    rule = f"clue({r}, {c}).\n"
+    for i in range(nbit):
+        if _id >> i & 1:
+            rule += f"clue_bit({r}, {c}, {i}).\n"
+    return rule.strip()
+
+
+def grid_bit_color_connected(nbit: int, color: str = "grid", adj_type: Union[int, str] = "loop") -> str:
+    """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
+    if type(adj_type) is int:
+        adj_type = str(adj_type)
+    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
+    rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), {color}(R, C), bit_range(B).\n"
+    rule += f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
+    rule += f"not {tag}(R, C, B) :- grid(R, C), {color}(R, C), bit_range(B), clue(R, C), not clue_bit(R, C, B).\n"
+    rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), grid(R, C), bit_range(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f"not {tag}(R, C, B) :- not {tag}(R1, C1, B), grid(R, C), grid(R1, C1), bit_range(B), {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
+    return rule.strip()
+
+
+def num_binary_range(num):
+    """Generate a rule restricting number represented by bits between 0 and num."""
+    nbit = int(log2(num)) + 1
+    rule = f"bit_range(0..{nbit - 1}).\n"
+    rule += "binary(0..1).\n"
+    return rule.strip(), nbit
