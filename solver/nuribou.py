@@ -1,7 +1,6 @@
 """The Nuribou solver."""
 
 from typing import List
-from math import log2
 
 from .core.common import display, grid, shade_c
 from .core.helper import tag_encode
@@ -10,7 +9,7 @@ from .core.penpa import Puzzle, Solution
 from .core.reachable import (
     grid_branch_color_connected,
 )
-from .numlin import clue_bit, grid_bit_color_connected
+from .numlin import clue_bit, num_binary_range, grid_bit_color_connected
 from .core.shape import all_rect
 from .core.solution import solver
 
@@ -52,10 +51,17 @@ def count_reachable_bit(clue, _id, nbit, color):
     tag = tag_encode("reachable", "grid", "bit", "adj", 4)
     id_str = []
     for i in range(nbit):
-        has_bit = "" if _id >> i & 1 else "not "
-        id_str.append(f"{has_bit}{tag}(R, C, {i})")
+        bit = _id >> i & 1
+        id_str.append(f"{tag}(R, C, {i}, {bit})")
     id_str = ", ".join(id_str)
     return f":- #count{{ R, C: grid(R, C), {color}(R, C), {id_str} }} != {clue}."
+
+
+def connected_to_clue(color, adj_type):
+    rule = "connected_to_clue(R, C) :- grid(R, C), clue(R, C).\n"
+    rule += f"connected_to_clue(R, C) :- grid(R, C), {color}(R, C), connected_to_clue(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f":- grid(R, C), {color}(R, C), not connected_to_clue(R, C).\n"
+    return rule
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -78,8 +84,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         all_src.append((r, c))
     assert len(all_src) > 0, "No clues found."
 
-    nbit = int(log2(len(puzzle.text.items()))) + 1
-    solver.add_program_line(f"bitrange(0..{nbit - 1}).")
+    rule, nbit = num_binary_range(len(puzzle.text.items()))
+    solver.add_program_line(rule)
 
     for _id, ((r, c), clue) in enumerate(puzzle.text.items()):
         assert isinstance(clue, int) or (isinstance(clue, str) and clue == "?"), "Clue must be an integer or '?'."
@@ -94,9 +100,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(count_reachable_bit(clue, _id + 1, nbit=nbit, color="not black"))
 
     # solver.add_program_line(avoid_unknown_src(color="not black"))
+    solver.add_program_line(connected_to_clue(color="not black", adj_type=4))
     tag = tag_encode("reachable", "grid", "bit", "adj", 4)
-    solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(R, C, _).")
-    solver.add_program_line(grid_bit_color_connected(color="not black", adj_type=4))
+    solver.add_program_line(f"nuribou_ok(R, C) :- grid(R, C), not black(R, C), bit_range(B), {tag}(R, C, B, 1).")
+    solver.add_program_line(":- grid(R, C), not black(R, C), not nuribou_ok(R, C).")
+    # solver.add_program_line(f":- grid(R, C), not black(R, C), not {tag}(R, C, _).")
+    solver.add_program_line(grid_bit_color_connected(nbit=nbit, color="not black", adj_type=4))
     solver.add_program_line(grid_branch_color_connected(color="black"))
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))
