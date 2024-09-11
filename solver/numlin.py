@@ -19,11 +19,9 @@ def no_2x2_path_bit() -> str:
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
     tag = tag_encode("reachable", "grid", "bit", "adj", "loop")
-    rule = (
-        f"bit_same(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'{tag}(R + {r}, C + {c}, B, 1)' for r, c in points) }.\n"
-    )
+    rule = f"bit_same(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'{tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
     rule += (
-        f"bit_no(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'{tag}(R + {r}, C + {c}, B, 0)' for r, c in points) }.\n"
+        f"bit_no(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'not {tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
     )
     rule += "bit_same(R, C, B) :- bit_no(R, C, B).\n"
     rule += "no_2x2(R, C) :- grid(R, C), bit_range(B), not bit_same(R, C, B).\n"
@@ -46,14 +44,11 @@ def grid_bit_color_connected(nbit: int, color: str = "grid", adj_type: Union[int
     if type(adj_type) is int:
         adj_type = str(adj_type)
     tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
-    rule = f"{{ {tag}(R, C, B, V) : binary(V) }} = 1 :- grid(R, C), {color}(R, C), bit_range(B).\n"
-    rule += f"{tag}(R, C, B, 1) :- clue_bit(R, C, B).\n"
-    rule += f"{tag}(R, C, B, 0) :- grid(R, C), {color}(R, C), bit_range(B), clue(R, C), not clue_bit(R, C, B).\n"
-    rule += f"{tag}(R, C, B, V) :- {tag}(R1, C1, B, V), grid(R, C), bit_range(B), binary(V), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
-
-    bits_str = ", ".join([f"{tag}(R, C, {i}, V{i}), binary(V{i})" for i in range(nbit)])
-    var_str = ", ".join([f"V{i}" for i in range(nbit - 1, -1, -1)])
-    rule += f":- grid(R, C), {bits_str}, out_of_bit_range({var_str}).\n"
+    rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), {color}(R, C), bit_range(B).\n"
+    rule += f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
+    rule += f"not {tag}(R, C, B) :- grid(R, C), {color}(R, C), bit_range(B), clue(R, C), not clue_bit(R, C, B).\n"
+    rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), grid(R, C), bit_range(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f"not {tag}(R, C, B) :- not {tag}(R1, C1, B), grid(R, C), grid(R1, C1), bit_range(B), {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
     return rule.strip()
 
 
@@ -62,13 +57,6 @@ def num_binary_range(num):
     nbit = int(log2(num)) + 1
     rule = f"bit_range(0..{nbit - 1}).\n"
     rule += "binary(0..1).\n"
-    curr_bits = []
-    for i in range(nbit - 1, -1, -1):
-        if not (num >> i & 1):
-            bits = curr_bits + ["1"] + [f"V{i}" for i in range(i - 1, -1, -1)]
-            constraint = [f"binary(V{i})" for i in range(i - 1, -1, -1)]
-            rule += f"out_of_bit_range({', '.join(bits)}) :- {', '.join(constraint)}.\n"
-        curr_bits.append(str(num >> i & 1))
     return rule.strip(), nbit
 
 
@@ -114,8 +102,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line("numlin(R, C) :- clue(R, C).")
     solver.add_program_line("dead_end(R, C) :- clue(R, C).")
     solver.add_program_line(grid_bit_color_connected(nbit=nbit, adj_type="loop"))
-    solver.add_program_line(f"numlin_ok(R, C) :- grid(R, C), numlin(R, C), bit_range(B), {tag}(R, C, B, 1).")
-    solver.add_program_line(":- grid(R, C), numlin(R, C), not numlin_ok(R, C).")
+    solver.add_program_line(f":- grid(R, C), not {tag}(R, C, _).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
