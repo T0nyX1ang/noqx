@@ -82,13 +82,8 @@ class ClingoSolver:
             elif _type == "black":
                 solution.surface[(int(r), int(c))] = 4
 
-            elif len(data) == 2:
-                solution.symbol[(int(r), int(c))] = str(_type)
             else:
-                if (int(r), int(c)) not in solution.text:
-                    solution.text[(int(r), int(c))] = "_".join(map(str, data[2:]))
-                else:
-                    solution.text[(int(r), int(c))] += "," + "_".join(map(str, data[2:]))
+                solution.symbol[(int(r), int(c))] = str(_type)
 
         self.solutions.append(solution)
 

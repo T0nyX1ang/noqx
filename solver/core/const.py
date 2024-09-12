@@ -406,12 +406,8 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "name": "Nuribou",
         "category": "shade",
         "examples": [
-            {
-                "url": "https://puzz.link/p?nuribou/13/13/1j.l1g3o3m7zi2i2v4h.m.h3v2i2zi.m3o3g1l4j1",
-            },
-            {
-                "url": "https://puzz.link/p?nuribou/20/15/h5o6zs6k3i3h6zg4p4zi.pbzl7h3zz4k4l9v7zn4h.l4k4o4q7i2"
-            },  # warning: this example will TLE
+            {"url": "https://puzz.link/p?nuribou/13/13/1j.l1g3o3m7zi2i2v4h.m.h3v2i2zi.m3o3g1l4j1"},
+            {"url": "https://puzz.link/p?nuribou/20/15/h5o6zs6k3i3h6zg4p4zi.pbzl7h3zz4k4l9v7zn4h.l4k4o4q7i2"},
         ],
     },
     "nurikabe": {
@@ -631,13 +627,10 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "yajilin": {
         "name": "Yajilin",
         "category": "loop",
+        "aliases": ["yajirin"],
         "examples": [
-            {
-                "url": "https://puzz.link/p?yajilin/10/10/0.p31g23l21g33f42g42l13g12p0./",
-            },
-            {
-                "url": "https://puzz.link/p?yajilin/19/13/g24g33f45o23d30g32z43k41y11a11a42zo33a14a12b11d31a32c21e11t36g31e21y",
-            },
+            {"url": "https://puzz.link/p?yajilin/10/10/0.p31g23l21g33f42g42l13g12p0./"},
+            {"url": "https://puzz.link/p?yajilin/19/13/g24g33f45o23d30g32z43k41y11a11a42zo33a14a12b11d31a32c21e11t36g31e21y"},
         ],
     },
     "yajikazu": {
