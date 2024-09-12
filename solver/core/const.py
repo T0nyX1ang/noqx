@@ -183,7 +183,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "category": "region",
         "examples": [
             {
-                "data": "m=edit&p=7VVPb5swFL/nU1Q++4DDnyTcui7ZJcvWNVNVIRQ5CW1QIc4MrBNRvnufH3SxDT3ssKqaJsTj8fPP74/t91z8qLhMKHMoY9QdU/jC47Ex9fyAjlwPX6d9lmmZJeEFvazKnZCgUPplNqP3PCuSQdSy4sGxnoT1Na0/hREZEoovIzGtr8Nj/TmsF7S+gSFCGWBz0BihQ1CnZ/UWx5V21YDMAX3R6qDegbpJ5SZLVvMG+RpG9ZIS5ecDzlYqycXPhDTT8H8j8nWqgDUvIZlilx7akaLaiseq5bL4ROvL18N1z+EqtQlXaX8t3Owg+gKdxKcTLPg3CHUVRirq72d1fFZvwiPIRXgkXvCSY7MrxBspADbpNzBWgKsBE2uK71hTfGYBATK0KYFvMUae5WWMbjUGc4aWEea4HQ6aMTjoSTPMHDtl5tg5M4YcHRliTrod106KuXZWzOvE06yebse3F5j5yNHtNAuoc4JOPEFnfQJzfWDLGW78HcoZyiHKJZwLWrsoP6J0UPoo58iZorxFeYXSQxkgZ6RO1h+dvTcIJ3KbFmY+/r+BxYOITLcPycVCyJxn0A8WVb5O5Ms/tF5SiGxVVPKeb6CRYGeGjgHYHpkGlAlxyNK9yUsf9kImvUMKTMB9D38t5Nay/sSzzACau8aAmpZoQKWEfqf9cynFk4HkvNwZgNbKDUvJvjQDKLkZIn/klrf8nPNpQH4RfCNX3Yn/77U3v9fU4jvvrcO8t3Dw3ArZW/QA99Q9oL313eKdEge8U8zKYbeeAe0paUDtqgaoW9gAdmobsFfKW1m1K1xFZRe5ctWpc+VKL/UoHjwD",
+                "data": "m=edit&p=7VbNbtpAEL7zFNGe9+AZ29jrW5pCL5Q2DVUUWVYExG1QQU75qSoj3j2zs1CW2ebQQyMOkdnR+NuZ3W9+dvHq52a8rDWk9hfnOtJATzfKeUBO7zQOz2i2ntfFhb7crB+bJSlaf+r39bfxfFV3yr1V1dm2pmivdfuhKBUqzQNUpdvrYtt+LNqhbm9oSmkgbEAaKI2k9o7qLc9b7cqBEJE+3Ouk3pE6nS2n8/p+4JDPRdmOtLL7vGNvq6pF86tWzo3fp81iMrPAZLymYFaPs6f9zGrz0PzY7G2h2un28mW68ZGuVR1dq/03uvOn5m9ETbXbUcK/ENX7orSsvx7V/KjeFFuSw2KrutEhRlcV1QULUJH+ACiB2AKxByQWiDwglRZduUsmLXJpYYRFxkw9HplkmkmmGa/hAYZdvEUNb+tZAMiEAEiugLyubxPLACEJ1kl48xOECfsrJ5xbn0/CyT1BmLPvlcp8QyqzB0HVwNXA55PxXr5NFuQnZ85esSHn2H0vE+xlZA4xkqXAiKPw9kKQ+UGQeUZXnRMv2UoIsg8QZTMhytgxDhi66nixY8rr+Ig7Lr5X0MmYy87FXNYU84CzCTi7dvYjNfIIYFALNPK4opH9gybIc1hBd3ZObGSkcXTKmS4d4KvnjmWfJbIc0c2k25jle5YRy5TlgG16LG9ZXrFMWHbZJrN32z/dfq9Ap0zcn+hLD/3Vvs2e92zVKVXv4Xt9MWyWi/Gc/neHm8WkXh7e6RNn11G/FY8yJpfk7avn1b96bPKjczv950aH7qOq8ww=",
             },
         ],
     },
@@ -373,10 +373,6 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [
             {
                 "data": "m=edit&p=7VVPb5swFL/nU1Q++4DDnyTcui7ZJcvWNVNVIRQ5CW1QIc4MrBNRvnufH3SxDT3ssKqaJsTj8fPP74/t91z8qLhMKHMoY9QdU/jC47Ex9fyAjlwPX6d9lmmZJeEFvazKnZCgUPplNqP3PCuSQdSy4sGxnoT1Na0/hREZEoovIzGtr8Nj/TmsF7S+gSFCGWBz0BihQ1CnZ/UWx5V21YDMAX3R6qDegbpJ5SZLVvMG+RpG9ZIS5ecDzlYqycXPhDTT8H8j8nWqgDUvIZlilx7akaLaiseq5bL4ROvL18N1z+EqtQlXaX8t3Owg+gKdxKcTLPg3CHUVRirq72d1fFZvwiPIRXgkXvCSY7MrxBspADbpNzBWgKsBE2uK71hTfGYBATK0KYFvMUae5WWMbjUGc4aWEea4HQ6aMTjoSTPMHDtl5tg5M4YcHRliTrod106KuXZWzOvE06yebse3F5j5yNHtNAuoc4JOPEFnfQJzfWDLGW78HcoZyiHKJZwLWrsoP6J0UPoo58iZorxFeYXSQxkgZ6RO1h+dvTcIJ3KbFmY+/r+BxYOITLcPycVCyJxn0A8WVb5O5Ms/tF5SiGxVVPKeb6CRYGeGjgHYHpkGlAlxyNK9yUsf9kImvUMKTMB9D38t5Nay/sSzzACau8aAmpZoQKWEfqf9cynFk4HkvNwZgNbKDUvJvjQDKLkZIn/klrf8nPNpQH4RfCNX3Yn/77U3v9fU4jvvrcO8t3Dw3ArZW/QA99Q9oL313eKdEge8U8zKYbeeAe0paUDtqgaoW9gAdmobsFfKW1m1K1xFZRe5ctWpc+VKL/UoHjwD",
-            },
-            {
-                "data": "m=edit&p=7ZbfbpswFMbv8xSVr30B5k+Au65Ld9PRde1UVQhFTkpbVIgzB9bJUd69xweqFJtqqiZF01QRjg4/G5/PjvM5m58tlwV1Q/3xIupQF67QD/EOohhvp7+uyqYqkiN63DYPQkJC6fnpKb3j1aaYZH2vfLJVcaIuqPqSZIQRirdLcqoukq36mqiUqktoItQFdgaZSyiDdLZPr7FdZycddB3I0z6H9AbSZSmXVTE/68i3JFNXlOg6n/BtnZJa/CpI9xo+L0W9KDVY8AYms3ko133Lpr0Vj23f1813VB13cmcjcr29XJ12cnU2IlfP4u/lVmsxJjTOdztY8O8gdZ5kWvWPfRrt08tkCzFNtsSPX+bYfSsk8A0QWiAwgOtMTeIyi1hvMc8kfmiSwLGINc7UqjW19ERWrcgaJ4pMEpt9mDUvxsxazDM1M9+szqxVZtYs2NRcDWZpZrFZy3PMWp5jzsuzZuFZK+8FrkWG1WEDubiNbjCeYmQYr2CXUeVh/IzRwRhgPMM+M4zXGE8w+hhD7DPV+/RdO/kAcjKfoSG+fQUf7f9zez7JyOz2vjhKhax5BQ6ctvWikC/PcNiRjajmm1be8SVYN56F4NHAVthzgCoh1lW5GvYr71dCFqNNGhZQfqT/QshbY/QnXlUD0J3uA9QdQgPUSDhhXj1zKcXTgNS8eRiAV4fnYKRi1QwFNHwokT9yo1q9n/NuQn4TvDMPFt//+Cdx8H8SevGdf82F/yAnU5fUj6k6p2Tdzvl8KeB3Cqv2Nr95J081776B/mgc62C+ePBlwt+TkKNmBHjEj4CO+k7PLesBbpmMLmj7DNARqwFqug0g23AAWp4D7A3b0aOazqNVmeajS1n+o0u9tqAsnzwD",  # a bit slow to calculate
-                "config": {"region_size": 4},
             },
         ],
         "parameters": {"region_size": {"name": "Region Size", "type": "number", "default": 5}},
