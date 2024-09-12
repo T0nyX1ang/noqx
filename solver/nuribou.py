@@ -12,8 +12,9 @@ from .core.solution import solver
 
 def noribou_strip_different(color: str = "black") -> str:
     """
-    Generate a rule to ensure that no two adjacent cells are shaded.
-    Based on all_rect rule.
+    Generate a rule to ensure that no two adjacent cells have the same shaded strips.
+
+    An all_rect constraint should be defined first.
     """
     rule = "nth(R, C, 1) :- upleft(R, C).\n"
     rule += "nth(R, C, N) :- up(R, C), nth(R, C - 1, N - 1).\n"
