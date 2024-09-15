@@ -55,23 +55,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
             solver.add_program_line(count_reachable_src(num, (r, c), main_type="bulb", color="not black"))
 
-    # for (r, c), clue in E.clues.items():
-    #     if clue == "black":
-    #         solver.add_program_line(f"black({r}, {c}).")
-    #     elif clue == "green":
-    #         solver.add_program_line(f"not black({r}, {c}).")
-    #     elif clue == "yellow":
-    #         solver.add_program_line(f"not black({r}, {c}).")
-    #         solver.add_program_line(count_adjacent(1, (r, c), color="not black"))
-    #         all_src.append((r, c))
-    #     else:
-    #         num = int(clue)
-    #         solver.add_program_line(f"not black({r}, {c}).")
-    #         solver.add_program_line(count_adjacent(1, (r, c), color="not black"))
-    #         solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
-    #         solver.add_program_line(count_reachable_src(num, (r, c), main_type="bulb", color="not black"))
-    #         all_src.append((r, c))
-
     solver.add_program_line(avoid_unknown_misaki(all_src, color="not black"))
     solver.add_program_line(display())
     solver.solve()
