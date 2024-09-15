@@ -10,8 +10,11 @@ def display(item: str = "black", size: int = 2) -> str:
     return f"#show {item}/{size}."
 
 
-def grid(rows: int, cols: int) -> str:
-    """Generates facts for a grid."""
+def grid(rows: int, cols: int, with_holes: bool = False) -> str:
+    """Generates facts for a grid. This fact can be extended with holes."""
+    if with_holes:
+        return f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
+
     return f"grid(0..{rows - 1}, 0..{cols - 1})."
 
 

@@ -30,16 +30,13 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     solver.reset()
     solver.register_puzzle(puzzle)
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
 
-    if shaded == 0:
-        solver.add_program_line("black(-1, -1).")
-
     for (r, c), color_code in puzzle.surface.items():
-        solver.add_program_line(f"black({r}, {c}).")
+        solver.add_program_line(f"hole({r}, {c}).")
 
         for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
             prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
@@ -47,10 +44,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
     for i, o_shape in enumerate(OMINOES[3].values()):
-        solver.add_program_line(general_shape("omino_3", i, o_shape, color="not black", adj_type="edge"))
+        solver.add_program_line(general_shape("omino_3", i, o_shape, color="grid", adj_type="edge"))
 
-    solver.add_program_line(all_shapes("omino_3", color="not black"))
-    solver.add_program_line(avoid_adj_same_omino(color="not black"))
+    solver.add_program_line(all_shapes("omino_3", color="grid"))
+    solver.add_program_line(avoid_adj_same_omino(color="grid"))
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
