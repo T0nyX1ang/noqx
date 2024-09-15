@@ -122,6 +122,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
+    "circlesquare": {
+        "name": "Circles and Squares",
+        "category": "shade",
+        "aliases": ["circlesandsquares"],
+        "examples": [
+            {"url": "https://puzz.link/p?circlesquare/8/8/001699o080310000009c10"},
+            {"url": "https://puzz.link/p?circlesquare/11/9/30933091330090090901003a009130003"},
+        ],
+    },
     "country": {
         "name": "Country Road",
         "category": "loop",

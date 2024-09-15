@@ -16,6 +16,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
   urlstring = urlstring.replace("statuepark", "yinyang");
+  urlstring = urlstring.replace("circlesquare", "yinyang");
 
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
