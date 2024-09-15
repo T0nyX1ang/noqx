@@ -146,22 +146,18 @@ def general_shape(
                     f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
                 )
 
-            sum_adj = 0
             for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
                 if (nr, nc) in variant:
-                    sum_adj += 1
                     if adj_type not in [4, 8, "x"] and (dr, dc) < (nr, nc):
                         valid.add(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-                elif color == "grid":  # Simplify adjacency re-check if the color is set to 'grid'
-                    valid.add(f"not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-
-            if simple or color == "grid":
-                continue  # Skip the adjacency re-check if it is simple
-
-            if _type == "grid":
-                valid.add(f"{{ {color}(R1, C1): adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
-            elif _type == "area":
-                valid.add(f"{{ {color}(R1, C1): area(A, R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
+                        valid.add(f"{color}(R + {nr}, C + {nc})")
+                elif not simple:  # Skip the adjacency re-check if it is simple
+                    if color == "grid":  # Simplify the adjacency re-check if the color is set to 'grid'
+                        valid.add(f"not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
+                    else:
+                        valid.add(
+                            f"{{ not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc}); not {color}(R + {nr}, C + {nc}) }} > 0"
+                        )
 
         if _type == "grid":
             data += f"{tag}(R, C, {_id}, {i}) :- grid(R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
