@@ -450,6 +450,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
+    "nuriuzu": {
+        "name": "Nuri-uzu",
+        "category": "shade",
+        "examples": [
+            {
+                "url": "https://pzprxs.vercel.app/p?tentaisho/15/15/znezzqezu6esezzzoezzzzzqereztcel0ezzkezzweztezzzzjezzezzzueu",  # hack tentaisho as nuriuzu
+            },
+        ],
+    },
     "onsen": {
         "name": "Onsen-Meguri",
         "category": "loop",
