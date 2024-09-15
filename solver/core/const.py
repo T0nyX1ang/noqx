@@ -118,7 +118,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "category": "shade",
         "examples": [
             {
-                "url": "https://puzz.link/p?aqre/26/22/885kcco5lc912qccuksc8u9k8cdbs24ujt2ctre2ifbuagd77ah6bbjpubmjvt7n57t4gldt0oa6t0gi3uci41s4icrs32ar3j7cqhjpkk2lik3g3302fuitovkgv3g7tge73ifv7jejuc0r4v3ei4e1o79r01jpqune0kg1ov1f300bf783vukb00fg2mvvvggs0tvovs0g3frku1s0tg7v270064a13422432332444724242322633942221232249322222423462242621324325398321344611532442412253236225",  # aqre layout is the same with chocona, hack to make it work
+                "url": "https://puzz.link/p?aqre/26/22/885kcco5lc912qccuksc8u9k8cdbs24ujt2ctre2ifbuagd77ah6bbjpubmjvt7n57t4gldt0oa6t0gi3uci41s4icrs32ar3j7cqhjpkk2lik3g3302fuitovkgv3g7tge73ifv7jejuc0r4v3ei4e1o79r01jpqune0kg1ov1f300bf783vukb00fg2mvvvggs0tvovs0g3frku1s0tg7v270064a13422432332444724242322633942221232249322222423462242621324325398321344611532442412253236225",  # hack aqre as chocona
             }
         ],
     },
@@ -395,6 +395,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [
             {
                 "url": "http://pzv.jp/p.html?norinori/20/10/ahkcfeorctdhkqdffmk9jprqnqd57ea6us16ok4jboec2oku7ck43rbqseje3kc16cvv8f7i7f",
+            }
+        ],
+    },
+    "norinuri": {
+        "name": "Norinuri",
+        "category": "shade",
+        "examples": [
+            {
+                "url": "https://puzz.link/p?nuribou/10/10/g6p8l.n-14zzhan4lap.g",  # hack nuribou as norinuri
             }
         ],
     },
