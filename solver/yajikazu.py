@@ -36,17 +36,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_adjacent_color(color="gray"))
     solver.add_program_line(grid_color_connected(color="not gray"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not gray({r}, {c}).")
+    # avoid all cells are unshaded
+    solver.add_program_line(":- { gray(R, C) } = 0.")
 
     for (r, c), clue in puzzle.text.items():
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
         num, direction = clue.split("_")
         assert num.isdigit() and direction.isdigit(), "Invalid arrow or number clue."
         solver.add_program_line(yajikazu_count(int(num), (r, c), int(direction), color="gray"))
+
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f"gray({r}, {c}).")
+        else:  # safe color (others)
+            solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
     solver.solve()
