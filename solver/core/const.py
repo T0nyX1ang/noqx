@@ -179,7 +179,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "fivecells": {
-        "name": "Fivecells",
+        "name": "FiveCells",
         "category": "region",
         "examples": [
             {
@@ -188,7 +188,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "fourcells": {
-        "name": "Fourcells",
+        "name": "FourCells",
         "category": "region",
         "examples": [
             {

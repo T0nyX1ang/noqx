@@ -131,16 +131,18 @@ def general_shape(
 
     variants = get_variants(deltas, allow_rotations=True, allow_reflections=True)
     for i, variant in enumerate(variants):
-        valid, belongs_to = [], []
+        valid, belongs_to = set(), set()
         for dr, dc in variant:
             if _type == "grid":
-                valid.append(f"grid(R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
-                belongs_to.append(
+                valid.add(f"grid(R + {dr}, C + {dc})")
+                valid.add(f"{color}(R + {dr}, C + {dc})")
+                belongs_to.add(
                     f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
                 )
             elif _type == "area":
-                valid.append(f"area(A, R + {dr}, C + {dc}), {color}(R + {dr}, C + {dc})")
-                belongs_to.append(
+                valid.add(f"area(A, R + {dr}, C + {dc})")
+                valid.add(f"{color}(R + {dr}, C + {dc})")
+                belongs_to.add(
                     f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
                 )
 
@@ -149,22 +151,22 @@ def general_shape(
                 if (nr, nc) in variant:
                     sum_adj += 1
                     if adj_type not in [4, 8, "x"] and (dr, dc) < (nr, nc):
-                        valid.append(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
+                        valid.add(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
+                elif color == "grid":  # Simplify adjacency re-check if the color is set to 'grid'
+                    valid.add(f"not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
 
-            if simple:
+            if simple or color == "grid":
                 continue  # Skip the adjacency re-check if it is simple
 
             if _type == "grid":
-                valid.append(f" {{ {color}(R1, C1): adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
+                valid.add(f"{{ {color}(R1, C1): adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
             elif _type == "area":
-                valid.append(
-                    f" {{ {color}(R1, C1): area(A, R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}"
-                )
+                valid.add(f"{{ {color}(R1, C1): area(A, R1, C1), adj_{adj_type}(R + {dr}, C + {dc}, R1, C1) }} = {sum_adj}")
 
         if _type == "grid":
-            data += f"{tag}(R, C, {_id}, {i}) :- grid(R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to)
+            data += f"{tag}(R, C, {_id}, {i}) :- grid(R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
         elif _type == "area":
-            data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to)
+            data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
     return data.strip()
 
