@@ -284,6 +284,18 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
+    "kakuru": {
+        "name": "Kakuru",
+        "category": "num",
+        "examples": [
+            {
+                "data": "m=edit&p=7VNNb5tAEL3zK6I57wGWheC9pWnci0ub2lUUrZCFKVFQsWixqaq1/N8zH7Sgqodc2uZQLfvm+e1457HDHr4OZV+rBEecqVBFOLTOeJqQnh9j0xzb2l6oq+H42PVIlHq3XKqHsj3UgRuziuDkF9bfKv/GOohAgcYZQaH8rT35t9bnyq9xCZRBbSVJGunNRO94ndi1iFGIPBeeIr1HWjV91dbbFa6i8t46v1FAdV7xv4nCvvtWw+iDflfdfteQsCuP+DKHx+bLuHIYPnWfhzE3Ks7KX/1il6qMduPJLlGxS+w3dukt/rDdRXE+47F/QMNb68j7x4lmE13bE+gQrMGmaAmxBCNhwSHOOBjJNJKZRBJSCZcSJDOlTNw/H/d3EGObpOtcCV2GMwWrOTCTQAUdefmpUG3cJZspsg31f1TICirpTJF9ZqXI2cwNeozsCfGeccmoGTd4RMrHjK8ZQ8aEccU5N4x3jNeMhjHlnEs65Ge2QQ7rL9hxWm40jeR5rAgcrIf+oaxq/NjyYb+r+4u86/dlC3i7zwF8B54uxnTz/8L/owtPLQhf2vf20uzgDSiCJw=="
+            },
+            {
+                "data": "m=edit&p=7VTfb9MwEH7PXzHdsx8Sx0lav6AxVl5KYLRomqxoSkumVbQKpA1Crvq/734E3BUeEBJsD8jy+et3d/Z3OdfbL33dNSrHkY5UrBIcOs95JsbwjIcxX+3WjT1T5/3uvu0QKPV2MlF39XrbRG6IqqK9H1t/pfxr6yABBRpnApXyV3bv31hfKj9DFyiD3FSCNMLLAK/ZT+hCyCRGXArOEd4gXK665bq5naIXmXfW+bkCOuclZxOETfu1gUEH/V62m8WKiEW9w2K296vPg2fbf2w/9UNsUh2UPz+RS6cMctMgl6DIJfQLuVTFX5Y7rg4H/OzvUfCtdaT9Q4CjAGd2D1qDNdgUI0smS8FLmvJiJMSIz4gvEzKTvEzIPOelEF8hvkLyCgrBQ8vhUFRqsHlyF/j8EwbTHGhq8HcGd3DwIhCkz0EaB4akPk4i1ScxvE1SBIZqeRxDZTkwxwxnjQNBteJRR9tQ2bjx6Ij5qSr6GMikR4zI+cHgJ0rsHu0N2wlbzXaObVM+ZfuKbcw2YzvlmEu212wv2Bq2OccU1PjfvBrSq38gx2nN74yM7M9xFTmY9d1dvWzwb1H2m0XTnZVtt6nXgO/QIYJvwNOlGG7+P01P9DRRC+Lndgufmxz8X1TRAw=="
+            },
+        ],
+    },
     "kurodoko": {
         "name": "Kurodoko",
         "category": "shade",
