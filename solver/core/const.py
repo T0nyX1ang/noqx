@@ -699,6 +699,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             {"url": "https://puzz.link/p?yajilin/19/13/g24g33f45o23d30g32z43k41y11a11a42zo33a14a12b11d31a32c21e11t36g31e21y"},
         ],
     },
+    "yajilin-regions": {
+        "name": "Regional Yajilin",
+        "category": "loop",
+        "examples": [
+            {
+                "url": "https://puzz.link/p?yajilin-regions/11/18/c6c69alhlhg1lhhh4h91gdict8jomt4aemu3001i3tk00uuff1g3vovve81oiu2k1sfvmrto68g2g22g222g222111111111g11g11111h",
+            }
+        ],
+    },
     "yajikazu": {
         "name": "Yajisan-Kazusan",
         "category": "shade",
