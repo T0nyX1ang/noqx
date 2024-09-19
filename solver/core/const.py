@@ -717,13 +717,10 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "category": "shade",
         "examples": [
             {
-                "url": "https://puzz.link/p?yinyang/11/11/02000620ik00i0i00i8kiq030061206j002100600",
+                "url": "https://puzz.link/p?yinyang/8/8/9003003c30099033100030",
             },
             {
-                "url": "https://puzz.link/p?yinyang/15/15/00000000006a8jo3j6b06a8b03j6207h31o000005bobc0b6965j6bc626964bojc0000000000",
-            },
-            {
-                "url": "https://puzz.link/p?yinyang/22/18/00000000000000030190030000900003000000900130020006000l0000090000i0020009400030200060000002empf01900001009901030130900031009a00009000",  # this example will TLE
+                "url": "https://puzz.link/p?yinyang/22/18/00000000000000030190030000900003000000900130020006000l0000090000i0020009400030200060000002empf01900001009901030130900031009a00009000",
             },
         ],
     },
