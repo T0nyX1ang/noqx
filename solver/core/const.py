@@ -514,6 +514,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             },
         ],
     },
+    "paintarea": {
+        "name": "Paintarea",
+        "category": "shade",
+        "examples": [
+            {
+                "url": "https://puzz.link/p?paintarea/18/10/fesmfvrsi3vrvsntsvuttippjvnvrnvdferjbmtvtmnftnrnvrfbanmunev6vffddd8a1zj2b0t2b2a2c1o1d2b1c3zx2d2a2a3t",
+            }
+        ],
+    },
     "ripple": {
         "name": "Ripple Effect",
         "category": "num",

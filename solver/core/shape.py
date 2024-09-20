@@ -290,3 +290,8 @@ def avoid_rect(
         rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
     return f":- {', '.join(rect_pattern)}."
+
+
+def area_same_color(color: str = "black") -> str:
+    """Ensure that all cells in the same area have the same color."""
+    return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
