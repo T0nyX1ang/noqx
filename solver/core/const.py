@@ -140,6 +140,19 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             {"url": "https://puzz.link/p?circlesquare/11/9/30933091330090090901003a009130003"},
         ],
     },
+    "cocktail": {
+        "name": "Cocktail Lamp",
+        "category": "shade",
+        "aliases": ["cocktaillamp"],
+        "examples": [
+            {
+                "url": "https://puzz.link/p?cocktail/14/14/dei94p4j4ici9i9694p4j4ici9i9694p4iqo0vvv000007vv001000vvo004007vv003007vvog1g2g1g3144440g544445444404444g11h1g2g6",
+            },
+            {
+                "url": "https://puzz.link/p?cocktail/17/35/0gf1sfdrdfrvnar28dkkmpab4k3i4jt99ugkvdo7nd5n6irjmdpn6sr36c1jj09tqgctc0ve8tb9b9qapr5as8be6dr575jbcphpc5cidpitt9h41fhj2poh2g2l29f0e70e8041h0t3hpk01u01n1o0hh76003hvc08000gs080e7s0oue607v0o7ha2dd1dte8371ji01o610ao6180ca790dt5fkg42rck531h314h56g28j2g6h4g2k1632g4i0h25h34111",
+            },
+        ],
+    },
     "country": {
         "name": "Country Road",
         "category": "loop",
