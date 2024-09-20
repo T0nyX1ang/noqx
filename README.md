@@ -4,9 +4,9 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 ## Current Maintainers
 
-- [@T0nyX1ang](https://github.com/T0nyX1ang): backend, frontend, bug fixes
+- [@T0nyX1ang](https://github.com/T0nyX1ang): backend, frontend, new solver implementations, bug fixes
 
-- [@zhuyaoyu](https://github.com/zhuyaoyu): (huge) solver optimizations, bug fixes
+- [@zhuyaoyu](https://github.com/zhuyaoyu): (huge) solver optimizations, new solver implementations, bug fixes
 
 ## Current development status
 
@@ -50,10 +50,10 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
     pip install -r requirements.txt
 ```
 
-- Clone this project recursively and switch to `master` branch.
+- Clone this project and switch to `master` branch.
 
 ```bash
-    git clone https://github.com/T0nyX1ang/noqx.git --recursive
+    git clone https://github.com/T0nyX1ang/noqx.git
 ```
 
 - Run locally (based on your system):
@@ -66,7 +66,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Additional Usage
 
 ```text
-    usage: noqx.py [-h] [-H HOST] [-p PORT] [-d]
+    usage: noqx.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -81,10 +81,10 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Install [PDM](https://pdm-project.org/latest/) first.
 
-- Clone this project recursively and switch to `dev` branch.
+- Clone this project and switch to `dev` branch.
 
 ```bash
-    git clone https://github.com/T0nyX1ang/noqx.git --recursive
+    git clone https://github.com/T0nyX1ang/noqx.git
     git checkout dev
 ```
 

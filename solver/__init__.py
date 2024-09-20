@@ -11,7 +11,7 @@ from .core.solution import Config
 
 modules: Dict[str, ModuleType] = {}
 for pt in PUZZLE_TYPES:
-    modules[pt] = importlib.import_module(f"solver.{pt}")  # load module
+    modules[pt] = importlib.import_module(f"solver.{pt.replace('-', '_')}")  # load module
 
 
 def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:

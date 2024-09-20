@@ -11,6 +11,28 @@ from .core.shape import avoid_rect
 from .core.solution import solver
 
 
+def exclude_border_color_changes(rows: int, cols: int, symbol_1: str, symbol_2: str) -> str:
+    """Exclude border color changes more than twice."""
+    rule = ""
+
+    for r in range(rows - 1):
+        rev_r = rows - 1 - r
+        rule += f"changed({r}, 0) :- {symbol_1}({r}, 0), {symbol_2}({r + 1}, 0).\n"
+        rule += f"changed({r}, 0) :- {symbol_2}({r}, 0), {symbol_1}({r + 1}, 0).\n"
+        rule += f"changed({rev_r}, {cols - 1}) :- {symbol_1}({rev_r}, {cols - 1}), {symbol_2}({rev_r - 1}, {cols - 1}).\n"
+        rule += f"changed({rev_r}, {cols - 1}) :- {symbol_2}({rev_r}, {cols - 1}), {symbol_1}({rev_r - 1}, {cols - 1}).\n"
+
+    for c in range(cols - 1):
+        rev_c = cols - 1 - c
+        rule += f"changed(0, {c}) :- {symbol_1}(0, {c}), {symbol_2}(0, {c + 1}).\n"
+        rule += f"changed(0, {c}) :- {symbol_2}(0, {c}), {symbol_1}(0, {c + 1}).\n"
+        rule += f"changed({rows - 1}, {rev_c}) :- {symbol_1}({rows - 1}, {rev_c}), {symbol_2}({rows - 1}, {rev_c - 1}).\n"
+        rule += f"changed({rows - 1}, {rev_c}) :- {symbol_2}({rows - 1}, {rev_c}), {symbol_1}({rows - 1}, {rev_c - 1}).\n"
+
+    rule += ":- { changed(R, C) } > 2.\n"
+    return rule.strip()
+
+
 def solve(puzzle: Puzzle) -> List[Solution]:
     symbol_set = set(puzzle.symbol.values())
     symbol_1, symbol_2 = extract_two_symbols(symbol_set)
@@ -21,8 +43,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(shade_c(color=symbol_1))
     solver.add_program_line(f"{symbol_2}(R, C) :- grid(R, C), not {symbol_1}(R, C).")
     solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color=symbol_1))
-    solver.add_program_line(avoid_rect(rect_r=2, rect_c=2, color=f"not {symbol_1}"))
+    solver.add_program_line(avoid_rect(2, 2, color=symbol_1))
+    solver.add_program_line(avoid_rect(2, 2, color=f"not {symbol_1}"))
+
+    # exclude checkerboard shape
+    solver.add_program_line(f":- {symbol_1}(R, C), {symbol_2}(R, C + 1), {symbol_2}(R + 1, C), {symbol_1}(R + 1, C + 1).")
+    solver.add_program_line(f":- {symbol_2}(R, C), {symbol_1}(R, C + 1), {symbol_1}(R + 1, C), {symbol_2}(R + 1, C + 1).")
+
+    # exclude border color changes more than twice
+    solver.add_program_line(exclude_border_color_changes(puzzle.row, puzzle.col, symbol_1, symbol_2))
 
     symbol_1_initial: List[Tuple[int, int]] = []
     symbol_2_initial: List[Tuple[int, int]] = []

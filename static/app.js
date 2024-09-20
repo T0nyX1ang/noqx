@@ -9,8 +9,17 @@ function exp() {
 }
 
 function imp(penpa) {
-  const urlstring = penpa || document.getElementById("urlstring").value;
+  let urlstring = penpa || document.getElementById("urlstring").value;
 
+  // replace unsupported solver to supported solvers
+  urlstring = urlstring.replace("chocona", "aqre");
+  urlstring = urlstring.replace("cocktail", "aqre");
+  urlstring = urlstring.replace("norinuri", "nuribou");
+  urlstring = urlstring.replace("nuriuzu", "tentaisho");
+  urlstring = urlstring.replace("statuepark", "yinyang");
+  urlstring = urlstring.replace("circlesquare", "yinyang");
+
+  // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
     Swal.fire({
       icon: "error",
