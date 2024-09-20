@@ -659,6 +659,23 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
+    "tapaloop": {
+        "name": "Tapa-Like Loop",
+        "category": "loop",
+        "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like"],
+        "examples": [
+            {
+                "url": "https://puzz.link/p?tapaloop/16/16/y+72zg+5qrb0q+10n+10h+6wl-g8ha0zvb0j-10m-g8q-g8k-10zo+10ha0ka0i-g8q+10n+10zna0l",
+                "config": {"visit_all": True},
+            },
+            {
+                "url": "https://puzz.link/p?tapaloop/17/17/g2h3h2yarhajh2x4h2haiyaihaih3xabhajh+2lyaihaih2w3h3h2y3haihabx2hajhaiyajhaihajx2hajhajy2h2h3g",  # a bit slow example
+            },
+        ],
+        "parameters": {
+            "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False},
+        },
+    },
     "tasquare": {
         "name": "Tasquare",
         "category": "shade",
@@ -695,22 +712,14 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "category": "var",
         "examples": [{"url": "https://puzz.link/p?tents/13/13/23g3g1i333g2j2g2j3i1517617151695114b322hi33g00100100e"}],
     },
-    "tapaloop": {
-        "name": "Tapa-Like Loop",
-        "category": "loop",
-        "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like"],
+    "tilepaint": {
+        "name": "Tilepaint",
+        "category": "shade",
         "examples": [
             {
-                "url": "https://puzz.link/p?tapaloop/16/16/y+72zg+5qrb0q+10n+10h+6wl-g8ha0zvb0j-10m-g8q-g8k-10zo+10ha0ka0i-g8q+10n+10zna0l",
-                "config": {"visit_all": True},
-            },
-            {
-                "url": "https://puzz.link/p?tapaloop/17/17/g2h3h2yarhajh2x4h2haiyaihaih3xabhajh+2lyaihaih2w3h3h2y3haihabx2hajhaiyajhaihajx2hajhajy2h2h3g",  # a bit slow example
-            },
+                "data": "m=edit&p=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",
+            }
         ],
-        "parameters": {
-            "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False},
-        },
     },
     "yajilin": {
         "name": "Yajilin",
