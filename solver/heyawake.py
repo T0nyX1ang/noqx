@@ -11,6 +11,17 @@ from .core.shape import avoid_rect
 from .core.solution import solver
 
 
+def avoid_diamond_pattern(color: str = "black") -> str:
+    """Avoid diamond patterns (radius = 1)."""
+    rule = f":- grid(R, C), not {color}(R, C), {color}(R - 1, C), {color}(R, C - 1), {color}(R + 1, C), {color}(R, C + 1).\n"
+    rule += f":- grid(R, C), not {color}(R, C), not grid(R - 1, C), {color}(R, C - 1), {color}(R + 1, C), {color}(R, C + 1).\n"
+    rule += f":- grid(R, C), not {color}(R, C), {color}(R - 1, C), not grid(R, C - 1), {color}(R + 1, C), {color}(R, C + 1).\n"
+    rule += f":- grid(R, C), not {color}(R, C), {color}(R - 1, C), {color}(R, C - 1), not grid(R + 1, C), {color}(R, C + 1).\n"
+    rule += f":- grid(R, C), not {color}(R, C), {color}(R - 1, C), {color}(R, C - 1), {color}(R + 1, C), not grid(R, C + 1).\n"
+
+    return rule.strip()
+
+
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -20,6 +31,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent_color(color="gray"))
     solver.add_program_line(grid_color_connected(color="not gray"))
+    solver.add_program_line(avoid_diamond_pattern(color="gray"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
