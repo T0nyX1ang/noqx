@@ -3,7 +3,7 @@
 
 [metadata]
 groups = ["default", "dev"]
-strategy = ["cross_platform", "inherit_metadata"]
+strategy = ["cross_platform"]
 lock_version = "4.5.0"
 content_hash = "sha256:18ea02866f811db5e923d288ff21863fb6e9130731c09929c318d37af5499dec"
 
@@ -12,27 +12,23 @@ requires_python = ">=3.8"
 
 [[package]]
 name = "anyio"
-version = "4.4.0"
-requires_python = ">=3.8"
-summary = "High level compatibility layer for multiple asynchronous event loop implementations"
-groups = ["default"]
+version = "4.5.0"
+summary = ""
 dependencies = [
-    "exceptiongroup>=1.0.2; python_version < \"3.11\"",
-    "idna>=2.8",
-    "sniffio>=1.1",
-    "typing-extensions>=4.1; python_version < \"3.11\"",
+    "exceptiongroup; python_full_version < \"3.11\"",
+    "idna",
+    "sniffio",
+    "typing-extensions; python_full_version < \"3.11\"",
 ]
 files = [
-    {file = "anyio-4.4.0-py3-none-any.whl", hash = "sha256:c1b2d8f46a8a812513012e1107cb0e68c17159a7a594208005a57dc776e1bdc7"},
-    {file = "anyio-4.4.0.tar.gz", hash = "sha256:5aadc6a1bbb7cdb0bede386cac5e2940f5e2ff3aa20277e991cf028e0585ce94"},
+    {file = "anyio-4.5.0-py3-none-any.whl", hash = "sha256:fdeb095b7cc5a5563175eedd926ec4ae55413bb4be5770c424af0ba46ccb4a78"},
+    {file = "anyio-4.5.0.tar.gz", hash = "sha256:c5a275fe5ca0afd788001f58fca1e69e29ce706d746e317d660e21f70c530ef9"},
 ]
 
 [[package]]
 name = "cffi"
 version = "1.17.1"
-requires_python = ">=3.8"
-summary = "Foreign Function Interface for Python calling C code."
-groups = ["default"]
+summary = ""
 dependencies = [
     "pycparser",
 ]
@@ -109,9 +105,7 @@ files = [
 [[package]]
 name = "cfgv"
 version = "3.4.0"
-requires_python = ">=3.8"
-summary = "Validate configuration and produce human readable error messages."
-groups = ["dev"]
+summary = ""
 files = [
     {file = "cfgv-3.4.0-py2.py3-none-any.whl", hash = "sha256:b7265b1f29fd3316bfcd2b330d63d024f2bfd8bcb8b0272f8e19a504856c48f9"},
     {file = "cfgv-3.4.0.tar.gz", hash = "sha256:e52591d4c5f5dead8e0f673fb16db7949d2cfb3f7da4582893288f0ded8fe560"},
@@ -120,12 +114,9 @@ files = [
 [[package]]
 name = "click"
 version = "8.1.7"
-requires_python = ">=3.7"
-summary = "Composable command line interface toolkit"
-groups = ["default"]
+summary = ""
 dependencies = [
     "colorama; platform_system == \"Windows\"",
-    "importlib-metadata; python_version < \"3.8\"",
 ]
 files = [
     {file = "click-8.1.7-py3-none-any.whl", hash = "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28"},
@@ -135,9 +126,7 @@ files = [
 [[package]]
 name = "clingo"
 version = "5.7.1"
-requires_python = ">=3.6"
-summary = "CFFI-based bindings to the clingo solver."
-groups = ["default"]
+summary = ""
 dependencies = [
     "cffi",
 ]
@@ -210,10 +199,7 @@ files = [
 [[package]]
 name = "colorama"
 version = "0.4.6"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
-summary = "Cross-platform colored terminal text."
-groups = ["default"]
-marker = "platform_system == \"Windows\""
+summary = ""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -222,9 +208,7 @@ files = [
 [[package]]
 name = "conventional-pre-commit"
 version = "3.4.0"
-requires_python = ">=3.8"
-summary = "A pre-commit hook that checks commit messages for Conventional Commits formatting."
-groups = ["dev"]
+summary = ""
 files = [
     {file = "conventional_pre_commit-3.4.0-py3-none-any.whl", hash = "sha256:07180fec7fe73f5bc0abc1a8114434f48812ba36e2d1ad3618412554fd7faa16"},
     {file = "conventional_pre_commit-3.4.0.tar.gz", hash = "sha256:6f2afac88cebf50773e0ef1067bcab46966e512dfec1105c943d5b929be32e86"},
@@ -233,8 +217,7 @@ files = [
 [[package]]
 name = "distlib"
 version = "0.3.8"
-summary = "Distribution utilities"
-groups = ["dev"]
+summary = ""
 files = [
     {file = "distlib-0.3.8-py2.py3-none-any.whl", hash = "sha256:034db59a0b96f8ca18035f36290806a9a6e6bd9d1ff91e45a7f172eb17e51784"},
     {file = "distlib-0.3.8.tar.gz", hash = "sha256:1530ea13e350031b6312d8580ddb6b27a104275a31106523b8f123787f494f64"},
@@ -243,10 +226,7 @@ files = [
 [[package]]
 name = "exceptiongroup"
 version = "1.2.2"
-requires_python = ">=3.7"
-summary = "Backport of PEP 654 (exception groups)"
-groups = ["default"]
-marker = "python_version < \"3.11\""
+summary = ""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
     {file = "exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc"},
@@ -254,24 +234,17 @@ files = [
 
 [[package]]
 name = "filelock"
-version = "3.16.0"
-requires_python = ">=3.8"
-summary = "A platform independent file lock."
-groups = ["dev"]
+version = "3.16.1"
+summary = ""
 files = [
-    {file = "filelock-3.16.0-py3-none-any.whl", hash = "sha256:f6ed4c963184f4c84dd5557ce8fece759a3724b37b80c6c4f20a2f63a4dc6609"},
-    {file = "filelock-3.16.0.tar.gz", hash = "sha256:81de9eb8453c769b63369f87f11131a7ab04e367f8d97ad39dc230daa07e3bec"},
+    {file = "filelock-3.16.1-py3-none-any.whl", hash = "sha256:2082e5703d51fbf98ea75855d9d5527e33d8ff23099bec374a134febee6946b0"},
+    {file = "filelock-3.16.1.tar.gz", hash = "sha256:c249fbfcd5db47e5e2d6d62198e565475ee65e4831e2561c8e313fa7eb961435"},
 ]
 
 [[package]]
 name = "h11"
 version = "0.14.0"
-requires_python = ">=3.7"
-summary = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-groups = ["default"]
-dependencies = [
-    "typing-extensions; python_version < \"3.8\"",
-]
+summary = ""
 files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
@@ -280,9 +253,7 @@ files = [
 [[package]]
 name = "identify"
 version = "2.6.1"
-requires_python = ">=3.8"
-summary = "File identification library for Python"
-groups = ["dev"]
+summary = ""
 files = [
     {file = "identify-2.6.1-py2.py3-none-any.whl", hash = "sha256:53863bcac7caf8d2ed85bd20312ea5dcfc22226800f6d6881f232d861db5a8f0"},
     {file = "identify-2.6.1.tar.gz", hash = "sha256:91478c5fb7c3aac5ff7bf9b4344f803843dc586832d5f110d672b19aa1984c98"},
@@ -291,9 +262,7 @@ files = [
 [[package]]
 name = "idna"
 version = "3.10"
-requires_python = ">=3.6"
-summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["default"]
+summary = ""
 files = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
     {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
@@ -302,9 +271,7 @@ files = [
 [[package]]
 name = "nodeenv"
 version = "1.9.1"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
-summary = "Node.js virtual environment builder"
-groups = ["dev"]
+summary = ""
 files = [
     {file = "nodeenv-1.9.1-py2.py3-none-any.whl", hash = "sha256:ba11c9782d29c27c70ffbdda2d7415098754709be8a7056d79a737cd901155c9"},
     {file = "nodeenv-1.9.1.tar.gz", hash = "sha256:6ec12890a2dab7946721edbfbcd91f3319c6ccc9aec47be7c7e6b7011ee6645f"},
@@ -312,27 +279,23 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "4.3.4"
-requires_python = ">=3.8"
-summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
-groups = ["dev"]
+version = "4.3.6"
+summary = ""
 files = [
-    {file = "platformdirs-4.3.4-py3-none-any.whl", hash = "sha256:8b4ba85412f5065dae40aa19feaa02ac2be584c8b14abd70712b5cd11ad80034"},
-    {file = "platformdirs-4.3.4.tar.gz", hash = "sha256:9e8a037c36fe1b1f1b5de4482e60464272cc8dca725e40b568bf2c285f7509cf"},
+    {file = "platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb"},
+    {file = "platformdirs-4.3.6.tar.gz", hash = "sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907"},
 ]
 
 [[package]]
 name = "pre-commit"
 version = "3.5.0"
-requires_python = ">=3.8"
-summary = "A framework for managing and maintaining multi-language pre-commit hooks."
-groups = ["dev"]
+summary = ""
 dependencies = [
-    "cfgv>=2.0.0",
-    "identify>=1.0.0",
-    "nodeenv>=0.11.1",
-    "pyyaml>=5.1",
-    "virtualenv>=20.10.0",
+    "cfgv",
+    "identify",
+    "nodeenv",
+    "pyyaml",
+    "virtualenv",
 ]
 files = [
     {file = "pre_commit-3.5.0-py2.py3-none-any.whl", hash = "sha256:841dc9aef25daba9a0238cd27984041fa0467b4199fc4852e27950664919f660"},
@@ -342,9 +305,7 @@ files = [
 [[package]]
 name = "pycparser"
 version = "2.22"
-requires_python = ">=3.8"
-summary = "C parser in Python"
-groups = ["default"]
+summary = ""
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
@@ -353,9 +314,7 @@ files = [
 [[package]]
 name = "pyyaml"
 version = "6.0.2"
-requires_python = ">=3.8"
-summary = "YAML parser and emitter for Python"
-groups = ["dev"]
+summary = ""
 files = [
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0a9a2848a5b7feac301353437eb7d5957887edbf81d56e903999a75a3d743086"},
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:29717114e51c84ddfba879543fb232a6ed60086602313ca38cce623c1d62cfbf"},
@@ -415,9 +374,7 @@ files = [
 [[package]]
 name = "sniffio"
 version = "1.3.1"
-requires_python = ">=3.7"
-summary = "Sniff out which async library your code is running under"
-groups = ["default"]
+summary = ""
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
@@ -425,26 +382,21 @@ files = [
 
 [[package]]
 name = "starlette"
-version = "0.38.5"
-requires_python = ">=3.8"
-summary = "The little ASGI library that shines."
-groups = ["default"]
+version = "0.39.2"
+summary = ""
 dependencies = [
-    "anyio<5,>=3.4.0",
-    "typing-extensions>=3.10.0; python_version < \"3.10\"",
+    "anyio",
+    "typing-extensions; python_full_version < \"3.10\"",
 ]
 files = [
-    {file = "starlette-0.38.5-py3-none-any.whl", hash = "sha256:632f420a9d13e3ee2a6f18f437b0a9f1faecb0bc42e1942aa2ea0e379a4c4206"},
-    {file = "starlette-0.38.5.tar.gz", hash = "sha256:04a92830a9b6eb1442c766199d62260c3d4dc9c4f9188360626b1e0273cb7077"},
+    {file = "starlette-0.39.2-py3-none-any.whl", hash = "sha256:134dd6deb655a9775991d352312d53f1879775e5cc8a481f966e83416a2c3f71"},
+    {file = "starlette-0.39.2.tar.gz", hash = "sha256:caaa3b87ef8518ef913dac4f073dea44e85f73343ad2bdc17941931835b2a26a"},
 ]
 
 [[package]]
 name = "typing-extensions"
 version = "4.12.2"
-requires_python = ">=3.8"
-summary = "Backported and Experimental Type Hints for Python 3.8+"
-groups = ["default"]
-marker = "python_version < \"3.11\""
+summary = ""
 files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
@@ -452,33 +404,28 @@ files = [
 
 [[package]]
 name = "uvicorn"
-version = "0.30.6"
-requires_python = ">=3.8"
-summary = "The lightning-fast ASGI server."
-groups = ["default"]
+version = "0.31.0"
+summary = ""
 dependencies = [
-    "click>=7.0",
-    "h11>=0.8",
-    "typing-extensions>=4.0; python_version < \"3.11\"",
+    "click",
+    "h11",
+    "typing-extensions; python_full_version < \"3.11\"",
 ]
 files = [
-    {file = "uvicorn-0.30.6-py3-none-any.whl", hash = "sha256:65fd46fe3fda5bdc1b03b94eb634923ff18cd35b2f084813ea79d1f103f711b5"},
-    {file = "uvicorn-0.30.6.tar.gz", hash = "sha256:4b15decdda1e72be08209e860a1e10e92439ad5b97cf44cc945fcbee66fc5788"},
+    {file = "uvicorn-0.31.0-py3-none-any.whl", hash = "sha256:cac7be4dd4d891c363cd942160a7b02e69150dcbc7a36be04d5f4af4b17c8ced"},
+    {file = "uvicorn-0.31.0.tar.gz", hash = "sha256:13bc21373d103859f68fe739608e2eb054a816dea79189bc3ca08ea89a275906"},
 ]
 
 [[package]]
 name = "virtualenv"
-version = "20.26.4"
-requires_python = ">=3.7"
-summary = "Virtual Python Environment builder"
-groups = ["dev"]
+version = "20.26.6"
+summary = ""
 dependencies = [
-    "distlib<1,>=0.3.7",
-    "filelock<4,>=3.12.2",
-    "importlib-metadata>=6.6; python_version < \"3.8\"",
-    "platformdirs<5,>=3.9.1",
+    "distlib",
+    "filelock",
+    "platformdirs",
 ]
 files = [
-    {file = "virtualenv-20.26.4-py3-none-any.whl", hash = "sha256:48f2695d9809277003f30776d155615ffc11328e6a0a8c1f0ec80188d7874a55"},
-    {file = "virtualenv-20.26.4.tar.gz", hash = "sha256:c17f4e0f3e6036e9f26700446f85c76ab11df65ff6d8a9cbfad9f71aabfcf23c"},
+    {file = "virtualenv-20.26.6-py3-none-any.whl", hash = "sha256:7345cc5b25405607a624d8418154577459c3e0277f5466dd79c49d5e492995f2"},
+    {file = "virtualenv-20.26.6.tar.gz", hash = "sha256:280aede09a2a5c317e409a00102e7077c6432c5a38f0ef938e643805a7ad2c48"},
 ]
