@@ -46,8 +46,10 @@ parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="the hos
 parser.add_argument("-p", "--port", default=8000, type=int, help="the port to run the server on.")
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
+parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
+Config.parallel_threads = args.parallel_threads
 
 routes = [
     Mount(

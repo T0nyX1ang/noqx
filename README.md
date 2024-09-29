@@ -75,6 +75,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
       -d, --debug           whether to enable debug mode with auto-reloading.
       -tl TIME_LIMIT, --time_limit TIME_LIMIT
                             time limit in seconds (default = 30).
+      -pt PARALLEL_THREADS, --parallel_threads PARALLEL_THREADS
+                            parallel threads (default = 1).
 ```
 
 ## How to contribute

@@ -16,6 +16,7 @@ class Config:
 
     time_limit: int = 30
     max_solutions_to_find: int = 10
+    parallel_threads: int = 1
 
 
 class ClingoSolver:
@@ -103,6 +104,7 @@ class ClingoSolver:
         self.clingo_instance.configuration.sat_prepro = 2
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
         self.clingo_instance.configuration.asp.eq = 1  # type: ignore
+        self.clingo_instance.configuration.solve.parallel_mode = Config.parallel_threads  # type: ignore
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
