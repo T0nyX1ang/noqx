@@ -7,9 +7,9 @@ authors = [
   {name = "Tony Xiang"},
 ]
 dependencies = [
-    "clingo>=5.6.2",
-    "starlette<1,>=0.37.2",
-    "uvicorn<1,>=0.30.6",
+  "clingo>=5.6.2",
+  "starlette<1,>=0.37.2",
+  "uvicorn<1,>=0.30.6",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -36,11 +36,9 @@ pythonPlatform = "All"
 typeCheckingMode = "basic"
 reportAttributeAccessIssue = false
 
-[tool.pdm]
-distribution = false
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "pre-commit>=3.5.0",
-    "conventional-pre-commit>=3.1.0",
+[tool.uv]
+package = false
+dev-dependencies = [
+  "pre-commit>=3.5.0",
+  "conventional-pre-commit>=3.1.0",
 ]
