@@ -3,10 +3,10 @@
 from typing import List
 
 from .core.common import display, edge, grid
-from .core.penpa import Puzzle, Solution
 from .core.helper import extract_initial_edges, tag_encode
 from .core.neighbor import adjacent
-from .core.reachable import grid_src_color_connected, count_reachable_src
+from .core.penpa import Puzzle, Solution
+from .core.reachable import count_reachable_src, grid_src_color_connected
 from .core.solution import solver
 
 

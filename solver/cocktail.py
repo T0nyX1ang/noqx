@@ -3,10 +3,10 @@
 from typing import List
 
 from .core.common import area, count, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent, avoid_area_adjacent
-from .core.reachable import grid_color_connected, area_color_connected
+from .core.penpa import Puzzle, Solution
+from .core.reachable import area_color_connected, grid_color_connected
 from .core.shape import avoid_rect
 from .core.solution import solver
 

@@ -3,9 +3,9 @@
 from typing import List
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected, grid_src_color_connected, count_reachable_src
 from .core.neighbor import adjacent, avoid_adjacent_color
+from .core.penpa import Puzzle, Solution
+from .core.reachable import count_reachable_src, grid_color_connected, grid_src_color_connected
 from .core.shape import avoid_rect
 from .core.solution import solver
 

@@ -3,9 +3,9 @@
 from typing import List, Tuple
 
 from .core.common import display, edge, grid
-from .core.penpa import Puzzle, Solution
 from .core.helper import extract_initial_edges, reverse_op, tag_encode
 from .core.neighbor import adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import bulb_src_color_connected
 from .core.shape import all_rect_region
 from .core.solution import solver

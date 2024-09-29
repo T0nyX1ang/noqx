@@ -1,12 +1,12 @@
 """The Tapa-like Loop solver."""
 
 import itertools
-from typing import List, Tuple, Union, Optional
+from typing import List, Optional, Tuple, Union
 
 from .core.common import direction, display, fill_path, grid
-from .core.penpa import Puzzle, Solution
 from .core.loop import single_loop
 from .core.neighbor import adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import grid_color_connected
 from .core.solution import solver
 

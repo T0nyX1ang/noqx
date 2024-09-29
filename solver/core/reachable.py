@@ -1,7 +1,7 @@
 """Utility for reachable things and connectivity tests."""
 
-from typing import Iterable, List, Optional, Tuple, Union
 from math import log2
+from typing import Iterable, List, Optional, Tuple, Union
 
 from .helper import tag_encode, target_encode
 

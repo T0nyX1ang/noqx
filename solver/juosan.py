@@ -1,9 +1,9 @@
-﻿"""The Juosan solver."""
+"""The Juosan solver."""
 
 from typing import List
 
-from .core.helper import full_bfs
 from .core.common import area, display, grid, shade_c
+from .core.helper import full_bfs
 from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 

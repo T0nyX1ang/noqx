@@ -3,10 +3,10 @@
 from typing import Iterable, List, Tuple, Union
 
 from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.loop import single_loop
 from .core.neighbor import adjacent
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 

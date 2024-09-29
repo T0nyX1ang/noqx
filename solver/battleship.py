@@ -3,8 +3,8 @@
 from typing import List
 
 from .core.common import count, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, avoid_adjacent_color
+from .core.penpa import Puzzle, Solution
 from .core.shape import OMINOES, all_shapes, count_shape, general_shape
 from .core.solution import solver
 

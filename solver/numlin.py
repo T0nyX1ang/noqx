@@ -3,11 +3,11 @@
 from typing import Dict, List, Tuple, Union
 
 from .core.common import direction, display, fill_path, grid, shade_c
-from .core.penpa import Puzzle, Solution
+from .core.helper import tag_encode
 from .core.loop import single_loop
 from .core.neighbor import adjacent
-from .core.reachable import clue_bit, num_binary_range, grid_bit_color_connected, avoid_unknown_src_bit
-from .core.helper import tag_encode
+from .core.penpa import Puzzle, Solution
+from .core.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
 from .core.solution import solver
 
 

@@ -1,7 +1,7 @@
 """Generate solutions for the given problem."""
 
-from typing import List, Optional
 from dataclasses import dataclass
+from typing import List, Optional
 
 from clingo.control import Control
 from clingo.solving import Model

@@ -1,7 +1,7 @@
 """Encoding for penpa-edit frontend."""
 
 import json
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from enum import Enum
 from functools import reduce
 from typing import Any, Dict, List, Optional, Set, Tuple, Union

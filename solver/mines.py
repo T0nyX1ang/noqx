@@ -3,8 +3,8 @@
 from typing import List
 
 from .core.common import count, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 

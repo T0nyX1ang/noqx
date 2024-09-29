@@ -3,9 +3,9 @@
 from typing import List
 
 from .core.common import area, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs, tag_encode
 from .core.neighbor import adjacent, area_adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import grid_color_connected
 from .core.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_shape
 from .core.solution import solver

@@ -2,7 +2,7 @@
 
 import random
 from collections import deque
-from typing import Any, Dict, Optional, Set, Tuple, Union, Iterator
+from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
 
 from .penpa import Direction
 
