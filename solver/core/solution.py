@@ -108,7 +108,7 @@ class ClingoSolver:
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
-        with self.clingo_instance.solve(  # pylint: disable=not-context-manager
+        with self.clingo_instance.solve(  # pylint: disable=not-context-manager  # type: ignore
             on_model=self.store_solutions, async_=True
         ) as handle:
             handle.wait(Config.time_limit)
