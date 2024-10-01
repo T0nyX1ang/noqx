@@ -22,24 +22,33 @@ def avoid_diamond_pattern(color: str = "black") -> str:
     return rule.strip()
 
 
+def avoid_area_2x2_rect(_id: int, color: str = "black") -> str:
+    """Avoid 2x2 rectangle in areas."""
+    rule = f":- area({_id}, R, C), area({_id}, R + 1, C), area({_id}, R, C + 1), area({_id}, R + 1, C + 1), not {color}(R, C), not {color}(R + 1, C), not {color}(R, C + 1), not {color}(R + 1, C + 1).\n"
+    return rule
+
+
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c("gray"))
-
-    solver.add_program_line(adjacent())
+    solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(avoid_adjacent_color(color="gray"))
-    solver.add_program_line(grid_color_connected(color="not gray"))
     solver.add_program_line(avoid_diamond_pattern(color="gray"))
+    solver.add_program_line(grid_color_connected(color="not gray"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
+
         if rc:
             data = puzzle.text[rc]
             assert isinstance(data, int), "Clue must be an integer."
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
+
+            if puzzle.param["fast_mode"] and data > len(ar) // 4:  # fast mode, but will lose some solutions
+                solver.add_program_line(avoid_area_2x2_rect(_id=i, color="gray"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
