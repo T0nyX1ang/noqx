@@ -71,10 +71,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
-        if puzzle.param["fast_mode"]:
-            solver.add_program_line(area_border(_id=i, ar=ar))
-            solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
-
         if rc:
             data = puzzle.text[rc]
             assert isinstance(data, int), "Clue must be an integer."
@@ -82,6 +78,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
             if puzzle.param["fast_mode"] and data > len(ar) // 4:
                 solver.add_program_line(avoid_area_2x2_rect(_id=i, color="gray"))
+                solver.add_program_line(area_border(_id=i, ar=ar))
+                solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
