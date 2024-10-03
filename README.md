@@ -111,9 +111,9 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### How to write a new solver
 
 - First, add the related information in `solver/core/const.py`.
-  - （Optional) You can add examples in two ways:
+  - (Optional) You can add examples in two ways:
     - One way is to draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL` to get the board URL.
-    - Another way is to directly draw the board in noqx and get the data URL by printing `puzzle_content` in `run_solver()` in `solver/__init__.py`.
+    - Another way is to directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`.
 - Second, create the corresponding python file in `solver/` and write solver code in that file.
 
 - Free to PR now ^\_^
