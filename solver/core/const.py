@@ -523,6 +523,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
             }
         ],
     },
+    "pipelink": {
+        "name": "Pipe Link",
+        "category": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZVLbxNBDMfv+RRozj7M67Gzt1IaLqFQWlRVq1WVhqBGpArkgdBG+e712F5tijhwAYqEknF+mfF4/vY6k83X3XQ9B6PL21WAn/jypqJhq0hDy+tqsV3O6xdwstver9YIAG/HY/g0XW7mo0a82tG+y3V3Ad3rulFGgbI4jGqhu6j33Zu6m0B3iUsKDM5NkIICi3jG/gWvab3QKU8ajXwujHiDOFusZ8v57YRn3tVNdwWqnPOSdhdUD6tvcyU6yvfZ6uFuUSbupltMZnO/+CIrm93H1eed+Jr2AN0Jy738US6uu0FuQZZb6CdySxa/WW5uDwcs+3sUfFs3RfuHAasBL+s92nOyhuwN2TFZS/YKXaFzZF+R1WQD2Um9Vy5AtE7VFgp6mwh9foLe9BhdHFAcIiJHIPSEwSDmHr1nhxgR2QExBpm1ED37FgyaMHmI0fboIx9cJYiJIxCGHn0cMHEwozVyNXDmcMZmSIbjMXMmhYM+Yst5G+8huWOWOMjBHrEUx0QNyUsc5OBEA9bnmJPUypiE54pm5KQ5FaMx7ywxkaPoz1jQyO6IUbJNFdaLNyL6wPsyPtTEZS5YiSqNzrk/pXB/Cu6sBg6an4WxeGQWhchJSxbOQbLiQ9xXCasq/VE4UAdhQ55RW16TPSXryUZqyFQ6+4/1/i/KaRxfpE9f4d+ba0cN3ueHkfquaDSu/D38v+L/0hVfHoF+bs3+3OTgz68dPQI=",
+            }
+        ],
+    },
     "ripple": {
         "name": "Ripple Effect",
         "category": "num",

@@ -9,7 +9,7 @@ from zlib import compress, decompress
 
 from .const import logger
 
-Direction = Enum("Direction", "LEFT TOP DIAG_UP DIAG_DOWN")
+Direction = Enum("Direction", "LEFT TOP RIGHT DOWN DIAG_UP DIAG_DOWN")
 PENPA_PREFIX = "m=edit&p="
 PENPA_ABBREVIATIONS = [
     ('"qa"', "z9"),
@@ -148,7 +148,15 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.DIAG_DOWN))
         logger.debug("[Puzzle] Edge unpacked.")
 
-        self.line = set()  # TODO implement line unpacking
+        self.line = set()
+        for index, _ in self.board["line"].items():
+            index_1, index_2 = map(int, index.split(","))
+            coord_1, _ = self.index_to_coord(index_1)
+            coord_2, d = self.index_to_coord(index_2)
+            eqxy = coord_1 == coord_2
+            d = (Direction.DOWN if eqxy else Direction.TOP) if d == 2 else (Direction.RIGHT if eqxy else Direction.LEFT)
+            self.line.add((*coord_1, d))
+        logger.debug("[Puzzle] Line unpacked.")
 
         self.sudoku = {}
         for index, num_data in self.board["sudoku"].items():
@@ -196,7 +204,15 @@ class Solution:
         """Initialize the solution."""
         self.puzzle: Puzzle = puzzle
         self.parts = puzzle.parts
-        self.board = {"surface": {}, "number": {}, "sudoku": {}, "symbol": {}, "squareframe": [], "line": {}, "edge": {}}
+        self.board = {
+            "surface": {},
+            "number": {},
+            "sudoku": {},
+            "symbol": {},
+            "squareframe": [],
+            "line": {},
+            "edge": {},
+        }
 
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str]] = {}

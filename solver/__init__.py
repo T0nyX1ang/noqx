@@ -25,6 +25,7 @@ def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> 
     puzzle: Puzzle = Puzzle(puzzle_type, puzzle_content, param)
     solutions: List[str] = list(map(str, module.solve(puzzle)))
     stop = time.time()
+    # print(puzzle_content)
 
     if (stop - start) >= Config.time_limit:
         logger.warning(f"[Solver] {str(puzzle_type).capitalize()} puzzle timed out.")
