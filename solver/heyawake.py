@@ -56,7 +56,7 @@ def calculate_penalty(_id: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle) -
         i, segment_border_penalty = 0, 0
         while i < cols:
             segment = 0
-            while (r, i) in ar and i < cols:
+            while (r, i) in ar and i < cols and puzzle.surface.get((r, i)) != 2:
                 segment += 1
                 i += 1
 
@@ -66,7 +66,7 @@ def calculate_penalty(_id: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle) -
         i = 0
         while i < rows:
             segment = 0
-            while (i, c) in ar and i < cols:
+            while (i, c) in ar and i < cols and puzzle.surface.get((i, c)) != 2:
                 segment += 1
                 i += 1
 
@@ -88,6 +88,13 @@ def calculate_penalty(_id: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle) -
 
         if plus_segment and r + 1 < rows and c + 1 < cols:
             loop_penalty += 1
+
+        cost_plus_segment = True
+        for dr, dc in ((0, 0), (0, 1), (1, 0), (1, 1)):
+            r1, c1 = r + dr, c + dc
+            cost_plus_segment &= puzzle.surface.get((r1, c1)) == 2
+        if cost_plus_segment:  # remove known 2x2 regions
+            loop_penalty -= 1
 
         internal_loop = False
         if (r, c) not in ar and puzzle.surface.get((r, c)) in [1, 3, 4, 8]:  # internal cell is shaded
@@ -141,7 +148,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         calculate_penalty(_id=i, ar=ar, puzzle=puzzle)
 
-        print("Area", i, "has total shaded of", puzzle.text[rc] if rc else "N/A")
+        print("Area", i, "has cost penalty of", puzzle.text[rc] * 3 if rc else "N/A")
 
         if rc:
             data = puzzle.text[rc]
