@@ -51,7 +51,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
-    fleet_name = ""
+    fleet_name = "battleship_B"  # set a default battleship fleet name
     for (r, c), symbol_name in puzzle.symbol.items():
         shape, style, _ = symbol_name.split("__")
         assert shape.startswith("battleship"), "Invalid battleship shape."
