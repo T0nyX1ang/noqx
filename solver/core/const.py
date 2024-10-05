@@ -9,7 +9,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "akari": {
         "name": "Akari",
         "category": "var",
-        "aliases": ["akari"],
+        "aliases": ["lightup"],
         "examples": [
             {
                 "url": "https://puzz.link/p?akari/20/20/................................h............h1...h............i...i...........i1.bg........t.....i6cn...hbibi1b..kbl1b0.g6bgc..l..k.j1.l..hciam...i6.q...v0...bs....b.b..h2..h....i..h..i..h....i..h..b..h....h1..h...h..h....................../",
