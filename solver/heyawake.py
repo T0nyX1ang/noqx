@@ -1,6 +1,5 @@
 """The Heyawake solver."""
 
-import itertools
 from typing import Iterable, List, Tuple, Union
 
 from .core.common import area, count, display, grid, shade_c
@@ -64,74 +63,6 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
     return rule.strip()
 
 
-def calculate_penalty(_id: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle) -> int:
-    """Calculate penalties of an area."""
-    rows, cols = puzzle.row, puzzle.col
-
-    def calculate_each_border_penalty(r: int = 0, c: int = 0) -> int:
-        i, segment_border_penalty = 0, 0
-        while i < cols:
-            segment = 0
-            while (r, i) in ar and i < cols and puzzle.surface.get((r, i)) != 2:
-                segment += 1
-                i += 1
-
-            segment_border_penalty += (segment + 1) // 2
-            i += 1
-
-        i = 0
-        while i < rows:
-            segment = 0
-            while (i, c) in ar and i < cols and puzzle.surface.get((i, c)) != 2:
-                segment += 1
-                i += 1
-
-            segment_border_penalty += (segment + 1) // 2
-            i += 1
-
-        return segment_border_penalty
-
-    loop_penalty = 0
-    for r, c in itertools.product(range(rows), range(cols)):
-        plus_segment = False
-        for dr, dc in ((0, 0), (0, 1), (1, 0), (1, 1)):
-            r1, c1 = r + dr, c + dc
-            if (r1, c1) not in ar and puzzle.surface.get((r1, c1)) in [1, 3, 4, 8]:
-                plus_segment = False
-                break
-
-            plus_segment |= (r1, c1) in ar
-
-        if plus_segment and r + 1 < rows and c + 1 < cols:
-            loop_penalty += 1
-
-        cost_plus_segment = True
-        for dr, dc in ((0, 0), (0, 1), (1, 0), (1, 1)):
-            r1, c1 = r + dr, c + dc
-            cost_plus_segment &= puzzle.surface.get((r1, c1)) == 2
-        if cost_plus_segment:  # remove known 2x2 regions
-            loop_penalty -= 1
-
-        internal_loop = False
-        if (r, c) not in ar and puzzle.surface.get((r, c)) in [1, 3, 4, 8]:  # internal cell is shaded
-            internal_loop = True
-            for dr, dc in ((0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)):
-                if (r + dr, c + dc) not in ar:  # internal cell is not in the area, but surrounding cells in the area
-                    internal_loop = False
-                    break
-
-        if internal_loop:
-            loop_penalty += 1  # calculate internal loops
-
-    border_penalty = 0
-    border_penalty += calculate_each_border_penalty(0, 0)
-    border_penalty += calculate_each_border_penalty(rows - 1, cols - 1)
-
-    print("Area", _id, "has total penalty of", loop_penalty, "+", border_penalty)
-
-    return loop_penalty + border_penalty
-
-
 def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
     """Generates a fact for the border of an area."""
     borders = set()
@@ -182,9 +113,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 
             if puzzle.param["fast_mode"] and data > len(ar) // 4:
-                solver.add_program_line(limit_area_2x2_rect(limit=1, _id=i, color="gray"))
                 solver.add_program_line(area_border(_id=i, ar=ar))
                 solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
+                solver.add_program_line(limit_area_2x2_rect(limit=1, _id=i, color="gray"))
                 solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="top", color="gray"))
                 solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="bottom", color="gray"))
                 solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="left", color="gray"))
