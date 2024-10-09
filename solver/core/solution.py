@@ -90,7 +90,8 @@ class ClingoSolver:
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
-        self.program += line + "\n"
+        if line != "":
+            self.program += line + "\n"
 
     def reset(self):
         """Reset the program."""

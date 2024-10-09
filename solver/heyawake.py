@@ -23,29 +23,45 @@ def avoid_diamond_pattern(color: str = "black") -> str:
     return rule.strip()
 
 
-def avoid_area_2x2_rect(_id: int, color: str = "black") -> str:
-    """Avoid 2x2 rectangle in areas."""
-    rule = f":- area({_id}, R, C), area({_id}, R + 1, C), area({_id}, R, C + 1), area({_id}, R + 1, C + 1), not {color}(R, C), not {color}(R + 1, C), not {color}(R, C + 1), not {color}(R + 1, C + 1).\n"
+def limit_area_2x2_rect(limit: int, _id: int, color: str = "black") -> str:
+    """Limit 2x2 rectangle in areas."""
+    rule = f"rect_2x2({_id}, R, C) :- area({_id}, R, C), area({_id}, R + 1, C), area({_id}, R, C + 1), area({_id}, R + 1, C + 1), not {color}(R, C), not {color}(R + 1, C), not {color}(R, C + 1), not {color}(R + 1, C + 1).\n"
+    rule += f":- {{ rect_2x2({_id}, R, C) }} > {limit}.\n"
     return rule
 
 
-def avoid_area_isolated_inner_cell(_id: int, color: str = "black") -> str:
-    """Avoid isolated non-border cells in areas."""
-    rule = f":- area({_id}, R, C), area({_id}, R - 1, C - 1), area({_id}, R - 1, C + 1), area({_id}, R + 1, C - 1), area({_id}, R + 1, C + 1), {color}(R, C), not {color}(R - 1, C - 1), not {color}(R - 1, C + 1), not {color}(R + 1, C - 1), not {color}(R + 1, C + 1).\n"
-    return rule
+def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _type: str, color: str = "black") -> str:
+    """Limit the border shades of an area."""
+    if _type == "top":
+        n, key = puzzle.col, 0
+    elif _type == "bottom":
+        n, key = puzzle.col, puzzle.row - 1
+    elif _type == "left":
+        n, key = puzzle.row, 0
+    elif _type == "right":
+        n, key = puzzle.row, puzzle.col - 1
+    else:
+        raise AssertionError(f"Invalid border type: {_type}")
 
+    def coord(i: int) -> Tuple[int, int]:
+        return (key, i) if _type in ["top", "bottom"] else (i, key)
 
-def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
-    """Generates a fact for the border of an area."""
-    borders = set()
-    for r, c in ar:
-        for dr, dc in ((0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)):
-            r1, c1 = r + dr, c + dc
-            if (r1, c1) not in ar:
-                borders.add((r, c))
+    rule, i = "", 0
+    while i < n:
+        segment, data = 0, []
+        while coord(i) in ar and i < n and puzzle.surface.get(coord(i)) != 2:
+            r, c = coord(i)
+            data.append(f"{color}({r}, {c})")
+            segment += 1
+            i += 1
 
-    rule = "\n".join(f"area_border({_id}, {r}, {c})." for r, c in borders)
-    return rule
+        minimum = segment // 2 - limit
+        if len(data) > n // 2 - 1 and minimum > 0:
+            rule += f":- {{ {';'.join(data)} }} < {minimum}.\n"
+
+        i += 1
+
+    return rule.strip()
 
 
 def calculate_penalty(_id: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle) -> int:
@@ -116,6 +132,19 @@ def calculate_penalty(_id: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle) -
     return loop_penalty + border_penalty
 
 
+def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
+    """Generates a fact for the border of an area."""
+    borders = set()
+    for r, c in ar:
+        for dr, dc in ((0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)):
+            r1, c1 = r + dr, c + dc
+            if (r1, c1) not in ar:
+                borders.add((r, c))
+
+    rule = "\n".join(f"area_border({_id}, {r}, {c})." for r, c in borders)
+    return rule
+
+
 def area_border_connected(_id: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells connected to borders of an area.
@@ -146,9 +175,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        calculate_penalty(_id=i, ar=ar, puzzle=puzzle)
-
-        print("Area", i, "has cost penalty of", puzzle.text[rc] * 3 if rc else "N/A")
 
         if rc:
             data = puzzle.text[rc]
@@ -156,10 +182,13 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 
             if puzzle.param["fast_mode"] and data > len(ar) // 4:
-                solver.add_program_line(avoid_area_2x2_rect(_id=i, color="gray"))
-                solver.add_program_line(avoid_area_isolated_inner_cell(_id=i, color="gray"))
+                solver.add_program_line(limit_area_2x2_rect(limit=1, _id=i, color="gray"))
                 solver.add_program_line(area_border(_id=i, ar=ar))
                 solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
+                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="top", color="gray"))
+                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="bottom", color="gray"))
+                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="left", color="gray"))
+                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="right", color="gray"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
