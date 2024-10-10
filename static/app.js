@@ -52,6 +52,9 @@ function make_param(id, type, name, value) {
     paramInput.className = "param_input";
     paramInput.id = `param_${id}`;
 
+    if (type === "number") {
+      paramInput.min = 0;
+    }
     if (type === "checkbox") paramInput.checked = value;
     else paramInput.value = value;
   } else {
@@ -80,7 +83,6 @@ $(document).ready(function () {
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const parameterBox = document.getElementById("parameter_box");
-  const updateDisplay = document.getElementById("closeBtn_nb2");
 
   const categoryName = {
     shade: "- Shading -",

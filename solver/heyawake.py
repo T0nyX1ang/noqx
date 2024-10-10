@@ -113,13 +113,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 
             if puzzle.param["fast_mode"] and data > len(ar) // 4:
+                lmt_2x2 = int(puzzle.param["limit_2x2"])
+                lmt_border = int(puzzle.param["limit_border"])
                 solver.add_program_line(area_border(_id=i, ar=ar))
                 solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
-                solver.add_program_line(limit_area_2x2_rect(limit=1, _id=i, color="gray"))
-                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="top", color="gray"))
-                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="bottom", color="gray"))
-                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="left", color="gray"))
-                solver.add_program_line(limit_border(limit=1, ar=ar, puzzle=puzzle, _type="right", color="gray"))
+                solver.add_program_line(limit_area_2x2_rect(lmt_2x2, _id=i, color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="top", color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="bottom", color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="left", color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="right", color="gray"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
