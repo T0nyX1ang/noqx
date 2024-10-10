@@ -75,7 +75,7 @@ class Puzzle:
         self.symbol: Dict[Tuple[int, int], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.helper_x: Set[Tuple[int, int, Direction]] = set()
-        self.line: Set[Tuple[int, int, Direction]] = set()
+        self.line: Set[Tuple[int, int, str]] = set()
         self.cage: List[List[Tuple[int, int]]] = []
         self.arrows: List[List[Tuple[int, int]]] = []
         self.thermo: List[List[Tuple[int, int]]] = []
@@ -148,7 +148,15 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.DIAG_DOWN))
         logger.debug("[Puzzle] Edge unpacked.")
 
-        self.line = set()  # TODO implement line unpacking
+        self.line = set()
+        for index, _ in self.board["line"].items():
+            index_1, index_2 = map(int, index.split(","))
+            coord_1, _ = self.index_to_coord(index_1)
+            coord_2, d = self.index_to_coord(index_2)
+            eqxy = coord_1 == coord_2
+            d = ("d" if eqxy else "u") if d == 2 else ("r" if eqxy else "l")
+            self.line.add((*coord_1, d))
+        logger.debug("[Puzzle] Line unpacked.")
 
         self.sudoku = {}
         for index, num_data in self.board["sudoku"].items():
@@ -196,7 +204,15 @@ class Solution:
         """Initialize the solution."""
         self.puzzle: Puzzle = puzzle
         self.parts = puzzle.parts
-        self.board = {"surface": {}, "number": {}, "sudoku": {}, "symbol": {}, "squareframe": [], "line": {}, "edge": {}}
+        self.board = {
+            "surface": {},
+            "number": {},
+            "sudoku": {},
+            "symbol": {},
+            "squareframe": [],
+            "line": {},
+            "edge": {},
+        }
 
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str]] = {}
@@ -231,6 +247,7 @@ class Solution:
 
         for r, c, direction in self.edge:
             coord_1 = (r - 1, c - 1)
+            coord_2 = (r - 1, c - 1)
             if direction == Direction.TOP:
                 coord_2 = (r - 1, c)
             elif direction == Direction.LEFT:
@@ -262,7 +279,7 @@ class Solution:
 
             if self.puzzle.puzzle_type == "hashi":
                 self.board["line"][f"{index_1},{index_2}"] = 3 if direction.endswith("_1") else 30
-            else:
+            elif not self.puzzle.board["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.board["line"][f"{index_1},{index_2}"] = 3
         logger.debug("[Solution] Line packed.")
 

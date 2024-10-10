@@ -83,8 +83,11 @@ class ClingoSolver:
             elif _type == "black":
                 solution.surface[(int(r), int(c))] = 4
 
-            else:
+            elif len(data) == 2:
                 solution.symbol[(int(r), int(c))] = str(_type)
+            else:
+                # for debugging
+                solution.text[(int(r), int(c))] = int(data[2])
 
         self.solutions.append(solution)
 

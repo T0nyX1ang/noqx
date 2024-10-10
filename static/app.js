@@ -32,6 +32,12 @@ function imp(penpa) {
   import_url(urlstring);
 }
 
+function hook_update_display() {
+  for (let i = 0; i < pu.space.length; i++) {
+    pu.space[i] = parseInt(document.getElementById(`nb_space${i + 1}`).value, 10);
+  }
+}
+
 function make_param(id, type, name, value) {
   let paramDiv = document.createElement("div");
 
@@ -74,6 +80,7 @@ $(document).ready(function () {
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const parameterBox = document.getElementById("parameter_box");
+  const updateDisplay = document.getElementById("closeBtn_nb2");
 
   const categoryName = {
     shade: "- Shading -",

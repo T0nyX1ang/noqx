@@ -72,9 +72,13 @@ def fill_path(color: str = "black", directed: bool = False) -> str:
     if directed:
         rule = f"{{ grid_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
         rule += f"{{ grid_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
-        return rule
+        rule += f"not grid_in(R, C, D) :- grid(R, C), direction(D), not {color}(R, C)."
+        rule += f"not grid_out(R, C, D) :- grid(R, C), direction(D), not {color}(R, C)."
+    else:
+        rule = f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+        rule += f"not grid_direction(R, C, D) :- grid(R, C), direction(D), not {color}(R, C)."
 
-    return f"{{ grid_direction(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+    return rule
 
 
 def fill_num(_range: Iterable[int], _type: str = "grid", _id: Union[int, str] = "A", color: Optional[str] = None) -> str:

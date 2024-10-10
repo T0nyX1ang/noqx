@@ -76,7 +76,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
 
     for (r, c), color_code in puzzle.surface.items():
-        if color_code == 4:
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"black({r}, {c}).")
 
     for (r, c), clue in puzzle.text.items():
