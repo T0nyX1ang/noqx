@@ -22,10 +22,45 @@ def avoid_diamond_pattern(color: str = "black") -> str:
     return rule.strip()
 
 
-def avoid_area_2x2_rect(_id: int, color: str = "black") -> str:
-    """Avoid 2x2 rectangle in areas."""
-    rule = f":- area({_id}, R, C), area({_id}, R + 1, C), area({_id}, R, C + 1), area({_id}, R + 1, C + 1), not {color}(R, C), not {color}(R + 1, C), not {color}(R, C + 1), not {color}(R + 1, C + 1).\n"
+def limit_area_2x2_rect(limit: int, _id: int, color: str = "black") -> str:
+    """Limit 2x2 rectangle in areas."""
+    rule = f"rect_2x2({_id}, R, C) :- area({_id}, R, C), area({_id}, R + 1, C), area({_id}, R, C + 1), area({_id}, R + 1, C + 1), not {color}(R, C), not {color}(R + 1, C), not {color}(R, C + 1), not {color}(R + 1, C + 1).\n"
+    rule += f":- {{ rect_2x2({_id}, R, C) }} > {limit}.\n"
     return rule
+
+
+def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _type: str, color: str = "black") -> str:
+    """Limit the border shades of an area."""
+    if _type == "top":
+        n, key = puzzle.col, 0
+    elif _type == "bottom":
+        n, key = puzzle.col, puzzle.row - 1
+    elif _type == "left":
+        n, key = puzzle.row, 0
+    elif _type == "right":
+        n, key = puzzle.row, puzzle.col - 1
+    else:
+        raise AssertionError(f"Invalid border type: {_type}")
+
+    def coord(i: int) -> Tuple[int, int]:
+        return (key, i) if _type in ["top", "bottom"] else (i, key)
+
+    rule, i = "", 0
+    while i < n:
+        segment, data = 0, []
+        while coord(i) in ar and i < n and puzzle.surface.get(coord(i)) != 2:
+            r, c = coord(i)
+            data.append(f"{color}({r}, {c})")
+            segment += 1
+            i += 1
+
+        minimum = segment // 2 - limit
+        if len(data) > n // 2 - 1 and minimum > 0:
+            rule += f":- {{ {';'.join(data)} }} < {minimum}.\n"
+
+        i += 1
+
+    return rule.strip()
 
 
 def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
@@ -36,6 +71,7 @@ def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
             r1, c1 = r + dr, c + dc
             if (r1, c1) not in ar:
                 borders.add((r, c))
+
     rule = "\n".join(f"area_border({_id}, {r}, {c})." for r, c in borders)
     return rule
 
@@ -77,9 +113,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(count(data, color="gray", _type="area", _id=i))
 
             if puzzle.param["fast_mode"] and data > len(ar) // 4:
-                solver.add_program_line(avoid_area_2x2_rect(_id=i, color="gray"))
+                lmt_2x2 = int(puzzle.param["limit_2x2"])
+                lmt_border = int(puzzle.param["limit_border"])
                 solver.add_program_line(area_border(_id=i, ar=ar))
                 solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
+                solver.add_program_line(limit_area_2x2_rect(lmt_2x2, _id=i, color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="top", color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="bottom", color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="left", color="gray"))
+                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="right", color="gray"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)

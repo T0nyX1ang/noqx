@@ -276,8 +276,20 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
                 "url": "https://puzz.link/p?heyawake/19/15/201480mhg2i40a8s192816704r503gk0m2g2oa0a18085010k046g0003hu0104000400fbvgvo005fu1800o0000000800600000003s0003c-1c140411g81ah8233",
                 "config": {"fast_mode": True},
             },
+            {
+                "url": "https://puzz.link/p?heyawake/8/7/060o00000081g2000000-121g",
+                "config": {"fast_mode": True, "limit_border": 1},
+            },
+            {
+                "url": "https://puzz.link/p?heyawake/12/12/00000o0003063cc0o00030000000008020080a4a92a02008020000-2811111111",
+                "config": {"fast_mode": True, "limit_2x2": 1},
+            },
         ],
-        "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False}},
+        "parameters": {
+            "fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False},
+            "limit_border": {"name": "Border Limit", "type": "number", "default": 0},
+            "limit_2x2": {"name": "2x2 Limit", "type": "number", "default": 0},
+        },
     },
     "hitori": {
         "name": "Hitori",
