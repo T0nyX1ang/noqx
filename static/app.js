@@ -38,6 +38,19 @@ function hook_update_display() {
   }
 }
 
+function invoke_param_box() {
+  const parameterBox = document.getElementById("parameter_box");
+  const parameterButton = document.getElementById("param");
+
+  if (parameterBox.style.display === "none") {
+    parameterBox.style.display = "inline-block";
+    parameterButton.textContent = "Hide parameters";
+  } else {
+    parameterBox.style.display = "none";
+    parameterButton.textContent = "Show parameters";
+  }
+}
+
 function make_param(id, type, name, value) {
   let paramDiv = document.createElement("div");
   paramDiv.className = "parameter_div";
@@ -84,6 +97,7 @@ $(document).ready(function () {
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const parameterBox = document.getElementById("parameter_box");
+  const parameterButton = document.getElementById("param");
 
   const categoryName = {
     shade: "- Shading -",
@@ -109,6 +123,7 @@ $(document).ready(function () {
   const choicesExample = new Choices(exampleSelect, {
     itemSelectText: "",
     searchEnabled: false,
+    noChoicesText: "Select a puzzle first",
   });
 
   let foundUrl = null;
@@ -138,21 +153,18 @@ $(document).ready(function () {
         puzzleType = typeSelect.value;
         if (puzzleType !== "") {
           parameterBox.style.display = "none"; // hide parameter box if no parameters
+          parameterButton.textContent = "Show parameters";
+          parameterButton.disabled = true;
           while (parameterBox.firstChild) {
             parameterBox.removeChild(parameterBox.lastChild);
           }
 
           if (body[puzzleType].parameters) {
-            let legendElement = document.createElement("legend");
-            legendElement.textContent = "Parameters";
-            parameterBox.appendChild(legendElement);
-
+            parameterButton.disabled = false;
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
               const paramDiv = make_param(k, v.type, v.name, v.default);
               parameterBox.appendChild(paramDiv);
             }
-
-            parameterBox.style.display = "inline-block";
           }
 
           choicesExample.clearStore();

@@ -132,7 +132,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "circlesquare": {
-        "name": "Circles and Squares",
+        "name": "Circles & Squares",
         "category": "shade",
         "aliases": ["circlesandsquares"],
         "examples": [
