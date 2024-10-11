@@ -40,10 +40,11 @@ function hook_update_display() {
 
 function make_param(id, type, name, value) {
   let paramDiv = document.createElement("div");
+  paramDiv.className = "parameter_div";
 
   let paramLabel = document.createElement("label");
   paramLabel.for = `param_${name}`;
-  paramLabel.textContent = `${name} `;
+  paramLabel.innerHTML = `&nbsp;&nbsp;&nbsp;&nbsp;${name}&nbsp;`;
 
   let paramInput = null;
   if (type !== "select") {
@@ -151,7 +152,7 @@ $(document).ready(function () {
               parameterBox.appendChild(paramDiv);
             }
 
-            parameterBox.style.display = "block";
+            parameterBox.style.display = "inline-block";
           }
 
           choicesExample.clearStore();

@@ -72,20 +72,6 @@
       <button id="page_help" style="display: none;">Help</button> </span>
   </header>
 
-  <div class="left">
-    <select id="type">
-      <option value="" disabled selected>Puzzle type</option>
-    </select>
-
-    <select id="example">
-      <option value="" selected>Choose Example</option>
-    </select>
-    <button id="rules" disabled>Show Rules</button>
-    <button id="solve">Solve</button>
-    <button id="solver_reset">Reset</button>
-    <fieldset id="parameter_box"></fieldset>
-  </div>
-
   <script src="./app.js"></script>
 
   <div id="app-container">
@@ -102,6 +88,19 @@
           <button id="input_sudoku">I/O Sudoku</button>
           <button id="input_url">Load</button>
           <button id="page_settings">⚙️</button>
+        </div>
+        <div id="solver_button">
+          <select id="type" tabindex="">
+            <option value="" disabled selected>Choose Puzzle</option>
+          </select>
+          <button id="rules" disabled>Rules</button>
+          <select id="example" tabindex="">
+            <option value="" selected>Choose Example</option>
+          </select>
+          <button id="solve">Solve</button>
+          <button id="solver_reset">Reset</button>
+          <br>
+          <fieldset id="parameter_box"></fieldset>
         </div>
         <div id="buttons">
           <div id="edit_button" class="mode_button">

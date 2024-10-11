@@ -1,12 +1,14 @@
 .choices {
+  display: inline-block;
   position: relative;
-  overflow: hidden;
-  max-width: 136px;
+  min-width: 150px;
   font-size: 14px;
-  margin: 10px auto;
+  margin: 0 auto;
   padding: 2px 5px;
   border: 2px solid #000;
   border-radius: 4px;
+  background-color: var(--bgMain);
+  color: var(--fgMain);
 }
 
 .choices [hidden] {
@@ -15,10 +17,6 @@
 
 .choices:last-child {
   margin-bottom: 0;
-}
-
-.choices.is-open {
-  overflow: visible;
 }
 
 .choices[data-type*="select-one"] {
@@ -30,37 +28,18 @@
 }
 
 .choices[data-type*="select-one"] .choices__input {
-  display: block;
+  display: inline-block;
   width: 100%;
   background-color: #fff;
   padding: 2.5px 0;
   margin: 0;
 }
 
-.choices[data-type*="select-one"]::after {
-  content: "";
-  height: 0;
-  width: 0;
-  border-style: solid;
-  border-color: #333 transparent transparent;
-  border-width: 5px;
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  margin-top: -2.5px;
-  pointer-events: none;
-}
-
-.choices[data-type*="select-one"].is-open::after {
-  border-color: transparent transparent #333;
-  margin-top: -7.5px;
-}
-
 .choices__inner {
-  display: block;
+  display: inline-block;
+  position: relative;
   width: 100%;
   font-size: 14px;
-  text-indent: -10px;
 }
 
 .choices__list {
@@ -70,6 +49,7 @@
 
 .choices__list--single {
   display: block;
+  position: relative;
   width: 100%;
 }
 
@@ -83,7 +63,7 @@
 .choices__list--dropdown,
 .choices__list[aria-expanded] {
   display: none;
-  z-index: 1;
+  z-index: 2;
   position: absolute;
   width: 100%;
   top: 100%;

@@ -2,19 +2,12 @@ body {
   margin: 0;
 }
 
-#iframe {
-  display: block;
-  border: none;
-  width: 100vw;
-  height: 100vh;
-}
-
-.left {
-  position: fixed;
-  left: 6px;
-  top: 30px;
+#solver_button {
+  position: relative;
+  max-width: 700px;
   text-align: center;
-  z-index: 99999999; /* wtf, there is an item with z-index: 99999993 */
+  margin: 0 auto;
+  padding-bottom: 10px;
 }
 
 .param_input {
@@ -22,23 +15,17 @@ body {
   text-align: center;
 }
 
-#readme,
 #type,
 #example,
 #rules,
 #solve,
 #solver_reset {
-  display: block;
-  font-size: 14px;
-  margin: 10px auto;
-  width: 150px;
-  height: 24px;
-  text-align: center;
-  cursor: pointer;
+  display: inline-block;
   padding: 2px 5px;
   text-decoration: none;
-  border: 2px solid #000;
   border-radius: 4px;
+  background-color: var(--bgMain);
+  color: var(--fgMain);
 }
 
 #parameter_box {
@@ -46,7 +33,7 @@ body {
   font-size: 14px;
   margin-bottom: 10px;
   margin: 10px auto;
-  width: 136px;
+  width: 500px;
   text-align: center;
   padding: 2px 5px;
   text-decoration: none;
@@ -54,7 +41,11 @@ body {
   border-radius: 4px;
 }
 
-#param_shapeset {
-  width: 40px;
+.parameter_div {
+  display: inline-block;
+}
+
+#param_shapeset, #param_letters {
+  min-width: 100px;
   text-align: center;
 }
