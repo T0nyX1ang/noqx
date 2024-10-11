@@ -154,7 +154,7 @@ $(document).ready(function () {
             parameterBox.style.display = "block";
           }
 
-          choicesExample.clearChoices();
+          choicesExample.clearStore();
           let exampleList = [{ value: "", label: "Choose Example", selected: true }];
           exampleList.push(...body[puzzleType].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
           choicesExample.setChoices(exampleList);
