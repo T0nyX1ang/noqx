@@ -8,7 +8,9 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - [@zhuyaoyu](https://github.com/zhuyaoyu): (huge) solver optimizations, new solver implementations, bug fixes
 
-## Current development status
+## New features
+
+### New features from Noq
 
 - Remove redundant codes and formatting codes.
 
@@ -17,6 +19,20 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 - Change the backend from Django to Starlette with Uvicorn (See issue [#31](https://github.com/T0nyX1ang/noqx/issues/31), [#50](https://github.com/T0nyX1ang/noqx/issues/50)).
 
 - Change the frontend from Noq native to penpa-edit. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
+
+### New usages from Penpa-edit
+
+- Select puzzle type.
+
+- Show rules in [puzz.link](https://puzz.link/list.html) if possible.
+
+- Choose example puzzle.
+
+- Show/Edit parameters of the solver if possible.
+
+- Solve/Reset the puzzle.
+
+**Note**: if the puzzle is imported from [puzz.link](https://puzz.link/list.html), you will need to change the edit mode to `Problem` to reset the puzzle itself.
 
 ## How to run locally
 
@@ -87,6 +103,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 ## How to contribute
 
+### Preparations
+
 - Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
 
 - Clone this project and switch to `dev` branch.
@@ -117,3 +135,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 - Second, create the corresponding python file in `solver/` and write solver code in that file.
 
 - Free to PR now ^\_^
+
+## License
+
+- This project is licensed under the `GPLv3` License.
