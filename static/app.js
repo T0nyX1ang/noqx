@@ -1,10 +1,5 @@
 function exp() {
-  // clear every information created by penpa itself
-  document.getElementById("saveinfotitle").value = "";
-  document.getElementById("saveinfoauthor").value = "";
-  document.getElementById("saveinfosource").value = "";
-  document.getElementById("saveinforules").value = "";
-
+  clear_info(); // clear every information created by penpa itself
   return pu.maketext().split("#")[1];
 }
 
@@ -30,6 +25,15 @@ function imp(penpa) {
   }
 
   import_url(urlstring);
+  clear_info();
+}
+
+function clear_info() {
+  document.getElementById("saveinfotitle").value = "";
+  document.getElementById("saveinfoauthor").value = "";
+  document.getElementById("saveinfosource").value = "";
+  document.getElementById("saveinforules").value = "";
+  document.getElementById("puzzleinfo").style.display = "none";
 }
 
 function hook_update_display() {
