@@ -3,16 +3,12 @@ body {
 }
 
 #solver_button {
+  display: block;
   position: relative;
   max-width: 700px;
   text-align: center;
   margin: 0 auto;
   padding-bottom: 10px;
-}
-
-.param_input {
-  width: 30px;
-  text-align: center;
 }
 
 #type,
@@ -22,6 +18,8 @@ body {
 #solve,
 #solver_reset {
   display: inline-block;
+  font-size: 14px;
+  position: relative;
   padding: 2px 5px;
   min-height: 24px;
   text-decoration: none;
