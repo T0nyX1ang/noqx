@@ -176,6 +176,7 @@ $(document).ready(function () {
 
       exampleSelect.addEventListener("change", () => {
         solveButton.disabled = false;
+        solveButton.textContent = "Solve";
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;
