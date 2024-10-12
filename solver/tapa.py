@@ -1,11 +1,11 @@
 """The Tapa solver."""
 
 import itertools
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import grid_color_connected
 from .core.shape import avoid_rect
 from .core.solution import solver

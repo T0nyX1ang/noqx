@@ -4,9 +4,9 @@ from typing import List
 
 from .core.common import display, edge, grid
 from .core.helper import extract_initial_edges
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent_edges
-from .core.shape import OMINOES, all_shapes, general_shape, count_shape
+from .core.penpa import Puzzle, Solution
+from .core.shape import OMINOES, all_shapes, count_shape, general_shape
 from .core.solution import solver
 
 

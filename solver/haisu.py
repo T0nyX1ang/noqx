@@ -3,9 +3,9 @@
 from typing import Iterable, List, Tuple
 
 from .core.common import area, direction, display, fill_path, grid
-from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.loop import directed_loop
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 

@@ -3,8 +3,8 @@
 from typing import List
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import (
     count_reachable_src,
     grid_color_connected,

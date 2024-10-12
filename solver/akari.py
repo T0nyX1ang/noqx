@@ -4,8 +4,8 @@ from typing import List
 
 from .core.common import display, grid
 from .core.helper import tag_encode
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, count_adjacent
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 
@@ -32,8 +32,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(lightup(color="not black"))
 
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f"black({r}, {c}).")
+
     for (r, c), clue in puzzle.text.items():
-        solver.add_program_line(f"black({r}, {c}).")
         if isinstance(clue, int):
             solver.add_program_line(count_adjacent(clue, (r, c), color="sun_moon__3__0"))
 

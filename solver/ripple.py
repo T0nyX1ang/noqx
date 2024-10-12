@@ -3,8 +3,8 @@
 from typing import List
 
 from .core.common import area, display, fill_num, grid, unique_num
-from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
+from .core.penpa import Puzzle, Solution
 from .core.solution import solver
 
 

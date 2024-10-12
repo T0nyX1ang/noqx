@@ -1,7 +1,7 @@
 """Utility for reachable things and connectivity tests."""
 
-from typing import Iterable, List, Optional, Tuple, Union
 from math import log2
+from typing import Iterable, List, Optional, Tuple, Union
 
 from .helper import tag_encode, target_encode
 
@@ -19,7 +19,7 @@ def grid_color_connected(
 
     An adjacent rule and a grid fact should be defined first.
     """
-    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
     if grid_size is None:
@@ -42,7 +42,7 @@ def border_color_connected(rows: int, cols: int, color: str = "black", adj_type:
 
     An adjacent rule and a grid fact should be defined first.
     """
-    validate_type(adj_type, (4,))
+    validate_type(adj_type, (4, 8, "x"))
     tag = tag_encode("reachable", "border", "adj", adj_type, color)
     borders = [(r, c) for r in range(rows) for c in range(cols) if r in [0, rows - 1] or c in [0, cols - 1]]
     initial = "\n".join(f"{tag}({r}, {c}) :- {color}({r}, {c})." for r, c in borders)
@@ -57,7 +57,7 @@ def area_color_connected(color: str = "black", adj_type: int = 4) -> str:
 
     An adjacent rule and an area fact should be defined first.
     """
-    validate_type(adj_type, (4, 8))
+    validate_type(adj_type, (4, 8, "x"))
     tag = tag_encode("reachable", "area", "adj", adj_type, color)
     initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1): area(A, R1, C1), {color}(R1, C1) }}."
     propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), area(A, R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -81,7 +81,7 @@ def grid_src_color_connected(
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
@@ -148,7 +148,7 @@ def count_reachable_src(
     if color is None:
         validate_type(adj_type, ("edge",))
     elif main_type == "grid":
-        validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
@@ -193,7 +193,7 @@ def num_binary_range(num: int) -> Tuple[str, int]:
 
 def grid_bit_color_connected(color: str = "grid", adj_type: Union[int, str] = "loop") -> str:
     """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
-    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
 
     tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
     rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), {color}(R, C), bit_range(B).\n"
@@ -225,7 +225,7 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, 8))
+        validate_type(adj_type, (4, 8, "x"))
 
     tag = tag_encode("reachable", "grid", "branch", "adj", adj_type, color)
 

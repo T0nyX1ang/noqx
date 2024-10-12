@@ -3,9 +3,9 @@
 from typing import List
 
 from .core.common import display, edge, grid
-from .core.penpa import Puzzle, Solution
 from .core.helper import extract_initial_edges, tag_encode
 from .core.neighbor import adjacent
+from .core.penpa import Puzzle, Solution
 from .core.shape import OMINOES, all_shapes, general_shape
 from .core.solution import solver
 

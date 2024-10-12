@@ -3,9 +3,9 @@
 from typing import List, Tuple
 
 from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.helper import tag_encode
 from .core.neighbor import adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import (
     border_color_connected,
     bulb_src_color_connected,

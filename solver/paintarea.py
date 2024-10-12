@@ -3,11 +3,11 @@
 from typing import List
 
 from .core.common import area, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.helper import full_bfs
 from .core.neighbor import adjacent, count_adjacent
+from .core.penpa import Puzzle, Solution
 from .core.reachable import grid_color_connected
-from .core.shape import avoid_rect, area_same_color
+from .core.shape import area_same_color, avoid_rect
 from .core.solution import solver
 
 

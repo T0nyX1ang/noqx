@@ -3,8 +3,8 @@
 from typing import List
 
 from .core.common import count, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
 from .core.neighbor import adjacent, avoid_adjacent_color
+from .core.penpa import Puzzle, Solution
 from .core.shape import OMINOES, all_shapes, count_shape, general_shape
 from .core.solution import solver
 
@@ -51,10 +51,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
-    fleet_name = ""
+    fleet_name = "battleship_B"  # set a default battleship fleet name
     for (r, c), symbol_name in puzzle.symbol.items():
         shape, style, _ = symbol_name.split("__")
-        assert shape.startswith("battleship"), "Invalid battleship shape."
+        assert shape.startswith("battleship"), f"Invalid battleship shape: {shape}."
         assert fleet_name in ("", shape), "Multiple fleet shapes are not allowed."
 
         fleet_name = shape

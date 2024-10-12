@@ -1,7 +1,7 @@
 """Generate solutions for the given problem."""
 
-from typing import List, Optional
 from dataclasses import dataclass
+from typing import List, Optional
 
 from clingo.control import Control
 from clingo.solving import Model
@@ -16,6 +16,7 @@ class Config:
 
     time_limit: int = 30
     max_solutions_to_find: int = 10
+    parallel_threads: int = 1
 
 
 class ClingoSolver:
@@ -82,14 +83,18 @@ class ClingoSolver:
             elif _type == "black":
                 solution.surface[(int(r), int(c))] = 4
 
-            else:
+            elif len(data) == 2:
                 solution.symbol[(int(r), int(c))] = str(_type)
+            else:
+                # for debugging
+                solution.text[(int(r), int(c))] = int(data[2])
 
         self.solutions.append(solution)
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
-        self.program += line + "\n"
+        if line != "":
+            self.program += line + "\n"
 
     def reset(self):
         """Reset the program."""
@@ -103,10 +108,11 @@ class ClingoSolver:
         self.clingo_instance.configuration.sat_prepro = 2
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
         self.clingo_instance.configuration.asp.eq = 1  # type: ignore
+        self.clingo_instance.configuration.solve.parallel_mode = Config.parallel_threads  # type: ignore
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
-        with self.clingo_instance.solve(  # pylint: disable=not-context-manager
+        with self.clingo_instance.solve(  # pylint: disable=not-context-manager  # type: ignore
             on_model=self.store_solutions, async_=True
         ) as handle:
             handle.wait(Config.time_limit)

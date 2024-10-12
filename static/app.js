@@ -1,10 +1,5 @@
 function exp() {
-  // clear every information created by penpa itself
-  document.getElementById("saveinfotitle").value = "";
-  document.getElementById("saveinfoauthor").value = "";
-  document.getElementById("saveinfosource").value = "";
-  document.getElementById("saveinforules").value = "";
-
+  clear_info(); // clear every information created by penpa itself
   return pu.maketext().split("#")[1];
 }
 
@@ -30,14 +25,43 @@ function imp(penpa) {
   }
 
   import_url(urlstring);
+  clear_info();
+}
+
+function clear_info() {
+  document.getElementById("saveinfotitle").value = "";
+  document.getElementById("saveinfoauthor").value = "";
+  document.getElementById("saveinfosource").value = "";
+  document.getElementById("saveinforules").value = "";
+  document.getElementById("puzzleinfo").style.display = "none";
+}
+
+function hook_update_display() {
+  for (let i = 0; i < pu.space.length; i++) {
+    pu.space[i] = parseInt(document.getElementById(`nb_space${i + 1}`).value, 10);
+  }
+}
+
+function invoke_param_box() {
+  const parameterBox = document.getElementById("parameter_box");
+  const parameterButton = document.getElementById("param");
+
+  if (parameterBox.style.display === "none") {
+    parameterBox.style.display = "inline-block";
+    parameterButton.textContent = "Hide parameters";
+  } else {
+    parameterBox.style.display = "none";
+    parameterButton.textContent = "Show parameters";
+  }
 }
 
 function make_param(id, type, name, value) {
   let paramDiv = document.createElement("div");
+  paramDiv.className = "parameter_div";
 
   let paramLabel = document.createElement("label");
   paramLabel.for = `param_${name}`;
-  paramLabel.textContent = `${name} `;
+  paramLabel.innerHTML = `&nbsp;&nbsp;&nbsp;&nbsp;${name}&nbsp;`;
 
   let paramInput = null;
   if (type !== "select") {
@@ -46,6 +70,9 @@ function make_param(id, type, name, value) {
     paramInput.className = "param_input";
     paramInput.id = `param_${id}`;
 
+    if (type === "number") {
+      paramInput.min = 0;
+    }
     if (type === "checkbox") paramInput.checked = value;
     else paramInput.value = value;
   } else {
@@ -74,6 +101,7 @@ $(document).ready(function () {
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
   const parameterBox = document.getElementById("parameter_box");
+  const parameterButton = document.getElementById("param");
 
   const categoryName = {
     shade: "- Shading -",
@@ -99,6 +127,7 @@ $(document).ready(function () {
   const choicesExample = new Choices(exampleSelect, {
     itemSelectText: "",
     searchEnabled: false,
+    noChoicesText: "Select a puzzle first",
   });
 
   let foundUrl = null;
@@ -128,24 +157,21 @@ $(document).ready(function () {
         puzzleType = typeSelect.value;
         if (puzzleType !== "") {
           parameterBox.style.display = "none"; // hide parameter box if no parameters
+          parameterButton.textContent = "Show parameters";
+          parameterButton.disabled = true;
           while (parameterBox.firstChild) {
             parameterBox.removeChild(parameterBox.lastChild);
           }
 
           if (body[puzzleType].parameters) {
-            let legendElement = document.createElement("legend");
-            legendElement.textContent = "Parameters";
-            parameterBox.appendChild(legendElement);
-
+            parameterButton.disabled = false;
             for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
               const paramDiv = make_param(k, v.type, v.name, v.default);
               parameterBox.appendChild(paramDiv);
             }
-
-            parameterBox.style.display = "block";
           }
 
-          choicesExample.clearChoices();
+          choicesExample.clearStore();
           let exampleList = [{ value: "", label: "Choose Example", selected: true }];
           exampleList.push(...body[puzzleType].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
           choicesExample.setChoices(exampleList);
@@ -154,6 +180,7 @@ $(document).ready(function () {
 
       exampleSelect.addEventListener("change", () => {
         solveButton.disabled = false;
+        solveButton.textContent = "Solve";
         if (exampleSelect.value !== "") {
           solutionList = null;
           solutionPointer = -1;

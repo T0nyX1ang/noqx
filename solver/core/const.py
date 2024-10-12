@@ -9,7 +9,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
     "akari": {
         "name": "Akari",
         "category": "var",
-        "aliases": ["akari"],
+        "aliases": ["lightup"],
         "examples": [
             {
                 "url": "https://puzz.link/p?akari/20/20/................................h............h1...h............i...i...........i1.bg........t.....i6cn...hbibi1b..kbl1b0.g6bgc..l..k.j1.l..hciam...i6.q...v0...bs....b.b..h2..h....i..h..i..h....i..h..b..h....h1..h...h..h....................../",
@@ -132,7 +132,7 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         ],
     },
     "circlesquare": {
-        "name": "Circles and Squares",
+        "name": "Circles & Squares",
         "category": "shade",
         "aliases": ["circlesandsquares"],
         "examples": [
@@ -271,13 +271,25 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "name": "Heyawake",
         "category": "shade",
         "examples": [
+            {"url": "https://puzz.link/p?heyawake/12/12/rdtmurfdnmrrdtpusvfe1n0rgdo0000000000000v0000sfo3u0vg0w"},
             {
-                "data": "m=edit&p=7VXfT9swEH7vX4H87Ic4dn6+MVb2wroxmBCKKpSWABVpw9J2TKn6v/OdfdCmDdqkaRqTpjb25+98vu8cnzP/tszrQiqP/jqW6PEzKraPH4f28fh3PlmURXogD5eLu6oGkPLT8bG8yct50ct41rC3apK0OZXNhzQTSkjh41FiKJvTdNV8TJu+bM5gEjIGd+Im+YD9DbywdkJHjlQe8IAx4CXgeFKPy+LqxDGf06w5l4LivLPeBMW0+l4I1kHjcTUdTYgY5QskM7+bPLBlvryu7pc8Vw3Xsjl8Xa7ukktkh1ya8IflJsP1Gtv+BYKv0oy0f93AeAPP0pUwoUhjKYLYdklgO+Ur1xtHq8BDD48BPDRwJiLodu/R+mbhyzAku9kMdduKeJl+GSrP35qNCCpdob207bFtfdueQ7JstG3f29azbWDbEzunD3W+UdIPkIaPk2YMMNRZHEk/RFqEgwA4YYyDHUEE4RC+EfuGCQ47tBOOfDr4jOEbs2+spZ9EjEOpPaRucQLMvkkktXJxYQc2jDWw84Vdat/FhR3YaYZdas2+fgDs4sIutXGaYQdmX424gYsLO7DTDDswa8Yc37BO4wHzntC+8ZrogVm/QY7Gabb7ybHQA/OeGFwMhveB9pmOjcXYW7O1VzGvE2OdmNeJaT9ZJ+WrnnNHjorzpRz1c77IS5M2vPAL+9qPbGtsG9rjENH5/sUKcKf690/eT+Vk2l2n7V/w73HDXibOlvVNPi5w+/Svb4uDQVVP8xKjwXI6KurnMS5/Ma/KqznPTu23AbcVuJmd2aLKqnooJ7P2vMntrKqLThORBcJ3zB9V9fXO6o95WbYI97VrUe5SblGLGjfu1jiv6+qxxUzzxV2L2LqdWysVs0VbwCJvS8zv851o003O6574Iexj70/z/8v6l76s9Aq8t3a7vDU59vRWdWfpg+6ofrCdVc78XqGD3ytpCrhf1WA7Chvsbm2D2i9vkHsVDu6VIqdVd+ucVO2WOoXaq3YKtV3w2bD3BA==",
+                "url": "https://puzz.link/p?heyawake/19/15/201480mhg2i40a8s192816704r503gk0m2g2oa0a18085010k046g0003hu0104000400fbvgvo005fu1800o0000000800600000003s0003c-1c140411g81ah8233",
+                "config": {"fast_mode": True},
             },
             {
-                "data": "m=edit&p=7VdNbxs3EL3rVwR7ngO/P/aWpnYvrtvULoJgIQSys6mN2FAjW/1Yw/89b4azXhUokAJF0RwMQeTjcDh8nH3Dle4+7Te7kWwlG8kXMmTxyclQMoWcbV+jn/Pr+5uxf0Ev9/dX2x0A0Q/Hx/Rhc3M3rgb1Wq8eptpPr2n6rh8621Hn8LXdmqbX/cP0fT8d0XSGqY4KbCfNyQEeLfCNzDN61YzWAJ8qBnwLeHm9u7wZ3500y4/9MJ1Tx/t8I6sZdrfb38ZOefD4cnt7cc2Gi809DnN3df2rztzt328/7tXXrh9petnons10eRel6xe6DBtdRn9Dl0/xH9Ot68dHpP0nEH7XD8z95wWWBZ71D10JXV/wQExpvTetj2rPOs5O+9meWl91XOdxi+NMW+dsszvvWx/UHlo8F9p6F9QvqT3X1he1lxbXK0/vm5/3bb1Xvj5b7dt+PkftdV3h/XH2U5w9wDZ4KFz02EWEHKx7GidsPXABtCFnagjLkGe5QNqQ83Awy2k4WGsDaByOOa1DWcYS7WC+ZB4v4SWPBwtQhxi7AwMneFjIu4AEHhxOEvM0RgJs/4D2rbTH0jppz6ENmry030prpI3SnojPEScvRQr8VBx1IScKFRsKrhQNUsm4FIoWGzOumaLDsQXDxzWfaAwwyAt2wEgVY2sp8tMVDLtXu4N/UH8HO6dWcARufLCOYkQKGQdPkR+lYPgk9QngxklhHMGNlSEY9jLbwbMoz5SA2xkRg2JVnwye/PQZF74plVvxwLpvtZSs+tQA3LglnD3p2ZOB3c32CNx4IgZw2xcxKHn1sZkSVxNjh724ggRjreYhOaxlIQiulFjijD34cMUwDuCQlEOAf1L/gPgsU8bRAbc8Yx2wckiwF7UnxK8aPyNm1ZgZfLgcBGfKfDMwLhFY7dVRthqnemA9Sy2UXcsz1gG3mFhH2asdr6rsWxz4UuYbRTDiaE4wj7eY+ocA3PhjHridF/OUucYFg2dtPDEP3M6FeSpG15ZKxaq9GmDlhrMUPQtrPujZ0S81wvrXPEQD7Wke0AOrxgx8rPrgJpjrSOpC9xX9z7XDmp9rhDUcNQ5qM+rzQg+se2XW/+zDOte9CuLPmoeGo+YEPbDGx7OLfGUJ5rrQ+IXrSONz7c/1glxFzSf6pXaQB9TAUgum2dEDq5ZwJ8w1hR5Ydcv1YlQzXC9aa6J/N2NoeK4j1j+/3UT/2Ev1I7XAbxPB2IsvUsHYS+8f9MC6l0d8r/E96mWuR66dMOOy1B3XyFxfCTGTaox1qzqHlqFh1RI4ZOXAesuac/TA6o+cZ805emDVP3IOXQLjkn4jV/UraYO0Sa7wzC//f/jzoL0o//3b4ot0BmSMX39f+sRnr2evv37Wq6E72+8+bC5H/Bg+ev/L+OJ0u7vd3GB0ur+9GHfzGP9FHlfdH5185bdQeP578j/9PeFHYL62W+hro4N7sbsa/9z8vvk4duvVZw==",
+                "url": "https://puzz.link/p?heyawake/8/7/060o00000081g2000000-121g",
+                "config": {"fast_mode": True, "limit_border": 1},
+            },
+            {
+                "url": "https://puzz.link/p?heyawake/12/12/00000o0003063cc0o00030000000008020080a4a92a02008020000-2811111111",
+                "config": {"fast_mode": True, "limit_2x2": 1},
             },
         ],
+        "parameters": {
+            "fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False},
+            "limit_border": {"name": "Border Limit", "type": "number", "default": 0},
+            "limit_2x2": {"name": "2x2 Limit", "type": "number", "default": 0},
+        },
     },
     "hitori": {
         "name": "Hitori",
@@ -520,6 +532,15 @@ PUZZLE_TYPES: Dict[str, Dict[str, Any]] = {
         "examples": [
             {
                 "url": "https://puzz.link/p?paintarea/18/10/fesmfvrsi3vrvsntsvuttippjvnvrnvdferjbmtvtmnftnrnvrfbanmunev6vffddd8a1zj2b0t2b2a2c1o1d2b1c3zx2d2a2a3t",
+            }
+        ],
+    },
+    "pipelink": {
+        "name": "Pipe Link",
+        "category": "loop",
+        "examples": [
+            {
+                "data": "m=edit&p=7ZVLbxNBDMfv+RRozj7M67Gzt1IaLqFQWlRVq1WVhqBGpArkgdBG+e712F5tijhwAYqEknF+mfF4/vY6k83X3XQ9B6PL21WAn/jypqJhq0hDy+tqsV3O6xdwstver9YIAG/HY/g0XW7mo0a82tG+y3V3Ad3rulFGgbI4jGqhu6j33Zu6m0B3iUsKDM5NkIICi3jG/gWvab3QKU8ajXwujHiDOFusZ8v57YRn3tVNdwWqnPOSdhdUD6tvcyU6yvfZ6uFuUSbupltMZnO/+CIrm93H1eed+Jr2AN0Jy738US6uu0FuQZZb6CdySxa/WW5uDwcs+3sUfFs3RfuHAasBL+s92nOyhuwN2TFZS/YKXaFzZF+R1WQD2Um9Vy5AtE7VFgp6mwh9foLe9BhdHFAcIiJHIPSEwSDmHr1nhxgR2QExBpm1ED37FgyaMHmI0fboIx9cJYiJIxCGHn0cMHEwozVyNXDmcMZmSIbjMXMmhYM+Yst5G+8huWOWOMjBHrEUx0QNyUsc5OBEA9bnmJPUypiE54pm5KQ5FaMx7ywxkaPoz1jQyO6IUbJNFdaLNyL6wPsyPtTEZS5YiSqNzrk/pXB/Cu6sBg6an4WxeGQWhchJSxbOQbLiQ9xXCasq/VE4UAdhQ55RW16TPSXryUZqyFQ6+4/1/i/KaRxfpE9f4d+ba0cN3ueHkfquaDSu/D38v+L/0hVfHoF+bs3+3OTgz68dPQI=",
             }
         ],
     },
