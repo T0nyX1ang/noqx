@@ -6,7 +6,7 @@ from typing import List, Optional
 from clingo.control import Control
 from clingo.solving import Model
 
-from .const import logger
+from .logging import logger
 from .penpa import Direction, Puzzle, Solution
 
 

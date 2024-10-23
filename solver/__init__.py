@@ -5,7 +5,8 @@ import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from .core.const import PUZZLE_TYPES, logger
+from .core.const import PUZZLE_TYPES
+from .core.logging import logger
 from .core.penpa import Puzzle
 from .core.solution import Config
 
@@ -31,6 +32,6 @@ def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> 
         raise TimeoutError("Time limit exceeded.")
 
     logger.info(f"[Solver] {str(puzzle_type).capitalize()} puzzle solved.")
-    logger.info(f"[Stats] {str(puzzle_type).capitalize()} solver took {stop - start} seconds")
+    logger.info(f"[Stats] {str(puzzle_type).capitalize()} solver took {stop - start} seconds.")
 
     return {"url": solutions}  # return the first solution
