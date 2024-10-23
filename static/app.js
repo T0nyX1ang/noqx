@@ -203,7 +203,9 @@ $(document).ready(function () {
 
       ruleButton.addEventListener("click", () => {
         if (ruleButton.disabled || !puzzleType) return;
-        window.open(`https://puzz.link/rules.html?${puzzleType !== "ncells" ? puzzleType : "fivecells"}`);
+        window.open(
+          `https://puzz.link/rules.html?${puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"}`
+        );
       });
 
       solveButton.addEventListener("click", () => {

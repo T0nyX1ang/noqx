@@ -1,18 +1,39 @@
 """Initialize the solver manager."""
 
 import importlib
+import os
 import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from .core.const import PUZZLE_TYPES
 from .core.logging import logger
 from .core.penpa import Puzzle
 from .core.solution import Config
 
+solver_dir = os.path.dirname(__file__)
+
 modules: Dict[str, ModuleType] = {}
-for pt in PUZZLE_TYPES:
-    modules[pt] = importlib.import_module(f"solver.{pt.replace('-', '_')}")  # load module
+for filename in os.listdir(solver_dir):
+    if filename.endswith(".py") and filename != "__init__.py":
+        pt = filename[:-3]
+        modules[pt] = importlib.import_module(f"solver.{pt}")  # load module
+
+
+def list_solver_metadata() -> Dict[str, Any]:
+    """List all available solver metadata."""
+    metadata = {}
+    for puzzle_type, module in modules.items():
+        if hasattr(module, "__metadata__"):
+            metadata[puzzle_type] = module.__metadata__
+        else:
+            metadata[puzzle_type] = {
+                "name": puzzle_type.capitalize().replace("_", " "),
+                "category": "var",
+                "aliases": [],
+                "examples": [],
+            }
+
+    return metadata
 
 
 def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:

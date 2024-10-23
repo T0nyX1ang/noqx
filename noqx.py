@@ -11,8 +11,8 @@ from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from solver import run_solver
-from solver.core.const import PUZZLE_TYPES, logger
+from solver import list_solver_metadata, run_solver
+from solver.core.logging import logger
 from solver.core.solution import Config
 
 
@@ -23,7 +23,7 @@ async def root_redirect(_: Request) -> RedirectResponse:
 
 async def list_puzzles_api(_: Request) -> JSONResponse:
     """List the available puzzles."""
-    return JSONResponse(PUZZLE_TYPES)
+    return JSONResponse(list_solver_metadata())
 
 
 async def solver_api(request: Request) -> JSONResponse:
