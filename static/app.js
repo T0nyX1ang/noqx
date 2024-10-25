@@ -110,6 +110,7 @@ $(document).ready(function () {
     num: "- Number -",
     var: "- Variety -",
     draw: "- Drawing -",
+    unk: "- Unknown -",
   };
 
   const choicesType = new Choices(typeSelect, {
@@ -127,7 +128,7 @@ $(document).ready(function () {
   const choicesExample = new Choices(exampleSelect, {
     itemSelectText: "",
     searchEnabled: false,
-    noChoicesText: "Select a puzzle first",
+    noChoicesText: "No examples found",
   });
 
   let foundUrl = null;
@@ -150,6 +151,11 @@ $(document).ready(function () {
         };
         puzzleTypeDict[pvalue.category].choices.push(typeOption);
       }
+
+      for (const [k, _] of Object.entries(categoryName)) {
+        if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
+      }
+
       choicesType.setChoices(Object.values(puzzleTypeDict));
 
       typeSelect.addEventListener("change", () => {

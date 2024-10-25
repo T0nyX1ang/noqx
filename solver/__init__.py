@@ -28,7 +28,7 @@ def list_solver_metadata() -> Dict[str, Any]:
         else:
             metadata[puzzle_type] = {
                 "name": puzzle_type.capitalize().replace("_", " "),
-                "category": "var",
+                "category": "unk",
                 "aliases": [],
                 "examples": [],
             }
