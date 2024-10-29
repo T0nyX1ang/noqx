@@ -72,6 +72,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line("dead_end(R, C) :- clue(R, C).")
     solver.add_program_line(grid_bit_color_connected(adj_type="loop"))
     solver.add_program_line(avoid_unknown_src_bit(adj_type="loop"))
+    solver.add_program_line(grid_bit_color_connected(adj_type="loop", color="numlin"))
+    solver.add_program_line(avoid_unknown_src_bit(adj_type="loop", color="numlin"))
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
