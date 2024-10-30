@@ -29,8 +29,7 @@ target-version = "py37"
 select = ["I"]
 
 [tool.pylint]
-max-line-length = 127
-disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation"]
+disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation", "line-too-long"]
 
 [tool.pyright]
 pythonVersion = "3.7"
