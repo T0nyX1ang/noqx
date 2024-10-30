@@ -2,7 +2,7 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .core.common import area, direction, display, fill_path, grid, shade_c
+from .core.common import area, count, direction, display, fill_path, grid, shade_c
 from .core.helper import full_bfs
 from .core.loop import single_loop
 from .core.neighbor import adjacent
@@ -45,14 +45,14 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
 
 
 def onsen_global_rule() -> str:
-    """Generates global ruleS for an Onsen-Meguri puzzle."""
-    mutual = "area_border(A, R, C, D), grid_direction(R, C, D)"
-
-    # any area, go through border at least twice
-    rule = f":- area(A, _, _), #count {{ R, C, D: grid(R, C), {mutual} }} < 2.\n"
-
+    """Generates global rules for an Onsen-Meguri puzzle."""
     # any area, any onsen area, go through border at most twice
-    rule += f":- area(A, _, _), onsen(O, _, _), #count {{ R, C, D: onsen(O, R, C), {mutual} }} > 2.\n"
+    mutual = "area_border(A, R, C, D), grid_direction(R, C, D)"
+    rule = f":- area(A, _, _), onsen(O, _, _), #count {{ R, C, D: onsen(O, R, C), {mutual} }} > 2.\n"
+
+    # two different onsen loops cannot be connected
+    rule += ":- onsen(O1, R, C), onsen(O2, R, C), O1 != O2.\n"
+
     return rule.strip()
 
 
@@ -71,6 +71,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_border(i, ar))
+        solver.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))
 
         for rc in ar:
             if rc in puzzle.text:
