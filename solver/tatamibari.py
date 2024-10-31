@@ -66,3 +66,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Tatamibari",
+    "category": "region",
+    "examples": [
+        {
+            "data": "m=edit&p=7VTBjtMwEL3nK1a+Mkh2khbXF1SWlEsJCy1araJolXQNW5EqkDQIueTfdzwOxER74QD0gFw/vT7PjF/HtdsvXdFoWOCIJHAQOCLJacrYfvgwtvtjpdUFLLvjfd0gAXizWsGHomp1kA1ReXAyC2WWYF6pjIUMaAqWg3mrTua1MimYDS4xEKitkQkGIdJkpNe0btmlEwVHng4c6Q3S3b7ZVfp27ZQrlZktMLvPC8q2lB3qr5q5NPq+qw/l3gplccQf097vPw8rbXdXf+qGWJH3YJbObvKI3Wi0a6mza9mfsqvvPuq2Kx/zusj7Hnv+Dt3eqswafz9SOdKNOiGm6sRCaVO/oxF3MCziVnjqCaEVnntCbIUnnjCf1JhNI+ZUw4uQtItXVE5TJBnzIgSnbbwQIaZJwpn9RaEYb2vh7PqVo2kTREz+ftbBZglq2Q3hijAk3GJHwUSELwk54YxwTTEJ4TXhJWFMOKeYZ/ZMfuvU/oKdLJR0+/0xOy8lDzKW4F24SOvmUFR4H9LuUOrmx3d8ffqAfWM0swhT4v8P0r94kGz/+bn9wc/NDl65PHgA",
+        }
+    ],
+}

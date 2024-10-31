@@ -53,3 +53,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "LITS",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VXfa9s8FH3PX1H0rAdLV7Jlv2X90r103beloxQTSpq6a1hKuvwYwyH/e8+VrjCDwh4GpYOR+Ork5ujeIx3L3n7fzzedNgV/KWiM+DgT4mVDGa9CPpfL3aprTvR4v3tYbwC0/nh2pu/nq203aoU1Gx36uunHun/ftMoorSwuo2a6/9Qc+g9NP9H9FH8pbZA7TyQLOBngVfyf0WlKmgL4QjDgNeBiuVmsupvzlPm/aftLrbjPuziboXpc/+iU6ODfi/Xj7ZITt/MdFrN9WD7JP9v93frbXrhmdtT9OMmdviCXBrkMk1xGL8jlVfy53NXT+iWh9ex4xIZ/htSbpmXVXwYYBjhtDogXMZoYr2M8i9HGeAmq7inG/2IsYvQxnkfOpDkoa6y2tlSNhbfGA9eCK23JJGyBnWAqgJ1gzHUylxxwSNgZbb0XDI4XjgPHZw56eenlUL+U+g63amkT9uCUwvHgVMLx4FTCKaGnEj0l+lbSt+RbPnNqYEq4Aj8IvyLgSjB6BekVkK8lH6C5Fs0haCqkZqiBpWaN81ZIzbrSZERnDY5JHCoMcNKGecCpPvFZtWkuwQsSL8g44NSXTKmJioQt8iR564GTZnA1uaSN4AuJL+RQ30t97D/l/bd4HFhZo8X+SH14DixrZH9J1kjYE5I1sqdO8g75fD+wvy77jvpO6rOP+R5gH7MGj76l9C1Rs5Sa7F32nf3KvlfgVNlH9MpeB2jOXrN32d+AXmHwbvAXfWvpWyNfyx6yR+Iv/AQWv9gj8RQjsHAM+5i9Az/7y35lf9mj7Cn2nGTPMQ7+sndy7jAOXuOskZxBjMDZX8zN9wCB74QPX0h8wQicfUff6AUO/VU8+qcxuhjL+Eio+Nnyyk+f38ppsQP8Evv14/++3GzUqul+cz9fdHjyT+6+dicX683jfKXwij2O1E8Vr5b4jf3vrfvqb13e/OKt3f1vTQ7Oo1otd1s1Gz0D",
+        },
+        {
+            "url": "https://puzz.link/p?lits/24/24/0000000o01lnmg5dvc0dntsq94ia94i814i914i976i94i294i294i8t4i90ci94ki94s294j094ia14i9pki944i94o1mregamtm0rddc00010002002dhm02i14080044vvvk6001os0001vvvq1g00a4000sfvvvsc003p80073fvvq700080000g3vvu100021g0087vvv8114102295g296oo",
+            "test": False,
+        },
+    ],
+}

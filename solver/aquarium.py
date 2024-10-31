@@ -47,3 +47,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Aquarium",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VZNb+M2EL37Vyx05kH8FKlbunV6SbNtk2KxMIyF49V2gyZw68RFocD/fd8MhxYtFCiKougWKGyRT89vRjPDIa2nXw+b/aC0pq+NqlVAyvnAl9aGr1Y+t/fPD0P/Sl0cnj/t9gBKvbm8VB83D0/DYqXZul0vXsbUjxdq/KZfNbpRjcGlm7Uav+9fxm/7canGG/zUKA3uKosM4HKCb/l3Qq8zqVvga8GA7wC39/vtw/D+KjPf9avxVjX0nK/YmmDzuPttaCQOut/uHu/uibjbPCOZp0/3v8gvT4cPu58PotXroxovcrg3Jdw4hWuncAnmcAn9QbiUxT8cblofjyj7Dwj4fb+i2H+cYJzgTf+C8bp/aawlU4dY8to01hFhK8LPFWFOdHOTSISviDQjXEtEqgg9VxgiuoqYPyWwooqjYwW6rBCJFZVT3c4l2sy96JxObeVZEysmsKaKTkfWnDJCeTUX+R2PlzwaHm+xBmq0PH7NY8uj5/GKNUssjYmdMhGlNNg6MQKjioQ7d447rBDh0E44JmUSikw4tcq2mccMjAVkHlu94C5AjzVg7OFH+GCAkSzziIdKyrYGtpnHDCxxJjvhDjEn9Fex7YoGPk88NJ3kEiiXkhfFj1ZkPfhU8kKOBQfEGUuOwElijnrCAXlFyStRjpIL9FZnW8zAWYMZuOTokEuOB7OyJseDGVjqaeDH5GexbcEmKEs9TdiBp3YutrQbCFv4pI3AGsRw0gN78e/h34tPnMTWS809/ATxE+AnSmwRfBTbCNsothG2sbKt/XcSQ4fnFlt6VifxdPSXMPlxbeYxK6cL78FnP5jBlxjwrCRxpniGnc494PDPUrBN6KWU+8RG9JisF+MomogeK/liTU8aWlNZd4s+wf2EpQcwA8taQO9KD9BaFz31sPSepT6XXrXYCzYUDE0QDfrWSt9a9PMZLrYaeWnJq4WtYNrXuJd+gH86jxlD40TvoHGlZ/CsGtPpzH2FHAvW1KuSVwuNLj1M/VzpjdSkRQ0LNqgPHfDsn/pNeE89WeEgfrAHbRA99tqpzoTpkGSM3IPk4qluFfZSQ4/cfckdejpyOR6qSXXO0HHNGDUxojfwU/Ym3l2m/QXMPnGgvuVj9TWPjsfAx21Hf4h/6S/z75/sfxrOCitO71/nH7yH/de49WLV3Bz2HzfbAa8ryw8/Da+ud/vHzQPurg+Pd8O+3ONt8bhofm/4Wll6+fz/BfJfeoGkJWi/tD3xpYWDXbpefAY=",
+        },
+    ],
+}

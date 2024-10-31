@@ -39,3 +39,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Canal View",
+    "category": "shade",
+    "aliases": ["canalview"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VVNb5tAEL37V1h73gP7AQZubhr34rofdhVFCEXYJYpVXFJs0mot//fMDES7i9JIVaUoBwszmrfzdvbtgzX7X23RlFxM8KdiHnABVxRruqUM6H66VttDVaZjPm0Pd3UDCeefZjN+W1T7cpT1rHx0NElqptx8SDMmGGcSbsFybr6kR/MxNQtullBiXMDYvCNJSC9tekV1zC66QRFAvuhzSK8h3WybTVXezLuRz2lmVpzhOu9oNqZsVz+UrNeBeFPv1lscWBcH2Mz+bnvfV/bt9/pH23NFfuJm2sldPsnVVq6ycjHt5GL2jFzcxf/Lre7r54Qm+ekEhn8FqTdphqq/2TS26TI9QlykRxZGMBWfMj0TFk48OFEAlYXah0h2YOzBJPCh8Don2MqBoUcWgd9aBNjb0oXwuwkhAUcWS+RrByeApcV6MF8P5keIYwejEQ4/wbqLsW7XkwKxXU8Kf7tSou1OXfq+S43Y6ad9byVZ7/DJe6tfJgN+gvu3fEX+2boi/5w6+Wf7qYF/SiHf6lPK90dpfJ6hg3G/Dl9jP2f9EF8WZz7572LfTxX5r62K0A9nvXjAj13/4dUXdACuKc4oSoorOB/cKIrvKQYUQ4pz4lxSvKJ4QVFTjIgzwRP2T2fwFeRkGr1/+UL3zowz4y9XPsrYsm1ui00JX55Fu1uXzXhRN7uiYvCRP43YH0Y3HWt9/u6/+ncfzQ/e2j/PW5MD/4VsU/wsqvHDtvzN8tEj",
+        },
+    ],
+}

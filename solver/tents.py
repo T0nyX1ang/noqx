@@ -60,3 +60,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Tents",
+    "category": "var",
+    "examples": [
+        {
+            "data": "m=edit&p=7VXNjpswEL7zFCuffcDmx8At3W56SelPUq0ihFYkpUrUpGyBVJWjvPvODFQE7EtXarWHlfFo5vOY+WYG4+bnqahLLgJ8vIi7XMAI3YimiMCG+Wes9u2hTG747NTuqhoUzj/M5/xbcWhKJ8OdMHLnrONEz7h+l2RMMM4kTMFyrj8lZ/0+0SnXS1hi4Mv1onOSoN4N6j2to3bbgcIFPe11UNegbvf19lA+LDrkY5LpFWcY5w3tRpUdq18l63mgva2Omz0Cm6KFZJrd/rFfaU5fq++n3lfkF65nHd21ha430EW1o4uahS5mgXTb8kfbPItrv9OkGeeXC5T7MxB9SDLk/GVQo0FdJmeQaXJmvoCtEvpEHWG+BNMbTH9shmBiUzszcEerAb7qyhy/KohHgUSAr76yY3QfbBmpq+1AVhDlNVAOMQ7gQ/1Y6JkQxhtDytwYBQYURwYkXMx0iln8hMVPYmJTDJOfYB4mPMF8C0aFnGCWkghLTYSyxI26po6w2IaZcaVr5iY9M6605Cbpy5tgyqyftHRNKktcS25Sme2VysxNKrOXUlnyjab84JOc04cpSa7geHHtkXxL0iUZkFyQzx3Je5K3JH2SIfkoPKB/dYSvz8Y/opOF3T1gG+p15TkruZOx9HTclPVNWtXH4gC/8+WueCwZ3JcXh/1mNOkP6L9eof/5CsXSuy/tFL40OvBf6MuYO08=",
+        }
+    ],
+}

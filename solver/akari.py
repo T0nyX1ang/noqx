@@ -48,3 +48,23 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Akari",
+    "category": "var",
+    "aliases": ["lightup"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VTfa9swEH73XxH0fA+W5SSO3rKu2UuW/XBGCcIEJ3OJaVx3djyGQv733p1E7UIZYw+lg6Ho03ffydKXE1L7o8ubAmRIP5UAjthimXCPkgn30Ld1eToWegTz7nSoGyQAnxYLuM2PbREYPysLznam7RzsB22EFCAi7FJkYL/os/2obQo2xZSAGLWlmxQhve7pDeeJXTlRhshXjk+RbpDuy2Z/LLZLzKLyWRu7BkH7vOOviYqq/lkI74PifV3tShJ2+Qn/THsoH3ym7b7Xd52fK7ML2Lmzu3nBrurtEnV2if3Gbtvdb6u6vv8ru/ld3pQvOZ1llwtW/Ct63WpDtr/1NOlpqs9CRULHIMaSh4mLpoqHxIkzJ8rQqVLGboy8rrwee31CMS6/8subCKbutHkbI59C2s6IEdbDC7TxIE8GBl+TkUHIhoYxGRvGZHCwGhsdxmT42fZs/WkF/AtSnxE3jAvGiHGNBQSrGN8zhoxjxiXPuWa8YbxijBknPGdKR/CHh+Rq+Qp2jHKX/Xkb/3taFhiRds1tvi/wgqy6alc0o1XdVPkR4/SQPxQCH6VLIH4J7kbRG/f/nXr9d4qqH761i/DW7ODV9GXMgkc=",
+        },
+        {
+            "url": "https://puzz.link/p?akari/17/17/g666.g6.g6.x6.x6.x6.obl6.gbi6cv.gblcmbl7cv6bi66blam6.x.gbv.gcv66.g666.g.g",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?akari/20/20/................................h............h1...h............i...i...........i1.bg........t.....i6cn...hbibi1b..kbl1b0.g6bgc..l..k.j1.l..hciam...i6.q...v0...bs....b.b..h2..h....i..h..i..h....i..h..b..h....h1..h...h..h....................../",
+            "test": False,
+        },
+    ],
+}

@@ -48,3 +48,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Skyscrapers",
+    "category": "num",
+    "aliases": ["building"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VRNb5wwEL3zK6I5zwGDYVnftmm2ly39yFZRhFDEUqqggEhhiVqv9r9nZqBhkdpDD233UBk/vecZy89j4+5rn7UFKsWfH6GLxFAHoXSlPOnu2LblvirMBa76/X3TEkF8t17jl6zqCifhmdRS52CXxq7QvjEJKEDwqCtI0X4wB/vW2BjtNYWActFuhiSP6NVEbyTO7HIYVC7xeOREb4nmZZtXxd1mGHlvErtF4HVeyWymUDdPBYw+WOdNvSt5YJftaTPdffk4Rrr+c/PQj7kqPaJd/dquP9llOthl9hO7vIs/bHeZHo9U9o9k+M4k7P3TRKOJXpsDYWwO4Guaqum85GTAD0kuJhmRDF6kdmcy9Ej6LzJazOYuOUr3ZpRKcTiatMfxE605fpIfcJzu3g8dBTOnSpabzKhoebI87U7JHm8F14Ke4JZKgNYXfC3oCgaCG8m5ErwRvBTUgqHkLLiIv1Xmv2An0VzLeeNqnNFI6iQQ9/WuaC/ipq2zCuiNODrwDaTLVdL/n41/9GzwEbjndqvPzQ79Z9A9fO/yNnss2g5S5xk="
+        }
+    ],
+}

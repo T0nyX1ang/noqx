@@ -101,3 +101,22 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Haisu",
+    "category": "loop",
+    "examples": [
+        {
+            "data": "m=edit&p=7ZRNb9pAEIbv/Ipoz3Pw2l7b6xtNaS6EfkAVRZYVGeIWq1BawFVkxH/PO+MldiSkqkpV5VAZD+98wTO7a+9+1sW2pBhXkJBHGlfghXJHHn9O16zar8r0gob1frnZQhC9n9CXYrUrB5krygeHxqbNkJqrNFNakfJxa5VT8zE9NNdpM6JmipQijdi4LfIhR528kTyryzaoPeiJ05C3kItqu1iVd+M28iHNmhkp/p830s1SrTe/SuU42F9s1vOKA/Nij1l2y+qHy+zq+8232tXq/EjNsMUdn8ENOlyWLS6rM7g8xYtxV9X38uEcqc2PR6z4J7DepRljf+5k0slpeoCdpAcVRGjlPZZNUUECN3hyQ3bVFJAuYLxnecN5/8mN/GfZmIu7bMxZddX9WMKBLp+EPRTgaYG8FftOrC92hhmoCcS+FeuJNWLHUjPCaDowpEPM5+MXcZZ1aFsdRqRN7LQlHYGTtYmhMRFrnHMda6fRG7veGIDMLRq91vUmmMMGrbYe+Z7rtQE0BoNGjHzd9iIGbdz/gtM4TtNjYx5eYdFgMI7B9JiZMzpxgo23QHhQn7j6pMcJNm1PbKi3rt72+bGFtmXGNzRzYlFvZGkvxYZiI1nymA/VHx27l+/ub3EyH+S9C2v8t718kKkxHsWLyWa7LlZ4IEf3X3vepF7Py+3Jx6vwOFAPSm55SsL/b8d//3bk1fde22F9bTh4fNSyqHa1ygeP",
+        },
+        {
+            "url": "https://puzz.link/p?haisu/9/9/199103msp7vvv4pre00bs6poj0068sr1ugp2g2g2g2u2g2k2k2g2u2g2g2g2p",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?haisu/13/9/5948l0l2la55d8220gg44110000vg305c0cc00000000fvol3t1k3h25g5y5r6i7jao5zq",
+            "test": False,
+        },
+    ],
+}

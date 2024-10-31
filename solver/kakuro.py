@@ -81,3 +81,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Kakuro",
+    "category": "num",
+    "examples": [
+        {
+            "data": "m=edit&p=7VZNb9swDL3nVxQ66yBK/r5lXbtLl25rh6IwjCHZMrRoAxdpMgwO8t9LUrKTKDwVKIZhg2OGfJTFR1KS/TB9WC9bDYZ+rtD4j1cCBd+2yPg24bq+Xz3OqxM9Xq/u2iUqWl+en+uf08fn+agOo5rRpiurbqy7D1WtQGll8QbV6O5ztek+Vt1Ed1foUhoQu/CDLKpnO/WG/aSdehAM6hPUnX/sFlVP3tufqrq71oqivONnSVWL9tdcBRZkf28Xs3sCZtMVpvJ8d/8UPM/rH+3DOoyFZqu7MZPtHQJlt6NMqqdMWkw55PSmlG2z3WLhvyDpb1VN/L/u1GKnXlUblBOWUG1UCQXPkCmd4JyltWTatDczMpNgOcPOMphZyY/23pK9ubfA4Bw0GJsfbJ7KYv+8nfJwt7MTng1z8Xae78+Otic6+EvHdiADgLRo/t4PiWfXx4eC+YQ8AUqermdrDecNgw3MbohuwUfr2Vr0HNgJcHTT2xnbQ3Rb+mx6dg4j7VfDHbYBXHi+55NgXkM1sXW32DruhtXDmsI1phwNgwij1GKM0okxSinGqGgxRo2MMUonxiilGKOmRFgixE2EuIkQNxXyTYV8UyHfVOCXCvwyqnOMCVwyoQa5wCUXuPBij7BCiFEK+YIRCIIRooARSo07TwKF4LgHBZB3whEo1BGsUHCQViJIywn3gARKj0srCvi8OQKleqZS7qlESVpCIK0hyCRK2VHlcWuf89lsWV7joa07x/I9S8MyZXnBY85Y3rA8ZZmwzHhMTsf+K14M/ox5Izq1898Zh1f692HNqFaT9WI2X55M2uVi+oiv5it+Le/Zd9OnucKvou1I/VZ8144+sv5/KP2xDyVqgnn1ruC3Z3f5b+xVXLZDN5rRCw==",
+        },
+        {
+            "url": "https://puzz.link/p?kakuro/15/15/m-dm.ffl-7l9-mQjmIBmbam-anWZs.jSpBjo.7goP4lJ9m..nAjo74lf-.lUUrF9l7-qHNq-clKTrO4l.-clgIoibn.JbmHglfgo.gOo7NpA-.s7Hnb-m-fm-7m-7m-hl-4l.-Dm-Em46BfgJjhSK79acVZD",
+            "test": False,
+        },
+    ],
+}

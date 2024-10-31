@@ -36,3 +36,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Aquapelago",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VVRa9swEH73ryj3rAfLlh1bb13X7CXz1iWjFGGKk7nU1Jk7Jx5DIf+9dyetrqGDwWArozj67vLdSfpOEtLu21D1tZAp/eJMhELil6qUW5Ll3EL/rZp9W+sTcTrsb7seHSE+zOfipmp3dWB8VhkcbK7thbDvtAEJAiJsEkphL/TBvte2EHaJIRAKuYVLitA9H91LjpN35kgZol84n7pdobtp+k1bXy8wisxHbexKAM3zhnuTC9vuew1eB/3fdNt1Q8S62mMxu9vm3kd2w5fubvC5sjwKe8pyfZefmmkqrzkeNZPrNJP3jGYq5c81t/fdc2rz8njEVf+Eeq+1IemfRzcb3aU+gIpAKwFqxiZJ2GQpm1yykdIF5cxFZR6zjUKXFkXK2cyNFYeZs9LlxcrF48THExoP5y/8/CiattGdCpbi9tUTJGpCkDwDaiRIqIHZSLDkSR8Wb+jsPTJUBuY8obiiqRoubtKPyzQQjwwXPGWo9Mn8vAiTcXg5DCRPGVb9OA4ukdQHxCvGOWPEuMIdFDZmfMsYMiaMC845Z7xkPGNUjCnnzOgM/OYpcXv1F+QYFfGN8+sveY3/z/EyMLAc+ptqU+PNVgzbdd2fFF2/rVrAl+QYwA/gZmJMV6+Py795XGgHwpd2ebw0OXidwdehb+6qdQ1l8AA=",
+        }
+    ],
+}

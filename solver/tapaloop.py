@@ -179,3 +179,27 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Tapa-Like Loop",
+    "category": "loop",
+    "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like", "tll"],
+    "examples": [
+        {
+            "data": "m=edit&p=7ZRfb5swFMXf+RSVn/2AMSHEL1XWNXth7E8zVRVCFck8FYXMGQlT5Sjfvfde0+K0eZkmbZ00EZ8cfpjcYzv29kdXtZqLED8y5fANVyxSalGaUAv7a17vGq3O+LTb3ZkWDOcfZjP+rWq2Oij6XmWwtxNlp9y+UwUTjLMImmAlt5/U3r5XNuf2Ch4xLoBlrlME9nKw1/Qc3YWDIgSfg4/dazdgl3W7bPRt5shHVdg5Z1jnDb2Nlq3NT836HHi/NOtFjWBR7WAw27t60z/Zdl/Nquv7ivLA7dTFzU7ElUNctC4uuhNxcRS/Hbepv2tzfyrqpDwcYMo/Q9hbVWDuL4NNB3ul9qC52jMZ4quwKoJDPvg9OXkGEkEAB/JIIiTn5x6RL0hMkYSHxoSkT6iWT9KUinlEhFRNekQkVM0jEY0C/w5PhFL75YUb6hEZPY8t4hPIlTtC45eIkvskoZ96mkmYcEHTfkM6I41I57Aq3ErSt6Qh6Yg0oz6XpNekF6QxaUJ9xriuv7TyfyBOId0RcnyN/j1WBgXLYNOd5aZdVw3svLxbL3T7eA/H3CFg94xaIfHU/H/y/YWTD6c/fG274LXFgX3JdtWmauqVbozZsDJ4AA==",
+        },
+        {
+            "data": "m=edit&p=7VVNb5tAEL3zK6I972E/AJu9WG4a90LpR1xFEUIRdqiMgouLTRWt5f+emQEEjemhqtRGVbTep8fbmZ3HrjXsv9dplXHp40/7XHAJw5eKpjcNaIp2LPNDkZkLPq8Pm7ICwvmHxYJ/TYt95sRtVOIcbWDsnNt3JmaScaZgSpZw+8kc7XtjI26vYYlxCVrYBCmgVz29oXVkl40oBfAIuNuk3QJd59W6yO7CRvloYrvkDOu8oWykbFv+yFjrA5/X5XaVo7BKD/Ay+02+a1f29X35ULexMjlxO2/shiN2dW8XaWMX2YhdfIs/tlvk37LyccxqkJxOcOSfweydidH3l55Oe3ptjoCROTLfw1RXo08ODmHHQKKkNVxVJ0kxpTA88E5SLkqz2WygaT2i+ZSqhtu5Eyqh5FD0RJM8kILG3aCsEl3ZQRzuc7afUuT5majH0ieU/kyj0j9J0xEpOK+hRRs3CNTy/LS0RwfdS3Alki7mlnBBqAiXcG/casK3hILQIwwp5orwhvCS0CX0KWaCN/9b/42/YCd2FTWZXw/vdf1/Xk+cmIXQzi6istqmBfS0qN6usqp7hg/IyWGPjGasIcV9/ab8g28KHr94ad3jpdmBfsYO6S4t8oesKMsdS5wn",
+            "config": {"visit_all": True},
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?tapaloop/17/17/g2h3h2yarhajh2x4h2haiyaihaih3xabhajh+2lyaihaih2w3h3h2y3haihabx2hajhaiyajhaihajx2hajhajy2h2h3g",
+            "test": False,
+        },
+    ],
+    "parameters": {
+        "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False},
+    },
+}

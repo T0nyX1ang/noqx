@@ -89,3 +89,23 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Fillomino",
+    "category": "num",
+    "examples": [
+        {
+            "data": "m=edit&p=7VXPj5s8EL3zV6x89oGx+RVu6TbpJaVfm1SrFUIrkiVdVCj9SKgqR/nfdzxQRR5tD63Udg8r4qc3fjNm8rDh8P9Q9pUEbX86kb4EvEKtaEAQ0PCna1Mfmyq9kvPh+ND1SKR8t1zKfdkcKi+fsgrvZGapmUvzJs2FEpIGiEKa9+nJvE1NJs0aJSEB51bIQEiFdHGhN6Rbdj1Ogo88mzjSW6S7ut811d1qnPkvzc1GCnufV1RtqWi7b5UYyyjede22thPb8oh/5vBQf52Uw3DffR6mXCjO0sx/3q6+tGvp2K5lT7Rr/8UfbndWnM9o+wds+C7Nbe8fLzS50HV6QszSk9AzLMWnPj4ZEQROGLIwxtBujCl0ayNw1MitjVno1iZuOHOTZ64KviuDHzp3Bt/tE3xWD8rVga0HbD3FdGYaHg03P2A6swJi7eYzbyCOmM7WS1ynIWHrJWw95i4we4H5q5hfivmjmB9KuX4rxeq126/SrJ7tOuX4hxsVaLveEi4JFeEGd7M0mvA1oU8YEq4oZ0F4Q3hNGBBGlBPb8/BLJ+YvtJPriF6/T13hi/I7SuHlYj30+3JX4Xtzcf+pusq6vi0bjLKh3Vb9jxg/W2dPfBc0aBMGL1+yf/Qls4/Af26n87m1g+8Lsa+bpmvrL50ovEc=",
+        },
+        {
+            "url": "https://puzz.link/p?fillomino/15/15/h1o5i8g2m6g3g7i3h4h1i1g6g4h2g3h4g2i5h2i4h3l4h1h5m4h2g2h6k7h3i3h7k7h2g2h3m2h1h5l3h4i3h3i-10g4h4g1h3g7g1i8h4h3i2g2g2m8g6i1o1h",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?fillomino/9/9/rb-134k-13i-13i7k5h-13k-13h8k6i-13i-13k9-13am2j",
+            "test": False,
+        },
+    ],
+    "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": True}},
+}

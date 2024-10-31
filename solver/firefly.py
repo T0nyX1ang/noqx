@@ -74,3 +74,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Hotaru Beam",
+    "category": "loop",
+    "aliases": ["hotaru", "hotarubeam", "firefly"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VbNbts8ELz7KQyeWoAH/VC/tzR1e3GVtkkRBIJhyI7SGLWhVLaKlIbfPcuh8okhEwTFhwY9BLIWq+HuckiOSW5/dlVbc1+oX5hyj/v0RImHVyQxXq9/zla7dZ2P+VG3u25acjg/KfhVtd7Wo1Il0jMb7WWWyyMuP+YlCxjv3xmXX/K9/JTLgstTamIUy+WUPJ/xgNzJ4J6jXXnHGvQ98gvtx+RekLtctct1PZ/qQp/zUp5xpvp5h2zlsk3zq2Y6Dd/LZrNYKWBR7Wgs2+vVTd+y7S6bH10f688OXB5pupNH6IYDXeVqusp7hK4axf+mW19+r28fY5rNDgea8a/EdZ6Xiva3wU0H9zTfky3yPQvjQOUSDU4FqF4YpwoIDSQRNpIiyUQy736yekR4oUJouQcksrKEn9lIYFcWAbLMOiEYCgMRyDJjInA2AD1Os3CCwibl1KGT+XZMlliFMyQNQORj4EaVKIgVEhlICHpG3UggxgAizKhZJgYZE0COZyAJQsyk9GFPtOw+Fv/iv8UPOLtatfXV+jfk2SuAwh+iUEFoo1CCsFGowY7VirDralXYHLQy7LpaHU4sFOL0BpU4vUEpTgWoxYnF7DgcIBsnFtJxYiEfJxYScvhCR3asFpODQlD2KLSobA5aWE4FqMuJhcJcVFWw+WqpORwgt4e9kdg+QHIB7BltQVyGsO9hPdgIdoqYCew57DGsgI0Rk6hN7I+2OVP1f4lOGSX6yHOeV7y/CpRsQgfXuGjaTbWm46voNou6vf+mq8JhxG4ZXpKbz8Xr7eHlbw9q9r1/7c/1DJ1STtWGxKOUcXnC2U03r+bLhjRGc/dM40QdeAHddukYfaI59XiYPZ39TPNTxV98DmmPut+Wx2+um13VduNFXW3estnoDg==",
+        }
+    ],
+}

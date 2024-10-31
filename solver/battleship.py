@@ -122,3 +122,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         battleship_refine(solution)
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Battleship",
+    "category": "var",
+    "examples": [
+        {
+            "data": "m=edit&p=7VRLb9NAEL77V1R7nsOOX7H3lpaGSzGPBFWRZVUOGCUikUsSI7RR/ntnxm69uL5wAIqEnB19+eax384+Dt+acl8BIv+CBDQQgjCKZSD6MnT3LTbHbWUuYNoc1/WeAMDb2Qy+lNtD5eUo2brwTjY1dgr2tckVKlA+DVQF2PfmZN8Ym4Gdk0sBEnfTBvkEr3t4K35GVy2JmnDWYYJLgqvySHoO68393WXLvjO5XYDiuS6lAkO1q79XqtPC/z/Vu9WGib5A5zk0n+uvTReLxRnstJW8HJEc9JIZtpIZjUjmlfwByWlxPlP7P5DoO5Oz/o89THo4NyeymTmpIODUgLS0e6SC8HH5j0TEBO3hExEPiQkT2iESJkKHSAcpoR7MEuJAR+gPU2QWp2g8jJhIhFM0lQhHGGoJcXLQlxinLLbLccpgNJwJ42cxicQ8LYDai9LkJTU55o7F8Hz3VcLtH/Wg5p4Foy7Jmoy6Uu7jiIuUzESPL3ZB5wBsIPaVWC02EnsjMddib8VeiQ3FxhIz4ZP0S2fNbclvkpOHiTxgP3/0kP1rXOHlKmt2q2p/kdX7Xbml2z5fl/eVouf17KkfSgadD3qt/7+4f/nF5a3QL+0uvDQ5dDsL7wE=",
+        }
+    ],
+}

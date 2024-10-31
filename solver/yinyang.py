@@ -71,3 +71,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Yin-Yang",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VXva9tADP3uv2LoswaWz+c4963Lmn5Ju3XNKMWYkmbeapbUW35s6wX/79HJhhQiGIyNlTEcPV7eKdKzo/Otv25nqwqJwsfkGCMzTG0mQZRIxP01rTeLyr3Ak+3mvlkxQXwzHuPH2WJdRUWfVUY7P3T+Ev2ZK4AAIeEgKNFfup0/dzBvlnc1oL/idUDihUmXmTA9PdBrWQ9s1IkUM7/oOdMbpvN6NV9Ut5NOeesKP0UIzV7JrwOFZfOtgt5M+N4ZYOFu8f2+19bbD83nbZ9FZYv+5CduzcFtoJ3bwBS34SaeuD3/rW6HZdvyQ3/Hfm9dEay/P9D8QK/cjvFCkARv3A7MgMsk3OapNbCJqmaamqWqqtbNhpqax6qqdhuqFShW21Gc67JehEiX1YdBZHVZtU2kG0xCNh3JRjeYGjU71Vta3aDVndjQ8rj2QL/5Qah9nJ0rtXnQxjJuieCUpxG9EXwtGAtawYnknApeC44EU8FMcgZhnn954v+QncLwy1K57L+rllEBo2b5pVnXmwr4xd9G8AMkChPOkf9nwV85C8IfED+3/fHc7PCOhcf64eXj7OETlNEe",
+        },
+        {
+            "url": "https://puzz.link/p?yinyang/22/18/00000000000000030190030000900003000000900130020006000l0000090000i0020009400030200060000002empf01900001009901030130900031009a00009000",
+            "test": False,
+        },
+    ],
+}

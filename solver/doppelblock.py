@@ -49,3 +49,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Doppelblock",
+    "category": "num",
+    "examples": [
+        {
+            "data": "m=edit&p=7VVRb5swEH7nV1T3fA82JgT8lnXNXjK6LZmqykKIUKpGI6IlYZoc5b/3fLA5qlZNe1i2h+niTx+f78J3NpjdU192NaYUKkGBkkIlgkcSuZ8YY7XZN7W+wFm/f2g7IojX8znel82uDozkWpEHB5tqO0P7ThuQgBDSkJCj/agP9r22GdolTQFGpC2GpJDolac3PO/Y5SBKQTwbOdFbotWmq5q6WAzKB23sCsHd5w1XOwrb9msNow93XbXb9cYJ63JPzeweNo/jzK6/a7/0Y67Mj2hnr9tV3q6jg13HfmLXdfGH7ab58UjL/okMF9o47589TTxd6gNhpg+ghCtNyMuwN6Ak/xft1Q8lckooTpTJSyUaqmKvTLhKeSGevhASvrVMvZIqViKvSBGzND2RqIKk0yQVsp/vCrUmucFbxjljyLii/tEqxreMgnHCuOCcK8YbxkvGiDHmnKlbwd9a4zPYMVHIr6uP+LzXeWBg2Xf3ZVXTc5n123XdXWRtty0boIPgGMA34GEUpUf/z4a/dDa4LRD/2tP7CzvGLlEJtNcIj31RFlXbAH1e8BX97O7p9YPyqashD54B",
+        }
+    ],
+}

@@ -74,3 +74,19 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Tentaisho",
+    "category": "region",
+    "aliases": ["spiralgalaxies"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VVNj9owEL3zK1Y++5CJ82Fyo1vay5ZtG6oViiIU2GxBBYUCqSoj/vvOjL1CbRy1UtUvaRU883geT57Hdnz43Fb7WkJAP6Ulenwi0NxCnXAL3DNdHzd1diVH7XHV7BFIeTuRD9XmUA8KF1QOTmaYmZE0r7NChEJyA1FK8y47mTeZmUmTY5eQEXI3iEDIEOH4Au+4n9C1JSFAPHEY4Qzhcr1fbup5nlvqbVaYqRT0ohc8nKDYNl9qYcfx/2WzXayJWFRHnMxhtd65nkN733xqXSyUZ2lGVu/4SS+9xelVF70ErV5CHr00jV/XW99/rA/twid2WJ7PWPX3KHeeFaT8wwXqC8yzk0hAZJEUSWidsi5ilzo3ZKc1u6ENgcCOgCC1HhLnbTSENjGoJ+/ilRuvbHKIKB7FTLITWmA7Q2EK+QJwwpcqYeFEjGk8dBIgHXbp2Etr1ORJoumV3WhQ/iygcMo+Pia+mx6our54Tfm78Sryz1XRunj4KOzhWaeH1xTf1ROHPaXvqUPcU+U49Zc5CWlensXqqWfSM98kxR3p47W/bmng15kCbmEfn9J6fZ8Ht+cr3qQh2ykeJWkU25dsA7Yx2xuOGbO9Y3vNNmKbcExKh/Enj2v3nPwmOYWyX/5vn/j/48pBIfJ2/1Ata/xUjvGjeTVp9ttqg//yVbWrBV5Q54H4KrgViq675zvr79xZtALBv3YUfiCnwL0AKUhzK8WunVfzZYN7C0vX1/HH9eNpLgeP",
+        },
+        {
+            "url": "https://puzz.link/p?tentaisho/19/22/hafheneweo2ffneneyerfgezy0eg4fifhafnezgfnfmegepel3epfzzt6989ezq7ehfehfwfnezk2dezq4b88fzveweofznfhefezzu54ffzzmedb4b3ezuejflexezg4fl7ezel72eregfztflefzzheifhbeztewen9ekejemer6eret8fpe",
+            "test": False,
+        },
+    ],
+}

@@ -55,3 +55,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Easy As ABC",
+    "category": "num",
+    "examples": [
+        {
+            "data": "m=edit&p=7ZRPb5tAEMXvfIpoz3NggGDYG03jXFz6x7aiCKEIu1SxaosWm6pay989M7OobHAvPaT1ocL79PxjZ/3Ywbv/3lVtDYj8CRPwgRxE17EMxECG31+LzWFb6yvIusNT05IBeD+dwpdqu6+9givpKr2jSbXJwNzpQqECFdBAVYL5qI/mnTY5mDndUhARm9lJAdnbwd7LfXY3FqJPPu892Qey60273taPM0s+6MIsQPHvvJFqtmrX/KhVn4O/r5vdasNgVR3oYfZPm2/9nX33ufna9XOxPIHJRnE5Th83HOKytXHZ/SYul71y3LQ8nWjbP1HgR11w9uVgk8HO9ZE010cVRlyaURbbGxXGDJYOmIxBwmA+gMhnsHAAjoGs4YDJGCQCnBxpwOBuAOiPaxDH0TA4q7LxnYXRhnGr4jOSyLa8ILIvzlPjWWRMZGdekHScJ5XNcldOZbd+VVFjUNrzIDoVDUQX1D0woehbUV/0WnQmc25F70VvRCPRWOZMuP9/9Ib8hThFlNgjw7kml0VKr1B5t1vV7VXetLtqq+h4O3nqp5JRhHxa/j/x/tGJxy3wL+2tvrQ49D8rvWc=",
+            "config": {"letters": "AUGST"},
+        }
+    ],
+    "parameters": {"letters": {"name": "Letters", "type": "text", "default": "ABC"}},
+}

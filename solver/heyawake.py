@@ -145,3 +145,33 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Heyawake",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7ZZLbxs3HMTv+hQGzzzsktznzU3VXhz3YRdBIAiBomxqITLUylYfa/i750dyWB0aoKe2OQQrUaPVcPjncEjtw6+nzXGytYsv39vK1lxhCOntuya9K123u8f9NF7Yy9Pj3eEIsPa7a/t+s3+YFiuR1ouneRjnSzt/O65MbaxxvGuztvMP49P8cpyXdr7hJ2N77l1lkgMuz/BV+j2iF/lmXYGvhYGvgdvdcbuf3lzlO9+Pq/nWmjjOV6l3hOb+8NtkVEf8vj3cv93FG283j8zl4W73i355OL07fDiJW6+f7XyZy735RLn+XG6EudyIPlFunMW/XO6wfn7G9h8p+M24irX/dIb9Gd6MT7TXqa1T+zq136TWpfYWqp19ar9ObZXaJrVXibMcn4zrgnVDZUbHCpMRN9TCHdgL9+CQcV+BW+Ea3Al78CBM5ippDhVY/KEGiz94sPgxo3Xht2An3IFVwzCAm4TRBmdNtK13mY82OPPRBotfw3fixw3iemFqcLkGtK33ee5og6Xp4HvxHXwvvoMfxHfwQ+H34OwV2mDV4Jl7yHNHGyxNdqtvxPfwG/ED/Eb8AL8RP+BVm71CG6waAnNvNfeAZivNJu5/8Zt4DojfwO/Eb+B34rd41cmrlho61dAy905zb9HspdnB78Xv4Pfid/B78cmYV8bSWaSMeXLllSu0wZo7GfPKGNo2VPK278CquR/A4pOxoIyhDVYN8fxTrtAGa1wyFpQxtMHZW7TBuWa0bXCZjza48KlBGQtVD871Mw4418A44FwD44ClT36C8kM/G0KujX5g6Tv0g/TJUlCW6GeDskE/sMYiG0HZoB9Y+uQkKCf0s0HrTj+wxmLdg9adfmDpk4FQMhDXTvfz/0i5T+ZLNjgrWMvzmionyauqeMtY2u98/rUuoYZT/K/hFP9rOK74E71V/S56W7yK3sorH70tXjF3r7l45u7llWfuXuviGVf7ms/zuoToc/Et+lx8Y9ym+BY917hN9Lx4yLhpjThcX6Uj9kVqQ2rbdPR28Qz/j0/5fyxnhWPxieHvV/PlfrzWi5W5OR3fb7YT/9zLdz9PF9eH4/1mb3hQel6YP0x6r3x87Pry7PQ/PTvFJag+t731uZXDbjd305+b3zcfJrNefAQ=",
+        },
+        {
+            "url": "https://puzz.link/p?heyawake/19/15/201480mhg2i40a8s192816704r503gk0m2g2oa0a18085010k046g0003hu0104000400fbvgvo005fu1800o0000000800600000003s0003c-1c140411g81ah8233",
+            "config": {"fast_mode": True},
+            "test": False,
+        },
+        {
+            "data": "m=edit&p=7VNNa9wwEL37VyxznoMl+Wt126ZuL9vtx24JwZjgOErXxItb77pptfi/ZzQWuIdAKSU0hyL0eDN6kp4+5vhtqHqDGaaoMgxRUFORRBVGGCWCe+jbrjm1Ri9wNZz2XU8E8f0G76r2aILCi8rgbJfartC+1QUIQJDUBZRoP+qzfadtjnZLQ4AZ5daTSBLNZ3rJ445dTEkREt94TvSKaN30dWuu11Pmgy7sDsHt84pnOwqH7rsB78PFdXe4aVzipjrRWY775qsfOQ633f3gtaIc0a4mu9sn7KrZrqOTXceesOtO8cx2l+U40rV/IsPXunDeP880m+lWnwk3+gwyoakio7fmpwG1dLEPSSNYecX4hlEy7mghtIrxNWPIGDOuWZPT+iKmtdMQtKQV4yVxMfGUNsmU55J45DWkj8kE5+kX/qpP5cQz5fW0ySVvdcEYMSZsIXUn/aO7+PvT/tZOIROuq7nFzxuXQQHbob+rakP/Jb/9Yhabrj9ULVB5jgH8AO4FXShG/yv2H1Wse4Lwpf3Vl2aHqgf25mf1UN0bKINH",
+            "config": {"fast_mode": True, "limit_border": 1},
+        },
+        {
+            "url": "https://puzz.link/p?heyawake/12/12/00000o0003063cc0o00030000000008020080a4a92a02008020000-2811111111",
+            "config": {"fast_mode": True, "limit_2x2": 1},
+            "test": False,
+        },
+    ],
+    "parameters": {
+        "fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False},
+        "limit_border": {"name": "Border Limit", "type": "number", "default": 0},
+        "limit_2x2": {"name": "2x2 Limit", "type": "number", "default": 0},
+    },
+}

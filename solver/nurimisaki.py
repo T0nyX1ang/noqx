@@ -60,3 +60,22 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Nurimisaki",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VRNb5tAEL3zK6w5z4Fl+fLe3DTuxaUfuIoihCJMiYICJQVTVWvx3zM7ICETX3poFFUV3qe3b2aXt4N3up991hYohPnJEG0khq7n8xDC4WFPz748VoVa4aY/PjQtEcRP2y3eZ1VXWMmUlVonvVZ6g/qDSkAAgkNDQIr6izrpj0pHqGMKAbqk7cYkh+j1TG84btjVKAqbeDRyn+gt0bxs86q421GUlM8q0XsE8553vNpQqJtfBUw+zDxv6kNphEN2pMN0D+XTFOn6781jP+WKdEC9Ge3GF+zK2a6ho13D/prd6qm5ZHSdDgMV/CtZvVOJcf1tpuFMY3UijNQJZEBLffTHbwKeTVM5T12z8YpcT0KwPouH3iIuxHKFcOQLxbxz3kRIsczwTMaZ4i/WBC8ywnOFzif4lLeMW0aHcU9FQC0Z3zPajB7jjnOuGW8YrxhdRp9zAlPGPyr0K9hJJN3PC4/376qplUDct/dZXtB1iPr6ULSrqGnrrALqPIMFv4EH/XWokf1vRq/ejEzx7bd2U96aHbq78KNvy7rssscSUusZ",
+        },
+        {
+            "url": "https://puzz.link/p?nurimisaki/15/15/v.h.h.h.h.zr.j.h.i.zk.l.q.m.j.l.r.i.i.i.zr.h.h.h.h.v",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?nurimisaki/22/15/j.zj3j.h.v.n.g..k3q4z4l.l2w3n4h.u5g3o3k.m.h.g4u.p.k3h.j.p3n.i3k.t.u4o.h3h.g3r4",
+            "test": False,
+        },
+    ],
+}

@@ -63,3 +63,19 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Hashiwokakero",
+    "category": "loop",
+    "aliases": ["bridges", "hashiwokakero"],
+    "examples": [
+        {
+            "url": "https://puzz.link/p?hashi/19/14/2g2g3g3g2i2g3g2q2g2g1h3g2g3h2v2i3g2h1g2h1g2g3p2g23g2g2g2j2g2i2h2g3g3g33zh2h3g1h2g32h1g2g2h2j4g3h1h2l2g1j23g2h4g2g1h2h3g2o1g2h2p2g2i2k1g2g3g4j3h22g3h2",
+            "test": False,
+        },
+        {
+            "data": "m=edit&p=7VbNattAEL77KcyeWliodmclS7qlqdNL6v4kJQRhgp2ojYmNWjlui4zfPTMjh93ZpodCG3IIQsN8Oz/7zWg10vr7ZtbW2qTaGg25TrTBK0tynUOmLYz4TvbX6eJ2WZdDfbC5vW5aVLR+f3Skv8yW63pQ7b2mg21XlN2B7t6WlQKlleV7qruP5bZ7V3YT3Z2gSWmDa8eoGaUtqmOvnrGdtMN+0SSoT3o9Q/Uc1ctFe7msL477RB/KqjvVivZ5zdGkqlXzo1Z9GOPLZjVf0MJ8dovFrK8X3/aW9eaqudnsfc10p7uDnu74Abrg6ZLa0yXtf9G9niHVh5gW090OO/4JuV6UFdH+7NXcqyflFuWk3CqXUOgQiWlMgPmcxQXw0CG0HmbSmguYUjLvnMpUKaXyMCfnAEJEJB8JeyHdjTViL2MpPrSnEgOlcx47ig/sLt7fOIoIdmD+IabiA5xRRpEhkxWbjCKEx6iIV/KorkKysIm0WyPrtkbWaU28g+VOBRlA1oXveBzBhyTYI404pNRrEZFGrLk3AatRxGEU+Rfx07AF7eE9IKGTGHqAkSyBOyM9KCbIYeV5BStZAEjWAL9l5F4FezrqNs7Mexx1ClL5tCCXvQc+9AEu4jMFRfRCRjU4G72/lvx9Dc5SD0IsT7EDyhfYgfKFdsrnGeEYMTxMzlkesbQsT3HW6A5YvmGZsExZHrPPmOUZy0OWjmXGPiOaVn81zx6BTuX67+KfrvTZ+mz999bpoFLjq6/1cNK0q9kSv/6TzWpet/cY/7R2A/VL8Y0DwGj3/PP1+D9f1P3kqY2sp0YHh2jfxp/NzeymbpvhC4av5u0Cj/j6pZoO7gA=",
+        },
+    ],
+}

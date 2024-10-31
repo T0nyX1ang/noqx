@@ -38,3 +38,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Kurodoko",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VRNb5wwEL3zK6I5+4AxOKxv2zTby5Z+sFUUIRSxlCgoIKewVJUR/z3jgdahyqWHRqlUef32Pc/YfgzY/beh6CrGffsTMcN/bCGPqQexpO4v7VCfmkqdse1wutMdEsY+7Hbstmj6ysuWrNwbzUaZLTPvVAYcGATYOeTMfFKjea9MwkyKIWAhju3npADppaNXFLfsYh7kPvJk5hLpNdKy7sqmutljFEc+qswcGNh93tBsS6HV3ytYfFhd6vZY24FjccKH6e/qhyXSD1/1/bDk8nxiZjvbTZ+xK5xdS2e7lv01u82Dfs7oJp8mLPhntHqjMuv6i6Oxo6kaERM1gvBxqmByficgBMrASYkycnKzSpbruTJCKX/J82C1VMxXS3Eeoo6dDtY789+McWFXD52OrDW3G4+styfzpd3+yX7k7mccH55TCa4Jd4QB4QErxIwgfEvoE0aEe8q5JLwivCAMCSXlnNsa/9FbeAE7mZgP87pF/95Y7mWQDt1tUVZ4ApKhPVbdWaK7tmgAL5vJgx9AHT8evLv+3z8vfv/Y4vuv7ft/bXbwRML90GksnobcewQ=",
+        }
+    ],
+}

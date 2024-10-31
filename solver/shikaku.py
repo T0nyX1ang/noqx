@@ -50,3 +50,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Shikaku",
+    "category": "region",
+    "examples": [
+        {
+            "data": "m=edit&p=7VTLbtswELzrKwye90CKsh68uandi6s+4iIIBCGQHbYxYkOtZBUFDf97dpdKZBW59NA2BQqa45nla7z0sv3WVY0FJemjU8BvbJFKuYdpzF32bbU97KyZwKw73NUNEoB3iwV8rnatDYp+VhkcXWbcDNwbU4hQAHclSnAfzNG9NS4Hd4lDAhTGlsiUgBDpfKBXPE7swgeVRJ57niC9RrrZNpudvVn6jd6bwq1A0DmveDVRsa+/W+GXsd7U+/WWAuvqgD+mvdt+7Ufa7ra+7/q5qjyBm3m782fs6sEuUW+X2O+ya2+/2LZbP+c1K08nzPlHdHtjCjL+aaDpQC/NETE3R6GnuDSDxF+LiFKU6ZOMQ5Txk0ySkUxjlHqQ2UhmmkxN8Ec/BqKfAkqq0X5K0nHRmaYDxivojFFEkeOzPTQde7ZHNPasYnmmMQmKU3HNuGAMGVeYKXCa8TWjZJwyLnnOnPGK8YIxYox5TkK5/qXb+AN2Cu3retym/16sDAoxx0qY5HWzr3ZYDXm3X9vmUePbcwrED8Ed/5b4lP1/jv7Gc0T5ly+tDF6aHSxMgTd+X2HuyuAB",
+        },
+        {
+            "url": "https://puzz.link/p?shikaku/24/14/h5x6i.j8g6lag4j.l9i8j6i4l3z9g6i4i4h56h6i4i6j8h4n3h6zn4j4r6j4g6j8i8hci6j8q6h2r8k5l8k8j.l9j4l.lataock36kck",
+            "test": False,
+        },
+    ],
+}

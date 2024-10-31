@@ -43,3 +43,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Paintarea",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7ZZBb5tOEMXv/hTRnvfAwgK73NLU7SV1+/87VRQhFBGHNFbtOsWmqrD83fNmmA0+RKqqtmoOFfb4t8NjmX07IG+/dnXb6BxH4nSkDY4ksvzNIvqE42K5WzXFiT7tdvebFqD1+5m+q1fbZlKKqJrse1/0p7p/W5TKKK1ifI2qdP9fse/fFf1U93OcUtohdz6IYuB0xEs+T3Q2JE0EngkDr4CLZbtYNdfnQ+ZDUfYXWtF9XvHVhGq9+dYoqYPGi836ZkmJm3qHtWzvlw9yZtvdbj53ojXVQfenQ7nzZ8pNxnIJh3KJnimXVvGHy/XV4QDb/0fB10VJtX8c0Y04L/aIs2Kv4hSX0kbzzqjMYJg8DV2EYSxDXGH4uiuObzjGHC8wre4Tjq85RhxTjuesmeJuJkm1sZkqYsyIHjPWD2yRTyVvkU9D3muToQjiNAc7YWgy0aTQ5KJBj5oca2CGPhd9Bg0thjiHxokmx+JcIow5ncyZQ+9F76DxonFex5HkfQSWeXwMFo1PwFbYgmExGFodm1gYeTPkjbXwIXAGzoVRv5X6yYc0+ID6U7lvCn0qevIk+EY+0F4yY3uz4b7sSfAwO/KQPAm+kSd58OTIQ/IkeOiOPHSY38n85FXwE/4YH/yBxosG/sAX8WH0kP2Jgj+jn/h98hNegqlP0FCX3FZnHC3HjNstpx7/qafg1zv7h+WUMXb56EC//+5RNSnVvGvv6kWDd8P09lNzMtu063qF0axb3zRtGOPVfJio74q//Ljbf2/rv/S2pi2IXlq3vrRy8Pyoh3r5ZYf/J7WqJo8=",
+        },
+        {
+            "url": "https://puzz.link/p?paintarea/18/10/fesmfvrsi3vrvsntsvuttippjvnvrnvdferjbmtvtmnftnrnvrfbanmunev6vffddd8a1zj2b0t2b2a2c1o1d2b1c3zx2d2a2a3t",
+            "test": False,
+        },
+    ],
+}

@@ -75,3 +75,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Nagareru-Loop",
+    "category": "loop",
+    "aliases": ["nagareru"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VfLbutGDN37KwKtZ6F56bVLbpNu3PThFEEgGIbjKI1Rp7614zaQ4X/PkDyOjZpF20WLCzSwNcMhOZwzR0NKWv+6ma4643L6+8rkxqZfWVd8VdHyleN3M39ZdM2ZOd+8PC1XSTDm26sr8zhdrLtBC6/xYNvXTX9u+q+bNnOZwTU2/ffNtv+m6e9MP0qmzISkGybJZsYl8fIg3rKdpE+itHmSryEn8S6J09Vq+fvkYnIhnt81bX9jMlrogqeTmD0vf+symcfj2fL5fk6K++lL2s36af4ZlvXmYfnzBr52vDP9ueAd7vHSwsDrD3hJFLwkKXgJHOGdzVezRTcZSqB/CLd7+Kl71ZDW490uUf5DwjppWoL940GsDuKo2WaxzJpgssJyV8qoitLJqM6lq7izubjaXJxsXktvvfTOoZfZ1sHuJYz1sHv4e8Tx8A/wC4X0QGhLzCsxr4S9BK4S61SwV9BX0NeyjsvF7oDbWVnPOdmXc/ADfuckjgNOFzA/BOmj4HIlxsDlwKUDLlfBD+R64PC5zPPg01uM7X4scbyVON4JXg+8Hnx7h3ge+rDvMT9iHvD6AusUgteDJ1/DXsNew16LPeRiD+AtWFkn4P4H4A5WeAvAF8BnAJ/BIx5whohxgbgF5hWYV0Jfwh/nIIDngGMaahlH4ItW8EfgieAxMl8pC66bbWott3cpIyhea817LbnldM3oNrbxoJYSw8mheBOJmjcF8Sdqzqm2PInCOaTqKY6ipzOqoOHc0vwp1zR/uifH/nuclJPH29r705nX4lNuHu93r68o/ik9nIuKP+ekEp9zVNNTrVF4dpQbyr4c1aJjHt71f4i/19OZ1PwL2q+ip9qg4fwT3jjnFR64Bmh6qgmqnvar6el4anri+ZQ3rinKfecao+mptijnyleE85RPTzmr6LnWKDi5tijxudYoeLimKDyHQs9Hri1aHHqmKOeWa4+Gk545ynmIuX5+uCadxEl16Yqrk+P2Jj28Te+5/YrbnNvI7ZB9Lrm95fYTt4Hbgn1Kevz/zReE0wL5L8Fpo7xp/vUvfvh9+P3//MaDNhttVo/TWZde+ofzX7qz6+XqebpIo9HT9HOXpe+s3SB7zfhKZcSmz6mPT6///tOL6M+/tPr6pcFJFX88eAM=",
+        }
+    ],
+}
