@@ -23,7 +23,7 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
@@ -58,7 +58,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
 
     for (r, c), color_code in puzzle.surface.items():
-        solver.add_program_line(f"black({r}, {c}).")
+        solver.add_program_line(f"hole({r}, {c}).")
 
         for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
             prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
@@ -67,7 +67,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
-    solver.add_program_line(f":- grid(R, C), not black(R, C), {spawn_points}.")
+    solver.add_program_line(f":- grid(R, C), not hole(R, C), {spawn_points}.")
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
