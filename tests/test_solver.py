@@ -2,7 +2,7 @@
 
 from starlette.testclient import TestClient
 
-from solver import list_solver_metadata
+from noqx.manager import list_solver_metadata
 
 metadata = list_solver_metadata()
 
