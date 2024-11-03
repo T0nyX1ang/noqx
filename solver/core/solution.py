@@ -26,6 +26,7 @@ class ClingoSolver:
         """Initialize a solver."""
         self.clingo_instance: Control = Control()
         self.program: str = ""
+        self.model: Optional[str] = None
         self.puzzle: Optional[Puzzle] = None
         self.solutions: List[Solution] = []
 
@@ -100,6 +101,7 @@ class ClingoSolver:
         """Reset the program."""
         self.clingo_instance = Control()
         self.program = ""
+        self.model = None
         self.puzzle = None
         self.solutions = []
 
@@ -112,9 +114,9 @@ class ClingoSolver:
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
-        with self.clingo_instance.solve(  # pylint: disable=not-context-manager  # type: ignore
-            on_model=self.store_solutions, async_=True
-        ) as handle:
+        with self.clingo_instance.solve(async_=True, yield_=True) as handle:  # type: ignore
+            for model in handle:
+                self.store_solutions(model)
             handle.wait(Config.time_limit)
             handle.cancel()
 
