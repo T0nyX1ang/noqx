@@ -6,9 +6,9 @@ import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from .core.logging import logger
-from .core.penpa import Puzzle
-from .core.solution import Config
+from noqx.logging import logger
+from noqx.penpa import Puzzle
+from noqx.solution import Config
 
 solver_dir = os.path.dirname(__file__)
 

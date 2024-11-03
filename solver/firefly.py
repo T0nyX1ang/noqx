@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import direction, display, fill_path, grid
-from .core.loop import directed_loop
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.loop import directed_loop
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 drdc = {"1": (0, 1), "2": (1, 0), "3": (0, -1), "4": (-1, 0)}
 dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}

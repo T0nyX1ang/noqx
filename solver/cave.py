@@ -2,17 +2,17 @@
 
 from typing import List, Tuple
 
-from .core.common import display, grid, shade_c
-from .core.helper import tag_encode
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import (
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import tag_encode
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import (
     border_color_connected,
     bulb_src_color_connected,
     count_reachable_src,
     grid_color_connected,
 )
-from .core.solution import solver
+from noqx.solution import solver
 
 
 def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):

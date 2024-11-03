@@ -2,13 +2,13 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .core.common import area, count, display, grid, shade_c
-from .core.helper import full_bfs, tag_encode
-from .core.neighbor import adjacent, avoid_adjacent_color
-from .core.penpa import Direction, Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.penpa import Direction, Puzzle, Solution
+from noqx.rule.common import area, count, display, grid, shade_c
+from noqx.rule.helper import full_bfs, tag_encode
+from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.reachable import grid_color_connected
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def avoid_diamond_pattern(color: str = "black") -> str:

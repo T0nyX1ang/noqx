@@ -4,7 +4,7 @@ import random
 from collections import deque
 from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
 
-from .penpa import Direction
+from ..penpa import Direction
 
 
 def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:

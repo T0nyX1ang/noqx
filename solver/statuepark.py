@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.shape import OMINOES, all_shapes, count_shape, general_shape
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:

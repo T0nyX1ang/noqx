@@ -2,9 +2,9 @@
 
 from typing import List
 
-from .core.common import count, display, fill_num, grid, unique_num
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import count, display, fill_num, grid, unique_num
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:

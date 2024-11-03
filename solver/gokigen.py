@@ -2,9 +2,9 @@
 
 from typing import List
 
-from .core.common import direction, display, fill_path, grid
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid
+from noqx.solution import solver
 
 
 def slant_rule() -> str:

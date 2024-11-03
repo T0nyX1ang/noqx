@@ -2,13 +2,13 @@
 
 from typing import List
 
-from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.helper import full_bfs
-from .core.loop import pass_area_once, single_loop
-from .core.neighbor import adjacent, area_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.loop import pass_area_once, single_loop
+from noqx.rule.neighbor import adjacent, area_adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 
 def moon_sun_area() -> str:

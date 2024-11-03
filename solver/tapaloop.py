@@ -3,12 +3,12 @@
 import itertools
 from typing import List, Optional, Tuple, Union
 
-from .core.common import direction, display, fill_path, grid
-from .core.loop import single_loop
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.loop import single_loop
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))

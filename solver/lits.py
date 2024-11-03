@@ -2,13 +2,13 @@
 
 from typing import List
 
-from .core.common import area, display, grid, shade_c
-from .core.helper import full_bfs, tag_encode
-from .core.neighbor import adjacent, area_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_shape
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, display, grid, shade_c
+from noqx.rule.helper import full_bfs, tag_encode
+from noqx.rule.neighbor import adjacent, area_adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.rule.shape import OMINOES, all_shapes, avoid_rect, count_shape, general_shape
+from noqx.solution import solver
 
 
 def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> str:

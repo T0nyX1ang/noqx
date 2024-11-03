@@ -2,13 +2,13 @@
 
 from typing import List, Tuple
 
-from .core.common import display, edge, grid
-from .core.helper import extract_initial_edges, tag_encode
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import bulb_src_color_connected
-from .core.shape import all_rect_region
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, edge, grid
+from noqx.rule.helper import extract_initial_edges, tag_encode
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import bulb_src_color_connected
+from noqx.rule.shape import all_rect_region
+from noqx.solution import solver
 
 
 def shikaku_cell_constraint(target: int, src_cell: Tuple[int, int]) -> str:

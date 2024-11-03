@@ -2,16 +2,16 @@
 
 from typing import List, Tuple
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent, count_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import (
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent, count_adjacent
+from noqx.rule.reachable import (
     bulb_src_color_connected,
     count_reachable_src,
     grid_color_connected,
 )
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def avoid_unknown_misaki(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:

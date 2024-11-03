@@ -2,17 +2,17 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import (
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import (
     avoid_unknown_src,
     count_reachable_src,
     grid_color_connected,
     grid_src_color_connected,
 )
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:

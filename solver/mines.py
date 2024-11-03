@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import count, display, grid, shade_c
-from .core.neighbor import adjacent, count_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.neighbor import adjacent, count_adjacent
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:

@@ -2,13 +2,13 @@
 
 from typing import List
 
-from .core.common import area, display, grid, shade_c
-from .core.helper import full_bfs
-from .core.neighbor import adjacent, count_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.shape import area_same_color, avoid_rect
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, display, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.neighbor import adjacent, count_adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.rule.shape import area_same_color, avoid_rect
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:

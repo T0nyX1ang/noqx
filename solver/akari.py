@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import display, grid
-from .core.helper import tag_encode
-from .core.neighbor import adjacent, count_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid
+from noqx.rule.helper import tag_encode
+from noqx.rule.neighbor import adjacent, count_adjacent
+from noqx.solution import solver
 
 
 def lightup(color: str = "black") -> str:

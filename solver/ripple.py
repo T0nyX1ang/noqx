@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import area, display, fill_num, grid, unique_num
-from .core.helper import full_bfs
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, display, fill_num, grid, unique_num
+from noqx.rule.helper import full_bfs
+from noqx.solution import solver
 
 
 def ripple_constraint() -> str:

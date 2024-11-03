@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import area, count, display, grid, shade_c
-from .core.helper import full_bfs
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, display, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.solution import solver
 
 
 def area_gravity(color: str = "black") -> str:

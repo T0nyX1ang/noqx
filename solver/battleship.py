@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import count, display, grid, shade_c
-from .core.neighbor import adjacent, avoid_adjacent_color
-from .core.penpa import Puzzle, Solution
-from .core.shape import OMINOES, all_shapes, count_shape, general_shape
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
+from noqx.solution import solver
 
 
 def battleship_refine(solution: Solution) -> Solution:

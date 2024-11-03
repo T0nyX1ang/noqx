@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import area, count, display, grid, shade_c
-from .core.helper import full_bfs
-from .core.neighbor import adjacent, avoid_adjacent_color
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, display, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:

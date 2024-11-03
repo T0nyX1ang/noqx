@@ -2,9 +2,9 @@
 
 from typing import Dict, List, Tuple, Union
 
-from .core.common import display, shade_c
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, shade_c
+from noqx.solution import solver
 
 
 def nono_row(col: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):

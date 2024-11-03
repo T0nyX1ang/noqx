@@ -9,8 +9,8 @@ from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
+from noqx.logging import logger
 from solver import list_solver_metadata, run_solver
-from solver.core.logging import logger
 
 
 async def root_redirect(_: Request) -> RedirectResponse:

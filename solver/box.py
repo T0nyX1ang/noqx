@@ -2,9 +2,9 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.solution import solver
 
 
 def count_box_col(target: int, c: int, color: str = "black") -> str:

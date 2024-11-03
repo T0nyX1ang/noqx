@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import direction, display, fill_path, grid, shade_c
-from .core.loop import separate_item_from_loop, single_loop
-from .core.neighbor import adjacent, count_adjacent_edges
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.loop import separate_item_from_loop, single_loop
+from noqx.rule.neighbor import adjacent, count_adjacent_edges
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 
 def convert_direction_to_edge() -> str:

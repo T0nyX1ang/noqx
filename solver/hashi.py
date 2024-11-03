@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import direction, display, grid, shade_c
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, grid, shade_c
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 
 def hashi_bridge() -> str:

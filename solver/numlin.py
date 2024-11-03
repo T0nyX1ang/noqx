@@ -2,13 +2,13 @@
 
 from typing import Dict, List, Tuple, Union
 
-from .core.common import direction, display, fill_path, grid, shade_c
-from .core.helper import tag_encode
-from .core.loop import single_loop
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import tag_encode
+from noqx.rule.loop import single_loop
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
+from noqx.solution import solver
 
 
 def no_2x2_path_bit() -> str:

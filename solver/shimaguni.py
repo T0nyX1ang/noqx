@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import area, count, display, grid, shade_c
-from .core.helper import full_bfs
-from .core.neighbor import adjacent, area_adjacent, avoid_area_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import area_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, display, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.neighbor import adjacent, area_adjacent, avoid_area_adjacent
+from noqx.rule.reachable import area_color_connected
+from noqx.solution import solver
 
 
 def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str:

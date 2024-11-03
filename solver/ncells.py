@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, edge, grid
-from .core.helper import extract_initial_edges, tag_encode
-from .core.neighbor import adjacent, count_adjacent_edges
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_branch_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, edge, grid
+from noqx.rule.helper import extract_initial_edges, tag_encode
+from noqx.rule.neighbor import adjacent, count_adjacent_edges
+from noqx.rule.reachable import grid_branch_color_connected
+from noqx.solution import solver
 
 
 def count_reachable_edge(target: int) -> str:

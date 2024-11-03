@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import direction, display, fill_path, grid
-from .core.helper import tag_encode
-from .core.loop import intersect_loop
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.helper import tag_encode
+from noqx.rule.loop import intersect_loop
+from noqx.solution import solver
 
 
 def adjacent_loop_intersect() -> str:

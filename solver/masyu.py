@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import direction, display, fill_path, grid, shade_c
-from .core.loop import loop_sign, single_loop
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.loop import loop_sign, single_loop
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 
 def masyu_black_rule() -> str:

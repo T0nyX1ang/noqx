@@ -2,13 +2,13 @@
 
 from typing import List
 
-from .core.common import area, count, display, fill_num, grid
-from .core.helper import full_bfs
-from .core.neighbor import adjacent, area_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, display, fill_num, grid
+from noqx.rule.helper import full_bfs
+from noqx.rule.neighbor import adjacent, area_adjacent
+from noqx.rule.reachable import grid_color_connected
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def nanro_fill_constraint(color: str = "black") -> str:

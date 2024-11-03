@@ -2,12 +2,12 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .core.common import area, count, direction, display, fill_path, grid, shade_c
-from .core.helper import full_bfs
-from .core.loop import single_loop
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.loop import single_loop
+from noqx.rule.neighbor import adjacent
+from noqx.solution import solver
 
 
 def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:

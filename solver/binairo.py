@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import count, display, grid, shade_c
-from .core.helper import extract_two_symbols
-from .core.penpa import Puzzle, Solution
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.helper import extract_two_symbols
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def unique_linecolor(colors: List[str], _type: str = "row") -> str:

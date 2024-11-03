@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, edge, grid
-from .core.helper import extract_initial_edges, tag_encode
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.shape import OMINOES, all_shapes, general_shape
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, edge, grid
+from noqx.rule.helper import extract_initial_edges, tag_encode
+from noqx.rule.neighbor import adjacent
+from noqx.rule.shape import OMINOES, all_shapes, general_shape
+from noqx.solution import solver
 
 
 def avoid_adj_same_omino(color: str = "black") -> str:
