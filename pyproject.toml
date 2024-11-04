@@ -19,7 +19,7 @@ license = {text = "GPL-3.0-or-later"}
 
 [tool.black]
 line-length = 127
-target-version = ["py37", "py38", "py39", "py310", "py311"]
+target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
 
 [tool.ruff]
 line-length = 127
