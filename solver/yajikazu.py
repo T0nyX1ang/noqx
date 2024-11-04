@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, grid, shade_c
+from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
@@ -35,9 +35,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_adjacent_color(color="gray"))
     solver.add_program_line(grid_color_connected(color="not gray"))
-
-    # avoid all cells are unshaded
-    solver.add_program_line(":- { gray(R, C) } = 0.")
+    solver.add_program_line(count(("gt", 0), color="gray", _type="grid"))
 
     for (r, c), clue in puzzle.text.items():
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
