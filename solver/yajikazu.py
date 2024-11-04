@@ -2,11 +2,11 @@
 
 from typing import List, Tuple
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent, avoid_adjacent_color
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.reachable import grid_color_connected
+from noqx.solution import solver
 
 
 def yajikazu_count(target: int, src_cell: Tuple[int, int], arrow_direction: int, color: str = "black") -> str:
@@ -55,3 +55,19 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Yajisan-Kazusan",
+    "category": "shade",
+    "aliases": ["yk", "yajisan-kazusan"],
+    "examples": [
+        {
+            "data": "m=edit&p=7VRNj9MwEL3nV1Q+gTRIdpzvW1m2XEr4aNFqFUVRWrLasC2BZIPAVf/7jidGdWguHIAVQlFen59nxs/O1N2XvmwrEB7EICPgIPDxQ44DDpGI6OXmWdf3uyqZwby/v21aJACvFwu4KXdd5WQmKncOKk7UHNTLJGMuA3oFy0G9TQ7qVaJSUCucYhChtkQmGLhIL0/0iuY1uxhEwZGnQ0GB9Brptm63u6pYDsqbJFNrYHqd55StKds3Xys2lKDxttlvai1synvcTHdbfzYzXf+huetNrMiPoOaD3dWEXXmyq+lgV7MJu3oXv9lunB+PeOzv0HCRZNr7+xONTnSVHBDT5MA8V6d6hUQ3+gthRc/XklvoE/4hxbRAoXdkJJ9ridtRgXeWGFAtaZcPwyHKqhVSec9OjORZYkyJY8n4shIFF2fGBKdqrp0qBMW5Bbe1YCLOLGvXc6PzOJe8jDVJhyTG2oQXObGunFjDo3o/aWYfI41yRwcqAnPu9n5D48WOi6gjxnER7c06A+weQT10TbggdAnX2GKgJOELQk7oEy4p5pLwivCC0CMMKCbUTfpLbfwH7GR4K+o7cfrx/+253MnYqm9vym2F107a7zdVO0ubdl/uGN7zR4d9Y/RmEsO9/1f/X7r69Sfgj+2f89js4H+ZfS8/1nel6mdPNOvKT8/0CH+fstx5AA==",
+        },
+        {
+            "url": "https://puzz.link/p?yajikazu/9/9/301040104010103040201030101030103040301030101020304010203030401040404040301010304010401030402030402020203040203040302020204040304020402040201010402020102020402040",
+            "test": False,
+        },
+    ],
+}

@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import count_reachable_src, grid_src_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
+from noqx.solution import solver
 
 
 def nori_adjacent(color: str = "black", adj_type: int = 4) -> str:
@@ -51,3 +51,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Norinuri",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VTfj5NAEH7nr2jmeR9YoEj3xdR69aXiKTVNQ8gFkMsRQU7oGrOE/70zA4pn+mJMmjMx2/n45tuBfvuz+6rTthDSpp8bCHxi82TA4QQ+hz21fXmqCrUQa316aFokQrzbbsV9WnWFFU9VidWblTJrYd6oGCQIcDAkJMK8V715q0woTIRdIDzUdmORg/RmpgfuJ7YZRWkjDyeO9Ig0L9u8Ku52o3KrYrMXQP/zit8mCnXzrYDJB+V5U2clCVl6wsF0D+Xj1NPpT81nPdXKZBBmPdqNLth1Z7tER7vELtilUfy93eqxuWR0lQwDTvgHtHqnYnL9cabBTCPVI4aqB1fiqz6uMq8JeD6mwc906dKHX6LHSfCp36F9MebSWaFAG+aH4DkoeL/kvxf43pNvog/Jbo6MW0aHcY9mhXEZXzPajEvGHdfcMB4YN4weo881L2i4fzQhV7ATu+O5etqW/56WWDFEur1P8wI3Y6jrrGgXYdPWaQV47gcLvgNH7NI18v8quPpVQJNvP7f9/9zs4ImEL7ots0ZDYp0B",
+        }
+    ],
+}

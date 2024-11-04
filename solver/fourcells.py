@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, edge, grid
-from .core.helper import extract_initial_edges
-from .core.neighbor import adjacent, count_adjacent_edges
-from .core.penpa import Puzzle, Solution
-from .core.shape import OMINOES, all_shapes, count_shape, general_shape
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, edge, grid
+from noqx.rule.helper import extract_initial_edges
+from noqx.rule.neighbor import adjacent, count_adjacent_edges
+from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -35,3 +35,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "FourCells",
+    "category": "region",
+    "examples": [
+        {
+            "data": "m=edit&p=7VVNi9swEL37VwSd52B9+POWbtNeUm/bpCzBmOBk3W6og1MnLkUh/31HYy+hUpayFEIpi6LH89PI82Yi5P2Prmwr4KH5yRh84DhCFdIM4oSmP4z55lBX6QjG3eGhaZEA3Gbwtaz3lZcPQYV31Emqx6DfpzkTDGhyVoD+lB71h1RnoGe4xICjNkXGGQikkzO9o3XDbnqR+8izgSNdIF1v2nVdLae98jHN9RyYyfOGdhvKts3PivXb6HndbFcbI6zKA9ayf9jshpV9d99874ZYXpxAj3u7kwt25dmuob1dwy7YNVX8vd1611wymhSnEzb8M1pdprlx/eVM4zOdpUfELD0ylTzV2P8rLFCWEDpCYAncj2yFC0dxdglpKyq0lcB3FOc9kZMrcvzETq7YeU8c20pixwinLiHsXELanoWyswuny8KpQkR2N4TjWSR2LunbuaRv1yWdKqTTeRlwR/k9Ox4gTsdoQfiOUBDO8ZSBloRvCX3CgHBKMRPCO8IbQkUYUkxkzumLTvIV7ORK0H34/Ahe1//n9cLL2eT+WzXKmnZb1ngDZ912VbVPz/ixO3nsF6OZS9yiXr9/V//+meb7/9rd8Qc7uZ6BSkDfAtt1y3K5bvB0Ydee1xcv1DOj9//AcKFfCrA3Xr1NeMsW3iM=",
+        },
+    ],
+}

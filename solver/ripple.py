@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import area, display, fill_num, grid, unique_num
-from .core.helper import full_bfs
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, display, fill_num, grid, unique_num
+from noqx.rule.helper import full_bfs
+from noqx.solution import solver
 
 
 def ripple_constraint() -> str:
@@ -44,3 +44,19 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Ripple Effect",
+    "category": "num",
+    "aliases": ["rippleeffect"],
+    "examples": [
+        {
+            "url": "https://puzz.link/p?ripple/13/13/i2aonbatddnfdjqt6qafrlvfl9egl450fvjbt3t9lfu2072jfj8pvgojecbvcvu0zzzzzzzzo",
+            "test": False,
+        },
+        {
+            "data": "m=edit&p=7VZdbyo3EH3nV0T77Ie1vfZ696VK06QvKf0g1VWEUETI0osKIuWjqhbx3++Z8bgo3itVV1XVVKoAcxjGM4c5Z83ufzvOd53SJT1tUHjHo9KBXyZ4fpXyeFgd1l17pa6Ph4/bHYBS39/dqeV8ve9GU8majU590/bXqv+2nRa6UIXBSxcz1f/Ynvrv2n6s+gm+KpRG7D4mGcDbC/zA3xO6iUFdAo8FAz4CLla7xbp7uo+RH9pp/6AK6vM17yZYbLa/d4XwoM+L7eZ5RYHn+QE/Zv9x9Srf7I8v21+PkqtnZ9VfR7qTz9C1F7oEI11Cn6FLv+IfptvMzmeM/ScQfmqnxP3nCwwXOGlPWMftqbAlbf0KXKI2hdV5wOQBmwd8HqjzQMgDTRaoqjzg8gAVJVfGjy6n5XJaLm/qc1p1XiPkP17rnJc2eR9t8kZ6MABd5a10NahTUR1/+exybbQb8HP57LUb9B4MQrt8/NoP+PkBPz+YhX8rEjyl2VmPvN7xanh9gPFUb3n9hteSV8frPefcwo9GO2UM6BmcF7pWhvxI2ABXCeNIooESthoYNBgbYAyEsQXGKAhXpTIO5Bkj30l+hRwaF2MccR4DZ4z6NBDCrgLGABkjp5YchxzyD2GP+rXU96hfS30PPrXw8XSMSn6N/CD5NXKC5NToFaRXAG4S9sqW0jcEYKnT4KwupU6DHC05TQ0ss2qQr2M+agDHfNQAjn1RAzj2Qg1ljeRoCxzng33AKQf1RRfsA5b6xgFH7awBnyrywT5gyYFeVvSy0MKKFhZa2KQFaS29WOvkB9JaerHWdBIlfZM3KvJAipMHku6YZ/JJRV5KmsJvdBElfRMHhxy6cJLWdMkwbi4+Id299PXITz6pUTPpXpNnpGYgrYVbALfkAdI6CLeAvckP/Leb9qL+n94gLwmfAD5N0h17G9kLDyT/sL6lzJn0FW/AF8CRD2udvEFa65QPTZNPNHlM/GDID5JDWiefkL7JD7a5eAAaQW/B6Csase6iEd7FGzgMPvCRcMNrxavno6Kmf7Av+o/7+6fSX9KZ2njD9Pbh/nux2WhaTI675XzR4f7i9uWX7mq83W3ma3waHzfP3S59xu3deVT8UfBraulu8f87vn/pjo8kKN/bNfHe6OAqLXar19d1d9Utl93iUMxGnwA=",
+        },
+    ],
+}

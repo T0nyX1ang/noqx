@@ -2,9 +2,9 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.solution import solver
 
 
 def count_box_col(target: int, c: int, color: str = "black") -> str:
@@ -50,3 +50,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(display())
     solver.solve()
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Box",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VXPj9o8EL3nr1j57IMd5/eNbpdeaPoDqtUqilaBZrWooLSBVJ+M+N93PJOQadNLD1/LoQoePZ7fmDcexxy+dVVbS63dxyRSSUAyCCMcWvs4VP+stsddnd3IWXd8bloAUr6bz+VTtTvUXuEy4Sm9k00zO5P2TVYILaTwYWhRSvshO9m3mc2lXcKUkAa4BYl8gHcjvMd5h26J1Apw3mOADwA323azqx8XxLzPCruSwv3OK8x2UOyb77Xofbjvm2a/3jpiXR2hmMPz9ms/c+g+N1+6XqvLs7Qzsrsc7AajXee8t+sg2XXoF3ZdFf+z3bQ8n2HbP4Lhx6xw3j+NMBnhMjtBzLOTMAZTQzBDzREmcIxvGBM6xijGRBNNPGESZPjK6c+aQE0YjUzEGFxZu83smZAYIaOeiHwkglESIwMHbpDElMPcJMjATw+SlFaBpEGiFVKw7qDRauJGa6Rg5YvIxzRWgzYDc9HQhsFGjiKqNGaiENN+EFGtCRNF05Wo2pSJEuozZ6jPnKE+cwb7zOunXePFJthnXlqCfeZ1pNhnbjrFPl8cwmnUeCYfMM4x+hhXcGSlNRhfY1QYQ4wL1NxhvMd4izHAGKEmdof+t16LP2CnCBK6J9kTXxdTeoVYdu1Ttanhssm7/bpub/Km3Vc7Abf72RP/CRyFcX8W/y78v3Thuxaoazvf12YH3rjSewE=",
+        },
+    ],
+}

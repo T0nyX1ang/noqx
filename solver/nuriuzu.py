@@ -2,13 +2,13 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.helper import tag_encode
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_src_color_connected
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import tag_encode
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import grid_src_color_connected
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def nuriuzu_constraint(glxr: int, glxc: int, adj_type: int = 4, color: str = "black") -> str:
@@ -74,3 +74,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Nuri-uzu",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VVBb5swFL7zK6Z3fgcbQwK+ZV23S5dtJVNUIVSR1G3QqJJBmCpH+e99fjBxMZdN03KoHH/6+N7D/uxH7PZnVzYGZex+KkGBktpMJNxlQs/Uf7dVdayNfoeL7rjbN0QQvyzxsaxbE+RDUhGcbKrtAu0nnUMIyF1CgfabPtnP2mZoMwoBRqTdEJOAIdHrka457thVL0pBfDlwondEt1Wzrc19lvXSV53bFYKb6D2/7ig8738Z6N/j5+3+eVM5YVMeaTHtrjoMkbZ72P/ohlxZnNEupv2q0a+jvV/HPH7dMv7er3l4Mm238ZlNi/OZdv2W7N7r3Dn/PtJkpJk+ES4ZJeOdPkEc0TCSZhrtkWNIYr8898pSzvx6IiZ0/zih8LtRIvXq80T6bYoJ+6lfT5V/3nRi/HRiHBmqZCIQTQVi/9KkCn17R1X7yLULGVdUWrSK8QOjYIwZbzjnmnHNeMUYMc44Z+4+jj/+fP6RnTzqT6KpRufVW/Syo0WQQ9Y1j+XW0KGV7cqDAboczgG8APdcUVr0dl/8n/vCVUBc2t/+0uzQQQTtoWrK+qmsy5fKtFAErw==",
+        },
+    ],
+}

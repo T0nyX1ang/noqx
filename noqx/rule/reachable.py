@@ -187,11 +187,10 @@ def num_binary_range(num: int) -> Tuple[str, int]:
     """Generate a rule restricting number represented by bits between 0 and num."""
     nbit = int(log2(num)) + 1
     rule = f"bit_range(0..{nbit - 1}).\n"
-    rule += "binary(0..1).\n"
     return rule.strip(), nbit
 
 
-def grid_bit_color_connected(color: str = "grid", adj_type: Union[int, str] = "loop") -> str:
+def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "loop") -> str:
     """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
     validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
 
@@ -204,7 +203,7 @@ def grid_bit_color_connected(color: str = "grid", adj_type: Union[int, str] = "l
     return rule.strip()
 
 
-def avoid_unknown_src_bit(color: str = "grid", adj_type: Union[int, str] = 4) -> str:
+def avoid_unknown_src_bit(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to avoid cells starting from unknown source (bit version).
 

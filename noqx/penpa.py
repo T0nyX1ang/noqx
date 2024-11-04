@@ -7,7 +7,7 @@ from functools import reduce
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from zlib import compress, decompress
 
-from .const import logger
+from .logging import logger
 
 Direction = Enum("Direction", "LEFT TOP DIAG_UP DIAG_DOWN")
 PENPA_PREFIX = "m=edit&p="

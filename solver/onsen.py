@@ -2,12 +2,12 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .core.common import area, direction, display, fill_path, grid, shade_c
-from .core.helper import full_bfs
-from .core.loop import single_loop
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.loop import single_loop
+from noqx.rule.neighbor import adjacent
+from noqx.solution import solver
 
 
 def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
@@ -45,14 +45,13 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
 
 
 def onsen_global_rule() -> str:
-    """Generates global ruleS for an Onsen-Meguri puzzle."""
-    mutual = "area_border(A, R, C, D), grid_direction(R, C, D)"
-
-    # any area, go through border at least twice
-    rule = f":- area(A, _, _), #count {{ R, C, D: grid(R, C), {mutual} }} < 2.\n"
-
+    """Generates global rules for an Onsen-Meguri puzzle."""
     # any area, any onsen area, go through border at most twice
-    rule += f":- area(A, _, _), onsen(O, _, _), #count {{ R, C, D: onsen(O, R, C), {mutual} }} > 2.\n"
+    rule = ":- area(A, _, _), onsen(O, _, _), #count { R, C, D: onsen(O, R, C), area_border(A, R, C, D), grid_direction(R, C, D) } > 2.\n"
+
+    # two different onsen loops cannot be connected
+    rule += ":- onsen(O1, R, C), onsen(O2, R, C), O1 != O2.\n"
+
     return rule.strip()
 
 
@@ -71,6 +70,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_border(i, ar))
+        solver.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))
 
         for rc in ar:
             if rc in puzzle.text:
@@ -86,3 +86,22 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Onsen-Meguri",
+    "category": "loop",
+    "examples": [
+        {
+            "data": "m=edit&p=7VTLbtswELz7Kwye9yDqwYdubur24rqPuAgCQQjsRG2M2lFrx0Ugw/+eWWpV6RCgKPpADgWt9XA5XO0sl9p/Oyx3FVmMxFFEGiOJ0vCYiH/dWKzvN1U+psnh/rbeARC9ndOn5WZfjQohlaNj4/NmQs3rvFCxovBoVVLzPj82b/JmSs05lhRp+GZAWlEMOO3hRVhndNY6dQQ8b7EBvAS8Xu+uN9XVrA30Li+aBSl+z4uwm6Ha1t8r1W4L8+t6u1qzY7W8h5b97fqrrOwPN/WXg3B1eaJm0qY7eyLdpE+XYZsuo7+V7mZ9Vz08lakvTydU/ANyvcoLTvtjD10Pz/Mj7Dw/qjTCVpxseyjK8FSNkac4HDsSmWKPDjsvg30VbBzsAoGpSYJ9GWwUbBbsLHCmeJ9OLOnUqTxGxDQjnRnB8Ged3wH7FmdoQaMFg2OEk3nSFskxRlNqKxyDhrWxYHBYAGMLjhOORXwn8S04XjgOHC8cFwMngj3FkXC8Bpb4PgYWjk+Bs4CxTrEWP2tMO40G2PZ6uzqwxqzTOKgJ6+1qwnr5dIIuxDESxwxqYqDLdLoGdWC9VvwOfid+1ug6jQlwKloGdYDGH3WARu1bjdr3NQl6pQ74B27j4F9qgsO/CC1wFmwarAmtYbkjf6lnf78Lf5pOEUPpYOBM/vSsHBVqhns8nte77XKD2zy9+TyYzQ/bVbXr5viOnkbqQYUH91FT+v/T+u8/rVz96Lk163NLB9dH1Xf76k6Vo0c=",
+        },
+        {
+            "url": "http://pzv.jp/p.html?onsen/10/10/akkh92j6mt9pjvfti91svv1vvovv3g3f04ti3m2n1j1x1zq2v3n3",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?onsen/15/15/9018m2kqm9jbr3a9f853qcfj996k6esa8alac2v892cvv0sj4086g5lb4a6qqeh7q2404c5nvq8cvi30m098zzzzzzj.u..zzzzi",
+            "test": False,
+        },
+    ],
+}

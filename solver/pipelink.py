@@ -2,11 +2,11 @@
 
 from typing import List
 
-from .core.common import direction, display, fill_path, grid
-from .core.helper import tag_encode
-from .core.loop import intersect_loop
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.helper import tag_encode
+from noqx.rule.loop import intersect_loop
+from noqx.solution import solver
 
 
 def adjacent_loop_intersect() -> str:
@@ -54,3 +54,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Pipe Link",
+    "category": "loop",
+    "examples": [
+        {
+            "data": "m=edit&p=7ZVNb9NMEMfv+RTVnuewby+2b3lKwyWEB1pUVZZVpcGoEQmBpEHIUb57Z2fGciqBxAUoEnJ2/Mt6dvY/48lm92U/37ZgdP64AvCOlzcFDVtEGlquq+XDqq3OYLx/uN9sEQBeTybwYb7ataNavJrRoSurbgzdy6pWRoGyOIxqoHtTHbpXVTeF7hIfKTA4N0UKCiziBftnvKbnmc550mjkmTDiDeJiuV2s2tspz/xf1d0VqLzPf7Q6o1pvvrZKdOTvi836bpkn7uYPmMzufvlZnuz27zcf9+JrmiN04x/LdYPcjCw303fk5ix+sdyyOR6x7G9R8G1VZ+3vBiwGvKwOaGdkDdkbshOyluwVukLnyL4gq8kGstPqoFyAaJ2qLGT0NhH68gl602N0cUBxiIgcgdATBoNY9ug9O8SIyA6IMcishejZN2PQhMlDjLZHH3njIkFMHIEw9OjjgImDGa2Ri4FLDmdsCclwPGbOJHPQJ2w5b+M9JHfKEgc52BOW4pioIXmJgxycaMD6nHKSWhmTcF/RjJw0p2I05l1KTOQo+kssaGR3xCjZpgLrxQsRfeB1Jb7UxGXOWIgqjc5lv0vmfhdcWQwcNL8LY3HLUhQiJy1ZOAfJig9xXyWsqvRH5kAdhA15QW15TfacrCcbqSFT7uzf1vs/Kad2fJA+vcLfN9eMajVdfmrPZpvter5SeLgfR+qbolG7/F/x77z/Q+d9fgX6uXX+c5ODv8Vm9Ag=",
+        }
+    ],
+}
