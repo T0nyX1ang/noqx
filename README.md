@@ -145,10 +145,10 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 ### Test the solver
 
-- Run the tests with uv:
+- Run the tests (with default `unittest` features) with uv:
 
 ```bash
-    uv run coverage run -m pytest .
+    uv run coverage run -m unittest
 ```
 
 - Check the HTML version of coverage report with uv:
