@@ -11,26 +11,29 @@ on:
 
 jobs:
   build:
-    runs-on: [ubuntu-latest, windows-latest]
     strategy:
       matrix:
-        python-version: ["3,7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        runs-on: [ubuntu-latest, windows-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    runs-on: ${{ matrix.runs-on }}
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Enable caching
-      uses: astral-sh/setup-uv@v3
-      with:
-        enable-cache: true
+      - uses: actions/checkout@v4
 
-    - name: Install the project
-      run: uv sync --all-extras --dev
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Run tests
-      # For example, using `pytest`
-      run: uv run coverage run -m unittest
+      - name: Enable caching
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Run tests
+        # For example, using `pytest`
+        run: uv run coverage run -m unittest
