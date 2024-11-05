@@ -15,7 +15,7 @@ dependencies = [
 ]
 requires-python = ">=3.7"
 readme = "README.md"
-license = {text = "GPL-3.0-or-later"}
+license = {text = "Apache-2.0 OR GPL-3.0-or-later"}
 
 [tool.black]
 line-length = 127
