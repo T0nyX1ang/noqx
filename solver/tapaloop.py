@@ -1,6 +1,6 @@
 """The Tapa-like Loop solver."""
 
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import direction, display, fill_path, grid
@@ -12,7 +12,7 @@ from noqx.solution import solver
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
 pattern_ref: Dict[Tuple[int, ...], List[int]] = {}
-tapa_clue_dict = {}
+pattern_idx: Dict[Tuple[int, ...], int] = {}
 
 
 def single_shape(*shape_d: Optional[int]) -> Optional[str]:
@@ -72,8 +72,8 @@ def parse_shape_clue(inner: Tuple[int, ...], outer: Tuple[int, ...]) -> Optional
     return tuple(sorted(clues))
 
 
-def generate_pattern_ref():
-    """Generate pattern reference dictionary."""
+def tapaloop_pattern_rule() -> str:
+    """Generate pattern reference dictionary and tapaloop pattern map."""
     for i in range(4096):
         pat = bin(i)[2:].zfill(12)
         inner = tuple(map(int, pat[:8]))
@@ -88,8 +88,13 @@ def generate_pattern_ref():
         else:
             pattern_ref[parsed] = [i]
 
+    rule = ""
+    for i, (pat, vals) in enumerate(pattern_ref.items()):
+        pattern_idx[pat] = i
+        for v in vals:
+            rule += f"valid_tapaloop_map({i}, {v}).\n"
 
-generate_pattern_ref()
+    return rule.strip()
 
 
 def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
@@ -106,10 +111,10 @@ def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
 
 def parse_clue(r: int, c: int, clue: List[Union[int, str]]) -> str:
     """Parse tapa clue to binary pattern."""
-    result: List[int] = []
+    result: Set[int] = set()
     for pattern in filter(lambda x: len(x) == len(clue), pattern_ref.keys()):
         if clue_in_target(clue, list(pattern)):
-            result.extend(pattern_ref[pattern])
+            result.add(pattern_idx[pattern])
 
     rule = ""
     for num in result:
@@ -127,14 +132,12 @@ def direction_to_binary(r: int, c: int) -> str:
 
 def valid_tapaloop(r: int, c: int) -> str:
     """Generate rules for a valid tapa-loop clue."""
-    num_segment: List[str] = []
-    binary_segment: List[str] = []
-
+    num_seg: List[str] = []
+    binary_seg: List[str] = []
     for i, (dr, dc, d) in enumerate(direc + direc_outer):
-        binary_segment.append(f"{2 ** (11 - i)} * E{i}")
-        num_segment.append(f'binary({r + dr}, {c + dc}, "{d}", E{i})')
-
-    rule = f":- not valid_tapaloop({r}, {c}, E), {', '.join(num_segment)}, E = {' + '.join(binary_segment)}."
+        binary_seg.append(f"{2 ** (11 - i)} * N{i}")
+        num_seg.append(f'binary({r + dr}, {c + dc}, "{d}", N{i})')
+    rule = f":- not valid_tapaloop({r}, {c}, P), valid_tapaloop_map(P, N), {', '.join(num_seg)}, N = {' + '.join(binary_seg)}."
     return rule
 
 
@@ -154,6 +157,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="tapaloop", adj_type="loop"))
     solver.add_program_line(single_loop(color="tapaloop"))
     solver.add_program_line(direction_to_binary(puzzle.row, puzzle.col))
+    solver.add_program_line(tapaloop_pattern_rule())
 
     for (r, c), clue in puzzle.text.items():
         assert isinstance(clue, list), "Please set all NUMBER to tapa sub."

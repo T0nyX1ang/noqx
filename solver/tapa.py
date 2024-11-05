@@ -1,6 +1,6 @@
 """The Tapa solver."""
 
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import display, grid, shade_c
@@ -11,6 +11,7 @@ from noqx.solution import solver
 
 direc = ((0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1))
 pattern_ref: Dict[Tuple[int, ...], List[int]] = {}
+pattern_idx: Dict[Tuple[int, ...], int] = {}
 
 
 def parse_pattern(pattern: str) -> Tuple[int, ...]:
@@ -37,8 +38,8 @@ def parse_pattern(pattern: str) -> Tuple[int, ...]:
     return tuple(sorted(result))
 
 
-def generate_pattern_ref():
-    """Generate pattern reference dictionary."""
+def tapa_pattern_rule() -> str:
+    """Generate pattern reference dictionary and tapa pattern map."""
     for i in range(256):
         pat = bin(i)[2:].zfill(8)
         parsed = parse_pattern(pat)
@@ -48,8 +49,13 @@ def generate_pattern_ref():
         else:
             pattern_ref[parsed] = [i]
 
+    rule = ""
+    for i, (pat, vals) in enumerate(pattern_ref.items()):
+        pattern_idx[pat] = i
+        for v in vals:
+            rule += f"valid_tapa_map({i}, {v}).\n"
 
-generate_pattern_ref()
+    return rule.strip()
 
 
 def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
@@ -66,10 +72,10 @@ def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
 
 def parse_clue(r: int, c: int, clue: List[Union[int, str]]) -> str:
     """Parse tapa clue to binary pattern."""
-    result: List[int] = []
+    result: Set[int] = set()
     for pattern in filter(lambda x: len(x) == len(clue), pattern_ref.keys()):
         if clue_in_target(clue, list(pattern)):
-            result.extend(pattern_ref[pattern])
+            result.add(pattern_idx[pattern])
 
     rule = ""
     for num in result:
@@ -87,12 +93,12 @@ def color_to_binary(r: int, c: int, color: str = "black") -> str:
 
 def valid_tapa(r: int, c: int) -> str:
     """Generate rules for a valid tapa clue."""
-    num_segment: List[str] = []
-    binary_segment: List[str] = []
+    num_seg: List[str] = []
+    binary_seg: List[str] = []
     for i, (dr, dc) in enumerate(direc):
-        binary_segment.append(f"{2 ** (7 - i)} * N{i}")
-        num_segment.append(f"binary({r + dr}, {c + dc}, N{i})")
-    rule = f":- not valid_tapa({r}, {c}, N), {', '.join(num_segment)}, N = {' + '.join(binary_segment)}."
+        binary_seg.append(f"{2 ** (7 - i)} * N{i}")
+        num_seg.append(f"binary({r + dr}, {c + dc}, N{i})")
+    rule = f":- not valid_tapa({r}, {c}, P), valid_tapa_map(P, N), {', '.join(num_seg)}, N = {' + '.join(binary_seg)}."
     return rule
 
 
@@ -105,6 +111,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(grid_color_connected(color="black", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
+    solver.add_program_line(tapa_pattern_rule())
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
