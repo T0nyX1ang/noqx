@@ -1,6 +1,5 @@
 """Generate solutions for the given problem."""
 
-from dataclasses import dataclass
 from typing import List, Optional
 
 from clingo.control import Control
@@ -10,7 +9,6 @@ from .logging import logger
 from .penpa import Direction, Puzzle, Solution
 
 
-@dataclass
 class Config:
     """Configuration for the solver."""
 
@@ -26,7 +24,7 @@ class ClingoSolver:
         """Initialize a solver."""
         self.clingo_instance: Control = Control()
         self.program: str = ""
-        self.model: Optional[str] = None
+        self.model: List[str] = []
         self.puzzle: Optional[Puzzle] = None
         self.solutions: List[Solution] = []
 
@@ -35,12 +33,16 @@ class ClingoSolver:
         self.puzzle = puzzle
         logger.debug("[Solver] Puzzle registered.")
 
-    def store_solutions(self, model: Model):
+    def store_model(self, model: Model):  # pragma: no cover
+        """Store the model on solving."""
+        self.model.append(str(model))
+
+    def store_solutions(self, model_str: str):
         """Get the solution."""
         if self.puzzle is None:
             raise PermissionError("Puzzle not registered.")
 
-        solution_data = tuple(str(model).split())  # raw solution converted from clingo
+        solution_data = tuple(str(model_str).split())  # raw solution converted from clingo
         solution = Solution(self.puzzle)
 
         for item in solution_data:
@@ -101,7 +103,7 @@ class ClingoSolver:
         """Reset the program."""
         self.clingo_instance = Control()
         self.program = ""
-        self.model = None
+        self.model = []
         self.puzzle = None
         self.solutions = []
 
@@ -114,11 +116,12 @@ class ClingoSolver:
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
-        with self.clingo_instance.solve(async_=True, yield_=True) as handle:  # type: ignore
-            for model in handle:
-                self.store_solutions(model)
+        with self.clingo_instance.solve(on_model=self.store_model, async_=True) as handle:  # type: ignore
             handle.wait(Config.time_limit)
             handle.cancel()
+
+        for model_str in self.model:
+            self.store_solutions(model_str)
 
 
 solver = ClingoSolver()
