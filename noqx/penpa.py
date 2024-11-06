@@ -97,17 +97,14 @@ class Puzzle:
         margin = (self.top_row, self.bottom_row, self.left_col, self.right_col)
         logger.debug(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {margin}.")
 
-    def _unpack_board(self):
-        """Initialize the content of the puzzle."""
-        self.board = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[3]))
-
-        self.surface = {}
+    def _unpack_surface(self):
+        """Unpack the surface element from the board."""
         for index, color in self.board["surface"].items():
             coord, _ = self.index_to_coord(int(index))
             self.surface[coord] = int(color)
-        logger.debug("[Puzzle] Surface unpacked.")
 
-        self.text = {}
+    def _unpack_text(self):
+        """Unpack the number/text element from the board."""
         for index, num_data in self.board["number"].items():
             coord, _ = self.index_to_coord(int(index))
             # num_data: number, color, subtype
@@ -115,17 +112,43 @@ class Puzzle:
                 self.text[coord] = list(map(int_or_str, list(num_data[0])))
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
                 self.text[coord] = int_or_str(num_data[0])
-        logger.debug("[Puzzle] Number/Text unpacked.")
 
-        self.symbol = {}
+    def _unpack_sudoku(self):
+        """Unpack the sudoku element from the board."""
+        for index, num_data in self.board["sudoku"].items():
+            coord, category = self.index_to_coord(int(index) // 4)
+            num_direction = (category - 1) * 4 + int(index) % 4
+            if self.sudoku.get(coord) is None:
+                self.sudoku[coord] = {}
+                self.sudoku[coord][num_direction] = int_or_str(num_data[0])
+            else:
+                self.sudoku[coord][num_direction] = int_or_str(num_data[0])
+
+        for indices in self.board["killercages"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.cage.append(coord_indices)
+
+        for indices in self.board["arrows"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.arrows.append(coord_indices)
+
+        for indices in self.board["thermo"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.thermo.append(coord_indices)
+
+        for indices in self.board["nobulbthermo"]:
+            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
+            self.nobulbthermo.append(coord_indices)
+
+    def _unpack_symbol(self):
+        """Unpack the text element from the board."""
         for index, (style, shape, _) in self.board["symbol"].items():
             coord, category = self.index_to_coord(int(index))
             symbol_name = f"{shape}__{style}__{category}"
             self.symbol[coord] = symbol_name
-        logger.debug("[Puzzle] Symbol unpacked.")
 
-        self.edge = set()
-        self.helper_x = set()
+    def _unpack_edge(self):
+        """Unpack the edge/helper_x element from the board."""
         for index, _ in self.board["edge"].items():
             if "," not in index:  # helper(x) edges
                 coord, category = self.index_to_coord(int(index))
@@ -146,9 +169,9 @@ class Puzzle:
                 self.edge.add((coord_2[0], coord_2[1], Direction.DIAG_UP))
             elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
                 self.edge.add((coord_2[0], coord_2[1] + 1, Direction.DIAG_DOWN))
-        logger.debug("[Puzzle] Edge unpacked.")
 
-        self.line = set()
+    def _unpack_line(self):
+        """Unpack the line element from the board."""
         for index, _ in self.board["line"].items():
             index_1, index_2 = map(int, index.split(","))
             coord_1, _ = self.index_to_coord(index_1)
@@ -156,38 +179,18 @@ class Puzzle:
             eqxy = coord_1 == coord_2
             d = ("d" if eqxy else "u") if d == 2 else ("r" if eqxy else "l")
             self.line.add((*coord_1, d))
-        logger.debug("[Puzzle] Line unpacked.")
 
-        self.sudoku = {}
-        for index, num_data in self.board["sudoku"].items():
-            coord, category = self.index_to_coord(int(index) // 4)
-            num_direction = (category - 1) * 4 + int(index) % 4
-            if self.sudoku.get(coord) is None:
-                self.sudoku[coord] = {}
-                self.sudoku[coord][num_direction] = int_or_str(num_data[0])
-            else:
-                self.sudoku[coord][num_direction] = int_or_str(num_data[0])
-
-        self.cage = []
-        for indices in self.board["killercages"]:
-            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
-            self.cage.append(coord_indices)
-
-        self.arrows = []
-        for indices in self.board["arrows"]:
-            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
-            self.arrows.append(coord_indices)
-
-        self.thermo = []
-        for indices in self.board["thermo"]:
-            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
-            self.thermo.append(coord_indices)
-
-        self.nobulbthermo = []
-        for indices in self.board["nobulbthermo"]:
-            coord_indices = list(map(lambda x: self.index_to_coord(x)[0], indices))
-            self.nobulbthermo.append(coord_indices)
-        logger.debug("[Puzzle] Sudoku unpacked.")
+    def _unpack_board(self):
+        """Initialize the content of the puzzle."""
+        for p in (4, 3):  # must unpack solution board first, then edit board to keep consistency
+            self.board = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[p]))
+            self._unpack_surface()
+            self._unpack_text()
+            self._unpack_sudoku()
+            self._unpack_symbol()
+            self._unpack_edge()
+            self._unpack_line()
+        logger.debug("[Puzzle] Board unpacked.")
 
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
@@ -226,25 +229,30 @@ class Solution:
         self.parts[4] = reduce(lambda s, abbr: s.replace(abbr[0], abbr[1]), PENPA_ABBREVIATIONS, json.dumps(self.board))
         return PENPA_PREFIX + b64encode(compress("\n".join(self.parts).encode())[2:-4]).decode()
 
-    def _pack_board(self):
-        """Pack the solution into penpa format."""
+    def _pack_surface(self):
+        """Pack the surface element into the board."""
         for coord, color in self.surface.items():
             index = self.coord_to_index(coord)
-            self.board["surface"][f"{index}"] = color
-        logger.debug("[Solution] Surface packed.")
+            if not self.puzzle.board["surface"].get(f"{index}"):  # avoid overwriting the original stuff
+                self.board["surface"][f"{index}"] = color
 
+    def _pack_text(self):
+        """Pack the text/number element into the board."""
         for coord, text in self.text.items():
             index = self.coord_to_index(coord)
             if not self.puzzle.board["number"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.board["number"][f"{index}"] = [str(text), 2, "1"]
-        logger.debug("[Solution] Number/Text packed.")
 
+    def _pack_symbol(self):
+        """Pack the symbol element into the board."""
         for coord, symbol_name in self.symbol.items():
             shape, style, category = symbol_name.split("__")
             index = self.coord_to_index(coord, category=int(category))
-            self.board["symbol"][f"{index}"] = [int(style), shape, 1]
-        logger.debug("[Solution] Symbol packed.")
+            if not self.puzzle.board["symbol"].get(f"{index}"):  # avoid overwriting the original stuff
+                self.board["symbol"][f"{index}"] = [int(style), shape, 1]
 
+    def _pack_edge(self):
+        """Pack the edge element into the board."""
         for r, c, direction in self.edge:
             coord_1 = (r - 1, c - 1)
             coord_2 = (r - 1, c - 1)
@@ -262,8 +270,9 @@ class Solution:
             index_2 = self.coord_to_index(coord_2, category=1)
             if not self.puzzle.board["edge"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.board["edge"][f"{index_1},{index_2}"] = 3
-        logger.debug("[Solution] Edge packed.")
 
+    def _pack_line(self):
+        """Pack the line element into the board."""
         for r, c, direction in self.line:
             index_1 = self.coord_to_index((r, c), category=0)
             if direction.startswith("r"):
@@ -281,7 +290,15 @@ class Solution:
                 self.board["line"][f"{index_1},{index_2}"] = 3 if direction.endswith("_1") else 30
             elif not self.puzzle.board["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.board["line"][f"{index_1},{index_2}"] = 3
-        logger.debug("[Solution] Line packed.")
+
+    def _pack_board(self):
+        """Pack the solution into penpa format."""
+        self._pack_surface()
+        self._pack_text()
+        self._pack_symbol()
+        self._pack_edge()
+        self._pack_line()
+        logger.debug("[Solution] Board packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
