@@ -6,7 +6,7 @@ from starlette.config import environ
 from starlette.testclient import TestClient
 
 from noqx import app
-from noqx.manager import list_solver_metadata
+from noqx.manager import list_solver_metadata, load_solvers
 from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import all_shapes, count_shape, general_shape, get_neighbor
 from noqx.solution import Config
@@ -15,6 +15,7 @@ from solver.yajikazu import yajikazu_count
 from solver.yajilin import yajilin_count
 
 environ["DEBUG"] = "TRUE"
+load_solvers("solver")
 metadata = list_solver_metadata()
 
 
