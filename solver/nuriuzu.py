@@ -33,16 +33,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         reachables.append((r, c))
         _, _, category = symbol_name.split("__")
 
+        # there are no category = 1 for nuriuzu, because it is conflicting with the no 2x2 white rule.
         if category == "0":
             solver.add_program_line(nuriuzu_constraint(r * 2 + 1, c * 2 + 1, color="not black"))
             solver.add_program_line(f"not black({r}, {c}).")
-
-        if category == "1":
-            solver.add_program_line(nuriuzu_constraint(r * 2 + 2, c * 2 + 2, color="not black"))
-            solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(f"not black({r + 1}, {c}).")
-            solver.add_program_line(f"not black({r}, {c + 1}).")
-            solver.add_program_line(f"not black({r + 1}, {c + 1}).")
 
         if category == "2":
             solver.add_program_line(nuriuzu_constraint(r * 2 + 2, c * 2 + 1, color="not black"))
