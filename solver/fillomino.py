@@ -75,10 +75,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
 
         if num == 1:
-            solver.add_program_line(f"edge_left({r}, {c}).")
-            solver.add_program_line(f"edge_top({r}, {c}).")
-            solver.add_program_line(f"edge_left({r}, {c + 1}).")
-            solver.add_program_line(f"edge_top({r + 1}, {c}).")
+            solver.add_program_line(f":- not edge_left({r}, {c}).")
+            solver.add_program_line(f":- not edge_top({r}, {c}).")
+            solver.add_program_line(f":- not edge_left({r}, {c + 1}).")
+            solver.add_program_line(f":- not edge_top({r + 1}, {c}).")
 
     for r, c, d in puzzle.edge:
         solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
@@ -100,6 +100,10 @@ __metadata__ = {
     "name": "Fillomino",
     "category": "num",
     "examples": [
+        {
+            "data": "m=edit&p=7VNNj9MwEL3nV1Q+zyF2vrq+laXlUsLHFlWrKKrSNstGJASSBiFH+e87M0kxleAAEtADsvz0nj2jeeOP9nOXNTmEOLw5uCBxqDDkKX2fpzuNTXEqcz2DRXd6rBskAK9WK3jIyjZ3kikqdXpzo80CzAudCCWApxQpmDe6Ny+1icHc4ZYAiWtrZFKAQrq0dMv7xG7HRekijyeO9B7poWgOZb5bjyuvdWI2IKjOM84mKqr6Sy7GNNaHutoXtLDPTthM+1h8mnba7lh/6KZYmQ5gFj+361m7REe7xH5gl7r4w3Zv0mHAY3+Lhnc6Ie/vLJ1beqd7xFj3QilMpbvmmxHKR6msDC92PQ/l3MoAZfRN+pRrg/3oQgaXhQLKtTKkXM9KqmtlRHVtcES51mT0fSFsS3Jz94wrRsW4wd7BeIzPGV3GgHHNMUvGLeMto88YckxEp/dL5/sX7CSKjuI8gt/nqZOI5fF9PovrpspKfF9xV+3z5qzxQw+O+Cp48u34///4P/rjdAXutb3Ea7ODf0M8FGVZV8XHWqTOEw==",
+            "config": {"fast_mode": False},
+        },
         {
             "data": "m=edit&p=7VRNb9swDL3nVxQ68yDJXx+3rEt26dJtzVAUhhEkqbsac+YuqYdBQf57SVqtoyJG0XXrdhicEE96pEyT1Nt8b+brAhJ8vBgkKHy8WPI/9ukn7TMtb6siPYJhc3tdrxEAnI7HcDWvNsUgs175YGuS1AzBvEszoQXwX4kczMd0a96nZgLmDCkBCvdOECkBGuGog+fMEzpuN5VEPLEY4QXCZbleVsXspN35kGZmCoLe84ajCYpV/aMQbRivl/VqUdLGYn6LH7O5Lm8ss2ku66+N9VX5DsywP12vS5dgmy6hA+nSV/zhdJN8t8Oyf8KEZ2lGuX/uYNzBs3SLdpJuhY4x1MNOc2eETnDpPyw97S49dxk4sT4d1bEhxXZsGLlL1zmSDhu5sZH73sh9b+KyCbF7y9B1dr9XSffFSionWkk3XGny3+MflUQ9qonyKH6fdwus/P3zsCeKO3PBdsxWs51i48B4bN+ylWwDtifsM2J7zvaYrc82ZJ+IWv+s4Xh5OsKn+iYxDkeAhScQUAUIhD6WhoBCZVEJjoeH86c90FQzwqECTVNEOCDsWxwixlPYPwbtY88Ya8D4FieoXdL6SzyT8ZPVyfA4kr39J/i3dvJBJkaXX4qjSb1ezStUgUmzWhTr+zXK7m4gfgr+8yT6/5X4LykxtUC+8pV7qQJkZtRdSTCnIG6a2Xy2rHHUsIRM39/SPtpe3D7a3uVeur3eh2nUkR5CysMECs5hAgWo9/taVemL088kHuSoj7YK9Yv0E4dbWfzNqb362KI6i6uyqupV+a0W+eAO",
         },

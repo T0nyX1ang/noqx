@@ -53,11 +53,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
     solver.add_program_line(convert_direction_to_edge())
 
-    # warning: incompatible encoding with penpa+/puzz.link
     for (r, c), symbol_name in puzzle.symbol.items():
         shape, style, _ = symbol_name.split("__")
-        if shape != "firefly":
-            continue
+        if shape != "firefly":  # pragma: no cover
+            continue  # warning: incompatible encoding with penpa+/puzz.link
 
         dr, dc = drdc[style]
         clue = puzzle.text.get((r, c))

@@ -88,9 +88,9 @@ class ClingoSolver:
 
             elif len(data) == 2:
                 solution.symbol[(int(r), int(c))] = str(_type)
-            else:
-                # for debugging
-                solution.text[(int(r), int(c))] = int(data[2])
+
+            else:  # pragma: no cover
+                solution.text[(int(r), int(c))] = int(data[2])  # for debugging
 
         self.solutions.append(solution)
 

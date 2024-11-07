@@ -3,7 +3,7 @@
 import random
 from collections import deque
 from enum import Enum
-from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
+from typing import Any, Dict, Iterable, Iterator, Optional, Set, Tuple, Union
 
 
 class Direction(Enum):
@@ -37,6 +37,11 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
         return ("!=", target)
 
     return (reverse_op(target[0]), target[1])
+
+
+def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
+    """Validate any matching type."""
+    assert _type in target_type, f"Invalid type '{_type}'."
 
 
 def full_bfs(
