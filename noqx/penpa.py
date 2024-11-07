@@ -2,14 +2,13 @@
 
 import json
 from base64 import b64decode, b64encode
-from enum import Enum
 from functools import reduce
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from zlib import compress, decompress
 
 from .logging import logger
+from .rule.helper import Direction
 
-Direction = Enum("Direction", "LEFT TOP DIAG_UP DIAG_DOWN")
 PENPA_PREFIX = "m=edit&p="
 PENPA_ABBREVIATIONS = [
     ('"qa"', "z9"),

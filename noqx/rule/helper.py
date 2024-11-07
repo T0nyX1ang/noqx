@@ -2,31 +2,17 @@
 
 import random
 from collections import deque
+from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
 
-from ..penpa import Direction
 
+class Direction(Enum):
+    """Enumeration for directions."""
 
-def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[Tuple[int, int, Direction]]) -> str:
-    """Extract the initial edges to the solver."""
-    rule = ""
-    for r, c, d in edges:
-        if d == Direction.LEFT:
-            rule += f"edge_left({r}, {c}).\n"
-        elif d == Direction.TOP:
-            rule += f"edge_top({r}, {c}).\n"
-        elif d == Direction.DIAG_UP:
-            rule += f"edge_diag_up({r}, {c}).\n"
-        elif d == Direction.DIAG_DOWN:
-            rule += f"edge_diag_down({r}, {c}).\n"
-
-    for r, c, d in helper_x:
-        if d == Direction.LEFT:
-            rule += f"not edge_left({r}, {c}).\n"
-        elif d == Direction.TOP:
-            rule += f"not edge_top({r}, {c}).\n"
-
-    return rule.strip()
+    LEFT = "left"
+    TOP = "top"
+    DIAG_UP = "diag_up"
+    DIAG_DOWN = "diag_down"
 
 
 def tag_encode(name: str, *data: Union[str, int, None]) -> str:
