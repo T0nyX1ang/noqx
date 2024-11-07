@@ -7,22 +7,6 @@ from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
 from ..penpa import Direction
 
 
-def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
-    """Extract two symbols from a set."""
-    if len(symbol_set) == 2:
-        symbol_1 = list(symbol_set)[0]
-        symbol_2 = list(symbol_set)[1]
-    elif len(symbol_set) == 1:
-        symbol_1 = list(symbol_set)[0]
-        symbol_2 = "circle_M__1__0" if symbol_1 == "circle_M__2__0" else "circle_M__2__0"
-    elif len(symbol_set) == 0:
-        symbol_1 = "circle_M__1__0"
-        symbol_2 = "circle_M__2__0"
-    else:
-        raise AssertionError("At most two symbols are allowed.")
-    return symbol_1, symbol_2
-
-
 def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[Tuple[int, int, Direction]]) -> str:
     """Extract the initial edges to the solver."""
     rule = ""
