@@ -257,12 +257,12 @@ class Solution:
             coord_2 = (r - 1, c - 1)
             if direction == Direction.TOP:
                 coord_2 = (r - 1, c)
-            elif direction == Direction.LEFT:
+            if direction == Direction.LEFT:
                 coord_2 = (r, c - 1)
-            elif direction == Direction.DIAG_UP:
+            if direction == Direction.DIAG_UP:
                 coord_1 = (r, c - 1)
                 coord_2 = (r - 1, c)
-            elif direction == Direction.DIAG_DOWN:
+            if direction == Direction.DIAG_DOWN:
                 coord_2 = (r, c)
 
             index_1 = self.coord_to_index(coord_1, category=1)
