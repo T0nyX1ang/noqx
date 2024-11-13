@@ -24,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for (r, c), symbol_name in puzzle.symbol.items():
         if symbol_name == "circle_M__2__0":
             solver.add_program_line(f"gray({r}, {c}).")
-        elif symbol_name == "circle_M__1__0":
+        if symbol_name == "circle_M__1__0":
             solver.add_program_line(f"not gray({r}, {c}).")
 
     for (r, c), color_code in puzzle.surface.items():

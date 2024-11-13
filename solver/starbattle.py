@@ -29,10 +29,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count(num_stars, color="star__2__0", _type="area", _id=i))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c), symbol_name in filter(lambda x: x[0][0] != -1, puzzle.symbol.items()):
+        if symbol_name == "star__2__0":
             solver.add_program_line(f"star__2__0({r}, {c}).")
-        else:  # safe color (others)
+        if symbol_name == "star__0__0":
             solver.add_program_line(f"not star__2__0({r}, {c}).")
 
     solver.add_program_line(display(item="star__2__0"))
@@ -46,7 +46,7 @@ __metadata__ = {
     "category": "var",
     "examples": [
         {
-            "data": "m=edit&p=7VXNbts8ELz7KQKeeeCfREm3NHV6SZO2SREEgmAojtoYdeDUP0Uhw++e2eWq/oqmCJpD8BUoZFFjkjsc7nCl1ddNu+y0dfTzhTba4gpl4NvHjG8j18VsPe+qA324Wd8ulgBanx0f60/tfNWNaorE1Yy2fVn1h7p/U9XKKc23VY3u31fb/m3Vj3V/jiGFubo/AbJKO8DxHl7yOKGj1GkN8KlgwCvA6Ww5nXeTk9Tzrqr7C61onVccTVDdLb51KoXx/+ni7npGHdftGptZ3c7uZWS1uVl82chc2+x0f5jkXj0i1+/lEkxyCT0il3ZBclfrdvksqSnwV5Fls9sh2R8gc1LVpPjjHhZ7eF5t0Z5WWxU8hcIPy46g1/LYFY0FjDkswas5GjzmQcftBbh077l9za3hNuP2hOeMQeNKnBlrVQUqb6L2DmsSthY4CsYcL3OcBy4FYz5pZFwAQxNhj9ggsb7UPssSDojNJDbgvOZGMHhy4cnoDMtaGWKjxOaIjRIbwV8If6RCKASDsxROqoVSeCJ4SuEpog5G1ioKYNFcGuBcMGrKCD/yEyQ/iANOGhCng0trIQ7YCQa/5BBxwIkHcTr4pAHjwMKDHAbJYUBFh0z0kBdG9mWQWyN7N9iLlT1as/eO/LJJA57Ag4/ImxVOi/xYyQP55QYfwemF04Nz8DoHzgcM/lz4c/APfpEXUfrJizj0k1+yLvky+MjvKMlzzIEHH7HfOPgIbT+8hrZCtBWYL74j98it+OIoz5J/D7984scTWOZ75Nknfs7zkH+czxDExwDOIJwBnEE4gxOPUDSXXDpH3AZucy6pSMX7R+X933J+XvU+KafO5C3/0xX/vr5mVKvxzefu4HSxvGvneL2e37b3ncLXazdS3xXftaeP4b8P2ot+0Cjx5v927p+QUyOnqIz+TKv7zaSdTBc4UcjYb/pfXD0Kl5OezohqRg8=",
+            "data": "m=edit&p=7VVda9swFH3Pryh61oO+bNl+67p0L127rR2lmBDcNFvDUtLlYwyH/Peee3U9UxZWWlhhMBzLJ5Lu0dE9uvbq+6ZZTrV19POFNtriCmXg28eMbyPXxWw9n1YH+nCzvl0sAbQ+Oz7WX5r5ajqoKRLXaLBty6o91O27qlZOab6tGun2Y7Vt31ftULfnGFKYq9sTIKu0Axz28JLHCR2lTmuATwUDXgFOZsvJfDo+ST0fqrq90IrWecPRBNXd4sdUpTD+P1ncXc+o47pZYzOr29m9jKw2N4tvG5lrRzvdHia5V3vk+l4uwSSX0B65tAuSu1o3yxdJTYG/iyxHux2S/Qkyx1VNij/3sOjhebVFe1ptVfAUCj8sO4Jey2NXNBYw5rAEr+Zo8JgHHbcX4NKt5/Ytt4bbjNsTnjMEjStxZqxVFai8ido7rEnYWuAoGHO8zHEeuBSM+aSRcQEMTYQ9YoPE+lL7LEs4IDaT2IDzmhvB4MmFJ6MzLGtliI0SmyM2SmwEfyH8kQqhEAzOUjipFkrhieAphaeIOhhZqyiARXNpgHPBqCkj/MhPkPwgDjhpQJwOLq2FOGAnGPySQ8QBJx7E6eCTBowDCw9yGCSHARUdMtFDXhjZl0FujezdYC9W9mhN7x35ZZMGPIE7H5E3K5wW+bGSB/LLdT6C0wunB2fndQ6cdxj8ufDn4O/8Ii+i9JMXsesnv2Rd8qXzkd9RkueYA3c+Yr+x8xHafnkNbYVoKzBffEfukVvxxVGeJf8efvnEjyewzPfIs0/8nOcu/zifIYiPAZxBOAM4g3AGJx6haC65dI64DdzmXFKRivdZ5f2onHPI7MsZbx1VUPGbvudlBf6k4jqTD8GjK/57faNBrYY3X6cHp4vlXTPHG/j8trmfKnzgdgP1U/Fde/pe/v/mveo3jxJvXlwaf+ncPyGnRk5RGe2ZVvebcTOeLHCikLE/9edxf3/hn8ezp//Vs4MXA5uazqAaDR4A",
         },
         {
             "url": "https://puzz.link/p?starbattle/15/15/3/31g94h1gk30glmiuum28c52kl8mh0i10o51gh4i1go2h84a4802gt5hah8la6046hc9aign1ga18424a42h8",

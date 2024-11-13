@@ -24,23 +24,23 @@ def battleship_refine(solution: Solution) -> Solution:
             solution.symbol[(r, c)] = f"{fleet_name}__1__0"
 
         # middle part
-        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
+        if (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
             solution.symbol[(r, c)] = f"{fleet_name}__2__0"
 
         # left part
-        elif {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
+        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__3__0"
 
         # top part
-        elif {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+        if {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__4__0"
 
         # right part
-        elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
+        if {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__5__0"
 
         # bottom part
-        elif {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+        if {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__6__0"
 
     return solution

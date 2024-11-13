@@ -62,7 +62,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"nagare({r}, {c}).")
             solver.add_program_line(f'grid_in({r}, {c}, "{rev_direction[d]}").')
             solver.add_program_line(f'grid_out({r}, {c}, "{d}").')
-        elif shape == "arrow_B_W":
+        if shape == "arrow_B_W":
             solver.add_program_line(f"not nagare({r}, {c}).")
             solver.add_program_line(nagare_wind(r, c, d, puzzle))
 

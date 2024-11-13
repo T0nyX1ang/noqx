@@ -58,7 +58,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(f"masyu({r}, {c}).")
         if symbol_name == "circle_L__1__0":
             solver.add_program_line(f"white({r}, {c}).")
-        elif symbol_name == "circle_L__2__0":
+        if symbol_name == "circle_L__2__0":
             solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))

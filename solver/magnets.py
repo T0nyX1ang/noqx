@@ -47,10 +47,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         assert isinstance(num, int), "RIGHT clue should be integer."
         solver.add_program_line(count(int(num), color="math_G__3__0", _type="row", _id=r))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name in ("math_G__2__0", "math_G__3__0"):
-            solver.add_program_line(f"{symbol_name}({r}, {c}).")
-
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"gray({r}, {c}).")

@@ -44,7 +44,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for (r, c), symbol_name in puzzle.symbol.items():
         if symbol_name == "sun_moon__1__0":
             solver.add_program_line(f"moon({r}, {c}).")
-        elif symbol_name == "sun_moon__2__0":
+        if symbol_name == "sun_moon__2__0":
             solver.add_program_line(f"sun({r}, {c}).")
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)

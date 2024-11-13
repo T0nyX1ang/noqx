@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, grid, shade_c
+from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.rule.reachable import (
     bulb_src_color_connected,
@@ -38,6 +38,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="not black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
+    solver.add_program_line(count(("gt", 0), color="black", _type="grid"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
