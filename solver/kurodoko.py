@@ -29,10 +29,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
         solver.add_program_line(f"not black({r}, {c}).")
         solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
-        solver.add_program_line(count_reachable_src(num, (r, c), main_type="bulb", color="not black"))
+
+        if isinstance(num, int):
+            solver.add_program_line(count_reachable_src(num, (r, c), main_type="bulb", color="not black"))
 
     solver.add_program_line(display())
     solver.solve()
@@ -45,7 +46,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VRNb5wwEL3zK6I5+4AxOKxv2zTby5Z+sFUUIRSxlCgoIKewVJUR/z3jgdahyqWHRqlUef32Pc/YfgzY/beh6CrGffsTMcN/bCGPqQexpO4v7VCfmkqdse1wutMdEsY+7Hbstmj6ysuWrNwbzUaZLTPvVAYcGATYOeTMfFKjea9MwkyKIWAhju3npADppaNXFLfsYh7kPvJk5hLpNdKy7sqmutljFEc+qswcGNh93tBsS6HV3ytYfFhd6vZY24FjccKH6e/qhyXSD1/1/bDk8nxiZjvbTZ+xK5xdS2e7lv01u82Dfs7oJp8mLPhntHqjMuv6i6Oxo6kaERM1gvBxqmByficgBMrASYkycnKzSpbruTJCKX/J82C1VMxXS3Eeoo6dDtY789+McWFXD52OrDW3G4+styfzpd3+yX7k7mccH55TCa4Jd4QB4QErxIwgfEvoE0aEe8q5JLwivCAMCSXlnNsa/9FbeAE7mZgP87pF/95Y7mWQDt1tUVZ4ApKhPVbdWaK7tmgAL5vJgx9AHT8evLv+3z8vfv/Y4vuv7ft/bXbwRML90GksnobcewQ=",
+            "data": "m=edit&p=7VXBjtowEL3zFWjOc4jjxBDf6HbphbJtoVqtogiFNKtFGxQaSFUZ8e87M0lJUPfQHkqlqgp+em9mHL+MZbP/WqdVjkrxT4/RQ2IYhEaGUr4Mr32Wm0OR2yFO6sNTWRFBvJtO8TEt9vkgbquSwdFF1k3QvbMxKEDwaShI0H20R/feujm6BaUAA4rNmiKf6G1H7yXP7KYJKo/4vOGG6APRbFNlRb6aUZYiH2zslgi8zhuZzRS25bccWh+ss3K73nBgnR7oY/ZPm12b2ddfyue6rVXJCd2ksbv4YZfttHZ1Z5dpY5fZH7Nb7MrXjEbJ6UQN/0RWVzZm1587Ou7owh4J5/YI2qepykPTbAoEY37VkHy2gZAL/E6GJMOzNMFF1vBsfZZj71JycXCWkbmQyuPJPa145W4ppbjedNrn+p4OeLW+5uVGnQ55fk8bru9/qjLR5YojdjDuaX5DT0ecj1pNDVXS1gfBqaAvuKSuo9OCbwU9wVBwJjW3gveCN4KBoJGaEe/bL+4saA3WR9D0/UGzzVfwFmu6HV55wn83mgxiWNTVY5rldBjn9XadV8N5WW3TAujeOw3gO8igM0DX6P+r8OpXITff+60L8e+f4pj6qgN0dwi7epWusrIA+h9Fieuf4ld3T0cdnuuqpF6XkAxeAA==",
         }
     ],
 }

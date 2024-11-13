@@ -45,10 +45,10 @@ class TestSolver(unittest.TestCase):
 
     def test_solver_assertion_error(self):
         """Test solver assertion error."""
-        payload = "m=edit&p=7VZBz5pAEL3zK8ye58CKCu5NrX4Xi22xsWZDCCp+mkqwIM2XJfx3Z4dtuNg07cG2CVl4eTszj33s7mGKb2WcJ+DY9HhgA9eDu54Bl48asM1Yn2+XRPRgUt5OWY4EYLVYwDG+FIklTVVoVWos1ATUi5CMM2B9fDkLQX0UlXovlA8qwBQDjrFlU9RHOm/phvKazZogt5H7hiPdIt3FN/RTnM7XaNpEPwip1sD0WlP6gqYszb4nzHjR832W7s460H7AZIrykH0tTS0Pa1CTxnLwwLLTWta0sazZA8v6T55geRzWNW7/JzQdCan9f26p19JAVIi+qBi3vaEWf0E3dEoY55TdEi4I+4RrFINyCN8R2oRDwiXVzAk3hDPCAeGIaly9/G8ZfIId6Zqb/0dj2Gk7bafttJ220/7f2tCSLCjzY7xPsLmYH16Tnp/laXzBmV+muyT/Mccer7bYG6NXOigedG3fX2779FHY/1pv9Qs7EndYd6CgVsCuZRRH+wxvG+7gTzNP/wNsEEPrDg=="
+        payload = "m=edit&p=7ZLNbuowEEb3eYpq1rOIk5Qf71IK3QD9gQohK0JAXRE1NL0kaSujvDvjiaVsqnZTVXeBLB+O7UH+Yk3xr1ofNAYoMOyhTz80RITdDgo/4um7MU/LTMsLjKtylx9IEG9HI3xeZ4X2lKtKvKPpSxOjuZEKBCAENAUkaO7l0UwkbPP9JgU0MzoHFHQwbioD0mGrCz63Nmg2hU8+dU66JC31a1k0yzupzBzB3nTFf7UK+/xdg0ti183ttLHJPnZur6ie8pfKVYmkRhP/EDVso1ptolr7Iqr9Aht1mx62mV5NfjVtP6lrevEHyruSykZ/bLXX6kweiVOmYC6ZI2bAnFMpmpB5zfSZl8wx1wyZC+aAGTE7XNO1l/1vcRR1s0g8BYN8/5YXaamBmrT24BN4qpBaPjr37d/3rX19/9y938ehBk68Ew=="
         response = self.client.post(
             "/api/solve/",
-            json={"puzzle_type": "aqre", "puzzle": payload, "param": {}},
+            json={"puzzle_type": "binairo", "puzzle": payload, "param": {}},
         )
         self.assertEqual(response.status_code, 400)
 

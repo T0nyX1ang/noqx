@@ -31,8 +31,7 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
-    if not (puzzle.row % 2 == 0 and puzzle.col % 2 == 0):
-        raise AssertionError("# rows and # columns must both be even!")
+    assert puzzle.row % 2 == 0 and puzzle.col % 2 == 0, "# rows and # columns must both be even!"
 
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -50,9 +49,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     for (r, c), symbol_name in puzzle.symbol.items():
         if symbol_name == "circle_M__1__0":
-            solver.add_program_line(f"circle_M__1__0({r}, {c}).")
+            solver.add_program_line(f":- circle_M__2__0({r}, {c}).")
         else:
-            solver.add_program_line(f"not circle_M__1__0({r}, {c}).")
+            solver.add_program_line(f":- circle_M__1__0({r}, {c}).")
 
     solver.add_program_line(display(item="circle_M__1__0"))
     solver.add_program_line(display(item="circle_M__2__0"))
