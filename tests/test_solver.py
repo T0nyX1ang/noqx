@@ -11,6 +11,9 @@ from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import all_shapes, count_shape, general_shape, get_neighbor
 from noqx.solution import Config
 from solver.binairo import unique_linecolor
+from solver.castle import wall_length
+from solver.heyawake import limit_border
+from solver.nagare import nagare_wind
 from solver.yajikazu import yajikazu_count
 from solver.yajilin import yajilin_count
 
@@ -113,6 +116,23 @@ class TestSolver(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()["url"]), 1)
 
+    def test_statuepark_all_shapes(self):
+        """Test statuepark all shapes."""
+        for shapeset in ["tetro", "pento", "double_tetro", "others"]:
+            payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
+
+            response = self.client.post(
+                "/api/solve/",
+                json={"puzzle_type": "statuepark", "puzzle": payload, "param": {"shapeset": shapeset}},
+            )
+
+            if shapeset == "others":
+                self.assertRaises(AssertionError)
+                continue
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.json()["url"]), 0)
+
 
 class TestExtraFunction(unittest.TestCase):
     """Test extra functions in solvers."""
@@ -141,3 +161,15 @@ class TestExtraFunction(unittest.TestCase):
         self.assertRaises(AssertionError, yajilin_count, 0, (0, 0), -1, "black")
         self.assertRaises(AssertionError, yajikazu_count, 0, (0, 0), 5, "black")
         self.assertRaises(AssertionError, yajikazu_count, 0, (0, 0), -1, "black")
+
+    def test_heyawake_limit_border(self):
+        """Test heyawake limit border."""
+        self.assertRaises(AssertionError, limit_border, 0, [(0, 0)], None, "unknown")
+
+    def test_castle_wall_length(self):
+        """Test castle wall length."""
+        self.assertRaises(AssertionError, wall_length, 0, 0, 4, 1)
+
+    def test_nagare_wind(self):
+        """Test nagare wind."""
+        self.assertRaises(AssertionError, nagare_wind, 0, 0, "unknown", None)

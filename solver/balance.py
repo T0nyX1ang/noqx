@@ -83,14 +83,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             if isinstance(num, int):
                 solver.add_program_line(count_balance(num, (r, c), color="white"))
 
-        elif symbol_name == "circle_L__2__0":
+        if symbol_name == "circle_L__2__0":
             solver.add_program_line(f"black({r}, {c}).")
             num = puzzle.text.get((r, c))
             if isinstance(num, int):
                 solver.add_program_line(count_balance(num, (r, c), color="black"))
-
-        else:
-            raise AssertionError("Invalid symbol found.")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
