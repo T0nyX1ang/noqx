@@ -14,6 +14,9 @@ function imp(penpa) {
   urlstring = urlstring.replace("statuepark", "yinyang");
   urlstring = urlstring.replace("circlesquare", "yinyang");
 
+  // replace unsupported host to supported host
+  urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
+
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
     Swal.fire({
