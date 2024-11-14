@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, grid, shade_c
+from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.rule.reachable import (
     bulb_src_color_connected,
@@ -38,6 +38,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="not black"))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
+    solver.add_program_line(count(("gt", 0), color="black", _type="grid"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
@@ -67,7 +68,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VRNb5tAEL3zK6w5z4Fl+fLe3DTuxaUfuIoihCJMiYICJQVTVWvx3zM7ICETX3poFFUV3qe3b2aXt4N3up991hYohPnJEG0khq7n8xDC4WFPz748VoVa4aY/PjQtEcRP2y3eZ1VXWMmUlVonvVZ6g/qDSkAAgkNDQIr6izrpj0pHqGMKAbqk7cYkh+j1TG84btjVKAqbeDRyn+gt0bxs86q421GUlM8q0XsE8553vNpQqJtfBUw+zDxv6kNphEN2pMN0D+XTFOn6781jP+WKdEC9Ge3GF+zK2a6ho13D/prd6qm5ZHSdDgMV/CtZvVOJcf1tpuFMY3UijNQJZEBLffTHbwKeTVM5T12z8YpcT0KwPouH3iIuxHKFcOQLxbxz3kRIsczwTMaZ4i/WBC8ywnOFzif4lLeMW0aHcU9FQC0Z3zPajB7jjnOuGW8YrxhdRp9zAlPGPyr0K9hJJN3PC4/376qplUDct/dZXtB1iPr6ULSrqGnrrALqPIMFv4EH/XWokf1vRq/ejEzx7bd2U96aHbq78KNvy7rssscSUusZ",
+            "data": "m=edit&p=7VVRj5pAEH7nV5h5ngeWBcR9s97ZF8u11eZyIcQg5XLkoFiQplnjf7/ZgYSIPrQPtUnT4H759ptZ+BidsfneJnWGQpiPDNBGYuh6Pi8hHF52f23yQ5GpCc7bw0tVE0F8WC7xOSmazIr6rNg66pnSc9TvVQQCEBxaAmLUn9RRf1A6RL2mEKBL2qpLcojeD/SR44YtOlHYxMOO+0SfiKZ5nRbZdkVRUj6qSG8QzHPe8WlDoax+ZND7MPu0Kne5EXbJgV6mecn3faRpv1avbZ8r4hPqeWd3fcWuHOwa2tk17I/ZLfbVNaOz+HSign8mq1sVGddfBhoMdK2OhKE6gpzSUR/97jsBz6atHLauufGEXPfCdHYWD7xRXIjxCeHIC8U8c7iJkGKc4ZmMM8UfnZleZATnCr2f4Ld8YlwyOowbKgJqyXjHaDN6jCvOuWd8ZFwwuow+50xNGX+x0CAdUC6CG4ByuqrfwFskqVmvXN6/q8ZWBOu2fk7SjHojbMtdVk/Cqi6TAmgMnSz4Cbzod0RT7f9kuvlkMsW3f2s+/f0ujqiu1Ev6AWHfbpNtWhVAf2todDe40G/unlodvrV1XuZN8ppDbL0B",
         },
         {
             "url": "https://puzz.link/p?nurimisaki/15/15/v.h.h.h.h.zr.j.h.i.zk.l.q.m.j.l.r.i.i.i.zr.h.h.h.h.v",

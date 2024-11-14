@@ -56,7 +56,7 @@ __metadata__ = {
     "aliases": ["building"],
     "examples": [
         {
-            "data": "m=edit&p=7VRNb5wwEL3zK6I5zwGDYVnftmm2ly39yFZRhFDEUqqggEhhiVqv9r9nZqBhkdpDD233UBk/vecZy89j4+5rn7UFKsWfH6GLxFAHoXSlPOnu2LblvirMBa76/X3TEkF8t17jl6zqCifhmdRS52CXxq7QvjEJKEDwqCtI0X4wB/vW2BjtNYWActFuhiSP6NVEbyTO7HIYVC7xeOREb4nmZZtXxd1mGHlvErtF4HVeyWymUDdPBYw+WOdNvSt5YJftaTPdffk4Rrr+c/PQj7kqPaJd/dquP9llOthl9hO7vIs/bHeZHo9U9o9k+M4k7P3TRKOJXpsDYWwO4Guaqum85GTAD0kuJhmRDF6kdmcy9Ej6LzJazOYuOUr3ZpRKcTiatMfxE605fpIfcJzu3g8dBTOnSpabzKhoebI87U7JHm8F14Ke4JZKgNYXfC3oCgaCG8m5ErwRvBTUgqHkLLiIv1Xmv2An0VzLeeNqnNFI6iQQ9/WuaC/ipq2zCuiNODrwDaTLVdL/n41/9GzwEbjndqvPzQ79Z9A9fO/yNnss2g5S5xk="
+            "data": "m=edit&p=7VRNb5tAEL3zK6I5z4GFBeO9uWnci0s/4iqKEIowpQoKiBRM1K7l/56ZgQYjtYce2vpQrffpvZkB3s6ut/vaZ22BSvHPj9BFYqiDUKZSnkx3HNtyXxXmAlf9/r5piSC+W6/xS1Z1hZPwkzRS52CXxq7QvjEJKEDwaCpI0X4wB/vW2BjtNaWAatFuhiKP6NVEbyTP7HIIKpd4PHKit0Tzss2r4m4zRN6bxG4R+Duv5GmmUDdPBYw+WOdNvSs5sMv2tJjuvnwcM13/uXnox1qVHtGufm3Xn+wyHewy+4ldXsUftrtMj0dq+0cyfGcS9v5potFEr82BMDYH8DU9qmm/ZGfAD0kuJhmRDF6kdueSs7CgdYyB0KOA/yKjxexlS87SQRqlUpyOJu1x/kRrzp/UB5ynw/hDR8HMupLPTe5UtDz5PC1XyaJvBdeCnuCWeoLWF3wt6AoGghupuRK8EbwU1IKh1Cy4q7/V979gJ9Hcy/ngbpxRJHUSiPt6V7QXcdPWWQV0aRwd+AYy5Sjp//fIP7pHeAvcczvV52aH/mfQPXzv8jZ7LNoOUucZ"
         }
     ],
 }

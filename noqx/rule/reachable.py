@@ -1,14 +1,9 @@
 """Utility for reachable things and connectivity tests."""
 
 from math import log2
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
-from .helper import tag_encode, target_encode
-
-
-def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
-    """Validate any matching type."""
-    assert _type in target_type, f"Invalid type '{_type}'."
+from .helper import tag_encode, target_encode, validate_type
 
 
 def grid_color_connected(

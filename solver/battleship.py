@@ -24,23 +24,23 @@ def battleship_refine(solution: Solution) -> Solution:
             solution.symbol[(r, c)] = f"{fleet_name}__1__0"
 
         # middle part
-        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
+        if (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
             solution.symbol[(r, c)] = f"{fleet_name}__2__0"
 
         # left part
-        elif {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
+        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__3__0"
 
         # top part
-        elif {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+        if {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__4__0"
 
         # right part
-        elif {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
+        if {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__5__0"
 
         # bottom part
-        elif {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+        if {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
             solution.symbol[(r, c)] = f"{fleet_name}__6__0"
 
     return solution
@@ -129,7 +129,7 @@ __metadata__ = {
     "category": "var",
     "examples": [
         {
-            "data": "m=edit&p=7VRLb9NAEL77V1R7nsOOX7H3lpaGSzGPBFWRZVUOGCUikUsSI7RR/ntnxm69uL5wAIqEnB19+eax384+Dt+acl8BIv+CBDQQgjCKZSD6MnT3LTbHbWUuYNoc1/WeAMDb2Qy+lNtD5eUo2brwTjY1dgr2tckVKlA+DVQF2PfmZN8Ym4Gdk0sBEnfTBvkEr3t4K35GVy2JmnDWYYJLgqvySHoO68393WXLvjO5XYDiuS6lAkO1q79XqtPC/z/Vu9WGib5A5zk0n+uvTReLxRnstJW8HJEc9JIZtpIZjUjmlfwByWlxPlP7P5DoO5Oz/o89THo4NyeymTmpIODUgLS0e6SC8HH5j0TEBO3hExEPiQkT2iESJkKHSAcpoR7MEuJAR+gPU2QWp2g8jJhIhFM0lQhHGGoJcXLQlxinLLbLccpgNJwJ42cxicQ8LYDai9LkJTU55o7F8Hz3VcLtH/Wg5p4Foy7Jmoy6Uu7jiIuUzESPL3ZB5wBsIPaVWC02EnsjMddib8VeiQ3FxhIz4ZP0S2fNbclvkpOHiTxgP3/0kP1rXOHlKmt2q2p/kdX7Xbml2z5fl/eVouf17KkfSgadD3qt/7+4f/nF5a3QL+0uvDQ5dDsL7wE=",
+            "data": "m=edit&p=7VRNb9swDL37VxQ68yDasmP7lnbNLp33kQxFYBiFs3lIsATukngYFOS/l6TdWnN92WFbBwyJiJfHJ+mJUnj41pT7ChD5G8SggRCYMJKB6MvQ3WexOW6r9AKmzXFd7wkAvJ3N4Eu5PVRejjJbF97JJqmdgn2d5goVKJ8GqgLs+/Rk36Q2AzunlAIk7qYV+QSve3greUZXLYmacNZhgkuCq/JIfg7rzf3dZcu+S3O7AMV7XcoKDNWu/l6pzgv//lTvVhsm+gW6zKH5XH9tOi0WZ7DT1vJyxHLQW2bYWmY0YplP8gcsJ8X5TOX/QKbv0pz9f+xh3MN5eqKYpScVBDw1IC/tHanAPB7/kQiZoDt8IqIhMWFCO0TMhHGIZDDF6MEuBgc+jD+cIrs4i0ZDxUQUzqKJKBxjqEXizEFfNM6y2B7HWQbD4U4YPdPEonk6AJUXpchLKnLI6hCe376KuJbRWAY11ywYTfmc8kdTUnozmor5qiejqYSrT8aHKfI/k1P4Ehf0esAGEl9J1BJDiTeiuZZ4K/FKopEYiWbC7++XXqhbyN9kJzextL2fP9T+/jWu8HKVNbtVtb/I6v2u3FKPmK/L+0pRUz576oeSQa+Kevz/Pv2X+zRfhX5p/4WXZof+nYX3AA==",
         }
     ],
 }

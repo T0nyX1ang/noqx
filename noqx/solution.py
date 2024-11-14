@@ -1,6 +1,5 @@
 """Generate solutions for the given problem."""
 
-from dataclasses import dataclass
 from typing import List, Optional
 
 from clingo.control import Control
@@ -10,7 +9,6 @@ from .logging import logger
 from .penpa import Direction, Puzzle, Solution
 
 
-@dataclass
 class Config:
     """Configuration for the solver."""
 
@@ -26,7 +24,7 @@ class ClingoSolver:
         """Initialize a solver."""
         self.clingo_instance: Control = Control()
         self.program: str = ""
-        self.model: Optional[str] = None
+        self.model: List[str] = []
         self.puzzle: Optional[Puzzle] = None
         self.solutions: List[Solution] = []
 
@@ -35,12 +33,16 @@ class ClingoSolver:
         self.puzzle = puzzle
         logger.debug("[Solver] Puzzle registered.")
 
-    def store_solutions(self, model: Model):
+    def store_model(self, model: Model):  # pragma: no cover
+        """Store the model on solving."""
+        self.model.append(str(model))
+
+    def store_solutions(self, model_str: str):
         """Get the solution."""
         if self.puzzle is None:
             raise PermissionError("Puzzle not registered.")
 
-        solution_data = tuple(str(model).split())  # raw solution converted from clingo
+        solution_data = tuple(str(model_str).split())  # raw solution converted from clingo
         solution = Solution(self.puzzle)
 
         for item in solution_data:
@@ -50,14 +52,9 @@ class ClingoSolver:
             r, c = data[:2]  # ensure the first two elements of data is the row and column
 
             if _type.startswith("edge_"):
-                if _type == "edge_left":
-                    solution.edge.add((int(r), int(c), Direction.LEFT))
-                elif _type == "edge_top":
-                    solution.edge.add((int(r), int(c), Direction.TOP))
-                elif _type == "edge_diag_up":
-                    solution.edge.add((int(r), int(c), Direction.DIAG_UP))
-                elif _type == "edge_diag_down":
-                    solution.edge.add((int(r), int(c), Direction.DIAG_DOWN))
+                for d in Direction:
+                    if _type == f"edge_{d.value}":
+                        solution.edge.add((int(r), int(c), d))
 
             elif _type.startswith("grid_"):
                 grid_direction = str(data[2]).replace('"', "")
@@ -86,9 +83,9 @@ class ClingoSolver:
 
             elif len(data) == 2:
                 solution.symbol[(int(r), int(c))] = str(_type)
-            else:
-                # for debugging
-                solution.text[(int(r), int(c))] = int(data[2])
+
+            else:  # pragma: no cover
+                solution.text[(int(r), int(c))] = int(data[2])  # for debugging
 
         self.solutions.append(solution)
 
@@ -101,7 +98,7 @@ class ClingoSolver:
         """Reset the program."""
         self.clingo_instance = Control()
         self.program = ""
-        self.model = None
+        self.model = []
         self.puzzle = None
         self.solutions = []
 
@@ -114,11 +111,12 @@ class ClingoSolver:
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
         self.clingo_instance.add("base", [], self.program)
         self.clingo_instance.ground()
-        with self.clingo_instance.solve(async_=True, yield_=True) as handle:  # type: ignore
-            for model in handle:
-                self.store_solutions(model)
+        with self.clingo_instance.solve(on_model=self.store_model, async_=True) as handle:  # type: ignore
             handle.wait(Config.time_limit)
             handle.cancel()
+
+        for model_str in self.model:
+            self.store_solutions(model_str)
 
 
 solver = ClingoSolver()

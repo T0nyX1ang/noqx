@@ -4,7 +4,6 @@ from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import count, display, grid, shade_c
-from noqx.rule.helper import extract_two_symbols
 from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
@@ -32,33 +31,30 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
-    if not (puzzle.row % 2 == 0 and puzzle.col % 2 == 0):
-        raise AssertionError("# rows and # columns must both be even!")
-
-    symbol_1, symbol_2 = extract_two_symbols(set(puzzle.symbol.values()))
+    assert puzzle.row % 2 == 0 and puzzle.col % 2 == 0, "# rows and # columns must both be even!"
 
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color=symbol_1))
-    solver.add_program_line(f"{symbol_2}(R, C) :- grid(R, C), not {symbol_1}(R, C).")
-    solver.add_program_line(count(puzzle.row // 2, color=symbol_1, _type="row"))
-    solver.add_program_line(count(puzzle.col // 2, color=symbol_1, _type="col"))
-    solver.add_program_line(unique_linecolor(colors=[symbol_1, f"not {symbol_1}"], _type="row"))
-    solver.add_program_line(unique_linecolor(colors=[symbol_1, f"not {symbol_1}"], _type="col"))
-    solver.add_program_line(avoid_rect(1, 3, color=symbol_1))
-    solver.add_program_line(avoid_rect(1, 3, color=f"not {symbol_1}"))
-    solver.add_program_line(avoid_rect(3, 1, color=symbol_1))
-    solver.add_program_line(avoid_rect(3, 1, color=f"not {symbol_1}"))
+    solver.add_program_line(shade_c(color="circle_M__1__0"))
+    solver.add_program_line("circle_M__2__0(R, C) :- grid(R, C), not circle_M__1__0(R, C).")
+    solver.add_program_line(count(puzzle.row // 2, color="circle_M__1__0", _type="row"))
+    solver.add_program_line(count(puzzle.col // 2, color="circle_M__1__0", _type="col"))
+    solver.add_program_line(unique_linecolor(colors=["circle_M__1__0", "circle_M__2__0"], _type="row"))
+    solver.add_program_line(unique_linecolor(colors=["circle_M__1__0", "circle_M__2__0"], _type="col"))
+    solver.add_program_line(avoid_rect(1, 3, color="circle_M__1__0"))
+    solver.add_program_line(avoid_rect(1, 3, color="circle_M__2__0"))
+    solver.add_program_line(avoid_rect(3, 1, color="circle_M__1__0"))
+    solver.add_program_line(avoid_rect(3, 1, color="circle_M__2__0"))
 
     for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name == symbol_1:
-            solver.add_program_line(f"{symbol_1}({r}, {c}).")
+        if symbol_name == "circle_M__1__0":
+            solver.add_program_line(f":- circle_M__2__0({r}, {c}).")
         else:
-            solver.add_program_line(f"not {symbol_1}({r}, {c}).")
+            solver.add_program_line(f":- circle_M__1__0({r}, {c}).")
 
-    solver.add_program_line(display(item=symbol_1))
-    solver.add_program_line(display(item=symbol_2))
+    solver.add_program_line(display(item="circle_M__1__0"))
+    solver.add_program_line(display(item="circle_M__2__0"))
     solver.solve()
 
     return solver.solutions

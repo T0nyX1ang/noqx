@@ -17,12 +17,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(shade_c(color="sun_moon__4__0"))
     solver.add_program_line(adjacent(_type=8))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"sun_moon__4__0({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not sun_moon__4__0({r}, {c}).")
-
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue must be an integer."
         solver.add_program_line(f"not sun_moon__4__0({r}, {c}).")
@@ -31,6 +25,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     if mine_count:
         assert isinstance(mine_count, str) and mine_count.isdigit(), "Please provide a valid mine count."
         solver.add_program_line(count(int(mine_count), color="sun_moon__4__0", _type="grid"))
+
+    for (r, c), symbol_name in puzzle.symbol.items():
+        if symbol_name == "sun_moon__4__0":
+            solver.add_program_line(f"sun_moon__4__0({r}, {c}).")
 
     solver.add_program_line(display(item="sun_moon__4__0"))
     solver.solve()
@@ -44,7 +42,7 @@ __metadata__ = {
     "aliases": ["minesweeper"],
     "examples": [
         {
-            "data": "m=edit&p=7VTBjpswEL3zFSuffbANS8C3dLvpJcu2TapVhBAiqaughpBCaCtH+fedGWgAKVLVHqIeKstP73nG9ssMcf2tySrDAxhuwAWXMFxP0VQipCm6scyPO6Pv+LQ5bssKCOfPsxn/ku1q48RdVuKcbKjtlNt3OmaScaZgSpZw+0Gf7JO2EbcLCDEuYW3eJimgjz19oTiyh3ZRCuBRx4GugG7yarMz6bxdea9ju+QM73lDu5GyovxuWOcD9aYs1jkurLMj/Jh6mx+6SN18Lr82Xa5MztxOW7urK3bd3i7S1i6yK3bxV6DdutmnRVnu/8puke9Nfc1pmJzPUPGP4DXVMdr+1NOgpwt9Aoz0iakJbMVGU1OYG4DErrfSE2OpRsmeN5I+RvtkH6MDOT55gvd6vcTo/UUGeK+6yBBPHkh3dG+IewfREKR7kVLgWf1NUuBhQz32KaUcnS4l3vYrDlWTVLsV4YxQES6htNy6hG8JBeE94ZxyHglfCB8IPUKfcibYnD9q3w3sxMqnZ6Af2KYb6sSJWdQUa1PdRWVVZDv48Bfb7GAYPC5nh/1kNKnl3v/35vbvDVZf/Guf7W/sxFBY3+X2mbNDk2bppoTPCipzdV0kN3cP/7u26j+MOZiKJc4r",
+            "data": "m=edit&p=7VRNj5swEL3zKyKffbCB5euWbje9pGzbpFpFCCGSugpqCCmEtnKU/74zA41BymG7UtNLZXn03sxgP88YN9/bvFY8gOEEXHAJw3FtmrYIaYp+LIvjTkUTPm2P26oGwPnjbMa/5rtGWUmflVonHUZ6yvW7KGGScWbDlCzl+mN00u8jHXO9gBDjEnzzLskG+GDgE8UR3XdOKQDHPQa4Argp6s1OZfPO8yFK9JIz3OcNfY2QldUPxXodyDdVuS7Qsc6PcJhmWxz6SNN+qb61fa5Mz1xPO7mrK3IdIxdhJxfRFbl4CpTbtPusrKr9q+SWxV4115SG6fkMFf8EWrMoQdmfDQwMXEQnsHF0YrYPn2KjqSnMCYBi1zvqijG1R8muO6IeRk2yh9EBHa/s476uoRi9u9AA97UvNMSVB9QZ7Rvit4NoCNS5UClwLbOTFLjYkI91SilHq0uJu/2OQ9Uk1W5FdkbWJruE0nLtkH1LVpC9IzunnAeyT2TvybpkPcrxsTl/1L6hHObjwV28EeZq/SWNie3R22AG9u6GPLUSFrflWtWTuKrLfAd/w2KbHxSDF+dssV+MJt0D9/8jdPtHCKsvXn2X/82vlUBhPYfrR84ObZZnmwquFVTmqh/KiX4/fLH/5qeF/7Tr0k+lDqpmqfUM",
             "config": {"mine_count": 10},
         },
         {

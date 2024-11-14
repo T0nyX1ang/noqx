@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import extract_initial_edges, tag_encode
+from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import OMINOES, all_shapes, general_shape
 from noqx.solution import solver
@@ -33,7 +33,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
 
     for (r, c), color_code in puzzle.surface.items():
         solver.add_program_line(f"hole({r}, {c}).")
@@ -45,6 +44,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     for i, o_shape in enumerate(OMINOES[3].values()):
         solver.add_program_line(general_shape("omino_3", i, o_shape, color="grid", adj_type="edge"))
+
+    for r, c, d in puzzle.edge:
+        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+
+    for r, c, d in puzzle.helper_x:
+        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(all_shapes("omino_3", color="grid"))
     solver.add_program_line(avoid_adj_same_omino(color="grid"))
@@ -60,7 +65,7 @@ __metadata__ = {
     "category": "region",
     "examples": [
         {
-            "data": "m=edit&p=7ZfPbtw2EMbv+xSBzjqInOFQ0s1N7V4c949dBMFiEWycTWPUxrZrb1HI8LuH4vwWvvjQHtqmwEKr4YicGc7Hb0Su7n/fr3ebNqb5J33btaFcQ9/XW2NX78N1dfNwuxlftSf7h8/bXVHa9vuzs/bT+vZ+s1hitVo8TsM4nbTTd+OyiU1b79Cs2unH8XF6M06X7XRZhppWS9950ULTxqKePqtv6/isvfbO0BX9Ar2o74p6fbO7vt28P/eeH8bldNU28zzfVO9Zbe62f2wad6vP19u7Dzdzx4f1QwFz//nmN0bu9x+3v+6xDaundjrxdE9fSFee051VT3fWXkh3RvEPpzusnp7Ksv9UEn4/Lufcf35W+2f1cnxsrG9GbRsbapODN9Eb8UZrM/jY4GNDqk3ojNYDhNDRulmIPEf3DvHQ77FDJE70PEIkjuAn+AnzSPZWGdfDM37Jkw2JuAm/hJ0Rz8jDyMPwYyFCxi+TV4/94HFi5/0xuF0M9IM3Ro8XwRfBFYVncEShXz1+VM8nKv7gi8p8yfOPCXvwRnDGhB14ouGfyQs8MTNvzzh8xsHHpfN5pPN5pPN4Aq8SPE8Jh36fX+BXwC/R4wv8ijAu+At2rIuwHgK/ouQBToFHAafAp8CnGHmAW6hvobKFYhbwS888PfmwHtLjN9A/4Mc6KeujnY8r66Kshwb3V9ZDwa/UgbIOCk6Ff4V/hX9V5qMOlDrXhB91rvCvrIeCX6ln5ZXWTH+PHXWt4FfqO3UeP1Hnifc78X4n+E/gTcHzSAG76Pkk8Cb4TvCcqP8E3qTYw3OC5wSeBL/J8Adfgs+U6QdH6pmX7SqBy8Bl7FsGbwYeA4fBn8GfUcfGvmTUpcGbgcPgzXhfjffUEuPgMiMO+Ix9yNhzDVwGX0a9GnwZdWrgs4ENnHrMnY9n8GXwZd7TzD6V4SeDK8NThqcsjiODM4MzgzODM1OX+XCQ1P2znDEX42ORocp3VZ5VGau8KgdRO0mV31bZVZmqPK82p1W+rfJ1lVqlVZs8H2V/8bD719JZmv9z+jtXOnocPY4eR4//h8dqsWwu97tP6+tN+QQ5/fjL5tXFdne3vm3KF9/TovmzqfdSirEePwL/o4/AmYLuazsdv7Z0ynm9WnwB",
+            "data": "m=edit&p=7ZhBbxs3E4bv/hXBnnlYcsjh7t7c1O7FddraRRAIgqEoSmNUhlLbKoo1/N/D5TyCD5XxtUmb4gMESeQsZ4acd95Zcld3v20XtysX0vSVzrXOl0/fdfUXQ1t/u8/l9f16Nbxwx9v7D5vbIjj36vTUvV+s71ZHM6zmRw9jP4zHbvxumDWhcfXnm7kbfxwexu+H8cKNF0XVuFjGzorkGxeKePIkvq76SXppg74t8jlyEd8UcXl9u1yvrs5s5IdhNl66Zlrnm+o9ic3N5vdVY271erm5eXs9Dbxd3Bcwdx+uP6K5277b/LrF1s8f3Xhs4Z7sCVeewp1EC3eS9oQ7ofiXw+3nj48l7T+VgK+G2RT7z09i9yReDA+Nds0QXaN97bK3Llgn1sXa9abrTden2vlW6W0C71t6M/OB62DePuzGbW4fmCdYHD4wj+An+AnrSLY+oo+7a/ySBesT8yb8EnbKfEocShyKH4nwGb9MXB32vc0TWhsP3uyCZxy8Idh8AXwBXEG4BkcQxqPNH6LFEyL+4AuR9ZLFHxL24A3gDAk78ATFPxMXeEJm3Q49fIbe9NLaOtLaOtLafAKv4i1O8btxW1/gV8AvweYX+BVBL/gLduRFyIfAr0TiAKfAo4BT4FPgU5Q4wC3Ut1DZQjEL+KVjnY54yId0+PWM9/iRp0h+Ymv6SF4i+Yje/CP5iOCP1EEkDxGcEf4j/Ef4j5H1qINInceEH3Ue4T+Sjwj+SD1HbumYGe+wo64j+CP1nVqbP1Hnifs7cX8n+E/gTd7iSB67YPEk8Cb4TvCcqP8E3hSxh+cEzwk8CX6T4g++BJ8pMw6O1LEu21UCl4JL2bcU3hQ8Cg6FP4U/pY6VfUmpS4U3BYfCm3K/KvepJvTgUmUe8Cn7kLLnKrgUvpR6VfhS6lTBpz0bOPWYW9Nn8GXwZe7TzD6V4SeDK8NThqcshiODM4MzgzODM1OXeXeQ1P2znDHnw0NpfW3f1Pa0tqG2l+UgcqPU9tvatrVNtT2rNie1fV3bl7WNtdVqk6ej7C8edv9UOOU0mMqn7+r+WhI1Sb2K6yc2pMh9KHLJlPzPyGdqD1l/55MOHgePg8fB4//DY340ay62t+8Xy1V5Wzl598vqxfnm9maxbsrL4eNR80dTfzMpxvHwvvgfvS9OFLRf+SD90nN9VrJbXu36coSm8nrqxleu+bi9WlwtN+um/PfgdgalCrU88ew3EGnbZzX++Um/bNVi0PXTDJ9t8Flx7x5TnlPz5LJfPT3t7NdMT0R/0nz1aimPU/OjTw==",
         }
     ],
 }

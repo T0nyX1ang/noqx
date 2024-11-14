@@ -23,12 +23,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not black({r}, {c}).")
-
     for c in range(puzzle.col):
         target = puzzle.text.get((puzzle.row, c))
         assert isinstance(target, int), "BOTTOM clue must be an integer."
@@ -47,6 +41,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         assert isinstance(num, int), "TOP clue must be an integer."
         solver.add_program_line(count_box_col(num, c, color="black"))
 
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f":- not black({r}, {c}).")
+        else:  # safe color (others)
+            solver.add_program_line(f":- black({r}, {c}).")
+
     solver.add_program_line(display())
     solver.solve()
     return solver.solutions
@@ -57,7 +57,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VXPj9o8EL3nr1j57IMd5/eNbpdeaPoDqtUqilaBZrWooLSBVJ+M+N93PJOQadNLD1/LoQoePZ7fmDcexxy+dVVbS63dxyRSSUAyCCMcWvs4VP+stsddnd3IWXd8bloAUr6bz+VTtTvUXuEy4Sm9k00zO5P2TVYILaTwYWhRSvshO9m3mc2lXcKUkAa4BYl8gHcjvMd5h26J1Apw3mOADwA323azqx8XxLzPCruSwv3OK8x2UOyb77Xofbjvm2a/3jpiXR2hmMPz9ms/c+g+N1+6XqvLs7Qzsrsc7AajXee8t+sg2XXoF3ZdFf+z3bQ8n2HbP4Lhx6xw3j+NMBnhMjtBzLOTMAZTQzBDzREmcIxvGBM6xijGRBNNPGESZPjK6c+aQE0YjUzEGFxZu83smZAYIaOeiHwkglESIwMHbpDElMPcJMjATw+SlFaBpEGiFVKw7qDRauJGa6Rg5YvIxzRWgzYDc9HQhsFGjiKqNGaiENN+EFGtCRNF05Wo2pSJEuozZ6jPnKE+cwb7zOunXePFJthnXlqCfeZ1pNhnbjrFPl8cwmnUeCYfMM4x+hhXcGSlNRhfY1QYQ4wL1NxhvMd4izHAGKEmdof+t16LP2CnCBK6J9kTXxdTeoVYdu1Ttanhssm7/bpub/Km3Vc7Abf72RP/CRyFcX8W/y78v3Thuxaoazvf12YH3rjSewE=",
+            "data": "m=edit&p=7VVBj5s8EL3zK1Y+zwFjA4Zbut30kma/r0m1WiEUEcpqoxKxJaGqHOW/73gMwS09tIfu9lARj14eb5w3Hts5fOmKtgLOzUco8AERyDCiwXlAw++f9e5YV+kVzLrjY9MiALidz+GhqA+Vl5lMfHLvpJNUz0C/SzPGGbAAB2c56P/Tk36f6iXoFb5iIJBbWFGA8GaEd/TeoGtLch/xsscI7xGWu7asq83CMv+lmV4DM7/zhrINZPvma8V6H+Z72ey3O0NsiyMWc3jcPfVvDt2n5nPXa3l+Bj2zdleDXTnaNc57uwZauwb9xK6p4g/bTfLzGZf9AxrepJnx/nGEaoSr9IRxmZ6YEJQaohnbHCakYQLhMKFhhO8w0UQTTxhFjDtz8qNG+hOGExM5DM3MzWL2TGgZBlFPRAERcpTExOCGGySxzXHcKGLwpwdJYmfBpEHCfaJw3kHD/YkbzonCmS+igNKcGrgYmIvGLhgu5CiylcaOKKS070S2VuWIoulMttrEESnbZ5exfXYZ22eXoT679dtVc4tV1Ge3NEV9dutIqM+u6YT6fHGIu5HTnrynOKcYUFzjlgUtKL6l6FMMKS5Ic0PxjuI1RUkxIk1sNv0vHgsmsZwAdx3WIO0ZeQFvmVT20nSe+O9ici9jq659KMoKb55lt99W7dWyafdFzfCqP3vsG6ORCfPP8e/2f6Xb37TA/63/gNc/exmurkxA3wJ76jbFpmxqBrh2xKsJ/+Lu8YDm3jM=",
         },
     ],
 }

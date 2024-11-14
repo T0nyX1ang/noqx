@@ -49,10 +49,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         if symbol_name == "tents__1__0":
             all_trees.append((r, c))
             solver.add_program_line(f"not tents__2__0({r}, {c}).")
-        elif symbol_name == "tents__2__0":
+        if symbol_name == "tents__2__0":
             solver.add_program_line(f"tents__2__0({r}, {c}).")
-        else:
-            solver.add_program_line(f"not tents__2__0({r}, {c}).")
 
     solver.add_program_line(identical_adjacent_map(all_trees, color="tents__2__0", adj_type=4))
     solver.add_program_line(count(len(all_trees), color="tents__2__0", _type="grid"))
@@ -67,7 +65,7 @@ __metadata__ = {
     "category": "var",
     "examples": [
         {
-            "data": "m=edit&p=7VXNjpswEL7zFCuffcDmx8At3W56SelPUq0ihFYkpUrUpGyBVJWjvPvODFQE7EtXarWHlfFo5vOY+WYG4+bnqahLLgJ8vIi7XMAI3YimiMCG+Wes9u2hTG747NTuqhoUzj/M5/xbcWhKJ8OdMHLnrONEz7h+l2RMMM4kTMFyrj8lZ/0+0SnXS1hi4Mv1onOSoN4N6j2to3bbgcIFPe11UNegbvf19lA+LDrkY5LpFWcY5w3tRpUdq18l63mgva2Omz0Cm6KFZJrd/rFfaU5fq++n3lfkF65nHd21ha430EW1o4uahS5mgXTb8kfbPItrv9OkGeeXC5T7MxB9SDLk/GVQo0FdJmeQaXJmvoCtEvpEHWG+BNMbTH9shmBiUzszcEerAb7qyhy/KohHgUSAr76yY3QfbBmpq+1AVhDlNVAOMQ7gQ/1Y6JkQxhtDytwYBQYURwYkXMx0iln8hMVPYmJTDJOfYB4mPMF8C0aFnGCWkghLTYSyxI26po6w2IaZcaVr5iY9M6605Cbpy5tgyqyftHRNKktcS25Sme2VysxNKrOXUlnyjab84JOc04cpSa7geHHtkXxL0iUZkFyQzx3Je5K3JH2SIfkoPKB/dYSvz8Y/opOF3T1gG+p15TkruZOx9HTclPVNWtXH4gC/8+WueCwZ3JcXh/1mNOkP6L9eof/5CsXSuy/tFL40OvBf6MuYO08=",
+            "data": "m=edit&p=7VZNj9owEL3nV6x89iF2PpzkRrfLXijbFqoViiIUaCpQoaGQVJUR/31nJqlCYl+K1O1lZTyaeR5n3oy/OP2s82PBRYA/L+IuF9BCN6IuIrCh/2nzbbUrkjs+qqtNeQSF86fxmH/Ld6fCSXEmtMw56zjRI64fk5QJxpmELljG9afkrD8kesr1DIYY+HI9aZwkqA+d+kzjqN03oHBBn7Y6qAtQ19vjelcsJw3yMUn1nDOM845mo8r25a+CtTzQXpf71RaBVV5BMqfN9tCOnOqv5fe69RXZhetRQ3dhoet1dFFt6KJmoYtZIN2q+FGdbuLazjRpxtnlAuX+DESXSYqcv3Rq1Kmz5AxympyZL2CqhHWiFWG+BNPrTL9vhmDiojZm4PZGA/zUldn/VBD3AokAP31lx+je2TJSV9OBrCDKC6AcYhzAu/qx0DMhjNeHlDkxCgwojgxIuJjpELP4CYufxMSGGCY/wDxMeID5FowKOcAsJRGWmghliRs1i9rDYhtmxpWumZv0zLjSkpuknTfAlFk/aVk1qSxxLblJZS6vVGZuUplrKZUl32jID7bkmDamJDmH48W1R/I9SZdkQHJCPg8kn0nek/RJhuSj8ID+1RHunQ0iKP89wTRsXgZbU28jt4xkTsqm9X5VHO+m5XGf7+CCn23yQ8HgBb047DejTnei//aovvKjiqV3bz6X/+eaSKGq8G9NP3F2qJf5cl3CnnKzV2cJ10Vb3cx5AQ==",
         }
     ],
 }

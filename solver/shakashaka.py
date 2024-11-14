@@ -83,12 +83,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         if isinstance(clue, int):
             solver.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {clue}.")
 
-    for (r, c), symbol in puzzle.symbol.items():
-        if symbol.startswith("tri__"):
-            solver.add_program_line(f"triangle({r}, {c}, {symbol.split('__')[1]}).")
-        else:
-            solver.add_program_line(f"black({r}, {c}).")
-
     solver.add_program_line(shaka())
     solver.add_program_line(display(item="triangle", size=3))
     solver.solve()

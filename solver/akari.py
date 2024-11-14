@@ -56,7 +56,7 @@ __metadata__ = {
     "aliases": ["lightup"],
     "examples": [
         {
-            "data": "m=edit&p=7VTfa9swEH73XxH0fA+W5SSO3rKu2UuW/XBGCcIEJ3OJaVx3djyGQv733p1E7UIZYw+lg6Ho03ffydKXE1L7o8ubAmRIP5UAjthimXCPkgn30Ld1eToWegTz7nSoGyQAnxYLuM2PbREYPysLznam7RzsB22EFCAi7FJkYL/os/2obQo2xZSAGLWlmxQhve7pDeeJXTlRhshXjk+RbpDuy2Z/LLZLzKLyWRu7BkH7vOOviYqq/lkI74PifV3tShJ2+Qn/THsoH3ym7b7Xd52fK7ML2Lmzu3nBrurtEnV2if3Gbtvdb6u6vv8ru/ld3pQvOZ1llwtW/Ct63WpDtr/1NOlpqs9CRULHIMaSh4mLpoqHxIkzJ8rQqVLGboy8rrwee31CMS6/8subCKbutHkbI59C2s6IEdbDC7TxIE8GBl+TkUHIhoYxGRvGZHCwGhsdxmT42fZs/WkF/AtSnxE3jAvGiHGNBQSrGN8zhoxjxiXPuWa8YbxijBknPGdKR/CHh+Rq+Qp2jHKX/Xkb/3taFhiRds1tvi/wgqy6alc0o1XdVPkR4/SQPxQCH6VLIH4J7kbRG/f/nXr9d4qqH761i/DW7ODV9GXMgkc=",
+            "data": "m=edit&p=7VTfa9s8FH33XxH0rAfLchxHb1m/Zi9Zus0ZJQhjHM8lpnGd2fEYCvnfe++VVrswRims44Oh6OjcI0U6vvrRfevztuTCx5+MObRQQhFTDeKIqu/KpjodSjXhi/60b1ognN8sl/wuP3Slp92o1DubuTILbt4rzQTjLIAqWMrNJ3U2H5RJuEmgi/EQtJUdFAC9Hugt9SO7sqLwga8tnwHdAi2qtjiU2Qp6QfmotNlwhuu8o38jZXXzvWTOB8ZFU+8qFHb5CT6m21dH19P1X5v73o0V6YWbhbW7/WkX7Ti7crCL1NpF9hu7Xf+Q1U3z8Cq7+X3eVr9yOk8vF8j4Z/CaKY22vww0HmiizkwGTIWcTQU1kY1mkprYinMrCt+qQoS2DZwunR46PcIYpl+76XXAZ3a3aRktnkJcTrMJ5MMJuPCoHw2M/o1GRiEZGsdobByjwdFsZHQco+Fny5P1pxngE4Q6A24Jl4QB4QYSyI0k/I/QJ5wSrmjMNeEt4RVhSBjRmBluwQs3yeZybIdJzIzEfR8O0B/yqKV9AZ6X6f9PSz3Nkr69y4sSbs26r3dlO1k3bZ0fIE72+bFk8FJdPPaDUYUEw8P37/F6+8cLs++/+nb8ncuqIbFScHPD2bHP8qxo4FhB2jScjzB6sf7mXwU33O1G6j0C",
         },
         {
             "url": "https://puzz.link/p?akari/17/17/g666.g6.g6.x6.x6.x6.obl6.gbi6cv.gblcmbl7cv6bi66blam6.x.gbv.gcv66.g666.g.g",

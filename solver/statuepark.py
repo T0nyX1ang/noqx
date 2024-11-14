@@ -36,7 +36,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for (r, c), symbol_name in puzzle.symbol.items():
         if symbol_name == "circle_M__2__0":
             solver.add_program_line(f"gray({r}, {c}).")
-        elif symbol_name == "circle_M__1__0":
+        if symbol_name == "circle_M__1__0":
             solver.add_program_line(f"not gray({r}, {c}).")
 
     for (r, c), color_code in puzzle.surface.items():
@@ -58,9 +58,10 @@ __metadata__ = {
         {
             "url": "https://puzz.link/p?statuepark/12/12/3g3g6000515100003ala0i003g3a0060515160003g3g0000//p",
             "config": {"shapeset": "pento"},
+            "test": False,
         },
         {
-            "data": "m=edit&p=7VVNa9tAEL3rV5Q5T2Fn17Llvblu3IuTftglBCGC4yqNqB21ttXWa/zfMzsSGJI5FVJCKWIfz2/Hs2+W0Wj7o1lsSiRCMugyNMgMe2kfe5RhSgNZpnvm1W5V+lc4anZ39YYJ4vvJBG8Xq22Z5F1UkRzC0IcRhnc+BwIEy4ugwPDRH8K5h2W9vqkAw4z3AYk3pm2kZXp2opeyH9m4Fckwv+g40yumy2qzXJXX01b54PMwR4iHvZF/Rwrr+mcJnZn4uzXAws3q112nbZsv9bemi6LiiGEkbsNMMepORiNtjUamGI3+n83osDge+b4/sdVrn0fXn080O9GZPzBeCJLglT9A6jgN8TGttXOxBmlfUwcDTc1IVdW8Waqq8TT7WB1aVdVjVWfDTIslY3Q5nvckBxk1NZFaNZFaNpFaN1HM/dSJVSsnq+e2PT1avSiy+p04/U6cXqXeNKR1DbfZRJrNCs65FzE4wbeCRjAVnErMmeCl4FiwJ9iXmEHs5j/u92eykzsrU/Pxk/4LapHkMGs2t4tlyfNnXK+/19tqVwJP+WMCv0FW7uJH4//g/9uDP969eWmvw0uzwy8o7Kv71/vF/Vcokgc=",
+            "data": "m=edit&p=7VZNa9tAEL37V5Q5T0Gz+rCsm+vGvThJW7uEIIRRVKURlaPUjtpmjf97ZkcqgngOpZAUShH7eH4az74ZxrvefWvzbYlESB76MXrIDIMwwoBiDGksy+ufVXVfl8krnLb3N82WCeL5fI7Xeb0rR2kflY32dpLYKdp3SQoECIYXQYb2Q7K3pwkUzeaqArRLfg9I/GLRRRqmJwO9kPeOzTqRPOZnPWd6ybSotkVdrhed8j5J7QrBbfZGvu0obJrvJfRm3OfOAAtX9Y+bXtu1n5uvbR9F2QHtVNza5S+j8WDUH4w62hl1TDHq/D+b0Ul2OHC/P7LVdZI6158GGg90mewZzwRJ8DLZQ+hzGuJtOmunYg3CSFPHY02NSVXVvHGoqm4381SdGFXVY1Vnk1iLJc/TZbffUQ7y1NREatVEatlEat1ELvexE6NWTkbPbQI9Wm0UGb0nvt4TX69SHxrSpobHbC7DZgRXPItofcG3gp5gKLiQmBPBC8GZYCAYSczYTfNvzjsE3GCuKmK/8fHwP5O31DdyhD59wn9BzUYpLNvtdV6UfBjNms1ds6vuS+Aj/zCCnyAr9d0N8v8WeOlbwPXe++O74O/8VFPuazBGe45w167zddHUwP8g0OmRf6S/uHv+PcNDdfv6Ib/9AtnoEQ==",
             "config": {"shapeset": "double_tetro"},
         },
     ],

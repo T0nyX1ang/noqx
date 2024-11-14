@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import extract_initial_edges, tag_encode
+from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
 from noqx.solution import solver
@@ -66,7 +66,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
     solver.add_program_line(fillomino_constraint())
 
     for (r, c), num in puzzle.text.items():
@@ -76,10 +75,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
 
         if num == 1:
-            solver.add_program_line(f"edge_left({r}, {c}).")
-            solver.add_program_line(f"edge_top({r}, {c}).")
-            solver.add_program_line(f"edge_left({r}, {c + 1}).")
-            solver.add_program_line(f"edge_top({r + 1}, {c}).")
+            solver.add_program_line(f":- not edge_left({r}, {c}).")
+            solver.add_program_line(f":- not edge_top({r}, {c}).")
+            solver.add_program_line(f":- not edge_left({r}, {c + 1}).")
+            solver.add_program_line(f":- not edge_top({r + 1}, {c}).")
+
+    for r, c, d in puzzle.edge:
+        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+
+    for r, c, d in puzzle.helper_x:
+        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
     solver.add_program_line(display(item="edge_left", size=2))
@@ -96,7 +101,11 @@ __metadata__ = {
     "category": "num",
     "examples": [
         {
-            "data": "m=edit&p=7VXPj5s8EL3zV6x89oGx+RVu6TbpJaVfm1SrFUIrkiVdVCj9SKgqR/nfdzxQRR5tD63Udg8r4qc3fjNm8rDh8P9Q9pUEbX86kb4EvEKtaEAQ0PCna1Mfmyq9kvPh+ND1SKR8t1zKfdkcKi+fsgrvZGapmUvzJs2FEpIGiEKa9+nJvE1NJs0aJSEB51bIQEiFdHGhN6Rbdj1Ogo88mzjSW6S7ut811d1qnPkvzc1GCnufV1RtqWi7b5UYyyjede22thPb8oh/5vBQf52Uw3DffR6mXCjO0sx/3q6+tGvp2K5lT7Rr/8UfbndWnM9o+wds+C7Nbe8fLzS50HV6QszSk9AzLMWnPj4ZEQROGLIwxtBujCl0ayNw1MitjVno1iZuOHOTZ64KviuDHzp3Bt/tE3xWD8rVga0HbD3FdGYaHg03P2A6swJi7eYzbyCOmM7WS1ynIWHrJWw95i4we4H5q5hfivmjmB9KuX4rxeq126/SrJ7tOuX4hxsVaLveEi4JFeEGd7M0mvA1oU8YEq4oZ0F4Q3hNGBBGlBPb8/BLJ+YvtJPriF6/T13hi/I7SuHlYj30+3JX4Xtzcf+pusq6vi0bjLKh3Vb9jxg/W2dPfBc0aBMGL1+yf/Qls4/Af26n87m1g+8Lsa+bpmvrL50ovEc=",
+            "data": "m=edit&p=7VNNj9MwEL3nV1Q+zyF2vrq+laXlUsLHFlWrKKrSNstGJASSBiFH+e87M0kxleAAEtADsvz0nj2jeeOP9nOXNTmEOLw5uCBxqDDkKX2fpzuNTXEqcz2DRXd6rBskAK9WK3jIyjZ3kikqdXpzo80CzAudCCWApxQpmDe6Ny+1icHc4ZYAiWtrZFKAQrq0dMv7xG7HRekijyeO9B7poWgOZb5bjyuvdWI2IKjOM84mKqr6Sy7GNNaHutoXtLDPTthM+1h8mnba7lh/6KZYmQ5gFj+361m7REe7xH5gl7r4w3Zv0mHAY3+Lhnc6Ie/vLJ1beqd7xFj3QilMpbvmmxHKR6msDC92PQ/l3MoAZfRN+pRrg/3oQgaXhQLKtTKkXM9KqmtlRHVtcES51mT0fSFsS3Jz94wrRsW4wd7BeIzPGV3GgHHNMUvGLeMto88YckxEp/dL5/sX7CSKjuI8gt/nqZOI5fF9PovrpspKfF9xV+3z5qzxQw+O+Cp48u34///4P/rjdAXutb3Ea7ODf0M8FGVZV8XHWqTOEw==",
+            "config": {"fast_mode": False},
+        },
+        {
+            "data": "m=edit&p=7VRNb9swDL3nVxQ68yDJXx+3rEt26dJtzVAUhhEkqbsac+YuqYdBQf57SVqtoyJG0XXrdhicEE96pEyT1Nt8b+brAhJ8vBgkKHy8WPI/9ukn7TMtb6siPYJhc3tdrxEAnI7HcDWvNsUgs175YGuS1AzBvEszoQXwX4kczMd0a96nZgLmDCkBCvdOECkBGuGog+fMEzpuN5VEPLEY4QXCZbleVsXspN35kGZmCoLe84ajCYpV/aMQbRivl/VqUdLGYn6LH7O5Lm8ss2ku66+N9VX5DsywP12vS5dgmy6hA+nSV/zhdJN8t8Oyf8KEZ2lGuX/uYNzBs3SLdpJuhY4x1MNOc2eETnDpPyw97S49dxk4sT4d1bEhxXZsGLlL1zmSDhu5sZH73sh9b+KyCbF7y9B1dr9XSffFSionWkk3XGny3+MflUQ9qonyKH6fdwus/P3zsCeKO3PBdsxWs51i48B4bN+ylWwDtifsM2J7zvaYrc82ZJ+IWv+s4Xh5OsKn+iYxDkeAhScQUAUIhD6WhoBCZVEJjoeH86c90FQzwqECTVNEOCDsWxwixlPYPwbtY88Ya8D4FieoXdL6SzyT8ZPVyfA4kr39J/i3dvJBJkaXX4qjSb1ezStUgUmzWhTr+zXK7m4gfgr+8yT6/5X4LykxtUC+8pV7qQJkZtRdSTCnIG6a2Xy2rHHUsIRM39/SPtpe3D7a3uVeur3eh2nUkR5CysMECs5hAgWo9/taVemL088kHuSoj7YK9Yv0E4dbWfzNqb362KI6i6uyqupV+a0W+eAO",
         },
         {
             "url": "https://puzz.link/p?fillomino/15/15/h1o5i8g2m6g3g7i3h4h1i1g6g4h2g3h4g2i5h2i4h3l4h1h5m4h2g2h6k7h3i3h7k7h2g2h3m2h1h5l3h4i3h3i-10g4h4g1h3g7g1i8h4h3i2g2g2m8g6i1o1h",

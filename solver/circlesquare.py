@@ -24,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for (r, c), symbol_name in puzzle.symbol.items():
         if symbol_name == "circle_M__2__0":
             solver.add_program_line(f"gray({r}, {c}).")
-        elif symbol_name == "circle_M__1__0":
+        if symbol_name == "circle_M__1__0":
             solver.add_program_line(f"not gray({r}, {c}).")
 
     for (r, c), color_code in puzzle.surface.items():
@@ -45,7 +45,7 @@ __metadata__ = {
     "aliases": ["circlesandsquares"],
     "examples": [
         {
-            "data": "m=edit&p=7VRdb5swFH3nV0z32ZNs8xHwW5Y1e0mzDzJFFUIVZXRFI2WDsK1G/PdcX5B4wE+TWvVhsu7R4fhgn1wTt7+6rClYiMMNGWcCh+tJKskjKj6NQ3muCvWGrbvzQ90gYezjdsvus6otnGRypU6vI6XXTH9QCQhgILEEpEx/Vr2+VpDXp7sSmI5xHliIE7vRKZFezfRI84ZtRlFw5PuJI71BmpdNXhW3u1H5pBJ9YGA2e0dvGwqn+ncBUxjzPAZA4a768zBpbfet/tFNLpEOTK8prY4tQd05qKFjUMMsQU3+ZwsapcOA/f6CUW9VYlJ/nWk401j1iHtCQXijenBDXEbgNmO0a4oGHkdVLlRp9fo21TfexQq+a1MDu+pZ1ci222plUwU3SyxlIeyy9ecJESxlbN6WWigJD9hhpl3C94Sc0CfckeeK8Ei4IfQIA/KszBn98yk+U5xEBnQXzMN/2efUSSDumvssL/DL39Snn3VbngvA+2Vw4C9QJS5avf9XzktfOab3/LV9sq8tDv6J4Kl8fPuUPX6H1LkA",
+            "data": "m=edit&p=7VXBbtswDL37KwaeOcCS7MTWLcuaXdJ2WzIUhWAErueuxpy6S+JtVZB/L0Ub8ME6DAOaXQaBD09PjPRCRcz+R5vvSkxoqARDFDRUJDlkmHKE/VhXh7rUb3DWHh6aHRHE68UC7/N6Xwamz8qCo021naH9oA0IQJAUAjK0n/TRXmoomu1dBWhXtA6Y0MKyy5RELwZ6w+uOzTtRhMSvek70lmhR7Yq63Cw75aM2do3gDnvHn3YUts3PEnozbt4ZIOGu/vXQa/v2a/O97bNEdkI7Y7d25TGqBqOOdkYd8xh1/l/NaJqdTlTvz2R1o41z/WWgyUBX+kh4xSgYb/URVELbCDqms3bJ1iAKSZUjVXpzY58au9zRDrHyqRO/GnnV1HfadOpTRei2GMtC+GXv1xNiMpapeAsuoWRcU4XRKsb3jCFjzLjknAvGG8Y5Y8Q44Zypu6M/vEWQ5ChBUFQKOb7SV/Jm5IQbwzDi886zwMCq3d3nRUnPYN5sn5p9dSiBms0pgN/AYRSlRv/7z7n7j6t9+Ndd6N88J0N1pR+1vUZ4ajf5pmhqoP8udLpKR/rZ3dObg+fq8e1z/vgNsuAF",
         },
         {
             "data": "m=edit&p=7ZRfa9swFMXf/SnGfb4DS7IdW29Z1uwl7f4koxRjipu5q1lSb0ncrTL+7r26NhjGfRp0dDAUH46PbqQfkqzjj7Y8VKgUZmhSDFFRi+KEXkLMZv4Xjm1Tn3aVfYXz9nTXHMggvl8u8bbcHasgH6uKoHOZdXN072wOChA0PQoKdB9t584tbJv9TQ3o1tQPmFLHaqjUZM8me8n93i2GUIXkL0ZP9orstj5sd9X1akg+2NxtEPxkb/jf3sK+eahghPHvAwAFN7ufd2N2bL8039qxShU9ujnTurUAaiZQbwdQ7wRQz/9soFnR97Tenwj12uae+vNk08mubUd6wapYr2wHxtAwiqYZ0M4ZDUwqpZEW00xK40hKE3G2JBZTkSENpTQTx81EMqWUGGtxDKVFOKVnYiwvnIrksSN57EQApO1a8qZp1g3tKTrD+pY1ZI1ZV1xzxnrJumCNWBOumflT8cfn5plwcqP57vm9xf9WWgQ5rNvDbbmt6ItdNPvvzbE+VUD3Yh/AL+AnN/6S/X9V/u2r0q99+NIO/kvDoU8RHuv714/l/Vcogic=",

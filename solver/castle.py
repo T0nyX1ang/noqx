@@ -44,7 +44,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(f"not castle({r}, {c}).")
         if color_code == 4:
             solver.add_program_line(f"black({r}, {c}).")
-        elif color_code in [1, 3, 8]:  # shaded color (DG, GR, LG)
+        if color_code in [1, 3, 8]:  # shaded color (DG, GR, LG)
             solver.add_program_line(f"gray({r}, {c}).")
 
     for (r, c), clue in puzzle.text.items():
@@ -52,7 +52,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"white({r}, {c}).")
             solver.add_program_line(f"not castle({r}, {c}).")
 
-        if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue or space (for compatibility)
+        if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue for compatibility # pragma: no cover
             continue
 
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."

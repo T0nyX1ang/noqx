@@ -5,7 +5,10 @@ import argparse
 import uvicorn
 from starlette.config import environ
 
+from noqx.manager import load_solvers
 from noqx.solution import Config
+
+load_solvers("solver")  # default solver directory
 
 parser = argparse.ArgumentParser(description="noqx startup settings.")
 parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="the host to run the server on.")
