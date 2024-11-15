@@ -13,6 +13,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
   urlstring = urlstring.replace("statuepark", "yinyang");
   urlstring = urlstring.replace("circlesquare", "yinyang");
+  urlstring = urlstring.replace("tetrochain", "yajikazu");
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
