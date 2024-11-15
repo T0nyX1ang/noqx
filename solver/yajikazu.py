@@ -1,30 +1,13 @@
 """The Yajilin-Kazusan solver."""
 
-from typing import List, Tuple
+from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.variety import yaji_count
 from noqx.solution import solver
-
-
-def yajikazu_count(target: int, src_cell: Tuple[int, int], arrow_direction: int, color: str = "black") -> str:
-    """
-    Generates a constraint for counting the number of {color} cells in a row / col.
-
-    A grid fact should be defined first.
-    """
-    src_r, src_c = src_cell
-    op = "<" if arrow_direction in [0, 1] else ">"
-
-    if arrow_direction in [1, 2]:  # left, right
-        return f":- not {color}({src_r}, {src_c}), #count {{ C1 : {color}({src_r}, C1), C1 {op} {src_c} }} != {target}."
-
-    if arrow_direction in [0, 3]:  # up, down
-        return f":- not {color}({src_r}, {src_c}), #count {{ R1 : {color}(R1, {src_c}), R1 {op} {src_r} }} != {target}."
-
-    raise AssertionError("Invalid direction.")
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -41,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
         num, direction = clue.split("_")
         assert num.isdigit() and direction.isdigit(), "Invalid arrow or number clue."
-        solver.add_program_line(yajikazu_count(int(num), (r, c), int(direction), color="gray"))
+        solver.add_program_line(yaji_count(int(num), (r, c), int(direction), color="gray", unshade_clue=False))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)

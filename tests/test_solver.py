@@ -9,13 +9,12 @@ from noqx import app
 from noqx.manager import list_solver_metadata, load_solvers
 from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import all_shapes, count_shape, general_shape, get_neighbor
+from noqx.rule.variety import yaji_count
 from noqx.solution import Config
 from solver.binairo import unique_linecolor
 from solver.castle import wall_length
 from solver.heyawake import limit_border
 from solver.nagare import nagare_wind
-from solver.yajikazu import yajikazu_count
-from solver.yajilin import yajilin_count
 
 environ["DEBUG"] = "TRUE"
 load_solvers("solver")
@@ -155,12 +154,10 @@ class TestExtraFunction(unittest.TestCase):
         """Test binairo unique linecolor."""
         self.assertRaises(AssertionError, unique_linecolor, ["color1", "color2"], "unknown")
 
-    def test_yajilin_yajikazu_count(self):
+    def test_yaji_yajikazu_count(self):
         """Test yajilin count and yajikazu count."""
-        self.assertRaises(AssertionError, yajilin_count, 0, (0, 0), 5, "black")
-        self.assertRaises(AssertionError, yajilin_count, 0, (0, 0), -1, "black")
-        self.assertRaises(AssertionError, yajikazu_count, 0, (0, 0), 5, "black")
-        self.assertRaises(AssertionError, yajikazu_count, 0, (0, 0), -1, "black")
+        self.assertRaises(AssertionError, yaji_count, 0, (0, 0), 5, "black")
+        self.assertRaises(AssertionError, yaji_count, 0, (0, 0), -1, "black")
 
     def test_heyawake_limit_border(self):
         """Test heyawake limit border."""
