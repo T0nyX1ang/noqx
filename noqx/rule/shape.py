@@ -221,15 +221,24 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
     A grid rule should be defined first.
     """
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1)."
+    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
     left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1)."
+    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
     up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
     up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
     remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
+
+    if color.startswith("not "):  # additional boundary check if the color starts with "not"
+        upleft += f"upleft(0, 0) :- grid(0, 0), {color}(0, 0).\n"
+        upleft += f"upleft(R, 0) :- grid(R, 0), {color}(R, 0), not {color}(R - 1, 0).\n"
+        upleft += f"upleft(0, C) :- grid(0, C), {color}(0, C), not {color}(0, C - 1).\n"
+        left += f"left(R, 0) :- grid(R, 0), {color}(R, 0), upleft(R - 1, 0), {color}(R - 1, 0).\n"
+        left += f"left(R, 0) :- grid(R, 0), {color}(R, 0), left(R - 1, 0), {color}(R - 1, 0).\n"
+        up += f"up(0, C) :- grid(0, C), {color}(0, C), upleft(0, C - 1), {color}(0, C - 1).\n"
+        up += f"up(0, C) :- grid(0, C), {color}(0, C), up(0, C - 1), {color}(0, C - 1).\n"
 
     constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
