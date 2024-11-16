@@ -9,10 +9,11 @@ function imp(penpa) {
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("chocona", "aqre");
   urlstring = urlstring.replace("cocktail", "aqre");
+  urlstring = urlstring.replace("circlesquare", "yinyang");
+  urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
   urlstring = urlstring.replace("statuepark", "yinyang");
-  urlstring = urlstring.replace("circlesquare", "yinyang");
   urlstring = urlstring.replace("tetrochain", "yajikazu");
 
   // replace unsupported host to supported host
