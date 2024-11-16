@@ -36,6 +36,9 @@ async def solver_api(request: Request) -> JSONResponse:
         return JSONResponse({"detail": str(err)}, status_code=400)
     except TimeoutError as err:
         return JSONResponse({"detail": str(err)}, status_code=504)
+    except Exception as err:  # pylint: disable=broad-except  # pragma: no cover
+        logger.error(traceback.format_exc())
+        return JSONResponse({"detail": "Unknown error."}, status_code=500)
 
 
 routes = [
