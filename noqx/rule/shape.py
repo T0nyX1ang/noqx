@@ -307,6 +307,26 @@ def avoid_rect(
     return f":- {', '.join(rect_pattern)}."
 
 
+def no_rect(color: str = "black") -> str:
+    """
+    Generate a constraint to avoid all-shaped rectangles.
+
+    A grid rule should be defined first.
+    """
+    tag = tag_encode("reachable", "Lshape", "adj", 4, color)
+
+    mutual = "grid(R, C), grid(R + 1, C + 1)"
+    initial = f"{tag}(R, C) :- {mutual}, {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1).\n"
+    initial += f"{tag}(R, C) :- {mutual}, {color}(R, C), {color}(R, C + 1), {color}(R + 1, C + 1), not {color}(R + 1, C).\n"
+    initial += f"{tag}(R, C) :- {mutual}, {color}(R, C), {color}(R + 1, C), {color}(R + 1, C + 1), not {color}(R, C + 1).\n"
+    initial += (
+        f"{tag}(R + 1, C + 1) :- {mutual}, not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), {color}(R + 1, C + 1).\n"
+    )
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_4(R, C, R1, C1).\n"
+    constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    return initial + propagation + constraint
+
+
 def area_same_color(color: str = "black") -> str:
     """Ensure that all cells in the same area have the same color."""
     return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
