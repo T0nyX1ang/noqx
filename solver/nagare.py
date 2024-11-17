@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
@@ -19,7 +19,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
 
         c1, c2 = cols[0], cols[-1]
         for c_ in cols:
-            if puzzle.symbol.get((r, c_)) or puzzle.surface.get((r, c_)):
+            if puzzle.symbol.get((r, c_, Direction.CENTER)) or puzzle.surface.get((r, c_)):
                 c1 = c_ + cols.step
         if d == "r":
             c1, c2 = c2, c1
@@ -32,7 +32,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
 
         r1, r2 = rows[0], rows[-1]
         for r_ in rows:
-            if puzzle.symbol.get((r_, c)) or puzzle.surface.get((r_, c)):
+            if puzzle.symbol.get((r_, c, Direction.CENTER)) or puzzle.surface.get((r_, c)):
                 r1 = r_ + rows.step
         if d == "d":
             r1, r2 = r2, r1
@@ -54,8 +54,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="nagare", adj_type="loop_directed"))
     solver.add_program_line(directed_loop(color="nagare"))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        shape, style, _ = symbol_name.split("__")
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        shape, style = symbol_name.split("__")
         d = dict_dir[style]
 
         if shape == "arrow_B_B":

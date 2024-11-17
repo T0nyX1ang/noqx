@@ -71,7 +71,7 @@ class Puzzle:
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str, List[Union[int, str]]]] = {}
         self.sudoku: Dict[Tuple[int, int], Dict[int, Union[int, str]]] = {}
-        self.symbol: Dict[Tuple[int, int], str] = {}
+        self.symbol: Dict[Tuple[int, int, Direction], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.helper_x: Set[Tuple[int, int, Direction]] = set()
         self.line: Set[Tuple[int, int, str]] = set()
@@ -142,9 +142,17 @@ class Puzzle:
     def _unpack_symbol(self):
         """Unpack the text element from the board."""
         for index, (style, shape, _) in self.board["symbol"].items():
-            coord, category = self.index_to_coord(int(index))
-            symbol_name = f"{shape}__{style}__{category}"
-            self.symbol[coord] = symbol_name
+            (r, c), category = self.index_to_coord(int(index))
+            symbol_name = f"{shape}__{style}"
+
+            if category == 0:
+                self.symbol[(r, c, Direction.CENTER)] = symbol_name
+            if category == 1:
+                self.symbol[(r, c, Direction.DOWNRIGHT)] = symbol_name
+            if category == 2:
+                self.symbol[(r, c, Direction.DOWN)] = symbol_name
+            if category == 3:
+                self.symbol[(r, c, Direction.RIGHT)] = symbol_name
 
     def _unpack_edge(self):
         """Unpack the edge/helper_x element from the board."""
@@ -218,7 +226,7 @@ class Solution:
 
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str]] = {}
-        self.symbol: Dict[Tuple[int, int], str] = {}
+        self.symbol: Dict[Tuple[int, int, Direction], str] = {}
         self.edge: Set[Tuple[int, int, Direction]] = set()
         self.line: Set[Tuple[int, int, str]] = set()
 
@@ -244,9 +252,9 @@ class Solution:
 
     def _pack_symbol(self):
         """Pack the symbol element into the board."""
-        for coord, symbol_name in self.symbol.items():
-            shape, style, category = symbol_name.split("__")
-            index = self.coord_to_index(coord, category=int(category))
+        for (r, c, _), symbol_name in self.symbol.items():
+            shape, style = symbol_name.split("__")
+            index = self.coord_to_index((r, c), category=0)  # currently the packing of symbols are all in the center
             if not self.puzzle.board["symbol"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.board["symbol"][f"{index}"] = [int(style), shape, 1]
 

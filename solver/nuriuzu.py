@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
@@ -29,21 +29,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
 
     reachables = []
-    for (r, c), symbol_name in puzzle.symbol.items():
+    for (r, c, d), _ in puzzle.symbol.items():
         reachables.append((r, c))
-        _, _, category = symbol_name.split("__")
 
         # there are no category = 1 for nuriuzu, because it is conflicting with the no 2x2 white rule.
-        if category == "0":
+        if d == Direction.CENTER:
             solver.add_program_line(nuriuzu_constraint(r * 2 + 1, c * 2 + 1, color="not black"))
             solver.add_program_line(f"not black({r}, {c}).")
 
-        if category == "2":
+        if d == Direction.DOWN:
             solver.add_program_line(nuriuzu_constraint(r * 2 + 2, c * 2 + 1, color="not black"))
             solver.add_program_line(f"not black({r}, {c}).")
             solver.add_program_line(f"not black({r + 1}, {c}).")
 
-        if category == "3":
+        if d == Direction.RIGHT:
             solver.add_program_line(nuriuzu_constraint(r * 2 + 1, c * 2 + 2, color="not black"))
             solver.add_program_line(f"not black({r}, {c}).")
             solver.add_program_line(f"not black({r}, {c + 1}).")

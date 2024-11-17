@@ -9,8 +9,12 @@ from typing import Any, Dict, Iterable, Iterator, Optional, Set, Tuple, Union
 class Direction(Enum):
     """Enumeration for directions."""
 
+    CENTER = "center"
     LEFT = "left"
+    RIGHT = "right"
     TOP = "top"
+    DOWN = "down"
+    DOWNRIGHT = "downright"
     DIAG_UP = "diag_up"
     DIAG_DOWN = "diag_down"
 

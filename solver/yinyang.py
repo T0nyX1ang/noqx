@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -12,8 +12,8 @@ from noqx.solution import solver
 
 def exclude_checkboard_shape() -> str:
     """Exclude checkboard shape."""
-    rule = ":- circle_M__1__0(R, C), circle_M__2__0(R, C + 1), circle_M__2__0(R + 1, C), circle_M__1__0(R + 1, C + 1).\n"
-    rule += ":- circle_M__2__0(R, C), circle_M__1__0(R, C + 1), circle_M__1__0(R + 1, C), circle_M__2__0(R + 1, C + 1)."
+    rule = ":- circle_M__1(R, C), circle_M__2(R, C + 1), circle_M__2(R + 1, C), circle_M__1(R + 1, C + 1).\n"
+    rule += ":- circle_M__2(R, C), circle_M__1(R, C + 1), circle_M__1(R + 1, C), circle_M__2(R + 1, C + 1)."
     return rule
 
 
@@ -22,25 +22,17 @@ def exclude_border_color_changes(rows: int, cols: int) -> str:
     rule = ""
     for r in range(rows - 1):
         rev_r = rows - 1 - r
-        rule += f"changed({r}, 0) :- circle_M__1__0({r}, 0), circle_M__2__0({r + 1}, 0).\n"
-        rule += f"changed({r}, 0) :- circle_M__2__0({r}, 0), circle_M__1__0({r + 1}, 0).\n"
-        rule += (
-            f"changed({rev_r}, {cols - 1}) :- circle_M__1__0({rev_r}, {cols - 1}), circle_M__2__0({rev_r - 1}, {cols - 1}).\n"
-        )
-        rule += (
-            f"changed({rev_r}, {cols - 1}) :- circle_M__2__0({rev_r}, {cols - 1}), circle_M__1__0({rev_r - 1}, {cols - 1}).\n"
-        )
+        rule += f"changed({r}, 0) :- circle_M__1({r}, 0), circle_M__2({r + 1}, 0).\n"
+        rule += f"changed({r}, 0) :- circle_M__2({r}, 0), circle_M__1({r + 1}, 0).\n"
+        rule += f"changed({rev_r}, {cols - 1}) :- circle_M__1({rev_r}, {cols - 1}), circle_M__2({rev_r - 1}, {cols - 1}).\n"
+        rule += f"changed({rev_r}, {cols - 1}) :- circle_M__2({rev_r}, {cols - 1}), circle_M__1({rev_r - 1}, {cols - 1}).\n"
 
     for c in range(cols - 1):
         rev_c = cols - 1 - c
-        rule += f"changed(0, {c}) :- circle_M__1__0(0, {c}), circle_M__2__0(0, {c + 1}).\n"
-        rule += f"changed(0, {c}) :- circle_M__2__0(0, {c}), circle_M__1__0(0, {c + 1}).\n"
-        rule += (
-            f"changed({rows - 1}, {rev_c}) :- circle_M__1__0({rows - 1}, {rev_c}), circle_M__2__0({rows - 1}, {rev_c - 1}).\n"
-        )
-        rule += (
-            f"changed({rows - 1}, {rev_c}) :- circle_M__2__0({rows - 1}, {rev_c}), circle_M__1__0({rows - 1}, {rev_c - 1}).\n"
-        )
+        rule += f"changed(0, {c}) :- circle_M__1(0, {c}), circle_M__2(0, {c + 1}).\n"
+        rule += f"changed(0, {c}) :- circle_M__2(0, {c}), circle_M__1(0, {c + 1}).\n"
+        rule += f"changed({rows - 1}, {rev_c}) :- circle_M__1({rows - 1}, {rev_c}), circle_M__2({rows - 1}, {rev_c - 1}).\n"
+        rule += f"changed({rows - 1}, {rev_c}) :- circle_M__2({rows - 1}, {rev_c}), circle_M__1({rows - 1}, {rev_c - 1}).\n"
 
     rule += ":- { changed(R, C) } > 2.\n"
     return rule.strip()
@@ -50,11 +42,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color="circle_M__1__0"))
-    solver.add_program_line("circle_M__2__0(R, C) :- grid(R, C), not circle_M__1__0(R, C).")
+    solver.add_program_line(shade_c(color="circle_M__1"))
+    solver.add_program_line("circle_M__2(R, C) :- grid(R, C), not circle_M__1(R, C).")
     solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_rect(2, 2, color="circle_M__1__0"))
-    solver.add_program_line(avoid_rect(2, 2, color="circle_M__2__0"))
+    solver.add_program_line(avoid_rect(2, 2, color="circle_M__1"))
+    solver.add_program_line(avoid_rect(2, 2, color="circle_M__2"))
 
     # exclude checkerboard shape
     solver.add_program_line(exclude_checkboard_shape())
@@ -62,17 +54,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     # exclude border color changes more than twice
     solver.add_program_line(exclude_border_color_changes(puzzle.row, puzzle.col))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name == "circle_M__1__0":
-            solver.add_program_line(f"circle_M__1__0({r}, {c}).")
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        if symbol_name == "circle_M__1":
+            solver.add_program_line(f"circle_M__1({r}, {c}).")
         else:
-            solver.add_program_line(f"not circle_M__1__0({r}, {c}).")
+            solver.add_program_line(f"not circle_M__1({r}, {c}).")
 
-    solver.add_program_line(grid_color_connected(color="circle_M__1__0", grid_size=(puzzle.row, puzzle.col)))
-    solver.add_program_line(grid_color_connected(color="circle_M__2__0", grid_size=(puzzle.row, puzzle.col)))
+    solver.add_program_line(grid_color_connected(color="circle_M__1", grid_size=(puzzle.row, puzzle.col)))
+    solver.add_program_line(grid_color_connected(color="circle_M__2", grid_size=(puzzle.row, puzzle.col)))
 
-    solver.add_program_line(display(item="circle_M__1__0"))
-    solver.add_program_line(display(item="circle_M__2__0"))
+    solver.add_program_line(display(item="circle_M__1"))
+    solver.add_program_line(display(item="circle_M__2"))
     solver.solve()
 
     return solver.solutions

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
@@ -16,26 +16,27 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color="star__2__0"))
+    solver.add_program_line(shade_c(color="star__2"))
 
     solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(avoid_adjacent_color(color="star__2__0", adj_type=8))
+    solver.add_program_line(avoid_adjacent_color(color="star__2", adj_type=8))
 
-    solver.add_program_line(count(num_stars, color="star__2__0", _type="row"))
-    solver.add_program_line(count(num_stars, color="star__2__0", _type="col"))
+    solver.add_program_line(count(num_stars, color="star__2", _type="row"))
+    solver.add_program_line(count(num_stars, color="star__2", _type="col"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count(num_stars, color="star__2__0", _type="area", _id=i))
+        solver.add_program_line(count(num_stars, color="star__2", _type="area", _id=i))
 
-    for (r, c), symbol_name in filter(lambda x: x[0][0] != -1, puzzle.symbol.items()):
-        if symbol_name == "star__2__0":
-            solver.add_program_line(f"star__2__0({r}, {c}).")
-        if symbol_name == "star__0__0":
-            solver.add_program_line(f"not star__2__0({r}, {c}).")
+    for (r, c, d), symbol_name in filter(lambda x: x[0][0] != -1, puzzle.symbol.items()):
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        if symbol_name == "star__2":
+            solver.add_program_line(f"star__2({r}, {c}).")
+        if symbol_name == "star__0":
+            solver.add_program_line(f"not star__2({r}, {c}).")
 
-    solver.add_program_line(display(item="star__2__0"))
+    solver.add_program_line(display(item="star__2"))
     solver.solve()
 
     return solver.solutions

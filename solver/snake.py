@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -52,11 +52,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="gray"))
     solver.add_program_line(simple_shade_path(color="gray"))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name == "circle_L__1__0":
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        if symbol_name == "circle_L__1":
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(f":- dead_end({r}, {c}).")
-        if symbol_name == "circle_L__2__0":
+        if symbol_name == "circle_L__2":
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(f":- not dead_end({r}, {c}).")
 
