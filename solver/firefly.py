@@ -54,20 +54,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(convert_direction_to_edge())
 
     for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.DOWNRIGHT, "The symbol should be placed in the center."
+        assert d == Direction.TOP_LEFT, "The symbol should be placed in the center."
         shape, style = symbol_name.split("__")
         if shape != "firefly":  # pragma: no cover
             continue  # warning: incompatible encoding with penpa+/puzz.link
 
         dr, dc = drdc[style]
-        clue = puzzle.text.get((r, c))
+        clue = puzzle.text.get((r - 1, c - 1))  # the text is also placed in the top-left corner
 
         if isinstance(clue, int):
-            solver.add_program_line(restrict_num_bend(r + dr + 1, c + dc + 1, clue, color="firefly"))
+            solver.add_program_line(restrict_num_bend(r + dr, c + dc, clue, color="firefly"))
 
-        solver.add_program_line(f"dead_end({r + 1}, {c + 1}).")
-        solver.add_program_line(f'grid_out({r + 1}, {c + 1}, "{dict_dir[style]}").')
-        solver.add_program_line(f'{{ grid_in({r + 1}, {c + 1}, D) }} :- direction(D), D != "{dict_dir[style]}".')
+        solver.add_program_line(f"dead_end({r}, {c}).")
+        solver.add_program_line(f'grid_out({r}, {c}, "{dict_dir[style]}").')
+        solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))

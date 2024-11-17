@@ -148,11 +148,11 @@ class Puzzle:
             if category == 0:
                 self.symbol[(r, c, Direction.CENTER)] = symbol_name
             if category == 1:
-                self.symbol[(r, c, Direction.DOWNRIGHT)] = symbol_name
+                self.symbol[(r + 1, c + 1, Direction.TOP_LEFT)] = symbol_name
             if category == 2:
-                self.symbol[(r, c, Direction.DOWN)] = symbol_name
+                self.symbol[(r + 1, c, Direction.TOP)] = symbol_name
             if category == 3:
-                self.symbol[(r, c, Direction.RIGHT)] = symbol_name
+                self.symbol[(r, c + 1, Direction.LEFT)] = symbol_name
 
     def _unpack_edge(self):
         """Unpack the edge/helper_x element from the board."""

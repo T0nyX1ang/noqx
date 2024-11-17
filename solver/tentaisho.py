@@ -28,26 +28,30 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="edge"))
 
     reachables = []
-    for (r, c, d), _ in puzzle.symbol.items():
-        reachables.append((r, c))
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
 
         if d == Direction.CENTER:
+            reachables.append((r, c))
             solver.add_program_line(galaxy_constraint(r * 2 + 1, c * 2 + 1))
 
-        if d == Direction.DOWNRIGHT:
-            solver.add_program_line(galaxy_constraint(r * 2 + 2, c * 2 + 2))
-            solver.add_program_line(f"not edge_top({r + 1}, {c}).")
-            solver.add_program_line(f"not edge_top({r + 1}, {c + 1}).")
-            solver.add_program_line(f"not edge_left({r}, {c + 1}).")
-            solver.add_program_line(f"not edge_left({r + 1}, {c + 1}).")
+        if d == Direction.TOP_LEFT:
+            reachables.append((r - 1, c - 1))
+            solver.add_program_line(galaxy_constraint(r * 2, c * 2))
+            solver.add_program_line(f"not edge_top({r}, {c - 1}).")
+            solver.add_program_line(f"not edge_top({r}, {c}).")
+            solver.add_program_line(f"not edge_left({r - 1}, {c}).")
+            solver.add_program_line(f"not edge_left({r}, {c}).")
 
-        if d == Direction.DOWN:
-            solver.add_program_line(galaxy_constraint(r * 2 + 2, c * 2 + 1))
-            solver.add_program_line(f"not edge_top({r + 1}, {c}).")
+        if d == Direction.TOP:
+            reachables.append((r - 1, c))
+            solver.add_program_line(galaxy_constraint(r * 2, c * 2 + 1))
+            solver.add_program_line(f"not edge_top({r}, {c}).")
 
-        if d == Direction.RIGHT:
-            solver.add_program_line(galaxy_constraint(r * 2 + 1, c * 2 + 2))
-            solver.add_program_line(f"not edge_left({r}, {c + 1}).")
+        if d == Direction.LEFT:
+            reachables.append((r, c - 1))
+            solver.add_program_line(galaxy_constraint(r * 2 + 1, c * 2))
+            solver.add_program_line(f"not edge_left({r}, {c}).")
 
     assert len(reachables) > 0, "Please provide at least one clue."
 

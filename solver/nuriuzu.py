@@ -29,23 +29,26 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
 
     reachables = []
-    for (r, c, d), _ in puzzle.symbol.items():
-        reachables.append((r, c))
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
 
         # there are no category = 1 for nuriuzu, because it is conflicting with the no 2x2 white rule.
         if d == Direction.CENTER:
+            reachables.append((r, c))
             solver.add_program_line(nuriuzu_constraint(r * 2 + 1, c * 2 + 1, color="not black"))
             solver.add_program_line(f"not black({r}, {c}).")
 
-        if d == Direction.DOWN:
-            solver.add_program_line(nuriuzu_constraint(r * 2 + 2, c * 2 + 1, color="not black"))
+        if d == Direction.TOP:
+            reachables.append((r - 1, c))
+            solver.add_program_line(nuriuzu_constraint(r * 2, c * 2 + 1, color="not black"))
+            solver.add_program_line(f"not black({r - 1}, {c}).")
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(f"not black({r + 1}, {c}).")
 
-        if d == Direction.RIGHT:
-            solver.add_program_line(nuriuzu_constraint(r * 2 + 1, c * 2 + 2, color="not black"))
+        if d == Direction.LEFT:
+            reachables.append((r, c - 1))
+            solver.add_program_line(nuriuzu_constraint(r * 2 + 1, c * 2, color="not black"))
+            solver.add_program_line(f"not black({r}, {c - 1}).")
             solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(f"not black({r}, {c + 1}).")
 
     assert len(reachables) > 0, "Please provide at least one clue."
 

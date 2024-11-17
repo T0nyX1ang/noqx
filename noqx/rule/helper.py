@@ -11,10 +11,8 @@ class Direction(Enum):
 
     CENTER = "center"
     LEFT = "left"
-    RIGHT = "right"
     TOP = "top"
-    DOWN = "down"
-    DOWNRIGHT = "downright"
+    TOP_LEFT = "top_left"
     DIAG_UP = "diag_up"
     DIAG_DOWN = "diag_down"
 
