@@ -2,7 +2,7 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.solution import solver
 
@@ -14,7 +14,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         if isinstance(data.get(1), int):
             area_points = []
             cur = c + 1
-            while cur < puzzle.col and not puzzle.symbol.get((r, cur)):
+            while cur < puzzle.col and not puzzle.symbol.get((r, cur, Direction.CENTER)):
                 area_points.append((r, cur))
                 cur += 1
 
@@ -24,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         if isinstance(data.get(2), int):
             area_points = []
             cur = r + 1
-            while cur < puzzle.row and not puzzle.symbol.get((cur, c)):
+            while cur < puzzle.row and not puzzle.symbol.get((cur, c, Direction.CENTER)):
                 area_points.append((cur, c))
                 cur += 1
 

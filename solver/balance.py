@@ -2,7 +2,7 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import reverse_op
 from noqx.rule.loop import loop_sign, single_loop
@@ -75,15 +75,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(balance_rule(color="black"))
     solver.add_program_line(balance_rule(color="white"))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
         solver.add_program_line(f"balance({r}, {c}).")
-        if symbol_name == "circle_L__1__0":
+        if symbol_name == "circle_L__1":
             solver.add_program_line(f"white({r}, {c}).")
             num = puzzle.text.get((r, c))
             if isinstance(num, int):
                 solver.add_program_line(count_balance(num, (r, c), color="white"))
 
-        if symbol_name == "circle_L__2__0":
+        if symbol_name == "circle_L__2":
             solver.add_program_line(f"black({r}, {c}).")
             num = puzzle.text.get((r, c))
             if isinstance(num, int):

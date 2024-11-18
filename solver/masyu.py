@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.loop import loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
@@ -54,11 +54,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(masyu_black_rule())
     solver.add_program_line(masyu_white_rule())
 
-    for (r, c), symbol_name in puzzle.symbol.items():
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
         solver.add_program_line(f"masyu({r}, {c}).")
-        if symbol_name == "circle_L__1__0":
+        if symbol_name == "circle_L__1":
             solver.add_program_line(f"white({r}, {c}).")
-        if symbol_name == "circle_L__2__0":
+        if symbol_name == "circle_L__2":
             solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -33,10 +33,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(general_shape(f"omino_{omino_num}", i, o_shape, color="gray", adj_type=4))
         solver.add_program_line(count_shape(omino_count_type, name=f"omino_{omino_num}", _id=i, color="gray"))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name == "circle_M__2__0":
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        if symbol_name == "circle_M__2":
             solver.add_program_line(f"gray({r}, {c}).")
-        if symbol_name == "circle_M__1__0":
+        if symbol_name == "circle_M__1":
             solver.add_program_line(f"not gray({r}, {c}).")
 
     for (r, c), color_code in puzzle.surface.items():

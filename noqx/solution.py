@@ -74,7 +74,7 @@ class ClingoSolver:
 
             elif _type == "triangle":
                 shaka_dict = {'"ul"': "1", '"ur"': "4", '"dl"': "2", '"dr"': "3"}
-                solution.symbol[(int(r), int(c))] = f"tri__{shaka_dict[data[2]]}__0"
+                solution.symbol[(int(r), int(c), Direction.CENTER)] = f"tri__{shaka_dict[data[2]]}"
 
             elif _type == "gray":
                 solution.surface[(int(r), int(c))] = 8
@@ -82,7 +82,7 @@ class ClingoSolver:
                 solution.surface[(int(r), int(c))] = 4
 
             elif len(data) == 2:
-                solution.symbol[(int(r), int(c))] = str(_type)
+                solution.symbol[(int(r), int(c), Direction.CENTER)] = str(_type)
 
             else:  # pragma: no cover
                 solution.text[(int(r), int(c))] = int(data[2])  # for debugging

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import pass_area_once, single_loop
@@ -41,10 +41,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="moon_sun", adj_type="loop"))
     solver.add_program_line(single_loop(color="moon_sun"))
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name == "sun_moon__1__0":
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        if symbol_name == "sun_moon__1":
             solver.add_program_line(f"moon({r}, {c}).")
-        if symbol_name == "sun_moon__2__0":
+        if symbol_name == "sun_moon__2":
             solver.add_program_line(f"sun({r}, {c}).")
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)

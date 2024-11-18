@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
@@ -11,37 +11,37 @@ from noqx.solution import solver
 
 def battleship_refine(solution: Solution) -> Solution:
     """Refine the battleship solution."""
-    for (r, c), _ in solution.symbol.items():
-        has_top_neighbor = (r - 1, c) in solution.symbol
-        has_left_neighbor = (r, c - 1) in solution.symbol
-        has_bottom_neighbor = (r + 1, c) in solution.symbol
-        has_right_neighbor = (r, c + 1) in solution.symbol
+    for (r, c, d), _ in solution.symbol.items():
+        has_top_neighbor = (r - 1, c, d) in solution.symbol
+        has_left_neighbor = (r, c - 1, d) in solution.symbol
+        has_bottom_neighbor = (r + 1, c, d) in solution.symbol
+        has_right_neighbor = (r, c + 1, d) in solution.symbol
 
-        fleet_name = solution.symbol[(r, c)].split("__")[0]
+        fleet_name = solution.symbol[(r, c, d)].split("__")[0]
 
         # center part
         if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__1__0"
+            solution.symbol[(r, c, d)] = f"{fleet_name}__1"
 
         # middle part
         if (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
-            solution.symbol[(r, c)] = f"{fleet_name}__2__0"
+            solution.symbol[(r, c, d)] = f"{fleet_name}__2"
 
         # left part
         if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__3__0"
+            solution.symbol[(r, c, d)] = f"{fleet_name}__3"
 
         # top part
         if {has_top_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__4__0"
+            solution.symbol[(r, c, d)] = f"{fleet_name}__4"
 
         # right part
         if {has_top_neighbor, has_bottom_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__5__0"
+            solution.symbol[(r, c, d)] = f"{fleet_name}__5"
 
         # bottom part
         if {has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c)] = f"{fleet_name}__6__0"
+            solution.symbol[(r, c, d)] = f"{fleet_name}__6"
 
     return solution
 
@@ -52,8 +52,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     fleet_name = "battleship_B"  # set a default battleship fleet name
-    for (r, c), symbol_name in puzzle.symbol.items():
-        shape, style, _ = symbol_name.split("__")
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        shape, style = symbol_name.split("__")
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
         assert shape.startswith("battleship"), f"Invalid battleship shape: {shape}."
         assert fleet_name in ("", shape), "Multiple fleet shapes are not allowed."
 
