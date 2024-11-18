@@ -123,3 +123,15 @@ def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
         constraint += f":- {outside_item}(R, C), not outside_loop(R, C).\n"
 
     return (rule + constraint).strip()
+
+
+def loop_turning(color: str = "white") -> str:
+    """
+    Generate a rule for turning through a cell.
+
+    A grid fact and a grid_direction rule should be defined first.
+    """
+    rule = ""
+    for d1, d2 in ("lu", "ld", "ru", "rd"):
+        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+    return rule.strip()
