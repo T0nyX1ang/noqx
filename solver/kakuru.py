@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import display, grid
-from noqx.rule.neighbor import adjacent
+from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
 
@@ -14,7 +14,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line("{ number(R, C, (1..9)) } = 1 :- grid(R, C), not black(R, C).")
     solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(":- adj_8(R, C, R1, C1), number(R, C, N), number(R1, C1, N).")
+    solver.add_program_line(avoid_num_adjacent(adj_type=8))
 
     for (r, c), clue in puzzle.text.items():
         solver.add_program_line(f":- number(_, _, N), {{ grid(R, C): number(R, C, N), adj_8(R, C, {r}, {c}) }} > 1.")

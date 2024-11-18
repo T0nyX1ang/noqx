@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.neighbor import adjacent
+from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
 
@@ -42,12 +42,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"area({n + 2}, {i}, {8 - i}).")
 
     if puzzle.param["untouch"]:  # untouch rule
-        solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_x(R, C, R1, C1).")
+        solver.add_program_line(avoid_num_adjacent(adj_type="x"))
 
     if puzzle.param["antiknight"]:  # antiknight rule
         solver.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 2, |C - C1| = 1.")
         solver.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 2.")
-        solver.add_program_line(":- number(R, C, N), number(R1, C1, N), adj_knight(R, C, R1, C1).")
+        solver.add_program_line(avoid_num_adjacent(adj_type="knight"))
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()
