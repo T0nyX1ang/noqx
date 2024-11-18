@@ -114,7 +114,6 @@ $(document).ready(function () {
     region: "- Area Division -",
     num: "- Number -",
     var: "- Variety -",
-    draw: "- Drawing -",
     unk: "- Unknown -",
   };
 

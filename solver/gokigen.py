@@ -62,7 +62,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
 __metadata__ = {
     "name": "Gokigen",
-    "category": "draw",
+    "category": "var",
     "aliases": ["slant"],
     "examples": [
         {
