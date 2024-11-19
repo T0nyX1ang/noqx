@@ -8,7 +8,7 @@ from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
-    assert puzzle.row == puzzle.col, "Doppelblock puzzles must be square."
+    assert puzzle.row == puzzle.col, "This puzzle must be square."
     n = puzzle.row
 
     solver.reset()
