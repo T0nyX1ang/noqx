@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.common import count, display, grid, invert_c, shade_c
 from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
@@ -37,7 +37,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="circle_M__1"))
-    solver.add_program_line("circle_M__2(R, C) :- grid(R, C), not circle_M__1(R, C).")
+    solver.add_program_line(invert_c(color="circle_M__1", invert="circle_M__2"))
     solver.add_program_line(count(puzzle.row // 2, color="circle_M__1", _type="row"))
     solver.add_program_line(count(puzzle.col // 2, color="circle_M__1", _type="col"))
     solver.add_program_line(unique_linecolor(colors=["circle_M__1", "circle_M__2"], _type="row"))
