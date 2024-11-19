@@ -221,6 +221,10 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
     A grid rule should be defined first.
     """
+    rule = ""
+    if color.startswith("not"):
+        raise AssertionError("Unsupported color prefix 'not', please define the color explicitly.")
+
     upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
     left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
     left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
@@ -230,15 +234,6 @@ def all_rect(color: str = "black", square: bool = False) -> str:
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
-
-    if color.startswith("not "):  # additional boundary check if the color starts with "not"
-        upleft += f"upleft(0, 0) :- grid(0, 0), {color}(0, 0).\n"
-        upleft += f"upleft(R, 0) :- grid(R, 0), {color}(R, 0), not {color}(R - 1, 0).\n"
-        upleft += f"upleft(0, C) :- grid(0, C), {color}(0, C), not {color}(0, C - 1).\n"
-        left += f"left(R, 0) :- grid(R, 0), {color}(R, 0), upleft(R - 1, 0), {color}(R - 1, 0).\n"
-        left += f"left(R, 0) :- grid(R, 0), {color}(R, 0), left(R - 1, 0), {color}(R - 1, 0).\n"
-        up += f"up(0, C) :- grid(0, C), {color}(0, C), upleft(0, C - 1), {color}(0, C - 1).\n"
-        up += f"up(0, C) :- grid(0, C), {color}(0, C), up(0, C - 1), {color}(0, C - 1).\n"
 
     constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
@@ -250,8 +245,8 @@ def all_rect(color: str = "black", square: bool = False) -> str:
         constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
         constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
 
-    data = upleft + left + up + remain + constraint
-    return data.replace("not not ", "").strip()
+    data = rule + upleft + left + up + remain + constraint
+    return data.strip()
 
 
 def all_rect_region() -> str:

@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import display, grid, shade_c
+from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import all_rect, avoid_rect
@@ -15,7 +15,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
-    solver.add_program_line("green(R, C) :- grid(R, C), not gray(R, C).")
+    solver.add_program_line(invert_c(color="gray", invert="green"))
     solver.add_program_line(adjacent())
     solver.add_program_line(grid_color_connected(color="gray", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(2, 2, color="gray"))

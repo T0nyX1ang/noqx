@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 from noqx import app
 from noqx.manager import list_solver_metadata, load_solvers
 from noqx.rule.neighbor import adjacent
-from noqx.rule.shape import all_shapes, count_shape, general_shape, get_neighbor
+from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape, get_neighbor
 from noqx.rule.variety import yaji_count
 from noqx.solution import Config
 from solver.binairo import unique_linecolor
@@ -143,6 +143,7 @@ class TestExtraFunction(unittest.TestCase):
 
     def test_shape_functions(self):
         """Test shape functions."""
+        self.assertRaises(AssertionError, all_rect, "not black", False)
         self.assertRaises(AssertionError, all_shapes, "test", "black", "unknown")
         self.assertRaises(AssertionError, count_shape, 0, "test", None, "black", "unknown")
         self.assertRaises(AssertionError, general_shape, "test", 0, [(0, 0)], "black", "unknown", 4, False)

@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, grid, shade_c
+from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import (
     count_reachable_src,
@@ -19,11 +19,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="black"))
+    solver.add_program_line(invert_c(color="black", invert="green"))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type=8))
     solver.add_program_line(grid_color_connected(color="not black", adj_type=8, grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(avoid_rect(2, 2, color="black"))
-    solver.add_program_line(all_rect(color="not black"))
+    solver.add_program_line(all_rect(color="green"))
     solver.add_program_line(no_rect(color="black"))
 
     all_src = []
