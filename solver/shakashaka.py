@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import display, grid
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid
+from noqx.rule.neighbor import adjacent
+from noqx.solution import solver
 
 
 def shaka() -> str:
@@ -83,14 +83,23 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         if isinstance(clue, int):
             solver.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {clue}.")
 
-    for (r, c), symbol in puzzle.symbol.items():
-        if symbol.startswith("tri__"):
-            solver.add_program_line(f"triangle({r}, {c}, {symbol.split('__')[1]}).")
-        else:
-            solver.add_program_line(f"black({r}, {c}).")
-
     solver.add_program_line(shaka())
     solver.add_program_line(display(item="triangle", size=3))
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Shakashaka",
+    "category": "var",
+    "examples": [
+        {
+            "data": "m=edit&p=7VRNi9swEL37V4Q5z8HyVxzd0u2ml222bVKWIExQsl5sNsGpHZeikP++o5GJU9jSQotpoSh68zSjj6fJWM2XVtc5Ct/+whTJUotEyj1IE+5+15blcZfLEU7bY1HVRBDvZzN80rsm91Q3K/NOZiLNFM07qSAA5C4gQ/NRnsx7aVZoFhQCjMh3R0wABkRve/rAcctunFP4xOcdJ7oieqxLN/gglVki2CPe8EJLYV99zcGt4PG22m9K69joI92jKcpDF2nax+q57eaK7Ixm+mOlYa/UUqfUsleU2gv8jtKm0M/6NZGT7HymPH8imWuprOLPPU17upAniH2QEcI4ZjMJ2Ag/6uzE2Th1NrFxWjnvVqoAx+7v4x2UuAztTgpGcHHwnlcTeO+r9XzGddyedRnTmUKeCFeMM8aAcUmXQRMyvmX0GWPGO55zy/jAeMMYMSY8Z2zT8YsJc5cfQI4K3ef2fYv/PV/mKVi09ZPe5lSs83a/yevRvKr3ekfjRaEPOdCzcPbgG3BXoX1l/r8UQ70UNuf+31b+P5GjKKf0gZh7hEO71uttRcVEGfuTfpEM7h88y/TOuOpwJZJ5Lw==",
+        },
+        {
+            "url": "https://puzz.link/p?shakashaka/30/30/kcodzzzgchbjbgbgbgbzzzobmcclbhblbobr.zkbncczzpbobgbgbscvczzu.lbgbgbobzgddkcsbzzndibiddbjbkcw.ztbzpbhbgbgbgb.zwbzgczzhegdobycgdlbhdx",
+            "test": False,
+        },
+    ],
+}

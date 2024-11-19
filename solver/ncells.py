@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, edge, grid
-from .core.helper import extract_initial_edges, tag_encode
-from .core.neighbor import adjacent, count_adjacent_edges
-from .core.penpa import Puzzle, Solution
-from .core.reachable import grid_branch_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, edge, grid
+from noqx.rule.helper import tag_encode
+from noqx.rule.neighbor import adjacent, count_adjacent_edges
+from noqx.rule.reachable import grid_branch_color_connected
+from noqx.solution import solver
 
 
 def count_reachable_edge(target: int) -> str:
@@ -22,6 +22,7 @@ def count_reachable_edge(target: int) -> str:
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
+    assert puzzle.param["region_size"].isdigit(), "Invalid region size."
     size = int(puzzle.param["region_size"])
     assert puzzle.row * puzzle.col % size == 0, "It's impossible to divide grid into regions of this size!"
 
@@ -32,14 +33,31 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(grid_branch_color_connected(color=None, adj_type="edge"))
     solver.add_program_line(count_reachable_edge(size))
-    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
 
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be integer."
         solver.add_program_line(count_adjacent_edges(num, (r, c)))
+
+    for r, c, d in puzzle.edge:
+        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+
+    for r, c, d in puzzle.helper_x:
+        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "N Cells",
+    "category": "region",
+    "examples": [
+        {
+            "data": "m=edit&p=7VjfbyI3EH7nr4j22Q/2+tfuvqVX0peUa5tUUbRCiBDaQwWRQqiqRfzv99m7hM3CrJNycNeqQmsGf+OxPTP+PMvyz9VwMWaCMyGYTBi+8VEiYUobZqXyD68+t5Pn6Ti7YJer50/zBQTGPl5dsd+G0+W4k1da/c66SLPikhU/ZHkUR8w/Iuqz4udsXfyYFT1W3ACKmEDfNSQRsRhidyfeedxJH8pOwSH3KhniPcTRZDGajgfXZc9PWV7cssjN850f7cRoNv9rHJXD/O/RfPYwcR0Pw2dsZvlp8lQhy9Xj/I9VpSv6G1ZclsvtHliu3C3XieVynXSy5U6f5ocWmvY3Gzj8Fyx1kOVu1b/uxGQn3mRrtL1sHSmz3WMZlUhZ14EgvXQkrkPWOtLGEM0bQ7RodBivURtidEPDqsYsiZ+2piF43DAiuNzT8WZe6fiZaoYFb25Z8OaehfA69Z7Y76luRzY3JWRzV0Ltraf0Xt2ObjpYaK9Tt1M6sK5j9tZj9vxjXvsHIRc+8Pe+vfJt7Ntb5AUrpG+/9y33rfbttdfp+vbOtx98q3xrvI51mfWu3Dt+OchN+CVNkHEK7vCCgcedAKaqBAtveiHZCmmlHGvNYo1QSxZJMJy0MOdkk+5k6ADb6Wgki5Mthw4MyaBTclkS6euP/m/09Tt51H38fXzRmy9mwylYqbeaPYwX29+4ADad6O/IP7l098n/d8LZ7wTnfH7m03ksWeTw68sRZcVHFj2tBsPBaI4kg/Mq2AC2JKxkKxynDCq0cYXRmjbOAatWGLREzm1bYGPiw4AyigA0p0xRgNWUKWJyYw01Qr53H19wDmofZfhxBZMw4qta4ovUQ31Ewkg9VEsk7OKbkDAKaRpWOqX8SYTfGMIJxhD+NMaSeY+loyoh4YTFFpTd4hfUKxSMdIxR7VGwRcja4BgwfWKtaF1aO7wtASi4qgrI0WWh0GacpqJtOXEYRulCAClxuFsA8aUIhOSic2QpeUSCvBxg9cCFcwyrB6+rwH30b6Wzr8sJAboKkF2gggjAbzBOB1QKUAbeMttgQTOKsBhNpqJEtkg6WzxMrxwQ4JSEOdiM03Nz/L0k6LkF5qbhGDwcJ3S8Ezg1ackW5BoJ44WSoE0k+EEAb57ECEtxNlUTWUNUOFoSpjRVE5FzkKboyak5kASSSUMnIKhbmpYUQpRJGO/xXyH8YYo95rif9FSclixOGOkTM9EbqrJ/XvK1Fm2hki9UKwQqjTdUObTPQ/AJX21DFdY3WYWf/a8R/GvY73wG",
+        },
+    ],
+    "parameters": {"region_size": {"name": "Region Size", "type": "number", "default": 5}},
+}

@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
-from .core.shape import all_rect
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
+from noqx.rule.shape import all_rect
+from noqx.solution import solver
 
 
 def noribou_strip_different(color: str = "black") -> str:
@@ -67,3 +67,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Nuribou",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VVNb9pAEL37V0Rz3oP3C4gvFU1DL5S0hSqKLAsZ11GsmpoatqoW8d8zMzZ1nHLoh0QvkdmnNzPr3bczy3j7zaV1LqSmnx6JUEh8rFY8pDE8wvZZFLsyjy7E2O0eqhqJEDeTibhPy20exO2sJNj7y8iPhX8bxSBBgMIhIRH+Q7T37yI/E36OIRAGfdNmkkJ63dFbjhO7apwyRD5rOdI7pFlRZ2W+nDae91HsFwJon9f8NlFYV99zaHWQnVXrVUGOVbrDw2wfik0b2brP1RfXzpXJQfhxI3d+Qq7u5BJt5BI7IZdO8e9yy011Suhlcjhgwj+i1GUUk+pPHR11dB7tEWfRHvQAX6Uqc03ASFrpFYo6Oka9uDVo4vVozUHfHNJiw5+mDOllvDhHW6q+rTXaeKmOtgmf7S55+57H2t6Wkvd8suaI1uhsxXs+XUGpvmiln9msojuyMsOeSmVpxWMc0yg5mXeME0bFuMBcC68Z3zCGjJZxynOuGW8ZrxgN44DnDKlav1lP0JgqgxXC/KimuGfQFusB94hTj32J/E0kCWKYu/o+zXL8i8/cepXXF7OqXqclYDc9BPADePCdNS8N9uwNlpIf/lGb/f9dIsa84hfd3wjYuGW6zKoS8OssyG/tL/6zq8dWAl9dXawqB0nwCA==",
+        },
+        {"url": "https://puzz.link/p?nuribou/20/15/h5o6zs6k3i3h6zg4p4zi.pbzl7h3zz4k4l9v7zn4h.l4k4o4q7i2", "test": False},
+    ],
+}

@@ -1,6 +1,6 @@
 [project]
 name = "noqx"
-version = "0.3.3"
+version = "0.4.0"
 description = "Extended logic puzzle solver of Noq."
 authors = [
   {name = "Yaoyu Zhu"},
@@ -15,11 +15,11 @@ dependencies = [
 ]
 requires-python = ">=3.7"
 readme = "README.md"
-license = {text = "GPL-3.0-or-later"}
+license = {text = "Apache-2.0 OR GPL-3.0-or-later"}
 
 [tool.black]
 line-length = 127
-target-version = ["py37", "py38", "py39", "py310", "py311"]
+target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
 
 [tool.ruff]
 line-length = 127
@@ -29,8 +29,7 @@ target-version = "py37"
 select = ["I"]
 
 [tool.pylint]
-max-line-length = 127
-disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation"]
+disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation", "line-too-long"]
 
 [tool.pyright]
 pythonVersion = "3.7"
@@ -45,6 +44,8 @@ dev-dependencies = [
   "black>=23.7.0; python_version>='3.8'",
   "conventional-pre-commit<2.5.0; python_version<'3.8'",
   "conventional-pre-commit>=2.5.0; python_version>='3.8'",
+  "coverage>=7.0.0",
+  "httpx>=0.24.1",
   "pre-commit<2.22.0; python_version<'3.8'",
   "pre-commit>=2.22.0; python_version>='3.8'",
   "pyinstaller>=5.5,<6",

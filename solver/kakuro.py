@@ -2,61 +2,34 @@
 
 from typing import List, Tuple
 
-from .core.common import area, display, fill_num, grid, unique_num
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Direction, Puzzle, Solution
+from noqx.rule.common import area, display, fill_num, grid, unique_num
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
-    # Find sections and their corresponding clues
-    # 'sum' is 0 when the clue is blank; this is because we need to check every run for duplicates.
     sums: List[Tuple[int, List[Tuple[int, int]]]] = []
 
-    for (r, c), symbol_name in puzzle.symbol.items():
-        if symbol_name.startswith("kakuro") and (r, c) not in puzzle.sudoku:
-            puzzle.sudoku[(r, c)] = {}  # set empty kakuro cell
+    for (r, c), data in puzzle.sudoku.items():
+        if isinstance(data.get(1), int):
+            area_points = []
+            cur = c + 1
+            while cur < puzzle.col and not puzzle.symbol.get((r, cur, Direction.CENTER)):
+                area_points.append((r, cur))
+                cur += 1
 
-    def end_run(start_coord: Tuple[int, int], coords: List[Tuple[int, int]], idx: int):
-        if start_coord in puzzle.sudoku:
-            value = puzzle.sudoku[start_coord]
-            if len(coords) > 0:
-                if len(value) == 0:
-                    sums.append((0, coords))
-                elif idx in value:
-                    sums.append((int(value[idx]), coords))
-            elif len(value) != 0 and idx in value:
-                return False
-        else:
-            sums.append((0, coords))
-        return True
+            assert len(area_points) > 0, "Invalid kakuro clue."
+            sums.append((int(data[1]), area_points))
 
-    # Across sections
-    for r in range(puzzle.row):
-        start_coord = (r, -1)
-        coords = []
-        for c in range(puzzle.col):
-            if (r, c) in puzzle.sudoku:
-                if not end_run(start_coord, coords, 1):
-                    return []
-                start_coord = (r, c)
-                coords = []
-            else:
-                coords.append((r, c))
-        end_run(start_coord, coords, 1)
+        if isinstance(data.get(2), int):
+            area_points = []
+            cur = r + 1
+            while cur < puzzle.row and not puzzle.symbol.get((cur, c, Direction.CENTER)):
+                area_points.append((cur, c))
+                cur += 1
 
-    # Down sections
-    for c in range(puzzle.col):
-        start_coord = (-1, c)
-        coords = []
-        for r in range(puzzle.row):
-            if (r, c) in puzzle.sudoku:
-                if not end_run(start_coord, coords, 2):
-                    return []
-                start_coord = (r, c)
-                coords = []
-            else:
-                coords.append((r, c))
-        end_run(start_coord, coords, 2)
+            assert len(area_points) > 0, "Invalid kakuro clue."
+            sums.append((int(data[2]), area_points))
 
     area_id = 0
 
@@ -65,12 +38,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     for sum_clue, coord_list in sums:
-        if len(coord_list) > 0:
-            solver.add_program_line(area(_id=area_id, src_cells=coord_list))
-            solver.add_program_line(fill_num(_range=range(1, 10), _type="area", _id=area_id))
-            if sum_clue > 0:
-                solver.add_program_line(f":- #sum {{ N: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
-            area_id += 1
+        solver.add_program_line(area(_id=area_id, src_cells=coord_list))
+        solver.add_program_line(fill_num(_range=range(1, 10), _type="area", _id=area_id))
+        solver.add_program_line(f":- #sum {{ N: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
+        area_id += 1
 
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be integer."
@@ -81,3 +52,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Kakuro",
+    "category": "num",
+    "examples": [
+        {
+            "data": "m=edit&p=7VZNb9s8DL7nVxQ66yBK8uct65pdunRbOxSFYQzJliFBGrjIxzA4yH8vSdlO43CHd0DxYtjgmCEfyeJDUl/LyXK3rjQY+rlU4z8+HlJ+bRrza5rnbrF9nOUXerjbzqs1KlrfjEb6++RxMxsUTa9ysK+zvB7q+l1eKFBaWXxBlbr+mO/r93k91vUtNikNiF2HThbVq6N6z+2kXQYQDOpj1F347AHVQD7YH/KivtOKvLzhb0lVq+rHTDUsyP5araYLAqaTLYaymS+empbN7lu13DV9oTzoevhrsu5IltRAlrQ+2SaaVyVry8MBU/4J6X7JC2L++aimR/U236Mc53vlE/oUqwJcF0QB0cxahiOlPfrIbEymbyxnuDFrzDhj721rxq1JsMDgGNQZPTQ2D2WxdMGOuLs72p5Hw2CCnTDBdnS009P2zLHdkAFAWjR+2w4+sGv9Q8p84tbMeLiWrTUcN3Q2MLvOu4XgrWVrseXE9sDeTWvHbHfebRaiadk59PQyGw5CdC0913zf8vEYV5dNrNUD1oqrYXU3qXCSKUfdsKInGIXWxyicPkYh9TFKWh+jQvYxCqePUUh9jIrSw7zg1wt+veA3EuKNhHgjId5I4BcJ/GLKcx8TuMRCDhKBSyJw4cnew1LBRybEC0YgCEbwAkZINa48CRSc4xoUQF4JZ6CQR7BCwkGaiSBNJ1wDEih9Ls0o4P3mDJTyGUmxRxIlaQqBNIcglijFZ5nHpT3iLdqyvMNdW9eO5VuWhmXE8pr7XLG8Z3nJ0rOMuU9C+/5/OhnCSRD2mFeiU7hwxTh9oj8PKweFGu9W09n6YlytV5NHPJtv+Vx+Yc8nTzOFF6LDQP1U/BaO7lf/7kj/wx2J0m9+ez3wuVnf/B2rFCdsV41y8Aw=",
+        },
+        {
+            "url": "https://puzz.link/p?kakuro/15/15/m-dm.ffl-7l9-mQjmIBmbam-anWZs.jSpBjo.7goP4lJ9m..nAjo74lf-.lUUrF9l7-qHNq-clKTrO4l.-clgIoibn.JbmHglfgo.gOo7NpA-.s7Hnb-m-fm-7m-7m-hl-4l.-Dm-Em46BfgJjhSK79acVZD",
+            "test": False,
+        },
+    ],
+}

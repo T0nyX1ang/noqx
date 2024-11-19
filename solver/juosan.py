@@ -2,10 +2,10 @@
 
 from typing import List
 
-from .core.common import area, display, grid, shade_c
-from .core.helper import full_bfs
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, display, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.solution import solver
 
 
 def jousan_constraint():
@@ -44,3 +44,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Juosan",
+    "category": "var",
+    "examples": [
+        {
+            "data": "m=edit&p=7VZdbxM5FH3Pr6j87Ifxx4zH81ZKy0sJLC2qqiiq0jbQLAlhk2aFJsp/77n2MekioZVAiCKhZDzH9v04c8/1JOt/NpPVVJtKvq7VuOPjTZsu2zbpqvg5n93Pp92BPtzc3y1XAFq/OjnR7ybz9XQwotV4sO1j1x/q/kU3UlbpdBk11v1f3bZ/2fVD3Z9hS2mDtVMgo7QFPN7Di7Qv6Cgvmgp4COyy2yXgzWx1M59eneaV192oP9dK8jxL3gLVYvnvVOUQaX6zXFzPZOF6co+HWd/NPnFnvbldftjQ1ox3uj/8Nl23pysw0xX0NV0+z0+mG8e7Hcr+BoSvupFwf7uH7R6edVuMwzSabqti5RHBCyEVjQVuMrYVsHRFmohR3jCVaTBxnDiZlB0vZpaT8GjH1DLhjmkkdE5pTCs+jGZ9u/exj81cYlAmtfDkxCcGEgBPdJme6ySNNo3neGzduzQ+T2OVxjqNp8nmGHWwxmlrg+osutXUwJEYB8CBiWBbAYNIwkFbb4gjsMvYwUbqkLAHxiMJ9livue4NcE2MvDXzetjXxR55pQKCa6w3XK/BrSG3GhwCOdQ4rAF1EdwgV2CuRg4x1wPytswbrBxsYsRvGT8gfsv4ARwiObSwj7RvYRNpg5eDq4pNC8xcbQRmTSJsDG1iACbnCBuTbRADOHN2lQHOPF3lgTM3+GlnuQ69HPWCH3CxQS7qBT/gzAd+wJkz/LSjdvADpg20c9QOfsD5eeGnXU2e0M5RO/gB0wY6OuqIGMCsp/SAY80RB32w74fSP6K7L/2A2jJv6gFfekP6rfSA9AntReuGcRro25QegF4N698gb2DeIL1Be9E9lH5AXjmyRffAvK30DGNG+MaiHfhE8onoMfZD0rFibUVH9gPuX/oBd2DWWX512A/QHJj1FB1N0Vd6pugLvUzRUXqAcaz0wCNdeB6TFqwt7tQUh/4iHf2jNPo0NumVEOQ9+R1v0h95+/wvnRE6U36W//upf7+18WCkjm/fTw+Gy9ViMscv2XCzuJ6uyhx/HXYD9VmlS97q2v/5N/GL/k2IBNVTOwlPjQ7Opvp7s1xPPqrx4AE=",
+        },
+        {
+            "url": "https://puzz.link/p?juosan/21/12/4ql08qtg9qt59ul5bunltnn9tntd72ta72h636h5b641bm04vmcvjo0fu1vo3s6fhuv1u0gf7fvpjo0fvjro0fs3vu0tvvgg33g42554342h553444g2g24211g121g2221341225h121g252442224465g25g1g2425g273",
+            "test": False,
+        },
+    ],
+}

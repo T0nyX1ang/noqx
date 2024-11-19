@@ -41,6 +41,11 @@ def shade_cc(colors: Iterable[str]) -> str:
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
 
 
+def invert_c(color: str = "black", invert: str = "white") -> str:
+    """Generates a rule for inverting colors."""
+    return f"{invert}(R, C) :- grid(R, C), not {color}(R, C)."
+
+
 def edge(rows: int, cols: int) -> str:
     """
     Generates facts for grid edges.

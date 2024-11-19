@@ -2,13 +2,13 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from .core.common import area, count, display, grid, shade_c
-from .core.helper import full_bfs, tag_encode
-from .core.neighbor import adjacent, avoid_adjacent_color
-from .core.penpa import Direction, Puzzle, Solution
-from .core.reachable import grid_color_connected
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.penpa import Direction, Puzzle, Solution
+from noqx.rule.common import area, count, display, grid, shade_c
+from noqx.rule.helper import full_bfs, tag_encode
+from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.reachable import grid_color_connected
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def avoid_diamond_pattern(color: str = "black") -> str:
@@ -145,3 +145,33 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Heyawake",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7ZbPbhs3HITveoqAZx52Se7fm5vavbhOW7sIAkEwFGVTG5GhVLaadg2/ez6SwwpoA7RA2/QSrESNqOHwx+Estfc/H9b7ydYuvnxvK1tzhSGkt++a9K50Xd0+bKfxmT05PNzs9gBrX5yd2bfr7f20WIq1WjzOwzif2PmbcWlqY43jXZuVnb8fH+dvx/nUzpf8ZGxP33kmOeDpEb5Mv0f0PHfWFfhCGPgKuLndb7bT9Xnu+W5czlfWxHm+SqMjNHe7XyajOuL3ze7u9W3seL1+YDH3N7fv9cv94c3u3UHcevVk55Nc7uUnyvXHciPM5Ub0iXLjKv7jcofV0xO2/0DB1+My1v7jEfZHeDk+0l6ktk7tq9Sepdal9gqqnX1qv05tldomteeJczo+GtcF64bKjI4dJiRuqIU7sBfuwSHjvgK3wjW4E/bgQZjQVdIcKrD4Qw0Wf/Bg8WNI68JvwU64A6uGYQA3CaMNzppoW+8yH21w5qMNFr+G78SPd4jrhanB5RrQtt7ntaMNlqaD78V38L34Dn4Q38EPhd+Ds1dog1WDZ+0hrx1tsDS5XX0jvoffiB/gN+IH+I34Aa/a7BXaYNUQWHurtQc0W2k28QAQv4kHgfgN/E78Bn4nfotXnbxqqaFTDS1r77T2Fs1emh38XvwOfi9+B78Xn4x5ZSwdRsqYJ1deuUIbrLWTMa+MoW1DJW/7Dqya+wEsPhkLyhjaYNUQD0DlCm2w5iVjQRlDG5y9RRuca0bbBpf5aIMLnxqUsVD14Fw/84BzDcwDzjUwD1j65CcoP4yzIeTaGAeWvkM/SJ8sBWWJcTYoG4wDay6yEZQNxoGlT06CcsI4G7TvjANrLvY9aN8ZB5Y+GQglA3Hv1J//SEo/mS/Z4KxgL497qpwkr6riLXPpfufz930JNZzifw2n+F/DccWf6K3qd9Hb4lX0Vl756G3xirV7rcWzdi+vPGv32hfPvLqv+TzuS4g+F9+iz8U35m2Kb9FzzdtEz4uHzJv2iMP1ZTpin6c2pLZNR28Xz/C/ecpzJ5uxtybV8G8d+X9Z2xL74vPDn6/mS3+8VouluTzs3643E3/jp29+mp5d7PZ3663hqelpYX416b308SHsy4PU//QgFbeg+syPU//0vl/iLnff/MKa94fr9fVmtzU8i9vYzwH0x/7PXj2Hg7mZflt/WL+bzGrxEQ==",
+        },
+        {
+            "url": "https://puzz.link/p?heyawake/19/15/201480mhg2i40a8s192816704r503gk0m2g2oa0a18085010k046g0003hu0104000400fbvgvo005fu1800o0000000800600000003s0003c-1c140411g81ah8233",
+            "config": {"fast_mode": True},
+            "test": False,
+        },
+        {
+            "data": "m=edit&p=7VPLbtswELzrK4I970Ek9TJvbir34roPuwgCQQgUhamFyFArW33Q0L9nuSKgHgIURRE0h4LgYHY5JIePPX4dqt5ghimqDEMU1FQkUYURRongHvq2a06t0Re4HE77rieC+G61wvuqPZqg8KoyONuFtku0b3QBAhAkdQEl2g/6bN9qm6Pd0hBgRrn1JJJE85le8bhjl1NShMQ3nhO9Jlo3fd2am/WUea8Lu0Nw+7zi2Y7CoftmwPtwcd0dbhuXuK1OdJjjvvniR47DXfcweK0oR7TLye72CbtqtuvoZNexJ+y6Uzyz3UU5jnTtH8nwjS6c908zzWa61WfCjT6DTGiqyOix+WlALVzsQ9IIVl4zrhgl444WQqsYXzOGjDHjmjU5rS9iWjsNQUtaMV4QFxNPaZNMeS6JR15D+phMcJ6+4a/6VE48U15Pm1zxVpeMEWPCFlJ30j+6i78/7W/tFDLhwppb/LxxGRSwHfr7qjb0X/K7z+Zi0/WHqgUqzzGAH8C9oAvF6H/F/qOKdU8QvrS/+tLsUPXA3vysvlcPBsrgEQ==",
+            "config": {"fast_mode": True, "limit_border": 1},
+        },
+        {
+            "url": "https://puzz.link/p?heyawake/12/12/00000o0003063cc0o00030000000008020080a4a92a02008020000-2811111111",
+            "config": {"fast_mode": True, "limit_2x2": 1},
+            "test": False,
+        },
+    ],
+    "parameters": {
+        "fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False},
+        "limit_border": {"name": "Border Limit", "type": "number", "default": 0},
+        "limit_2x2": {"name": "2x2 Limit", "type": "number", "default": 0},
+    },
+}

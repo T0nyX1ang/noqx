@@ -16,7 +16,7 @@ a = Analysis(
     ["noqx.py"],
     pathex=[],
     binaries=[],
-    datas=[("./static/*", "./static"), ("./LICENSE", "./")],
+    datas=[("./static/*", "./static"), ("./LICENSE.GPL", "./"), ("./LICENSE.APACHE", "./")],
     hiddenimports=hiddle_imports,
     hookspath=[],
     hooksconfig={},

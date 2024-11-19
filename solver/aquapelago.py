@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import display, grid, shade_c
-from .core.neighbor import adjacent, avoid_adjacent_color
-from .core.penpa import Puzzle, Solution
-from .core.reachable import count_reachable_src, grid_color_connected, grid_src_color_connected
-from .core.shape import avoid_rect
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, grid, shade_c
+from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.reachable import count_reachable_src, grid_color_connected, grid_src_color_connected
+from noqx.rule.shape import avoid_rect
+from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -36,3 +36,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Aquapelago",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VZRa9swEH7Pryj3fA+WJTuO37Ku2UuWbktHKcIEJ3NpqDNnTjyGQv57706mrlnGCoM8jGLru8t3J+k7ScjZ/WjyukAV86sTDFDRE5tYWpSMpAXtc7Pel0V6geNm/1DV5CBeTyZ4n5e7YmDbrGxwcKPUjdF9SC0oQAipKcjQfU4P7mPqZujmFAI0xE19UkjuVefeSpy9S0+qgPyZ97nbHbmrdb0qi8WUosR8Sq27QeB53klvdmFT/Syg1cG/V9VmuWZime+pmN3DettGds236rFpc1V2RDf2cucn5OpOLrteLnsn5HIV/y633FanhI6y45EW/AtJXaSWVX/t3KRz5+kBTAipQTBDMVEkJonFjJQYpXxQDX1UjbTYMPBpYWi8TfxYOki8VT5PGx/XURuPeDyaf9bOT6J5B/2BECl+S1uCRfUIlmfBdAQLtTDsCJHc6yPiLR+7Z4bLoJwXlFTUVyPF9fpJmRZ0x0jBfYZL780vi9AbR5bDQvSSEdXP49ASqfRAeCc4EQwFb2gH0WnB94KBYCQ4lZwrwVvBS0EjGEvOkM/Aq08JlRMixLyhfuPOoM2aUG6ePz/RW/x/jmcDC/Omvs9XBV1zs2azLOqLWVVv8hLoi3IcwC+QZjWlm7ePzNk/Mrz4wSsvkbPdG3+RY2ldY43uGmHbLPLFqiqB/qEg8+Z3/uzq6eKD7029fsyXBWSDJw==",
+        }
+    ],
+}

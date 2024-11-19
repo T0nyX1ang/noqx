@@ -2,12 +2,12 @@
 
 from typing import List
 
-from .core.common import area, count, display, grid, shade_c
-from .core.helper import full_bfs
-from .core.neighbor import adjacent, avoid_area_adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import area_color_connected
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import area, count, display, grid, shade_c
+from noqx.rule.helper import full_bfs
+from noqx.rule.neighbor import adjacent, avoid_area_adjacent
+from noqx.rule.reachable import area_color_connected
+from noqx.solution import solver
 
 
 def valid_stostone(color: str = "black") -> str:
@@ -54,3 +54,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Stostone",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VZNb9s4FLz7VwQ88yB+iZRuaersJeu0dRZBIBiG4yiNsXad+qMoZPi/Zx75CBVtgbQoNosChW16/DR6HHFGtLYf97NNK5WSqpAmyEICSetKaVWQTvn4Kfh1tdgt2/pEnu53D+sNgJSX5+fyfrbctoOGWZPBoavq7lR2f9WNUEIKjY8SE9m9rQ/d33U3lN0Yh4RUqF0kkgYc9vA6Hid0loqqAB4xBrwBnC8282U7vUiVN3XTXUlB87yKZxMUq/WnVrAO+j1fr24XVLid7XAx24fFIx/Z7u/W/+6ZqyZH2Z0mueMsN/RyTS+XYJJL6Dty6Sr+Y7nV5HjEsr+D4GndkPZ/ehh6OK4PGEf1QZQWpzp4Tc6gpuKRmziex1HH8Qonys7E8XUcizi6OF5EzhD9tK6ktmiq4bcxwIGxBa4StsAu41LqUjEOwIYx+pA4wk4Bl4zB8cwpNbBnjJ6ee5boGbinBycwx0NPYD0e/MB8D36V+R5YM4aGijUEaKhYQ/DSFMwJAZj1hAqY+ZUCZn6lgVlDZYF53qqURqV50Q84cdAPOOlEP+DEN4WTRheMca7O50KPTnrQGzhpQD9pDNdxGxuTdKIfMHM07nfjGEOzSZqNxlyW5zLQZlkbPDXsKXoAszaDuRzPZdDfcX+Lesl1+GvYX5wHzBz4a9hf9ADmuRw0eNYArw17DS72KL72Ev0D9/e0d6VriRmzGTvgnB/4yDpjlnIOHeUtzYXvPpMlZY/5lLecT4+6zzmhHOY6MuY5A5Qxzxo8NPg+D7pifgU+Zyx6XbAX5DXnBxlBBr7wMedBY000r6eGL9l3jT46e0qZyZ5SZrKPODfnwYCTfTfgmMyh/GSvKT/Za3iXs2Gx5pa9sNBps9eUAeY4cBxzHLQ51kb+uuw75nXZX8oAaytxXTEn2GCu4zZzFkcbxzJuP552tR/c9wQJDFLEudIm+Ovb3rPaGiw3/aN+/aKd97evTgaNGO8397N5iz+l4d379mS03qxmS/wa7Ve37Sb/xjPBcSA+i/hpDD1i/HlM+J8eE8iC4qceFl7gPnlGToPVtVp2l1I87qez6XyNjGHtqO78N/UXV48bXWx3a7w/tGIyeAI=",
+        }
+    ],
+}

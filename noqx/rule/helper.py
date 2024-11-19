@@ -2,47 +2,19 @@
 
 import random
 from collections import deque
-from typing import Any, Dict, Iterator, Optional, Set, Tuple, Union
-
-from .penpa import Direction
-
-
-def extract_two_symbols(symbol_set: Set[str]) -> Tuple[str, str]:
-    """Extract two symbols from a set."""
-    if len(symbol_set) == 2:
-        symbol_1 = list(symbol_set)[0]
-        symbol_2 = list(symbol_set)[1]
-    elif len(symbol_set) == 1:
-        symbol_1 = list(symbol_set)[0]
-        symbol_2 = "circle_M__1__0" if symbol_1 == "circle_M__2__0" else "circle_M__2__0"
-    elif len(symbol_set) == 0:
-        symbol_1 = "circle_M__1__0"
-        symbol_2 = "circle_M__2__0"
-    else:
-        raise AssertionError("At most two symbols are allowed.")
-    return symbol_1, symbol_2
+from enum import Enum
+from typing import Any, Dict, Iterable, Iterator, Optional, Set, Tuple, Union
 
 
-def extract_initial_edges(edges: Set[Tuple[int, int, Direction]], helper_x: Set[Tuple[int, int, Direction]]) -> str:
-    """Extract the initial edges to the solver."""
-    rule = ""
-    for r, c, d in edges:
-        if d == Direction.LEFT:
-            rule += f"edge_left({r}, {c}).\n"
-        elif d == Direction.TOP:
-            rule += f"edge_top({r}, {c}).\n"
-        elif d == Direction.DIAG_UP:
-            rule += f"edge_diag_up({r}, {c}).\n"
-        elif d == Direction.DIAG_DOWN:
-            rule += f"edge_diag_down({r}, {c}).\n"
+class Direction(Enum):
+    """Enumeration for directions."""
 
-    for r, c, d in helper_x:
-        if d == Direction.LEFT:
-            rule += f"not edge_left({r}, {c}).\n"
-        elif d == Direction.TOP:
-            rule += f"not edge_top({r}, {c}).\n"
-
-    return rule.strip()
+    CENTER = "center"
+    LEFT = "left"
+    TOP = "top"
+    TOP_LEFT = "top_left"
+    DIAG_UP = "diag_up"
+    DIAG_DOWN = "diag_down"
 
 
 def tag_encode(name: str, *data: Union[str, int, None]) -> str:
@@ -67,6 +39,11 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
         return ("!=", target)
 
     return (reverse_op(target[0]), target[1])
+
+
+def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
+    """Validate any matching type."""
+    assert _type in target_type, f"Invalid type '{_type}'."
 
 
 def full_bfs(

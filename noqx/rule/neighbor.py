@@ -110,3 +110,13 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
     h_1 = f"edge_top({src_r}, {src_c})"
     h_2 = f"edge_top({src_r + 1}, {src_c})"
     return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."
+
+
+def avoid_num_adjacent(adj_type: Union[int, str] = 4) -> str:
+    """
+    Generate a constraint to avoid adjacent cells with the same number.
+
+    An adjacent rule should be defined first.
+    """
+    rule = f":- number(R, C, N), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1)."
+    return rule

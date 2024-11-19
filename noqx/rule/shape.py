@@ -3,7 +3,7 @@
 import itertools
 from typing import Iterable, Optional, Set, Tuple, Union
 
-from .helper import tag_encode, target_encode
+from .helper import tag_encode, target_encode, validate_type
 
 OMINOES = {
     1: {
@@ -120,7 +120,7 @@ def general_shape(
 
     A grid rule and an adjacent rule should be defined first.
     """
-
+    validate_type(_type, ("grid", "area"))
     if not deltas:
         raise AssertionError("Shape coordinates must be provided.")
 
@@ -139,7 +139,8 @@ def general_shape(
                 belongs_to.add(
                     f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
                 )
-            elif _type == "area":
+
+            if _type == "area":
                 valid.add(f"area(A, R + {dr}, C + {dc})")
                 valid.add(f"{color}(R + {dr}, C + {dc})")
                 belongs_to.add(
@@ -161,7 +162,8 @@ def general_shape(
 
         if _type == "grid":
             data += f"{tag}(R, C, {_id}, {i}) :- grid(R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
-        elif _type == "area":
+
+        if _type == "area":
             data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
     return data.strip()
@@ -173,15 +175,17 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
 
     A grid rule and a shape/belong_to_shape rule should be defined first.
     """
-
+    validate_type(_type, ("grid", "area"))
     tag = tag_encode("belong_to_shape", name, color)
+
+    rule = ""
     if _type == "grid":
-        return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _, _)."
+        rule = f":- grid(R, C), {color}(R, C), not {tag}(R, C, _, _)."
 
     if _type == "area":
-        return f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C, _, _)."
+        rule = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C, _, _)."
 
-    raise AssertionError("Invalid type, must be one of 'grid', 'area'.")
+    return rule
 
 
 def count_shape(
@@ -196,17 +200,19 @@ def count_shape(
 
     A grid rule and a shape rule should be defined first.
     """
+    validate_type(_type, ("grid", "area"))
     tag = tag_encode("shape", name, color)
     rop, num = target_encode(target)
     _id = "_" if _id is None else _id
 
+    rule = ""
     if _type == "grid":
-        return f":- {{ {tag}(R, C, {_id}, _) }} {rop} {num}."
+        rule = f":- {{ {tag}(R, C, {_id}, _) }} {rop} {num}."
 
     if _type == "area":
-        return f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
+        rule = f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
 
-    raise AssertionError("Invalid type, must be one of 'grid', 'area'.")
+    return rule
 
 
 def all_rect(color: str = "black", square: bool = False) -> str:
@@ -215,9 +221,13 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
     A grid rule should be defined first.
     """
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1)."
+    rule = ""
+    if color.startswith("not"):
+        raise AssertionError("Unsupported color prefix 'not', please define the color explicitly.")
+
+    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
     left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1)."
+    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
     up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
     up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
     remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
@@ -235,8 +245,8 @@ def all_rect(color: str = "black", square: bool = False) -> str:
         constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
         constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
 
-    data = upleft + left + up + remain + constraint
-    return data.replace("not not ", "").strip()
+    data = rule + upleft + left + up + remain + constraint
+    return data.strip()
 
 
 def all_rect_region() -> str:
@@ -290,6 +300,26 @@ def avoid_rect(
         rect_pattern.append(f"grid({corner_r} + {rect_r - 1}, {corner_c} + {rect_c - 1})")
 
     return f":- {', '.join(rect_pattern)}."
+
+
+def no_rect(color: str = "black") -> str:
+    """
+    Generate a constraint to avoid all-shaped rectangles.
+
+    A grid rule should be defined first.
+    """
+    tag = tag_encode("reachable", "Lshape", "adj", 4, color)
+
+    mutual = "grid(R, C), grid(R + 1, C + 1)"
+    initial = f"{tag}(R, C) :- {mutual}, {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1).\n"
+    initial += f"{tag}(R, C) :- {mutual}, {color}(R, C), {color}(R, C + 1), {color}(R + 1, C + 1), not {color}(R + 1, C).\n"
+    initial += f"{tag}(R, C) :- {mutual}, {color}(R, C), {color}(R + 1, C), {color}(R + 1, C + 1), not {color}(R, C + 1).\n"
+    initial += (
+        f"{tag}(R + 1, C + 1) :- {mutual}, not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), {color}(R + 1, C + 1).\n"
+    )
+    propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_4(R, C, R1, C1).\n"
+    constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
+    return initial + propagation + constraint
 
 
 def area_same_color(color: str = "black") -> str:

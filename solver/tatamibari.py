@@ -2,13 +2,13 @@
 
 from typing import List, Tuple
 
-from .core.common import display, edge, grid
-from .core.helper import extract_initial_edges, reverse_op, tag_encode
-from .core.neighbor import adjacent
-from .core.penpa import Puzzle, Solution
-from .core.reachable import bulb_src_color_connected
-from .core.shape import all_rect_region
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, edge, grid
+from noqx.rule.helper import reverse_op, tag_encode
+from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import bulb_src_color_connected
+from noqx.rule.shape import all_rect_region
+from noqx.solution import solver
 
 
 def tatamibari_cell_constraint(op: str, src_cell: Tuple[int, int]) -> str:
@@ -45,7 +45,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(all_rect_region())
     solver.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
-    solver.add_program_line(extract_initial_edges(puzzle.edge, puzzle.helper_x))
 
     for (r, c), clue in puzzle.text.items():
         solver.add_program_line(f"clue({r}, {c}).")
@@ -58,6 +57,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         elif clue == "|":
             solver.add_program_line(tatamibari_cell_constraint("gt", (r, c)))
 
+    for r, c, d in puzzle.edge:
+        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+
+    for r, c, d in puzzle.helper_x:
+        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
     solver.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(tatamibari_global_constraint())
@@ -66,3 +71,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Tatamibari",
+    "category": "region",
+    "examples": [
+        {
+            "data": "m=edit&p=7VRRb9MwEH7Pr5j8yiHZcdo6fkFltLyUDGjRNEVRlXaBVbTKSBqEXPLfdz6H1YQihCYGD8jNpy/fne0v557rT01eFRDjkAo4CBxScXpUZH+8G4vNflvoMxg3+5uyQgJwMZ3C+3xbF0HaZWXBwcTajMG81CkLGdAjWAbmjT6YV9okYOYYYiBQmyETDEKkkyO9pLhl504UHHnScaRXSNebar0tljOnvNapWQCz+zyn2ZayXfm5YG4ava/L3WpjhVW+x4+pbza3XaRursuPTZcrshbM2NmdnLArj3YtdXYt+1N2i+sPRd2sTnmNs7bFmr9Ft0udWuPvjlQd6VwfEBN9YKGyU7+iEXcwTHIrPPWE0ArPPCGywhNPGPbWGPQzhrSGl6FoF29R1Z+iyJiXITht46UI0Z8knNnvFMrxthbOrr+y7BdBROTvfh0slqCSXRFOCUPCBVYUjCR8QcgJB4QzypkQXhKeE0aEQ8oZ2TP5rVN7uB08M6xCrPDwRlggSwR2t4hHTEvksYCQY0D+0ncaKrom/DH4t5QsSNkEm+YsKatdvsXGSZrdqqi+veM11QbsC6MnlTgl+n9z/Y2by9afP3InPLQxUyztfe+AuQB22yzz5brE/xnWz4W7djodxlb8SWAU/RB49K/HDs+COw==",
+        }
+    ],
+}

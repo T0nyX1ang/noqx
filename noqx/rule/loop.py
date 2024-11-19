@@ -47,19 +47,6 @@ def intersect_loop(color: str = "white", path: bool = False) -> str:
     return rule
 
 
-def loop_sign(color: str = "white") -> str:
-    """
-    Generate a constraint to generate loop signs for bent/straight loops.
-
-    A grid fact and a grid_direction rule should be defined first.
-    """
-    rule = ""
-    for d1, d2 in ["lu", "ld", "ru", "rd", "lr", "ud"]:
-        rule += f'loop_sign(R, C, "{d1}{d2}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
-
-    return rule.strip()
-
-
 def directed_loop(color: str = "white", path: bool = False) -> str:
     """
     Generate a directed loop constraint with loop signs.
@@ -123,3 +110,40 @@ def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
         constraint += f":- {outside_item}(R, C), not outside_loop(R, C).\n"
 
     return (rule + constraint).strip()
+
+
+def loop_sign(color: str = "white") -> str:
+    """
+    Generate a constraint to generate general loop signs.
+
+    A grid fact and a grid_direction rule should be defined first.
+    """
+    rule = ""
+    for d1, d2 in ("lu", "ld", "ru", "rd", "lr", "ud"):
+        rule += f'loop_sign(R, C, "{d1}{d2}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+
+    return rule.strip()
+
+
+def loop_straight(color: str = "white") -> str:
+    """
+    Generate a rule for straight passing through a cell.
+
+    A grid fact and a grid_direction rule should be defined first.
+    """
+    rule = ""
+    for d1, d2 in ("lr", "ud"):
+        rule += f'straight(R, C) :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+    return rule.strip()
+
+
+def loop_turning(color: str = "white") -> str:
+    """
+    Generate a rule for turning through a cell.
+
+    A grid fact and a grid_direction rule should be defined first.
+    """
+    rule = ""
+    for d1, d2 in ("lu", "ld", "ru", "rd"):
+        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
+    return rule.strip()

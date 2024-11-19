@@ -2,9 +2,9 @@
 
 from typing import Dict, List, Tuple, Union
 
-from .core.common import display, shade_c
-from .core.penpa import Puzzle, Solution
-from .core.solution import solver
+from noqx.penpa import Puzzle, Solution
+from noqx.rule.common import display, shade_c
+from noqx.solution import solver
 
 
 def nono_row(col: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):
@@ -93,3 +93,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.solve()
 
     return solver.solutions
+
+
+__metadata__ = {
+    "name": "Nonogram",
+    "category": "shade",
+    "examples": [
+        {
+            "data": "m=edit&p=7VU9b9swEN31K4KbbxD1YUtcCteNu7hKW7sIAkEwZFVBjMpQKltFQUP/PXcnKQ7YDM3QZCloPj8/8sjHIw8+/GzzpsQpNT9CFxU13w2kT1z+jG29O1alvsBZe7yrGyKIV4sF3ubVoXRSn2ZQz5yTibWZofmoU1CA4FFXkKH5ok/mkzYJmhUNAQakLftJHtHLM72WcWbzXlQu8WTgRG+IFrumqMrNslc+69SsEXif9xLNFPb1rxIGH/y7qPfbHQvb/EiHOdzt7oeRQ/u9/tEOc1XWoZn1dlejXbYz2PXPdpn2dpk9Y5fD/rHdOOs6SvtXMrzRKXv/dqbRma70iTDRJ/AjDn1HXvq7AT+2hMC1BTUmZxTskNAOCe2Q0GOBHsSjYPsI7UWn9qKRCE8WjexdYhGehMSy7aNAOVCSiRvBhaAnuKZEofEFPwi6gqHgUuZcCl4LzgUDwYnMmXKq//IyYEJnCeiMZNjrb+YVvKVU0lzkCqPnvzMnhVXb3OZFSa8taffbsrlI6mafV0Dl3TnwG6RTzSuq4v8V/zYVz1fgvqju3/7lp5Rden/mCuG+3eSboq6A/jRQdPUyffqn/uqnpXLKnAc=",
+        },
+        {
+            "url": "https://puzz.link/p?nonogram/31/13/m513j1111i531q55k11111h5111p55k111j131q55k11k55k11k135j1l55k111j55r35k311j35r51k115j51zn3353133o11111111111k131113133m11111111111k11111111333zg3113313311l111111111111111g3331111133l111112121111j11111111111111x",
+            "test": False,
+        },
+    ],
+}
