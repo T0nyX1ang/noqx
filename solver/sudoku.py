@@ -9,7 +9,7 @@ from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
-    assert puzzle.row == puzzle.col, "Doppelblock puzzles must be square."
+    assert puzzle.row == puzzle.col, "This puzzle must be square."
     n = puzzle.row
 
     sep = {9: (3, 3), 8: (2, 4), 6: (2, 3), 4: (2, 2)}
