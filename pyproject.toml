@@ -10,7 +10,7 @@ dependencies = [
   "clingo>=5.6.2",
   "starlette<0.30.0; python_version<'3.8'",
   "starlette<1,>=0.30.0; python_version>='3.8'",
-  "uvicorn<1,<0.23.0; python_version<'3.8'",
+  "uvicorn<0.23.0; python_version<'3.8'",
   "uvicorn<1,>=0.23.0,!=0.29.0; python_version>='3.8'",
 ]
 requires-python = ">=3.7"
