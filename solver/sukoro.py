@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import display, fill_num, grid, invert_c
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -29,10 +29,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         assert isinstance(num, int), "Clue should be integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        if symbol_name == "ox_E__1":
             solver.add_program_line(f"not white({r}, {c}).")
-        else:  # safe color (others)
+        if symbol_name in ("ox_E__4", "ox_E__7"):
             solver.add_program_line(f"white({r}, {c}).")
 
     solver.add_program_line(display(item="number", size=3))
@@ -46,7 +47,7 @@ __metadata__ = {
     "category": "num",
     "examples": [
         {
-            "data": "m=edit&p=7VXfb9owEH7PX1Hdsx/i2ITgN9aVvbB0G0xVFUUoZKmKGuQukGky4n/v3SVb8ESl7WGtJk3BH9/9sPP5Dpvd17ZoKiFD+qhE4Dc+WiY8oiTmEfbPcrOvK3Mhpu3+3jZIhLiezcRdUe+qIOuz8uDgJsZNhXtnMpAgIMIhIRfuozm498alwi0wBEKib94lRUivBnrDcWKXnVOGyNOeI71FWm6asq5W887zwWRuKYDe84ZnE4Wt/VZBr4Ps0m7XG3Ksiz1uZne/eewju/aLfWj7XJkfhZt2chc/5OpBrhrkEu3kEjsjl3bxl+VO8uMRy/4JBa9MRto/DzQZ6MIcEFNzACVxqsJec2dAKTSp9b058UxNZvTTHNHcIRqH3lJx5EXHNHeIyjDx1pKRv5hUtNqpTcpO5quxH9exv97oV9vfioz1SRyLIbkkt4wzxohxiRUTTjG+ZQwZR4xzzrlivGG8ZNSMMeeMqea/2RWgbWusNKqLuha9gLZMdefdf0b/ni8PMli0zV1RVng80na7rpqL1Dbboga8j44BfAce/EvS/6+oV7qiqAXhH11Ur39CM6wunhN3LeCxXRWr0taA/3KC/Fqf9z+Xf8b/4rvFY4+debCNhTx4Ag==",
+            "data": "m=edit&p=7VRNb9pAEL37V0Rz3oPXuxjjG02hF+q0hSpClmUZ6goUkKnBVbSI/56ZsdVlIzikahpVqux9vPnY4Xn2Y/+jKepSSJ9eFQn8xUfLiEcQhTz87pmtD5syvhHD5rCqaiRC3I3H4nux2Zde2mVl3tEMYjMU5kOcggQBAQ4JmTCf46P5GJtEmCmGQEj0TdqkAOnI0nuOE7ttndJHnnQc6Rzpcl0vN2U+aT2f4tTMBND/vOPZRGFb/Syh00H2stou1uRYFAf8mP1qvesi++Zb9dB0uTI7CTN8JldbucrKJdrKJXZBLn0Fya0e89ErSB1kpxO2/AuKzeOUdH+1NLJ0Gh8Rk/gISuJUhevMqwJKoUnL3pkDx9RkBr/MHs210dB3SoWBE+3TXBuVfuTUkoFbTCqqdm6TsrP5qu/GdejW6z233U+RoT6LYzMkt2TOOGYMGGfYMWEU43tGn7HHOOGcEeM94y2jZgw5p089f9GqnMuBrhF2y4Am6dp6XklxqtobwH16/54v81JImu2irG+Sqt4WGzw601WxKwHvp5MHj8CDd5f+f2W9wZVF7fd/+4i8zYlNzVTgCTF3AnZNXuTLCvcV9o38Wl/2X8t/qf9a/cv++ZU686v5f8D/11cLLyzcWQ9VXUHmPQE=",
         },
         {"url": "https://puzz.link/p?sukoro/11/11/p2324d14e3b2b3g3b1h31c13h2b3g1b2b1e23d1434p", "test": False},
     ],
