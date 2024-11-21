@@ -1,11 +1,26 @@
 """The Kropki solver."""
 
-import itertools
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import display, fill_num, grid, unique_num
 from noqx.solution import solver
+
+
+def kropki_constraint() -> str:
+    """Return the constraint for the Kropki puzzle."""
+    white_rule = "|N1 - N2| != 1"
+    black_rule = "(N1 - N2 * 2) * (N1 * 2 - N2) != 0"
+    empty_rule = "(|N1 - N2| - 1) * (N1 - N2 * 2) * (N1 * 2 - N2) = 0"
+
+    rule = f":- white_v(R, C), number(R, C - 1, N1), number(R, C, N2), {white_rule}.\n"
+    rule += f":- white_h(R, C), number(R - 1, C, N1), number(R, C, N2), {white_rule}.\n"
+    rule += f":- black_v(R, C), number(R, C - 1, N1), number(R, C, N2), {black_rule}.\n"
+    rule += f":- black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {black_rule}.\n"
+    rule += f":- grid(R, C), not white_v(R, C), not black_v(R, C), number(R, C - 1, N1), number(R, C, N2), {empty_rule}.\n"
+    rule += f":- grid(R, C), not white_h(R, C), not black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {empty_rule}."
+
+    return rule
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -18,28 +33,19 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(fill_num(_range=range(1, n + 1)))
     solver.add_program_line(unique_num(_type="row", color="grid"))
     solver.add_program_line(unique_num(_type="col", color="grid"))
+    solver.add_program_line(kropki_constraint())
 
-    for r, c in itertools.product(range(puzzle.row), range(1, puzzle.col)):
-        symbol_name = puzzle.symbol.get((r, c, Direction.LEFT))
-        if symbol_name == "circle_SS__1":
-            solver.add_program_line(f":- number({r}, {c - 1}, N1), number({r}, {c}, N2), |N1 - N2| != 1.")
-        elif symbol_name == "circle_SS__2":
-            solver.add_program_line(f":- number({r}, {c - 1}, N1), number({r}, {c}, N2), (N1 - N2 * 2) * (N1 * 2 - N2) != 0.")
-        else:
-            solver.add_program_line(
-                f":- number({r}, {c - 1}, N1), number({r}, {c}, N2), (|N1 - N2| - 1) * (N1 - N2 * 2) * (N1 * 2 - N2) = 0."
-            )
+    for (r, c, d), symbol_name in puzzle.symbol.items():
+        assert d in (Direction.TOP, Direction.LEFT), "Symbol direction should be top or left."
+        tag_d = "h" if d == Direction.TOP else "v"
 
-    for r, c in itertools.product(range(1, puzzle.row), range(puzzle.col)):
-        symbol_name = puzzle.symbol.get((r, c, Direction.TOP))
         if symbol_name == "circle_SS__1":
-            solver.add_program_line(f":- number({r - 1}, {c}, N1), number({r}, {c}, N2), |N1 - N2| != 1.")
-        elif symbol_name == "circle_SS__2":
-            solver.add_program_line(f":- number({r - 1}, {c}, N1), number({r}, {c}, N2), (N1 - N2 * 2) * (N1 * 2 - N2) != 0.")
-        else:
-            solver.add_program_line(
-                f":- number({r - 1}, {c}, N1), number({r}, {c}, N2), (|N1 - N2| - 1) * (N1 - N2 * 2) * (N1 * 2 - N2) = 0."
-            )
+            solver.add_program_line(f"white_{tag_d}({r}, {c}).")
+            solver.add_program_line(f"not black_{tag_d}({r}, {c}).")
+
+        if symbol_name == "circle_SS__2":
+            solver.add_program_line(f"black_{tag_d}({r}, {c}).")
+            solver.add_program_line(f"not white_{tag_d}({r}, {c}).")
 
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be integer."
