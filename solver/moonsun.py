@@ -25,9 +25,13 @@ def moon_sun_area() -> str:
     rule += ":- not sun_area(A), area(A, R, C), sun(R, C), moon_sun(R, C).\n"
     rule += ":- not sun_area(A), area(A, R, C), moon(R, C), not moon_sun(R, C).\n"
 
+    extra = "area_pass_moon(A) :- area(A, R, C), moon(R, C), moon_sun(R, C).\n"
+    extra += "area_pass_sun(A) :- area(A, R, C), sun(R, C), moon_sun(R, C).\n"
+    extra += ":- area(A, _, _), not area_pass_moon(A), not area_pass_sun(A).\n"
+
     constraint = ":- area_adj_loop(A1, A2), sun_area(A1), sun_area(A2).\n"
     constraint += ":- area_adj_loop(A1, A2), not sun_area(A1), not sun_area(A2).\n"
-    return (rule + constraint).strip()
+    return (rule + extra + constraint).strip()
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
