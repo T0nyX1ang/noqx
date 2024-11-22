@@ -3,7 +3,7 @@
 from typing import Iterable, List, Tuple
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import area, direction, display, fill_path, grid
+from noqx.rule.common import area, defined, direction, display, fill_path, grid
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import directed_loop
 from noqx.solution import solver
@@ -67,6 +67,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="number", size=3))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("haisu(R, C) :- grid(R, C).")

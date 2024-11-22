@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import pass_area_once, single_loop
 from noqx.rule.neighbor import adjacent, area_adjacent
@@ -25,14 +25,20 @@ def moon_sun_area() -> str:
     rule += ":- not sun_area(A), area(A, R, C), sun(R, C), moon_sun(R, C).\n"
     rule += ":- not sun_area(A), area(A, R, C), moon(R, C), not moon_sun(R, C).\n"
 
+    extra = "area_pass_moon(A) :- area(A, R, C), moon(R, C), moon_sun(R, C).\n"
+    extra += "area_pass_sun(A) :- area(A, R, C), sun(R, C), moon_sun(R, C).\n"
+    extra += ":- area(A, _, _), not area_pass_moon(A), not area_pass_sun(A).\n"
+
     constraint = ":- area_adj_loop(A1, A2), sun_area(A1), sun_area(A2).\n"
     constraint += ":- area_adj_loop(A1, A2), not sun_area(A1), not sun_area(A2).\n"
-    return (rule + constraint).strip()
+    return (rule + extra + constraint).strip()
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="moon"))
+    solver.add_program_line(defined(item="sun"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="moon_sun"))
@@ -71,6 +77,10 @@ __metadata__ = {
         },
         {
             "url": "http://pzv.jp/p.html?moonsun/15/15/928i4h492940i814g28h2h25248g0h01208g0h01200000000vvv0000003vvs00000fvvg0000vvv0000001800jn33l000f6ig100109inb6i4003a3f00600fclh01i0910032f31ii290003631lk5ai100",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?moonsun/36/20/j4i9h8gikma8oi9sq9i8jcjq9j9j4s59i9jcsq9qojssi9qlriciaqbreak5a9q6d3jidp69ijid94fijj594hiikk94uijna9khii9i94oj9mi9p6kklj556b4pj4t6ccpj44294p3c0gc18ge7jr3no0guoe49vj1bs0301gfbuvf1fge70fe5403rr02vvvaeabgadtogs0ft007g1q1gho0fqg7nfvo1fs4mu21c05no0ve3uqsecuekivsrgtfvg1t00u0001fof03rg69n3j35i96013j16filk3ajffofbm57a76862kbi26b69bc9c340kb6a6jk04k7475fqk9398klk3k153l693cg4743f6a7n8ca8j26nkp83k2745olk3ap333fc9j13k7oik08glfmkc3d3660cb2f776443n5a415bj73ih60iin3cb3j52nf14a5k6a3fd27gfbk53ba5b9938kacgl6jp88g1i6239a60c832aalaj8a",
             "test": False,
         },
     ],

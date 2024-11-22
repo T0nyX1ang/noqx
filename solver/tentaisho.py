@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import display, edge, grid
+from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_src_color_connected
@@ -23,6 +23,7 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="hole"))
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))

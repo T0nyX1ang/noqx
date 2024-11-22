@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -35,6 +35,8 @@ def masyu_white_rule() -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="black"))
+    solver.add_program_line(defined(item="white"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="masyu"))

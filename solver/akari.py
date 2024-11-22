@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import display, grid
+from noqx.rule.common import defined, display, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.solution import solver
@@ -27,6 +27,7 @@ def lightup(color: str = "black") -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line("{ sun_moon__3(R, C) } :- grid(R, C), not black(R, C).")
     solver.add_program_line(adjacent())
