@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, grid
+from noqx.rule.common import defined, display, grid
 from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
 
@@ -71,6 +71,7 @@ def shade_shaka() -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_shaka())
     solver.add_program_line(adjacent())

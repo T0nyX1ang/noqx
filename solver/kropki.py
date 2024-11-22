@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import display, fill_num, grid, unique_num
+from noqx.rule.common import defined, display, fill_num, grid, unique_num
 from noqx.solution import solver
 
 
@@ -18,9 +18,9 @@ def kropki_constraint() -> str:
     rule += f":- black_v(R, C), number(R, C - 1, N1), number(R, C, N2), {black_rule}.\n"
     rule += f":- black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {black_rule}.\n"
     rule += f":- grid(R, C), not white_v(R, C), not black_v(R, C), number(R, C - 1, N1), number(R, C, N2), {empty_rule}.\n"
-    rule += f":- grid(R, C), not white_h(R, C), not black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {empty_rule}."
+    rule += f":- grid(R, C), not white_h(R, C), not black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {empty_rule}.\n"
 
-    return rule
+    return rule.strip()
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -29,6 +29,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="white_h"))
+    solver.add_program_line(defined(item="white_v"))
+    solver.add_program_line(defined(item="black_h"))
+    solver.add_program_line(defined(item="black_v"))
+
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, n + 1)))
     solver.add_program_line(unique_num(_type="row", color="grid"))

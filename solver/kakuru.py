@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, grid
+from noqx.rule.common import defined, display, grid
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
@@ -11,6 +11,7 @@ from noqx.solution import solver
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line("{ number(R, C, (1..9)) } = 1 :- grid(R, C), not black(R, C).")
     solver.add_program_line(adjacent(_type=8))

@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -44,6 +44,8 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="dead_end"))
+    solver.add_program_line(defined(item="firefly_all"))
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("{ firefly(R, C) } :- grid(R, C), not dead_end(R, C).")

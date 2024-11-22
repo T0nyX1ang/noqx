@@ -81,6 +81,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
                 onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
 
+    assert onsen_id > 0, "No onsen clues found."
     solver.add_program_line(onsen_global_rule())
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

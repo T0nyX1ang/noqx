@@ -76,7 +76,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VXva9tADP3uv2LoswaWz+c4963Lmn5Ju3XNKMWYkmbeapbUW35s6wX/79HJhhQiGIyNlTEcPV7eKdKzo/Otv25nqwqJwsfkGCMzTG0mQZRIxP01rTeLyr3Ak+3mvlkxQXwzHuPH2WJdRUWfVUY7P3T+Ev2ZK4AAIeEgKNFfup0/dzBvlnc1oL/idUDihUmXmTA9PdBrWQ9s1IkUM7/oOdMbpvN6NV9Ut5NOeesKP0UIzV7JrwOFZfOtgt5M+N4ZYOFu8f2+19bbD83nbZ9FZYv+5CduzcFtoJ3bwBS34SaeuD3/rW6HZdvyQ3/Hfm9dEay/P9D8QK/cjvFCkARv3A7MgMsk3OapNbCJqmaamqWqqtbNhpqax6qqdhuqFShW21Gc67JehEiX1YdBZHVZtU2kG0xCNh3JRjeYGjU71Vta3aDVndjQ8rj2QL/5Qah9nJ0rtXnQxjJuieCUpxG9EXwtGAtawYnknApeC44EU8FMcgZhnn954v+QncLwy1K57L+rllEBo2b5pVnXmwr4xd9G8AMkChPOkf9nwV85C8IfED+3/fHc7PCOhcf64eXj7OETlNEe",
+            "data": "m=edit&p=7VVda9tAEHzXryj7vAWtTifL9+a6cV+c9CMuIQgRHFdtRO2o9UfbnNF/995K4IAXCqWloRR5h/Hcenck7+k2X3fzdYVE4WNyjJEZpjaTIEok4v6a1dtl5Z7haLe9a9ZMEF9PJvhxvtxUUdFnldHeD50foX/lCiBASDgISvRv3d6fO1g0q9sa0F/yOiDxwrTLTJieHemVrAc27kSKmV/0nOk100W9Xiyrm2mnvHGFnyGEZi/k14HCqvlWQW8mfO8MsHC7/H7Xa5vdh+bzrs+iskU/+olbc3QbaOc2MMVtuIlHbs9/q9th2bb80N+x3xtXBOvvjzQ/0ku3Z7wQJMFrtwcz4DIJt3lsDWyiqpmmZqmqqnWzoabmsaqq3YZqBYrVdhTnuqwXIdJl9WEQWV1WbRPpBpOQTSey0Q2mRs1O9ZZWN2h1Jza0PK090G9+EGqfZudKbR60iYxbIjjjaURvBF8KxoJWcCo5Z4JXgmPBVDCTnEGY51+e+D9kpzD8slQu+++qZVTAuFl9aTb1tgJ+8bcR/ACJwoRz5P9Z8FfOgvAHxE9tfzw1O7xj4aG+f/4wv/8EZXQA",
         },
         {
             "url": "https://puzz.link/p?yinyang/22/18/00000000000000030190030000900003000000900130020006000l0000090000i0020009400030200060000002empf01900001009901030130900031009a00009000",
