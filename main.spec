@@ -2,7 +2,7 @@
 
 import os
 
-hiddle_imports = ["noqx", "_cffi_backend"]
+hiddle_imports = ["main", "_cffi_backend"]
 
 for file in os.listdir("solver"):
     if file.endswith(".py") and file != "__init__.py":
@@ -13,10 +13,10 @@ block_cipher = None
 
 
 a = Analysis(
-    ["noqx.py"],
+    ["main.py"],
     pathex=[],
     binaries=[],
-    datas=[("./static/*", "./static"), ("./LICENSE.GPL", "./"), ("./LICENSE.APACHE", "./")],
+    datas=[("./static/*", "./static"), ("./LICENSE.GPL", "./")],
     hiddenimports=hiddle_imports,
     hookspath=[],
     hooksconfig={},
@@ -34,7 +34,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="noqx",
+    name='main',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -46,7 +46,6 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
-
 coll = COLLECT(
     exe,
     a.binaries,
@@ -55,5 +54,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="noqx",
+    name='noqx',
 )

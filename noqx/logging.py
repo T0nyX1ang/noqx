@@ -21,6 +21,3 @@ class LoguruHandler(logging.Handler):  # pragma: no cover
             depth += 1
 
         logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
-
-
-logger.remove()

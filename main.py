@@ -63,19 +63,17 @@ Config.parallel_threads = args.parallel_threads
 # logging setup
 log_level = "DEBUG" if args.debug else "INFO"
 log_format = "<g>{time:MM-DD HH:mm:ss}</g> | <lvl>{level}</lvl> | {message}"
-logger.add(sys.stdout, level=log_level, diagnose=False, format=log_format)
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {"default": {"class": "noqx.logging.LoguruHandler", "level": log_level}},
     "loggers": {
         "uvicorn.error": {"handlers": ["default"], "level": log_level},
-        "uvicorn.access": {
-            "handlers": ["default"],
-            "level": log_level,
-        },
+        "uvicorn.access": {"handlers": ["default"], "level": log_level},
     },
 }
+logger.remove()
+logger.add(sys.stdout, level=log_level, diagnose=False, format=log_format)
 
 # starlette app setup
 routes = [
@@ -90,17 +88,16 @@ routes = [
     Mount("/penpa-edit/", StaticFiles(directory="static", html=True), name="static"),
     Route("/", root_redirect),
 ]
-environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
-
 app = Starlette(routes=routes)
+environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
 
 # start the server
 if __name__ == "__main__":
     uvicorn.run(
-        app=app,
+        app="main:app",
         host=args.host,
         port=args.port,
-        # reload=args.debug,
+        reload=args.debug,
         log_level=log_level.lower(),
         log_config=LOGGING_CONFIG,
     )
