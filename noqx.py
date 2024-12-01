@@ -2,13 +2,49 @@
 
 import argparse
 import sys
+import traceback
+from typing import Any, Dict
 
 import uvicorn
+from starlette.applications import Starlette
 from starlette.config import environ
+from starlette.requests import Request
+from starlette.responses import JSONResponse, RedirectResponse
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 
 from noqx.logging import logger
-from noqx.manager import load_solvers
+from noqx.manager import list_solver_metadata, load_solvers, run_solver
 from noqx.solution import Config
+
+
+async def root_redirect(_: Request) -> RedirectResponse:
+    """Redirect root page to penpa-edit page."""
+    return RedirectResponse(url="/penpa-edit/")
+
+
+async def list_puzzles_api(_: Request) -> JSONResponse:
+    """List the available puzzles."""
+    return JSONResponse(list_solver_metadata())
+
+
+async def solver_api(request: Request) -> JSONResponse:
+    """The solver endpoint of the server."""
+    try:
+        body = await request.json()
+        puzzle_type: str = body["puzzle_type"]
+        puzzle: str = body["puzzle"]
+        param: Dict[str, Any] = body["param"]
+        return JSONResponse(run_solver(puzzle_type, puzzle, param))
+    except AssertionError as err:
+        logger.error(traceback.format_exc())
+        return JSONResponse({"detail": str(err)}, status_code=400)
+    except TimeoutError as err:
+        return JSONResponse({"detail": str(err)}, status_code=504)
+    except Exception as err:  # pylint: disable=broad-except  # pragma: no cover
+        logger.error(traceback.format_exc())
+        return JSONResponse({"detail": "Unknown error."}, status_code=500)
+
 
 # load default solver directory
 load_solvers("solver")
@@ -41,13 +77,30 @@ LOGGING_CONFIG = {
     },
 }
 
+# starlette app setup
+routes = [
+    Mount(
+        "/api",
+        name="api",
+        routes=[
+            Route("/list/", endpoint=list_puzzles_api, methods=["GET"]),
+            Route("/solve/", endpoint=solver_api, methods=["POST"]),
+        ],
+    ),
+    Mount("/penpa-edit/", StaticFiles(directory="static", html=True), name="static"),
+    Route("/", root_redirect),
+]
+environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
+
+app = Starlette(routes=routes)
+
+# start the server
 if __name__ == "__main__":
-    environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
     uvicorn.run(
-        app="noqx:app",
+        app=app,
         host=args.host,
         port=args.port,
-        reload=args.debug,
+        # reload=args.debug,
         log_level=log_level.lower(),
         log_config=LOGGING_CONFIG,
     )
