@@ -11,9 +11,9 @@ from noqx.rule.shape import OMINOES, all_shapes, avoid_rect, count_shape, genera
 from noqx.solution import solver
 
 
-def avoid_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> str:
+def avoid_area_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> str:
     """
-    Generates a constraint to avoid adjacent ominos with the same type.
+    Generates a constraint to avoid area adjacent ominos with the same type.
 
     An area adjacent rule, an omino rule should be defined first.
     """
@@ -41,7 +41,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(all_shapes("omino_4", color="gray", _type="area"))
     solver.add_program_line(count_shape(1, "omino_4", _id=None, color="gray", _type="area"))
     solver.add_program_line(area_adjacent(color="gray"))
-    solver.add_program_line(avoid_adjacent_same_omino(4, color="gray"))
+    solver.add_program_line(avoid_area_adjacent_same_omino(4, color="gray"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
