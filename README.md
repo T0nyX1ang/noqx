@@ -85,6 +85,12 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
     python3 noqx.py
 ```
 
+### Use prebuilt releases (Windows only)
+
+- Download the latest release [here](https://github.com/T0nyX1ang/noqx/releases).
+
+- A new version is released from weekly to monthly.
+
 ### Additional Usage
 
 ```text
