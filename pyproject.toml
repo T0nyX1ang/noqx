@@ -46,7 +46,6 @@ dev-dependencies = [
   "conventional-pre-commit<2.5.0; python_version<'3.8'",
   "conventional-pre-commit>=2.5.0; python_version>='3.8'",
   "coverage>=7.0.0",
-  "httpx>=0.24.1",
   "pre-commit<2.22.0; python_version<'3.8'",
   "pre-commit>=2.22.0; python_version>='3.8'",
   "pyinstaller>=5.5,<6",
