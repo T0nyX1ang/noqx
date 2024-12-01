@@ -8,6 +8,7 @@ authors = [
 ]
 dependencies = [
   "clingo>=5.6.2",
+  "loguru<1,>=0.7.0",
   "starlette<0.30.0; python_version<'3.8'",
   "starlette<1,>=0.30.0; python_version>='3.8'",
   "uvicorn<0.23.0; python_version<'3.8'",
