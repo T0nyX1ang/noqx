@@ -17,6 +17,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("statuepark", "yinyang");
   urlstring = urlstring.replace("swslither", "slitherlink");
   urlstring = urlstring.replace("tetrochain", "yajikazu");
+  urlstring = urlstring.replace("tslither", "slitherlink");
   urlstring = urlstring.replace("vslither", "slitherlink");
 
   // replace unsupported host to supported host
