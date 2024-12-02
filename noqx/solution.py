@@ -10,7 +10,7 @@ from .logging import logger
 from .penpa import Direction, Puzzle, Solution
 
 
-def clingo_logging_handler(code: MessageCode, message: str) -> None:
+def clingo_logging_handler(code: MessageCode, message: str) -> None:  # pragma: no cover
     """Handle clingo logging."""
     logger.error(f"[Clingo] {code.name}: {message.strip()}")
 
