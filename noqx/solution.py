@@ -2,11 +2,17 @@
 
 from typing import List, Optional
 
+from clingo import MessageCode
 from clingo.control import Control
 from clingo.solving import Model
 
 from .logging import logger
 from .penpa import Direction, Puzzle, Solution
+
+
+def clingo_logging_handler(code: MessageCode, message: str) -> None:
+    """Handle clingo logging."""
+    logger.error(f"[Clingo] {code.name}: {message.strip()}")
 
 
 class Config:
@@ -22,7 +28,7 @@ class ClingoSolver:
 
     def __init__(self):
         """Initialize a solver."""
-        self.clingo_instance: Control = Control()
+        self.clingo_instance: Control = Control(logger=clingo_logging_handler)
         self.program: str = ""
         self.model: List[str] = []
         self.puzzle: Optional[Puzzle] = None
@@ -96,7 +102,7 @@ class ClingoSolver:
 
     def reset(self):
         """Reset the program."""
-        self.clingo_instance = Control()
+        self.clingo_instance = Control(logger=clingo_logging_handler)
         self.program = ""
         self.model = []
         self.puzzle = None
