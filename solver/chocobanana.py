@@ -27,10 +27,7 @@ def grid_src_same_color_connected(
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type)
 
     r, c = src_cell
-    initial = ""
-    for color in color_list:
-        initial += f"{tag}_{color}({r}, {c}, {r}, {c}) :- {color}({r}, {c}).\n"
-        initial += f"{tag}({r}, {c}, R, C) :- grid(R, C), {tag}_{color}({r}, {c}, R, C).\n"
+    initial = f"{tag}({r}, {c}, {r}, {c}).\n"
 
     if include_cells:
         initial += "\n".join(f"{tag}({r}, {c}, {inc_r}, {inc_c})." for inc_r, inc_c in include_cells) + "\n"
@@ -40,7 +37,7 @@ def grid_src_same_color_connected(
 
     propagation = ""
     for color in color_list:
-        propagation += f"{tag}_{color}({r}, {c}, R, C) :- {tag}_{color}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+        propagation += f"{tag}({r}, {c}, R, C) :- {color}({r}, {c}), {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
     return initial + propagation.strip()
 
 
