@@ -10,6 +10,11 @@ def display(item: str = "black", size: int = 2) -> str:
     return f"#show {item}/{size}."
 
 
+def defined(item: str, size: int = 2) -> str:
+    """Generates a rule for defined specific items with a certain size."""
+    return f"#defined {item}/{size}."
+
+
 def grid(rows: int, cols: int, with_holes: bool = False) -> str:
     """Generates facts for a grid. This fact can be extended with holes."""
     if with_holes:

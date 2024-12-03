@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import direction, display, grid, shade_c
+from noqx.rule.common import defined, direction, display, grid, shade_c
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
@@ -49,6 +49,7 @@ def hashi_bridge() -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="number", size=3))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lrud"))
     solver.add_program_line(shade_c(color="hashi"))

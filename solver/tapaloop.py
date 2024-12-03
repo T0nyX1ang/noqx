@@ -3,7 +3,7 @@
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -144,6 +144,7 @@ def valid_tapaloop(r: int, c: int) -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     if puzzle.param["visit_all"]:

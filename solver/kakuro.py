@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import area, display, fill_num, grid, unique_num
+from noqx.rule.common import area, defined, display, fill_num, grid, unique_num
 from noqx.solution import solver
 
 
@@ -35,6 +35,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="area", size=3))
+    solver.add_program_line(defined(item="number", size=3))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     for sum_clue, coord_list in sums:

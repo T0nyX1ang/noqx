@@ -55,13 +55,13 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 - Install non-development packages with uv:
 
 ```bash
-    uv sync --no-dev
+    uv sync --extra web --no-dev
 ```
 
 - Run with uv:
 
 ```bash
-    uv run noqx.py
+    uv run main.py
 ```
 
 ### Use PIP
@@ -81,9 +81,15 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 - Run locally (based on your system):
 
 ```bash
-    py -3 noqx.py
-    python3 noqx.py
+    py -3 main.py
+    python3 main.py
 ```
+
+### Use prebuilt releases (Windows only)
+
+- Download the latest release [here](https://github.com/T0nyX1ang/noqx/releases).
+
+- A new version is released from weekly to monthly.
 
 ### Additional Usage
 
@@ -117,7 +123,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 - Install all dependencies with uv:
 
 ```bash
-    uv sync
+    uv sync --all-extras
 ```
 
 - Install [pre-commit](https://pre-commit.com/) and add commit hooks:

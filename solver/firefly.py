@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Direction, Puzzle, Solution
-from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -44,6 +44,8 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="dead_end"))
+    solver.add_program_line(defined(item="firefly_all"))
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("{ firefly(R, C) } :- grid(R, C), not dead_end(R, C).")
@@ -69,6 +71,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(f'grid_out({r}, {c}, "{dict_dir[style]}").')
         solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
+    for r, c, d in puzzle.edge:
+        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+
+    for r, c, d in puzzle.helper_x:
+        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))
     solver.solve()
@@ -82,7 +90,7 @@ __metadata__ = {
     "aliases": ["hotaru", "hotarubeam", "firefly"],
     "examples": [
         {
-            "data": "m=edit&p=7VbNbts8ELz7KQyeWoAH/VC/tzR1e3GVtkkRBIJhyI7SGLWhVLaKlIbfPcuh8okhEwTFhwY9BLIWq+HuckiOSW5/dlVbc1+oX5hyj/v0RImHVyQxXq9/zla7dZ2P+VG3u25acjg/KfhVtd7Wo1Il0jMb7WWWyyMuP+YlCxjv3xmXX/K9/JTLgstTamIUy+WUPJ/xgNzJ4J6jXXnHGvQ98gvtx+RekLtctct1PZ/qQp/zUp5xpvp5h2zlsk3zq2Y6Dd/LZrNYKWBR7Wgs2+vVTd+y7S6bH10f688OXB5pupNH6IYDXeVqusp7hK4axf+mW19+r28fY5rNDgea8a/EdZ6Xiva3wU0H9zTfky3yPQvjQOUSDU4FqF4YpwoIDSQRNpIiyUQy736yekR4oUJouQcksrKEn9lIYFcWAbLMOiEYCgMRyDJjInA2AD1Os3CCwibl1KGT+XZMlliFMyQNQORj4EaVKIgVEhlICHpG3UggxgAizKhZJgYZE0COZyAJQsyk9GFPtOw+Fv/iv8UPOLtatfXV+jfk2SuAwh+iUEFoo1CCsFGowY7VirDralXYHLQy7LpaHU4sFOL0BpU4vUEpTgWoxYnF7DgcIBsnFtJxYiEfJxYScvhCR3asFpODQlD2KLSobA5aWE4FqMuJhcJcVFWw+WqpORwgt4e9kdg+QHIB7BltQVyGsO9hPdgIdoqYCew57DGsgI0Rk6hN7I+2OVP1f4lOGSX6yHOeV7y/CpRsQgfXuGjaTbWm46voNou6vf+mq8JhxG4ZXpKbz8Xr7eHlbw9q9r1/7c/1DJ1STtWGxKOUcXnC2U03r+bLhjRGc/dM40QdeAHddukYfaI59XiYPZ39TPNTxV98DmmPut+Wx2+um13VduNFXW3estnoDg==",
+            "data": "m=edit&p=7VbfT9s8FH3vX1H5aZP8kMT5/cZY9710ZRtMCEVVlZYwqrUKX9pMzFX/d66Pw2JsUAVIPKE0V7fH914f2ye2N/+3ZVNxP1Q/kXKP+/REiYc3TGK8XvecLberKh/yo3Z7XTfkcH4y4VflalMNCpVIz3Swk1kuj7j8Ly9YwHj3Trn8nu/k11xOuDylJkaxXI7J8xkPyB317jnalXesQd8jf6L9mNwLchfLZrGqZmNd6FteyDPOVD+fkK1ctq7/VEyn4f+iXs+XCpiXWxrL5np507Vs2sv6d9vF+tM9l0ea7ugRuqKnq1xNV3mP0FWjeDXd6vJXdfsY02y639OM/yCus7xQtH/2btq7p/mO7CTfMREHKpdocCpA9UScKkAYSBLaSIokE8m8+8nqkNATCqHl7pHIygr9zEYCu3IYIMusI8AwNJAQWWZMBM4GoMdpFk5Q2KScOnQy347JEqtwhqQeiHwM3KgSBbFCIgMRoGfUjULEGECEGTXLxCBjAsjxDCRBiJmUPuyJlt3H4l/8W/yAs6tlU12t/kKenQIo/CEKFQgbhRJCG4Ua7FitCLuuVoXNQSvDrqvV4cRCIU5vUInTG5TiVIBanFjMjsMBsnFiIR0nFvJxYiEhhy90ZMdqMTkoBGWPQovK5qCF5VSAupxYKMxFVQWbr5aawwFye9gbie0LJBfAntEWxKWA/QzrwUawY8SMYM9hj2FD2BgxidrEnrXNmap/GR0Wp7RqWao+j4DORpo+cZBiESX6GHSed7y7HhRsRIfZcFI363JFR9qkXc+r5v4/XR/2A3bL8JIEfR6+3yje/kahZt974w/utd9/Icdqk+JRyrg84eymnZWzRU0ao7k70Djqv/KnmlOPi+zp7APNB4rH6vZNsn5JNu1Tzy375itHO+P9ATH8cF1vy6Ydzqty/ZFNB3c=",
         }
     ],
 }

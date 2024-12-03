@@ -1,4 +1,4 @@
-"""The Heteromino solver."""
+"""The Tetrominous solver."""
 
 from typing import List
 
@@ -10,23 +10,23 @@ from noqx.rule.shape import OMINOES, all_shapes, general_shape
 from noqx.solution import solver
 
 
-def avoid_adj_same_omino(color: str = "black") -> str:
+def avoid_adj_same_omino(omino_num: int = 4, color: str = "grid") -> str:
     """
     Generates a constraint to avoid adjacent ominos with the same type.
 
     An split by edge rule, an omino rule should be defined first.
     """
-    t_be = tag_encode("belong_to_shape", "omino", 3, color)
+    t_be = tag_encode("belong_to_shape", f"omino_{omino_num}", color)
     constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge_top(R + 1, C).\n"
     constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge_left(R, C + 1).\n"
     constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
-    constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
+    constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, _), {t_be}(R1, C1, T, _), split_by_edge(R, C, R1, C1)."
     return constraint
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
     shaded = len(puzzle.surface)
-    assert (puzzle.row * puzzle.col - shaded) % 3 == 0, "The grid cannot be divided into 3-ominoes!"
+    assert (puzzle.row * puzzle.col - shaded) % 4 == 0, "The grid cannot be divided into 4-ominoes!"
 
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -43,8 +43,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             direc = "left" if c1 != c else "top"
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
-    for i, o_shape in enumerate(OMINOES[3].values()):
-        solver.add_program_line(general_shape("omino_3", i, o_shape, color="grid", adj_type="edge"))
+    shape_dict = {}
+    for i, (o_name, o_shape) in enumerate(OMINOES[4].items()):
+        shape_dict[o_name] = i
+        solver.add_program_line(general_shape("omino_4", i, o_shape, color="grid", adj_type="edge"))
+
+    for (r, c), shape_name in puzzle.text.items():
+        assert shape_name in shape_dict, f"Shape {shape_name} is not defined!"
+        t_be = tag_encode("belong_to_shape", "omino_4", "grid")
+        solver.add_program_line(f":- not {t_be}({r}, {c}, {shape_dict[shape_name]}, _).")
 
     for r, c, d in puzzle.edge:
         solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
@@ -52,8 +59,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for r, c, d in puzzle.helper_x:
         solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
-    solver.add_program_line(all_shapes("omino_3", color="grid"))
-    solver.add_program_line(avoid_adj_same_omino(color="grid"))
+    solver.add_program_line(all_shapes("omino_4", color="grid"))
+    solver.add_program_line(avoid_adj_same_omino(omino_num=4, color="grid"))
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
@@ -62,11 +69,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
 
 __metadata__ = {
-    "name": "Heteromino",
+    "name": "Tetrominous",
     "category": "region",
     "examples": [
         {
-            "data": "m=edit&p=7ZhBbxs3E4bv/hXBnnlYcsjh7t7c1O7FddraRRAIgqEoSmNUhlLbKoo1/N/D5TyCD5XxtUmb4gMESeQsZ4acd95Zcld3v20XtysX0vSVzrXOl0/fdfUXQ1t/u8/l9f16Nbxwx9v7D5vbIjj36vTUvV+s71ZHM6zmRw9jP4zHbvxumDWhcfXnm7kbfxwexu+H8cKNF0XVuFjGzorkGxeKePIkvq76SXppg74t8jlyEd8UcXl9u1yvrs5s5IdhNl66Zlrnm+o9ic3N5vdVY271erm5eXs9Dbxd3Bcwdx+uP6K5277b/LrF1s8f3Xhs4Z7sCVeewp1EC3eS9oQ7ofiXw+3nj48l7T+VgK+G2RT7z09i9yReDA+Nds0QXaN97bK3Llgn1sXa9abrTden2vlW6W0C71t6M/OB62DePuzGbW4fmCdYHD4wj+An+AnrSLY+oo+7a/ySBesT8yb8EnbKfEocShyKH4nwGb9MXB32vc0TWhsP3uyCZxy8Idh8AXwBXEG4BkcQxqPNH6LFEyL+4AuR9ZLFHxL24A3gDAk78ATFPxMXeEJm3Q49fIbe9NLaOtLaOtLafAKv4i1O8btxW1/gV8AvweYX+BVBL/gLduRFyIfAr0TiAKfAo4BT4FPgU5Q4wC3Ut1DZQjEL+KVjnY54yId0+PWM9/iRp0h+Ymv6SF4i+Yje/CP5iOCP1EEkDxGcEf4j/Ef4j5H1qINInceEH3Ue4T+Sjwj+SD1HbumYGe+wo64j+CP1nVqbP1Hnifs7cX8n+E/gTd7iSB67YPEk8Cb4TvCcqP8E3hSxh+cEzwk8CX6T4g++BJ8pMw6O1LEu21UCl4JL2bcU3hQ8Cg6FP4U/pY6VfUmpS4U3BYfCm3K/KvepJvTgUmUe8Cn7kLLnKrgUvpR6VfhS6lTBpz0bOPWYW9Nn8GXwZe7TzD6V4SeDK8NThqcshiODM4MzgzODM1OXeXeQ1P2znDHnw0NpfW3f1Pa0tqG2l+UgcqPU9tvatrVNtT2rNie1fV3bl7WNtdVqk6ej7C8edv9UOOU0mMqn7+r+WhI1Sb2K6yc2pMh9KHLJlPzPyGdqD1l/55MOHgePg8fB4//DY340ay62t+8Xy1V5Wzl598vqxfnm9maxbsrL4eNR80dTfzMpxvHwvvgfvS9OFLRf+SD90nN9VrJbXu36coSm8nrqxleu+bi9WlwtN+um/PfgdgalCrU88ew3EGnbZzX++Um/bNVi0PXTDJ9t8Flx7x5TnlPz5LJfPT3t7NdMT0R/0nz1aimPU/OjTw==",
+            "data": "m=edit&p=7VNNb9pAEL37V0R7noM/FgN7oylUlahpC1UUWRYyjtOggpwaXFWL+O+8mTX1oVT9iJpeqtU+v30zmDfjnd3nJq9LirGiAfkUYIVxLDvQWrbfrsV6vynNFY2a/UNVgxDNJhO6zze70kvbrMw72KGxI7KvTKoCRSrEDlRG9p052DfGJmTnCCnS0KYuKQQdd/RG4syunRj44EnLQW9Bi3VdbMrl1ClvTWoXpPh/Xsivmapt9aVUrQ8+F9V2tWZhle9RzO5h/dhGds1d9alpc4PsSHbk7I4v2I06u0ydXWYX7HIVf9nuMDse0fb3MLw0KXv/0NFBR+fmoMJQGU0qcg/tHj1+ICHhBM1vncGm+2xK91l43Qlxj4V5J/TlJ1zZWZCMxVnAmwNzAN4KTgRDwQWckY0EXwr6gj3BqeSMBW8ErwW1YCw5fa7tF6t3JT7dDpqEpgwHqC7GjHD9EfOIcG45dG5U9FPraRjK2LnV+3OeefgqTX2fFyVuyfjuY3mVVPU23+CUNNtVWZ/PGNKjp74q2Slc43L/n9t/M7f8Cfxnvr9PHacU3f129cnOSD02y3xZVLhqaGEbdtPww7AbkMvhSMe/GcBEfhd49q5hmDPvBA==",
         }
     ],
 }

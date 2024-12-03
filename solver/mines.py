@@ -1,4 +1,4 @@
-"""The sun_moon__4sweeper solver."""
+"""The Minesweeper solver."""
 
 from typing import List
 
