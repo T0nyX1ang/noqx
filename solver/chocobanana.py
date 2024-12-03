@@ -72,6 +72,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(grid_src_same_color_connected(src_cell=(r, c), color_list=["gray", "white"]))
         solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c)))
 
+    for (r0, c0), num0 in puzzle.text.items():
+        for (r1, c1), num1 in puzzle.text.items():
+            if (r0, c0) < (r1, c1) and num0 != num1:
+                tag = tag_encode("reachable", "grid", "src", "adj", 4)
+                solver.add_program_line(f"not {tag}({r0}, {c0}, {r1}, {c1}).")
+
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"gray({r}, {c}).")
