@@ -4,12 +4,9 @@ from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import display, grid, invert_c, shade_c
+from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import (
-    count_reachable_src,
-    grid_color_connected,
-    grid_src_color_connected,
-)
+from noqx.rule.reachable import bulb_src_color_connected, count_rect_src, grid_color_connected
 from noqx.rule.shape import all_rect, avoid_rect
 from noqx.solution import solver
 
@@ -26,17 +23,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(all_rect(color="green"))
 
-    all_src = []
-    for (r, c), _ in puzzle.text.items():
-        all_src.append((r, c))
-    assert len(all_src) > 0, "No clues found."
+    assert len(puzzle.text), "No clues found."
 
     for (r, c), num in puzzle.text.items():
         solver.add_program_line(f"not black({r}, {c}).")
-        current_excluded = [src for src in all_src if src != (r, c)]
-        solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color="not black"))
+        solver.add_program_line(f"clue({r}, {c}).")
+        solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
         if isinstance(num, int):
-            solver.add_program_line(count_reachable_src(num, (r, c), color="not black"))
+            solver.add_program_line(count_rect_src(num, (r, c), color="not black"))
 
     for (r, c), color_code in puzzle.surface.items():
         if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
@@ -44,6 +38,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         else:  # safe color (others)
             solver.add_program_line(f"not black({r}, {c}).")
 
+    tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")
+    solver.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(display(item="black"))
     solver.solve()
 

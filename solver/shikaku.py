@@ -1,29 +1,14 @@
 """The Shikaku solver."""
 
-from typing import List, Tuple
+from typing import List
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import bulb_src_color_connected
+from noqx.rule.reachable import bulb_src_color_connected, count_rect_src
 from noqx.rule.shape import all_rect_region
 from noqx.solution import solver
-
-
-def shikaku_cell_constraint(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Generate a cell-relevant constraint for shikaku.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
-    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-
-    src_r, src_c = src_cell
-    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
-    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
-
-    return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -42,7 +27,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
 
         if isinstance(clue, int):
-            solver.add_program_line(shikaku_cell_constraint(clue, (r, c)))
+            solver.add_program_line(count_rect_src(clue, (r, c), adj_type="edge"))
 
     for r, c, d in puzzle.edge:
         solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
@@ -51,7 +36,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-    solver.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
+    solver.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
