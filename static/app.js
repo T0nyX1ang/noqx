@@ -9,6 +9,7 @@ function imp(penpa) {
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("chocona", "aqre");
   urlstring = urlstring.replace("cocktail", "aqre");
+  urlstring = urlstring.replace("context", "nuribou");
   urlstring = urlstring.replace("circlesquare", "yinyang");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("norinuri", "nuribou");

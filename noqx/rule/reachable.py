@@ -31,7 +31,7 @@ def grid_color_connected(
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: int = 4) -> str:
+def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells connected to borders.
 
