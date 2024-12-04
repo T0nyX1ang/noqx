@@ -5,7 +5,7 @@ from typing import List
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import pass_area_once, single_loop
+from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, avoid_area_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import area_same_color
@@ -30,7 +30,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, (ar, _) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(pass_area_once(ar).replace(":-", f":- not nothing({i}),"))
+        solver.add_program_line(count_area_pass(1, ar).replace(":-", f":- not nothing({i}),"))
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

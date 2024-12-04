@@ -76,9 +76,9 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     return constraint.strip()
 
 
-def pass_area_once(ar: Iterable[Tuple[int, int]]) -> str:
+def count_area_pass(target: int, ar: Iterable[Tuple[int, int]]) -> str:
     """
-    Generate a rule that a loop passes through an area exactly once.
+    Generate a rule that counts the times that a loop passes through an area.
 
     A direction fact should be defined first.
     """
@@ -89,7 +89,7 @@ def pass_area_once(ar: Iterable[Tuple[int, int]]) -> str:
             if (r1, c1) not in ar:
                 edges.append(f'grid_direction({r}, {c}, "{direc}")')
     edges = "; ".join(edges)
-    return f":- {{ {edges} }} != 2."
+    return f":- {{ {edges} }} != {2 * target}."
 
 
 def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
