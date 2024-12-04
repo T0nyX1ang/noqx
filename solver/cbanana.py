@@ -18,10 +18,11 @@ def grid_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
     """
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
+    tag_ls = tag_encode("reachable", "Lshape", "adj", adj_type, color)
 
     r, c = src_cell
     initial = f"{tag}({r}, {c}, {r}, {c}).\n"
-    propagation = f"{tag}({r}, {c}, R, C) :- {color}({r}, {c}), {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    propagation = f"{tag}({r}, {c}, R, C) :- {tag_ls}({r}, {c}), {tag}({r}, {c}, R1, C1), grid(R, C), {tag_ls}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
     return initial + propagation.strip()
 
 
@@ -104,7 +105,7 @@ __metadata__ = {
     "aliases": ["chocobanana"],
     "examples": [
         {
-            "data": "m=edit&p=7VRNb+IwFLznV1Q++xDH+fSNpdALZUthhVAUIaBZERWUXUKqlaP8d957iRqDuPSwWyqtjCfDePwysRMXv8vVIeXCxp8MOVyhuSKk7oQ+dbtts+y4S9Ud75XHbX4Awvn34ZD/XO2K1IpbV2JVOlJ6wvWDiplgnDnQBUu4nqhKPyo95noKQ4wL0EaNyQE66OicxpH1G1HYwMctB7oAuskOm126HDXKk4r1jDO8zzeajZTt87eUtTnw/ybfrzMU1qsjPEyxzX61I0X5kr+WrVckNde9Ju70SlzZxUXaxEV2JS4+xV+OGyV1Dcv+DIGXKsbsPzoadnSqKsCxqpgUONWFLM3eMOmj4BtChELYCW6AQtAJvnPh8KmGUTSgGoYQXt5F2GSJDEWQB16ad8UhjzlLSlQ8Q3HDizDCozrSVKiOWdl3zxRYHEFLtCAcEjqEM1hBriXhPaFN6BGOyDMgnBP2CV1CnzwB7sGHdukfxIll88mfN+/raYkVw8lTW+wPox5LPMj+H0afdBjhFti39rLfWhz4/BLrBA==",
+            "data": "m=edit&p=7VXBbtpAEL37K6o5z8HrNWbZG01DL5S0hSqKVhYC6iioRE4BV9Ui/j0zs1a9oWnVHJqoUmX28Xg7O37M4GH3tVlsK1Qpv7RBeqcrV0ZWZgpZaXvN1vtNZV/hsNnf1FsiiBejEV4vNrsqcW1UmRz8wPoh+rfWgQKEjJaCEv0He/DvrJ+gn9IWoCFtHIIyoucdvZR9ZmdBVCnxScuJXhFdrberTTUfB+W9dX6GwPd5LaeZwm39rYLWB39e1bfLNQvLxZ6+zO5mfdfu7JrP9ZemjVXlEf0w2J0+Yld3dpkGu8wescvf4i/bHZTHI5X9IxmeW8feP3XUdHRqD4QTewCt+GhOXkJvQBcsFJEwYMF0Qt5nod8JRXYSUUiOKGlfckSCOb2LSiVkEClKYuhH80PJJCY+pTUrvUjJzYkZ1ZM8OlYkT5y5yB8oVBwlJboSHAlmgjOqIHot+EYwFewJjiXmXPBS8EwwFywkps89+MMugU7BGmoClTgLLXsGb06H5//h1fv3tDJxNIaOCXwHWU7zVPs/mV5oMnEL0ifNp5d/EB1Vlx4Hf4Fw18wX81W9Afpzw9/q6hd69sT4n/M/e3VoGpTJPQ==",
         },
     ],
 }
