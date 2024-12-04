@@ -77,6 +77,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(count_geradeweg_constraint(num, (r, c)))
         if num > 0:
             solver.add_program_line(f"geradeweg({r}, {c}).")
+        else:
+            solver.add_program_line(f"not geradeweg({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -92,7 +94,7 @@ __metadata__ = {
             "data": "m=edit&p=7VTPb5swFL7zV1Q++2BjIMSXKeuaXhj70UxVhVBFUq9FI2MjYasc8b/nvQetoeplh1WdNIG/fN97D+fzs+zdz7ZoDJcCXxVz+IUnkDENP45oiOFZlfvK6BO+aPd3dQOE8w/LJf9aVDvjZUNV7h3sXNsFt+c6Y5Jx5sOQLOf2kz7Y99qm3F5AinEJsaQv8oGeOXpJeWSnfVAK4GnPI6BXQDdls6nMddJP9FFndsUZ/s9b+hop29a/DBt8oN7U23WJgXWxh8Xs7sofQ2bX3tTf2qFW5h23i95u8oxd5ewi7e0i+1t2q/K7uX/O6TzvOuj4Z/B6rTO0/cXR2NELfQBM9YEpAZ8qHvWbwtQcpP8ogxlI6WQ8lVjsZIhTORmhdFNF4SQ7CybZGGd2UgofVySgX4+RaPK9FGgtcFpifjSDL6d5Wugor9DPKB+gHuWDJ/NRK8b6ieMQ69mbkWNaMVMPEWi4pLZfES4JfcIV7Aq3ivAdoSAMCROqOSO8JDwlDAgjqpnhvv7Rzr+AnUz1N8j0Cf+9WO5lLIEzd5LWzbao4OSl7XZtmgcNt1znsXtGA04TXJr/L76Xv/iw++K1HYLXZgeOJbs1TXFjfptblntH",
         },
         {
-            "url": "https://puzz.link/p?geradeweg/13/13/g22l11l22h2h4j1h3g2h4j1h3h33i3h44n3k1i1h3j2j1h3i1k1n11h1i44h4h2j3h1g4h2j3h1h33l22l22g",
+            "url": "https://puzz.link/p?geradeweg/v:/17/17/0000i000i0000000i3g0g2i000000g1m3g000000j3g2j0000000g1k1g00000000000i00000000j0k0h2g0g2g1i.g.h4l1g3q2g2g2g0h2h0g2k1g00k00h3g0h000h1h000h0000000k000000000000g2g2g0000000000000i000000000000000g0000000000000000g00000000",
             "test": False,
         },
     ],
