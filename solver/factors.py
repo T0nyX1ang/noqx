@@ -3,7 +3,7 @@
 from typing import Iterable, List, Tuple
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, fill_num, grid, unique_num
+from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.rule.helper import full_bfs
 from noqx.solution import solver
 
@@ -16,6 +16,15 @@ def area_product_aggregate(_id: int, src_cells: Iterable[Tuple[int, int]]) -> st
             rule += f"area_product({_id}, {i}, N) :- number({r}, {c}, N).\n"
         else:
             rule += f"area_product({_id}, {i}, N1 * N2) :- area_product({_id}, {i - 1}, N1), number({r}, {c}, N2).\n"
+    return rule.strip()
+
+
+def number_exclusion(target: int, grid_size: int, _id: int) -> str:
+    """Generate a constraint to exclude the number from the cells."""
+    rule = ""
+    for num in range(1, grid_size + 1):
+        if target % num != 0:  # exclusion for non-factorable numbers
+            rule += f":- area({_id}, R, C), number(R, C, {num}).\n"
     return rule.strip()
 
 
@@ -32,12 +41,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.sudoku)
     for i, (ar, rc) in enumerate(areas.items()):
+        solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 
         if rc:
             data = puzzle.sudoku[rc].get(0)
             assert isinstance(data, int), "Clue should be integer."
             solver.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {data}).")
+            solver.add_program_line(number_exclusion(data, grid_size=n, _id=i))
 
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be integer."
