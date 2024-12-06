@@ -94,7 +94,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Additional Usage
 
 ```text
-    usage: noqx.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT]
+    usage: main.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
+    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
 
     optional arguments:
       -h, --help            show this help message and exit
