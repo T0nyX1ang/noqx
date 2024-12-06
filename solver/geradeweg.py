@@ -4,48 +4,19 @@ from typing import List, Tuple
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
-from noqx.rule.loop import loop_sign, single_loop
+from noqx.rule.loop import loop_segment, loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def geradeweg_clue() -> str:
-    """
-    Generate a rule for geradeweg loop.
-
-    A loop_sign rule should be defined first.
-    """
-
-    # detect the longest straight line
-    max_u = '#max { R0: grid(R0 + 1, C), not loop_sign(R0, C, "ud"), R0 < R }'
-    min_d = '#min { R0: grid(R0 - 1, C), not loop_sign(R0, C, "ud"), R0 > R }'
-    max_l = '#max { C0: grid(R, C0 + 1), not loop_sign(R, C0, "lr"), C0 < C }'
-    min_r = '#min { C0: grid(R, C0 - 1), not loop_sign(R, C0, "lr"), C0 > C }'
-
-    rule = f'geradeweg_clue(R, C, N1, N2) :- clue(R, C), loop_sign(R, C, "lu"), N1 = {max_u}, N2 = {max_l}.\n'
-    rule += f'geradeweg_clue(R, C, N1, N2) :- clue(R, C), loop_sign(R, C, "ld"), N1 = {min_d}, N2 = {max_l}.\n'
-    rule += f'geradeweg_clue(R, C, N1, N2) :- clue(R, C), loop_sign(R, C, "ru"), N1 = {max_u}, N2 = {min_r}.\n'
-    rule += f'geradeweg_clue(R, C, N1, N2) :- clue(R, C), loop_sign(R, C, "rd"), N1 = {min_d}, N2 = {min_r}.\n'
-    rule += f'geradeweg_clue(R, C, N1, N2) :- clue(R, C), loop_sign(R, C, "ud"), N1 = {max_u}, N2 = {min_d}.\n'
-    rule += f'geradeweg_clue(R, C, N1, N2) :- clue(R, C), loop_sign(R, C, "lr"), N1 = {max_l}, N2 = {min_r}.\n'
-
-    return rule.strip()
-
-
 def count_geradeweg_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     """Generate a constraint to count the geradeweg clue."""
     r, c = src_cell
-
-    rule = ""
-    for sign in ["lu", "ld", "ru", "rd"]:
-        rule += f':- geradeweg_clue({r}, {c}, N1, _), loop_sign({r}, {c}, "{sign}"), |{r} - N1| != {target}.\n'
-        rule += f':- geradeweg_clue({r}, {c}, _, N2), loop_sign({r}, {c}, "{sign}"), |{c} - N2| != {target}.\n'
-
-    # special case for straight line
-    rule += f':- geradeweg_clue({r}, {c}, N1, N2), loop_sign({r}, {c}, "ud"), |{r} - N1| + |{r} - N2| != {target}.\n'
-    rule += f':- geradeweg_clue({r}, {c}, N1, N2), loop_sign({r}, {c}, "lr"), |{c} - N1| + |{c} - N2| != {target}.\n'
-
+    rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "T"), |{c} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
     return rule.strip()
 
 
@@ -61,14 +32,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="geradeweg", adj_type="loop"))
     solver.add_program_line(single_loop(color="geradeweg"))
     solver.add_program_line(loop_sign(color="geradeweg"))
-    solver.add_program_line(geradeweg_clue())
 
     for (r, c), num in puzzle.text.items():
-        solver.add_program_line(f"clue({r}, {c}).")
-        for sign in ["lu", "ld", "ru", "rd"]:
-            solver.add_program_line(
-                f':- geradeweg_clue({r}, {c}, N1, N2), loop_sign({r}, {c}, "{sign}"), |{r} - N1| != |{c} - N2|.'
-            )
+        solver.add_program_line(loop_segment((r, c)))
+        solver.add_program_line(f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != |{c} - N2|.')
         if num == "?":
             solver.add_program_line(f"geradeweg({r}, {c}).")
             continue

@@ -125,6 +125,29 @@ def loop_sign(color: str = "white") -> str:
     return rule.strip()
 
 
+def loop_segment(src_cell: Tuple[int, int]) -> str:
+    """
+    Generate a rule for a loop segment.
+
+    A grid fact and a loop_sign rule should be defined first.
+    """
+    r, c = src_cell
+
+    max_u = f'#max {{ R0: grid(R0 + 1, {c}), not loop_sign(R0, {c}, "ud"), R0 < {r} }}'
+    min_d = f'#min {{ R0: grid(R0 - 1, {c}), not loop_sign(R0, {c}, "ud"), R0 > {r} }}'
+    max_l = f'#max {{ C0: grid({r}, C0 + 1), not loop_sign({r}, C0, "lr"), C0 < {c} }}'
+    min_r = f'#min {{ C0: grid({r}, C0 - 1), not loop_sign({r}, C0, "lr"), C0 > {c} }}'
+
+    rule = f'segment({r}, {c}, N1, N2, "T") :- loop_sign({r}, {c}, "lu"), N1 = {max_u}, N2 = {max_l}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "T") :- loop_sign({r}, {c}, "ld"), N1 = {min_d}, N2 = {max_l}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "T") :- loop_sign({r}, {c}, "ru"), N1 = {max_u}, N2 = {min_r}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "T") :- loop_sign({r}, {c}, "rd"), N1 = {min_d}, N2 = {min_r}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "V") :- loop_sign({r}, {c}, "ud"), N1 = {max_u}, N2 = {min_d}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "H") :- loop_sign({r}, {c}, "lr"), N1 = {max_l}, N2 = {min_r}.\n'
+
+    return rule.strip()
+
+
 def loop_straight(color: str = "white") -> str:
     """
     Generate a rule for straight passing through a cell.

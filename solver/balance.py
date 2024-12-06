@@ -4,61 +4,34 @@ from typing import List, Tuple
 
 from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import reverse_op
-from noqx.rule.loop import loop_sign, single_loop
+from noqx.rule.loop import loop_segment, loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def balance_rule(color: str = "black") -> str:
-    """
-    Generate a rule for balance loop.
-
-    A loop_sign rule should be defined first.
-    """
-    op = "=" if color == "black" else "!="
-
-    # detect the longest straight line
-    max_u = '#max { R0: grid(R0 + 1, C), not loop_sign(R0, C, "ud"), R0 < R }'
-    min_d = '#min { R0: grid(R0 - 1, C), not loop_sign(R0, C, "ud"), R0 > R }'
-    max_l = '#max { C0: grid(R, C0 + 1), not loop_sign(R, C0, "lr"), C0 < C }'
-    min_r = '#min { C0: grid(R, C0 - 1), not loop_sign(R, C0, "lr"), C0 > C }'
-
-    rule = f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "lu"), N1 = {max_u}, N2 = {max_l}.\n'
-    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "ld"), N1 = {min_d}, N2 = {max_l}.\n'
-    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "ru"), N1 = {max_u}, N2 = {min_r}.\n'
-    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "rd"), N1 = {min_d}, N2 = {min_r}.\n'
-    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "ud"), N1 = {max_u}, N2 = {min_d}.\n'
-    rule += f'balance_{color}(R, C, N1, N2) :- {color}(R, C), loop_sign(R, C, "lr"), N1 = {max_l}, N2 = {min_r}.\n'
-
-    for sign in ["lu", "ld", "ru", "rd"]:
-        rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "{sign}"), |R - N1| {op} |C - N2|.\n'
-
-    # special case for straight line
-    rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "ud"), |R - N1| {op} |R - N2|.\n'
-    rule += f':- balance_{color}(R, C, N1, N2), loop_sign(R, C, "lr"), |C - N1| {op} |C - N2|.\n'
+def balance_rule() -> str:
+    """Generate a balance rule."""
+    rule = ':- black(R, C), segment(R, C, N1, N2, "T"), |R - N1| = |C - N2|.\n'
+    rule += ':- black(R, C), segment(R, C, N1, N2, "V"), |R - N1| = |R - N2|.\n'
+    rule += ':- black(R, C), segment(R, C, N1, N2, "H"), |C - N1| = |C - N2|.\n'
+    rule += ':- white(R, C), segment(R, C, N1, N2, "T"), |R - N1| != |C - N2|.\n'
+    rule += ':- white(R, C), segment(R, C, N1, N2, "V"), |R - N1| != |R - N2|.\n'
+    rule += ':- white(R, C), segment(R, C, N1, N2, "H"), |C - N1| != |C - N2|.\n'
     return rule.strip()
 
 
-def count_balance(target: int, src_cell: Tuple[int, int], color: str = "black", op: str = "eq") -> str:
+def count_balance(target: int, src_cell: Tuple[int, int]) -> str:
     """
     Generate a constraint to count the length of "2-way" straight lines.
 
     A balance loop rule should be defined first.
     """
-    rop = reverse_op(op)
     r, c = src_cell
-    constraint = ""
-    for sign in ["lu", "ld", "ru", "rd"]:
-        constraint += (
-            f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "{sign}"), |{r} - N1| + |{c} - N2| {rop} {target}.\n'
-        )
-
-    # special case for straight line
-    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "ud"), |{r} - N1| + |{r} - N2| {rop} {target}.\n'
-    constraint += f':- balance_{color}({r}, {c}, N1, N2), loop_sign({r}, {c}, "lr"), |{c} - N1| + |{c} - N2| {rop} {target}.\n'
-    return constraint.strip()
+    rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
+    return rule.strip()
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -74,24 +47,25 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="balance", adj_type="loop"))
     solver.add_program_line(single_loop(color="balance"))
     solver.add_program_line(loop_sign(color="balance"))
-    solver.add_program_line(balance_rule(color="black"))
-    solver.add_program_line(balance_rule(color="white"))
 
     for (r, c, d), symbol_name in puzzle.symbol.items():
         assert d == Direction.CENTER, "The symbol should be placed in the center."
         solver.add_program_line(f"balance({r}, {c}).")
+        solver.add_program_line(loop_segment((r, c)))
+
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"white({r}, {c}).")
             num = puzzle.text.get((r, c))
             if isinstance(num, int):
-                solver.add_program_line(count_balance(num, (r, c), color="white"))
+                solver.add_program_line(count_balance(num, (r, c)))
 
         if symbol_name == "circle_L__2":
             solver.add_program_line(f"black({r}, {c}).")
             num = puzzle.text.get((r, c))
             if isinstance(num, int):
-                solver.add_program_line(count_balance(num, (r, c), color="black"))
+                solver.add_program_line(count_balance(num, (r, c)))
 
+    solver.add_program_line(balance_rule())
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
