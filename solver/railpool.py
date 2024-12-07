@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import area, direction, display, fill_path, grid
+from noqx.rule.common import area, defined, direction, display, fill_path, grid
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
@@ -33,9 +33,10 @@ def len_segment_area(color: str = "grid") -> str:
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
+    solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
-    solver.add_program_line("railpool(R, C) :- grid(R, C).")
+    solver.add_program_line("railpool(R, C) :- grid(R, C), not black(R, C).")
     solver.add_program_line(fill_path(color="railpool"))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(grid_color_connected(color="railpool", adj_type="loop"))
@@ -53,6 +54,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
                     solver.add_program_line(f":- not area_len({i}, {num}).")
             solver.add_program_line(f":- #count{{ N: area_len({i}, N) }} != {len(data)}.")
 
+    for (r, c), color_code in puzzle.surface.items():
+        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+            solver.add_program_line(f"black({r}, {c}).")
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -64,7 +69,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7ZRNaxsxEIbv/hVBZx1WI3m/LsFNnV5c9yMuISxLsJ1NY2rHrZ0tZY3/e94Zyd1tMJQSCDmUZWcfjWdGr8aStj/q6abSKR6b6kgbPNaRvBRl8kbhmSwellV+ogf1w916A9D6w/m5vp0ut1WvCFFlb9dkeTPQzbu8UEZpRXiNKnXzKd817/NmqJsL/KR0Ct/IBxFw2OKl/M505p0mAo/BDgy8As4Xm/myuh55z8e8aCZa8TxvJJtRrdY/KxV08Hi+Xs0W7LivV7fL4NzWN+tvdQgz5V43A690dESpPaaUnU+VhoBnK51NH9D27d3i+zG5Wbnfo+OfIfg6L1j7lxbTFi/yHew43ymKOdVCi0Y3Uc9acZyeti5n2NVxxE7m62Rl6ZMQE0mSoU6QMQn7Whc0GFFyJfZcLImdQKhurNi3YiOxfbEjiRlCv4kzbZJI5YT6/bTlhLRJoZM5deB+4D4Yi5YY9h/YIjfEc26CPjDHiEkOMTHisVKpg7nSzHPGJ8PPi68mQ56N6TD70ROJT8FBZ5ZojAOjfoYeCUNnFuYFU+T9+CLXz0uG6wSOYrCvI9yNjw5+xFPQSdBDXg++4KCTcNLxD/3WH1jWGPQTgW2oY1HHhVy+Jfq+h2TBLrBzYN9/fMF+XWTZf2CLmp1c3ocSD81xmIvZhZ7H6E/Ca8RGuJTtcCbWiY1lmyS82//pPDx/R/5VTkH4l/94sJKXHJe9Qo0W99XJeL1ZTfnaG9587YzG9WpWbQ5j3OD7nvql5C1wSLT7f6m//KXO3Y9e21Z+bXJwuMreIw==",
+            "data": "m=edit&p=7VVNa9tKFN37V4RZz2I+JY02IU2Tblz3tU4JQZjgOEpjasevdlQeMv7vOXd0ZalxoA8CJYsi63J8dObeM3dGo82ParouZcBlM6mkxmUzFe/M0U/xdTF/XJT5kTypHu9XawApP52fy7vpYlMOClZNBts65PWJrD/khdBCCoNbi4msP+fb+mNej2U9xiMhHbhhIzKAZx28jM8JnTakVsAjYAcMeAU4m69ni/J62DD/5EV9IQXVeRdHExTL1c9SsA/6P1stb+ZEPFTLuwWTm+p29b1imZ7sZH3SOB2+4NS+5JTI505Z8GqnN9NHtH1zP//3Jbthstuh419g+DovyPvXDmYdHOdbkTmRO+ARsNPtfCV6iqwODwtxfNxjkgMmRKYjkuy5JFXEYMn3hDmQHFQKkemZCQelQ1OpI7SKlfoarRt/fcoclNfmoL426a8UmqTzLeJVjOcxmhgv0E9Z2xjfx6hi9DEOo+YMDdYhkTogr0H+kEqj4RfYqNBhY6WxmCthmwA3emNcD0NDlgk7jE0wI8KJAbYN9qrDpPGcP0We1DP20mToIuEMflrsNcZy/gT6hPWe8rcYGs91U4wNnD+gbsBOinzWw9CknN+grmWMA8ZYLFLkab4thsY0fdCB+sO1NDxonpdCLcZRQ+sfeXjT7F/Dv2bPisa2GBrFOQ28OR7rkJPehMjD2x5DY9r+oP8Jr1ECzwmvi6detRgazx5SeAtcK8BDYP84TveYNBl78Jg7vUcxPzwk3BNPtVoMjWcPBmMd53fI7zinpbkwJo1t+0M9YZ+a9iHXUsi5x9Ao7lWGnFnrmfwzH6Cn99Jgg1/GbX4ao4sxids/pcPmfx5HzUH0+jftt3YKrCx91PqXf1vMZFCIcbW+m85KHPLD+UN5NFqtl1P6Qp3dfuv9G1XLm3Ld/sfHdjcQ/4l4Fxap3N/v75///lL31Vvb9m/NDl7EyeAJ",
         },
     ],
 }
