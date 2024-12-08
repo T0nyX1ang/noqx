@@ -146,6 +146,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
     - `url`: draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL` to get the board URL.
     - `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys.
     - `test` (Optional): whether the example is a test case, the default value is `True`, and cannot be used together with `url` way.
+    - Note: **Lots of examples can be found at https://pzplus.tck.mn/db**!
   - `parameters` (Optional): the parameters of the solver, which will be passed to the solver when it is created.
 
 - Free to PR now ^\_^
