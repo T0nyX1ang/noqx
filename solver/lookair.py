@@ -19,13 +19,15 @@ def square_size(color: str = "black") -> str:
 
 
 def avoid_same_size_square_see(color: str = "black") -> str:
-    left_c = f"#max{{ C0: grid(R, C0), {color}(R, C0), not {color}(R, C0 + 1), C0 < C }}"
-    rule = f":- upleft(R, C), MC = {left_c}, square_size(R, C, N), square_size(R, MC, N).\n"
-    rule += f":- left(R, C), MC = {left_c}, square_size(R, C, N), square_size(R, MC, N).\n"
+    rule = f"left_square(R, C, C - 1) :- grid(R, C), {color}(R, C - 1), not {color}(R, C).\n"
+    rule += f"left_square(R, C, C0) :- grid(R, C), not left_square(R, C, C - 1), left_square(R, C - 1, C0).\n"
+    rule += f":- upleft(R, C), left_square(R, C, MC), square_size(R, C, N), square_size(R, MC, N).\n"
+    rule += f":- left(R, C), left_square(R, C, MC), square_size(R, C, N), square_size(R, MC, N).\n"
 
-    up_c = f"#max{{ R0: {color}(R0, C), not {color}(R0 + 1, C), R0 < R }}"
-    rule += f":- upleft(R, C), MR = {up_c}, square_size(R, C, N), square_size(MR, C, N).\n"
-    rule += f":- up(R, C), MR = {up_c}, square_size(R, C, N), square_size(MR, C, N).\n"
+    rule += f"up_square(R, C, R - 1) :- grid(R, C), {color}(R - 1, C), not {color}(R, C).\n"
+    rule += f"up_square(R, C, R0) :- grid(R, C), not up_square(R, C, R - 1), up_square(R - 1, C, R0).\n"
+    rule += f":- upleft(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
+    rule += f":- up(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
     return rule.strip()
 
 
