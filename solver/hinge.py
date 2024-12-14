@@ -18,10 +18,10 @@ def symmetry_hinge(color: str = "black") -> str:
     rule += f"symmetry(R, C, D, R0, C0) :- grid(R, C), {color}(R, C), adj_4(R, C, R1, C1), symmetry(R1, C1, D, R0, C0).\n"
 
     rule += f":- grid(R, C), {color}(R, C), symmetry(R, C, D0, R0, C0), symmetry(R, C, D1, R1, C1), (D0, R0, C0) != (D1, R1, C1).\n"
-    rule += f":- grid(R, C), {color}(R, C), not symmetry(R, C, _, _, _)."
+    rule += f":- grid(R, C), {color}(R, C), not symmetry(R, C, _, _, _).\n"
 
     rule += ':- symmetry(R, C, "H", R0, C0), not symmetry(R0 * 2 - 1 - R, C, "H", R0, C0).\n'
-    rule += ':- symmetry(R, C, "V", R0, C0), not symmetry(R, C0 * 2 - 1 - C, "v", R0, C0).\n'
+    rule += ':- symmetry(R, C, "V", R0, C0), not symmetry(R, C0 * 2 - 1 - C, "V", R0, C0).\n'
     return rule.strip()
 
 
@@ -71,7 +71,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
-    print(solver.program)
     solver.solve()
 
     return solver.solutions
@@ -83,6 +82,9 @@ __metadata__ = {
     "examples": [
         {
             "data": "m=edit&p=7ZNPa9tAEMXv+hRlz3PQruRE2lvqxr24blK7hCBEUFSFiNoo1Z9SVvi7581ojS6BtpTSHMp6Hz/Pzs4+jVbdt6FoK1pgRAmFpDGMSWTGIf9OY1f3+8q+oYuhf2xaANHH1Yoein1XBZnPyoPRpdZdk3tvM6UVKYOpVU7u2o7ug3UbclssKdKIrackA7yc8UbWmZZTUIfgjWfgLbCs23Jf3a2nyJXN3I4Un/NWdjOqQ/O9Ut4H/y+bw33Ngfuix8N0j/WTX+mGL83Xwefq/EjuYrK7fcFuNNtlnOwyvWCXn+Iv203z4xFt/wTDdzZj759nTGbc2hG6saMyhrfG8DK9GxWfc+DsFECaluRb0ZWoEd2hFrlI9J1oKLoQXUvOJY5II7QBxxgUDA048oy49nGNuNETG1y9E+sUHHpOkJ/O+drX0Vwn9nu5jo8zR75OhMsccx14uhFnS9FY9Ewcn3Nvfqt7f96cn9rJuBt+LH6N8iBT26F9KMoKd2TZHJ6aru4rhQ/yGKgfSmaGplH8/xv9R98ov4Lwtd2112YHtz8PngE=",
+        },
+        {
+            "data": "m=edit&p=7VZbaxs9EH33ryj7rAfdV9q3NE36kuZr6pQQjAmO6xDTBKe+lLLG/z1nRrPZYALlo5SGUuzVHJ/VzpyZkeRdfdtMljNlDH1dUloBKR8iX8ZYvrR8zufru1nzRh1s1reLJYBS/x0fq5vJ3Wo2GMms8WDb5qY9U+37ZlSZSlUWl6nGqj1rtu2Hpj1V7RC3KmXAnZRJFvCohxd8n9BhIY0GPhUMeAk4nS+nd7Ork8J8bEbtuaoozlt+mmB1v/g+q0QH/Z4u7q/nRFxP1khmdTt/kDurzZfF143MNeOdag+K3OELcl0vl2CRS+gFuZTFb5abx7sdyv4Jgq+aEWn/3MPUw2GzxXjabCtn6VEPLaU3lUtEoFUd4c0eEfmR54Tn8LpnkiYm9USORMSeMLreC2zcfiAT9sWZej+2qQMxT7GRluHkLnk85tHyeI7cVet4fMej5jHweMJzjlASWxtlKZDFkq0tsBPsgJErYw+M0IwDMBJkHIGRGuMaGOVknICz4KwsVYhw0MpG8RPhp+MT+Cx8DsqhuoRhlbOFh1XOC+/BB+ED+Fr4GnzqdEJ/Ej0pKadLXrDwX3hY5ZzwDrwX3oOPwkfwkhescln47JTXz3jJFxYaRA/ycgmNZkxHTakzLLD4SfCfSp1hn/TDApc6wwJLnVEfSwuMMeqfC881odXLGLG89NSjL7SIuebUX/Hj0dMgPQrokfTaGcQy4tPUfa0ifIof2L4+lJfogVXedPkilyw1yRm8rKWE+miJpTHHyBwD3gnvwHvhPXjacxwXvKwfWGCJG6E5iuYIzbHTTH0UP4GeFezgM4hPC94Jr8Fb0ZnBa6kPeo3fglFDWQM2Y+9kqW2mNVxypxzxW3xCpxVs0SMn+h34IDz2hQtSt4B60lHAGHUO3fpELh22WDN0dLF/8LZb28i9W5MaNaFjp9OgqVbY9Be89Q959DxGPhJqOiz/13H666fPT+WMHP6LX/iEv5cdD0bVcLO8mUxn+NM7XNw/LFbz9azCG8ZuUP2o+Bo5emH599Lxh146qAX6te2V1yYHu3c8eAQ=",
         },
         {
             "data": "m=edit&p=7VZPaxs/EL37UxSd5yCtpNVqb2ma/C5p2tQpIRgTHNchpglO/aeUNf7ueSONssUESijll0Mwlt5KT09vZlayVz82k+WMjCNTkW1Ik8HHB00uOnJVlb5aPufz9d2sfUcHm/XtYglA9On4mG4md6vZYCSs8WDbxbY7o+6/dqSMIlXha9SYurN2231su1PqhphSZDB2kkkV4FEPL9I8o8M8aDTwqWDAS8DpfDm9m12d5JHP7ag7J8X7vE+rGar7xc+ZEh/8PF3cX8954HqyRjCr2/mDzKw23xbfN8I14x11B9nu8Bm7trfLMNtl9IxdjuIf243j3Q5p/wLDV+2IvX/tYdPDYbtFe9pulW14qbMwk4ujQhpBrcpAo3mg7geMNnsUY+w+x7p9jq33OXXY59RxnxPT7k8c2DbJ/GVqj1NbpfYcsVFnU/shtTq1PrUniXPEIeuGbAUzFSn0ZB2sMnYO2Av2wIUDfsFGYy0ylHAga4VvwfdIAmNvgUXTQ9MXDvgFm4i1CB/YQ8eLjouR8NxjjfCZozUw0p6wB85+0JOv8l6uCeSa7A09MJLJ2OP0ijfnDXAl2JILWRN9zw/gB+EH5og+YsFcxraGjowb7MXFZQyfeM4xNtAR/4xtI/lpkJ9G8tMgP03JOfJTC66Rz8LncSeajmuRfaJHPkXfoy4+x4IeOPtMHH7NkiZ0yl6NhzeJUSPGSvJQIQ9W8sAxSo3QA0tucT/2nEjOZQ/ogUWHNbXkRyNvWuqL2jmpHXpg0dfQ1xIj6mWDxIUb2EpN0f+2FjqV+K+wV9nXcX1L3eEtiH6AfhQP7N+LjoeHUt8An1HqG1G7KPoR+lE4/GtQdFi/lthrxF6LhxoeatHBmXrCOGt4Fv/wUM5gxNoSO949PAtGHeV9S3ko7yrrh/KuwkMs5wX6Txj5iayPQ3+Rjv5hal1q63QlBL4MX3Rd/v3t80c7I1SHf3uf//i3uZfOjQcjNdwsbybTGX4yDxf3D4vVfD1T+H+yG6hfKn1HFlT39pflf/rLwiXQr+0kvjY7uBvGg0c=",
