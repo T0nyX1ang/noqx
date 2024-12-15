@@ -75,6 +75,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(fillomino_constraint())
     solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
 
+    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for (r, c), num in puzzle.text.items()))
+    solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
+
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be an integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
