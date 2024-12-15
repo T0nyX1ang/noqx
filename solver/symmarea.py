@@ -85,15 +85,22 @@ def symmetry_area(fast: bool = False) -> str:
 
     # numberx
     if not fast:
-        # rule += f"have_numberx_root(R, C) :- have_numberx(R, C), edge_left(R, C), edge_top(R, C)."
+        rule += "{ min_rx(R, C, MR) : grid(MR, _) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+        rule += "{ max_rx(R, C, MR) : grid(MR, _) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+        rule += "{ min_cx(R, C, MC) : grid(_, MC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+        rule += "{ max_cx(R, C, MC) : grid(_, MC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+
         rule += f"min_rx(R, C, MR) :- have_numberx(R, C), MR = #min{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
         rule += f"max_rx(R, C, MR) :- have_numberx(R, C), MR = #max{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
         rule += f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
         rule += f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
 
-        rule += "{ symm_coord_sumx(R, C, SR, SC) : grid2(SR, SC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+        rule += f"min_rx(R, C, MR) :- have_numberx(R, C), adj_edge(R0, C0, R, C), min_rx(R0, C0, MR).\n"
+        rule += f"max_rx(R, C, MR) :- have_numberx(R, C), adj_edge(R0, C0, R, C), max_rx(R0, C0, MR).\n"
+        rule += f"min_cx(R, C, MC) :- have_numberx(R, C), adj_edge(R0, C0, R, C), min_cx(R0, C0, MC).\n"
+        rule += f"max_cx(R, C, MC) :- have_numberx(R, C), adj_edge(R0, C0, R, C), max_cx(R0, C0, MC).\n"
+
         rule += "symm_coord_sumx(R, C, SR, SC) :- grid(R, C), have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), min_cx(R, C, MINC), max_cx(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
-        # rule += f"symm_coord_sumx(R1, C1, SR, SC) :- have_numberx(R, C), have_numberx(R1, C1), {tag_numberx}(R, C, R1, C1), symm_coord_sumx(R, C, SR, SC).\n"
         rule += f":- have_numberx(R, C), symm_coord_sumx(R, C, SR, SC), not {tag_numberx}(R, C, SR - R, SC - C).\n"
 
     return rule.strip()
