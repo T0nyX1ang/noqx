@@ -65,7 +65,7 @@ def fillomino_filtered(fast: bool = True) -> str:
     return rule.strip()
 
 
-def symmetry_area() -> str:
+def symmetry_area(fast: bool = True) -> str:
     """Force central symmetry of areas."""
 
     tag_number = tag_encode("reachable", "grid", "src", "adj", "edge", None)
@@ -84,24 +84,17 @@ def symmetry_area() -> str:
     )
 
     # numberx
-    # rule += f"have_numberx_root(R, C) :- have_numberx(R, C), edge_left(R, C), edge_top(R, C)."
-    rule += (
-        f"min_rx(R, C, MR) :- have_numberx(R, C), MR = #min{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
-    )
-    rule += (
-        f"max_rx(R, C, MR) :- have_numberx(R, C), MR = #max{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
-    )
-    rule += (
-        f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
-    )
-    rule += (
-        f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
-    )
+    if not fast:
+        # rule += f"have_numberx_root(R, C) :- have_numberx(R, C), edge_left(R, C), edge_top(R, C)."
+        rule += f"min_rx(R, C, MR) :- have_numberx(R, C), MR = #min{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
+        rule += f"max_rx(R, C, MR) :- have_numberx(R, C), MR = #max{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
+        rule += f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
+        rule += f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
 
-    rule += "{ symm_coord_sumx(R, C, SR, SC) : grid2(SR, SC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
-    rule += "symm_coord_sumx(R, C, SR, SC) :- grid(R, C), have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), min_cx(R, C, MINC), max_cx(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
-    # rule += f"symm_coord_sumx(R1, C1, SR, SC) :- have_numberx(R, C), have_numberx(R1, C1), {tag_numberx}(R, C, R1, C1), symm_coord_sumx(R, C, SR, SC).\n"
-    rule += f":- have_numberx(R, C), symm_coord_sumx(R, C, SR, SC), not {tag_numberx}(R, C, SR - R, SC - C).\n"
+        rule += "{ symm_coord_sumx(R, C, SR, SC) : grid2(SR, SC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+        rule += "symm_coord_sumx(R, C, SR, SC) :- grid(R, C), have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), min_cx(R, C, MINC), max_cx(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
+        # rule += f"symm_coord_sumx(R1, C1, SR, SC) :- have_numberx(R, C), have_numberx(R1, C1), {tag_numberx}(R, C, R1, C1), symm_coord_sumx(R, C, SR, SC).\n"
+        rule += f":- have_numberx(R, C), symm_coord_sumx(R, C, SR, SC), not {tag_numberx}(R, C, SR - R, SC - C).\n"
 
     return rule.strip()
 
@@ -158,9 +151,11 @@ __metadata__ = {
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/3141592653zp9x2zp5827312384",
+            "Fast Mode": True,
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/5o2g3mag5g8lah7g7j5g7h2g1hag5h6g6j2g6halbg1g2m5g1o3",
+            "Fast Mode": True,
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/h1i5j4g4g1g1h1g2g1i1h4g4g1g1j4k1h4i9g1h1i4t1j1l1i1j",
