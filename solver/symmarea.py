@@ -167,6 +167,9 @@ __metadata__ = {
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/h1i5j4g4g1g1h1g2g1i1h4g4g1g1j4k1h4i9g1h1i4t1j1l1i1j",
         },
+        {
+            "url": "https://pzplus.tck.mn/p?symmarea/12/12/z1lbj3k17j736x12p26y15j584j-1bj-14q1u",
+        },
     ],
     "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False}},
 }
