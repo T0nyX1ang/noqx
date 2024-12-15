@@ -95,10 +95,14 @@ def symmetry_area(fast: bool = False) -> str:
         rule += f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
         rule += f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
 
-        rule += f"min_rx(R, C, MR) :- have_numberx(R, C), adj_edge(R0, C0, R, C), min_rx(R0, C0, MR).\n"
-        rule += f"max_rx(R, C, MR) :- have_numberx(R, C), adj_edge(R0, C0, R, C), max_rx(R0, C0, MR).\n"
-        rule += f"min_cx(R, C, MC) :- have_numberx(R, C), adj_edge(R0, C0, R, C), min_cx(R0, C0, MC).\n"
-        rule += f"max_cx(R, C, MC) :- have_numberx(R, C), adj_edge(R0, C0, R, C), max_cx(R0, C0, MC).\n"
+        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_rx(R0, C0, MR), not min_rx(R, C, MR).\n"
+        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_rx(R0, C0, MR), not max_rx(R, C, MR).\n"
+        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_cx(R0, C0, MC), not min_cx(R, C, MC).\n"
+        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_cx(R0, C0, MC), not max_cx(R, C, MC).\n"
+
+        # # the following two lines accelerates example 5 but slows example 1 and 4
+        # rule += f":- have_numberx(R, C), min_cx(R, C, MINC), max_cx(R, C, MAXC), SC = MINC + MAXC, N1 = #count{{ R1 : grid(R1, C), {tag_numberx}(R, C, R1, C) }}, N2 = #count{{ R1 : grid(R1, SC - C), {tag_numberx}(R, C, R1, SC - C) }}, N1 != N2.\n"
+        # rule += f":- have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), SR = MINR + MAXR, N1 = #count{{ C1 : grid(R, C1), {tag_numberx}(R, C, R, C1) }}, N2 = #count{{ C1 : grid(SR - R, C1), {tag_numberx}(R, C, SR - R, C1) }}, N1 != N2.\n"
 
         rule += "symm_coord_sumx(R, C, SR, SC) :- grid(R, C), have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), min_cx(R, C, MINC), max_cx(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
         rule += f":- have_numberx(R, C), symm_coord_sumx(R, C, SR, SC), not {tag_numberx}(R, C, SR - R, SC - C).\n"
@@ -110,7 +114,6 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(f"grid2(0..{(puzzle.row - 1) * 2}, 0..{(puzzle.col - 1) * 2}).")
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="edge"))
@@ -129,10 +132,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
 
         if num == 1:
-            solver.add_program_line(f":- not edge_left({r}, {c}).")
-            solver.add_program_line(f":- not edge_top({r}, {c}).")
-            solver.add_program_line(f":- not edge_left({r}, {c + 1}).")
-            solver.add_program_line(f":- not edge_top({r + 1}, {c}).")
+            solver.add_program_line(f"edge_left({r}, {c}).")
+            solver.add_program_line(f"edge_top({r}, {c}).")
+            solver.add_program_line(f"edge_left({r}, {c + 1}).")
+            solver.add_program_line(f"edge_top({r + 1}, {c}).")
 
     for r, c, d in puzzle.edge:
         solver.add_program_line(f"edge_{d.value}({r}, {c}).")
