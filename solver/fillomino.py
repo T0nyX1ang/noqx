@@ -15,48 +15,54 @@ def fillomino_constraint() -> str:
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
 
     # propagation of number
-    constraint = f"number(R, C, N) :- number(R0, C0, N), {tag}(R0, C0, R, C).\n"
+    rule = f"number(R, C, N) :- number(R0, C0, N), {tag}(R0, C0, R, C).\n"
+    # this is a huge optimization
+    rule += ":- grid(R, C), number(R, C, N1), number(R, C, N2), N1 < N2.\n"
 
     # same number, adjacent cell, no line
-    constraint += ":- number(R, C, N), number(R, C + 1, N), edge_left(R, C + 1).\n"
-    constraint += ":- number(R, C, N), number(R + 1, C, N), edge_top(R + 1, C).\n"
+    rule += ":- number(R, C, N), number(R, C + 1, N), edge_left(R, C + 1).\n"
+    rule += ":- number(R, C, N), number(R + 1, C, N), edge_top(R + 1, C).\n"
 
     # different number, adjacent cell, have line
-    constraint += ":- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not edge_left(R, C + 1).\n"
-    constraint += ":- number(R, C, N1), number(R + 1, C, N2), N1 != N2, not edge_top(R + 1, C).\n"
+    rule += ":- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not edge_left(R, C + 1).\n"
+    rule += ":- number(R, C, N1), number(R + 1, C, N2), N1 != N2, not edge_top(R + 1, C).\n"
 
     # special case for 1
     mutual = ["edge_top(R, C)", "edge_top(R + 1, C)", "edge_left(R, C)", "edge_left(R, C + 1)"]
-    constraint += f"{{ {'; '.join(mutual)} }} = 4 :- number(R, C, 1).\n"
-    constraint += f"number(R, C, 1) :- {', '.join(mutual)}.\n"
-    constraint += ":- number(R, C, 1), number(R1, C1, 1), adj_4(R, C, R1, C1).\n"
+    rule += f"{{ {'; '.join(mutual)} }} = 4 :- number(R, C, 1).\n"
+    rule += f"number(R, C, 1) :- {', '.join(mutual)}.\n"
+    rule += ":- number(R, C, 1), number(R1, C1, 1), adj_4(R, C, R1, C1).\n"
 
-    return constraint.strip()
+    return rule.strip()
 
 
 def fillomino_filtered(fast: bool = True) -> str:
     """Generate the Fillomino filtered connection constraints."""
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
-    initial = f"{tag}(R, C, R, C) :- grid(R, C), not number(R, C, _)."
-    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), not number(R, C, _), adj_edge(R, C, R1, C1)."
+    rule = ""
+    tag1 = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+    rule += f"have_numberx(R, C) :- grid(R, C), not {tag1}(_, _, R, C).\n"
 
-    # edge between two reachable grids is forbidden.
-    constraint = f":- {tag}(R, C, R, C + 1), edge_left(R, C + 1).\n"
-    constraint += f":- {tag}(R, C, R + 1, C), edge_top(R + 1, C).\n"
-    constraint += f":- {tag}(R, C + 1, R, C), edge_left(R, C + 1).\n"
-    constraint += f":- {tag}(R + 1, C, R, C), edge_top(R + 1, C).\n"
+    rule += f"{tag}(R, C, R, C) :- grid(R, C), have_numberx(R, C).\n"
+    rule += f"{tag}(R, C, R0, C0) :- grid(R0, C0), grid(R, C), {tag}(R, C, R1, C1), have_numberx(R0, C0), have_numberx(R, C), adj_edge(R0, C0, R1, C1).\n"
 
     if fast:
-        constraint += "{ numberx(R, C, 1..5) } = 1 :- grid(R, C), not number(R, C, _).\n"
-        constraint += f":- numberx(R, C, N), #count{{ R1, C1: {tag}(R, C, R1, C1) }} != N.\n"
+        rule += "{ numberx(R, C, 1..5) } = 1 :- grid(R, C), have_numberx(R, C).\n"
+        rule += f":- numberx(R, C, N), #count{{ R1, C1: {tag}(R, C, R1, C1) }} != N.\n"
     else:
-        constraint += (
-            f"{{ numberx(R, C, N) }} = 1 :- grid(R, C), not number(R, C, _), #count{{ R1, C1: {tag}(R, C, R1, C1) }} = N.\n"
-        )
-    constraint += f":- numberx(R, C, N), numberx(R1, C1, N), not {tag}(R, C, R1, C1), adj_4(R, C, R1, C1).\n"
-    constraint += ":- number(R, C, N), numberx(R1, C1, N), adj_4(R, C, R1, C1)."
+        rule += f"{{ numberx(R, C, N) }} = 1 :- grid(R, C), have_numberx(R, C), #count{{ R1, C1: {tag}(R, C, R1, C1) }} = N.\n"
+    rule += ":- number(R, C, N), numberx(R1, C1, N), adj_4(R, C, R1, C1)."
 
-    return initial + "\n" + propagation + "\n" + constraint
+    rule += ":- numberx(R, C, N), numberx(R, C + 1, N), edge_left(R, C + 1).\n"
+    rule += ":- numberx(R, C, N), numberx(R + 1, C, N), edge_top(R + 1, C).\n"
+    rule += (
+        ":- have_numberx(R, C), have_numberx(R, C + 1), numberx(R, C, N), not numberx(R, C + 1, N), not edge_left(R, C + 1).\n"
+    )
+    rule += (
+        ":- have_numberx(R, C), have_numberx(R + 1, C), numberx(R, C, N), not numberx(R + 1, C, N), not edge_top(R + 1, C).\n"
+    )
+
+    return rule.strip()
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -67,6 +73,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(fillomino_constraint())
+    solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
 
     for (r, c), num in puzzle.text.items():
         assert isinstance(num, int), "Clue should be an integer."
@@ -81,12 +88,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f":- not edge_top({r + 1}, {c}).")
 
     for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+        solver.add_program_line(f"edge_{d.value}({r}, {c}).")
 
     for r, c, d in puzzle.helper_x:
         solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
-    solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="number", size=3))
