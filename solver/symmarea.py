@@ -36,7 +36,7 @@ def fillomino_constraint() -> str:
     return rule.strip()
 
 
-def fillomino_filtered(fast: bool = True) -> str:
+def fillomino_filtered(fast: bool = False) -> str:
     """Generate the Fillomino filtered connection constraints."""
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
     rule = ""
@@ -65,7 +65,7 @@ def fillomino_filtered(fast: bool = True) -> str:
     return rule.strip()
 
 
-def symmetry_area(fast: bool = True) -> str:
+def symmetry_area(fast: bool = False) -> str:
     """Force central symmetry of areas."""
 
     tag_number = tag_encode("reachable", "grid", "src", "adj", "edge", None)
@@ -109,7 +109,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(fillomino_constraint())
     solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
-    solver.add_program_line(symmetry_area())
+    solver.add_program_line(symmetry_area(fast=puzzle.param["fast_mode"]))
 
     numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for (r, c), num in puzzle.text.items()))
     solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
@@ -151,11 +151,11 @@ __metadata__ = {
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/3141592653zp9x2zp5827312384",
-            "Fast Mode": True,
+            "fast_mode": True,
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/5o2g3mag5g8lah7g7j5g7h2g1hag5h6g6j2g6halbg1g2m5g1o3",
-            "Fast Mode": True,
+            "fast_mode": True,
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/h1i5j4g4g1g1h1g2g1i1h4g4g1g1j4k1h4i9g1h1i4t1j1l1i1j",
