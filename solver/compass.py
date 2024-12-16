@@ -3,9 +3,9 @@
 from typing import List
 
 from noqx.penpa import Puzzle, Solution
-from noqx.rule.common import display, edge, grid
+from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import tag_encode
-from noqx.rule.neighbor import adjacent, count_adjacent_edges
+from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_src_color_connected
 from noqx.solution import solver
 
@@ -13,15 +13,24 @@ from noqx.solution import solver
 def solve(puzzle: Puzzle) -> List[Solution]:
     solver.reset()
     solver.register_puzzle(puzzle)
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
+    solver.add_program_line(defined(item="hole"))
+    solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
 
     all_src = [(r, c) for (r, c), clue in puzzle.sudoku.items()]
     assert len(all_src) > 0, "No clues found."
 
+    for (r, c), color_code in puzzle.surface.items():
+        solver.add_program_line(f"hole({r}, {c}).")
+
+        for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
+            prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
+            direc = "left" if c1 != c else "top"
+            solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+
     for (r, c), clue in puzzle.sudoku.items():
-        solver.add_program_line(f"not black({r}, {c}).")
+        solver.add_program_line(f"not hole({r}, {c}).")
 
         current_excluded = [src for src in all_src if src != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color=None, adj_type="edge"))
