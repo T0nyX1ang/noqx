@@ -1,6 +1,9 @@
 function exp() {
   clear_info(); // clear every information created by penpa itself
-  return pu.maketext().split("#")[1];
+  document.getElementById("save_undo").checked = true;
+  let result = pu.maketext().split("#")[1];
+  document.getElementById("save_undo").checked = false;
+  return result;
 }
 
 function imp(penpa) {
