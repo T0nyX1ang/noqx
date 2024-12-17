@@ -214,15 +214,7 @@ class Solution:
         """Initialize the solution."""
         self.puzzle: Puzzle = puzzle
         self.parts = puzzle.parts
-        self.board = {
-            "surface": {},
-            "number": {},
-            "sudoku": {},
-            "symbol": {},
-            "squareframe": [],
-            "line": {},
-            "edge": {},
-        }
+        self.board = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[4]))
 
         self.surface: Dict[Tuple[int, int], int] = {}
         self.text: Dict[Tuple[int, int], Union[int, str]] = {}
