@@ -143,7 +143,6 @@ $(document).ready(function () {
     noChoicesText: "No examples found",
   });
 
-  let foundUrl = null;
   let puzzleType = null;
   let puzzleContent = null;
   let solutionList = null;
@@ -276,7 +275,6 @@ $(document).ready(function () {
                   text: "Time limit exceeded.",
                   footer: issueMessage,
                 });
-                foundUrl = null;
                 solveButton.textContent = "Solve";
                 return;
               } else {
@@ -292,7 +290,6 @@ $(document).ready(function () {
                 }
                 solutionPointer = 0;
                 load(solutionList[solutionPointer]);
-                foundUrl = exp();
               }
             })
             .catch((e) => {
@@ -319,14 +316,12 @@ $(document).ready(function () {
             solutionList.length === 10 ? "10+" : solutionList.length
           })`;
           load(solutionList[solutionPointer]);
-          foundUrl = exp();
         }
       });
 
       resetButton.addEventListener("click", () => {
         if (puzzleContent !== null) {
           imp(`${urlBase}${puzzleContent}`);
-          foundUrl = null;
         } else {
           pu.reset_board();
           pu.redraw();
@@ -341,11 +336,4 @@ $(document).ready(function () {
   });
 
   document.addEventListener("click", () => focus());
-
-  setInterval(() => {
-    if (solveButton.textContent !== "Solving..." && foundUrl !== null && exp() !== foundUrl) {
-      foundUrl = null;
-      solveButton.textContent = "Solve";
-    }
-  }, 200);
 });
