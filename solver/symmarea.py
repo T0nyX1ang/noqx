@@ -95,10 +95,10 @@ def symmetry_area(fast: bool = False) -> str:
         rule += f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
         rule += f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
 
-        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_rx(R0, C0, MR), not min_rx(R, C, MR).\n"
-        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_rx(R0, C0, MR), not max_rx(R, C, MR).\n"
-        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_cx(R0, C0, MC), not min_cx(R, C, MC).\n"
-        rule += f":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_cx(R0, C0, MC), not max_cx(R, C, MC).\n"
+        rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_rx(R0, C0, MR), not min_rx(R, C, MR).\n"
+        rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_rx(R0, C0, MR), not max_rx(R, C, MR).\n"
+        rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_cx(R0, C0, MC), not min_cx(R, C, MC).\n"
+        rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_cx(R0, C0, MC), not max_cx(R, C, MC).\n"
 
         # # the following two lines accelerates example 5 but slows example 1 and 4
         # rule += f":- have_numberx(R, C), min_cx(R, C, MINC), max_cx(R, C, MAXC), SC = MINC + MAXC, N1 = #count{{ R1 : grid(R1, C), {tag_numberx}(R, C, R1, C) }}, N2 = #count{{ R1 : grid(R1, SC - C), {tag_numberx}(R, C, R1, SC - C) }}, N1 != N2.\n"
@@ -121,7 +121,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
     solver.add_program_line(symmetry_area(fast=puzzle.param["fast_mode"]))
 
-    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for (r, c), num in puzzle.text.items()))
+    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
     solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
 
     for (r, c), num in puzzle.text.items():
@@ -157,22 +157,19 @@ __metadata__ = {
     "category": "num",
     "examples": [
         {
-            "data": "m=edit&p=7VRda9swFH33ryh6vg+W5I9Ub12X7CVz1zWjFGGM47qrmT11TjyGQv57r65tHELL2GDZHobQ4fjoKD661s3mW5e3JUQ45Ax84DhEFNHkQUDTH8aq2talOoOLbvtoWiQAV4sFPOT1pvT04Eq9nT1X9hrsO6WZYECTsxTstdrZ98omYG9wiQFHbYmMMxBI5xO9pXXHLnuR+8iTgSO9Q1pUbVGX2bJXPihtV8Dce97QbkdZY76XrN9Gz4Vp1pUT1vkWD7N5rJ6GlU13b750g5ene7AXr8eVU1xH+7iOvRDXneIPxz1P93ss+0cMnCntsn+a6GyiN2qHmKgdE3I8af9tmIiPBEmO6EAgx2wSAuEE/LqjEJIjnISIHPJAiI4cMTkOXhuTIxgFjMsp9B3hglAQrvBMYCXhW0KfMCRckmdOeEt4SRgQRuSJXVV+qW4niKOFoCbsR/j7PPU0m99/Ls8S0zZ5jfcm6Zp12Y7P2Kh7j/1gNLXELcH/3v1Lves+gf+v3cSfxNFYXSGhr9PQvU9dlmeFwcuGRXQG6Qz4J/KqAX/BXr288Vg/+fmxGdlDVdemqb4alnrP",
+            "data": "m=edit&p=7VTRbtMwFH3PV0x+vg+xnaad38pIeSkZsKJpsqIo7TIWkeCRNgi56r/v+jpRqqoIgcTgAVk+Ojk+bs51fLv92hVtCTEOOYMQOA4RxzR5FNEM+7GqdnWpLmDe7R5NiwTgerGAh6LeloHuXVmwt5fKzsG+UZoJBjQ5y8C+V3v7VtkU7A0uMeCoLZFxBgJpMtJbWnfsyos8RJ72HOkd0k3VbuoyX3rlndJ2Bcy95xXtdpQ15lvJ/DZ63phmXTlhXeywmO1j9dSvbLt787nrvTw7gJ37uMmZuHKM66iP69iZuK6KPxz3Mjsc8Ng/YOBcaZf940hnI71Re8RU7ZmQQ6X+2zAxPREkOeIjgRyzUYiEE/DrDsKEHJNRiMkhj4T4xDElx9Frp+SIBgHjcgp9R7ggFIQrrAmsJHxNGBJOCJfkSQhvCa8II8KYPFN3Kr90bi8QRwtBTejH5Pd5FmiW3H8qL1LTNkWN9ybtmnXZDs/YqIeAfWc0tcQt0f/e/Uu96z5B+K/dxJ/E0XgZhAR/Tn33PnV5kW8MXjY8RGeQzoB/Ij804C/Y6/MbT/UXrx+bkT1UdW2a6othWfAM",
         },
         {
-            "url": "https://pzplus.tck.mn/p?symmarea/10/10/3141592653zp9x2zp5827312384",
+            "data": "m=edit&p=7Vjdb+JGEH/nr4j2eR+8Hza239Ir6UvKtb1UpwghRDi3hxrEFULVc5T//X4zs45BzRhV117VqgKvf7Ozs56P9czA/tfDctdYl9E3lBZ3fKIr+fJlwVeWPjfrh/umvrCXh4f32x2Ata+vruxPy/t9M5qlVfPRY1vV7aVtv6lnxhvLlzNz235fP7bf1u3Utm/AMtZh7hrIGesBJz18y3xCr2TSZcDThAFvAVfr3eq+WVzLzHf1rL2xhp7zFUsTNJvtb40RMaZX283dmibulg8wZv9+/SFx9od3218Oaa2bP9n2UtSdvKBu6NUlKOoSekFdsuJvVreaPz3B7T9A4UU9I91/7GHZwzf1I8Zp/WhCBtGAWHNkTHAgKfSJ9CBjT4ZTbgSZ92QOsurJAqTvyTHIoifLU9nqRI2SZPutXEbsfi+XE7+XdjltXh7RtPvxepIf93RxarUrTs12Bdl9JF+Q4cfryfKj5xVkeucneNaxf295vOLR83gD99s28Pg1jxmPOY/XvGbC41seX/EYeSx4zZgC+KdC/PnqmOjhj6q0JlJQCXjnrfcgArBHdojwKOGYWZ/DO4Tz0GNa4xElwg7zzzgCI1q8BpnGI1I8nx9hyNI5ZTwGRrQYYz2dUMYVMKLE+0AHOpuEA/aPaf+I9RRZwgX0p6gCh+htoBPV4djNB8yLnsFX/TzhpA/umJdn4Y718qwQsCbv1udYL7YwTn7DHbJpH/gtJF8F2Pu8P2GXdIDtIdmOO2Rx6lgWe9IJZ3sd7JV53IFTjALsTThE7ElvAO9D9qZ5+BO04Ay2uGQL4Sw9C7Uh5GlNhA45zZ89rzO4iV6v0w+9wP+yufloZibvfm4uptvdZnmPHDw9bO6aXUej6D2NzO+GL84Y8f86+A/VQQpB9oVT5edm7hm8+5xcbfvamg+HxXKx2uKowYXCTvlWY6cU/DIbqVxhhELbMOXxIXWQzjV2yvaqNBJ6RMg0Y5DPkGNU1ZDiikplF6gKY91TOTQfYKMWYImuOcpJxLus2S2VbUgaBU6VlvqnsqUkqmypkipbCqfKllqqai7lVWOniqs6VYqwGjGpywq7Kz8a26NSobPU2PTbxuuaV1RrdaeWUK3Sj0OJk1rqhp1jD28+rNoZw865Zdip/9k3tOv7htho+VS2dIeqz6VhHGLrL3DXVqrPlk5TlZbmU3229KNDbL36dF2rqpo0supJld52iI12V2VLB6zaLU2xqpr0yWriktZZPWvSTavS0mCrz5aeW9Vc2nDVbunMNXZq1ofY6N+1hqDUGgKnMOCJv0pCe/jZTJ9+e/yB/cX7Ofy4MfuPm03zsPt4gf/QlmY++gQ=",
             "config": {"fast_mode": True},
         },
         {
             "url": "https://pzplus.tck.mn/p?symmarea/10/10/5o2g3mag5g8lah7g7j5g7h2g1hag5h6g6j2g6halbg1g2m5g1o3",
             "config": {"fast_mode": True},
+            "test": False,
         },
-        {
-            "url": "https://pzplus.tck.mn/p?symmarea/10/10/h1i5j4g4g1g1h1g2g1i1h4g4g1g1j4k1h4i9g1h1i4t1j1l1i1j",
-        },
-        {
-            "url": "https://pzplus.tck.mn/p?symmarea/12/12/z1lbj3k17j736x12p26y15j584j-1bj-14q1u",
-        },
+        {"url": "https://pzplus.tck.mn/p?symmarea/10/10/h1i5j4g4g1g1h1g2g1i1h4g4g1g1j4k1h4i9g1h1i4t1j1l1i1j", "test": False},
+        {"url": "https://pzplus.tck.mn/p?symmarea/12/12/z1lbj3k17j736x12p26y15j584j-1bj-14q1u", "test": False},
     ],
     "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False}},
 }

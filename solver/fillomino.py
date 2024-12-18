@@ -75,7 +75,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(fillomino_constraint())
     solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
 
-    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for (r, c), num in puzzle.text.items()))
+    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
     solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
 
     for (r, c), num in puzzle.text.items():

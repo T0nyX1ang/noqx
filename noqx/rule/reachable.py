@@ -180,12 +180,17 @@ def count_rect_src(
     return f":- {count_r}, {count_c}, CR * CC != {target}."
 
 
-def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to avoid cells starting from unknown source.
 
     Use this constraint with grid_src_color_connected, and adj_type cannot be "edge".
     """
+    if color is None:
+        validate_type(adj_type, ("edge",))
+        tag = tag_encode("reachable", "grid", "src", "adj", adj_type)
+        return f":- grid(R, C), not {tag}(_, _, R, C)."
+
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 

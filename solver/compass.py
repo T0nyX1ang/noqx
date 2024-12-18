@@ -1,13 +1,30 @@
 """The Compass solver."""
 
-from typing import List
+from typing import Dict, List, Union
 
 from noqx.penpa import Puzzle, Solution
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import grid_src_color_connected
+from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 from noqx.solution import solver
+
+
+def compass_constraint(r: int, c: int, clue: Dict[int, Union[int, str]]) -> str:
+    """Generate a compass constraint."""
+
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+
+    new_clue = {"u": clue[4], "r": clue[5], "l": clue[6], "d": clue[7]}
+    constraint = {"u": f"R < {r}", "l": f"C < {c}", "d": f"R > {r}", "r": f"C > {c}"}
+
+    rule = ""
+    for direction, num in new_clue.items():
+        if not isinstance(num, int):
+            continue
+        rule += f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[direction]} }} != {num}."
+
+    return rule.strip()
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -17,8 +34,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
+    solver.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
-    all_src = [(r, c) for (r, c), clue in puzzle.sudoku.items()]
+    all_src = [(r, c) for (r, c), _ in puzzle.sudoku.items()]
     assert len(all_src) > 0, "No clues found."
 
     for (r, c), color_code in puzzle.surface.items():
@@ -31,18 +49,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
     for (r, c), clue in puzzle.sudoku.items():
         solver.add_program_line(f"not hole({r}, {c}).")
-
         current_excluded = [src for src in all_src if src != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color=None, adj_type="edge"))
-        tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-        solver.add_program_line(f":- grid(R, C), not {tag}(_, _, R, C).")
-
-        clue = {"u": clue[4], "r": clue[5], "l": clue[6], "d": clue[7]}
-        constraint = {"u": f"R < {r}", "l": f"C < {c}", "d": f"R > {r}", "r": f"C > {c}"}
-        for direction, num in clue.items():
-            if not isinstance(num, int):
-                continue
-            solver.add_program_line(f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[direction]} }} != {num}.")
+        solver.add_program_line(compass_constraint(r, c, clue))
 
     for r, c, d in puzzle.edge:
         solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
@@ -62,11 +71,10 @@ __metadata__ = {
     "category": "region",
     "examples": [
         {
-            "url": "https://puzz.link/p?compass/9/9/p.96.k..8.zh5..1i...2h..37z0224i.4..o",
-            "test": False,
+            "data": "m=edit&p=7VRBj9o8EL3zK5DPPsSJSZxcKrqFXrZsW6hWqyhCgc1+rAoKJaSqgvjv+2aSEAJUW3Ul9B0qk9F7Mx7z7Bk7+5HHm0T6GI6RllQYjrH4M5p+VjUmz9tlEnRlP98u0g2AlHfDoXyKl1nSCatZUWdX+EHRl8XHIBS2kPwpEcniS7ArPgXFSBZjhITU8N0CKSFtwEED7zlO6KZ0Kgt4BOwDAz4AztPVOs6y0vE5CIuJFPQ37zmZoFilPxNRrsAcKbNncsziLfaSLZ7XVSTLH9PveTVXRXtZ9Eu1g1ot/Uul1mnUEizVErqgljbxVrXJ439Jls8uSfWj/R4n/hVip0FIur810DRwHOyE0pYINMgo2MEqcvVs+ELRZV1EVZvaoG5NHBC/Ilq3Jupem7qgpibeccw1lNmrCeWh5UpCWUcTW3me1VLqWaTUrgnpPIqR0obapk19UK8iDq3q1KS1e8N7xI0oCSnVNSGl1Z8b3l9N3FLlu3oNt72k2xJqXBJKi6IeD6iHprDi0h+6RWiSf+o0lHnmJCWnTp92cepUXMxz7/kCUDbkfrHZTtBPsnDYfmBrse2xveU5A7b3bG/YarYuz/GoI/+wZ4+btTyiv5MjHA9F9w226HvSViiS86rE0EYHnwz07f/JE3VCMc43T/E8weswwDvRHaWbVbwEG+WrWbJp+HgRrxOB93nfEb8Ef9T4eIb/PdlXf7Lp9K0rX4K33skQJ3u4P7K4k2KdT+PpPEV34fgojGt2OfBK3u/DVz8D3PtD5aPOCw==",
         },
         {
-            "url": "https://pzplus.tck.mn/p?compass/8/12/...4...8j.51..72.y.4.711..zx31..1.1.y6..71..1j..0...5./",
+            "url": "https://puzz.link/p?compass/10/10/j.222h.112i2122t1211g2212g11.1i2222m2222t2111g222.g2222h2212q1222l2221k111.2..2l1.21h",
             "test": False,
         },
     ],
