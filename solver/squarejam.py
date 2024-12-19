@@ -7,7 +7,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region
+from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
 from noqx.solution import solver
 
 
@@ -17,20 +17,6 @@ def squarejam_constraint(target: int, src_cell: Tuple[int, int]) -> str:
 
     src_r, src_c = src_cell
     return f":- {{ {tag}({src_r}, {src_c}, R, C) }} != {2 * target - 1}."
-
-
-def squarejam_global_constraint() -> str:
-    """Generate a global constraint for squarejam."""
-
-    no_rect_adjacent_by_point = [
-        "edge_left(R, C + 1)",
-        "edge_left(R + 1, C + 1)",
-        "edge_top(R + 1, C)",
-        "edge_top(R + 1, C + 1)",
-    ]
-    rule = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
-
-    return rule
 
 
 def solve(puzzle: Puzzle) -> List[Solution]:
@@ -55,7 +41,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for r, c, d in puzzle.helper_x:
         solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
 
-    solver.add_program_line(squarejam_global_constraint())
+    solver.add_program_line(avoid_region_border_crossover())
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
     solver.solve()
