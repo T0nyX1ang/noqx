@@ -65,5 +65,6 @@ __metadata__ = {
     "category": "region",
     "examples": [
         {"url": "https://puzz.link/p?araf/9/9/44g644g14h9i9h33h4h61h1i9h9h395h1g4k1g6g4i7g1g2g9g1g4i9g5g9h", "test": False},
+        {"url": "https://pzplus.tck.mn/p?araf/10/11/1l6p7q4467h5g55q7g7647g1q-108g-10h-1075-10q9p-10ld", "test": False},
     ],
 }
