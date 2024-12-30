@@ -64,7 +64,9 @@ __metadata__ = {
     "name": "Araf",
     "category": "region",
     "examples": [
-        {"url": "https://puzz.link/p?araf/9/9/44g644g14h9i9h33h4h61h1i9h9h395h1g4k1g6g4i7g1g2g9g1g4i9g5g9h", "test": False},
+        {
+            "data": "m=edit&p=7VRRb9owEH7nV1R+9oPPCcHJG+tgL4xua6eqiiIUaLqigdIFMk1G/PfeXcIcb7BpQur2MIWcvs93dr4zd7f5UudVIWN8AiOVBHwCo/g1If1U+9wst6siuZDDevtYVgikvBqP5UO+2hS9tI3KejsbJ3Yo7ZskFVpIfkFk0r5PdvZtYqfSXqNLSMC1CSIQUiMcOXjLfkKXzSIoxNMGRwjvEC6W1WJVzCbNQe+S1N5IQd95xbsJinX5tRDNNuaLcj1f0sI832Iym8flU+vZ1Pfl57qNhWwv7bCROzoiN2jlhg1s5BI6IpeyOFtucf+p2NTzY1rjbL/HO/+AamdJSsI/OmgcvE52aKfJTmiDW0MZNX+L0LFHA0AaOap9b+DTPlJwNPK8IQXHjg482g+RBo7SUR3qi4x8VRGpct+NKAVHB/53jfIped2HDMnoeElG31GS4U6OKdipAkVHOzcougAnE5SfBQDpHnQ4ndfZr+k83eEU78SB/jHev3AI/GSA/xCXDQSk5+DHcgAuiju2Y7aa7Q3WjLQB29dsFds+2wnHjNjesr1kG7KNOGZAVfdHdXm+HKw/zDc2mB2OLYix3gKsbxVLDXixhEEhxlo6YI3FgBiMkVo162AGiCn+t+ml2vC87D79f2sl66VihNPjYlpW63yFE2Rar+dFdeA4r/c98U3wi20BMvw/wv/GCKf7Vy/cMOf2b4pX+73XpL2S4qme5bNFiXWG98fuQ/udcrcd+Ss3NukJ96FvT7qbVj7uxmnxk+PFLxiHiMir/EFkvWc=",
+        },
         {"url": "https://pzplus.tck.mn/p?araf/10/11/1l6p7q4467h5g55q7g7647g1q-108g-10h-1075-10q9p-10ld", "test": False},
     ],
 }
