@@ -47,6 +47,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(araf_region_clue_count((r, c)))
         solver.add_program_line(araf_region_count((r, c)))
 
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+    for (r1, c1), num1 in puzzle.text.items():
+        for (r2, c2), num2 in puzzle.text.items():
+            assert isinstance(num1, int) and isinstance(num2, int)
+            if abs(r1 - r2) + abs(c1 - c2) >= max(num1, num2):
+                solver.add_program_line(f":- {tag}({r1}, {c1}, {r2}, {c2}).")
+
+            if abs(r1 - r2) + abs(c1 - c2) == 1 and abs(num1 - num2) <= 1:
+                solver.add_program_line(f":- {tag}({r1}, {c1}, {r2}, {c2}).")
+
     for r, c, d in puzzle.edge:
         solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
 
