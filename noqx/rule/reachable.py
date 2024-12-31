@@ -31,7 +31,7 @@ def grid_color_connected(
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: int = 4) -> str:
+def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to check the reachability of {color} cells connected to borders.
 
@@ -76,7 +76,7 @@ def grid_src_color_connected(
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "edge", "loop", "loop_directed"))
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
@@ -110,7 +110,7 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4,))
+        validate_type(adj_type, (4, "edge"))
 
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
@@ -143,7 +143,7 @@ def count_reachable_src(
     if color is None:
         validate_type(adj_type, ("edge",))
     elif main_type == "grid":
-        validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "edge", "loop", "loop_directed"))
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
@@ -157,12 +157,41 @@ def count_reachable_src(
     return f":- {{ {tag}({src_r}, {src_c}, R, C) }} {rop} {num}."
 
 
-def avoid_unknown_src(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+def count_rect_src(
+    target: Union[int, Tuple[str, int]],
+    src_cell: Tuple[int, int],
+    color: Optional[str] = None,
+    adj_type: Union[int, str] = 4,
+) -> str:
+    """
+    Generate a constraint to count the reachable rectangular area starting from a source.
+
+    A bulb_src_color_connected rule should be defined first.
+    """
+    if color is None:
+        validate_type(adj_type, ("edge",))
+
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
+    rop, num = target_encode(target)
+
+    src_r, src_c = src_cell
+    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
+
+    return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
+
+
+def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to avoid cells starting from unknown source.
 
     Use this constraint with grid_src_color_connected, and adj_type cannot be "edge".
     """
+    if color is None:
+        validate_type(adj_type, ("edge",))
+        tag = tag_encode("reachable", "grid", "src", "adj", adj_type)
+        return f":- grid(R, C), not {tag}(_, _, R, C)."
+
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
@@ -219,7 +248,7 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, 8, "x"))
+        validate_type(adj_type, (4, 8, "x", "edge"))
 
     tag = tag_encode("reachable", "grid", "branch", "adj", adj_type, color)
 

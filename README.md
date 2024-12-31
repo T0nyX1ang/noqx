@@ -94,7 +94,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Additional Usage
 
 ```text
-    usage: noqx.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT]
+    usage: main.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
+    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -141,10 +142,15 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
   - `name`: the name of the solver.
   - `category`: the category of the solver, should be `shade` (Shading), `loop` (Loop / Path), `region` (Area Division), `num` (Number), `var` (Variety), `draw` (Drawing), `unk` (Unknown).
   - `examples` (Optional): a list of examples of the solver, each example can be created in two conflicting ways, `data` and `url`:
-    - `data`: directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`.
+    - `data`: directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`. The URL are suggested to be generated with the following conditions:
+      - contains **all** the required `modes` in this puzzle.
+      - contains the required `sub-types` in this puzzle.
+      - contains necessary initial conditions to pass the coverage tests.
+      - set `edit mode` to `solution mode` instead of `problem mode`.
     - `url`: draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL` to get the board URL.
     - `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys.
     - `test` (Optional): whether the example is a test case, the default value is `True`, and cannot be used together with `url` way.
+    - **Lots of** examples can be found at [pzplus](https://pzplus.tck.mn/db).
   - `parameters` (Optional): the parameters of the solver, which will be passed to the solver when it is created.
 
 - Free to PR now ^\_^

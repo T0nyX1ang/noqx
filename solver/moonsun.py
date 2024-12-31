@@ -5,7 +5,7 @@ from typing import List
 from noqx.penpa import Direction, Puzzle, Solution
 from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import pass_area_once, single_loop
+from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
@@ -58,7 +58,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     assert len(areas) % 2 == 0, "The number of areas should be even."
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(pass_area_once(ar))
+        solver.add_program_line(count_area_pass(1, ar))
 
     solver.add_program_line(area_adjacent(adj_type="loop"))
     solver.add_program_line(moon_sun_area())
