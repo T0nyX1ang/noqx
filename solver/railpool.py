@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import single_loop
@@ -30,7 +30,8 @@ def len_segment_area(color: str = "grid") -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -47,15 +48,17 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
-            data = puzzle.text[rc]
-            assert isinstance(data, list), "Please set all NUMBER to tapa sub."
-            for num in data:
-                if num != "?":
+            len_data = 0
+            for j in range(4):
+                num = puzzle.text.get(Point(*rc, Direction.CENTER, f"tapa_{j}"))
+                if isinstance(num, int):
                     solver.add_program_line(f":- not area_len({i}, {num}).")
-            solver.add_program_line(f":- #count{{ N: area_len({i}, N) }} != {len(data)}.")
+                    len_data += 1
+                len_data += num == "?"
+            solver.add_program_line(f":- #count{{ N: area_len({i}, N) }} != {len_data}.")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))

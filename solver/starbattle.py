@@ -2,14 +2,15 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     assert puzzle.param["stars"].isdigit(), "Invalid star count."
     num_stars = int(puzzle.param["stars"])
 
@@ -29,8 +30,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count(num_stars, color="star__2", _type="area", _id=i))
 
-    for (r, c, d), symbol_name in filter(lambda x: x[0][0] != -1, puzzle.symbol.items()):
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in filter(lambda x: x[0][0] != -1, puzzle.symbol.items()):
+        validate_direction(r, c, d)
         if symbol_name == "star__2":
             solver.add_program_line(f"star__2({r}, {c}).")
         if symbol_name == "star__0":

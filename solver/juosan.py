@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.solution import solver
@@ -25,20 +25,21 @@ def count_lines(area_id: int, num1: int, num2: int = 0):
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
     solver.add_program_line(jousan_constraint())
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.sudoku)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
-            data = puzzle.sudoku[rc][0]
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count_lines(i, data, len(ar) - data))
+            num = puzzle.text.get(Point(*rc, Direction.CENTER, "sudoku_0"))
+            assert isinstance(num, int), f"Clue at ({rc[0]}, {rc[1]}) must be an integer."
+            solver.add_program_line(count_lines(i, num, len(ar) - num))
 
     solver.add_program_line(display(item="content", size=3))
     solver.solve()

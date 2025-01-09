@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -34,7 +34,8 @@ def moon_sun_area() -> str:
     return (rule + extra + constraint).strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="moon"))
@@ -47,18 +48,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="moon_sun", adj_type="loop"))
     solver.add_program_line(single_loop(color="moon_sun"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
-        if symbol_name == "sun_moon__1":
-            solver.add_program_line(f"moon({r}, {c}).")
-        if symbol_name == "sun_moon__2":
-            solver.add_program_line(f"sun({r}, {c}).")
-
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     assert len(areas) % 2 == 0, "The number of areas should be even."
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count_area_pass(1, ar))
+
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
+        if symbol_name == "sun_moon__1":
+            solver.add_program_line(f"moon({r}, {c}).")
+        if symbol_name == "sun_moon__2":
+            solver.add_program_line(f"sun({r}, {c}).")
 
     solver.add_program_line(area_adjacent(adj_type="loop"))
     solver.add_program_line(moon_sun_area())

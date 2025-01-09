@@ -2,9 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_src_color_connected
 from noqx.rule.shape import all_rect_region
@@ -24,7 +24,8 @@ def avoid_area_adjacent(color: str = "black") -> str:
     return constraint.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -35,21 +36,21 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_area_adjacent(color="black"))
     solver.add_program_line(avoid_area_adjacent(color="white"))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
         solver.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
         solver.add_program_line(count_patchwork_src(target=num, src_cell=(r, c), color="black"))
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        assert d is not None, f"Direction in ({r}, {c}) is not defined."
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color == Color.GRAY:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"gray({r}, {c}).")
-        elif color_code == 4:  # black color
+        elif color == Color.BLACK:  # black color
             solver.add_program_line(f"black({r}, {c}).")
             solver.add_program_line(f"not gray({r}, {c}).")
         else:  # safe color (others)

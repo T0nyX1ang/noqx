@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import validate_direction
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -32,7 +33,8 @@ def masyu_white_rule() -> str:
     return white_rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -49,8 +51,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(masyu_black_rule())
     solver.add_program_line(masyu_white_rule())
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         solver.add_program_line(f"masyu({r}, {c}).")
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"white({r}, {c}).")

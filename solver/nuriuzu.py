@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
@@ -19,7 +19,8 @@ def nuriuzu_constraint(glxr: int, glxc: int, adj_type: int = 4, color: str = "bl
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -29,7 +30,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
 
     reachables = []
-    for (r, c, d), symbol_name in puzzle.symbol.items():
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
         assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
 
         # there are no category = 1 for nuriuzu, because it is conflicting with the no 2x2 white rule.
@@ -60,10 +61,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
     solver.add_program_line(f":- grid(R, C), not black(R, C), {spawn_points}.")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())
@@ -79,5 +80,6 @@ __metadata__ = {
         {
             "data": "m=edit&p=7VZRb5swEH7Pr5ju+R4wmAR4y7quL126jUxVhVDkULdBoyKDMFWO8t97PpiQViNNm7buoXL86eO7s/mwrXPab51qNIrQ/oIIPRTU5l7EXUT0TP1HW5eHSidvcNkddnVDBPFqhXeqavUsG5Ly2dHEiVmiuUgy8AG5C8jRfEqO5kNiUjQphQAlaZfEBKBP9Hyk1xy37KwXhUd8NXCiN0SLsikqvUnTXvqYZGaNYF/0lodbCg/1dw39OH4u6odtaYWtOtDHtLtyP0Ta7rb+2g25Ij+hWf7k1/oZ/AajX0t7v5Y5/Nphf+5X397rttu6zMb56USr/pnsbpLMOv8y0mikaXIkXDEKxpvkCKGkaQS9abRHjiEK3fLCKQsxd+uRN6G75/E9t5vAi536IhJum96E/ditx4H7vfHE/PHEPMIPoomAnAqE7k8Tge9aO9q197x3PuOathZNwPiO0WMMGS8555zxmvGMUTLOOWdhD8cvHh+QZEkiSFoV//lZ+kveMtmXpalGxes1+n9H81kGadfcqUJTBUt3aq+BborTDB6BexZQmny9PF7m8rA74P32FfIyJSmjtaXCYK4Q9t1GbYq6Avr7gayLZ/o/d091C9p92ajqXlXqsdQt5LMn",
         },
+        {"url": "https://puzz.link/p?nuriuzu/10/10/iaaeztepexewezwepexewezzseezzj", "test": False},
     ],
 }

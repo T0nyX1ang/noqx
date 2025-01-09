@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, invert_c, shade_c
+from noqx.rule.helper import validate_direction
 from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
@@ -30,7 +31,8 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
     raise AssertionError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     assert puzzle.row % 2 == 0 and puzzle.col % 2 == 0, "# rows and # columns must both be even!"
 
     solver.reset()
@@ -47,8 +49,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(3, 1, color="circle_M__1"))
     solver.add_program_line(avoid_rect(3, 1, color="circle_M__2"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "circle_M__1":
             solver.add_program_line(f":- circle_M__2({r}, {c}).")
         else:

@@ -2,12 +2,14 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid, unique_num
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     assert puzzle.row == puzzle.col, "This puzzle must be square."
     n = puzzle.row
 
@@ -18,31 +20,29 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(unique_num(_type="row", color="grid"))
     solver.add_program_line(unique_num(_type="col", color="grid"))
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
-        assert isinstance(num, int), "TOP clue should be integer."
-        solver.add_program_line(f"blocked_t(R, {c}) :- number(R, {c}, N), number(R1, {c}, N1), R1 < R, N1 > N.")
-        solver.add_program_line(f":- #count {{ R: blocked_t(R, {c}) }} != {n - num}.")
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
 
-    for (r, c), num in filter(lambda x: x[0][0] == n and x[0][1] >= 0, puzzle.text.items()):  # filter bottom number
-        assert isinstance(num, int), "BOTTOM clue should be integer."
-        solver.add_program_line(f"blocked_b(R, {c}) :- number(R, {c}, N), number(R1, {c}, N1), R1 > R, N1 > N.")
-        solver.add_program_line(f":- #count {{ R: blocked_b(R, {c}) }} != {n - num}.")
+        if r == -1 and 0 <= c < puzzle.col:
+            solver.add_program_line(f"blocked_t(R, {c}) :- number(R, {c}, N), number(R1, {c}, N1), R1 < R, N1 > N.")
+            solver.add_program_line(f":- #count {{ R: blocked_t(R, {c}) }} != {n - num}.")
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
-        assert isinstance(num, int), "LEFT clue should be integer."
-        solver.add_program_line(f"blocked_l({r}, C) :- number({r}, C, N), number({r}, C1, N1), C1 < C, N1 > N.")
-        solver.add_program_line(f":- #count {{ C: blocked_l({r}, C) }} != {n - num}.")
+        if r == puzzle.row and 0 <= c < puzzle.col:
+            solver.add_program_line(f"blocked_b(R, {c}) :- number(R, {c}, N), number(R1, {c}, N1), R1 > R, N1 > N.")
+            solver.add_program_line(f":- #count {{ R: blocked_b(R, {c}) }} != {n - num}.")
 
-    for (r, c), num in filter(lambda x: x[0][1] == n and x[0][0] >= 0, puzzle.text.items()):  # filter right number
-        assert isinstance(num, int), "RIGHT clue should be integer."
-        solver.add_program_line(f"blocked_r({r}, C) :- number({r}, C, N), number({r}, C1, N1), C1 > C, N1 > N.")
-        solver.add_program_line(f":- #count {{ C: blocked_r({r}, C) }} != {n - num}.")
+        if c == -1 and 0 <= r < puzzle.row:
+            solver.add_program_line(f"blocked_l({r}, C) :- number({r}, C, N), number({r}, C1, N1), C1 < C, N1 > N.")
+            solver.add_program_line(f":- #count {{ C: blocked_l({r}, C) }} != {n - num}.")
 
-    for (r, c), num in filter(
-        lambda x: x[0][0] < n and x[0][0] >= 0 and x[0][1] < n and x[0][1] >= 0, puzzle.text.items()
-    ):  # filter center number
-        assert isinstance(num, int), "Clue should be integer."
-        solver.add_program_line(f"number({r}, {c}, {num}).")
+        if c == puzzle.col and 0 <= r < puzzle.row:
+            solver.add_program_line(f"blocked_r({r}, C) :- number({r}, C, N), number({r}, C1, N1), C1 > C, N1 > N.")
+            solver.add_program_line(f":- #count {{ C: blocked_r({r}, C) }} != {n - num}.")
+
+        if 0 <= r < puzzle.row and 0 <= c < puzzle.col:
+            solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

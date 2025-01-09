@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent
@@ -20,7 +20,8 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="hole"))
@@ -29,7 +30,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="edge"))
 
     reachables = []
-    for (r, c, d), symbol_name in puzzle.symbol.items():
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
         assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
 
         if d == Direction.CENTER:
@@ -60,19 +61,17 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
 
-    for (r, c), color_code in puzzle.surface.items():
+    for (r, c, _, _), color in puzzle.surface.items():
         solver.add_program_line(f"hole({r}, {c}).")
 
         for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
-            prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
+            prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
             direc = "left" if c1 != c else "top"
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        assert d is not None, f"Direction in ({r}, {c}) is not defined."
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
@@ -11,7 +11,8 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -28,9 +29,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count_area_pass(1, ar))
         if rc:
-            data = puzzle.text[rc]
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count(data, color="country_road", _type="area", _id=i))
+            num = puzzle.text[Point(*rc, Direction.CENTER, "normal")]
+            assert isinstance(num, int), f"Clue at ({rc[0]}, {rc[1]}) must be an integer."
+            solver.add_program_line(count(num, color="country_road", _type="area", _id=i))
 
     solver.add_program_line(avoid_area_adjacent(color="not country_road", adj_type=4))
     solver.add_program_line(display(item="grid_direction", size=3))

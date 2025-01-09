@@ -3,8 +3,9 @@
 import itertools
 from typing import List, Tuple
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.solution import solver
 
@@ -27,7 +28,8 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
     return rules + "\n" + constraints
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -36,17 +38,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type=8))
     solver.add_program_line(avoid_adjacent_color(color="tents__2", adj_type=8))
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
-        assert isinstance(num, int), "TOP clue must be an integer."
-        solver.add_program_line(count(num, color="tents__2", _type="col", _id=c))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
-        assert isinstance(num, int), "LEFT clue must be an integer."
-        solver.add_program_line(count(num, color="tents__2", _type="row", _id=r))
+        if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
+            solver.add_program_line(count(num, color="tents__2", _type="col", _id=c))
+
+        if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
+            solver.add_program_line(count(num, color="tents__2", _type="row", _id=r))
 
     all_trees: List[Tuple[int, int]] = []
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "tents__1":
             all_trees.append((r, c))
             solver.add_program_line(f"not tents__2({r}, {c}).")
@@ -67,6 +72,7 @@ __metadata__ = {
     "examples": [
         {
             "data": "m=edit&p=7VZNj9owEL3nV6x89iF2PpzkRrfLXijbFqoViiIUaCpQoaGQVJUR/31nJqlCYl+K1O1lZTyaeR5n3oy/OP2s82PBRYA/L+IuF9BCN6IuIrCh/2nzbbUrkjs+qqtNeQSF86fxmH/Ld6fCSXEmtMw56zjRI64fk5QJxpmELljG9afkrD8kesr1DIYY+HI9aZwkqA+d+kzjqN03oHBBn7Y6qAtQ19vjelcsJw3yMUn1nDOM845mo8r25a+CtTzQXpf71RaBVV5BMqfN9tCOnOqv5fe69RXZhetRQ3dhoet1dFFt6KJmoYtZIN2q+FGdbuLazjRpxtnlAuX+DESXSYqcv3Rq1Kmz5AxympyZL2CqhHWiFWG+BNPrTL9vhmDiojZm4PZGA/zUldn/VBD3AokAP31lx+je2TJSV9OBrCDKC6AcYhzAu/qx0DMhjNeHlDkxCgwojgxIuJjpELP4CYufxMSGGCY/wDxMeID5FowKOcAsJRGWmghliRs1i9rDYhtmxpWumZv0zLjSkpuknTfAlFk/aVk1qSxxLblJZS6vVGZuUplrKZUl32jID7bkmDamJDmH48W1R/I9SZdkQHJCPg8kn0nek/RJhuSj8ID+1RHunQ0iKP89wTRsXgZbU28jt4xkTsqm9X5VHO+m5XGf7+CCn23yQ8HgBb047DejTnei//aovvKjiqV3bz6X/+eaSKGq8G9NP3F2qJf5cl3CnnKzV2cJ10Vb3cx5AQ==",
-        }
+        },
+        {"url": "https://puzz.link/p?tents/13/13/h3g03h1g2j3h32g24g2g55233hi11131331f78625243a872550", "test": False},
     ],
 }

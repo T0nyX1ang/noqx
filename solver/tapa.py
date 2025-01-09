@@ -2,8 +2,9 @@
 
 from typing import Dict, List, Set, Tuple, Union
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -102,7 +103,8 @@ def valid_tapa(r: int, c: int) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -113,17 +115,24 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(tapa_pattern_rule())
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not black({r}, {c}).")
+    clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        assert pos and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub."
+        clue_dict.setdefault((r, c), [])
+        clue_dict[(r, c)].append(clue)
 
-    for (r, c), clue in puzzle.text.items():
-        assert isinstance(clue, list), "Please set all NUMBER to tapa sub."
         solver.add_program_line(f"not black({r}, {c}).")
-        solver.add_program_line(parse_clue(r, c, clue))
         solver.add_program_line(valid_tapa(r, c))
+
+    for (r, c), clue in clue_dict.items():
+        solver.add_program_line(parse_clue(r, c, clue))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"black({r}, {c}).")
+        else:
+            solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))
     solver.solve()
@@ -138,5 +147,6 @@ __metadata__ = {
         {
             "data": "m=edit&p=7VZNj9owEL3zK1Y+zyG243xdKrpdeqFsW6hWqyhCgWa1qEGhgVSVEf99x+O0MQFVW1WiFxQxery88bwx/mD7vcnrAgQH7oOMwANEEMkAVIiYc2GD1z6z1a4skhsYNrvnqkYAcD8awVNebotB2qqywV7HiR6Cfp+kjDNgAj+cZaA/JXv9IdET0FN8xcBHbmxFAuFdBx/ovUG3luQe4gliHzHCR4TLVb0si/nYMh+TVM+AmTpvKdtAtq5+FKz1Yb4vq/ViZYhFvsNmts+rTftm23ytvjWtlmcH0ENrd3rGruzsGmjtGnTGruni3+2Wm+qc0Tg7HHDCP6PVeZIa1186GHVwmuwxTpI9U4FJfYMuAN3heCoyBP5Iv4iICNkRMe8R3JPEuBSnLFwvDicoUQinGpct51I+UUepga3pVghIdlwh7Jvn8am1mFp2GOFZxskTXtz3JWRofbkUqbCHjlKn7oUimdO2CGgs10NAGjcr7M+ziKwDx5T0qJzZBr8ZasbVcNK4LiWnkY4Y27BLSdUfyac0pxGp7Pw6jG3NHSfy+lkRZblzJE+WmYyp/BFzPDQuYU4L+ZHiiKKgOMN1DlpSfEfRo6gojklzR/GB4i1Fn2JAmtDslFfuJaYES3xgZvkJu7Eu4C1VeCC/8lFX5VX5pycbpGza1E/5ssCLZdKsF0V9M6nqdV4yvMMPA/aT0SeVKPev1/rFr3Uz+d5fXe7//3xMcV7xlNL3wDbNPJ8vq5Lhf0IwfBid8Bd3j4co2+WbnGWDFw==",
         },
+        {"url": "https://puzz.link/p?tapa/10/10/i0ha0t1h2hb0t3h4h.q.h5h6ha0o.g.h7h8g.o./", "test": False},
     ],
 }

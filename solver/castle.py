@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -28,7 +29,8 @@ def wall_length(r: int, c: int, d: int, num: int) -> str:
     raise AssertionError("Invalid direction.")
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -40,15 +42,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(single_loop(color="castle"))
     solver.add_program_line(separate_item_from_loop(inside_item="white", outside_item="black"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        solver.add_program_line(f"not castle({r}, {c}).")
-        if color_code == 4:
-            solver.add_program_line(f"black({r}, {c}).")
-        if color_code in [1, 3, 8]:  # shaded color (DG, GR, LG)
-            solver.add_program_line(f"gray({r}, {c}).")
-
-    for (r, c), clue in puzzle.text.items():
-        if (r, c) not in puzzle.surface:
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        if Point(r, c) not in puzzle.surface:
             solver.add_program_line(f"white({r}, {c}).")
             solver.add_program_line(f"not castle({r}, {c}).")
 
@@ -57,8 +54,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
 
         assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
         num, d = clue.split("_")
-        assert num.isdigit() and d.isdigit(), "Invalid arrow or number clue."
+        assert num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c})."
         solver.add_program_line(wall_length(r, c, int(d), int(num)))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        solver.add_program_line(f"not castle({r}, {c}).")
+        if color == Color.BLACK:
+            solver.add_program_line(f"black({r}, {c}).")
+        if color == Color.GRAY:
+            solver.add_program_line(f"gray({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -76,6 +80,10 @@ __metadata__ = {
         },
         {
             "data": "m=edit&p=7VdNb1s3ELz7VwQ88/D49b5ubhL34rofdhEEgmHIroIYletWttpAhv97Zpa7fk9GixYwUOQQCCKHw+FyuVxS1N0f2+Vm5UPrQ/Cp940P+LS59bmAa/JQi0Y/Z9f369X4yh9u7z/ebgC8//7oyH9Yru9WBwtVnR887IZxd+h3344LF5x3Ed/gzv3ux/Fh9924O/W7U3Q5n8EdV1EEfDvBd9JP9LqSoQE+AYYxDnsPeHW9uVqvLo7RC+aHcbE7847zfCOjCd3N7Z8rp36wfXV7c3lN4nJ5j8Xcfbz+XXvutr/c/rpVbTh/9LvD6u6xuctZ1N00uUtY3SV67q6u58Xurq9/W336O0+H88dHRPwn+HoxLuj2zxPsJ3g6PrjcuzF512Y3ZlSDtLpOqiFJFZraDCFoDbHUykeMwuCQ2trOqNkuUWvVq9nQ18lCj7lZD03lbb6hSB1DtRejtlPVxQS7rLPWhTqs50TXg4y4YMCZZogN10YqOd8ZBY+VMlWHSRYuzQfSX9lkbfeYhxLkm1F0GTGfUxIuymbGJXTUNXNO/HqmezZliCJq5m5JvHWNtiCJ/TP3ZR9o7EnEDeFAeDFxOsF8BXXhZc8YN23PGHdvj+A27vleg7PvE/d2LoqNOBnmItn4hct7HJOAxmYRjFFdeCKYIfuErHhGMGdoem6G+bNw3TQdcimMDyjfS3kkZZTyDEfH75KUb6RspCxSHovmLfIwxc6njDhGD9wDw1fB4Ok3cabGcPKpRcAEZ2DE2/isuKXGeNhsbewAjKQwPituqVFcYLPTsaUAI57GF8UdNca3wAiMYPjJnDC+KO6oUdzCZq9jW/A8LMa3intqFHfRpwGbIRjrYrIY3ykeqFHc4xeIuSK4A9Z5waMtGP0TPzQ+B6SD4ACME6g82lUfqDE+Adu8GVhjBR5t1VNjPOZingqGPzy5yqOtemrMN4yN1X5uYJ8H2/hGcaTG+B647m9uBuC6j8I3ipFXT3woPqcaf5mXF4Lx6if6Jz4CZ9VH6HlZGB8VZ2psLGJYNG4pAte9E56njLhQYzzWUnS9CevlPWN8UlyoMQwfNN8y8i1rXgmv+Yb+icdZyL3ab2Gf95PxekbQP+Nh0/IE5yLz+jJezxH6Zzxi3mtsO+QJbzfjO8U9sPHI26z5nJHPWfNWeM1n9M94+Gx51SHOvBiN1zOI/onH2SmN4RZYYwUebcHon/gBOJgd6C0HwKNd9cgN4wtysmjuiR3et8brvOif8R1wjWdBThbNVeEbxbjrJn4ArvEsOHeFV7Xxek7RP/F4fpZU862ECFxjK3xQjNx74iNwVn2Enhe98VFxpsbGYo1675WE+PBHwHg9I+hXHpf6O7naX0uZpWzlyu/4lvqPr636Rnn5r8u/urPIUd7t//wpX/tf0n9+sHCn282H5dUKL/BjvMRfndxubpZrtE62N5erjbXx3+fxwH1y8l0kDM5f/w79/3+HGP3mSzumX5o7uDjc1fIOu/7Xcs3U/Qw=",
+        },
+        {
+            "url": "https://puzz.link/p?castle/10/10/f00.g231g141d141b022d042g241d212b112d141g042d022b241d241g131g00.f",
+            "test": False,
         },
     ],
 }

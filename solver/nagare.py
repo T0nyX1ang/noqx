@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import validate_direction
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -19,7 +20,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
 
         c1, c2 = cols[0], cols[-1]
         for c_ in cols:
-            if puzzle.symbol.get((r, c_, Direction.CENTER)) or puzzle.surface.get((r, c_)):
+            if puzzle.symbol.get(Point(r, c_, Direction.CENTER)) or puzzle.surface.get(Point(r, c_)):
                 c1 = c_ + cols.step
         if d == "r":
             c1, c2 = c2, c1
@@ -32,7 +33,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
 
         r1, r2 = rows[0], rows[-1]
         for r_ in rows:
-            if puzzle.symbol.get((r_, c, Direction.CENTER)) or puzzle.surface.get((r_, c)):
+            if puzzle.symbol.get(Point(r_, c, Direction.CENTER)) or puzzle.surface.get(Point(r_, c)):
                 r1 = r_ + rows.step
         if d == "d":
             r1, r2 = r2, r1
@@ -43,7 +44,8 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
     raise AssertionError("Invalid direction.")
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -54,21 +56,21 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="nagare", adj_type="loop_directed"))
     solver.add_program_line(directed_loop(color="nagare"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         shape, style = symbol_name.split("__")
-        d = dict_dir[style]
+        _d = dict_dir[style]
 
         if shape == "arrow_B_B":
             solver.add_program_line(f"nagare({r}, {c}).")
-            solver.add_program_line(f'grid_in({r}, {c}, "{rev_direction[d]}").')
-            solver.add_program_line(f'grid_out({r}, {c}, "{d}").')
+            solver.add_program_line(f'grid_in({r}, {c}, "{rev_direction[_d]}").')
+            solver.add_program_line(f'grid_out({r}, {c}, "{_d}").')
         if shape == "arrow_B_W":
             solver.add_program_line(f"not nagare({r}, {c}).")
-            solver.add_program_line(nagare_wind(r, c, d, puzzle))
+            solver.add_program_line(nagare_wind(r, c, _d, puzzle))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"not nagare({r}, {c}).")
 
     solver.add_program_line(display(item="grid_in", size=3))

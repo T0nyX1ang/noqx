@@ -2,8 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import validate_direction
 from noqx.rule.loop import loop_segment, loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -34,7 +35,8 @@ def count_balance(target: int, src_cell: Tuple[int, int]) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -48,20 +50,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(single_loop(color="balance"))
     solver.add_program_line(loop_sign(color="balance"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         solver.add_program_line(f"balance({r}, {c}).")
         solver.add_program_line(loop_segment((r, c)))
 
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"white({r}, {c}).")
-            num = puzzle.text.get((r, c))
+            num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
             if isinstance(num, int):
                 solver.add_program_line(count_balance(num, (r, c)))
 
         if symbol_name == "circle_L__2":
             solver.add_program_line(f"black({r}, {c}).")
-            num = puzzle.text.get((r, c))
+            num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
             if isinstance(num, int):
                 solver.add_program_line(count_balance(num, (r, c)))
 

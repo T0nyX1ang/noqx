@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
@@ -11,7 +12,8 @@ from noqx.rule.variety import yaji_count
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="gray"))
@@ -25,7 +27,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="white", adj_type="loop"))
     solver.add_program_line(single_loop(color="white"))
 
-    for (r, c), clue in puzzle.text.items():
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f"gray({r}, {c}).")
 
         # empty clue or space or question mark clue (for compatibility)

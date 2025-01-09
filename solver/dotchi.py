@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -19,7 +19,8 @@ def dotchi_constraint() -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="white"))
@@ -38,8 +39,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"white({r}, {c}).")
             solver.add_program_line(f"dotchi({r}, {c}).")
@@ -58,6 +59,10 @@ __metadata__ = {
     "examples": [
         {
             "data": "m=edit&p=7VZdaxs7EH33rwh6VkEj7Yd239I06Ytv2tukhGBMcBz32tTppv64hDX+7zkzK+O0HriQQknhsl7t8UiaOXP0ufy+Hi0mlhz/QrT44skoyutjIa9Lz+VsNZ/UR/Z4vZo2CwBrP5yd2S+j+XLSG6RWw96mrer22Lbv64HxxspLZmjbv+tN+1fdXtv2AlXGEmx9IDLWA57u4ZXUMzrpjOSAzxMGvAYczxbj+eSm31k+1oP20hqO81Z6MzT3zb8T03WT/+Pm/nbGhtvRCsksp7OHVLNc3zVf16ktDbe2Pe7o9hW6YU+XYUeXkUKXs/hluvPZt8mjxrQabrdQ/BO43tQDpv15D+MeXtQblOdSkpTX9cYEghtCnOfcTAiqNVetpWbNMtVawOoPrFGz5l61Vpq1ULMoOIvDtszhoG2p8i3VttGpVtbhIFpkvgdtK+Z70LZS+Vaq6uRUEuRU1chxeopZzY+cOiBEemuvik9enUPk2fehOei8gzosFNR5RJkqIOlzkTJ1wChTZxjlepaFPgwFp/OTGSvuTNadl/ISy9K2Qcp3Ujopcyn70uYUK9RTZj2rBk6esB8HhBRcAoMVY4+9OkNMxsEBI2XBBIwJxDjz1ucQTjB85slnlgMjacY5/JfJfw6fZfJZom9MfXEeBJ59wPjaQF2s4Dxw1yZQsMFDX8EZcBcL9TYk/qi3Iev4ox64i4V64OQzIxvyjj/qgZN/8A87/nllPQ8D4wK582YgGLnzOAgGf94OBEO3IvUtkGORci/gZ5d7RN+Y+kbOPfWNAThpG6FhTNpGaPhMH8+bgWDEiilW5PM0xYqIVaVYFTjzhrDT0HWx8AXeaYt8XdLBVdA5aciHNqW+BK0oaUg8FuwHk+hKptKJlJmUhUyxks+FF58cL5vN/0lngNHnG8iPT/7n2Ya9genjzD46bxb3ozlO7tO7f579u5iOHiYGd6VtzzwaeQeBr17/X59+//WJ1XevbSm8NjpYnOauWY2nszfzpnkww94T",
+        },
+        {
+            "url": "https://puzz.link/p?dotchi/11/11/00g5g5k5k5k5k5k5k1k100fv003v0000000000vo00vu13a0b3j3a6a6j6j6a3a3j6b6b3a3a3b6j6j393a30",
+            "test": False,
         },
     ],
 }

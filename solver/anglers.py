@@ -2,16 +2,17 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
 
@@ -26,27 +27,30 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(single_loop(color="anglers", path=True))
     solver.add_program_line(avoid_unknown_src("anglers", adj_type="loop"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
-        assert symbol_name == "tents__3", "Invalid symbol."
-        solver.add_program_line(f"dead_end({r}, {c}).")
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
+        if symbol_name == "tents__3":
+            solver.add_program_line(f"dead_end({r}, {c}).")
 
     tag = tag_encode("reachable", "grid", "src", "adj", "loop", "anglers")
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         if not (0 <= r < puzzle.row and 0 <= c < puzzle.col):  # coordinations out of bounds
             solver.add_program_line(f"grid({r}, {c}).")
 
         solver.add_program_line(f"dead_end({r}, {c}).")
         solver.add_program_line(grid_src_color_connected((r, c), color="anglers", adj_type="loop"))
+
         if isinstance(num, int):
             solver.add_program_line(count_reachable_src(num + 1, (r, c), color="anglers", adj_type="loop"))
 
-        for (r1, c1), _ in puzzle.text.items():
+        for (r1, c1, _, _), _ in puzzle.text.items():
             if (r1, c1) != (r, c):
                 solver.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))

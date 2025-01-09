@@ -2,16 +2,17 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import area_same_color, avoid_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -26,17 +27,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, _) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
-    for (r, c), num in puzzle.text.items():
-        if num == "?":
-            continue
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        if isinstance(num, int):
+            solver.add_program_line(count_adjacent(num, (r, c), color="gray"))
 
-        assert isinstance(num, int), "Clue must be an integer."
-        solver.add_program_line(count_adjacent(num, (r, c), color="gray"))
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

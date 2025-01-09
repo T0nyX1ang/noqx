@@ -2,9 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
-from noqx.rule.helper import full_bfs, tag_encode, target_encode
+from noqx.rule.helper import full_bfs, tag_encode, target_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_area_adjacent
 from noqx.rule.reachable import area_color_connected, grid_color_connected, grid_src_color_connected
 from noqx.solution import solver
@@ -25,7 +25,8 @@ def count_reachable_src_white_circle(target: int, src_cell: Tuple[int, int], col
     return f":- #count{{ R, C: {tag}({src_r}, {src_c}, R, C), white_circle(R, C) }} {rop} {num}."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -40,8 +41,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
 
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"not gray({r}, {c}).")
@@ -50,15 +51,17 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         if symbol_name == "circle_L__2":
             solver.add_program_line(f"gray({r}, {c}).")
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue ({r}, {c}) must be an integer."
         solver.add_program_line(grid_src_color_connected((r, c), color="not gray", adj_type=4))
         solver.add_program_line(count_reachable_src_white_circle(num, src_cell=(r, c), color="not gray"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

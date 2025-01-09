@@ -2,15 +2,17 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import count_reachable_src, grid_color_connected, grid_src_color_connected
 from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -21,15 +23,17 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
     solver.add_program_line(grid_color_connected(color="not black", adj_type=4, grid_size=(puzzle.row, puzzle.col)))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
+    for (r, c, d, tp), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(tp, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
         solver.add_program_line(grid_src_color_connected((r, c), color="black", adj_type="x"))
         solver.add_program_line(count_reachable_src(num, (r, c), color="black", adj_type="x"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))

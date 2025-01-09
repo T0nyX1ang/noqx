@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Tuple, Union
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, shade_c
 from noqx.solution import solver
 
@@ -63,14 +63,23 @@ def nono_col(row: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "b
     return "\n".join(constraints)
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     top_clues = {}
     for c in range(puzzle.col):
-        top_clues[c] = tuple(clue for (r1, c1), clue in puzzle.text.items() if r1 <= -1 and c1 == c)
+        top_clues[c] = tuple(
+            clue
+            for (r1, c1, d1, pos1), clue in puzzle.text.items()
+            if r1 <= -1 and c1 == c and d1 == Direction.CENTER and pos1 == "normal"
+        )
 
     left_clues = {}
     for r in range(puzzle.row):
-        left_clues[r] = tuple(clue for (r1, c1), clue in puzzle.text.items() if r1 == r and c1 <= -1)
+        left_clues[r] = tuple(
+            clue
+            for (r1, c1, d1, pos1), clue in puzzle.text.items()
+            if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
+        )
 
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -82,14 +91,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(f"not black(-1..{puzzle.row}, {puzzle.col}).")
     solver.add_program_line(nono_row(puzzle.col, left_clues))
     solver.add_program_line(nono_col(puzzle.row, top_clues))
-    solver.add_program_line(display())
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
+    solver.add_program_line(display())
     solver.solve()
 
     return solver.solutions

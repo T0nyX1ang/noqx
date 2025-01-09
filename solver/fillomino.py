@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
 from noqx.solution import solver
@@ -65,7 +65,8 @@ def fillomino_filtered(fast: bool = True) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -78,8 +79,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
     solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue should be an integer."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) should be an integer."
         solver.add_program_line(f"number({r}, {c}, {num}).")
         solver.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
         solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
@@ -90,11 +93,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f":- not edge_left({r}, {c + 1}).")
             solver.add_program_line(f":- not edge_top({r + 1}, {c}).")
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f"edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        assert d is not None, f"Direction in ({r}, {c}) is not defined."
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))

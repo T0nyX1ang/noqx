@@ -3,7 +3,7 @@
 import itertools
 from typing import Iterable, Optional, Set, Tuple, Union
 
-from .helper import tag_encode, target_encode, validate_type
+from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 OMINOES = {
     1: {

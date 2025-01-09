@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.solution import solver
 
 
@@ -39,7 +40,8 @@ def convert_direction_to_edge() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
@@ -49,9 +51,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(no_loop())
     solver.add_program_line(convert_direction_to_edge())
 
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d, Direction.TOP_LEFT)
+        validate_type(pos, "normal")
         assert isinstance(num, int), "Clue should be an integer."
-        solver.add_program_line(f":- #count{{ D: grid_direction({r + 1}, {c + 1}, D) }} != {num}.")
+        solver.add_program_line(f":- #count{{ D: grid_direction({r}, {c}, D) }} != {num}.")
 
     solver.add_program_line(display(item="edge_diag_down", size=2))
     solver.add_program_line(display(item="edge_diag_up", size=2))

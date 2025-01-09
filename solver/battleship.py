@@ -2,59 +2,61 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
 from noqx.solution import solver
 
 
-def battleship_refine(solution: Solution) -> Solution:
+def battleship_refine(solution: Puzzle) -> Puzzle:
     """Refine the battleship solution."""
-    for (r, c, d), _ in solution.symbol.items():
-        has_top_neighbor = (r - 1, c, d) in solution.symbol
-        has_left_neighbor = (r, c - 1, d) in solution.symbol
-        has_bottom_neighbor = (r + 1, c, d) in solution.symbol
-        has_right_neighbor = (r, c + 1, d) in solution.symbol
+    for (r, c, d, pos), _ in solution.symbol.items():
+        has_top_neighbor = (r - 1, c, d, pos) in solution.symbol
+        has_left_neighbor = (r, c - 1, d, pos) in solution.symbol
+        has_bottom_neighbor = (r + 1, c, d, pos) in solution.symbol
+        has_right_neighbor = (r, c + 1, d, pos) in solution.symbol
 
-        fleet_name = solution.symbol[(r, c, d)].split("__")[0]
+        fleet_name = solution.symbol[Point(r, c, d, pos)].split("__")[0]
 
         # center part
         if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[(r, c, d)] = f"{fleet_name}__1"
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__1"
 
         # middle part
         elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
-            solution.symbol[(r, c, d)] = f"{fleet_name}__2"
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__2"
 
         # left part
         if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, not has_right_neighbor} == {False}:
-            solution.symbol[(r, c, d)] = f"{fleet_name}__3"
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__3"
 
         # top part
         if {has_top_neighbor, has_left_neighbor, has_right_neighbor, not has_bottom_neighbor} == {False}:
-            solution.symbol[(r, c, d)] = f"{fleet_name}__4"
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__4"
 
         # right part
         if {has_top_neighbor, has_bottom_neighbor, has_right_neighbor, not has_left_neighbor} == {False}:
-            solution.symbol[(r, c, d)] = f"{fleet_name}__5"
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__5"
 
         # bottom part
         if {has_bottom_neighbor, has_left_neighbor, has_right_neighbor, not has_top_neighbor} == {False}:
-            solution.symbol[(r, c, d)] = f"{fleet_name}__6"
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__6"
 
     return solution
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     fleet_name = "battleship_B"  # set a default battleship fleet name
-    for (r, c, d), symbol_name in puzzle.symbol.items():
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
         shape, style = symbol_name.split("__")
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+        validate_direction(r, c, d)
         assert shape.startswith("battleship"), f"Invalid battleship shape: {shape}."
         assert fleet_name in ("", shape), "Multiple fleet shapes are not allowed."
 
@@ -71,26 +73,26 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f":- grid({r}, {c - 1}), {fleet_name}({r}, {c - 1}).")
 
         if style == "2":
-            assert 0 < c < puzzle.col - 1 and 0 < r < puzzle.row - 1, "Ship is outside of the board."
+            assert 0 < c < puzzle.col - 1 and 0 < r < puzzle.row - 1, f"Ship at ({r}, {c}) is outside of the board."
             solver.add_program_line(f":- #count {{ R, C: {fleet_name}(R, C), adj_4({r}, {c}, R, C) }} != 2.")
 
         if style == "3":
-            assert c < puzzle.col - 1, "Ship is outside of the board."
+            assert c < puzzle.col - 1, f"Ship at ({r}, {c}) is outside of the board."
             solver.add_program_line(f":- grid({r}, {c - 1}), {fleet_name}({r}, {c - 1}).")
             solver.add_program_line(f":- grid({r}, {c + 1}), not {fleet_name}({r}, {c + 1}).")
 
         if style == "4":
-            assert r < puzzle.row - 1, "Ship is outside of the board."
+            assert r < puzzle.row - 1, f"Ship at ({r}, {c}) is outside of the board."
             solver.add_program_line(f":- grid({r - 1}, {c}), {fleet_name}({r - 1}, {c}).")
             solver.add_program_line(f":- grid({r + 1}, {c}), not {fleet_name}({r + 1}, {c}).")
 
         if style == "5":
-            assert c > 0, "Ship is outside of the board."
+            assert c > 0, f"Ship at ({r}, {c}) is outside of the board."
             solver.add_program_line(f":- grid({r}, {c + 1}), {fleet_name}({r}, {c + 1}).")
             solver.add_program_line(f":- grid({r}, {c - 1}), not {fleet_name}({r}, {c - 1}).")
 
         if style == "6":
-            assert r > 0, "Ship is outside of the board."
+            assert r > 0, f"Ship at ({r}, {c}) is outside of the board."
             solver.add_program_line(f":- grid({r + 1}, {c}), {fleet_name}({r + 1}, {c}).")
             solver.add_program_line(f":- grid({r - 1}, {c}), not {fleet_name}({r - 1}, {c}).")
 
@@ -108,13 +110,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(count_shape(2, "battleship", 3, color=fleet_name))
     solver.add_program_line(count_shape(1, "battleship", 4, color=fleet_name))
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
-        assert isinstance(num, int), "TOP style must be an integer."
-        solver.add_program_line(count(num, color=fleet_name, _type="col", _id=c))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
-        assert isinstance(num, int), "LEFT style must be an integer."
-        solver.add_program_line(count(num, color=fleet_name, _type="row", _id=r))
+        if r == -1 and 0 <= c < puzzle.col:
+            solver.add_program_line(count(num, color=fleet_name, _type="col", _id=c))
+
+        if c == -1 and 0 <= r < puzzle.row:
+            solver.add_program_line(count(num, color=fleet_name, _type="row", _id=r))
 
     solver.add_program_line(display(item=fleet_name))
     solver.solve()

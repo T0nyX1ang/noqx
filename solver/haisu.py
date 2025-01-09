@@ -2,9 +2,9 @@
 
 from typing import Iterable, List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction, validate_type
 from noqx.rule.loop import directed_loop
 from noqx.solution import solver
 
@@ -62,7 +62,8 @@ def haisu_count() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     assert "S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided."
 
     solver.reset()
@@ -85,10 +86,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area_border(i, ar))
 
         for r, c in ar:
-            if puzzle.text.get((r, c)) == "S":
+            if puzzle.text.get(Point(r, c, Direction.CENTER, "normal")) == "S":
                 s_index = ar
 
-    for (r, c), clue in puzzle.text.items():
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         if clue == "S":
             solver.add_program_line(f"path_start({r}, {c}).")
         elif clue == "G":

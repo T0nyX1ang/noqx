@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple, Union
 
-from .helper import tag_encode, target_encode, validate_type
+from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 
 def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:

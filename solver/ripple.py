@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction, validate_type
 from noqx.solution import solver
 
 
@@ -15,19 +15,22 @@ def ripple_constraint() -> str:
     return row + "\n" + col
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     flag = False
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         if num == "?":
             solver.add_program_line(f"black({r}, {c}).")
             flag = True
             continue
 
-        assert isinstance(num, int), "Clue should be integer."
+        assert isinstance(num, int), f"Clue at ({r}, {c}) should be integer or '?'."
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)

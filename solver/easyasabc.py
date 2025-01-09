@@ -2,12 +2,14 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, fill_num, grid, unique_num
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     assert puzzle.row == puzzle.col, "This puzzle must be square."
     n = puzzle.row
     letters = puzzle.param["letters"]
@@ -22,34 +24,33 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(unique_num(_type="col", color="grid"))
     solver.add_program_line(count(n - len(letters), _type="col", color="white"))
 
-    for (r, c), letter in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top letter
-        assert isinstance(letter, str) and len(letter) == 1, "TOP clue should be a letter."
-        solver.add_program_line(
-            f":- Rm = #min {{ R: grid(R, {c}), not white(R, {c}) }}, not number(Rm, {c}, {rev_letters[letter]})."
-        )
+    for (r, c, d, pos), letter in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(letter, str) and len(letter) == 1, f"Clue at ({r}, {c}) should be a letter."
 
-    for (r, c), letter in filter(lambda x: x[0][0] == n and x[0][1] >= 0, puzzle.text.items()):  # filter bottom letter
-        assert isinstance(letter, str) and len(letter) == 1, "BOTTOM clue should be a letter."
-        solver.add_program_line(
-            f":- Rm = #max {{ R: grid(R, {c}), not white(R, {c}) }}, not number(Rm, {c}, {rev_letters[letter]})."
-        )
+        if r == -1 and 0 <= c < puzzle.col:
+            solver.add_program_line(
+                f":- Rm = #min {{ R: grid(R, {c}), not white(R, {c}) }}, not number(Rm, {c}, {rev_letters[letter]})."
+            )
 
-    for (r, c), letter in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left letter
-        assert isinstance(letter, str) and len(letter) == 1, "LEFT clue should be a letter."
-        solver.add_program_line(
-            f":- Cm = #min {{ C: grid({r}, C), not white({r}, C) }}, not number({r}, Cm, {rev_letters[letter]})."
-        )
+        if r == puzzle.row and 0 <= c < puzzle.col:
+            solver.add_program_line(
+                f":- Rm = #max {{ R: grid(R, {c}), not white(R, {c}) }}, not number(Rm, {c}, {rev_letters[letter]})."
+            )
 
-    for (r, c), letter in filter(lambda x: x[0][1] == n and x[0][0] >= 0, puzzle.text.items()):  # filter right letter
-        assert isinstance(letter, str) and len(letter) == 1, "RIGHT clue should be a letter."
-        solver.add_program_line(
-            f":- Cm = #max {{ C: grid({r}, C), not white({r}, C) }}, not number({r}, Cm, {rev_letters[letter]})."
-        )
+        if c == -1 and 0 <= r < puzzle.row:
+            solver.add_program_line(
+                f":- Cm = #min {{ C: grid({r}, C), not white({r}, C) }}, not number({r}, Cm, {rev_letters[letter]})."
+            )
 
-    for (r, c), letter in filter(
-        lambda x: x[0][0] < n and x[0][0] >= 0 and x[0][1] < n and x[0][1] >= 0, puzzle.text.items()
-    ):  # filter center number
-        solver.add_program_line(f"number({r}, {c}, {rev_letters[letter]}).")
+        if c == puzzle.col and 0 <= r < puzzle.row:
+            solver.add_program_line(
+                f":- Cm = #max {{ C: grid({r}, C), not white({r}, C) }}, not number({r}, Cm, {rev_letters[letter]})."
+            )
+
+        if 0 <= r < puzzle.row and 0 <= c < puzzle.col:
+            solver.add_program_line(f"number({r}, {c}, {rev_letters[letter]}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

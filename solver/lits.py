@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
 from noqx.rule.helper import full_bfs, tag_encode
 from noqx.rule.neighbor import adjacent, area_adjacent
@@ -22,7 +22,8 @@ def avoid_area_adjacent_same_omino(num: int = 4, color: str = "black", adj_type:
     return f":- {tag_adj}(A, A1), A < A1, {tag}(A, _, _, T, _), {tag}(A1, _, _, T, _)."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -49,10 +50,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(area_adjacent(color=color))
     solver.add_program_line(avoid_area_adjacent_same_omino(4, color=color))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

@@ -1,33 +1,26 @@
 """The Compass solver."""
 
-from typing import Dict, List, Union
+from typing import List, Union
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 from noqx.solution import solver
 
 
-def compass_constraint(r: int, c: int, clue: Dict[int, Union[int, str]]) -> str:
+def compass_constraint(r: int, c: int, pos: str, num: Union[int, str]) -> str:
     """Generate a compass constraint."""
-
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-
-    new_clue = {"u": clue[4], "r": clue[5], "l": clue[6], "d": clue[7]}
-    constraint = {"u": f"R < {r}", "l": f"C < {c}", "d": f"R > {r}", "r": f"C > {c}"}
-
-    rule = ""
-    for direction, num in new_clue.items():
-        if not isinstance(num, int):
-            continue
-        rule += f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[direction]} }} != {num}."
+    constraint = {"sudoku_4": f"R < {r}", "sudoku_6": f"C < {c}", "sudoku_7": f"R > {r}", "sudoku_5": f"C > {c}"}
+    rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[pos]} }} != {num}."
 
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="hole"))
@@ -36,28 +29,30 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
-    all_src = [(r, c) for (r, c), _ in puzzle.sudoku.items()]
+    all_src = set((r, c) for (r, c, _, _) in puzzle.text)
     assert len(all_src) > 0, "No clues found."
-
-    for (r, c), color_code in puzzle.surface.items():
-        solver.add_program_line(f"hole({r}, {c}).")
-
-        for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
-            prefix = "not " if ((r1, c1), color_code) in puzzle.surface.items() else ""
-            direc = "left" if c1 != c else "top"
-            solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
-
-    for (r, c), clue in puzzle.sudoku.items():
+    for r, c in all_src:
         solver.add_program_line(f"not hole({r}, {c}).")
         current_excluded = [src for src in all_src if src != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color=None, adj_type="edge"))
-        solver.add_program_line(compass_constraint(r, c, clue))
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
+        if pos and isinstance(num, int):
+            solver.add_program_line(compass_constraint(r, c, pos, num))
 
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, _, _), color in puzzle.surface.items():
+        solver.add_program_line(f"hole({r}, {c}).")
+
+        for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
+            prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
+            direc = "left" if c1 != c else "top"
+            solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+
+    for (r, c, d, _), draw in puzzle.edge.items():
+        assert d is not None, f"Direction in ({r}, {c}) is not defined."
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))

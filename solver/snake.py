@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -32,28 +33,31 @@ def simple_shade_path(color: str = "black", adj_type: int = 4) -> str:
     return constraint
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
-
-    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
-        assert isinstance(num, int), "TOP clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="col", _id=c))
-
-    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
-        assert isinstance(num, int), "LEFT clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="row", _id=r))
-
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(grid_color_connected(color="gray"))
     solver.add_program_line(exclude_checkboard_shape(color="gray"))
     solver.add_program_line(avoid_rect(2, 2, color="gray"))
     solver.add_program_line(simple_shade_path(color="gray"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+
+        if r == -1 and 0 <= c < puzzle.col:
+            solver.add_program_line(count(num, color="gray", _type="col", _id=c))
+
+        if c == -1 and 0 <= r < puzzle.row:
+            solver.add_program_line(count(num, color="gray", _type="row", _id=r))
+
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(f":- dead_end({r}, {c}).")
@@ -61,10 +65,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(f":- not dead_end({r}, {c}).")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
@@ -11,7 +11,8 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -23,23 +24,23 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="doubleback", adj_type="loop"))
     solver.add_program_line(single_loop(color="doubleback"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
 
             # enforce the black cells to have edges on all sides
-            puzzle.edge.add((r, c, Direction.TOP))
-            puzzle.edge.add((r, c, Direction.LEFT))
-            puzzle.edge.add((r + 1, c, Direction.TOP))
-            puzzle.edge.add((r, c + 1, Direction.LEFT))
+            puzzle.edge[Point(r, c, Direction.TOP)] = True
+            puzzle.edge[Point(r, c, Direction.LEFT)] = True
+            puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
+            puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for ar in areas:
-        ar_f = tuple(filter(lambda x: puzzle.surface.get(x) not in [1, 3, 4, 8], ar))
-        if len(ar_f) == 0:
+        arb = tuple(filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar))
+        if len(arb) == 0:
             continue  # drop black cells
 
-        solver.add_program_line(count_area_pass(2, ar_f))
+        solver.add_program_line(count_area_pass(2, arb))
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

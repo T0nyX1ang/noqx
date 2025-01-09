@@ -2,7 +2,7 @@
 
 from typing import Iterable, Optional, Tuple, Union
 
-from .helper import target_encode
+from noqx.rule.helper import target_encode
 
 
 def display(item: str = "black", size: int = 2) -> str:

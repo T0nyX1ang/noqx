@@ -2,8 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import loop_segment, loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -20,7 +21,8 @@ def count_geradeweg_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="clue"))
@@ -33,14 +35,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(single_loop(color="geradeweg"))
     solver.add_program_line(loop_sign(color="geradeweg"))
 
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(loop_segment((r, c)))
         solver.add_program_line(f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != |{c} - N2|.')
         if num == "?":
             solver.add_program_line(f"geradeweg({r}, {c}).")
             continue
 
-        assert isinstance(num, int), "Clue must be an integer."
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer or '?'."
         solver.add_program_line(count_geradeweg_constraint(num, (r, c)))
         if num > 0:
             solver.add_program_line(f"geradeweg({r}, {c}).")

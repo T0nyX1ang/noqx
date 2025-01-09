@@ -2,19 +2,9 @@
 
 import random
 from collections import deque
-from enum import Enum
-from typing import Any, Dict, Iterable, Iterator, Optional, Set, Tuple, Union
+from typing import Dict, Iterable, Iterator, Optional, Tuple, Union
 
-
-class Direction(Enum):
-    """Enumeration for directions."""
-
-    CENTER = "center"
-    LEFT = "left"
-    TOP = "top"
-    TOP_LEFT = "top_left"
-    DIAG_UP = "diag_up"
-    DIAG_DOWN = "diag_down"
+from noqx.puzzle import Direction, Point
 
 
 def tag_encode(name: str, *data: Union[str, int, None]) -> str:
@@ -41,30 +31,44 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
     return (reverse_op(target[0]), target[1])
 
 
-def validate_type(_type: Union[int, str], target_type: Iterable[Union[int, str]]) -> None:
+def validate_type(_type: Optional[Union[int, str]], target_type: Union[int, str, Iterable[Union[int, str]]]):
     """Validate any matching type."""
-    assert _type in target_type, f"Invalid type '{_type}'."
+    assert _type is not None, "Type is not defined."
+    if isinstance(target_type, (int, str)):
+        assert _type == target_type, f"Invalid type '{_type}'."
+    else:
+        assert _type in target_type, f"Invalid type '{_type}'."
+
+
+def validate_direction(r: int, c: int, d: Optional[Direction], target: Direction = Direction.CENTER):
+    """Validate the direction of any element."""
+    assert d is not None, f"Direction in ({r}, {c}) is not defined."
+    assert d == target, f"The element in ({r}, {c}) should be placed in the {target.value}."
 
 
 def full_bfs(
-    rows: int, cols: int, edges: Set[Tuple[int, int, Direction]], clues: Optional[Dict[Tuple[int, int], Any]] = None
+    rows: int,
+    cols: int,
+    edges: Dict[Point, bool],
+    clues: Optional[Dict[Point, Union[int, str]]] = None,
 ) -> Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]]:
     """Generate a dict of rooms with their unique clue."""
     unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}
     clue_to_room: Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]] = {}
+    rc_set = {(r, c) for (r, c, _, _) in clues} if clues else set()
 
     def get_neighbors(r: int, c: int) -> Iterator[Tuple[int, int]]:
         """Get the neighbors of a cell."""
-        if (r, c, Direction.LEFT) not in edges:
+        if edges.get(Point(r, c, Direction.LEFT)) is not True:
             yield (r, c - 1)
 
-        if (r, c + 1, Direction.LEFT) not in edges:
+        if edges.get(Point(r, c + 1, Direction.LEFT)) is not True:
             yield (r, c + 1)
 
-        if (r, c, Direction.TOP) not in edges:
+        if edges.get(Point(r, c, Direction.TOP)) is not True:
             yield (r - 1, c)
 
-        if (r + 1, c, Direction.TOP) not in edges:
+        if edges.get(Point(r + 1, c, Direction.TOP)) is not True:
             yield (r + 1, c)
 
     def single_bfs(start_cell: Tuple[int, int]) -> Tuple[Union[Tuple[int, int], None], Tuple[Tuple[int, int], ...]]:
@@ -81,7 +85,7 @@ def full_bfs(
                     unexplored_cells.remove(neighbor)
                     queue.append(neighbor)
 
-            if clues and (r, c) in clues:
+            if clues and (r, c) in rc_set:
                 clue_cell = (r, c)
 
         return clue_cell, tuple(connected_component)

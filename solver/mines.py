@@ -2,13 +2,15 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     mine_count = puzzle.param["mine_count"]
 
     solver.reset()
@@ -17,8 +19,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(shade_c(color="sun_moon__4"))
     solver.add_program_line(adjacent(_type=8))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
         solver.add_program_line(f"not sun_moon__4({r}, {c}).")
         solver.add_program_line(count_adjacent(num, (r, c), color="sun_moon__4", adj_type=8))
 
@@ -26,8 +30,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         assert isinstance(mine_count, str) and mine_count.isdigit(), "Please provide a valid mine count."
         solver.add_program_line(count(int(mine_count), color="sun_moon__4", _type="grid"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "sun_moon__4":
             solver.add_program_line(f"sun_moon__4({r}, {c}).")
 

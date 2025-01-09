@@ -3,7 +3,7 @@
 from collections import Counter
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import border_color_connected, grid_color_connected
@@ -26,14 +26,23 @@ def len_segment(color: str = "black") -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     top_clues = {}
     for c in range(puzzle.col):
-        top_clues[c] = tuple(clue for (r1, c1), clue in puzzle.text.items() if r1 <= -1 and c1 == c)
+        top_clues[c] = tuple(
+            clue
+            for (r1, c1, d1, pos1), clue in puzzle.text.items()
+            if r1 <= -1 and c1 == c and d1 == Direction.CENTER and pos1 == "normal"
+        )
 
     left_clues = {}
     for r in range(puzzle.row):
-        left_clues[r] = tuple(clue for (r1, c1), clue in puzzle.text.items() if r1 == r and c1 <= -1)
+        left_clues[r] = tuple(
+            clue
+            for (r1, c1, d1, pos1), clue in puzzle.text.items()
+            if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
+        )
 
     solver.reset()
     solver.register_puzzle(puzzle)
@@ -59,10 +68,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             forbidden_len = ",".join([f"N != {x}" for x in Counter(clue).keys()])
             solver.add_program_line(f":- grid(R, {c}), len_vertical(R, {c}, N), {forbidden_len}.")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())

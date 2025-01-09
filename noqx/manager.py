@@ -6,9 +6,10 @@ import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from .logging import logger
-from .penpa import Puzzle
-from .solution import Config
+from noqx.logging import logger
+from noqx.puzzle import Puzzle
+from noqx.puzzle.penpa import PenpaPuzzle
+from noqx.solution import Config
 
 modules: Dict[str, ModuleType] = {}
 
@@ -48,8 +49,10 @@ def run_solver(puzzle_type: str, puzzle_content: str, param: Dict[str, Any]) -> 
         raise NotImplementedError("Solver not implemented.")
 
     start = time.perf_counter()
-    puzzle: Puzzle = Puzzle(puzzle_type, puzzle_content, param)
-    solutions: List[str] = list(map(str, module.solve(puzzle)))
+    puzzle: Puzzle = PenpaPuzzle(puzzle_type, puzzle_content, param)
+    puzzle.decode()
+
+    solutions: List[str] = list(map(lambda x: x.encode(), module.solve(puzzle)))
     stop = time.perf_counter()
 
     if (stop - start) >= Config.time_limit:

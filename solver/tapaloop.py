@@ -2,8 +2,9 @@
 
 from typing import Dict, List, Optional, Set, Tuple, Union
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.helper import validate_direction
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -141,7 +142,8 @@ def valid_tapaloop(r: int, c: int) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -160,11 +162,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(direction_to_binary(puzzle.row, puzzle.col))
     solver.add_program_line(tapaloop_pattern_rule())
 
-    for (r, c), clue in puzzle.text.items():
-        assert isinstance(clue, list), "Please set all NUMBER to tapa sub."
+    clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        assert pos and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub."
+        clue_dict.setdefault((r, c), [])
+        clue_dict[(r, c)].append(clue)
+
         solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(parse_clue(r, c, clue))
         solver.add_program_line(valid_tapaloop(r, c))
+
+    for (r, c), clue in clue_dict.items():
+        solver.add_program_line(parse_clue(r, c, clue))
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

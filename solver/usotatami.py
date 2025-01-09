@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
 from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
@@ -16,7 +16,8 @@ def rect_constraint() -> str:
     return ":- upleft(R, C), left(R + 1, C), up(R, C + 1)."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
 
@@ -29,18 +30,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_region_border_crossover())
     solver.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
 
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f"clue({r}, {c}).")
         solver.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
 
         if isinstance(num, int):
             solver.add_program_line(count_reachable_src(("ne", num), (r, c), main_type="bulb", color=None, adj_type="edge"))
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        assert d is not None, f"Direction in ({r}, {c}) is not defined."
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
     solver.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")

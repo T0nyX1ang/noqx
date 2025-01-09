@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
@@ -46,7 +47,8 @@ def hashi_bridge() -> str:
     return rule + adj.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="number", size=3))
@@ -56,7 +58,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(hashi_bridge())
     solver.add_program_line(grid_color_connected(color="hashi", adj_type="loop"))
 
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f"hashi({r}, {c}).")
         solver.add_program_line(f"number({r}, {c}, {num if isinstance(num, int) else -1}).")
 

@@ -2,28 +2,15 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_direction, validate_type
 from noqx.rule.shape import area_same_color
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
-    top_clues = {}
-    for c in range(puzzle.col):
-        data = puzzle.sudoku.get((-1, c))
-        data = data.get(2) if data else 0
-        assert isinstance(data, int), "Clue must be an integer."
-        top_clues[c] = (data,)
-
-    left_clues = {}
-    for r in range(puzzle.row):
-        data = puzzle.sudoku.get((r, -1))
-        data = data.get(1) if data else 0
-        assert isinstance(data, int), "Clue must be an integer."
-        left_clues[r] = (data,)
-
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -34,20 +21,22 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, _) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
-    for (r, c), clue in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.sudoku.items()):  # filter top number
-        num = clue.get(2)
-        assert isinstance(num, int), "TOP clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="col", _id=c))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
 
-    for (r, c), clue in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.sudoku.items()):  # filter left number
-        num = clue.get(1)
-        assert isinstance(num, int), "LEFT clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="row", _id=r))
+        if r == -1 and 0 <= c < puzzle.col:
+            validate_type(pos, "sudoku_2")
+            solver.add_program_line(count(num, color="gray", _type="col", _id=c))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+        if c == -1 and 0 <= r < puzzle.row:
+            validate_type(pos, "sudoku_1")
+            solver.add_program_line(count(num, color="gray", _type="row", _id=r))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

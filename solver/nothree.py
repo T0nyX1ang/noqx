@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
@@ -20,7 +20,8 @@ def no_consecutive_same_distance(color: str = "black") -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -30,7 +31,7 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(no_consecutive_same_distance(color="black"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
         assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
 
         if d == Direction.CENTER:
@@ -47,10 +48,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
                 f":- {{ black({r}, {c}); black({r - 1}, {c}); black({r}, {c - 1}); black({r - 1}, {c - 1}) }} != 1."
             )
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))

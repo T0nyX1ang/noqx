@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.solution import solver
 
@@ -24,7 +24,8 @@ def lightup(color: str = "black") -> str:
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -33,18 +34,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(lightup(color="not black"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"black({r}, {c}).")
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        if isinstance(num, int):
+            solver.add_program_line(count_adjacent(num, (r, c), color="sun_moon__3"))
 
-    for (r, c), clue in puzzle.text.items():
-        if isinstance(clue, int):
-            solver.add_program_line(count_adjacent(clue, (r, c), color="sun_moon__3"))
-
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "sun_moon__3":
             solver.add_program_line(f"sun_moon__3({r}, {c}).")
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="sun_moon__3"))
     solver.solve()

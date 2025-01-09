@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.helper import validate_direction
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -41,7 +42,8 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="dead_end"))
@@ -55,14 +57,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
     solver.add_program_line(convert_direction_to_edge())
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.TOP_LEFT, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d, Direction.TOP_LEFT)
         shape, style = symbol_name.split("__")
         if shape != "firefly":  # pragma: no cover
             continue  # warning: incompatible encoding with penpa+/puzz.link
 
         dr, dc = drdc[style]
-        clue = puzzle.text.get((r - 1, c - 1))  # the text is also placed in the top-left corner
+        clue = puzzle.text.get(Point(r, c, Direction.TOP_LEFT, "normal"))  # the text is also placed in the top-left corner
 
         if isinstance(clue, int):
             solver.add_program_line(restrict_num_bend(r + dr, c + dc, clue, color="firefly"))
@@ -71,11 +73,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(f'grid_out({r}, {c}, "{dict_dir[style]}").')
         solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        assert d is not None, f"Direction in ({r}, {c}) is not defined."
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))
@@ -91,6 +91,7 @@ __metadata__ = {
     "examples": [
         {
             "data": "m=edit&p=7VbfT9s8FH3vX1H5aZP8kMT5/cZY9710ZRtMCEVVlZYwqrUKX9pMzFX/d66Pw2JsUAVIPKE0V7fH914f2ye2N/+3ZVNxP1Q/kXKP+/REiYc3TGK8XvecLberKh/yo3Z7XTfkcH4y4VflalMNCpVIz3Swk1kuj7j8Ly9YwHj3Trn8nu/k11xOuDylJkaxXI7J8xkPyB317jnalXesQd8jf6L9mNwLchfLZrGqZmNd6FteyDPOVD+fkK1ctq7/VEyn4f+iXs+XCpiXWxrL5np507Vs2sv6d9vF+tM9l0ea7ugRuqKnq1xNV3mP0FWjeDXd6vJXdfsY02y639OM/yCus7xQtH/2btq7p/mO7CTfMREHKpdocCpA9UScKkAYSBLaSIokE8m8+8nqkNATCqHl7pHIygr9zEYCu3IYIMusI8AwNJAQWWZMBM4GoMdpFk5Q2KScOnQy347JEqtwhqQeiHwM3KgSBbFCIgMRoGfUjULEGECEGTXLxCBjAsjxDCRBiJmUPuyJlt3H4l/8W/yAs6tlU12t/kKenQIo/CEKFQgbhRJCG4Ua7FitCLuuVoXNQSvDrqvV4cRCIU5vUInTG5TiVIBanFjMjsMBsnFiIR0nFvJxYiEhhy90ZMdqMTkoBGWPQovK5qCF5VSAupxYKMxFVQWbr5aawwFye9gbie0LJBfAntEWxKWA/QzrwUawY8SMYM9hj2FD2BgxidrEnrXNmap/GR0Wp7RqWao+j4DORpo+cZBiESX6GHSed7y7HhRsRIfZcFI363JFR9qkXc+r5v4/XR/2A3bL8JIEfR6+3yje/kahZt974w/utd9/Icdqk+JRyrg84eymnZWzRU0ao7k70Djqv/KnmlOPi+zp7APNB4rH6vZNsn5JNu1Tzy375itHO+P9ATH8cF1vy6Ydzqty/ZFNB3c=",
-        }
+        },
+        {"url": "https://puzz.link/p?firefly/10/10/4.40g20c32j1.b3.h32d41a23c4.d3.b2.g3.j2.a3.e1.d1.b10h30", "test": False},
     ],
 }

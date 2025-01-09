@@ -2,9 +2,9 @@
 
 from typing import Dict, List, Tuple, Union
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
@@ -30,10 +30,12 @@ def no_2x2_path_bit() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
-    for (r, c), clue in puzzle.text.items():
-        assert isinstance(clue, (int, str)), "Invalid clue."
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         locations[clue] = locations.get(clue, []) + [(r, c)]
 
     # check that puzzle makes sense

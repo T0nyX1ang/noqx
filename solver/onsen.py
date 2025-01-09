@@ -2,7 +2,7 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import single_loop
@@ -55,7 +55,8 @@ def onsen_global_rule() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -72,17 +73,17 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area_border(i, ar))
         solver.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))
 
-        for rc in ar:
-            if rc in puzzle.text:
-                r, c = rc
-                data = puzzle.text[rc]
+        for r, c in ar:
+            if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
+                num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
                 solver.add_program_line(f"onsen_loop({r}, {c}).")
-                solver.add_program_line(onsen_rule(data if isinstance(data, int) else "?", onsen_id, i, r, c))
+                solver.add_program_line(onsen_rule(num if isinstance(num, int) else "?", onsen_id, i, r, c))
 
                 onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
 
     assert onsen_id > 0, "No onsen clues found."
     solver.add_program_line(onsen_global_rule())
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
