@@ -4,7 +4,7 @@ from typing import Dict, List, Set, Tuple, Union
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import validate_direction
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -118,7 +118,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
-        assert pos and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub."
+        fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
         clue_dict.setdefault((r, c), [])
         clue_dict[(r, c)].append(clue)
 

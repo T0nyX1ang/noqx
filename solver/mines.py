@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, shade_c
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.solution import solver
 
@@ -22,12 +22,12 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"not sun_moon__4({r}, {c}).")
-        solver.add_program_line(count_adjacent(num, (r, c), color="sun_moon__4", adj_type=8))
+        solver.add_program_line(count_adjacent(int(num), (r, c), color="sun_moon__4", adj_type=8))
 
     if mine_count:
-        assert isinstance(mine_count, str) and mine_count.isdigit(), "Please provide a valid mine count."
+        fail_false(isinstance(mine_count, str) and mine_count.isdigit(), "Please provide a valid mine count.")
         solver.add_program_line(count(int(mine_count), color="sun_moon__4", _type="grid"))
 
     for (r, c, d, _), symbol_name in puzzle.symbol.items():

@@ -41,12 +41,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
 
-        if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
+        if r == -1 and 0 <= c < puzzle.col and isinstance(num, int) and isinstance(num, int):
             solver.add_program_line(count(num, color="tents__2", _type="col", _id=c))
 
-        if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
+        if c == -1 and 0 <= r < puzzle.row and isinstance(num, int) and isinstance(num, int):
             solver.add_program_line(count(num, color="tents__2", _type="row", _id=r))
 
     all_trees: List[Tuple[int, int]] = []
@@ -71,7 +70,7 @@ __metadata__ = {
     "category": "var",
     "examples": [
         {
-            "data": "m=edit&p=7VZNj9owEL3nV6x89iF2PpzkRrfLXijbFqoViiIUaCpQoaGQVJUR/31nJqlCYl+K1O1lZTyaeR5n3oy/OP2s82PBRYA/L+IuF9BCN6IuIrCh/2nzbbUrkjs+qqtNeQSF86fxmH/Ld6fCSXEmtMw56zjRI64fk5QJxpmELljG9afkrD8kesr1DIYY+HI9aZwkqA+d+kzjqN03oHBBn7Y6qAtQ19vjelcsJw3yMUn1nDOM845mo8r25a+CtTzQXpf71RaBVV5BMqfN9tCOnOqv5fe69RXZhetRQ3dhoet1dFFt6KJmoYtZIN2q+FGdbuLazjRpxtnlAuX+DESXSYqcv3Rq1Kmz5AxympyZL2CqhHWiFWG+BNPrTL9vhmDiojZm4PZGA/zUldn/VBD3AokAP31lx+je2TJSV9OBrCDKC6AcYhzAu/qx0DMhjNeHlDkxCgwojgxIuJjpELP4CYufxMSGGCY/wDxMeID5FowKOcAsJRGWmghliRs1i9rDYhtmxpWumZv0zLjSkpuknTfAlFk/aVk1qSxxLblJZS6vVGZuUplrKZUl32jID7bkmDamJDmH48W1R/I9SZdkQHJCPg8kn0nek/RJhuSj8ID+1RHunQ0iKP89wTRsXgZbU28jt4xkTsqm9X5VHO+m5XGf7+CCn23yQ8HgBb047DejTnei//aovvKjiqV3bz6X/+eaSKGq8G9NP3F2qJf5cl3CnnKzV2cJ10Vb3cx5AQ==",
+            "data": "m=edit&p=7VZNj9owEL3nV6x89iF2PpzkUtHt0gvNtoXVCkURCjQVqNBQIFVlxH/fmUlW2Ti+FKnby8p4NPM89rwZ2zHHX3VxKLkI8OdF3OUCWuhG1EUENvTnNtuctmVyw0f1aV0dQOH8fjzm34vtsXQynAktd846TvSI649JxgTjTEIXLOf6S3LWnxKdcj2FIQa+XE8aJwnqXac+0jhqtw0oXNDTVgd1Dupqc1hty8WkQT4nmZ5xhnHe02xU2a76XbKWB9qrarfcILAsTpDMcb3ZtyPH+lv1o259RX7hetTQnVvoeh1dVBu6qFnoYhZI91T+PB2v4trOHNKM88sFyv0ViC6SDDk/dGrUqdPkDDJNzswXMFXCPtGOMF+C6XWmhwu/A5LPgN8fD8HEXW7MwO2NBrj2C7O/dhD3IqvICCUCjNU5iBjnd7aM1Iv1IB1BSc0hqRADA95VmIWYiQEhgT6khhOjYADFSLUPCRdTNzGLn7D4SUzMxDB5A/MwYQPzLRhV1sAsJRGWmghliRs1u9zDYhs2jCvdYW7SG8aVltwknU0DU8P6ScuuSWWJa8lNquH2SjXMTdLxNDFLvpHJD47kmA6mJDmDC8i1R/IDSZdkQHJCPnckH0nekvRJhuSj8Ar/1SXv3Q0iKP89wSxs3g5bU28j14zkTsbSercsDzdpddgVW3gCputiXzJ4Yy8O+8Oo0zfRf3t2X/nZxdK7V9/L//OZyKCq8H9O33O2rxfFYlXBmXLzV2cJn4u2urnzBA==",
         },
         {"url": "https://puzz.link/p?tents/13/13/h3g03h1g2j3h32g24g2g55233hi11131331f78625243a872550", "test": False},
     ],

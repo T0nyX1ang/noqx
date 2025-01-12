@@ -4,19 +4,19 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, fill_num, grid, unique_num
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
+    solver.reset()
+    solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
     n = puzzle.row
     letters = puzzle.param["letters"]
     rev_letters = {v: k + 1 for k, v in enumerate(letters)}
-
-    solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, len(letters) + 1), color="white"))
     solver.add_program_line(unique_num(_type="row", color="grid"))
@@ -27,7 +27,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), letter in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(letter, str) and len(letter) == 1, f"Clue at ({r}, {c}) should be a letter."
+        fail_false(isinstance(letter, str) and len(letter) == 1, f"Clue at ({r}, {c}) should be a letter.")
 
         if r == -1 and 0 <= c < puzzle.col:
             solver.add_program_line(

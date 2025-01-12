@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
 from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
@@ -51,7 +51,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.reset()
     solver.register_puzzle(puzzle)
 
-    assert len(puzzle.text), "No clues found."
+    fail_false(len(puzzle.text) > 0, "No clues found.")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
@@ -63,14 +63,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         validate_direction(r, c, d)
         validate_type(pos, "normal")
         solver.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
-        assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
+        fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
         num, d = clue.split("_")
-        assert num.isdigit() and d.isdigit(), "Invalid arrow or number clue."
+        fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
         solver.add_program_line(count_reachable_src(int(num), (r, c), main_type="bulb", color=None, adj_type="edge"))
         solver.add_program_line(yaji_region_count(int(num) + 1, (r, c), int(d)))
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))

@@ -4,7 +4,7 @@ from typing import Iterable, List, Tuple
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.solution import solver
 
 
@@ -30,11 +30,11 @@ def number_exclusion(target: int, grid_size: int, _id: int) -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
-    n = puzzle.row
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, n + 1)))
     solver.add_program_line(unique_num(_type="row", color="grid"))
@@ -50,13 +50,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
             if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
                 num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
-                assert isinstance(num, int), f"Clue at ({r}, {c}) should be integer."
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                 solver.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {num}).")
-                solver.add_program_line(number_exclusion(num, grid_size=n, _id=i))
+                solver.add_program_line(number_exclusion(int(num), grid_size=n, _id=i))
 
             if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
                 num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
-                assert isinstance(num, int), f"Clue at ({r}, {c}) should be integer."
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                 solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))

@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_cc
-from noqx.rule.helper import full_bfs, validate_direction, validate_type
+from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
 
@@ -30,13 +30,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
-        assert len(ar) == 2, "All regions must be of size 2."
+        fail_false(len(ar) == 2, "All regions must be of size 2.")
         solver.add_program_line(area(_id=i, src_cells=ar))
 
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
         if r == -1 and 0 <= c < puzzle.col:
             solver.add_program_line(count(int(num), color="math_G__2", _type="col", _id=c))

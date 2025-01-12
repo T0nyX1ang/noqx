@@ -4,17 +4,17 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import count, display, fill_num, grid, unique_num
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
-    n = puzzle.row
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, n - 1), color="black"))
     solver.add_program_line(unique_num(_type="row", color="grid"))
@@ -25,19 +25,19 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
 
-        if r == -1 and 0 <= c < n:
+        if r == -1 and 0 <= c < n and isinstance(num, int):
             begin_r = f"Rb = #min {{ R: black(R, {c}) }}"
             end_r = f"Re = #max {{ R: black(R, {c}) }}"
             solver.add_program_line(f":- {begin_r}, {end_r}, #sum {{ N: number(R, {c}, N), R > Rb, R < Re }} != {num}.")
 
-        if c == -1 and 0 <= r < n:
+        if c == -1 and 0 <= r < n and isinstance(num, int):
             begin_c = f"Cb = #min {{ C: black({r}, C) }}"
             end_c = f"Ce = #max {{ C: black({r}, C) }}"
             solver.add_program_line(f":- {begin_c}, {end_c}, #sum {{ N: number({r}, C, N), C > Cb, C < Ce }} != {num}.")
 
         if 0 <= c < n and 0 <= r < n:
+            fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             solver.add_program_line(f"number({r}, {c}, {num}).")
 
     for (r, c, _, _), color in puzzle.surface.items():

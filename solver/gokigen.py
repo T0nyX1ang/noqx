@@ -54,8 +54,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d, Direction.TOP_LEFT)
         validate_type(pos, "normal")
-        assert isinstance(num, int), "Clue should be an integer."
-        solver.add_program_line(f":- #count{{ D: grid_direction({r}, {c}, D) }} != {num}.")
+        if isinstance(num, int):
+            solver.add_program_line(f":- #count{{ D: grid_direction({r}, {c}, D) }} != {num}.")
 
     solver.add_program_line(display(item="edge_diag_down", size=2))
     solver.add_program_line(display(item="edge_diag_up", size=2))
@@ -70,7 +70,7 @@ __metadata__ = {
     "aliases": ["slant"],
     "examples": [
         {
-            "data": "m=edit&p=7VZNb9s8DL7nVwQ6vQN0sGxR/rh1bbZLl25vMxSFEQRu6qVBk7rLxzA4yH8vSQeIRHQbdml3KAwTfMKvRxSleP19W61qbUAbq5NMR9rg46JMQxrpzAK/0eEZzTeLuujrk+3mrlmhovXFUH+rFuu6V1IgPuPers2L9kS3H4tSxUof3rFuvxS79lPRDnV7iSaFvro9R80oHaM66PxJvWI7aaed3USoDzvdoXqN6nS+mi7qyXmX6HNRtiOtqM57jiZVLZsfterCGE+b5c2cfripNriW9d388WBZb2+b++3B14z3uj3p6A6eoZsc6ZLa0SXtdejm4/0e2/4/Ep4UJXH/elSzo3pZ7FAOi51KshRjcac1xmO6JMsEzkOc2wDbyAicIE48TP6xhyHEJgr9DeXz7XGIY2GPKZ9XPw7524TiPWypno9Ffkv5PD7WCTvl93HYHwuCHwg+QP6e3VF9r56j/vl2US8l/j6mfF58RvFevYz679tF/3m/PXtO6/Xic5oPzz8P1wu8/0c7iP2GKIyHSMSbsL9gyP/IB0y4fhD7D3G4XhDzALGonwh7Eq4feD48fyvqWbE+G54fgLDfAGG/AQQfF84/iHkAJ/im4fmDVORPBZ8snHfg+fD8eT48nIfnGXLhz+ffx2K/8nC/XBT200Xh+hzPy7GeMxKH8+Ji/zzjJWb4Krtm+YFlzHKEN51uE5ZnLCOWwPKcfQYsr1iesrQsHfukdFf+1W36AnRK1/0zP/ekb5ZfW8a9Ug1uZ3X/bF7Nmodqgf+fw+3ypl71h81qiRg/WPY99VPxiyNqtH37hnmlbxjaguhfO3t/oFNid/F7KdH0TaTbC60et5NqMm1w1LCFvze/+FrwKlHrRfWw6f83a+7ns/rhnRr3ngA=",
+            "data": "m=edit&p=7VZNT9tMEL7nV0R7aqU97No764/LKwppLzS0L1QIWVZkghsiEkzzUVWO8t+ZGUf17ooicYELsjyaJ/P1eHZ2s+tf22pVSw1SGxmnUkmNj1WphETJ1AC/6vBczDeLOh/Ko+3mtlmhIuXZWP6sFut6UFAgPuVg12Z5eyTbL3khIiEPbynb7/mu/Zq3Y9meo0mgr2xPUdNCRqiOOn9SL9lO2nFn1wr1cadbVK9Qnc5X00U9Oe0SfcuL9kIKqvOJo0kVy+Z3LbowxtNmeT2nH66rDX7L+nb+cLCstzfN3fbgq8u9bI86uqMn6MY9XVI7uqS9Dd2s3O+x7f8j4UleEPcfvZr26nm+QznOdyJOk0OslSgxYZym+Auu/V+c+TgzHjZKBzhGHDuY/CMHg4+18v015XPtkY+jwB5RPqd+5PM3McU72FA9Fwf5DeVz+Bgb2Cm/i/3+GAj4QcAHyN+xW6rv1LPUP9ce1EuIv4spnxOfUrxTL6X+i7hfYZMGK9DNwH+uB9V0cmbUAydnRhFOhszvAfBM9HYIZgCUHw8qiNd+z0GTf88HtN8TCGYCIr8HEMwIREH9OLDH/vcDz4zjb4J6Jvg+Q/mdfEB2Jx/4KwAQ8LH+noBgRsAGfBN/T0IS5E8CPqm/B4BnxvHnmXFw5u9xyAJ/PhNcHKxX5q+XVX4/rfK/z/K89PWsDrE/LzZy9zgebZoPuCuWn1lGLC/w/JNtzPKEpWIJLE/ZZ8TykuUxS8PSsk9CJ+iLzthXoFPY7v/6qSd5t/zbUg4KMbqZ1cOTeTVr7qsF/quOt8vrejUcN6slYrzG7Afij+AXR1RL836zeaObDS2Betn95vl/irc/KQpsPl6xYknXKNmeSfGwnVSTaYOTiB1+3vzaxwzuhEKsF9X9Zvhh1tzNZ/X9R1EOHgE=",
         },
         {
             "url": "http://pzv.jp/p.html?gokigen/40/25/hbg1bha6ah66bcbh7c98d8cdjdk672817chc717die62b8dcg8c26di32ck3d287271617262bg31222c88e2bddcc3bkdeg87dc777228ddg1cehdch6cb2cb122b73d3c26b31377c7e71cc8clbg8bh317677c6d7b63716eh26d2b8c9ch31c7ddj28277d77bg732cg27c61cg83268871ci626b8681cieicg2ddjdi6277226ch8d3d7dgec2cg73dd63622d3cb172b62667cc1c66d37226263c7cdg8d7bg7273cg78cb9c77cg22dg061661668dge71b778c76bgcg717c7cd376677173bgdg81b9dc8dgch231ch8ce897cg7b631682cgcckcjdg318277cg4ceh6166cgb6cc268173cgeg2173c27d367328cgc267di6bi7bg77dg769cg78d8d22ba656776bgb1bibajb",

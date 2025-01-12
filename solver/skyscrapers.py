@@ -4,17 +4,17 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid, unique_num
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
-    n = puzzle.row
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, n + 1)))
     solver.add_program_line(unique_num(_type="row", color="grid"))
@@ -23,23 +23,23 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
         if r == -1 and 0 <= c < puzzle.col:
             solver.add_program_line(f"blocked_t(R, {c}) :- number(R, {c}, N), number(R1, {c}, N1), R1 < R, N1 > N.")
-            solver.add_program_line(f":- #count {{ R: blocked_t(R, {c}) }} != {n - num}.")
+            solver.add_program_line(f":- #count {{ R: blocked_t(R, {c}) }} != {n - int(num)}.")
 
         if r == puzzle.row and 0 <= c < puzzle.col:
             solver.add_program_line(f"blocked_b(R, {c}) :- number(R, {c}, N), number(R1, {c}, N1), R1 > R, N1 > N.")
-            solver.add_program_line(f":- #count {{ R: blocked_b(R, {c}) }} != {n - num}.")
+            solver.add_program_line(f":- #count {{ R: blocked_b(R, {c}) }} != {n - int(num)}.")
 
         if c == -1 and 0 <= r < puzzle.row:
             solver.add_program_line(f"blocked_l({r}, C) :- number({r}, C, N), number({r}, C1, N1), C1 < C, N1 > N.")
-            solver.add_program_line(f":- #count {{ C: blocked_l({r}, C) }} != {n - num}.")
+            solver.add_program_line(f":- #count {{ C: blocked_l({r}, C) }} != {n - int(num)}.")
 
         if c == puzzle.col and 0 <= r < puzzle.row:
             solver.add_program_line(f"blocked_r({r}, C) :- number({r}, C, N), number({r}, C1, N1), C1 > C, N1 > N.")
-            solver.add_program_line(f":- #count {{ C: blocked_r({r}, C) }} != {n - num}.")
+            solver.add_program_line(f":- #count {{ C: blocked_r({r}, C) }} != {n - int(num)}.")
 
         if 0 <= r < puzzle.row and 0 <= c < puzzle.col:
             solver.add_program_line(f"number({r}, {c}, {num}).")

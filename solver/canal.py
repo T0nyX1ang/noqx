@@ -28,10 +28,10 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
         solver.add_program_line(f"not black({r}, {c}).")
-        solver.add_program_line(bulb_src_color_connected((r, c), color="black"))
-        solver.add_program_line(count_reachable_src(num + 1, (r, c), main_type="bulb", color="black"))
+        if isinstance(num, int):
+            solver.add_program_line(bulb_src_color_connected((r, c), color="black"))
+            solver.add_program_line(count_reachable_src(num + 1, (r, c), main_type="bulb", color="black"))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:
@@ -51,7 +51,11 @@ __metadata__ = {
     "aliases": ["canalview"],
     "examples": [
         {
-            "data": "m=edit&p=7VZfb9o+FH3nUyA/+yH+k5DkjfVXfi+MbqNTVUURClmqooWFBdJNRnz33ntDZZt106ZJ7AWFXN3je2wfH8ch269d0VZcjPCnYh5wAVcUa7qlDOh+uW5Xu7pKh3zc7R6bFhLObyYT/lDU22qQHVn5YG+S1Iy5+T/NmGCcSbgFy7l5n+7N29TMuJlDiXEBbdOeJCG9tukd1TG76htFAPnsmEN6D2m5asu6Wkz7lndpZm45w3neUG9M2bp5qthRB+KyWS9X2LAsdrCY7eNqc6xsu0/N5+7IFfmBm3Evd/4iV1u5ysrFtJeL2StycRV/L7feNK8JTfLDAQz/AFIXaYaqP9o0tuk83UOcpXsWRtAVd5n2hIUjD44UQGWh9iGSHRh7MAl8KLyRExzKgaFHFoE/tAhwbEsXwh9NCAk4slgiXzs4ASwt1if99Un/CHHsYDTC4SdYdzHW7XxSILbzSeEvV0q03alL33epETvjad9bSdY7fPLe6pfJCT/B9Vu+Iv9sXZF/Tp38s+OpE/+UQr7Vp5Tvj9K4n6GDcb0OX+N4zvwhPixOf/Lfxb6fKvIfWxWhH8588Qk/dv2HR1/QAbinOKEoKd7C+eBGUfyPYkAxpDglzjXFO4pXFDXFiDgjPGG/eQaZBlmaM1yN7A/kGbRlGjfi1xdaeWFcGD+58kHG5l37UJQV/A3NuvWyaoezpl0XNYN//MOAfWd00xnXl4+As38EoPnBH30K/Pu3Yga+wrvJ3HC26RbFomxqBl+QHNuj6If2s6uHVycriy9FPXxaVd9YPngG",
+            "data": "m=edit&p=7VRNj5swEL3zK6I5+4CNSYgvVbrd9JLSj6RarRBaEcpqUUnZkrCtHPHfMzOw66TKoVKlVQ6V46f3Zib4eQze/myzphBTHEEkfCFxBJHPM9L084exKndVYUZi1u4e6gaJEB/nc3GfVdvCS4aq1NvbqbEzYd+bBCQIUDglpMJ+Nnv7wdhY2CWmQGiMLfoihfTa0RvOE7vqg9JHHg8c6S3SvGzyqrhb9JFPJrErAbTOW/43UdjUTwUMPkjn9WZdUmCd7XAz24fycchs22/193aolWkn7Ky3uzxjN3B2ifZ2iZ2xS7v4d7vVY33O6DTtOmz4F7R6ZxJy/dXRyNGl2UOowWgBYQhGYSjGkIrwOSEeOB8QBArl2MkxyuBFasoeycmJnFBWvcjIP3lUhGsn8Ab3/hyglV1+erqUVPIPTXntNDs9yrNVtxGpaflnjZuVZo94yzhnVIwrbI+wAeM7Rp8xZFxwzTXjDeMVo2Ycc82EGvyXR9B3/RXsJCri7/h4UDcuKJJ6CSzb5j7LC3yx43azLppRXDebrAK8QzoPfgNPPmb9/1p59WuFmu9f2pt9aXbwW4M8+5FVo6ey+AWpdwA=",
+        },
+        {
+            "url": "https://puzz.link/p?canal/17/17/r11q33h33m31h13m31h16q42q16u81z14u21q21u43z16u31q31q62h41m54h31m12h15q21r",
+            "test": False,
         },
     ],
 }

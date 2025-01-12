@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import fail_false, tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_src_color_connected
 from noqx.solution import solver
@@ -31,7 +31,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     reachables = []
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
-        assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
+        fail_false(symbol_name.startswith("circle_SS"), "Invalid symbol type.")
 
         if d == Direction.CENTER:
             reachables.append((r, c))
@@ -55,8 +55,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(galaxy_constraint(r * 2 + 1, c * 2))
             solver.add_program_line(f"not edge_left({r}, {c}).")
 
-    assert len(reachables) > 0, "Please provide at least one clue."
-
+    fail_false(len(reachables) > 0, "Please provide at least one clue.")
     for r, c in reachables:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type="edge", color=None))
@@ -70,7 +69,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")

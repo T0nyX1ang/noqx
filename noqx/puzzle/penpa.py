@@ -63,7 +63,7 @@ def category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, Dire
     if category == 3:
         return (r, c + 1, Direction.LEFT)
 
-    raise AssertionError("Invalid category type.")
+    raise ValueError("Invalid category type.")
 
 
 class PenpaPuzzle(Puzzle):
@@ -222,7 +222,7 @@ class PenpaPuzzle(Puzzle):
         """Pack the text/number element into the board."""
         for point, data in self.text.items():
             coord = (point.r, point.c)
-            index = self.coord_to_index(coord)
+            index = self.coord_to_index(coord, category=0)  # currently the packing of texts are all in the center
             if not self.problem["number"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.solution["number"][f"{index}"] = [str(data), 2, "1"]
 
@@ -271,7 +271,7 @@ class PenpaPuzzle(Puzzle):
             elif point.pos.startswith("u"):
                 index_2 = self.coord_to_index((point.r - 1, point.c), category=2)
             else:
-                raise AssertionError("Unsupported line d.")
+                raise ValueError("Unsupported line direction.")
 
             if self.puzzle_type == "hashi":
                 self.solution["line"][f"{index_1},{index_2}"] = 3 if point.pos.endswith("_1") else 30

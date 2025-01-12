@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import full_bfs, validate_direction
+from noqx.rule.helper import fail_false, full_bfs, validate_direction
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -49,7 +49,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(single_loop(color="moon_sun"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-    assert len(areas) % 2 == 0, "The number of areas should be even."
+    fail_false(len(areas) % 2 == 0, "The number of areas should be even.")
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count_area_pass(1, ar))

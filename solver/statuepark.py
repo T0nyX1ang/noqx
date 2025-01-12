@@ -13,6 +13,9 @@ from noqx.solution import solver
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
+    solver.reset()
+    solver.register_puzzle(puzzle)
+
     shapeset = puzzle.param["shapeset"]
     if shapeset == "tetro":
         omino_num, omino_count_type = 4, 1
@@ -21,10 +24,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     elif shapeset == "double_tetro":
         omino_num, omino_count_type = 4, 2
     else:
-        raise AssertionError("Shape set not supported.")
+        raise ValueError("Shape set not supported.")
 
-    solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())

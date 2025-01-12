@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, fill_num, grid
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -46,13 +46,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
                 unclued = False
                 num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
-                assert isinstance(num, int), f"Clue at ({r}, {c}) should be integer."
-                solver.add_program_line(count(num, color="not gray", _type="area", _id=i))
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
+                solver.add_program_line(count(int(num), color="not gray", _type="area", _id=i))
 
             if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
                 unclued = False
                 num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
-                assert isinstance(num, int), f"Clue at ({r}, {c}) should be integer."
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                 solver.add_program_line(f"number({r}, {c}, {num}).")
 
         if unclued:

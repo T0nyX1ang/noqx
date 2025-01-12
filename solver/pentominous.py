@@ -1,10 +1,10 @@
 """The Pentominous solver."""
 
-from typing import List
+from typing import Dict, List
 
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import OMINOES, all_shapes, general_shape
 from noqx.solution import solver
@@ -26,11 +26,11 @@ def avoid_adj_same_omino(omino_num: int = 4, color: str = "grid") -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    shaded = len(puzzle.surface)
-    assert (puzzle.row * puzzle.col - shaded) % 5 == 0, "The grid cannot be divided into 5-ominoes!"
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    shaded = len(puzzle.surface)
+    fail_false((puzzle.row * puzzle.col - shaded) % 5 == 0, "The grid cannot be divided into 5-ominoes!")
     solver.add_program_line(defined(item="hole"))
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
@@ -46,7 +46,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             direc = "left" if c1 != c else "top"
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
-    shape_dict = {}
+    shape_dict: Dict[str, int] = {}
     for i, (o_name, o_shape) in enumerate(OMINOES[5].items()):
         shape_dict[o_name] = i
         solver.add_program_line(general_shape("omino_5", i, o_shape, color="grid", adj_type="edge"))
@@ -54,12 +54,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), shape_name in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert shape_name in shape_dict, f"Shape {shape_name} is not defined!"
+        fail_false(shape_name in shape_dict, f"Shape {shape_name} is not defined!")
         t_be = tag_encode("belong_to_shape", "omino_5", "grid")
-        solver.add_program_line(f":- not {t_be}({r}, {c}, {shape_dict[shape_name]}, _).")
+        solver.add_program_line(f":- not {t_be}({r}, {c}, {shape_dict[str(shape_name)]}, _).")
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))

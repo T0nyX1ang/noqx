@@ -25,11 +25,14 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
+        flag = True
         if rc:
             num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
-            assert isinstance(num, int), f"Clue at ({rc[0]}, {rc[1]}) must be an integer."
-            solver.add_program_line(count(num, color="gray", _type="area", _id=i))
-        else:
+            if isinstance(num, int):
+                flag = False
+                solver.add_program_line(count(num, color="gray", _type="area", _id=i))
+
+        if flag:
             solver.add_program_line(count(("gt", 0), color="gray", _type="area", _id=i))
 
     for r in range(puzzle.row):
@@ -61,7 +64,11 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VVbT9tMEH3Pr0D7vA/ei+213ygNfaGhbagQiqLIBFMiEoUvIb04yn/nzOwYg4Q+qKpSVaoSr88ej2dmz6xn1/9tqlWtTUJ/FzTu+HkT+LIh4yuR38nsdl6Xe3p/c3u1XAFofXx4qC+r+brujcRq3Ns2Rdns6+ZdOVJGaWVxGTXWzcdy27wvm75uhnikdAB3FI0sYL+Dp/yc0EEkTQI8EAx4BjidrabzenIUmQ/lqDnRiuK84bcJqsXya60kD5pPl4vzGRHn1S0Ws76a3ciT9eZieb0RWzPe6WY/pjt8Il3XpUswpkvoiXRpFb853WK820H2T0h4Uo4o988dDB0clluMg3KrXIJXHWrNlVHOYmrvp2nA1N9PMzLunmYe07SbZo+emuSxtUnIvAtlPMV6OKf3H84pePs+0jWc9BmPhzxaHk+wJt04Ht/ymPCY8njENn0s1Rqnrc1VabEVTQpcCM61dUZwAewituC98Ba8F94Z4FQwfHrx6cGnwnvwacsjViqxPHxm4jMFnwmfgs9bHrFyiZXBZy4+M/BB+Bx8ED5HrCCxcvgM4jOAL4QP4IuWz7VLJFYogMVnAd4IX4A3kYctcIwFW+DoE7baWeGhrRNtYQscY8FWO9EWtsDCQ1sn2sIWWGJBWyfawla7VHho60Rb2AJLLGjrWm1hbz02HeucdLWjutBmY2y7OlKNPDYlY9/VlOpFm5ExOt99fWk/YFMyRlf0rZ5UC/Ef4L+tEekfxH+A/7ZeVIsg/rmztjWC/yD+A3Xd1j/WVci6CqyraHUjzaN/3LtakM42+se9qwtpbqN/3Lsakf7UB1hztP+2XlQLagiMLTCtCx/TKX9SBzx6HjP+1HJqLi9sP9x4glaseexFv/6JP5vbCMujg+3xj1rYX8aNeyM13Kwuq2mNc6B/8aXeGyxXi2qO2WCzOK9X7RzH8K6nviu+uL36fyfzHzqZqQTJT53Pr/BNPJPOCOqiITbHWt1sJtVkusQeg3b/x+Mre6n9q68WTUBd1T+qb9V1rca9Ow==",
+            "data": "m=edit&p=7VVdT9tKEH3Pr0D7vA/eD9trv1SUhr7Q0DZUCEVRZIIpEYnCTUg/HOW/c2Z2jEFCheqqXFW6Srw+ezyemT2znl3/s6lWtTYJ/V3QuOPnTeDLhoyvRH4ns9t5Xe7p/c3t1XIFoPXx4aG+rObrujcSq3Fv2xRls6+b9+VIGaWVxWXUWDefym3zoWz6uhnikdIB3FE0soD9Dp7yc0IHkTQJ8EAw4BngdLaazuvJUWQ+lqPmRCuK85bfJqgWy2+1kjxoPl0uzmdEnFe3WMz6anYjT9abi+X1RmzNeKeb/Zju8Il0XZcuwZguoSfSpVX84XSL8W4H2T8j4Uk5oty/dDB0cFhuMQ7KrXIJXnWoNVdGOYup7aaBHL9BpkKkRPj7aUZvd+aZxzTtptmjpyZ5bG0SMu9iG0/BH87p/YdzCt6+j/wNr+KMx0MeLY8nWKRuHI/veEx4THk8Yps+1m6N09bmqrTYmyYFLgTn2jojuAB2EVvwXngL3gvvDHAqGD69+PTgU+E9+LTlESuVWB4+M/GZgs+ET8HnLY9YucTK4DMXnxn4IHwOPgifI1aQWDl8BvEZwBfCB/BFy+faJRIrFMDiswBvhC/Am8jDFjjGgi1w9Alb7azw0NaJtrAFjrFgq51oC1tg4aGtE21hCyyxoK0TbWGrXSo8tHWiLWyBJRa0da22sLcem451TrraUV1oszG2XR2pRh6bkrHvakr1os3IGK3wvr60H7ApGaNN+lZPqoX4D/Df1oj0D+I/wH9bL6pFEP/catsawX8Q/4HacOsf6ypkXQXWVbS6kebRP+5dLUhnG/3j3tWFNLfRP+5djUh/agysOc6Dtl5UC+oQjC0wrQsf0yl/Ugc8eh4z/tRy6jYv7EfciYJWrHlsTv/+E382txGWRyfd4x+1sL+MG/dGarhZXVbTGgdD/+JrvTdYrhbVHLPBZnFer9o5zuVdT/1QfHF79f8f1f/RUU0lSH7rwH6Fb+KZdEZQFw2xOdbqZjOpJtMl9hi0+xWPr+yl9q++WjQBdVX/rL5X17Ua9+4A",
+        },
+        {
+            "url": "https://puzz.link/p?heyablock/15/10/4i894gi914i2944i894gi914i294000vvv000vvv000vvv000vvv0001122222024024311331235234",
+            "test": False,
         },
     ],
 }

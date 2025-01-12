@@ -27,8 +27,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d, Direction.TOP_LEFT)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
-        solver.add_program_line(creek_covering(num, r, c, color="gray"))
+        if isinstance(num, int):
+            solver.add_program_line(creek_covering(num, r, c, color="gray"))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:
@@ -47,10 +47,8 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VVNj9owEL3zK5BPrTSHJHY+b3S77YVm24VqtYoiFFhTUIOyDaTaGvHfdzyJGhPvoT2UqlJlPHo8P48fYxvvvzVFLcH19IdH4ICLTcSCOg996k7X5ttDKZMxTJrDpqoRANyksC7KvRxleiK2fHRUcaImoN4nGXMZMI96DupTclQfEpWCmuEQgwi5aSvyEF738I7GNbpqSddBnLY4QHiPcLWtV6VcTHEUmY9JpubA9DpvaLaGbFd9l6zzob+vqt1yq4llccDfst9sH7uRffNQfW06rZufQE1au7MX7PLeroatXY3+lF358EU+veQ0zk8nrPgtel0kmbb9uYdRD2fJEWOaHBl3Qj0XdyUAzIAJuRMPGdfVDDcZf6jx+FDjUR6TEU7ns2cos5lHeJZGWHksz77lxyeNmcePhkxAfszMAa1u5gkth6GtsdYKrRpGtLq5VmRpYvJzxliVj6nOhkY4xBirC4cqZmq8YeWFtV/Cs2dRVc80w8oLbmm4pbH2XbS7/FODh9GlI3lP8R1Fj+IcTywoTvEtRYeiT3FKmmuKdxSvKAqKAWlCfeZ/8VYwHwvuAQvwN0TtFbmAt8zv/i7PWvjvcfkoY7OmXhcriX9PabNbynqcVvWuKBk+BacRe2LUM64flv+vw+VfB11957feiL9/OTMsbBCCugH22CyKxaoqGWDZNI9XZ8hf3D3eYLbe1nJd/hi/2lSHom7GS1nsXrN89Aw=",
+            "data": "m=edit&p=7VXPj9o8EL3zVyCfWmkOSez8vFR0u+2FZr+vUK1WUYQCawpqULaBVFsj/vcdT6KNiffQHkpVqTIePZ6fx4+xjfffmqKW4Hr6wyNwwMUmYkGdhz51p2vz7aGUyRgmzWFT1QgAblJYF+VejjI9EVs+Oqo4URNQH5KMuQyYRz0H9X9yVB8TlYKa4RCDCLlpK/IQXvfwlsY1umpJ10GctjhAeIdwta1XpVxMcRSZ/5JMzYHpdd7SbA3ZrvouWedDf19Vu+VWE8vigL9lv9k+dCP75r762nRaNz+BmrR2Zy/Y5b1dDVu7Gv0uu/L+i3x8yWmcn05Y8U/odZFk2vbnHkY9nCVHjGlyZNwJ9dw36AwwAybkTqwZ3KdnxnU1w03GH2o8PtR4lMdkhNP57BnKbOYRnqURVh7ybM7yLT8+acw8fjRkAvJjZg5odTNPaDkMbY21VmjVMKLVzbUiSxOTnzPGqnxMdTY0wiHGWF04VDFT4w0rL6z9Ep49i6p6phlWXnBLwy2Nte+i3eVnDR5Gl47kHcX3FD2KczyxoDjFdxQdij7FKWmuKd5SvKIoKAakCfWZ/8lbwXwsuAcswN8QtVfkAt4yv/u7PGvh38flo4zNmnpdrCT+PaXNbinrcVrVu6Jk+BScRuyRUc+4flj+vQ6Xfx109Z1feiP+/OXMsLBBCOoG2EOzKBarqmSAZdM8Xp0hf3H3eIPZelvLdflj/GpTHYq6GS9lsXvN8tET",
         },
-        {
-            "data": "m=edit&p=7VTLbts6FNzrKwyuWoALUqSeOzdNu/FVH3YRBIIQyA5dC5WgVraKlIb/PYdHQkXT2XRxgxQoaA7GQ3LOiKK4/9GXnaLcNz8RU0Y5NJlI7CIKsLOxrapDrdIZnfeHXdsBofRDRrdlvVdebhZCK7yjTlI9p/p9mhNOKPGxF1R/So/6v1RnVC9hiNAYtMUwyQd6PdEbHDfsahA5A54NPAR6C3RTdZta3S1gFJSPaa5XlJg6b3C1oaRpfyoy5jD/N22zroywLg/wLPtd9X0c2ff37bd+nMuLE9XzIe7yibhiimvoENew/yuuuv+qHp5KmhSnE+z4Z8h6l+Ym9peJxhNdpkfALD0SwcJxbUgBwVCwxCjCUrhvFHhzkxK4ii/cVf6Fs3/hLNDZniPRx1YC6dYKIqNISwnZhYI+thJxt3qEzmcKOtu1YnS28yS4ylIkc59CMnd/JIudWpJjHnsOd/dH+uh8pqDzmYLOdvUAMzNbcXdVBu7bkQFW/63AAeF4TG4R3yH6iCs4RVQLxLeIDDFAXOCca8QbxCtEiRjinMicwz86qc8QJw/GW+usRX+fVng5WfbdttwouCWyvlmrbpa1XVPWBG7kk0ceCPZcmPv93yX9/Je02X320j6AlxYHPkmyrTq1rX/NXu3aQ9n1s7Uqm9ek8B4B",
-        },
+        {"url": "https://puzz.link/p?creek/10/10/qbdccdbdbibiceeeddcblbbcdcdddboabbb", "test": False},
     ],
 }

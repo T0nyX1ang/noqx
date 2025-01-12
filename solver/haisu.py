@@ -4,7 +4,7 @@ from typing import Iterable, List, Tuple
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid
-from noqx.rule.helper import full_bfs, validate_direction, validate_type
+from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.rule.loop import directed_loop
 from noqx.solution import solver
 
@@ -64,10 +64,10 @@ def haisu_count() -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert "S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided."
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
     solver.add_program_line(defined(item="number", size=3))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
@@ -94,10 +94,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         validate_type(pos, "normal")
         if clue == "S":
             solver.add_program_line(f"path_start({r}, {c}).")
-        elif clue == "G":
+
+        if clue == "G":
             solver.add_program_line(f"path_end({r}, {c}).")
-        else:
-            assert isinstance(clue, int), "Clue should be an integer."
+
+        if isinstance(clue, int):
             solver.add_program_line(f"number({r}, {c}, {clue - 1 if (r, c) in s_index else clue}).")  # special case
 
     solver.add_program_line(display(item="grid_in", size=3))
@@ -112,7 +113,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7ZRNb9pAEIbv/Ipoz3Pw2l7b6xtNaS6EfkAVRZYVGeIWq1BawFVkxH/PO+MldiSkqkpV5VAZD+98wTO7a+9+1sW2pBhXkJBHGlfghXJHHn9O16zar8r0gob1frnZQhC9n9CXYrUrB5krygeHxqbNkJqrNFNakfJxa5VT8zE9NNdpM6JmipQijdi4LfIhR528kTyryzaoPeiJ05C3kItqu1iVd+M28iHNmhkp/p830s1SrTe/SuU42F9s1vOKA/Nij1l2y+qHy+zq+8232tXq/EjNsMUdn8ENOlyWLS6rM7g8xYtxV9X38uEcqc2PR6z4J7DepRljf+5k0slpeoCdpAcVRGjlPZZNUUECN3hyQ3bVFJAuYLxnecN5/8mN/GfZmIu7bMxZddX9WMKBLp+EPRTgaYG8FftOrC92hhmoCcS+FeuJNWLHUjPCaDowpEPM5+MXcZZ1aFsdRqRN7LQlHYGTtYmhMRFrnHMda6fRG7veGIDMLRq91vUmmMMGrbYe+Z7rtQE0BoNGjHzd9iIGbdz/gtM4TtNjYx5eYdFgMI7B9JiZMzpxgo23QHhQn7j6pMcJNm1PbKi3rt72+bGFtmXGNzRzYlFvZGkvxYZiI1nymA/VHx27l+/ub3EyH+S9C2v8t718kKkxHsWLyWa7LlZ4IEf3X3vepF7Py+3Jx6vwOFAPSm55SsL/b8d//3bk1fde22F9bTh4fNSyqHa1ygeP",
+            "data": "m=edit&p=7ZRNb9pAEIbv/Ipoz3Pw2l7b60tFU8iF0g+oosiyIiBusQqlBVxFRvz3vDNeYkdCqqpEVQ6V8fDOFzyzu/buVzXbFhTjChLySOMKvFDuyOPP6ZqW+1WRXlC/2i83WwiiD8MhfZ2tdkUvc1V571DbtO5TfZVmSitSPm6tcqo/pYf6fVoPqJ4gpUgjNmqKfMhBK68lz+qyCWoPeuw05A3kotwuVsXtqIl8TLN6Sor/5610s1Trze9COQ72F5v1vOTAfLbHMLtl+dNldtXd5nvlanV+pLrf4I7O4AYtLssGl9UZXJ7i2bir8kdxf47U5scjVvwzWG/TjLG/tDJp5SQ9wI7TgwoitPImy6aoIIEbPLohu2oCSBcw3pO84bz/6EacVW/a8sh/Uh5zvi2POauu2vKEA20+CTts4NVCfSN2KNYXO8VQVAdi34n1xBqxI6kZYFYdGNIhBvbxizjdOrSNDiPSJnbakuY5WJsYGiOyxsnXsXYavbHrjQHI3KLRa11vgjls0Gjrke+5XhtAYzBoxMjXTS9i0Mb9LziN4zQdNubhJRcNBuMYTIeZOaMTJ9h4C4QH9YmrTzqcYNP2xIZ66+ptlx9baBtmfEMzJxb1Wpb2UmwoNpIlj/mU/dU5fP7u/hEn80HeubDGL+3lvUyN8GxejDfb9WyFJ3Rw963jjav1vNiefLwbjz11r+SWpyT8/7r8969LXn3vtR3W14aDx0ctZ+WuUnnvAQ==",
         },
         {
             "url": "https://puzz.link/p?haisu/9/9/199103msp7vvv4pre00bs6poj0068sr1ugp2g2g2g2u2g2k2k2g2u2g2g2g2p",

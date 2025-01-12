@@ -4,7 +4,7 @@ from typing import Iterable, List, Tuple, Union
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
@@ -81,7 +81,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
                 onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
 
-    assert onsen_id > 0, "No onsen clues found."
+    fail_false(onsen_id > 0, "No onsen clues found.")
     solver.add_program_line(onsen_global_rule())
 
     solver.add_program_line(display(item="grid_direction", size=3))

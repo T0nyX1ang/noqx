@@ -4,20 +4,20 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
-    n = puzzle.row
-
-    sep = {9: (3, 3), 8: (2, 4), 6: (2, 3), 4: (2, 2)}
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
+    sep = {9: (3, 3), 8: (2, 4), 6: (2, 3), 4: (2, 2)}
+
     solver.add_program_line(grid(n, n))
     solver.add_program_line(adjacent(_type="x"))
 
@@ -35,7 +35,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     if puzzle.param["diagonal"]:  # diagonal rule

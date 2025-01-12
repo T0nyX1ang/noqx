@@ -1,10 +1,10 @@
 """The Nuri-uzu solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import fail_false, tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_src_color_connected
 from noqx.rule.shape import avoid_rect
@@ -29,9 +29,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(avoid_rect(2, 2, color="not black"))
 
-    reachables = []
+    reachables: List[Tuple[int, int]] = []
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
-        assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
+        fail_false(symbol_name.startswith("circle_SS"), "Invalid symbol type.")
 
         # there are no category = 1 for nuriuzu, because it is conflicting with the no 2x2 white rule.
         if d == Direction.CENTER:
@@ -51,8 +51,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not black({r}, {c - 1}).")
             solver.add_program_line(f"not black({r}, {c}).")
 
-    assert len(reachables) > 0, "Please provide at least one clue."
-
+    fail_false(len(reachables) > 0, "Please provide at least one clue.")
     for r, c in reachables:
         excluded = [(r1, c1) for r1, c1 in reachables if (r1, c1) != (r, c)]
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=excluded, adj_type=4, color="not black"))

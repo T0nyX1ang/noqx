@@ -4,18 +4,18 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
-from noqx.rule.helper import full_bfs, validate_direction
+from noqx.rule.helper import fail_false, full_bfs, validate_direction
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.solution import solver
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.param["stars"].isdigit(), "Invalid star count."
-    num_stars = int(puzzle.param["stars"])
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.param["stars"].isdigit(), "Invalid star count.")
+    num_stars = int(puzzle.param["stars"])
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="star__2"))
 

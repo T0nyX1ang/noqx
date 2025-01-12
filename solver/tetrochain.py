@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import OMINOES, all_shapes, general_shape
@@ -44,10 +44,10 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         validate_type(pos, "normal")
         solver.add_program_line(f"not black({r}, {c}).")
 
-        assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
-        num, direction = clue.split("_")
-        assert num.isdigit() and direction.isdigit(), "Invalid arrow or number clue."
-        solver.add_program_line(yaji_count(int(num), (r, c), int(direction), color="black"))
+        fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
+        num, d = clue.split("_")
+        fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
+        solver.add_program_line(yaji_count(int(num), (r, c), int(d), color="black"))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:

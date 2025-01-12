@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.variety import yaji_count
@@ -25,10 +25,10 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
-        num, direction = clue.split("_")
-        assert num.isdigit() and direction.isdigit(), "Invalid arrow or number clue."
-        solver.add_program_line(yaji_count(int(num), (r, c), int(direction), color="gray", unshade_clue=False))
+        fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
+        num, d = clue.split("_")
+        fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
+        solver.add_program_line(yaji_count(int(num), (r, c), int(d), color="gray", unshade_clue=False))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:

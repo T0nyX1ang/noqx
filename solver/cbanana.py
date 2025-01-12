@@ -84,11 +84,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
-        solver.add_program_line(grid_src_same_color_connected(src_cell=(r, c), color="white"))
-        solver.add_program_line(count_reachable_src(num, src_cell=(r, c), color="white"))
-        solver.add_program_line(bulb_src_same_color_connected(src_cell=(r, c), color="gray"))
-        solver.add_program_line(count_rect_src(num, src_cell=(r, c), color="gray"))
+        if isinstance(num, int):
+            solver.add_program_line(grid_src_same_color_connected(src_cell=(r, c), color="white"))
+            solver.add_program_line(count_reachable_src(num, src_cell=(r, c), color="white"))
+            solver.add_program_line(bulb_src_same_color_connected(src_cell=(r, c), color="gray"))
+            solver.add_program_line(count_rect_src(num, src_cell=(r, c), color="gray"))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:
@@ -108,8 +108,11 @@ __metadata__ = {
     "aliases": ["chocobanana"],
     "examples": [
         {
-            "data": "m=edit&p=7VXBbtpAEL37K6o5z8HrNWbZG01DL5S0hSqKVhYC6iioRE4BV9Ui/j0zs1a9oWnVHJqoUmX28Xg7O37M4GH3tVlsK1Qpv7RBeqcrV0ZWZgpZaXvN1vtNZV/hsNnf1FsiiBejEV4vNrsqcW1UmRz8wPoh+rfWgQKEjJaCEv0He/DvrJ+gn9IWoCFtHIIyoucdvZR9ZmdBVCnxScuJXhFdrberTTUfB+W9dX6GwPd5LaeZwm39rYLWB39e1bfLNQvLxZ6+zO5mfdfu7JrP9ZemjVXlEf0w2J0+Yld3dpkGu8wescvf4i/bHZTHI5X9IxmeW8feP3XUdHRqD4QTewCt+GhOXkJvQBcsFJEwYMF0Qt5nod8JRXYSUUiOKGlfckSCOb2LSiVkEClKYuhH80PJJCY+pTUrvUjJzYkZ1ZM8OlYkT5y5yB8oVBwlJboSHAlmgjOqIHot+EYwFewJjiXmXPBS8EwwFywkps89+MMugU7BGmoClTgLLXsGb06H5//h1fv3tDJxNIaOCXwHWU7zVPs/mV5oMnEL0ifNp5d/EB1Vlx4Hf4Fw18wX81W9Afpzw9/q6hd69sT4n/M/e3VoGpTJPQ==",
+            "data": "m=edit&p=7VVNb5tAEL3zK6w5z4FlwXxcKjeNe3FJW7uKIoQsTIlsFZcUm6pay/89MwMpoPrQHppcovWO3psP89jZXQ4/mqwuUDn80wHaqGi4oStT+55Muxur3bEsognOmuO2qgkg3szneJ+Vh8JKuqzUOpkwMjM076MEFCA4NBWkaD5FJ/MhMjGaJYUAA/It2iSH4HUPbyXO6Kp1Kptw3GGCdwTzXZ2XxXrRej5GiVkh8HPeSjVD2Fc/C+h0MM+r/WbHjk12pJc5bHcPXeTQfK2+NV2uSs9oZq3c5QW5upfLsJXL6IJcfov/LDdMz2da9s8keB0lrP1LD4MeLqMT2Tg6gQ6p1KVeS2fAtYly6zuqiPo91aNkb0ynXDugAVH9m/r+iAZcC29oDTqHsllJ0HPljgqU443jeixViVZvwKfjfN8ZyVP+WJ8KWCDt/yce8vP6uGNz/YAr5tMBZ739/zuK64dx1vMUp9VX0oM7sXOxjtgVtQiNFvtOrC3WE7uQnGuxt2KvxLpip5Ljc5P/chuAJtkBgia1TrsnnkFbonkhLg1u4KtfpVYCy6a+z/KCznnc7DdFPYmrep+VQBfr2YJfIFN2pPt6177QXcstsP/pxn35k5/Q6tL5MzcID806W+dVCfS5RvF7f/ifXT1dD5Bvq7yabLLvNCC1HgE=",
         },
-        {"url": "https://puzz.link/p?cbanana/12/12/k417g4k4l4i3n3g4zg83p81p58zg4g3n2i3l3k6g464k", "test": False},
+        {
+            "url": "https://puzz.link/p?cbanana/15/15/w29l8q4k4j65l5g6h6m7g7m35i3zh8o7zh9i36m1g5m6h3g6l63j5k6q6l76w",
+            "test": False,
+        },
     ],
 }

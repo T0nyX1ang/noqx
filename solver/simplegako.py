@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
@@ -26,7 +26,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))

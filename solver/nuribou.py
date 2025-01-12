@@ -1,6 +1,6 @@
 """The Nuribou solver."""
 
-from typing import List
+from typing import List, Tuple
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
@@ -45,12 +45,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(noribou_strip_different(color="black"))
     solver.add_program_line(all_rect(color="black"))
 
-    all_src = []
+    all_src: List[Tuple[int, int]] = []
     for (r, c, d, pos), _ in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
         all_src.append((r, c))
-    assert len(all_src) > 0, "No clues found."
 
     for (r, c, _, _), num in puzzle.text.items():
         current_excluded = [src for src in all_src if src != (r, c)]

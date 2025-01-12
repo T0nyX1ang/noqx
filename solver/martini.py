@@ -54,9 +54,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue ({r}, {c}) must be an integer."
-        solver.add_program_line(grid_src_color_connected((r, c), color="not gray", adj_type=4))
-        solver.add_program_line(count_reachable_src_white_circle(num, src_cell=(r, c), color="not gray"))
+        if isinstance(num, int):
+            solver.add_program_line(grid_src_color_connected((r, c), color="not gray", adj_type=4))
+            solver.add_program_line(count_reachable_src_white_circle(num, src_cell=(r, c), color="not gray"))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:
@@ -75,7 +75,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VRfb9o+FH3nU1R+9gO2g6F5Yx3shdFtMFVVFKFA0xX9QOkvkGky4rv33BtnQSRVt0rrXiYrzsnxzfW5x392/xdJnkqLZgayKxWatpYfFQT8dH2br/ebNLyQw2L/kOUAUl6Px/I+2ezSTuSj4s7BXYZuKN2HMBJKSKHxKBFL9zk8uI+hG0k3w5CQA3CTMkgDjmp4w+OErkpSdYGnJbaAt4Crdb7apIsJRsF8CiM3l4Lmecd/ExTb7HsqvA76XmXb5ZqIZbJHMbuH9aMf2RV32X+Fj1XxUbphKXfWItfUcgmWcgm1yKUq/rDcy/h4hO1fIHgRRqT9aw0HNZyFB/TT8CB0QL9iZVS5NiLQRJiasPaM6HMEFccEEilOd0vpaExD72mN5SSIPmP7bayh2EYGVtWIDUxrbHsGKqPJtmroteq1rbOxPY1Y9uiMhUVjNkpzP8dSSGe4f899l/se9xOOGcFSpbRU5Cumxlsq47EBJl+Yx3E9jdHQytgAoxrGOMTkLv/LB7rEdLipYsI9YFvxlN/nCZCniqd/Tc/jHjAcIKxwUWiPNXDFG7pAPA4Iw3PCFpqt12wxF/nLGHNVGizp8XNZzEVuM0aePmGYdMNWXXEfcG/Zwj7t9V88DcIbZvAalEfjdF+/bule1BbRUv1sKO+1OO5EYlbk98kqxbUwuvuWXkyzfJts8DUttss0r75xKx874ofgJ4LTMvh3Uf+li5qWoPtb1/Ub7MkX5ERwF7vWXUvxWCySxSrDHoN3zJtn+GfiTTP+zavFIYw7Tw==",
+            "data": "m=edit&p=7VRdb9owFH3nV1R+9gO2g6F56zrYC6PrYKqqKEKBpisaKF0g02TEf++5N86CSKpulda9TFack+Ob63OPP7bfiyRPpUUzA9mVCk1by48KAn66vs1Wu3UansmLYveQ5QBSXo1G8j5Zb9NO5KPizt6dh+5aug9hJJSQQuNRIpbuOty7j6GbSDfFkJADcOMySAMOa3jD44QuS1J1gScl7gPeAi5X+XKdzscYBfMpjNxMCprnHf9NUGyyH6nwOuh7mW0WKyIWyQ7FbB9Wj35kW9xl3wofq+KDdBel3GmLXFPLJVjKJdQil6r4y3LP48MBtn+G4HkYkfYvNRzUcBru0U/CvdAB/YqVUeXaiEATYWrC2hOizxFUHBNIpDjdLaWjMQ29xzWWkyD6hO23sYZiGxlYVSM2MK2x7RmojCbbqqHXqte2zsb2NGLZoxMWFo3YKM39DEshneH+Pfdd7nvcjzlmCEuV0lKRr5gab6mMxwaYfGEex/U4RkMrYwOMahjjEJO7/C8f6BLT4aaKCfeAbcVTfp8nQJ4qnv41PY97wHCAsMJFoT3WwBVv6ALxOCAMzwlbaLZes8Vc5C9jzFVpsKTHz2UxF7nNGHn6hGHSDVt1yX3AvWUL+7TXf/M0CG+YwWtQHo3jff26pXtRW0RL9auhvNfiuBOJaZHfJ8sU18Lw7mt6NsnyTbLG16TYLNK8+satfOiIn4KfCE7L4P9F/Y8ualqC7h9d12+wJ1+QE8Fd7Fp3JcVjMU/mywx7DN4xb57hn4k3zfg3rxaHMO48AQ==",
         },
         {
             "data": "m=edit&p=7ZdNb9tGEIbv/hUFz3sguR8kdUvduBfXbWoXQSAIgeMqiFEbSv1RFDL83/PM7kt9B0ULFMkhEMR5OBoO39kd7lL3fz5e3s1dk1zjne9d7Ro+KSQXfeuaph/Kodbn4vrhZj75zr14fPiwuAOc+/nkxL2/vLmfH00VNTt6Wg6T5Su3/HEyrZrKVS3fppq55avJ0/KnyfLMLc/5qXINvtMS1IIv1/g6/250XJxNDZ+JwTfg1fXd1c387Wnx/DKZLi9cZff5Pl9tWN0u/ppX0mHnV4vbd9fmeHf5QDH3H64/6pf7x98Xfzwqtpk9u+WLIvf8gFy/lmtY5BodkGtV/M9yh9nzM8P+K4LfTqam/bc19ms8nzxxPJs8VaG1S5mZpsxNldJYuhxd2HH0+ZINR9PuhjTtsOsZdq9q03YMgpos680oC//WWFUh4m13vVnxXmxXH/Sa0j1vrmjPO3SHvKXYA26rZt+dy95zt/XBSsqQ7EdnfTvRDNRJHq42Hy+YWLf0+fhDPtb5GPPxNMe8ZGB9CjzhlEA6rAt1YawLVppx67c5+MKh3eAGRtd4rVWUOcLMSOYEM4p2r9RxX3HfrfxY7iVujXtxT36x5WyVvzXeyD9yMJ3SHNBjvZKZ+DDGEG/dYpzgXtwbSwPaorRhYWkIaEuKoZaQNvyjzmCamcLMgwuRHszx+HvF9P0qJ9ZF1Yt1ccxj8dYKmcnTi1mCY10Y62JT8mPhRtzAZV6wsOYr1i7YM2HcwYN4MC7XYld5ckw3MnPdaa47esCaOsdb/sKeeK+cWBekDeuCF3t4HBPzj/dCc1AeLCzN7EbBi72x5tczv1EcjTXXnrkeuYF9YT/AjbiL6By5haWfWrY0eLFH24qtFmlmYwxR/mg8jjM6O3FnLJ0dOjtpQ0Po1HsdvdepryxmUPwQGNvCWDZiMbVH1YWFS57I5h0b9a3x6PdwFEdY98W6OIiH5FJTGOvSKqcnT6kFSx4xNUaNP5acYupdM72hcYj0D+frPre1MjM9rN7AwuphxpwXDzF5NM4x4t9k9WfOrx6O9Dm/rVk9jyVGTH8m9SeWeuW3F56gMeS5Hp9HLCzNPNdRzybWRT2b2K38Kz32TKnHsLDGZGCsNNdYWHNKr67mhZxJzzt2pTnaGjLel7WCczGatS5l1poWWd/WTH6te5H1n3MxerQvpJqXv7poxsJFMxYeYwJcrsXC6h/W5KT1EwsXPViXxrWut5wak8SY2P6WxxZOY5/A2l8iGjhfs/RgYY0heqL0YGHVyP4VtWdhyS9OVq/YYrTfYWHlYa+J2kcie8oWJ8Wzn8YkfyJe+0vupZEZk6h9CgtrLtjvxn4LNi/jHkoezsWsCcqf9zXdN/SsSxq3wBhusWrE4hczv0Hzi1V+Xgpe51eD43wM+ZjyK0Nnb4r/6l1y8wXuv72d/KOcKR1if00+/4nffv+Sv8+OptX54937y6s5/0+OF7cfF/fXD/OKP4PPR9XfVf5OPaHh2//DL/T/0Kag/tqe7K9NDmvN7OgT",

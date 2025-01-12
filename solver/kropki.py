@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid, unique_num
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
@@ -26,7 +26,7 @@ def kropki_constraint() -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
     n = puzzle.row
 
     solver.reset()
@@ -43,7 +43,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(kropki_constraint())
 
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
-        assert d in (Direction.TOP, Direction.LEFT), f"Symbol direction at ({r}, {c}) should be top or left."
+        fail_false(d in (Direction.TOP, Direction.LEFT), f"Symbol direction at ({r}, {c}) should be top or left.")
         tag_d = "h" if d == Direction.TOP else "v"
 
         if symbol_name == "circle_SS__1":
@@ -57,7 +57,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))

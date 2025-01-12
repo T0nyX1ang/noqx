@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.loop import separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -26,7 +26,7 @@ def wall_length(r: int, c: int, d: int, num: int) -> str:
     if d == 3:
         return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
 
-    raise AssertionError("Invalid direction.")
+    raise ValueError("Invalid direction.")
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
@@ -52,9 +52,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue for compatibility # pragma: no cover
             continue
 
-        assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
+        fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
         num, d = clue.split("_")
-        assert num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c})."
+        fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
         solver.add_program_line(wall_length(r, c, int(d), int(num)))
 
     for (r, c, _, _), color in puzzle.surface.items():

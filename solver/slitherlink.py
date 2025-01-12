@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import target_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
 from noqx.rule.loop import separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
@@ -83,17 +83,16 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         elif puzzle.param["swslither"] and clue == "S":
             solver.add_program_line(f"sheep({r}, {c}).")
         else:
-            assert isinstance(clue, int), "Clue should be an integer or wolf/sheep with varient enabled."
+            fail_false(isinstance(clue, int), "Clue should be an integer or wolf/sheep with varient enabled.")
 
             if puzzle.param["vslither"]:
-                solver.add_program_line(count_adjacent_vertices(clue, (r, c)))
+                solver.add_program_line(count_adjacent_vertices(int(clue), (r, c)))
             elif puzzle.param["tslither"]:
-                solver.add_program_line(count_adjacent_segments(clue, (r, c)))
+                solver.add_program_line(count_adjacent_segments(int(clue), (r, c)))
             else:
-                solver.add_program_line(count_adjacent_edges(clue, (r, c)))
+                solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_top", size=2))

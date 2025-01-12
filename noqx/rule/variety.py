@@ -21,4 +21,4 @@ def yaji_count(
     if arrow_direction in [0, 3]:  # up, down
         return f":-{shade_clue} #count {{ R1 : {color}(R1, {src_c}), R1 {op} {src_r} }} != {target}."
 
-    raise AssertionError("Invalid direction.")
+    raise ValueError("Invalid direction.")

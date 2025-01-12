@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
@@ -24,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f":- not gray({r}, {c}), #count {{ R, C: adj_4({r}, {c}, R, C), gray(R, C) }} != {num}.")
         solver.add_program_line(f":- gray({r}, {c}), #count {{ R, C: adj_x({r}, {c}, R, C), gray(R, C) }} != {num}.")
 

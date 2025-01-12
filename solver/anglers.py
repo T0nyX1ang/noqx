@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
@@ -16,8 +16,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.reset()
     solver.register_puzzle(puzzle)
 
-    assert len(puzzle.symbol), "No clues found."
-    assert len(puzzle.text) == len(puzzle.symbol), "Unmatched clues."
+    fail_false(len(puzzle.symbol) > 0, "No clues found.")
+    fail_false(len(puzzle.text) == len(puzzle.symbol), "Unmatched clues.")
     solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))

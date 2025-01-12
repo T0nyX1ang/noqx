@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import fail_false, tag_encode
 from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import OMINOES, all_shapes, general_shape
 from noqx.solution import solver
@@ -26,11 +26,10 @@ def avoid_adj_same_omino(color: str = "black") -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    shaded = len(puzzle.surface)
-    assert (puzzle.row * puzzle.col - shaded) % 3 == 0, "The grid cannot be divided into 3-ominoes!"
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false((puzzle.row * puzzle.col - len(puzzle.surface)) % 3 == 0, "The grid cannot be divided into 3-ominoes!")
     solver.add_program_line(defined(item="hole"))
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
@@ -50,7 +49,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))

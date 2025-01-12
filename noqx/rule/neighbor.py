@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple, Union
 
-from noqx.rule.helper import tag_encode, target_encode, validate_type
+from noqx.rule.helper import tag_encode, target_encode
 
 
 def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
@@ -17,19 +17,20 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
 
     A grid fact should be defined first.
     """
-    validate_type(_type, (4, "x", 8, "edge", "loop", "loop_directed"))
-
     rule = f"adj_{_type}(R, C, R, C) :- grid(R, C).\n" if include_self else ""
 
     if _type == 4:
         rule += "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
+        return rule
 
     if _type == "x":
         rule += "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        return rule
 
     if _type == 8:
         rule += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
         rule += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        return rule
 
     if _type == "edge":
         rule += "adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not edge_left(R, C + 1).\n"
@@ -51,7 +52,7 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
         rule += "adj_loop_directed(R0, C0, R, C) :- adj_loop_directed(R, C, R0, C0)."
         return rule
 
-    return rule
+    raise ValueError(f"Invalid adjacent type: {_type}.")
 
 
 def avoid_adjacent_color(color: str = "black", adj_type: Union[int, str] = 4) -> str:

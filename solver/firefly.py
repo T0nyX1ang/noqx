@@ -74,7 +74,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f'{{ grid_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_top", size=2))

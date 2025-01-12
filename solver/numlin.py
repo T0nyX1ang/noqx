@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
@@ -32,20 +32,19 @@ def no_2x2_path_bit() -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
+    solver.reset()
+    solver.register_puzzle(puzzle)
+
     locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
         locations[clue] = locations.get(clue, []) + [(r, c)]
 
-    # check that puzzle makes sense
-    assert len(locations) > 0, "The grid cannot be empty!"
+    fail_false(len(locations) > 0, "No clues found.")
     for n, pair in locations.items():
-        assert len(pair) <= 2, f"There are more than two occurrences of {n}."
-        assert len(pair) >= 2, f"There is only one occurrence of {n}."
+        fail_false(len(pair) == 2, f"Element {n} is unmatched.")
 
-    solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
 

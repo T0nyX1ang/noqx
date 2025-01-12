@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_branch_color_connected
 from noqx.solution import solver
@@ -23,12 +23,12 @@ def count_reachable_edge(target: int) -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.param["region_size"].isdigit(), "Invalid region size."
-    size = int(puzzle.param["region_size"])
-    assert puzzle.row * puzzle.col % size == 0, "It's impossible to divide grid into regions of this size!"
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.param["region_size"].isdigit(), "Invalid region size.")
+    size = int(puzzle.param["region_size"])
+    fail_false(puzzle.row * puzzle.col % size == 0, "It's impossible to divide grid into regions of this size!")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
@@ -38,11 +38,10 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), "Clue should be integer."
-        solver.add_program_line(count_adjacent_edges(num, (r, c)))
+        if isinstance(num, int):
+            solver.add_program_line(count_adjacent_edges(num, (r, c)))
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))
@@ -57,7 +56,7 @@ __metadata__ = {
     "category": "region",
     "examples": [
         {
-            "data": "m=edit&p=7VjfbyI3EH7nr4j22Q/2+tfuvqVX0peUa5tUUbRCiBDaQwWRQqiqRfzv99m7hM3CrJNycNeqQmsGf+OxPTP+PMvyz9VwMWaCMyGYTBi+8VEiYUobZqXyD68+t5Pn6Ti7YJer50/zBQTGPl5dsd+G0+W4k1da/c66SLPikhU/ZHkUR8w/Iuqz4udsXfyYFT1W3ACKmEDfNSQRsRhidyfeedxJH8pOwSH3KhniPcTRZDGajgfXZc9PWV7cssjN850f7cRoNv9rHJXD/O/RfPYwcR0Pw2dsZvlp8lQhy9Xj/I9VpSv6G1ZclsvtHliu3C3XieVynXSy5U6f5ocWmvY3Gzj8Fyx1kOVu1b/uxGQn3mRrtL1sHSmz3WMZlUhZ14EgvXQkrkPWOtLGEM0bQ7RodBivURtidEPDqsYsiZ+2piF43DAiuNzT8WZe6fiZaoYFb25Z8OaehfA69Z7Y76luRzY3JWRzV0Ltraf0Xt2ObjpYaK9Tt1M6sK5j9tZj9vxjXvsHIRc+8Pe+vfJt7Ntb5AUrpG+/9y33rfbttdfp+vbOtx98q3xrvI51mfWu3Dt+OchN+CVNkHEK7vCCgcedAKaqBAtveiHZCmmlHGvNYo1QSxZJMJy0MOdkk+5k6ADb6Wgki5Mthw4MyaBTclkS6euP/m/09Tt51H38fXzRmy9mwylYqbeaPYwX29+4ADad6O/IP7l098n/d8LZ7wTnfH7m03ksWeTw68sRZcVHFj2tBsPBaI4kg/Mq2AC2JKxkKxynDCq0cYXRmjbOAatWGLREzm1bYGPiw4AyigA0p0xRgNWUKWJyYw01Qr53H19wDmofZfhxBZMw4qta4ovUQ31Ewkg9VEsk7OKbkDAKaRpWOqX8SYTfGMIJxhD+NMaSeY+loyoh4YTFFpTd4hfUKxSMdIxR7VGwRcja4BgwfWKtaF1aO7wtASi4qgrI0WWh0GacpqJtOXEYRulCAClxuFsA8aUIhOSic2QpeUSCvBxg9cCFcwyrB6+rwH30b6Wzr8sJAboKkF2gggjAbzBOB1QKUAbeMttgQTOKsBhNpqJEtkg6WzxMrxwQ4JSEOdiM03Nz/L0k6LkF5qbhGDwcJ3S8Ezg1ackW5BoJ44WSoE0k+EEAb57ECEtxNlUTWUNUOFoSpjRVE5FzkKboyak5kASSSUMnIKhbmpYUQpRJGO/xXyH8YYo95rif9FSclixOGOkTM9EbqrJ/XvK1Fm2hki9UKwQqjTdUObTPQ/AJX21DFdY3WYWf/a8R/GvY73wG",
+            "data": "m=edit&p=7Vjfb+JGEH7nrzj5eR92vb9sv1TplfQl5dpeqtPJQogQ2kMlIiWhqhzlf79vx+ZwHMabKwfXVpXFMuw3uzOeGX875u6PzXQ9F0oKpYTOBL5xGZUJY53w2tBHNtfl4n45L16Js839h9UaghBvzs/Fr9Pl3XxQNlrjwUOVF9WZqL4vyiRNBH1UMhbVT8VD9UNRjUT1FlAiFOYuIKlEpBCHO/Ed4UF6XU8qCXnUyBDfQ5wt1rPlfHJRz/xYlNWlSIKdb2l1EJOb1Z/zpF5Gv2erm6tFmLia3uNm7j4sbhvkbnO9+n3T6Krxo6jOaneHe9zVO3eDWLsbpKO5u7xd7XM0Hz8+IuA/w9VJUQavf9mJ2U58WzxgHBUPiXHbe6yzkhgfJpCkTxNZmNCtibyzxMrOEqs6E440Wkuc7Wh407Hiyco3u4mM/GgtyXVHQ8m0Y0ZJ0mktUpIMPdEhX1qmlewGRcluVJQinfZMSnfd3kd3b1vp7n0r88yfOr7tfWw3BcqSTnufOsRtHffMH/csPu5pfFAUikrjPY3nNKY0XqJyRKVp/I5GSaOl8YJ0hjS+o/E1jYZGRzo+1N5nVefh7qB6EZc8Q00ahIMEh4gHAVzWCKHWSMi2Qt4op9aK1CLVWiQaHKg9tguyy3cydIDtdCyKJcheQgcb6WhQSl1T7dPL/jfmxoMyGV7/Nn81Wq1vpkvw1mhzczVfb3/jiHgcJH8l9Cl1OHH+PzVOfmqE4MsTP52HkkWJuH56REX1RiS3m8l0MluhyBC8BnaAPQsb3QunuYAKv7nBastvLgGbXhi0xNr2PbBz6X7AOMMAVnJbcYC33FaMcecdt0J/7n18QRvcfdTpxxHMwsiv6ckvSg8dFAuj9NBPsXDIb8bCaLV52NiciyeTfueYIDjHxNM5z9Y9XEdXwsKZSD0ouycu6Fc4GOWYoh/kYI+U9cEpYP6J9arXtX542wJwcNMVsKvrRqFvc56Ktu3EfhitCwPkzMPdA6gvRSAsF52iStlHJMrLEVaPHDiHsHr0uIqcR/9WOvu6nBChqwjZRTqICPyCzfmEagXKwFtmH6x4RlEeq9lS1KgWzVcLwbzngADnLCzBZpK3LfEHlOJtK9jm4RQ8nGZ8vjMENeupFtQaC+OFkqFNFPheAG+ezArPcTbXE3nHdDhWM1tZridibbBb8cY5GygCLbTjCxDUrV1PCSHLLIz3+K+Q/jjFHvK4H/WpOC5ZHDHTR2aiF3Rlf7/l623aYi1frFeIdBov6HL4mMfgI77axjqsf2QXfvK/RvCv4XjwEQ==",
         },
     ],
     "parameters": {"region_size": {"name": "Region Size", "type": "number", "default": 5}},

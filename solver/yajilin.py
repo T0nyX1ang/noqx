@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
@@ -36,10 +36,14 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if isinstance(clue, str) and (len(clue) == 0 or clue.isspace() or clue == "?"):
             continue
 
-        assert isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows."
+        fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
         num, d = clue.split("_")
-        assert num.isdigit() and d.isdigit(), "Invalid arrow or number clue."
+        fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
         solver.add_program_line(yaji_count(int(num), (r, c), int(d), color="black"))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="grid_direction", size=3))
@@ -54,7 +58,7 @@ __metadata__ = {
     "aliases": ["yajirin"],
     "examples": [
         {
-            "data": "m=edit&p=7VRNj5swEL3zK1Y++2BjoMSXKt1ueqH0I6lWK4QQoV6FlpSWhGrriP++M2O2UDWXqtJqK1WOX56fZ8zzgH341ped4VLgT8Uc/qEFMqbuxxF1MbZNfWyMvuDL/rhrOyCcv1mt+G3ZHIyXjVG5d7ILbZfcvtIZk4wzH7pkObfv9Mm+1jbldg1TjMegJS7IB3o10WuaR3bpRCmAp8BhMQn0BmhVd1VjisQpb3VmN5zhc15QNlK2b78bNvrAcdXutzUK2/IImzns6q/jzKH/2H7ux1iZD9wund31GbtqsovU2UV2xi7u4q/tNvUXc3fO6SIfBqj4e/Ba6Axtf5hoPNG1PgGm+sSUwNTnYANfDawXSlqrQN+jFCmUVKEmKaY0OZcWvouaJUpBmX6B7+lBk+HvmhpzxUwLAhc31yLK/ekW9iBpJzeEK0KfcAMb5VYRviQUhCFhQjFXhNeEl4QBYUQxz7BUf1TMR7CTKXcof23hv6flXsbWfXdbVgY+5AQ+6Iu07fZlA6O0329N9zCGK2Tw2B2jnim8kf7fKo9/q2D1xVM7Dk/NDhxQ9qP8VEMpWe7dAw==",
+            "data": "m=edit&p=7VRRb5swEH7nV1T37AeMCSV+mbKu2Quj25KpqhBChFGVjYyOhKlzxH/v3ZmMTG2nVZMyTZqIv3z+uDOfz3Cbr13elkK69FOhwH+8fBny8MKAhztcy2pbl/pEzLrtTdMiEeJiPhfXeb0pnWSISp2dmWozE+a1TkCCAA+HhFSYd3pn3mgTC7PAWyBC1CIb5CE9H+kl3yd2ZkXpIo+R42IS6RXSomqLuswiq7zViVkKoOe85GyisG6+lTD4oHnRrFcVCat8i5vZ3FS3w51N97H53A2xMu2FmVm70d6uP9pVo12i1i6xR+zSLv7Ybl19Ke8eczpN+x4r/h69Zjoh2x9GGo50oXeIsd6Bcin1Bdqgo8H1JpLXysj3IAWKJJWpUQo5TR5KU89GHSRKlzO9jM5pr8nJQ00Nue6B5vs27lALOPeHW9yD5J1cMc4ZPcYlblQYxfiK0WWcMEYcc854yXjG6DMGHHNKpfrNYoIfgPZtSY9gKlH20/z5mvx7WuoksOja67wo8XWO8LU+iZt2ndc4i7v1qmz3c2wkvQN3wCNR1Jf+95bj9xaqvvusDvP3v9HELIQfCHMh4LbL8qxo8PXCsv1SP31CD5+pP7XOw+cevWrYR+B7/qnCE4fUuQc=",
         },
         {
             "url": "https://puzz.link/p?yajilin/19/13/g24g33f45o23d30g32z43k41y11a11a42zo33a14a12b11d31a32c21e11t36g31e21y",

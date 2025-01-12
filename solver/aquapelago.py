@@ -26,9 +26,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, tp), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(tp, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
-        solver.add_program_line(grid_src_color_connected((r, c), color="black", adj_type="x"))
-        solver.add_program_line(count_reachable_src(num, (r, c), color="black", adj_type="x"))
+        if isinstance(num, int):
+            solver.add_program_line(grid_src_color_connected((r, c), color="black", adj_type="x"))
+            solver.add_program_line(count_reachable_src(num, (r, c), color="black", adj_type="x"))
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:
@@ -47,7 +47,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VZRa9swEH7Pryj3fA+WJTuO37Ku2UuWbktHKcIEJ3NpqDNnTjyGQv57706mrlnGCoM8jGLru8t3J+k7ScjZ/WjyukAV86sTDFDRE5tYWpSMpAXtc7Pel0V6geNm/1DV5CBeTyZ4n5e7YmDbrGxwcKPUjdF9SC0oQAipKcjQfU4P7mPqZujmFAI0xE19UkjuVefeSpy9S0+qgPyZ97nbHbmrdb0qi8WUosR8Sq27QeB53klvdmFT/Syg1cG/V9VmuWZime+pmN3DettGds236rFpc1V2RDf2cucn5OpOLrteLnsn5HIV/y633FanhI6y45EW/AtJXaSWVX/t3KRz5+kBTAipQTBDMVEkJonFjJQYpXxQDX1UjbTYMPBpYWi8TfxYOki8VT5PGx/XURuPeDyaf9bOT6J5B/2BECl+S1uCRfUIlmfBdAQLtTDsCJHc6yPiLR+7Z4bLoJwXlFTUVyPF9fpJmRZ0x0jBfYZL780vi9AbR5bDQvSSEdXP49ASqfRAeCc4EQwFb2gH0WnB94KBYCQ4lZwrwVvBS0EjGEvOkM/Aq08JlRMixLyhfuPOoM2aUG6ePz/RW/x/jmcDC/Omvs9XBV1zs2azLOqLWVVv8hLoi3IcwC+QZjWlm7ePzNk/Mrz4wSsvkbPdG3+RY2ldY43uGmHbLPLFqiqB/qEg8+Z3/uzq6eKD7029fsyXBWSDJw==",
+            "data": "m=edit&p=7VZBb9pMEL3zK6I5z8Frr43xpaJp+C6U9CtUUbSykHEdBcXU1OCqWsR/z8ysFWOVqpEqcagis2+GN7PLm9nVmt33JqsLVBF/ghg9VPREOpIRxiMZXvss1vuySK5w3Owfq5ocxNvJBB+yclcMTJuVDg52lNgx2v8SAwoQfBoKUrT/Jwf7MbEztHMKAWripi7JJ/emc+8kzt61I5VH/sz5PO2e3Hxd52WxnFKUmE+JsQsE/p33Mptd2FQ/Cmh18Pe82qzWTKyyPRWze1xv28iu+Vo9NW2uSo9ox07u/IzcoJPLrpPL3hm5XMXfyy231Tmho/R4pIZ/JqnLxLDqL50bd+48OYD2IdEIeigmDMXE2plIzEiJUcrlqKFLUqNArO+5NN93s/zYLRl4sbPK5QXaxYOwjYe8HsmYtTJIO2+kOxeiyO1sS7C2HsEqDbw7IUiIAd0RrNzAsCOkht4iUo3h4/jCcF2Uc0JJiX15Um1vntRtIOgY6UCf4V70fl+60ltH+mMgPGVE9cs61DOVHAjvBSeCvuCCdhZtIPhB0BMMBaeScyN4J3gtqAUjyRny2Xj16aFyfISId9jt5AW0Ge3LjfT7J3yL/8vxdGBg3tQPWV7Q9TdrNquivppV9SYrgd40xwH8BBkmoHT99vK5+MuHm++98hK52L3xBzmG+hoFaG8Rts0yW+ZVCfTPBZnXv/IXV08XH3xr6vVTtiogHTwD",
         }
     ],
 }

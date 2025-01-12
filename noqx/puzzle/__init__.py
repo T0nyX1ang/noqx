@@ -30,7 +30,7 @@ class Point(NamedTuple):
 
     r: int
     c: int
-    d: Optional[Direction] = None
+    d: Direction = Direction.CENTER
     pos: Optional[str] = None
 
 

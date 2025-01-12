@@ -25,8 +25,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
-        solver.add_program_line(f"number({r}, {c}, {num}).")
+        if isinstance(num, int):
+            solver.add_program_line(f"number({r}, {c}, {num}).")
 
     for (r, c, _, _), color in puzzle.surface.items():
         if color in Color.DARK:
@@ -45,7 +45,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VdNb9s4EL37VwQ886CRqM9bmk32knW2dYogMAzDcR3EWBtO/VEUMvzfM2/kdEZKDttDExQoDBEzIufxvSE5lDdfd5P1zBN5inxS+Miz5UOa+UCFTymXJzr+rufbxaw68ae77cNqzYb3VxcX/n6y2Mx6w+OoUW9fl1V96uu/q6Ej513MD7mRrz9W+/qfqu77esBdzgd+d9kMitk8V/NG+mGdNS8pYrt/tNm8ZXM6X08Xs/Fl8+bfalhfe4d5Pkg0TLdcfZu5Iw/409Xybo4Xd5Mti9k8zB+PPZvdl9V/u+NYGh18fdrQHbxCN1G6MBu6sF6hCxW/mG45Ohw47Z+Y8LgagvtnNQs1B9We2361d0nMoTGvtayMSxJ2sQue/QBf3ZTdXN2s3Zu3sQp2E3XLVm+I2E3VJXZLdUHL9AK5ULeNHIBsSKeAztRtQ6eAVqxUFGO/H30oVokpFBssKA7qgpeZOQO2BmfAVhUZoJV2BmhNSAZoE9uFhmaDBc3KK4dkxcohWTXmbVo5oFVEDmQTC2SNLYBseBSAVhEFoJVHAcUmWLaPJreAZAsGzSYaxHSlSmCb6FKWSl2Aq4xSsNUFtOarBLTSLtuaS9lBP1yKIFqJUATRCkYRmCkaRbJYxge8Jpwi4Bs8Ar6miQj4KoWovWBEUK55IoJ0G98+l0QQb/hRh1/c4R938GPga3ooBr7hHwPfzB8D3+Qnhn6zzhQjAWZAggQYwQkSYCaUsmQmkNJiAaW4WABMYDLQKS8k9cVMIAXGKArIgI2XnWsmDEiBYRTax5WkRJkJpMwYAlJnTLzUGdsPfLMkUmksgabWGL+TgbSzxzJkwABmyICJl1plThdJxTGbQCqOBWyXHJKaYwhI0bGAUnbsgPb5pbxdDylvn2DKuymQwvXMgC8wkmvsVtoLaWNpr/mW83Ui7V/SRtKm0l7KmHNpb6Q9kzZIm8mYHPfk/7xJ5Q4Nza0UN9fqG3AbJthsL3/YUr/921Fv6Aa79f1kOuPPnP5ueTdbn/RX6+Vk4fi78tBz3508sn3Cn0/Nd/rUxBJEP/XB+f6ndsjZ5bNTX3n3uBtPxtPVwvG/FY/3oXjx/s3Z89F2D/Ptaj13o94T",
+            "data": "m=edit&p=7VbLbttKDN37K4xZz2Ko52Pnpkk3qdPWuQgCQTBkV0GE2lAqW0Uhw/8eklJKz7iL3kWTTSGIIDmjw6PDMeXd965sK53g5SfaaMDLDzy+PZPybcbrtt5vqmyqZ93+sWnR0frm6ko/lJtdNcnHXcXk0KdZP9P9hyxXoLTy8AZV6P5zdug/Zv1c9wtcUjrA3PWwyUP3Utw7XifvYkiCQX8++ujeo7uu2/WmWl4PmU9Z3t9qRXXe8dPkqm3zo1IjD4rXzXZVU2JV7vFldo/107iy674237pxLxRH3c8GuosXukRnpOsLXXIHuuT9hi499pfppsXxiLJ/QcLLLCfu/4mbiLvIDmjn2UF5ET5KvebOKC8mpClSe0kkbiJ1Er7BRCQhuOseJnwJfXedKggDn/C9X2FA6KfbA8IXuIDQQwkJPZAwcJ8OLfSQ0KV26HIPCT2W0OUeuvgh4VsJ0vcEwdU3ogpWwn6DiCokEtr8Ixs9InRpReT2LiJtZXvsso8JXYrF9tmICV1qx3bfYvdcJKStgCWutgmhS+cSV5mE8KXRiYuf2ucutc9F6uqakq5SLnW1SQlfdAfjHjww7huAsQ8fGLt3YEhg4QTGPR0AZ1XgrApQFRESgKqcoILbRgCqI9IAkNT2DlttHAbAI+Ge7RVbj+0tTgzd+2zfszVsQ7bXvOeS7R3bC7YB24j3xDRz/nAq8TwKhjnkDSPqFbjlHol1elFTXzEuJrladO1Dua5wrM+77apqp/Om3ZYbhd/R40T9VHxz34N/n9Y3+rRSC8z/+sC+/S8rR3XxfPc3Wj11y3K5bjYK/51pzsdn+Vdnjz8/9Vjvm7ZWxeQZ",
         },
         {
             "url": "https://puzz.link/p?hitori/10/10/1174453399113445756a2345678aa82513328aa85417a698323227a9411566517a43236688115329986a115274aa99886611",

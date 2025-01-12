@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.helper import full_bfs, validate_direction, validate_type
+from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
@@ -24,7 +24,7 @@ def meander_constraint(_id: int, area_size: int) -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
     n = puzzle.row
 
     solver.reset()
@@ -44,7 +44,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer."
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))

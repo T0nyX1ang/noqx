@@ -4,7 +4,7 @@ from typing import List, Union
 
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 from noqx.solution import solver
@@ -30,7 +30,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
     all_src = set((r, c) for (r, c, _, _) in puzzle.text)
-    assert len(all_src) > 0, "No clues found."
+    fail_false(len(all_src) > 0, "No clues found.")
     for r, c in all_src:
         solver.add_program_line(f"not hole({r}, {c}).")
         current_excluded = [src for src in all_src if src != (r, c)]
@@ -51,7 +51,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))

@@ -33,17 +33,26 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
 
 def validate_type(_type: Optional[Union[int, str]], target_type: Union[int, str, Iterable[Union[int, str]]]):
     """Validate any matching type."""
-    assert _type is not None, "Type is not defined."
-    if isinstance(target_type, (int, str)):
-        assert _type == target_type, f"Invalid type '{_type}'."
-    else:
-        assert _type in target_type, f"Invalid type '{_type}'."
+    if _type is None:
+        raise ValueError("Type cannot be 'None'.")
+
+    if isinstance(target_type, (int, str)) and _type != target_type:
+        raise ValueError(f"Invalid type '{_type}'.")
+
+    if not isinstance(target_type, (int, str)) and _type not in target_type:
+        raise ValueError(f"Invalid type '{_type}'.")
 
 
 def validate_direction(r: int, c: int, d: Optional[Direction], target: Direction = Direction.CENTER):
     """Validate the direction of any element."""
-    assert d is not None, f"Direction in ({r}, {c}) is not defined."
-    assert d == target, f"The element in ({r}, {c}) should be placed in the {target.value}."
+    if d != target:
+        raise ValueError(f"The element in ({r}, {c}) should be placed in the {target.value}.")
+
+
+def fail_false(express: bool, msg: str):
+    """Raise error if the expression is false. Works like an assertion in the background."""
+    if express is False:
+        raise ValueError(msg)
 
 
 def full_bfs(

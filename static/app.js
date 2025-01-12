@@ -15,6 +15,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("context", "nuribou");
   urlstring = urlstring.replace("coral", "nonogram");
   urlstring = urlstring.replace("circlesquare", "yinyang");
+  urlstring = urlstring.replace("creek", "gokigen");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("hinge", "aqre");
   urlstring = urlstring.replace("kramma/c", "yinyang");

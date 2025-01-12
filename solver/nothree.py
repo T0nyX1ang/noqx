@@ -4,6 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import fail_false
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
@@ -32,7 +33,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(no_consecutive_same_distance(color="black"))
 
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
-        assert symbol_name.startswith("circle_SS"), "Invalid symbol type."
+        fail_false(symbol_name.startswith("circle_SS"), "Invalid symbol type.")
 
         if d == Direction.CENTER:
             solver.add_program_line(f"black({r}, {c}).")

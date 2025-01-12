@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
 from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
@@ -24,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.reset()
     solver.register_puzzle(puzzle)
 
-    assert len(puzzle.text), "No clues found."
+    fail_false(len(puzzle.text) > 0, "No clues found.")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
@@ -39,7 +39,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(squarejam_constraint(num, (r, c)))
 
     for (r, c, d, _), draw in puzzle.edge.items():
-        assert d is not None, f"Direction in ({r}, {c}) is not defined."
         solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))

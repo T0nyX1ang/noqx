@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, invert_c, shade_c
-from noqx.rule.helper import validate_direction
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
@@ -28,15 +28,15 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
         ).replace("not not ", "")
         return f":- grid(_, C1), grid(_, C2), C1 < C2, {colors_col}."
 
-    raise AssertionError("Invalid line type, must be one of 'row', 'col'.")
+    raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    assert puzzle.row % 2 == 0 and puzzle.col % 2 == 0, "# rows and # columns must both be even!"
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row % 2 == 0 and puzzle.col % 2 == 0, "total rows and columns must both be even!")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="circle_M__1"))
     solver.add_program_line(invert_c(color="circle_M__1", invert="circle_M__2"))

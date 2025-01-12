@@ -41,7 +41,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
             f':- nagare(R, {c}), {r1} <= R, R <= {r2}, not grid_out(R, {c}, "{d}"), not grid_in(R, {c}, "{rev_direction[d]}").'
         )
 
-    raise AssertionError("Invalid direction.")
+    raise ValueError("Invalid direction.")
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:

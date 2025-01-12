@@ -40,16 +40,15 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         validate_type(pos, "normal")
         solver.add_program_line(loop_segment((r, c)))
         solver.add_program_line(f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != |{c} - N2|.')
-        if num == "?":
-            solver.add_program_line(f"geradeweg({r}, {c}).")
-            continue
 
-        assert isinstance(num, int), f"Clue at ({r}, {c}) must be an integer or '?'."
-        solver.add_program_line(count_geradeweg_constraint(num, (r, c)))
-        if num > 0:
-            solver.add_program_line(f"geradeweg({r}, {c}).")
+        if isinstance(num, int):
+            solver.add_program_line(count_geradeweg_constraint(num, (r, c)))
+            if num > 0:
+                solver.add_program_line(f"geradeweg({r}, {c}).")
+            else:
+                solver.add_program_line(f"not geradeweg({r}, {c}).")
         else:
-            solver.add_program_line(f"not geradeweg({r}, {c}).")
+            solver.add_program_line(f"geradeweg({r}, {c}).")
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()

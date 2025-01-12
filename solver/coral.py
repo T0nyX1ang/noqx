@@ -28,6 +28,9 @@ def len_segment(color: str = "black") -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
+    solver.reset()
+    solver.register_puzzle(puzzle)
+
     top_clues = {}
     for c in range(puzzle.col):
         top_clues[c] = tuple(
@@ -44,8 +47,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
         )
 
-    solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())

@@ -36,7 +36,7 @@ async def solver_api(request: Request) -> JSONResponse:
         puzzle: str = body["puzzle"]
         param: Dict[str, Any] = body["param"]
         return JSONResponse(run_solver(puzzle_type, puzzle, param))
-    except AssertionError as err:
+    except ValueError as err:
         logger.error(traceback.format_exc())
         return JSONResponse({"detail": str(err)}, status_code=400)
     except TimeoutError as err:

@@ -25,13 +25,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        if num == "?":
-            solver.add_program_line(f"black({r}, {c}).")
+        if isinstance(num, int):
+            solver.add_program_line(f"number({r}, {c}, {num}).")
+        else:
             flag = True
-            continue
-
-        assert isinstance(num, int), f"Clue at ({r}, {c}) should be integer or '?'."
-        solver.add_program_line(f"number({r}, {c}, {num}).")
+            solver.add_program_line(f"black({r}, {c}).")
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
