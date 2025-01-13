@@ -4,6 +4,9 @@ import unittest
 
 from noqx.logging import logger
 from noqx.manager import list_solver_metadata, load_solvers, run_solver
+from noqx.puzzle import Direction
+from noqx.rule.common import count, fill_num, unique_num
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape, get_neighbor
 from noqx.rule.variety import yaji_count
@@ -21,11 +24,6 @@ metadata = list_solver_metadata()
 
 class TestSolver(unittest.TestCase):
     """Test all solvers in Noqx."""
-
-    # def test_solver_assertion_error(self):
-    #     """Test solver assertion error."""
-    #     payload = "m=edit&p=7ZLNbuowEEb3eYpq1rOIk5Qf71IK3QD9gQohK0JAXRE1NL0kaSujvDvjiaVsqnZTVXeBLB+O7UH+Yk3xr1ofNAYoMOyhTz80RITdDgo/4um7MU/LTMsLjKtylx9IEG9HI3xeZ4X2lKtKvKPpSxOjuZEKBCAENAUkaO7l0UwkbPP9JgU0MzoHFHQwbioD0mGrCz63Nmg2hU8+dU66JC31a1k0yzupzBzB3nTFf7UK+/xdg0ti183ttLHJPnZur6ie8pfKVYmkRhP/EDVso1ptolr7Iqr9Aht1mx62mV5NfjVtP6lrevEHyruSykZ/bLXX6kweiVOmYC6ZI2bAnFMpmpB5zfSZl8wx1wyZC+aAGTE7XNO1l/1vcRR1s0g8BYN8/5YXaamBmrT24BN4qpBaPjr37d/3rX19/9y938ehBk68Ew=="
-    #     self.assertRaises(ValueError, run_solver, "binairo", payload, {})
 
     def test_solver_timeout_error(self):
         """Test solver assertion error."""
@@ -118,3 +116,18 @@ class TestExtraFunction(unittest.TestCase):
     def test_nagare_wind(self):
         """Test nagare wind."""
         self.assertRaises(ValueError, nagare_wind, 0, 0, "unknown", None)
+
+    def test_validation(self):
+        """Test validation functions in helper."""
+        self.assertRaises(ValueError, validate_direction, 0, 0, Direction.LEFT)
+        self.assertRaises(ValueError, validate_direction, 0, 0, Direction.CENTER, Direction.LEFT)
+        self.assertRaises(ValueError, validate_type, None, "any")
+        self.assertRaises(ValueError, validate_type, "unknown", "known")
+        self.assertRaises(ValueError, validate_type, "unknown", ("known", "something", "other"))
+        self.assertRaises(ValueError, fail_false, isinstance("?", int), "This is not an integer.")
+
+    def test_common_rules(self):
+        """Test common rules."""
+        self.assertRaises(ValueError, fill_num, [0], "unknown", 0, "unknown")
+        self.assertRaises(ValueError, unique_num, "black", "unknown")
+        self.assertRaises(ValueError, count, 0, "black", "unknown", None)

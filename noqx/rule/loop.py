@@ -35,7 +35,7 @@ def intersect_loop(color: str = "white", path: bool = False) -> str:
     rule += "pass_by_loop(R, C) :- intersection(R, C).\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
-    if path:
+    if path:  # pragma: no cover
         visit_constraints.append("not dead_end(R, C)")
         rule += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
 
