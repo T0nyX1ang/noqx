@@ -73,19 +73,8 @@ def area_adjacent(adj_type: Union[int, str] = 4, color: Optional[str] = None) ->
     area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
     if color:
         area_adj += f", {color}(R, C), {color}(R1, C1)"
-        return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
 
-    return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
-
-
-def avoid_area_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generates a constraint to avoid same {color} cells on the both sides of an area.
-
-    An adjacent rule and an area fact should be defined first.
-    """
-    area_adj = area_adjacent(adj_type, color)
-    return area_adj[area_adj.find(":-") :]
+    return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
 
 
 def count_adjacent(
