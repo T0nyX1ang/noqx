@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import single_loop
@@ -33,6 +33,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if isinstance(num, int):
             solver.add_program_line(count_adjacent(target=num, src_cell=(r, c), color="black", adj_type=4))
 
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"black({r}, {c}).")
+
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -45,7 +52,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7VRNb5tAEL3zK6I9z2GXxYTspXLTuBdKP+woihCKwN0oKDik2FTVWv7vmRlIoS6XqlIUVRXep7dvZ/CbRTPbb23eWFCKfjoCCcggmIW8lPJ5yf5ZlbvKmhOYt7u7ukEC8HGxgNu82lov7aMyb+/OjJuDe29SoQQIH5cSGbjPZu8+GJeAW+KRAIVa3AX5SC8GesXnxM47UUnkSc+RXiNdl826sjdxp3wyqVuBoP95y9lExab+bkXvg/brelOUJBT5DovZ3pWP/cm2/Vrft32syg7g5p3deMKuHuwS7ewSm7BLVfy93eqxnjJ6lh0OeOFf0OqNScn15UCjgS7NHjExe6HD5xq7ryICn4Q3gxAGJOiRcHqUoiTn4If9qSh1HKP0seL/ljXjN4+VUJIiR0rEWeP3RNEvMViY4vKuGReMPuMKqwenGd8xSsYZY8wxF4xXjOeMAWPIMad0f390wy9gJ9XYmBPP7N9VMy8Vy7a5zdcW+yAuH+xJUjebvMJd0m4K2zzvcQAdPPFD8Eo1zbP/M+nFZxJdvnxtffPa7GAni4e2Ke/zworMewI=",
+            "data": "m=edit&p=7VZRb9pADH7nV1R+9kMud4SQl4l1ZS+MboOpqqIIBZaqUaFhgUzVIf57fb4wGE2qRpVoNU3hrC+fz8lnH7ay+lXEeYJCmJ/00UFCqNoeLyFcXk55jdP1PAnOsFesb7OcAOJlv4838XyVtMJyV9Ta6G6ge6g/ByEIQHBpCYhQfws2+kugh6hH5AJUxA3sJpfgxR5esd+gc0sKh/CwxASvCc7SfDZPJgPLfA1CPUYw7/nI0QbCIvudQKnD3M+yxTQ1xDReUzKr23RZelbFz+yuKPeKaIu6Z+UOKuTKvVwDrVyDKuSaLF4vd77MqoR2o+2WCv6dpE6C0Kj+sYf+Ho6CDdlhsAHp7XK0pwLKNcSHPeEpQ8gDonMUIhyOoYP9wwhxvEfIY8Z9EtXmJx8ynmMY54DxOerwOb7/1x5KTHB612z7bF22Y8oetWT7ia3Dts12wHsu2F6xPWer2Hq8p2Pq98IKgySpytb5NaJA+XRIXR+hI7sWqA4qyloiSLlDxHn0QstJOjT5wmxCSX1dcbX/XTZqhTAq8pt4llAbDdL75GyY5Yt4TnfDYjFN8t09za9tCx6AVyjNOPw/0k4+0kzxnUaD7e2nQKhHSJ2lLxGWxSSezDL6d1HVQqp32cA1TtvT9ZHU5vWR1PnVThoeVY46kcS3m/FeQ76uOMpXTR3dytSecXQc/z06qo/oOce7zKP5Cb5xHrXVPUXZm76cPgeeOE4+++izAe6LPL2LpwlErUc=",
         },
     ],
 }

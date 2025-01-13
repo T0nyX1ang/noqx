@@ -43,6 +43,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             if isinstance(num, int):
                 solver.add_program_line(count(num, color="country_road", _type="area", _id=i))
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -55,7 +58,7 @@ __metadata__ = {
     "aliases": ["countryroad"],
     "examples": [
         {
-            "data": "m=edit&p=7ZZNb9tGF4X3+hUG17MgOZ/UpvCb2t2o7kdcBIEgBLKtNkLtqK9sFSkN//c8d+YOFbQGiiIomkUgaHRmdMh7eHkOh/f/P6z3G9P1pgvGJtOajo8bnAkuGBfBfFv9XG4fbjfzE3N6eHi72wOM+e783Py8vr3fzJbKWs0ex2E+nprxm/my6RrT9Hy7ZmXGH+aP47fz8cyML/mrMR1ri0LqgWdH+Cr/L+hFWexa8IVi4Gvg9XZ/fbt5sygr38+X46VppM7/8tECm7vd75tGdcj8end3tZWFq/UDF3P/dvub/nN/uNn9elBut3oy42mRu3hGrj3KFVjkCnpGrlzFJ8u93b7b7N4/J3VYPT3R8h8R+2a+FN0/HWE6wpfzR8aL+WPjnRz6FTrKfWl8+NNCiCxEN837Xhj2o/nA3B/n1jIX69S5Zx50TtkuF3+dx/M89nm8RJsZbR6/zmObR5/HReacIdniTSu6e9NY14FRmHEPTootGGEZO2NDqziCESjYe2NjpxjLx14xnFg51Ipayw9gLkZwaME0ImM0RNUQ0BBVQ6Bu0roRflJ+hJOUE6k1aK0EZ1BOInGt6hlIXqvnH3qwHjvA6QoHLriss2ZcX/FgnNwAwX00zpVazjrjfNHm6I/T/rAGLhpYI/EVUytpreh5KpS+8T9Y15MFl567NBjfat2hBet50O9VvxuS8V3prW/hdIXjW2d8X/RwDnCpxXFg5XesW13nGr1eI8eB9Ty9BRc9cI13pYfeosEVDd7CcZVDXe0J5wPr+W0Al2v0NoJLDz0+9OpD76gr0ckYflA+fvPqN2qCle/RI8nKGD1B9Xj0BNXj0RNVD1716lXqgPX8AX5UPn7z6jcf4Cflc++83jtqglVPQE9SPYEeJu0hXvXqVeqAVRv+9OpPn6IJbc0IPveaC8lRzaNkJGi+JBc1d2gmG8dc1Ayyu0wZjHBq7vDblDXJS81XIptJM47f7KBZw29kZspLzRcZmrJDVsiLelVyUfMiuah54RlCNo4Zcbou/q+5SGRN+ymex+uT56eMSGarhoFaQ/W/ZKT6nHuneSErYPUGmmteyAoZUY74v+aF7dp3yu/g63OAX7B6o8dvvXqg55726gHJSM1ULzmq/pccVf/Dl4d6zUjNmmSkZk0yYmu+qDvljnM6PacD13yJh9Un2av6zPHcX6/3l9+jt8V71c/0fPIwz5zJw0n8r9qS+L96VfyvtfBt8TObyau8pbzIo8tjyFtNlE3yH22jn76r/a2cJZ2XTfWvH9l6v6z/6+ur2bJZ8OZ1crHb361vef06u/nlo9nF4e5qs69z3nyfZs37Jn/z25L78jL8H7wMS/vbzy3Ln5scni409PDuYf/HyX63vmlWsw8=",
+            "data": "m=edit&p=7ZZPbxs3EMXv/hTGnnnYXf5dXQo3tXtxnbZxEQSCYMi22gi1o1S2inQNf/f8hhxKQWMjNYIml0AQ9UiOdh7J94Z789dmvl6YrjddMDaZ1nR83OBMcMG4CObb6ud0eXu1mOybg83t69UaYMzzoyPz+/zqZrE31ajZ3t04TMYDM/44mTZdY5qeb9fMzPjL5G78aTIemvEFU43pGDsuQT3wcAdf5nlBz8pg14JPFANfAS+W64urxdlxGfl5Mh1PTSN5vs//Fthcr/5eNMpD+her6/OlDJzPb1nMzevlW5252Vyu/txobDe7N+NBoXv8AF27oyuw0BX0AF1ZxWfTvVq+WazePUR1mN3fs+W/QvZsMhXev+1g2sEXkzvak8ld45389Tt4lHNpfPjXQIgMRLft971E2A/6A32/61tLX6RT+55+0D5pu5z8VW6Pctvn9hRuZrS5/SG3bW59bo9zzCGULdq0wrs3jXUdGIYZ9+Ck2IIhlrEzNrSKIxiCgr03NnaKkXzsFRMTawy5oubyA5jFCA4tmI3IGA5ROQQ4ROUQyJs0byQ+aXwkJmlMJNeguRIxg8YkHNcqnwHntfr8oQfrfwdiuhJDLLiMM2ZcX/FgnByA4D4a50ouZ51xvnBz7I/T/WEMXDgwhuMrJlfSXNFTFcq+MQ/W8WTBZc9dGoxvNe/QgvU58PfK3w3J+K7srW+J6UqMb53xfeHDM8AlF/8Da3zHuNVx1uh1jfwPrM/pLbjwIdZ4V/bQWzi4wsFbYlyNIa/uCc8D6/NtAJc1ehvBZQ89OvSqQ+/IK9bJmPig8ejNq97ICdZ4Dx9xVsbwCcrHwycoHw+fqHzQqletkgeszw/ER41Hb1715gPxSeM5O69nR06w8gnwSconsIdJ9xCtetUqecDKDX161adP0YS2egSde/WF+Kj6UTwS1F/ii+o7OOONnS+qB7ldth6MxFTfobet18Qv1V8Jbyb1OHqzg3oNveGZrV+qv/DQ1jt4Bb+oVsUX1S/ii+oXagje2HnE6bjov/oi4TXdT9E8Wt9qfusR8WzlMJBrqPoXj1Sdc3bqF7wCVm3AufoFr+ARjRH9V79wXftO4zvitQ7wC1Zt9OitVw30nGmvGhCPVE/14qOqf/FR1T/xUtSrR6rXxCPVa+IRW/1F3q3veKbTZzpw9ZdoWHWStao1x3O+Xs+X3522RXtVz+z5VsPUnK2Gk+hfuSXRf9Wq6F9zoduiZy6Tl/lKeZZbl9uQr5ool+STrtHPudWaKPtPLWy6VqqzIFwqC7QZSWkQlIwsFMQ6ZZmCrJGCC0JLnWjJlkvyk6ubcpByR3/8kZv82/j/Pj7bmzbHvMjtn6zW1/Mr3uYOL//4oHeyuT5frGufF+n7veZdk7/55ct9e7f+Cu/Wsv3tFysN/9HLn6AzZWe1opjxuWnebs7mZxcrRMbm1UmKzMOTkbeup01IGXvqjFa3RyZLwXtsMtfARya1LD6VDiX5o4kvfqoUaXS5eXO7/md/vZpfNrO99w==",
         },
         {
             "url": "https://puzz.link/p?country/17/17/4si5d6t8fa2heg0ch42pfar88vioeikf7s4665a6g69g2bo2rc2qk0g5jrmll2p6kk62qsfhflvrakghu0pq13l87qg5huhgj407o09p0557vg4g4j-19o-362k2q1g",

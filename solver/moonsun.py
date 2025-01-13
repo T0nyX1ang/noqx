@@ -63,6 +63,10 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(area_adjacent(adj_type="loop"))
     solver.add_program_line(moon_sun_area())
+
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -74,7 +78,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7VZdaxs5FH33rzB61sNImu+3bJr0xU0/khKCMcFp3I2p7UntuIQx/u85545cp/iWQhaWLCzj0RxfSfeee/S5+r4eLyfWJfyF0uKLJ3WlvL7M5U3iczF9mE3qvj1aP9w1SwBr35+e2q/j2WrSG8ZWo96mrer2yLZv66HxxsrrzMi2H+tN+65ur2x7jipjHWwDIGesBzzZw0upJzrujC4BPosY8ApwtV5cz5tm0Vk+1MP2whrG+Ut6E5p582Nium7y/0szv5nScDN+QDKru+l9rFmtb5tv69jWjba2PeroDhS6YU+XsKNLpNBlFv+Y7my6mDxqTKvRdgvFP4HrdT0k7c97WO7heb1BeSalk/Kq3pjg4MbT5TNuJnjVmqnWHFZ3YC01a5qq1kKzZkGLllVa2zxRrWoWhcqsVHUomduhlXwPrbpflW+l8q3I4dCqZlGp6lSqvhXH7cDqEpWES1QlXEIaSmuVh0tIRDH/hok6hVxCRRUnlPTQ7NTcnVcHwAUmf+hEn/gu6OnoU9+lupNUXT4uU0fdZeqicPpMd7k+aDlHR2mtpIP94FR2BS/lBTYN2wYp30iZSJlJOZA2J9g/vAvWe3CFO+9wWlBYwRUwwhP7wvoUDIlDAoz4gtGXi584ddZnUEhwCozBF4y+zI44y4AxnoJxOhUQmjhH3yL2zRG3jHELz9MrYvTlYiQuEbeKcXG6Ba4EwRVw7FsVNrguLuqBO86oB+76ot4G38VFPXDHGfU2cGMl9hlwFxf1NnByEAf05YwQjLjc7ohTD9xxRj1w5Iw2Po08U2oYNaFu0Se+wJF/Sm2jztQzxsIXOGqSYrx+6s8x2mkObdOdVvBfRv8l9Yz+qWEZ/ZfwX0b/JXWO/uX2sNMZ/rlFCubNYucfeXE7FM2RFzdB0Qo6+6i5p7ZRK+rpoz4eYxfnHr57/akz171gaBvnJL77caH+XO2CobnMVUzqS5nax1KmUuYy5Queoi8+Z1+2uv5IZ4iMeF/79cn+e7ZRb2gGuOH0z5rlfDzDPefk9u9n/87vxvcTg5vltmcejbzDwIvq/5fNf/+ySfWT17YUXhsdLE7o2yz6zbKPsTCj3hM=",
+            "data": "m=edit&p=7Vddb9s2FH33rzD4zAfxQxKlt6xL9uKl25KhCATDcFpvMeZEWRwPhYL8955zRc8tfIu2GxBgwGCLOr4kLw8P7yXp7Z+75cPKuoLfkCze+ESX5PGpkqfIn8v142bVTu3J7vGmfwCw9vXZmf1tudmuJl1uNZ88DU07nNjhh7Yz3lh5nJnb4ef2afixHa7scIEqYx1sMyBnrAc8PcA3Uk/0ajS6Avg8Y8ArwO3ubnHb93ej5ae2Gy6t4TjfSW9Cc9v/tTJjN/n9tr+9XtNwvXzEZLY36/tcs9296//Y5bZu/myHk5HuTKEbDnQJR7pECl3O4l/T3azvVu81ps38+RmK/wKui7Yj7V8PMB3gRfuE8lxKJ+VV+2SCgxtPlx9xM8Gr1lK1VrC6I2vSrDGq1lqzlkEbrWy0tlWhWtVZ1CqzpOqQOLdjK/keW3W/Kt9G5duQw7FVnUWjqtOo+jZctyOrK1QSrlCVcAVpKK1VHq4gEcX8GSZqCLmCiipOKOmx2alzd15dABc4+WMneuC7oE9HD30XdSdRTR9XqqvuSjUpnB7prtIXreLqKK2V6WA/OJNdwUt5iU3DDkHK76UspCylnEmbU+wf3gXrPbjCnXc4LSis4AYYwxP72voIhsShAMb4gtGXyU8cnfUlFBIcgbH4gtGXsyMuS2Csp2CcTjWEJq7Qt859K4yb8ri15+mVMfoyGYkTxm3yuDjdAjNBcAOc+za1DW4cF/XAI2fUA499UW+DH8dFPfDIGfU2cGMl9iXwOC7qbWBwEAf0ZUQIxrjc7oijBx45ox44c0YbHzPPSA2zJtQt+8QbOPOP1DbrTD3zWHgDZ00i1utv/blGe82hbdxrBf8p+0/UM/unhin7T/Cfsv9EnbN/uT3sdYZ/bpGCebPY+8e8uB2K5pgXN0HRCjr7rLmntlkr6umzPh5rl2MP74P+1Jl5Lxja5pjE+7Au1J/ZLhiaS6wiqN9IaL+SMkpZScjXPEX/8Tn7rdlloge3JuFw9CAmIFrmRBDE1QxjCn6Rc4dp81L36af879nmk87McA2anvcPt8sNLkOn737/6NfFzfJ+ZXD9fJ6Y90aeLvA2+/+N9OVvpFS/eLF8+cpU+AKdDsLmPLPDa2vud4vl4m2P2IJ2+0qknl5Z4Q+TWoFc/uYe4TM9cGR+dcWLq4u9BuHS3037hylCy8wnHwA=",
         },
         {
             "url": "http://pzv.jp/p.html?moonsun/15/15/928i4h492940i814g28h2h25248g0h01208g0h01200000000vvv0000003vvs00000fvvg0000vvv0000001800jn33l000f6ig100109inb6i4003a3f00600fclh01i0910032f31ii290003631lk5ai100",

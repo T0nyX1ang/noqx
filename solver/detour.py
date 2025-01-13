@@ -33,6 +33,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             if isinstance(num, int):
                 solver.add_program_line(f":- #count {{ R, C: area({i}, R, C), turning(R, C) }} != {num}.")
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -44,7 +47,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7VVRa9s8FH3Pryh61oMl2Zbkl9GvS/eS5dvWjFKMKWnrrWHJvDnxKA757z33Sq47KAxW2PowjK+Pjq6so6Mre/u9W7a1dLiMk4lUuEyq+daJ5zuJ12K1W9fFkTzudrdNCyDl/6en8tNyva0nZcyqJvveF/2x7N8UpdBC8q1EJfv3xb5/W/RT2Z+hS0gFbgakhNSA0xGecz+hk0CqBHgObMKwC8DrVXu9ri9ngXlXlP1CCprnPx5NUGyaH7UIr+D2dbO5WhFxtdxhMdvb1bfYs+1umi9dzFXVQfbHQe7sCblmlEswyCX0hFxaxbPlrldf6+buKam+Ohxg+QeIvSxK0v1xhG6EZ8Uecc5RFXuRuwRvMCQG2NHbXrE0kfscrZSxdSkwigLYJTQiYqsfchyPRukAezuO9Z5yaAZMecETn3LUHBfQJXvD8TXHhGPGccY5UwhVmZfKKlFolFGO6a2JGK+2WcAWvIu8Be8GPgO2ATvwPvIOvB94C+wD9hkqPvLeUvVHjJOgggb0AweeT4iOvFLAQQP6pTaR1+BN5LUBDhrQL3UaeQM+HXhoSIMG9EudRT4Fnw08NGRRm6O1w2rGevSB1kvbxxhbMnhCa3fYJsb5I3/gA20lYwc8rJE8Cfl4PvjDPiQhH88Hr9gThVJhH5LRN/JHBZ14Ag+ekFcx3yB/8I38MTHfIH/wkLwyYV14PvITOk3UaaDTkE4U0TmX0gnHlGPOJWbpYPzG0XlONf9STqmxIz9d2K0/2a4mpZjha3M0b9rNco1PzvTm86PWvNtc1e3Qxtf+MBF3gm866zL99wP4Cz8Asj95abX80uTgdImbetd0ragm9w==",
+            "data": "m=edit&p=7VVNb9s4EL37VwQ8z0EkJZPUpUhTZy+us22yCALDMBxH3RhrV6k/FoEM//e8GVJxFrWRRRbIXgpB1OObkfT4OCOtfmwmy4o8DuspI43D5kZOkwU5s3Rczdbzqjyh0836vl4CEF2cn9O3yXxVdYYpa9TZNqFsTqn5rRwqo0hOrUbUfCm3zeey6VFziZAiDa4PpBUZwN4eXkuc0VkkdQY8ALbxthvA6Ww5nVfjfmR+L4fNFSl+z0e5m6Fa1H9XKj5C5tN6cTtj4nayxmJW97OHFFlt7uq/NilXj3bUnEa5/QNy7V4uwyiX0QG5vIr/LHc++17Vj4ekhtFuB8u/Quy4HLLuP/bQ7+FlucU4kFGXW9X1GZ5gWQyw56d9EGmqG7qY5YKdz4FRFMA+4zsSduY5x8vdKB3g4Pb3hsA5/Aa88kZefC6jkfEKuqixMn6SMZOxkLEvOT0I1UUg7bQqDcqoi9c7mzAe7YqIHXifeAfet3wB7CL24EPiPfjQ8g44RBwKVHzig+PqTxidoKMGxIEjLx1iEq81cNSAOBmbeAPeJt5Y4KgBcTJ54i34vOWhIY8aECdTJD4HX7Q8NBRJm+e1w2rBZu8Dr5e3TzC2pPWE1+6xTYK7L/yBD7yVgj1wu0b2JObj+uyP+JDFfFyfvRJPNEpFfMj2vrE/OurEFbj1hL1K+Rb5rW/sj035Fvmth+yVjevC9YWf0GmTTgudlnWiiK6llM5kzGXsSok5bow3tM7bqlnZLrQFTwAQxsA5cvDPcpuRg3uMAnFjAvlAIaKQUYAnjDRxU9nYGq+ubWiwvf84sPXvOR91hqqPT9fJoF4uJnN8v3p3f76YDTaL22rZzvHr2HXUo5KTPxyU//qb/A9/E7Y/e7fG+Je1/IqcIZxNDUXNBamHzXgyntYoMpgXg9Jjx4LSdkeCsROPBGNzHgtKvx4O4ntwLOB+Cry72/h4qLtqXW+WatR5Ag==",
         },
         {
             "url": "https://puzz.link/p?detour/12/12/4i461svho42s221q10sfps312904a1aldml2h84k190ka5bdlak2h03147g91374232",

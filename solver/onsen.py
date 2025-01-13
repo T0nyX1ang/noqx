@@ -84,6 +84,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     fail_false(onsen_id > 0, "No onsen clues found.")
     solver.add_program_line(onsen_global_rule())
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -95,7 +98,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7VRJb9s8EL37Vxg8z0HUQpG6uan9XVx3iYsgEITAdtTGqG199VIEMvzf84YaVToEKIouyKGgNX4cPo7mDYc6fD0t9iWlGJGlgDRGFMT+MQH/2jFfHzdlNqTR6fhQ7QGI3k4m9GmxOZSDXFjF4Fy7rB5R/V+Wq1CRf7QqqH6fnes3WT2m+hpLijR8UyCtKAQcd/DGrzO6apw6AJ412ADeAq7W+9WmvJs2gd5leT0nxe955XczVNvqW6mabX6+qrbLNTuWiyPEHB7W/8vK4XRffTkJVxcXqkdNutNn0o26dBk26TL6U+lu1rvy8blMXXG5oOIfkOtdlnPaHztoO3idnWFn2VnFAbbiaJtDUYanaog8xWHZEckUe7TfeevtxNvQ2zkCUx15+9rbwNvE26nnjPE+HaWkY6uyEBHjhHRiBMOftH4L7BqcoAeNFgyOEU7iSKdIjjG6UqfCMejYNBQMDgtgnIJjhZMivpX4KThOOBYcJxwbAkeCHYWBcJwGlvguBBaOi4ETj7FOoRY/a4xbjQY47fS2dWCNSauxVxPW29aE9fLpeF2IYySO6dXEQJdpdfXqwHpT8Vv4rfhZo201RsCxaOnVARq/1wEatWs0atfVxOuVOuAfuImDf6kJDv/Gt8CVt7G3xrdGyh35Uz376134w3TyEEp7A2fyu2fFIFdT3OPhrNpvFxvc5vH9595sdtouy307x3f0MlCPyj+4j5rif5/Wv/9p5eoHL61ZX1o6uD6q2h3KnSoGTw==",
+            "data": "m=edit&p=7VRRb9owEH7nVyA/30McJ46dN9bRvTC6rUxVFUUIaLaiQdNBM1VB/Pd+di5LpFXqpm48TSaXz+fzcd/nc/bfq8WuoARDGQpIYqgg8o8O3K8ds/XDpkiHNKoebssdANHF+Tl9WWz2xSDjqHxwqG1aj6h+l2YiFOQfKXKqP6aH+n1aj6m+xJIgCd8ESAoKAccdvPLrDp01ThkATxusAa8BV+vdalPMJ02iD2lWz0i4/3njdzsotuWPQjTb/HxVbpdr51guHkBmf7u+55V9dVN+qzhW5keqR025k2fKVV25DjblOvSvyt2s74rH5yq1+fEIxT+h1nmaubI/d9B08DI9wE7Tg4gCbMXRNocitJuKIepkh3EOxVPskX7ntbfn3obezpCYauXtW28Db2NvJz5mjP+TKiEZGZGGyBjFJGPNGP649Rtg2+AYPaglY8RojoktyQTFOYyulAnHaHRsEjJGjCPgcIIYwzEJ8hvOnyDGcoxBjOUYEwIrxpbCgGOsBOb8NgTmGBsBxx5jnULJfscxajlq4KTj2+rgOMYtx54mjm+riePrTsfzQh7NeXRPEw1euuXV08HxTdhv4DfsdxxNy1EBR8ylpwM4/tQBHKVtOErbaeL5sg54Azd58GZNcPhXvgXOvI281b41EteRf9Szr+lCoQx0swbFxaQgs2r68sUCsxDcewOn9Ldn+SATE9zs4bTcbRcb3O/xzdfebFptl8WunePLehyIR+Ef3FBJ0f+P7ek/tk794GTt+5vN+kI5GYTl/qf6gsR9NV/MVyV6DNq9bhHX65eFk7PHbRXl3b64E/ngCQ==",
         },
         {
             "url": "http://pzv.jp/p.html?onsen/10/10/akkh92j6mt9pjvfti91svv1vvovv3g3f04ti3m2n1j1x1zq2v3n3",

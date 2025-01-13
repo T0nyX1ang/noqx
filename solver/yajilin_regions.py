@@ -38,6 +38,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -50,7 +53,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7ZZBj9tEGIbv+RUrn+dgz4w9Y1/QUrpcQkrZRVUVRatscGkg25TsBhVH+9/7zPgNKdKKAhWVkFDiyRPHT753HH/j3P2yX+56U5Xp6aLhlYevYt5sbPJW6nG1vt/03Zk539+/3u4AY55dXJhXy81dP5nrqMXkMLTdcG6Gr7t5URWmsGxVsTDD8+4wfNMNMzNc8lFhPPum40EWfHrCF/nzRE/GnVUJz2AHgy/B1Xq32vTX03HPt918uDJFqvNlthMWt9tf+0I50vvV9vZmnXbcLO+ZzN3r9Vt9crf/YfvzXsdWiwcznI9xp4/Edae4Cce4iR6Jm2bxyXE36zf9u8eStouHB874d2S97uYp9vcnjCe87A6MszxW3aFoS883+JQFjunbvsjJirayvHPi5sS2hK042cf9yea6Sew+cF1ydbxPbjqG8i9ziIs82jxekdEMLo9f5bHMY53HaT7mKaFtZY21fK3lqqocHMQeJkbmGm7FXMCO0pkDXIm5uFPUzC3sRrYlzNQy46bYmXG9XIvr5VpcL9fhermugmsxmb0yOzJ7ZXZk9srscWu5HreW63FruR63lutx66PLfGvN15O5UWZP5kaZPZkbZa5xG7k1biO3xg1ya9wgt8YNR5f5Bs23IXNQ5obMQZkbMgdlbtIiIrfBjXIDbpQbcKPcgBvlBuYbNd9A5qjMgcxRmQOZW2WOuK3ciNvKjbit3IjbymVhc+XRDbDmGyOszLGFlbllhUxNkxm3ktviVnJb3NQ+mXGr0aUOPLrUgcf5UgceM1MHHjNTBx4zU8e41G6Zca1cesGpF6gDy6UXnHqBOvA4X+oYp16gDjxmpg48ZqYOLNfiOrn0glMvUAeWSy849QJ1YM2XXnDqBerAykwvOPUCdYyr5TrcWi694NQL1IHl0gtOvUAdWPOlF5x6gTqwMtML7tgL/L6/Xz/8jrZN+VlUXuSl5UkefR6bvOSEtGj+xWWVX6vo/IeL66escR8NNefcppv0Hx/1f2/fYjIvLve7V8tVz41tyg3ubLbd3S43vJvtb2/63fE9fykeJsW7Im/p7sKt+P9/GZ/9X0Y6++U/+K/xr7bDR+LMh0tWbTM8M8Xb/fXyerXl8uK0/dl+FpS/tf+R7/nsZ4F1odj1P663b5abs9+WP635KYvF5D0=",
+            "data": "m=edit&p=7Zbfb9s2FIXf/VcEfOaDRVIipZch65q9eOm2ZCgKwwgcz129OXXnxEWnIP97P1LHc4e5+9EABQYMtukjSp/uuRLvlW5/3c23S1uN89cnyz+fUKXyc6kpv7E+l6u79bI7sae7u1ebLcLaZ2dn9uV8fbscTXXUbHTft11/avuvu6mpjDWOX2Vmtv+uu++/6fpz21+wy9jA3GQ4yCGfHuTzsj+rJ8NkNUafoz0a+QK5WG0X6+XVZJj5tpv2l9bkOF8WOktzs3m7NPKRtxebm+tVnrie35HM7avVG+253f24+WWnY6vZg+1PB7uTI3b9wW6Wg92sjtjNWTza7nr1evnumNN29vDAFf8er1fdNNv+4SDTQV5094znZay6e9OOA2cI2Qs65bN9UZyZtnJseenmoN0Y7aQzvZ/PNOsma/8B6zOr40Nm8zGEf1FMnJXRlfESj7b3ZfyqjOMy1mWclGOeYtpVzjrHaR2rqvLoKB3Q2Ci6RrfSLGBP6KIjupJmcWerRbdoP2g3RpNa0bDZdtGwQayDDWIdbBDrYYNYX6FraTwHefZ4DvLs8RzkOcDWYgNsLTbA1mIDbC02wNZ7lnxr5Rvw3MhzwHMjzwHPjTzXsI3YGrYRW8NGsTVsFFvDxj1LvlH5NniO8tzgOcpzg+coz01uImIb2CQ2wiaxETaJjbBJbCTfpHwjnpM8RzwneY54buU5wbZiE2wrNsG2YhNsK5bG5sd7NqKVb0poeU4tWp5bOmQumqJhK7EtbCW2hc3lUzRsNbDEQQ8scdBDvsRBD56Jgx48Ewc9eCaO9bncioZ1YqkFr1ogDlosteBVC8RBD/kSx3rVAnHQg2fioAfPxEGLdbBeLLXgVQvEQYulFrxqgTho5UsteNUCcdDyTC141QJxrK/FethaLLXgVQvEQYulFrxqgTho5UsteNUCcdDyTC34fS1wf39fP9xH12b/NJXnpbU8KWMoY1NaTsxN8x+2Ve6W6cKHzfXTepwJnoxYQYaM8gXzReXUUFRhTswPnfBvrU+5A/lR/sdP/d+bm42m5mK3fTlfLHn8TXgMnpxvtjfzNVvnu5vr5Xa/zYvHw8i8M+WXn0E8sP9/F/ns7yL56o8/4Y3kMS8Gj63kaX9Bb7f9M2ve7K7mV4sNy4vL9lfzlOa/mj9+nsm+2j++kwbwkZ1DTzi+k2bypx2f/arTh8x2+dNq83q+Pvlt/vOKpWNmo/c=",
         },
         {
             "url": "https://puzz.link/p?yajilin-regions/11/18/c6c69alhlhg1lhhh4h91gdict8jomt4aemu3001i3tk00uuff1g3vovve81oiu2k1sfvmrto68g2g22g222g222111111111g11g11111h",

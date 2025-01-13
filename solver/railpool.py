@@ -61,6 +61,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -72,7 +75,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7VVNa9tKFN37V4RZz2I+JY02IU2Tblz3tU4JQZjgOEpjasevdlQeMv7vOXd0ZalxoA8CJYsi63J8dObeM3dGo82ParouZcBlM6mkxmUzFe/M0U/xdTF/XJT5kTypHu9XawApP52fy7vpYlMOClZNBts65PWJrD/khdBCCoNbi4msP+fb+mNej2U9xiMhHbhhIzKAZx28jM8JnTakVsAjYAcMeAU4m69ni/J62DD/5EV9IQXVeRdHExTL1c9SsA/6P1stb+ZEPFTLuwWTm+p29b1imZ7sZH3SOB2+4NS+5JTI505Z8GqnN9NHtH1zP//3Jbthstuh419g+DovyPvXDmYdHOdbkTmRO+ARsNPtfCV6iqwODwtxfNxjkgMmRKYjkuy5JFXEYMn3hDmQHFQKkemZCQelQ1OpI7SKlfoarRt/fcoclNfmoL426a8UmqTzLeJVjOcxmhgv0E9Z2xjfx6hi9DEOo+YMDdYhkTogr0H+kEqj4RfYqNBhY6WxmCthmwA3emNcD0NDlgk7jE0wI8KJAbYN9qrDpPGcP0We1DP20mToIuEMflrsNcZy/gT6hPWe8rcYGs91U4wNnD+gbsBOinzWw9CknN+grmWMA8ZYLFLkab4thsY0fdCB+sO1NDxonpdCLcZRQ+sfeXjT7F/Dv2bPisa2GBrFOQ28OR7rkJPehMjD2x5DY9r+oP8Jr1ECzwmvi6detRgazx5SeAtcK8BDYP84TveYNBl78Jg7vUcxPzwk3BNPtVoMjWcPBmMd53fI7zinpbkwJo1t+0M9YZ+a9iHXUsi5x9Ao7lWGnFnrmfwzH6Cn99Jgg1/GbX4ao4sxids/pcPmfx5HzUH0+jftt3YKrCx91PqXf1vMZFCIcbW+m85KHPLD+UN5NFqtl1P6Qp3dfuv9G1XLm3Ld/sfHdjcQ/4l4Fxap3N/v75///lL31Vvb9m/NDl7EyeAJ",
+            "data": "m=edit&p=7VVNT+NIEL3nV6A+96G//NG+IIaBvWTD7oYRQlYUhWCGaBLCJHg0cpT/zqt2OfaQjEBCQnNYOW69vH5d9braZa+/l5NVIT0um0olNS6bqnCnjn6Kr8vZ07zIjuRJ+XS/XAFIeXF+Lu8m83XRy1k16m0qn1Unsvory4UWUhjcWoxk9W+2qf7OqqGshpgS0oHr1yIDeNbCqzBP6LQmtQIeADtgwGvA6Ww1nRfjfs38k+XVpRSU51NYTVAslj8KwT7o/3S5uJkR8VAu7uZMrsvb5beSZXq0ldVJ7bR/wKk95JTIl05Z8G6nN5MnlH19P3s8ZNePtltU/D8YHmc5ef/SwrSFw2wjUicyBzwAdrrZr0RNEdVhMhfHxx0m3mN8YFoiTl9KEkUMjnxHmD3JXiYfmI4Zv5fa15laQquQqavRuvbXpcxeem328muT/EqhSDrbYLwO43kYTRgvUU9Z2TB+DqMKYxTGftCcocDax1J7xDWI7xNpNPwCG+VbbKw0FnslbGPgWm+M62BoyDJhh7UxdkQ4NsC2xpFqMWkijp8gThIxjqRJUUXCKfw0ONJYy/Fj6GPWRxS/wdBEnDfBWs/xPfJ6PEmBTzsYmoTjG+S1jPGCMRaHFHjab4OhMXUdtKf6cC4ND5r3pZCLcdDQ+Qce3jT71/Cv2bOitQ2GRnFMA2+O1zrEpE4IPLztMDSmqQ/qH/MZxfAc87lEVKsGQxOxhwTePOfy8ODZP16nO0yalD1E2Dv1UYgPDzHXJKJcDYYmYg8Gax3Hd4jvOKalvTAmjW3qQzVhn5qeQ86lEHOHoVFcqxQx08Yz+WfeQ099afCAX4XH/DSMLoxxePwTetm88XVUv4je02nCUv19SkYlHZ1F82pJxQGi80T5bN2Pr5rOoadPX/eK/ixm1MvFsFzdTaYFPgX92UNxNFiuFhP6jp3dfu38G5SLm2LV/McnedsTP0W4c4tQ7v+v9Md/pan66sOa442P/St2clSXu0tWF1I8luPJeLrEmaCAYbJuuN9M1j14eBLNuzfx4btH3496zw==",
         },
     ],
 }

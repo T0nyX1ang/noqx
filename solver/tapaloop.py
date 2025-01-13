@@ -175,6 +175,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c), clue in clue_dict.items():
         solver.add_program_line(parse_clue(r, c, clue))
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -187,7 +190,7 @@ __metadata__ = {
     "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like", "tll"],
     "examples": [
         {
-            "data": "m=edit&p=7ZRfb5swFMXf+RSVn/2AMSHEL1XWNXth7E8zVRVCFck8FYXMGQlT5Sjfvfde0+K0eZkmbZ00EZ8cfpjcYzv29kdXtZqLED8y5fANVyxSalGaUAv7a17vGq3O+LTb3ZkWDOcfZjP+rWq2Oij6XmWwtxNlp9y+UwUTjLMImmAlt5/U3r5XNuf2Ch4xLoBlrlME9nKw1/Qc3YWDIgSfg4/dazdgl3W7bPRt5shHVdg5Z1jnDb2Nlq3NT836HHi/NOtFjWBR7WAw27t60z/Zdl/Nquv7ivLA7dTFzU7ElUNctC4uuhNxcRS/Hbepv2tzfyrqpDwcYMo/Q9hbVWDuL4NNB3ul9qC52jMZ4quwKoJDPvg9OXkGEkEAB/JIIiTn5x6RL0hMkYSHxoSkT6iWT9KUinlEhFRNekQkVM0jEY0C/w5PhFL75YUb6hEZPY8t4hPIlTtC45eIkvskoZ96mkmYcEHTfkM6I41I57Aq3ErSt6Qh6Yg0oz6XpNekF6QxaUJ9xriuv7TyfyBOId0RcnyN/j1WBgXLYNOd5aZdVw3svLxbL3T7eA/H3CFg94xaIfHU/H/y/YWTD6c/fG274LXFgX3JdtWmauqVbozZsDJ4AA==",
+            "data": "m=edit&p=7ZRRb5swEMff+RSVn/2AMSHEL1XWNXthdFszVRVCEcmYikrmjISpcpTv3rszaZyGh02tOk2aiC/Hz4b735nz+mdbNCUXPv5kzOEfrlDENII4ouF317Ta1KU64+N2c6cbcDi/mkz496Jel17Wrcq9rRkpM+bmg8qYYJwFMATLufmstuajMik31zDFuACW2EUBuJcH94bm0buwUPjgp+CH9rFbcBdVs6jLWWLJJ5WZKWcY5x09jS5b6l8l63Tg/UIv5xWCebGBZNZ31aqbWbff9H3brRX5jpuxlZv0yJUHuehauej1yMUsXiy3rn6U+qFP6ijf7aDkX0DsTGWo++vBjQ/utdqCTdWWSR8fhV0RHPTB++ToGYgEAUxkTwIk5+cOkSckJEnCQUNC0iUUyyVxTMEcInyKJh0iIormkICywM/hiZBqN7ywqR6RwXPZIuxBNtwRGp4iUu6SiF71VEkouKCy35KdkA3ITmFXuJFk35P1yQ7IJrTmkuwN2QuyIdmI1gxxX/9o518iB/YbNmUUw9cCBwSkKclDKH9Taibt8XJ8Df49lnsZS6Ahz1LdLIsaujJtl/Oy2d/DEbjz2AOjkUk8Uf+fin/hVMTy+2/WIa/TsBlUtmsxbq44W7WzYrbQ8JFB8faT0HX9k9CkJxNvniB0OtsUq6Ku7sta6xXLvUc=",
         },
         {
             "data": "m=edit&p=7VVNb5tAEL3zK6I972E/AJu9WG4a90LpR1xFEUIRdqiMgouLTRWt5f+emQEEjemhqtRGVbTep8fbmZ3HrjXsv9dplXHp40/7XHAJw5eKpjcNaIp2LPNDkZkLPq8Pm7ICwvmHxYJ/TYt95sRtVOIcbWDsnNt3JmaScaZgSpZw+8kc7XtjI26vYYlxCVrYBCmgVz29oXVkl40oBfAIuNuk3QJd59W6yO7CRvloYrvkDOu8oWykbFv+yFjrA5/X5XaVo7BKD/Ay+02+a1f29X35ULexMjlxO2/shiN2dW8XaWMX2YhdfIs/tlvk37LyccxqkJxOcOSfweydidH3l55Oe3ptjoCROTLfw1RXo08ODmHHQKKkNVxVJ0kxpTA88E5SLkqz2WygaT2i+ZSqhtu5Eyqh5FD0RJM8kILG3aCsEl3ZQRzuc7afUuT5majH0ieU/kyj0j9J0xEpOK+hRRs3CNTy/LS0RwfdS3Alki7mlnBBqAiXcG/casK3hILQIwwp5orwhvCS0CX0KWaCN/9b/42/YCd2FTWZXw/vdf1/Xk+cmIXQzi6istqmBfS0qN6usqp7hg/IyWGPjGasIcV9/ab8g28KHr94ad3jpdmBfsYO6S4t8oesKMsdS5wn",

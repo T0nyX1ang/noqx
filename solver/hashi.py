@@ -64,6 +64,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f"hashi({r}, {c}).")
         solver.add_program_line(f"number({r}, {c}, {num if isinstance(num, int) else -1}).")
 
+    # TODO: add initial conditions for hashi
     solver.add_program_line(display(item="grid_direction", size=4))
     solver.solve()
 

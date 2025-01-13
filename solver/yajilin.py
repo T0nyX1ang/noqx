@@ -45,6 +45,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -58,7 +61,7 @@ __metadata__ = {
     "aliases": ["yajirin"],
     "examples": [
         {
-            "data": "m=edit&p=7VRRb5swEH7nV1T37AeMCSV+mbKu2Quj25KpqhBChFGVjYyOhKlzxH/v3ZmMTG2nVZMyTZqIv3z+uDOfz3Cbr13elkK69FOhwH+8fBny8MKAhztcy2pbl/pEzLrtTdMiEeJiPhfXeb0pnWSISp2dmWozE+a1TkCCAA+HhFSYd3pn3mgTC7PAWyBC1CIb5CE9H+kl3yd2ZkXpIo+R42IS6RXSomqLuswiq7zViVkKoOe85GyisG6+lTD4oHnRrFcVCat8i5vZ3FS3w51N97H53A2xMu2FmVm70d6uP9pVo12i1i6xR+zSLv7Ybl19Ke8eczpN+x4r/h69Zjoh2x9GGo50oXeIsd6Bcin1Bdqgo8H1JpLXysj3IAWKJJWpUQo5TR5KU89GHSRKlzO9jM5pr8nJQ00Nue6B5vs27lALOPeHW9yD5J1cMc4ZPcYlblQYxfiK0WWcMEYcc854yXjG6DMGHHNKpfrNYoIfgPZtSY9gKlH20/z5mvx7WuoksOja67wo8XWO8LU+iZt2ndc4i7v1qmz3c2wkvQN3wCNR1Jf+95bj9xaqvvusDvP3v9HELIQfCHMh4LbL8qxo8PXCsv1SP31CD5+pP7XOw+cevWrYR+B7/qnCE4fUuQc=",
+            "data": "m=edit&p=7VRRb5tADH7Pr6j87AeOu1ByL1PWNXth6bZkqiqEEGFUZUtGR8LUXZT/Xp+PjEwlU6tKnSZN5JyPz/bx2Rxef2+yukDh2Z8Mkf7pUiLk5YcBL6+95uVmWegTHDebm6omgHgxmeB1tlwXg7iNSgZbM9JmjOatjkEAgk9LQILmg96ad9pM0czIBRgSF7kgn+B5By/Zb9GZI4VHeEqYNhMErwjmZZ0vizRyzHsdmzmCfc5rzrYQVtWPAlod9j6vVovSEotsQ8Wsb8rb1rNuPldfmzZWJDs0Yyc32stVnVzZybXQybWoR66t4tlyl+W34q5P6SjZ7ajjH0lrqmMr+1MHww7O9JbsVG9Bejb1Fcmwr4b2GwreK7W6WyqQlpKp7KiQ08QhNfJd1EGi8DjTT+172nNi+JCTba53wCnl4g65gHN/qaUaBFdyxXbC1mc7p0LRSLZv2Hpsh2wjjjlne8n2jK1iG3DMqW3VI5sJKgCtXEufIwqUT50YhdRzETqgFCqqWiJI+hYteqTyWLrv9/dr+O9xySCGWVNfZ3lBZz6is38yrepVtqS7abNaFPX+nqbNbgB3wCuWdnj9H0AvP4Bs970njaG//yHHZoYqQHOBcNukWZpXdLyobX/kT4/w4RP5Y/v0Pjfaz4QjTjcm+p00VfodNHceOF78DdHMgp/Zl5JOFySDew==",
         },
         {
             "url": "https://puzz.link/p?yajilin/19/13/g24g33f45o23d30g32z43k41y11a11a42zo33a14a12b11d31a32c21e11t36g31e21y",

@@ -173,12 +173,12 @@ class PenpaPuzzle(Puzzle):
             if "," not in index:  # helper(x) lines
                 coord, category = self.index_to_coord(int(index))
                 if category == 2:
-                    self.edge[Point(coord[0], coord[1], pos="d")] = False
-                    self.edge[Point(coord[0] + 1, coord[1], pos="u")] = False
+                    self.line[Point(coord[0], coord[1], pos="d")] = False
+                    self.line[Point(coord[0] + 1, coord[1], pos="u")] = False
 
                 if category == 3:
-                    self.edge[Point(coord[0], coord[1], pos="r")] = False
-                    self.edge[Point(coord[0], coord[1] + 1, pos="l")] = False
+                    self.line[Point(coord[0], coord[1], pos="r")] = False
+                    self.line[Point(coord[0], coord[1] + 1, pos="l")] = False
 
                 continue
 

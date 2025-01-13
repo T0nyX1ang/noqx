@@ -74,6 +74,9 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(grid_bit_color_connected(adj_type="loop", color="numlin"))
     solver.add_program_line(avoid_unknown_src_bit(adj_type="loop", color="numlin"))
 
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -86,7 +89,7 @@ __metadata__ = {
     "aliases": ["numberlink"],
     "examples": [
         {
-            "data": "m=edit&p=7VNNr5swELzzKyKffcBA+PCNfPVCaV+TKooQeiIpVVChtBCqyIj/nt2FiDTKpWr1lEPleDQej83Y8dY/m6RKuQPNdLnOBTRTt6jbOv6ubZOd8lROuN+cjmUFhPMPqxX/muR1qkWDK9Za5Unlc/VORkwwzgzogsVcvchWvZcq5GoNU4wL0ILeZABdjnRL88jmvSh04OHAge6AHrLqkKevQa98lJHacIbfmdFqpKwof6VsyIHjQ1nsMxT2yQkOUx+zH8NM3XwpvzWDV8QdV34fN3gQ1xzjIu3jInsQF0/x13Hz7Ht6fpTUi7sObvwTZH2VEcb+PFJ3pGvZAoayZYaDS32I0f8tzLRRmI2CpaOwvBFcFBajYJNjPgoOCTcOV9zt4ZHj5rOecbeHZ/6WA+IKCr0jXBEahBs4E1cm4YJQJ5wSBuRZEm4J54QWoU0eB2/lj+7tDeJEhkXVd23Tfz+KtYgF8JYmYVkVSQ4vKmyKfVpdx1C9ncbOjHpkwhLrf0G/fUHj7evP9jyfLQ4UTKxdAA==",
+            "data": "m=edit&p=7VPBbptAEL3zFdae58Cy2Ia9EcfuhZK2cRVFK4SwSxVUXFJsqmgt/3tmBizcyJVSJfKpWvP09s0svB3PbH+1eVPAFJcKwAWJS7k+PxOXfse1LHdVoUcQtbuHukECcLNYwPe82haO6bNSZ29DbSOwH7QRUoDw8JEiBftZ7+1HbROwtxgSIFGLuyQP6XygdxwnNutE6SJPeo70Hum6bNZVkcWd8kkbuwRB37ni00TFpv5diN4H7df1ZlWSsMp3eJntQ/nYR7btt/pH2+fK9AA26uzGZ+yqwS7Rzi6xM3bpFm+2W5U/i6dzTsP0cMCKf0GvmTZk++tAg4He6j1iovfCm9LRCG10f4tQExKuBsF3SZifCAEJ14Mw4YzZIExZOMkI5It3hJxx8tnQe/GOUP3hA+1KNn3PuGD0GJd4J7CK8ZrRZRwzxpwzZ7xjnDH6jBPOmVJV/qlub7Ej/DHeLQywTiFQIdQrDRrP53k8rvH771LHiBi7a5TUzSavsMeSdrMqmuMe5/ngiCfBj1F4xP8/4pcfcaq+e7GGfZ/5MVjYvuPB3oB4bLM8W9fYY1g7CuJY/C3gvz5w8VvjXKbOMw==",
             "config": {"visit_all": False, "no_2x2": False},
         },
         {
