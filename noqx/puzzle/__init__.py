@@ -31,7 +31,7 @@ class Point(NamedTuple):
     r: int
     c: int
     d: Direction = Direction.CENTER
-    pos: Optional[str] = None
+    pos: str = "normal"
 
 
 class Puzzle(ABC):

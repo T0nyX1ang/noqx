@@ -149,8 +149,10 @@ class PenpaPuzzle(Puzzle):
                 coord, category = self.index_to_coord(int(index))
                 if category == 2:
                     self.edge[Point(coord[0] + 1, coord[1], Direction.TOP)] = False
-                elif category == 3:
+
+                if category == 3:
                     self.edge[Point(coord[0], coord[1] + 1, Direction.LEFT)] = False
+
                 continue
 
             index_1, index_2 = map(int, index.split(","))
@@ -168,12 +170,30 @@ class PenpaPuzzle(Puzzle):
     def _unpack_line(self):
         """Unpack the line element from the board."""
         for index, _ in self.problem["line"].items():
+            if "," not in index:  # helper(x) lines
+                coord, category = self.index_to_coord(int(index))
+                if category == 2:
+                    self.edge[Point(coord[0], coord[1], pos="d")] = False
+                    self.edge[Point(coord[0] + 1, coord[1], pos="u")] = False
+
+                if category == 3:
+                    self.edge[Point(coord[0], coord[1], pos="r")] = False
+                    self.edge[Point(coord[0], coord[1] + 1, pos="l")] = False
+
+                continue
+
             index_1, index_2 = map(int, index.split(","))
             coord_1, _ = self.index_to_coord(index_1)
-            coord_2, d = self.index_to_coord(index_2)
-            eqxy = coord_1 == coord_2
-            d = ("d" if eqxy else "u") if d == 2 else ("r" if eqxy else "l")
-            self.line[Point(*coord_1, pos=d)] = True
+            coord_2, category = self.index_to_coord(index_2)
+
+            if category == 0:
+                dd = "rl" if coord_1[0] == coord_2[0] else "du"
+                self.line[Point(*coord_1, pos=dd[0])] = True
+                self.line[Point(*coord_2, pos=dd[1])] = True
+            else:
+                eqxy = coord_1 == coord_2
+                d = ("d" if eqxy else "u") if category == 2 else ("r" if eqxy else "l")
+                self.line[Point(*coord_1, pos=d)] = True
 
     def _unpack_board(self):
         """Initialize the content of the puzzle."""
