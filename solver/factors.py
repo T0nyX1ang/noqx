@@ -45,9 +45,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 
-        for rc in ar:
-            r, c = rc
-
+        for r, c in ar:
             if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
                 num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
                 fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")

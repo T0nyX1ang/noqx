@@ -40,9 +40,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i, color="gray"))
 
         unclued = True
-        for rc in ar:
-            r, c = rc
-
+        for r, c in ar:
             if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
                 unclued = False
                 num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]

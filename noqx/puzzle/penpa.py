@@ -278,9 +278,6 @@ class PenpaPuzzle(Puzzle):
     def _pack_line(self):
         """Pack the line element into the board."""
         for point in self.line:
-            if not point.pos:  # pragma: no cover
-                continue
-
             index_1 = self.coord_to_index((point.r, point.c), category=0)
             if point.pos.startswith("r"):
                 index_2 = self.coord_to_index((point.r, point.c), category=3)
