@@ -169,7 +169,7 @@ class PenpaPuzzle(Puzzle):
 
     def _unpack_line(self):
         """Unpack the line element from the board."""
-        for index, _ in self.problem["line"].items():
+        for index, data in self.problem["line"].items():
             if "," not in index:  # helper(x) lines
                 coord, category = self.index_to_coord(int(index))
                 if category == 2:
@@ -186,14 +186,15 @@ class PenpaPuzzle(Puzzle):
             coord_1, _ = self.index_to_coord(index_1)
             coord_2, category = self.index_to_coord(index_2)
 
+            hashi_num = (self.puzzle_type == "hashi") * ("_2" if data == 30 else "_1")  # hashi has two types of lines
             if category == 0:
                 dd = "rl" if coord_1[0] == coord_2[0] else "du"
-                self.line[Point(*coord_1, pos=dd[0])] = True
-                self.line[Point(*coord_2, pos=dd[1])] = True
+                self.line[Point(*coord_1, pos=f"{dd[0]}{hashi_num}")] = True
+                self.line[Point(*coord_2, pos=f"{dd[1]}{hashi_num}")] = True
             else:
                 eqxy = coord_1 == coord_2
                 d = ("d" if eqxy else "u") if category == 2 else ("r" if eqxy else "l")
-                self.line[Point(*coord_1, pos=d)] = True
+                self.line[Point(*coord_1, pos=f"{d}{hashi_num}")] = True
 
     def _unpack_board(self):
         """Initialize the content of the puzzle."""
