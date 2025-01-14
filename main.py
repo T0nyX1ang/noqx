@@ -32,10 +32,10 @@ async def solver_api(request: Request) -> JSONResponse:
     """The solver endpoint of the server."""
     try:
         body = await request.json()
-        puzzle_type: str = body["puzzle_type"]
+        puzzle_name: str = body["puzzle_name"]
         puzzle: str = body["puzzle"]
         param: Dict[str, Any] = body["param"]
-        return JSONResponse(run_solver(puzzle_type, puzzle, param))
+        return JSONResponse(run_solver(puzzle_name, puzzle, param))
     except ValueError as err:
         logger.error(traceback.format_exc())
         return JSONResponse({"detail": str(err)}, status_code=400)

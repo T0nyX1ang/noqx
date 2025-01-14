@@ -34,7 +34,7 @@ class TestSolver(unittest.TestCase):
 
     def test_solver_api(self):
         """Test all available solvers. The tests should only return a unique solution."""
-        for puzzle_type, puzzle_metadata in metadata.items():
+        for puzzle_name, puzzle_metadata in metadata.items():
             default_params = puzzle_metadata.get("parameters", {})
 
             for puzzle_example in puzzle_metadata.get("examples", []):
@@ -50,7 +50,7 @@ class TestSolver(unittest.TestCase):
                     if v_str.isdigit():
                         params[k] = v_str
 
-                response = run_solver(puzzle_type, puzzle_example["data"], params)
+                response = run_solver(puzzle_name, puzzle_example["data"], params)
                 self.assertEqual(len(response), 1)
 
     def test_nonogram_edge_case(self):

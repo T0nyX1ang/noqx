@@ -37,9 +37,9 @@ class Point(NamedTuple):
 class Puzzle(ABC):
     """Base class for puzzle encodings."""
 
-    def __init__(self, _type: str, content: str, param: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, content: str, param: Optional[Dict[str, Any]] = None):
         """Initialize the puzzle."""
-        self.puzzle_type = _type
+        self.puzzle_name = name
         self.param = param if param is not None else {}
         self.content = content
 

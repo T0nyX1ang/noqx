@@ -69,9 +69,9 @@ def category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, Dire
 class PenpaPuzzle(Puzzle):
     """The encoding for general puzzles."""
 
-    def __init__(self, _type: str, content: str, param: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, content: str, param: Optional[Dict[str, Any]] = None):
         """Initialize the encoding of the puzzle."""
-        super().__init__(_type, content, param)
+        super().__init__(name, content, param)
 
         self.cell_shape: Optional[str] = None
         self.problem: Dict[str, Any] = {}
@@ -186,7 +186,7 @@ class PenpaPuzzle(Puzzle):
             coord_1, _ = self.index_to_coord(index_1)
             coord_2, category = self.index_to_coord(index_2)
 
-            hashi_num = (self.puzzle_type == "hashi") * ("_2" if data == 30 else "_1")  # hashi has two types of lines
+            hashi_num = (self.puzzle_name == "hashi") * ("_2" if data == 30 else "_1")  # hashi has two types of lines
             if category == 0:
                 dd = "rl" if coord_1[0] == coord_2[0] else "du"
                 self.line[Point(*coord_1, pos=f"{dd[0]}{hashi_num}")] = True
@@ -291,7 +291,7 @@ class PenpaPuzzle(Puzzle):
             else:
                 raise ValueError("Unsupported line direction.")
 
-            if self.puzzle_type == "hashi":
+            if self.puzzle_name == "hashi":
                 self.solution["line"][f"{index_1},{index_2}"] = 3 if point.pos.endswith("_1") else 30
             elif not self.problem["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.solution["line"][f"{index_1},{index_2}"] = 3

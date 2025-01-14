@@ -66,13 +66,13 @@ class ClingoSolver:
 
             elif _type.startswith("grid_"):
                 grid_direction = str(data[2]).replace('"', "")
-                if self.puzzle.puzzle_type == "hashi":
+                if self.puzzle.puzzle_name == "hashi":
                     solution.line[Point(r, c, pos=f"{grid_direction}_{data[3]}")] = True
                 else:
                     solution.line[Point(r, c, pos=grid_direction)] = True
 
             elif _type.startswith("number"):
-                if self.puzzle.puzzle_type == "easyasabc":  # convert penpa number to letter
+                if self.puzzle.puzzle_name == "easyasabc":  # convert penpa number to letter
                     solution.text[Point(r, c, Direction.CENTER, "normal")] = self.puzzle.param["letters"][int(data[2]) - 1]
                 else:
                     solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
