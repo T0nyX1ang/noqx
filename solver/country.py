@@ -43,6 +43,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             if isinstance(num, int):
                 solver.add_program_line(count(num, color="country_road", _type="area", _id=i))
 
+    for (r, c, d, _), draw in puzzle.edge.items():
+        if d == Direction.TOP and r > 0 and draw:
+            solver.add_program_line(f":- not country_road({r}, {c}), not country_road({r - 1}, {c}).")
+
+        if d == Direction.LEFT and c > 0 and draw:
+            solver.add_program_line(f":- not country_road({r}, {c}), not country_road({r}, {c - 1}).")
+
     for (r, c, _, d), draw in puzzle.line.items():
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
