@@ -1,25 +1,13 @@
 """The Onsen-Meguri solver."""
 
-from typing import Iterable, List, Tuple, Union
+from typing import List, Union
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
-from noqx.rule.neighbor import adjacent
+from noqx.rule.neighbor import adjacent, area_border
 from noqx.solution import solver
-
-
-def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
-    """Generates a fact for the border of an area."""
-    borders = []
-    for r, c in ar:
-        for dr, dc, d in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
-            r1, c1 = r + dr, c + dc
-            if (r1, c1) not in ar:
-                borders.append(f'area_border({_id}, {r}, {c}, "{d}").')
-    rule = "\n".join(borders)
-    return rule
 
 
 def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) -> str:
@@ -70,7 +58,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(area_border(i, ar))
+        solver.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
         solver.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))
 
         for r, c in ar:
@@ -100,10 +88,8 @@ __metadata__ = {
         {
             "data": "m=edit&p=7VRRb9owEH7nVyA/30McJ46dN9bRvTC6rUxVFUUIaLaiQdNBM1VB/Pd+di5LpFXqpm48TSaXz+fzcd/nc/bfq8WuoARDGQpIYqgg8o8O3K8ds/XDpkiHNKoebssdANHF+Tl9WWz2xSDjqHxwqG1aj6h+l2YiFOQfKXKqP6aH+n1aj6m+xJIgCd8ESAoKAccdvPLrDp01ThkATxusAa8BV+vdalPMJ02iD2lWz0i4/3njdzsotuWPQjTb/HxVbpdr51guHkBmf7u+55V9dVN+qzhW5keqR025k2fKVV25DjblOvSvyt2s74rH5yq1+fEIxT+h1nmaubI/d9B08DI9wE7Tg4gCbMXRNocitJuKIepkh3EOxVPskX7ntbfn3obezpCYauXtW28Db2NvJz5mjP+TKiEZGZGGyBjFJGPNGP649Rtg2+AYPaglY8RojoktyQTFOYyulAnHaHRsEjJGjCPgcIIYwzEJ8hvOnyDGcoxBjOUYEwIrxpbCgGOsBOb8NgTmGBsBxx5jnULJfscxajlq4KTj2+rgOMYtx54mjm+riePrTsfzQh7NeXRPEw1euuXV08HxTdhv4DfsdxxNy1EBR8ylpwM4/tQBHKVtOErbaeL5sg54Azd58GZNcPhXvgXOvI281b41EteRf9Szr+lCoQx0swbFxaQgs2r68sUCsxDcewOn9Ldn+SATE9zs4bTcbRcb3O/xzdfebFptl8WunePLehyIR+Ef3FBJ0f+P7ek/tk794GTt+5vN+kI5GYTl/qf6gsR9NV/MVyV6DNq9bhHX65eFk7PHbRXl3b64E/ngCQ==",
         },
-        {
-            "url": "http://pzv.jp/p.html?onsen/10/10/akkh92j6mt9pjvfti91svv1vvovv3g3f04ti3m2n1j1x1zq2v3n3",
-            "test": False,
-        },
+        {"url": "http://pzv.jp/p.html?onsen/10/10/akkh92j6mt9pjvfti91svv1vvovv3g3f04ti3m2n1j1x1zq2v3n3", "test": False},
+        {"url": "https://puzz.link/p?onsen/10/10/ebvsrdlpn5bmq7v7kcgj9ac41au4d36hn0bm.n.zzzz.n./", "test": False},
         {
             "url": "https://puzz.link/p?onsen/15/15/9018m2kqm9jbr3a9f853qcfj996k6esa8alac2v892cvv0sj4086g5lb4a6qqeh7q2404c5nvq8cvi30m098zzzzzzj.u..zzzzi",
             "test": False,

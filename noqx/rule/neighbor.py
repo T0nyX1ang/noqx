@@ -1,7 +1,8 @@
 """Utility for neighbor-relevant (primary to connected) rules."""
 
-from typing import Optional, Tuple, Union
+from typing import Dict, Iterable, Optional, Tuple, Union
 
+from noqx.puzzle import Direction, Point
 from noqx.rule.helper import tag_encode, target_encode
 
 
@@ -112,4 +113,32 @@ def avoid_num_adjacent(adj_type: Union[int, str] = 4) -> str:
     An adjacent rule should be defined first.
     """
     rule = f":- number(R, C, N), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1)."
+    return rule
+
+
+def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Point, bool]) -> str:
+    """Generates a fact for the border of an area."""
+    edges = set()
+    for r, c in src_cells:
+        if edge.get(Point(r, c, Direction.TOP)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "u").')
+            if (r - 1, c) in src_cells:
+                edges.add(f'area_border({_id}, {r - 1}, {c}, "d").')
+
+        if edge.get(Point(r + 1, c, Direction.TOP)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "d").')
+            if (r + 1, c) in src_cells:
+                edges.add(f'area_border({_id}, {r + 1}, {c}, "u").')
+
+        if edge.get(Point(r, c, Direction.LEFT)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "l").')
+            if (r, c - 1) in src_cells:
+                edges.add(f'area_border({_id}, {r}, {c - 1}, "r").')
+
+        if edge.get(Point(r, c + 1, Direction.LEFT)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "r").')
+            if (r, c + 1) in src_cells:
+                edges.add(f'area_border({_id}, {r}, {c + 1}, "l").')
+
+    rule = "\n".join(edges)
     return rule

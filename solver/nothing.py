@@ -6,7 +6,7 @@ from noqx.puzzle import Puzzle
 from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
-from noqx.rule.neighbor import adjacent
+from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import area_same_color
 from noqx.solution import solver
@@ -40,7 +40,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, (ar, _) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count_area_pass(1, ar).replace(":-", f":- not nothing({i}),"))
+        solver.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
+        solver.add_program_line(count_area_pass(1, _id=i).replace(":-", f":- not nothing({i}),"))
 
     for (r, c, _, d), draw in puzzle.line.items():
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')

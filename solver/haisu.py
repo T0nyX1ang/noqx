@@ -1,24 +1,13 @@
 """The Haisu solver."""
 
-from typing import Iterable, List, Tuple
+from typing import List
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.rule.loop import directed_loop
+from noqx.rule.neighbor import area_border
 from noqx.solution import solver
-
-
-def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
-    """Generates a fact for the border of an area."""
-    borders = []
-    for r, c in ar:
-        for dr, dc, d in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
-            r1, c1 = r + dr, c + dc
-            if (r1, c1) not in ar:
-                borders.append(f'area_border({_id}, {r}, {c}, "{d}").')
-    rule = "\n".join(borders)
-    return rule
 
 
 def adj_before() -> str:
@@ -83,7 +72,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(area_border(i, ar))
+        solver.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
 
         for r, c in ar:
             if puzzle.text.get(Point(r, c, Direction.CENTER, "normal")) == "S":

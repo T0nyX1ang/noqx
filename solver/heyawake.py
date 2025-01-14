@@ -63,8 +63,8 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
     return rule.strip()
 
 
-def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
-    """Generates a fact for the border of an area."""
+def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
+    """Generates a simpler fact for the border of an area."""
     borders = set()
     for r, c in ar:
         for dr, dc in ((0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)):
@@ -116,7 +116,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
                 if puzzle.param["fast_mode"] and num > len(ar) // 4:
                     lmt_2x2 = int(puzzle.param["limit_2x2"])
                     lmt_border = int(puzzle.param["limit_border"])
-                    solver.add_program_line(area_border(_id=i, ar=ar))
+                    solver.add_program_line(area_border_simple(_id=i, ar=ar))
                     solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
                     solver.add_program_line(limit_area_2x2_rect(lmt_2x2, _id=i, color="gray"))
                     solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="top", color="gray"))
