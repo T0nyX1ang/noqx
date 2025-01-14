@@ -327,11 +327,6 @@ def no_rect(color: str = "black") -> str:
     return initial + propagation + constraint
 
 
-def area_same_color(color: str = "black") -> str:
-    """Ensure that all cells in the same area have the same color."""
-    return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
-
-
 def avoid_region_border_crossover() -> str:
     """Avoid the crossover of the region border."""
     no_rect_adjacent_by_point = [

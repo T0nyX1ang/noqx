@@ -5,9 +5,9 @@ from typing import List
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, count_adjacent
+from noqx.rule.neighbor import adjacent, area_same_color, count_adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.shape import area_same_color, avoid_rect
+from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
 

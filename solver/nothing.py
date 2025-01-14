@@ -6,9 +6,8 @@ from noqx.puzzle import Puzzle
 from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
-from noqx.rule.neighbor import adjacent, area_border
+from noqx.rule.neighbor import adjacent, area_border, area_same_color
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.shape import area_same_color
 from noqx.solution import solver
 
 

@@ -116,6 +116,11 @@ def avoid_num_adjacent(adj_type: Union[int, str] = 4) -> str:
     return rule
 
 
+def area_same_color(color: str = "black") -> str:
+    """Ensure that all cells in the same area have the same color."""
+    return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
+
+
 def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Point, bool]) -> str:
     """Generates a fact for the border of an area."""
     edges = set()

@@ -5,7 +5,7 @@ from typing import List
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction, validate_type
-from noqx.rule.shape import area_same_color
+from noqx.rule.neighbor import area_same_color
 from noqx.solution import solver
 
 
