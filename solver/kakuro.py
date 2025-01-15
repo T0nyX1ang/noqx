@@ -36,7 +36,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
             sums.append((num, area_points))
 
-        if pos == "number" and isinstance(num, int):
+        if pos == "normal" and isinstance(num, int):
             solver.add_program_line(f"number({r}, {c}, {num}).")  # initial conditions
 
     solver.add_program_line(defined(item="area", size=3))
