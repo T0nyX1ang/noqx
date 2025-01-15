@@ -1,4 +1,4 @@
-"""The N Cells solver."""
+"""The Fourcells solver."""
 
 from typing import List
 
@@ -49,5 +49,6 @@ __metadata__ = {
         {
             "data": "m=edit&p=7VXfb9owEH7nr6j8fA/+lZDkZWId7IWm22CqUBQhoNmKBgoDMk1G/O89X1LR2qkq1GmTpir49OU7X/zd2Zx3P6vZtgAR2p+KgIPAJ9QhjSCKafDmGS/3qyK5gF61vyu3CACuBwP4Nlvtik7WzMo7BxMnpgfmY5IxyYCGYDmYz8nBXCUmBTNCFwOB3BCRYCAR9k/whvwWXdak4IjTBiOcIFwst4tVMR3WzKckM2Ngdp33FG0hW5e/ClaH0fuiXM+XlpjP9pjM7m65aTy76rb8UTVzRX4E06vl9lvkqpNcC2u5FrXItVm8Xu5qU7YJjfPjEQv+BaVOk8yq/nqC0QmOkgPaNDkwHT/kWO8KC7RDhB4ROITgXZcR0mO8KKlcRocuE3CP8b7T9dbqenoib63I+04UeQwV590jJiY9Txj3O5K7UVK4UdKrj5SuZqnc3KV2s5DebkmvGrLrVlV6ucs6r0eM4u5airv1UV4WyttBFQiPebo6HkRBx3FCdkBWkh3jaQWjyH4gy8kGZIc0p0/2huwlWU02pDlde97P+ke8Xg6ebI2FiSNgWmvQ9g+kXtSYaUnd9vknePP/z/68k7H+7ffiIi2369kK23tarefF9uEdb9Jjh/1mNDKFIfrtcv3rl6stPj/vinUu0H/f7zIzAh2DuQa2qaaz6aLE04ZVfJ6fnMmnlq93pOn6bRNaAvunntnuFjJU53uwt7qeP9z0X94TbPF55x4=",
         },
+        {"url": "https://puzz.link/p?fourcells/10/10/d3g1c3g1c3b1a3b1j3a13a3j1b1a3b1c3g1c3g1d", "test": False},
     ],
 }
