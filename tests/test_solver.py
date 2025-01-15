@@ -51,19 +51,19 @@ class TestSolver(unittest.TestCase):
                         params[k] = v_str
 
                 response = run_solver(puzzle_name, puzzle_example["data"], params)
-                self.assertEqual(len(response), 1)
+                self.assertEqual(len(response["url"]), 1)
 
     def test_nonogram_edge_case(self):
         """Test nonogram edge case."""
         payload = "m=edit&p=7ZJBb7JAEIbv/Aqz5znsgvbTvVmrvVhai40xhBikGEkh9ANpmiX8d2cGjGnSSw9tPTTrvnmZnXWfnZ3yfxUWMdg4nCFIUDRUn+dA0u80lskhjXUPxtVhnxdoAO5nM9iFaRlbvuK9MrBqM9JmAeZW+0IJEDZOJQIwC12bO21cMB4uCXAwNm+TbLTTs13xOrlJG1QSvdt5tGu0UVJEabyZt5EH7ZslCDrnmneTFVn+FouOg76jPNsmFNiGB7xMuU9eu5Wyes5fqi5XBQ2YcYvrnXDplA6XyDtcsi0uuU9w6RbfjDsKmgbL/ojAG+0T+9PZDs/W0zWqq2uhBrRVIkv7NsKWHwKYpjh5zTpjtVmX+F9gHNYbVsk6YJ1zzpR1xTph7bNecc4/ovkS7w/g+LYKLF94VbELoxir7FbZNi56bl5kYSqwrRtLvAuevoNl6v91+i91Oj2BvLT+uTQc7OjAOgI="
         response = run_solver("nonogram", payload, {})
-        self.assertEqual(len(response), 1)
+        self.assertEqual(len(response["url"]), 1)
 
     def test_nurimisaki_edge_case(self):
         """Test nurimisaki edge case."""
         payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
         response = run_solver("nurimisaki", payload, {})
-        self.assertEqual(len(response), 1)
+        self.assertEqual(len(response["url"]), 1)
 
     def test_statuepark_all_shapes(self):
         """Test statuepark all shapes."""
@@ -75,7 +75,7 @@ class TestSolver(unittest.TestCase):
                 continue
 
             response = run_solver("statuepark", payload, {"shapeset": shapeset})
-            self.assertEqual(len(response), 1)
+            self.assertEqual(len(response["url"]), 0)
 
 
 class TestExtraFunction(unittest.TestCase):
