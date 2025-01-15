@@ -29,8 +29,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
         validate_direction(r, c, d)
-        if symbol_name == "tents__3":
-            solver.add_program_line(f"dead_end({r}, {c}).")
+        validate_type(symbol_name, "tents__3")
+        solver.add_program_line(f"dead_end({r}, {c}).")
 
     tag = tag_encode("reachable", "grid", "src", "adj", "loop", "anglers")
     for (r, c, d, pos), num in puzzle.text.items():
@@ -50,8 +50,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
                 solver.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     for (r, c, _, d), draw in puzzle.line.items():
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')

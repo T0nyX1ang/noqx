@@ -4,6 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.helper import fail_false
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -24,8 +25,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(single_loop(color="simpleloop"))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     for (r, c, _, d), draw in puzzle.line.items():
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')

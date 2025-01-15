@@ -41,8 +41,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"number({r}, {c}, {num}).")
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.add_program_line(display(item="black", size=2))

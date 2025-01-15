@@ -2,7 +2,7 @@
 
 from typing import Dict, List
 
-from noqx.puzzle import Point, Puzzle
+from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -39,6 +39,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(avoid_adj_same_omino(omino_num=5, color="grid"))
 
     for (r, c, _, _), color in puzzle.surface.items():
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
         solver.add_program_line(f"hole({r}, {c}).")
 
         for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):

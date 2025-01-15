@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.helper import full_bfs, validate_direction, validate_type
+from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
 
@@ -40,8 +40,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(fill_num(_range=range(len(ar), len(ar) + 1), _type="area", _id=i, color="gray"))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"gray({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"gray({r}, {c}).")
 
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)

@@ -57,8 +57,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(count(("gt", 0), color="not gray", _type="area", _id=i))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"gray({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray", size=2))
     solver.add_program_line(display(item="number", size=3))

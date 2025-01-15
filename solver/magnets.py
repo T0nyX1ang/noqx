@@ -51,8 +51,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(count(int(num), color="math_G__3", _type="row", _id=r))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"gray({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"gray({r}, {c}).")
 
     solver.add_program_line(display(item="math_G__2"))
     solver.add_program_line(display(item="math_G__3"))

@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
@@ -27,8 +27,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f":- #sum {{ N: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {num}.")
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color == Color.BLACK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

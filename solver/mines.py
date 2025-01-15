@@ -32,8 +32,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
         validate_direction(r, c, d)
-        if symbol_name == "sun_moon__4":
-            solver.add_program_line(f"sun_moon__4({r}, {c}).")
+        validate_type(symbol_name, "sun_moon__4")
+        solver.add_program_line(f"sun_moon__4({r}, {c}).")
 
     solver.add_program_line(display(item="sun_moon__4"))
     solver.solve()

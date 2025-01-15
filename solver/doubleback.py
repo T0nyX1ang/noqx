@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
@@ -25,14 +25,14 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(single_loop(color="doubleback"))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
-            # enforce the black cells to have edges on all sides
-            puzzle.edge[Point(r, c, Direction.TOP)] = True
-            puzzle.edge[Point(r, c, Direction.LEFT)] = True
-            puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
-            puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
+        # enforce the black cells to have edges on all sides
+        puzzle.edge[Point(r, c, Direction.TOP)] = True
+        puzzle.edge[Point(r, c, Direction.LEFT)] = True
+        puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
+        puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):

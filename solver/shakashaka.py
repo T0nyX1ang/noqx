@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
 
@@ -86,8 +86,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {num}.")
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="triangle", size=3))
     solver.solve()

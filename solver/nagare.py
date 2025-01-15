@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import validate_direction
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -70,8 +70,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(nagare_wind(r, c, _d, puzzle))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"not nagare({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"not nagare({r}, {c}).")
 
     solver.add_program_line(display(item="grid_in", size=3))
     solver.add_program_line(display(item="grid_out", size=3))

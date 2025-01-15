@@ -42,8 +42,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(yaji_count(int(num), (r, c), int(d), color="black"))
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     for (r, c, _, d), draw in puzzle.line.items():
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')

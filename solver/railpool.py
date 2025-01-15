@@ -4,7 +4,7 @@ from typing import List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -58,8 +58,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f":- #count{{ N: area_len({i}, N) }} != {len_data}.")
 
     for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     for (r, c, _, d), draw in puzzle.line.items():
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
