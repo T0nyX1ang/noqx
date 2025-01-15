@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.solution import solver
 
@@ -24,7 +24,8 @@ def lightup(color: str = "black") -> str:
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -33,18 +34,22 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(lightup(color="not black"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        if isinstance(num, int):
+            solver.add_program_line(count_adjacent(num, (r, c), color="sun_moon__3"))
+
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
+        validate_type(symbol_name, "sun_moon__3")
+        solver.add_program_line(f"sun_moon__3({r}, {c}).")
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-
-    for (r, c), clue in puzzle.text.items():
-        if isinstance(clue, int):
-            solver.add_program_line(count_adjacent(clue, (r, c), color="sun_moon__3"))
-
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
-        if symbol_name == "sun_moon__3":
-            solver.add_program_line(f"sun_moon__3({r}, {c}).")
+        else:
+            solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="sun_moon__3"))
     solver.solve()
@@ -58,7 +63,7 @@ __metadata__ = {
     "aliases": ["lightup"],
     "examples": [
         {
-            "data": "m=edit&p=7VTfa9s8FH33XxH0rAfLchxHb1m/Zi9Zus0ZJQhjHM8lpnGd2fEYCvnfe++VVrswRims44Oh6OjcI0U6vvrRfevztuTCx5+MObRQQhFTDeKIqu/KpjodSjXhi/60b1ognN8sl/wuP3Slp92o1DubuTILbt4rzQTjLIAqWMrNJ3U2H5RJuEmgi/EQtJUdFAC9Hugt9SO7sqLwga8tnwHdAi2qtjiU2Qp6QfmotNlwhuu8o38jZXXzvWTOB8ZFU+8qFHb5CT6m21dH19P1X5v73o0V6YWbhbW7/WkX7Ti7crCL1NpF9hu7Xf+Q1U3z8Cq7+X3eVr9yOk8vF8j4Z/CaKY22vww0HmiizkwGTIWcTQU1kY1mkprYinMrCt+qQoS2DZwunR46PcIYpl+76XXAZ3a3aRktnkJcTrMJ5MMJuPCoHw2M/o1GRiEZGsdobByjwdFsZHQco+Fny5P1pxngE4Q6A24Jl4QB4QYSyI0k/I/QJ5wSrmjMNeEt4RVhSBjRmBluwQs3yeZybIdJzIzEfR8O0B/yqKV9AZ6X6f9PSz3Nkr69y4sSbs26r3dlO1k3bZ0fIE72+bFk8FJdPPaDUYUEw8P37/F6+8cLs++/+nb8ncuqIbFScHPD2bHP8qxo4FhB2jScjzB6sf7mXwU33O1G6j0C",
+            "data": "m=edit&p=7VTfa9swEH73XxH0rAfLsh1Hb1nX7CVLt6WjBGGM47nENK4zJx5DIf97706idmk2usE6BkPR3XefztKX04/91y5vSy58/MmEg4cWioR6kMTUfdeuq8O2VCM+7Q6bpgXA+dVsxm/z7b70tMtKvaOZKDPl5p3STDDOAuiCpdx8VEfzXpklN0sYYjwEbm6TAoCXPbyhcUQXlhQ+4IXFY4ArgEXVFtsym8MoMB+UNtec4Tpv6GuErG6+lczpwLho6nWFxDo/wJ/Zb6qdG9l3X5q7zuWK9MTN1MpdnZEre7kIrVxEP5G77+6zumnuf0tufpe31Tmlk/R0gop/Aq2Z0ij7cw+THi7VkcmAqZCzSJCLbTSW5BJLTiwpfMsKEVofOF46PnR8jDFMv3DT64CP7W7TMlo8hricZiOohyNw4cE4Chh8jUIGIQkaxihsGKPAwWwkdBij4CfLk/THGeAvCHUEuyI7IxuQvYYCciPJviXrk43IzinnkuwN2QuyIdmYcsa4BS/eJJ+pgDMJ5QAXRuSiCThb5qFSytISj0R/tv6QfC3t4/C0Rf8el3qaLbv2Ni9KuFCLrl6X7WjRtHW+hXi5yXclg0fs5LHvjDoUGN7E/+/a679rWH3/hRfn+e34O/dYQ2Gl4OaKs12X5VnRwLGCsmk4H2H8azxcufP50Xk+mvxgnud6Xr1q8IK43U69Bw==",
         },
         {
             "url": "https://puzz.link/p?akari/17/17/g666.g6.g6.x6.x6.x6.obl6.gbi6cv.gblcmbl7cv6bi66blam6.x.gbv.gcv66.g666.g.g",

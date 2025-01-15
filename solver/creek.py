@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
@@ -11,10 +12,11 @@ from noqx.solution import solver
 
 def creek_covering(target: int, r: int, c: int, color: str = "black") -> str:
     """Generate a constraint to check the {color} covering of cells."""
-    return f":- {{ {color}({r}, {c}); {color}({r + 1}, {c}); {color}({r}, {c + 1}); {color}({r + 1}, {c + 1}) }} != {target}."
+    return f":- {{ {color}({r - 1}, {c - 1}); {color}({r - 1}, {c}); {color}({r}, {c - 1}); {color}({r}, {c}) }} != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -22,14 +24,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(grid_color_connected(color="not gray"))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
-        solver.add_program_line(creek_covering(num, r, c, color="gray"))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d, Direction.TOP_LEFT)
+        validate_type(pos, "normal")
+        if isinstance(num, int):
+            solver.add_program_line(creek_covering(num, r, c, color="gray"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
@@ -43,7 +47,8 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VVNj9owEL3zK5BPrTSHJHY+b3S77YVm24VqtYoiFFhTUIOyDaTaGvHfdzyJGhPvoT2UqlJlPHo8P48fYxvvvzVFLcH19IdH4ICLTcSCOg996k7X5ttDKZMxTJrDpqoRANyksC7KvRxleiK2fHRUcaImoN4nGXMZMI96DupTclQfEpWCmuEQgwi5aSvyEF738I7GNbpqSddBnLY4QHiPcLWtV6VcTHEUmY9JpubA9DpvaLaGbFd9l6zzob+vqt1yq4llccDfst9sH7uRffNQfW06rZufQE1au7MX7PLeroatXY3+lF358EU+veQ0zk8nrPgtel0kmbb9uYdRD2fJEWOaHBl3Qj0XdyUAzIAJuRMPGdfVDDcZf6jx+FDjUR6TEU7ns2cos5lHeJZGWHksz77lxyeNmcePhkxAfszMAa1u5gkth6GtsdYKrRpGtLq5VmRpYvJzxliVj6nOhkY4xBirC4cqZmq8YeWFtV/Cs2dRVc80w8oLbmm4pbH2XbS7/FODh9GlI3lP8R1Fj+IcTywoTvEtRYeiT3FKmmuKdxSvKAqKAWlCfeZ/8VYwHwvuAQvwN0TtFbmAt8zv/i7PWvjvcfkoY7OmXhcriX9PabNbynqcVvWuKBk+BacRe2LUM64flv+vw+VfB11957feiL9/OTMsbBCCugH22CyKxaoqGWDZNI9XZ8hf3D3eYLbe1nJd/hi/2lSHom7GS1nsXrN89Aw=",
+            "data": "m=edit&p=7VXPj9o8EL3zVyCfWmkOSez8vFR0u+2FZr+vUK1WUYQCawpqULaBVFsj/vcdT6KNiffQHkpVqTIePZ6fx4+xjfffmqKW4Hr6wyNwwMUmYkGdhz51p2vz7aGUyRgmzWFT1QgAblJYF+VejjI9EVs+Oqo4URNQH5KMuQyYRz0H9X9yVB8TlYKa4RCDCLlpK/IQXvfwlsY1umpJ10GctjhAeIdwta1XpVxMcRSZ/5JMzYHpdd7SbA3ZrvouWedDf19Vu+VWE8vigL9lv9k+dCP75r762nRaNz+BmrR2Zy/Y5b1dDVu7Gv0uu/L+i3x8yWmcn05Y8U/odZFk2vbnHkY9nCVHjGlyZNwJ9dw36AwwAybkTqwZ3KdnxnU1w03GH2o8PtR4lMdkhNP57BnKbOYRnqURVh7ybM7yLT8+acw8fjRkAvJjZg5odTNPaDkMbY21VmjVMKLVzbUiSxOTnzPGqnxMdTY0wiHGWF04VDFT4w0rL6z9Ep49i6p6phlWXnBLwy2Nte+i3eVnDR5Gl47kHcX3FD2KczyxoDjFdxQdij7FKWmuKd5SvKIoKAakCfWZ/8lbwXwsuAcswN8QtVfkAt4yv/u7PGvh38flo4zNmnpdrCT+PaXNbinrcVrVu6Jk+BScRuyRUc+4flj+vQ6Xfx109Z1feiP+/OXMsLBBCOoG2EOzKBarqmSAZdM8Xp0hf3H3eIPZelvLdflj/GpTHYq6GS9lsXvN8tET",
         },
+        {"url": "https://puzz.link/p?creek/10/10/qbdccdbdbibiceeeddcblbbcdcdddboabbb", "test": False},
     ],
 }

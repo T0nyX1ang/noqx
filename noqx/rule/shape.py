@@ -3,7 +3,7 @@
 import itertools
 from typing import Iterable, Optional, Set, Tuple, Union
 
-from .helper import tag_encode, target_encode, validate_type
+from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 OMINOES = {
     1: {
@@ -54,7 +54,7 @@ def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[i
     if _type == 8:
         return shape_4 + shape_x
 
-    raise AssertionError("Invalid type, must be one of 4, 8, 'x'.")
+    raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
 
 
 def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
@@ -122,7 +122,7 @@ def general_shape(
     """
     validate_type(_type, ("grid", "area"))
     if not deltas:
-        raise AssertionError("Shape coordinates must be provided.")
+        raise ValueError("Shape coordinates must be provided.")
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
@@ -223,7 +223,7 @@ def all_rect(color: str = "black", square: bool = False) -> str:
     """
     rule = ""
     if color.startswith("not"):
-        raise AssertionError("Unsupported color prefix 'not', please define the color explicitly.")
+        raise ValueError("Unsupported color prefix 'not', please define the color explicitly.")
 
     upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
     left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
@@ -325,11 +325,6 @@ def no_rect(color: str = "black") -> str:
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_4(R, C, R1, C1).\n"
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
     return initial + propagation + constraint
-
-
-def area_same_color(color: str = "black") -> str:
-    """Ensure that all cells in the same area have the same color."""
-    return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
 
 
 def avoid_region_border_crossover() -> str:

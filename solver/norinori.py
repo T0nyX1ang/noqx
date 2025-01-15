@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.neighbor import adjacent
@@ -18,7 +18,8 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
     return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -32,10 +33,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(count(2, color="gray", _type="area", _id=i))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

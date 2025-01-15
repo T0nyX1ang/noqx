@@ -2,17 +2,26 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
-from noqx.rule.neighbor import adjacent, avoid_area_adjacent
+from noqx.rule.neighbor import adjacent, area_border, area_same_color
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.shape import area_same_color
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generates a constraint to avoid same {color} cells on the both sides of an area.
+
+    An adjacent rule and an area fact should be defined first.
+    """
+    return f":- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1, {color}(R, C), {color}(R1, C1)."
+
+
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -30,7 +39,11 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, (ar, _) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count_area_pass(1, ar).replace(":-", f":- not nothing({i}),"))
+        solver.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
+        solver.add_program_line(count_area_pass(1, _id=i).replace(":-", f":- not nothing({i}),"))
+
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -44,7 +57,7 @@ __metadata__ = {
     "aliases": ["allornothing"],
     "examples": [
         {
-            "data": "m=edit&p=7ZhPj9PIE4bv8ymQzz7Edlfbzo1l4Xdh2T+wQigaoWE2iNEOhJ0/K5TRfHee6n7LvrDisNJvOaAk7jdJuapsv/20k+u/bs+u9m1n/hymdtN2PPJmKq9u4j2veLy4uLncbx+0D29v3h2uEG3785Mn7duzy+v9yU5Rpyd3x3l7fNge/7fdNX3TllfXnLbHX7d3x5+2zfnh/ZuLpj0+5/um7fjiKapr2h75eJUvy/euHtUPuw36mTTyFfL84ur8cv/6af3kl+3u+KJtvNgPZW+XzfvD3/um7lbe1wb44M3ZDUd0/e7io765vv3j8OetYrvT+/b48Cs9D2vPLmvPrr7Qsx/Kv+758uLD/tOX2p1P7+8597/R8Ovtznv/fZXTKp9v79g+K9uubF+V7ZOy7cv2BaHtcSjbH8t2U7ZWtk9LzOPtXTNMQ5s2fbPtW3RCD9IZbdIjOktP6LHqeYOepfs2dZ00eTrlmQ2dik6brk39Rpr4vsZTE117SBv27eu+1EfHvvTT136oj679pI4e+toD9ds0KH9HzkE5O3IOytkTPyi+Jz4pvqefpH564lPEz+ip6oF4U/xAflP+gRhTTCK/KX8iZ1bORM6snInjyjquxLFkHUsiT1YeY99R+xrnfKznPGXyj8qfiZkUk8k/KX8m/6T8mfyT8mfyT8o/ciyzjmUk/6z8IzGzYiBHmlVr6lvbqBaeMXkmTYZWLXxi8gl10Mo5zWjlxDMmz1CztU7xM/Gd4mfiuxpvG+K7Gk/91uQfwzMmz1AfXY/d8IzJM/SCrp6hF3StZaDSBsV0xAyK6YgZIoZ+htoP9dHqB/+Y/GP4x+Qf6qPVD/4x+Yf6aNXqqZVUq6dWUq2BeFP8QIwpBp6bqQd8ZfKVJepm1U3UzaqLr0y+Mnxl8pUZ+UflN2JGxRi1RtXCYyaPkRutWplak2plak2qhcdMHqMOWnlGYmbFjHw+x+f0M6sf/GbyG3XQOrf4zeQ3m3wVU128l+U9w3tZ3rOZmE4x8CeLP9REq7c5o9UDfsvyGzXR6gG/ZfmNmujaQ8ZjWR7LeCzLY9REKwYvZXmJfOian3zomp/92ixvsB9ateBJFk8yPMniCTnQtecMW7LYkrnuWdedfOh6vBluZHEjGzGjYoyco3JyrbOuNfnQ6o1rnYMnHDuMXlkdc9yZrLWgsDfmMncYwX9GOB/sJY+uRWFyFxz2NSK46vwP7cxXfubLwnbmS+rFBOZL6lW3p24wf3Ceq5bzOZg/kD+YzzxamO98Ds5zPmH0yupgvrNa87SwWvOUEa1+EjlT5HT+69jN+R/c9vVC+Z3nmuOF57FGmDNf+zrbY71wtsd64WzP6oe5BtOlyZNjLSCPrjvjunYw7+D7yvNYL5hfMH1h+7J2+P1ArB1+P6B57Zxf1hG/N5iC7fQwBc+J0RxnXNaUwvCYv87wmL/cA8DxleHyGGvFskYwwn/Nced2zF9ncqwFzuFYC/DVshY4k2MtcPbKS4W98hIjWrUGXxeCyb4WKIY5uHDe2Rucd/YG2/EGzF3ZqzluXPeF7cxHWLxy2ILPxGuOFw4H5/HGwnnncHDeORycxxuweGVvsH10zgdvyS8PFPYG2529wXb8sLDd1/dgOx5Y2O5rvTxgvo7PwVv2FfPh9MJnRrSY6SzVfUJhqa41zIa3iocPWXxgXBheGKvrzrhwG07DYbGOdTnrfpJx5bbzVveEjGjFOHvFCka06jqHg+esy1n3Bowr253PwXZ8kuUTRrTWBee2PMOIDlZTN9YCGAK7xWRixI3C8FgL8A8cX3ku/zCuawRegu8r2+UfxnW9wD+5+Icb/5fl9v9R2aayzeVnwei/L/7Pv0C+2s6Os+e/af/pwS/f799+29+enuya57dXb8/O9/zufXR4//FwfXGzb/in4f6k+dSU124gNH3/8+G//PPBr8PmWwPAt9YOSOL8Hj48OFw9uL790JyefAY=",
+            "data": "m=edit&p=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",
         }
     ],
 }

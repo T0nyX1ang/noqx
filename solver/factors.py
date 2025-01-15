@@ -2,9 +2,9 @@
 
 from typing import Iterable, List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.solution import solver
 
 
@@ -28,31 +28,34 @@ def number_exclusion(target: int, grid_size: int, _id: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
-    n = puzzle.row
-
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, n + 1)))
     solver.add_program_line(unique_num(_type="row", color="grid"))
     solver.add_program_line(unique_num(_type="col", color="grid"))
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.sudoku)
-    for i, (ar, rc) in enumerate(areas.items()):
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+    for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 
-        if rc:
-            data = puzzle.sudoku[rc].get(0)
-            assert isinstance(data, int), "Clue should be integer."
-            solver.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {data}).")
-            solver.add_program_line(number_exclusion(data, grid_size=n, _id=i))
+        for r, c in ar:
+            if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
+                num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
+                solver.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {num}).")
+                solver.add_program_line(number_exclusion(int(num), grid_size=n, _id=i))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue should be integer."
-        solver.add_program_line(f"number({r}, {c}, {num}).")
+            if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
+                num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
+                solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

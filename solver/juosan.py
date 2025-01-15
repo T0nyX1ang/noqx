@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.solution import solver
@@ -25,20 +25,21 @@ def count_lines(area_id: int, num1: int, num2: int = 0):
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
     solver.add_program_line(jousan_constraint())
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.sudoku)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
-            data = puzzle.sudoku[rc][0]
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count_lines(i, data, len(ar) - data))
+            num = puzzle.text.get(Point(*rc, Direction.CENTER, "sudoku_0"))
+            if isinstance(num, int):
+                solver.add_program_line(count_lines(i, num, len(ar) - num))
 
     solver.add_program_line(display(item="content", size=3))
     solver.solve()
@@ -51,7 +52,7 @@ __metadata__ = {
     "category": "var",
     "examples": [
         {
-            "data": "m=edit&p=7VZdbxM5FH3Pr6j87Ifxx4zH81ZKy0sJLC2qqiiq0jbQLAlhk2aFJsp/77n2MekioZVAiCKhZDzH9v04c8/1JOt/NpPVVJtKvq7VuOPjTZsu2zbpqvg5n93Pp92BPtzc3y1XAFq/OjnR7ybz9XQwotV4sO1j1x/q/kU3UlbpdBk11v1f3bZ/2fVD3Z9hS2mDtVMgo7QFPN7Di7Qv6Cgvmgp4COyy2yXgzWx1M59eneaV192oP9dK8jxL3gLVYvnvVOUQaX6zXFzPZOF6co+HWd/NPnFnvbldftjQ1ox3uj/8Nl23pysw0xX0NV0+z0+mG8e7Hcr+BoSvupFwf7uH7R6edVuMwzSabqti5RHBCyEVjQVuMrYVsHRFmohR3jCVaTBxnDiZlB0vZpaT8GjH1DLhjmkkdE5pTCs+jGZ9u/exj81cYlAmtfDkxCcGEgBPdJme6ySNNo3neGzduzQ+T2OVxjqNp8nmGHWwxmlrg+osutXUwJEYB8CBiWBbAYNIwkFbb4gjsMvYwUbqkLAHxiMJ9livue4NcE2MvDXzetjXxR55pQKCa6w3XK/BrSG3GhwCOdQ4rAF1EdwgV2CuRg4x1wPytswbrBxsYsRvGT8gfsv4ARwiObSwj7RvYRNpg5eDq4pNC8xcbQRmTSJsDG1iACbnCBuTbRADOHN2lQHOPF3lgTM3+GlnuQ69HPWCH3CxQS7qBT/gzAd+wJkz/LSjdvADpg20c9QOfsD5eeGnXU2e0M5RO/gB0wY6OuqIGMCsp/SAY80RB32w74fSP6K7L/2A2jJv6gFfekP6rfSA9AntReuGcRro25QegF4N698gb2DeIL1Be9E9lH5AXjmyRffAvK30DGNG+MaiHfhE8onoMfZD0rFibUVH9gPuX/oBd2DWWX512A/QHJj1FB1N0Vd6pugLvUzRUXqAcaz0wCNdeB6TFqwt7tQUh/4iHf2jNPo0NumVEOQ9+R1v0h95+/wvnRE6U36W//upf7+18WCkjm/fTw+Gy9ViMscv2XCzuJ6uyhx/HXYD9VmlS97q2v/5N/GL/k2IBNVTOwlPjQ7Opvp7s1xPPqrx4AE=",
+            "data": "m=edit&p=7VZdaxs5FH33rwh61sPoY0ajeSlpNulL6n4kSwjGBCfxNt6169aOlzLG/z3nSkd1WigLW0pTKPZojqSre4/uuZK9/riZrKbaVPJ1rcYbH2/a9Ni2SU/Fz/nsfj7tDvTh5v5uuQLQ+tXJif5rMl9PByNajQfbPnb9oe5fdCNllU6PUWPdv+m2/cuuH+r+DFNKG4ydAhmlLeDxHl6keUFHedBUwENgl5ddAt7MVjfz6dVpHnndjfpzrSTO87RaoFos/52q7CL1b5aL65kMXE/usZn13ewDZ9ab2+U/G9qa8U73h9+m6/Z0BWa6gr6my/38YLpxvNsh7W9B+KobCfc/97Ddw7Nui3aYWtNtVaw8PHghpKKxwE3GtgKWqkgdMcoTpjINOo4dJ50y48XMshMezZhKvKlnaePo1jJHQ9PIXGZgTCsu6Nz6du/CPjZziVDp1EKbHZ8IiQNs8DJt8yS1NrXnyILuXWr/SG2V2jq1p8nmGGmxxmlrg+ositfUwJEY58GBiWBbAYNIwkFbb4gjsMvYwUbSkrAHxpYEe4zXHPcGuCZG3JpxPezrYo+4kgHBNcYbjtfg1pBbDQ6BHGqc3YC8CG4QKzBWI2ea4wFxW8YNVs45Mfy39B/gv6X/AA6RHFrYR9q3sIm0wV3hROyEW2DGaiMwcxJhY2gTAzA5R9iYbAMfwJmzqwxw5ukqD5y5YZ12luPQy1EvrAMuNohFvbAOOPPBOuDMGeu0o3ZYB0wbaOeoHdYB5/1inXY1eUI7R+2wDpg20NFRR/gAZj6lBhxzDj+og309lPoR3X2pB+SWcVMN+FIbUm+lBqROaC9aN/TTQN+m1AD0apj/BnED4wapDdqL7qHUA+LKCS66B8ZtpWboM2JtLNqBTySfiBpjPSQdK+ZWdGQ94P25HvAGZp7lR4j1AM2BmU/R0RR9pWaKvtDLFB2lBujHSg080oXnMWnB3OJNTXHoL9LRP0qtT22TroQg1+b/uFi/5/b5TzojVKb8Sn/5qX+9sfFgpI5v300PhsvVYjLHD9tws7ierkof/yR2A/VJpUdude1//7n4SX8uRILqqZ2Ep0YHZ1P9vVmuJ+/VePAA",
         },
         {
             "url": "https://puzz.link/p?juosan/21/12/4ql08qtg9qt59ul5bunltnn9tntd72ta72h636h5b641bm04vmcvjo0fu1vo3s6fhuv1u0gf7fvpjo0fvjro0fs3vu0tvvgg33g42554342h553444g2g24211g121g2221341225h121g252442224465g25g1g2425g273",

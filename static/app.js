@@ -15,6 +15,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("context", "nuribou");
   urlstring = urlstring.replace("coral", "nonogram");
   urlstring = urlstring.replace("circlesquare", "yinyang");
+  urlstring = urlstring.replace("creek", "gokigen");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("hinge", "aqre");
   urlstring = urlstring.replace("kramma/c", "yinyang");
@@ -149,7 +150,7 @@ $(document).ready(function () {
     noChoicesText: "No examples found",
   });
 
-  let puzzleType = null;
+  let puzzleName = null;
   let puzzleContent = null;
   let solutionList = null;
   let solutionPointer = -1;
@@ -177,8 +178,8 @@ $(document).ready(function () {
 
       typeSelect.addEventListener("change", () => {
         ruleButton.disabled = false;
-        puzzleType = typeSelect.value;
-        if (puzzleType !== "") {
+        puzzleName = typeSelect.value;
+        if (puzzleName !== "") {
           parameterBox.style.display = "none"; // hide parameter box if no parameters
           parameterButton.textContent = "Show parameters";
           parameterButton.disabled = true;
@@ -186,9 +187,9 @@ $(document).ready(function () {
             parameterBox.removeChild(parameterBox.lastChild);
           }
 
-          if (body[puzzleType].parameters) {
+          if (body[puzzleName].parameters) {
             parameterButton.disabled = false;
-            for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
+            for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
               const paramDiv = make_param(k, v.type, v.name, v.default);
               parameterBox.appendChild(paramDiv);
             }
@@ -196,7 +197,7 @@ $(document).ready(function () {
 
           choicesExample.clearStore();
           let exampleList = [{ value: "", label: "Choose Example", selected: true }];
-          exampleList.push(...body[puzzleType].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
+          exampleList.push(...body[puzzleName].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
           choicesExample.setChoices(exampleList);
         }
       });
@@ -208,13 +209,13 @@ $(document).ready(function () {
           solutionList = null;
           solutionPointer = -1;
 
-          let exampleData = body[puzzleType].examples[exampleSelect.value];
+          let exampleData = body[puzzleName].examples[exampleSelect.value];
           puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
           imp(puzzleContent, exampleData.url !== undefined);
 
-          if (body[puzzleType].parameters) {
-            for (const [k, v] of Object.entries(body[puzzleType].parameters)) {
-              const config = body[puzzleType].examples[exampleSelect.value].config;
+          if (body[puzzleName].parameters) {
+            for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
+              const config = body[puzzleName].examples[exampleSelect.value].config;
               const value = config && config[k] !== undefined ? config[k] : v.default;
               const paramInput = document.getElementById(`param_${k}`);
               if (paramInput.type === "checkbox") paramInput.checked = value;
@@ -225,9 +226,9 @@ $(document).ready(function () {
       });
 
       ruleButton.addEventListener("click", () => {
-        if (ruleButton.disabled || !puzzleType) return;
+        if (ruleButton.disabled || !puzzleName) return;
         window.open(
-          `https://puzz.link/rules.html?${puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"}`
+          `https://puzz.link/rules.html?${puzzleName !== "yajilin_regions" ? puzzleName : "yajilin-regions"}`
         );
       });
 
@@ -246,8 +247,8 @@ $(document).ready(function () {
           solveButton.textContent = "Solving...";
           solveButton.disabled = true;
 
-          if (body[puzzleType].parameters) {
-            for (const [k, _] of Object.entries(body[puzzleType].parameters)) {
+          if (body[puzzleName].parameters) {
+            for (const [k, _] of Object.entries(body[puzzleName].parameters)) {
               const paramInput = document.getElementById(`param_${k}`);
               if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
               else puzzleParameters[k] = paramInput.value;
@@ -257,7 +258,7 @@ $(document).ready(function () {
           fetch("/api/solve/", {
             method: "POST",
             body: JSON.stringify({
-              puzzle_type: puzzleType,
+              puzzle_name: puzzleName,
               puzzle: puzzleContent,
               param: puzzleParameters,
             }),

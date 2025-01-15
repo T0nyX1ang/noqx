@@ -2,7 +2,7 @@
 
 from typing import Iterable, List, Tuple, Union
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs, tag_encode
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
@@ -40,7 +40,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
     elif _type == "right":
         n, key = puzzle.row, puzzle.col - 1
     else:
-        raise AssertionError(f"Invalid border type: {_type}")
+        raise ValueError(f"Invalid border type: {_type}")
 
     def coord(i: int) -> Tuple[int, int]:
         return (key, i) if _type in ["top", "bottom"] else (i, key)
@@ -48,7 +48,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
     rule, i = "", 0
     while i < n:
         segment, data = 0, []
-        while coord(i) in ar and i < n and puzzle.surface.get(coord(i)) != 2:
+        while coord(i) in ar and i < n and puzzle.surface.get(Point(*coord(i))) != 2:
             r, c = coord(i)
             data.append(f"{color}({r}, {c})")
             segment += 1
@@ -63,8 +63,8 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
     return rule.strip()
 
 
-def area_border(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
-    """Generates a fact for the border of an area."""
+def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
+    """Generates a simpler fact for the border of an area."""
     borders = set()
     for r, c in ar:
         for dr, dc in ((0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)):
@@ -92,7 +92,8 @@ def area_border_connected(_id: int, color: str = "black", adj_type: Union[int, s
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -108,38 +109,38 @@ def solve(puzzle: Puzzle) -> List[Solution]:
         solver.add_program_line(area(_id=i, src_cells=ar))
 
         if rc:
-            data = puzzle.text[rc]
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count(data, color="gray", _type="area", _id=i))
+            num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
+            if isinstance(num, int):
+                solver.add_program_line(count(num, color="gray", _type="area", _id=i))
 
-            if puzzle.param["fast_mode"] and data > len(ar) // 4:
-                lmt_2x2 = int(puzzle.param["limit_2x2"])
-                lmt_border = int(puzzle.param["limit_border"])
-                solver.add_program_line(area_border(_id=i, ar=ar))
-                solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
-                solver.add_program_line(limit_area_2x2_rect(lmt_2x2, _id=i, color="gray"))
-                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="top", color="gray"))
-                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="bottom", color="gray"))
-                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="left", color="gray"))
-                solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="right", color="gray"))
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not gray({r}, {c}).")
+                if puzzle.param["fast_mode"] and num > len(ar) // 4:
+                    lmt_2x2 = int(puzzle.param["limit_2x2"])
+                    lmt_border = int(puzzle.param["limit_border"])
+                    solver.add_program_line(area_border_simple(_id=i, ar=ar))
+                    solver.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
+                    solver.add_program_line(limit_area_2x2_rect(lmt_2x2, _id=i, color="gray"))
+                    solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="top", color="gray"))
+                    solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="bottom", color="gray"))
+                    solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="left", color="gray"))
+                    solver.add_program_line(limit_border(lmt_border, ar, puzzle, _type="right", color="gray"))
 
     for r in range(puzzle.row):
-        borders_in_row = [c for c in range(1, puzzle.col) if (r, c, Direction.LEFT) in puzzle.edge]
+        borders_in_row = [c for c in range(1, puzzle.col) if Point(r, c, Direction.LEFT) in puzzle.edge]
         for i in range(len(borders_in_row) - 1):
             b1, b2 = borders_in_row[i], borders_in_row[i + 1]
             solver.add_program_line(avoid_rect(1, b2 - b1 + 2, color="not gray", corner=(r, b1 - 1)))
 
     for c in range(puzzle.col):
-        borders_in_col = [r for r in range(1, puzzle.row) if (r, c, Direction.TOP) in puzzle.edge]
+        borders_in_col = [r for r in range(1, puzzle.row) if Point(r, c, Direction.TOP) in puzzle.edge]
         for i in range(len(borders_in_col) - 1):
             b1, b2 = borders_in_col[i], borders_in_col[i + 1]
             solver.add_program_line(avoid_rect(b2 - b1 + 2, 1, color="not gray", corner=(b1 - 1, c)))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"gray({r}, {c}).")
+        else:
+            solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
     solver.solve()
@@ -152,7 +153,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7ZbPbhs3HITveoqAZx52Se7fm5vavbhOW7sIAkEwFGVTG5GhVLaadg2/ez6SwwpoA7RA2/QSrESNqOHwx+Estfc/H9b7ydYuvnxvK1tzhSGkt++a9K50Xd0+bKfxmT05PNzs9gBrX5yd2bfr7f20WIq1WjzOwzif2PmbcWlqY43jXZuVnb8fH+dvx/nUzpf8ZGxP33kmOeDpEb5Mv0f0PHfWFfhCGPgKuLndb7bT9Xnu+W5czlfWxHm+SqMjNHe7XyajOuL3ze7u9W3seL1+YDH3N7fv9cv94c3u3UHcevVk55Nc7uUnyvXHciPM5Ub0iXLjKv7jcofV0xO2/0DB1+My1v7jEfZHeDk+0l6ktk7tq9Sepdal9gqqnX1qv05tldomteeJczo+GtcF64bKjI4dJiRuqIU7sBfuwSHjvgK3wjW4E/bgQZjQVdIcKrD4Qw0Wf/Bg8WNI68JvwU64A6uGYQA3CaMNzppoW+8yH21w5qMNFr+G78SPd4jrhanB5RrQtt7ntaMNlqaD78V38L34Dn4Q38EPhd+Ds1dog1WDZ+0hrx1tsDS5XX0jvoffiB/gN+IH+I34Aa/a7BXaYNUQWHurtQc0W2k28QAQv4kHgfgN/E78Bn4nfotXnbxqqaFTDS1r77T2Fs1emh38XvwOfi9+B78Xn4x5ZSwdRsqYJ1deuUIbrLWTMa+MoW1DJW/7Dqya+wEsPhkLyhjaYNUQD0DlCm2w5iVjQRlDG5y9RRuca0bbBpf5aIMLnxqUsVD14Fw/84BzDcwDzjUwD1j65CcoP4yzIeTaGAeWvkM/SJ8sBWWJcTYoG4wDay6yEZQNxoGlT06CcsI4G7TvjANrLvY9aN8ZB5Y+GQglA3Hv1J//SEo/mS/Z4KxgL497qpwkr6riLXPpfufz930JNZzifw2n+F/DccWf6K3qd9Hb4lX0Vl756G3xirV7rcWzdi+vPGv32hfPvLqv+TzuS4g+F9+iz8U35m2Kb9FzzdtEz4uHzJv2iMP1ZTpin6c2pLZNR28Xz/C/ecpzJ5uxtybV8G8d+X9Z2xL74vPDn6/mS3+8VouluTzs3643E3/jp29+mp5d7PZ3663hqelpYX416b308SHsy4PU//QgFbeg+syPU//0vl/iLnff/MKa94fr9fVmtzU8i9vYzwH0x/7PXj2Hg7mZflt/WL+bzGrxEQ==",
+            "data": "m=edit&p=7ZbPbhs3HITveoqAZx52Se7fS+Gmdi+u09YugkAQDFnZ1EZsKJWtpl3D756P5LAC2gBpUTS9BCtRI2o4/HE4S+39L/v1brK1iy/f28rWXGEI6e27Jr0rXRc3D7fT+Mwe7R+utzuAtS9OTuyb9e39tFiKtVo8zsM4H9n523FpamON412blZ1/GB/n78b52M7n/GRsT99pJjng8QG+TL9H9Dx31hX4TBj4Cri52W1up8vT3PP9uJwvrInzfJ1GR2jutr9ORnXE75vt3dVN7LhaP7CY++ubd/rlfv96+3Yvbr16svNRLvf8I+X6Q7kR5nIj+ki5cRX/cbnD6ukJ23+k4MtxGWv/6QD7AzwfH2nPxkcTmjj0K2pJe0NvnX57ldqT1LrUXjDUzj6136S2Sm2T2tPEOUbRdcG6oTKjY8cJjRtq4Q7shXtwyLivwK1wDe6EPXgQJoSVNIcKLP5Qg8UfPFj8GNq68FuwE+7AqmEYwCwfjDY4a6Jtvct8tMGZjzZY/Bq+Ez/eMa4XpgaXa0Dbep/XjjZYmg6+F9/B9+I7+EF8Bz8Ufg/OXqENVg2etYe8drTB0uT29Y34Hn4jfoDfiB/gN+IHvGqzV2iDVUNg7a3WHtBspdnEA0H8Jh4M4jfwO/Eb+J34LV518qqlhk41tKy909pbNHtpdvB78Tv4vfgd/F58MuaVsXQ4KWOeXHnlCm2w1k7GvDKGtg2VvO07sGruB7D4ZCwoY2iDVUM8EJUrtMGal4wFZQxtcPYWbXCuGW0bXOajDS58alDGQtWDc/3MA841MA8418A8YOmTn6D8MM6GkGtjHFj6Dv0gfbIUlCXG2aBsMA6suchGUDYYB5Y+OQnKCeNs0L4zDqy52PegfWccWPpkIJQMxL1Tf/5jKf1kvmSDs4K9POypcpK8qoq3zKX7nc8/9iXUcIr/NZzifw3HFX+it6rfRW+LV9FbeeWjt8Ur1u61Fs/avbzyrN1rXzzz6r7m87AvIfpcfIs+F9+Ytym+Rc81bxM9Lx4yb9ojDteX6Yh9ntqQ2jYdvV080//mqc+dbMbemlRD/gv490f+J2tbYl98nvjr1Xzpj9dqsTTn+92b9Wbib/349c/Ts7Pt7m59y7ez/d3VtCvfeap6WpjfTHovfXxI+/Kg9T89aMUtqP7R49ZnuNc+Uc4Sd7kb5xfWvNtfri83WzKGd7GfA+nP/Z+9eg4Lcz39vn6/fjuZ1eID",
         },
         {
             "url": "https://puzz.link/p?heyawake/19/15/201480mhg2i40a8s192816704r503gk0m2g2oa0a18085010k046g0003hu0104000400fbvgvo005fu1800o0000000800600000003s0003c-1c140411g81ah8233",
@@ -160,7 +161,7 @@ __metadata__ = {
             "test": False,
         },
         {
-            "data": "m=edit&p=7VPLbtswELzrK4I970Ek9TJvbir34roPuwgCQQgUhamFyFArW33Q0L9nuSKgHgIURRE0h4LgYHY5JIePPX4dqt5ghimqDEMU1FQkUYURRongHvq2a06t0Re4HE77rieC+G61wvuqPZqg8KoyONuFtku0b3QBAhAkdQEl2g/6bN9qm6Pd0hBgRrn1JJJE85le8bhjl1NShMQ3nhO9Jlo3fd2am/WUea8Lu0Nw+7zi2Y7CoftmwPtwcd0dbhuXuK1OdJjjvvniR47DXfcweK0oR7TLye72CbtqtuvoZNexJ+y6Uzyz3UU5jnTtH8nwjS6c908zzWa61WfCjT6DTGiqyOix+WlALVzsQ9IIVl4zrhgl444WQqsYXzOGjDHjmjU5rS9iWjsNQUtaMV4QFxNPaZNMeS6JR15D+phMcJ6+4a/6VE48U15Pm1zxVpeMEWPCFlJ30j+6i78/7W/tFDLhwppb/LxxGRSwHfr7qjb0X/K7z+Zi0/WHqgUqzzGAH8C9oAvF6H/F/qOKdU8QvrS/+tLsUPXA3vysvlcPBsrgEQ==",
+            "data": "m=edit&p=7VPLbtswELzrKwKe9yCSkiXz5qZ2L677sIsgEIRAdpjaiA21spW2NPTvGa5YqIcARVEEzaEgOJhdDsnhY49f26qxlFNGOqeYJJpOFOk4oWQkucehrXanvTUXNGlP27oBIXo3m9FdtT/aqAiqMjq7sXETcm9MIaQgodClKMl9MGf31rgpuSWGBOXIzXuRAp0O9IrHPbvskzIGXwQOeg262TWbvb2Z95n3pnArEn6fVzzbU3GoH6wIPny8qQ/rnU+sqxMOc9zuvoSRY3tb37dBK8uO3KS3u3zCrh7setrb9ewJu/4Uz2x3XHYdrv0jDN+Ywnv/NNB8oEtzBi7MWagRpsocj81PI/TYxyGERrLymnHGqBhXWIicZnzNGDOmjHPWTLG+TLF2FgujsGI6Bpc9z7BJrgNX4EnQQJ/CBOfxDX/VZ6rnuQ56bHLFW10yJowjtpD5k/7RXfz9aX9rp1AjLqyhpc8bl1Ehlm1zV20s/sv09rO9WNTNodojWrSHtW1+xijXLhLfBfcCF0zJ/wr+RxXsnyB+aX/3pdlBNYmt/VF9q+6tKKNH",
             "config": {"fast_mode": True, "limit_border": 1},
         },
         {

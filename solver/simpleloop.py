@@ -2,15 +2,17 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.helper import fail_false
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -22,9 +24,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="simpleloop", adj_type="loop"))
     solver.add_program_line(single_loop(color="simpleloop"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"black({r}, {c}).")
+    for (r, c, _, _), color in puzzle.surface.items():
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
+
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
@@ -37,7 +42,8 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7VVda9swFH33rwh61oM+/aG3rGv24mUfySjFmOJmLjVz5sxJRlHIf+/VvRp5CWwwKIUGWeceXR1JRzJI21/7Zmy5EuHTORdcQsmKHGtuJVYRy7Lb9a2b8Ol+9ziMQDj/NJvxh6bftkkVVXVy8IXzU+4/uIopxrFKVnP/xR38R+cX3C+gi3EDuRKYZFwBvT7RG+wP7IqSUgCfRw70FuiqG1d9e1dS5rOr/JKzsM47HB0oWw+/W0bDsL0a1vddSNw3O9jM9rHbxJ7t/vvwYx+1sj5yPyW75Rm7+mQ3ULIb2Bm7YRf/bbfvfrZP55wW9fEIJ/4VvN65Ktj+dqL5iS7cgVnDnOHM5hhShaGQGKQQFKWlqKhbqtg2BcU0tjNNMY/5IuYLaitB8ypBOhXnUymto2O/FhlFTeO0jXmbUsz/RNKZOM5oWs9YmtektI5Joy6LuozGm5w2bwravRUxKtLZ6M/ifuHA5u4AKBFvEWeICnEJp8q9RnyPKBAtYomaa8QbxCtEg5iiJgv/5R//3IvZqSzdAH8v9qK76N6erk4qttiPD82qhdu4hFt5Mh/GddMzePeOCXtiWCsNYnN5Cl/+KQynL17btfra7MBFz7bdetO3k34YNqxOngE=",
-        }
+            "data": "m=edit&p=7VZNb9pMEL7zK9Ce57Cf/rrRNPRCSd9CFUWWhRzqKFZNTQFXkRH/PbMzG3EoUSPlFZcis888OzPrnZ2VZ9j+6spNBVr6n0lAgsInThMaiVM0ZHjm9a6psiGMut1ju0ECcDMew0PZbKtBHryKwb5Ps34E/acsF1oADSUK6P/L9v3nrJ9BP0OTAIu6CTIlQCO9PtJbsnt2xUolkU8DR3qHdFlvlk21mLDmS5b3cxB+nw+02lOxan9XgpfRfNmu7muvuC93eJjtY70Olm33vf3RBV9VHKAfcbiTE+GaY7iecrienQjXn+Ld4Tb1z+rpVKRpcThgxr9irIss92F/O9LkSGfZXjgrMgvCJSQiTSJVJJSULJVjqdmsdJjblGUU5rFhmQR9GvQpz7Xk92rJfjq8T0e8jwl2I2OWhtcZF/QuYpm8SPazYZ01vJ91/F4b8T42Cn5x8It5vU348Dbl0zsZpGY/F+JzdF5M2DTbIyrCO8IxoSacY1ahN4QfCSWhI5yQzzXhLeEVoSWMyCf29/LGm3t/OHhPMR4MP2qBw9+RQZaC0pg2pCiRY4qQxxZ8kswbj5A7rhp/f9zF7+L37/kVg1zMus1Duaywgk+wkg+n7WZVNgJ75WEgngSNHL9A7DGX9nn29umzL89Wiv+fzpBjYkMph/4GxLpblItl2wj8BwZs5Or+ivWl4L9i5h5w2uhbyR+Ws6cHG4/Y1qt1Uw2btl2LYvAM",
+        },
+        {"url": "https://puzz.link/p?simpleloop/15/15/124000400000a0004g0002008h12000482008400004i1", "test": False},
     ],
 }

@@ -2,13 +2,15 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -17,15 +19,16 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type=8))
     solver.add_program_line(avoid_num_adjacent(adj_type=8))
 
-    for (r, c), clue in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f":- number(_, _, N), {{ grid(R, C): number(R, C, N), adj_8(R, C, {r}, {c}) }} > 1.")
-        if clue != "?":
-            assert isinstance(clue, int), "Clue should be integer or '?'."
-            solver.add_program_line(f":- #sum {{ N: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {clue}.")
+        if isinstance(num, int):
+            solver.add_program_line(f":- #sum {{ N: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {num}.")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code == 4:  # shaded color (BK)
-            solver.add_program_line(f"black({r}, {c}).")
+    for (r, c, _, _), color in puzzle.surface.items():
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

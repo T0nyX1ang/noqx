@@ -2,16 +2,17 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_rect_src, grid_color_connected
 from noqx.rule.shape import all_rect, avoid_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -23,19 +24,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_rect(2, 2, color="black"))
     solver.add_program_line(all_rect(color="green"))
 
-    assert len(puzzle.text), "No clues found."
-
-    for (r, c), num in puzzle.text.items():
+    fail_false(len(puzzle.text) > 0, "No clues found.")
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f"not black({r}, {c}).")
         solver.add_program_line(f"clue({r}, {c}).")
         solver.add_program_line(bulb_src_color_connected((r, c), color="not black"))
         if isinstance(num, int):
             solver.add_program_line(count_rect_src(num, (r, c), color="not black"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")

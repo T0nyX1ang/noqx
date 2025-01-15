@@ -20,6 +20,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Change the frontend from Noq native to penpa-edit. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
 
+- Obtain uniform data structures in every puzzle. (See issue [#88](https://github.com/T0nyX1ang/noqx/issues/84)).
+
 ### New usages from Penpa-edit
 
 - Select puzzle type.
@@ -136,6 +138,19 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Write a new solver
 
 - Create a python file in `solver/` and write solver codes in that file. The functions in `noqx` package are free to use.
+
+- Use the data structures from the puzzle. The atom element of a puzzle is a cell, and the data structures are all crafted around a cell. In detail, a puzzle has the following attributes:
+
+  - `puzzle_name`: the name of the puzzle, should be the same as the filename of the solver.
+  - `param`: the parameters of the puzzle.
+  - `row`: the number of rows in the puzzle.
+  - `col`: the number of columns in the puzzle.
+  - `margin`: the margin of the puzzle, the order is a tuple of (`top-margin`, `bottom-margin`, `left-margin`, `right-margin`).
+  - `surface`: the shaded cells in the puzzle.
+  - `text`: the text clues in the puzzle.
+  - `symbol`: the symbols in the puzzle.
+  - `edge`: the borders in the puzzle.
+  - `line`: the lines in the puzzle.
 
 - (Optional) Append a `__metadata__` variable in the end of the solver file. The keys of `__metadata__` are:
 

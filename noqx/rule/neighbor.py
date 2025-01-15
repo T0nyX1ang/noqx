@@ -1,8 +1,9 @@
 """Utility for neighbor-relevant (primary to connected) rules."""
 
-from typing import Optional, Tuple, Union
+from typing import Dict, Iterable, Optional, Tuple, Union
 
-from .helper import tag_encode, target_encode, validate_type
+from noqx.puzzle import Direction, Point
+from noqx.rule.helper import tag_encode, target_encode
 
 
 def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
@@ -17,19 +18,20 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
 
     A grid fact should be defined first.
     """
-    validate_type(_type, (4, "x", 8, "edge", "loop", "loop_directed"))
-
     rule = f"adj_{_type}(R, C, R, C) :- grid(R, C).\n" if include_self else ""
 
     if _type == 4:
         rule += "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
+        return rule
 
     if _type == "x":
         rule += "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        return rule
 
     if _type == 8:
         rule += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
         rule += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        return rule
 
     if _type == "edge":
         rule += "adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not edge_left(R, C + 1).\n"
@@ -51,7 +53,7 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
         rule += "adj_loop_directed(R0, C0, R, C) :- adj_loop_directed(R, C, R0, C0)."
         return rule
 
-    return rule
+    raise ValueError(f"Invalid adjacent type: {_type}.")
 
 
 def avoid_adjacent_color(color: str = "black", adj_type: Union[int, str] = 4) -> str:
@@ -72,19 +74,8 @@ def area_adjacent(adj_type: Union[int, str] = 4, color: Optional[str] = None) ->
     area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
     if color:
         area_adj += f", {color}(R, C), {color}(R1, C1)"
-        return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
 
-    return f"area_adj_{adj_type}(A, A1) :- {area_adj}."
-
-
-def avoid_area_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generates a constraint to avoid same {color} cells on the both sides of an area.
-
-    An adjacent rule and an area fact should be defined first.
-    """
-    area_adj = area_adjacent(adj_type, color)
-    return area_adj[area_adj.find(":-") :]
+    return f"{tag_encode('area_adj', adj_type, color)}(A, A1) :- {area_adj}."
 
 
 def count_adjacent(
@@ -122,4 +113,37 @@ def avoid_num_adjacent(adj_type: Union[int, str] = 4) -> str:
     An adjacent rule should be defined first.
     """
     rule = f":- number(R, C, N), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1)."
+    return rule
+
+
+def area_same_color(color: str = "black") -> str:
+    """Ensure that all cells in the same area have the same color."""
+    return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
+
+
+def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Point, bool]) -> str:
+    """Generates a fact for the border of an area."""
+    edges = set()
+    for r, c in src_cells:
+        if edge.get(Point(r, c, Direction.TOP)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "u").')
+            if (r - 1, c) in src_cells:
+                edges.add(f'area_border({_id}, {r - 1}, {c}, "d").')
+
+        if edge.get(Point(r + 1, c, Direction.TOP)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "d").')
+            if (r + 1, c) in src_cells:
+                edges.add(f'area_border({_id}, {r + 1}, {c}, "u").')
+
+        if edge.get(Point(r, c, Direction.LEFT)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "l").')
+            if (r, c - 1) in src_cells:
+                edges.add(f'area_border({_id}, {r}, {c - 1}, "r").')
+
+        if edge.get(Point(r, c + 1, Direction.LEFT)) is True:
+            edges.add(f'area_border({_id}, {r}, {c}, "r").')
+            if (r, c + 1) in src_cells:
+                edges.add(f'area_border({_id}, {r}, {c + 1}, "l").')
+
+    rule = "\n".join(edges)
     return rule

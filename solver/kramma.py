@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 from noqx.solution import solver
@@ -19,7 +19,8 @@ def straight_line() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
@@ -31,8 +32,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "circle_M__1":
             solver.add_program_line(f"white({r}, {c}).")
             solver.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
@@ -43,11 +44,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
             solver.add_program_line(f":- {tag}({r}, {c}, R, C), white(R, C).")
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))

@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
@@ -14,15 +15,18 @@ def simplegako_fill_constraint() -> str:
     )
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(fill_num(_range=range(1, puzzle.row + puzzle.col)))
     solver.add_program_line(simplegako_fill_constraint())
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue should be integer."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))

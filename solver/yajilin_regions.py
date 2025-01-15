@@ -2,16 +2,17 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_cc
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -24,14 +25,21 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="white", adj_type="loop"))
     solver.add_program_line(single_loop(color="white"))
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.sudoku)
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
         if rc:
-            data = puzzle.sudoku[rc].get(0)
-            assert isinstance(data, int), "Signpost clue should be integer."
-            solver.add_program_line(count(data, color="black", _type="area", _id=i))
+            num = puzzle.text[Point(*rc, Direction.CENTER, "sudoku_0")]
+            if isinstance(num, int):
+                solver.add_program_line(count(num, color="black", _type="area", _id=i))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"black({r}, {c}).")
+
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="grid_direction", size=3))
@@ -45,7 +53,7 @@ __metadata__ = {
     "category": "loop",
     "examples": [
         {
-            "data": "m=edit&p=7ZZda+NGGEbv/SuCrudCmg/NSHdpdtOb1P1IyrIYsziptuvWWbdOXLYK/u97ZvS4biFQ6ELZQrE1PpZ1/D4j6x354df9ajeYps5PlwyvPHyTymZTW7Zaj5v142boz8z5/vHddgcY8/XlpXm72jwMs4WOWs6exq4fz834Zb+omspUlq2plmb8tn8av+rHuRmv+agynn1X00EWfHnCV+XzTBfTzqaG57CDwdfg3Xp3txneXE17vukX442pcp0vip2xut/+NlTKkd/fbe9v13nH7eqRyTy8W/+iTx72P2x/3uvYZnkw4/kU9/qZuO4UN+MUN9MzcfMsPjnuZv1++PBc0m55OHDGvyPrm36RY39/wnTC6/6JcV7Gpn+qutrzDT5nqbrGwk7cntjWsBXn44/7E8yVktn9yXXZ1fE+u/kYCr4uZS/LaMt4QyozujK+KGNdxlDGq3LMS2Laxhpr+VrLddQ4OIo9TIzCAe7EXLKO0oUj3Ii5nHPUwh3sJrY1zNQK4+bYhXG9XIvr5VpcL9fhermugYOYzF6ZHZm9Mjsye2X2uEGuxw1yPW6Q63GDXI8bji7zDZqvJ3OrzJ7MrTJ7MrfKHHBbuQG3lRtwo9yAG+UG3Hh0mW/UfFsyR2VuyRyVuSVzVOY2LxtyW9wkN+ImuRE3yY24SW5kvknzjWROyhzJnJQ5krlT5oTbyU24ndyE28lNuJ1cljJXH90Ia74pwcqcOliZO9bE3CaFcRu5HW4jt8PN7VMYt5lc6sCTSx14mi914CkzdeApM3XgKTN1jMvtVhjXyqUXnHqBOrBcesGpF6gDT/OljnHqBerAU2bqwFNm6sByLa6TSy849QJ1YLn0glMvUAfWfOkFp16gDqzM9IJTL1DHuCDX4Qa59IJTL1AHlksvOPUCdWDNl15w6gXqwMpML7hjL/D7/nH98DvaLudnUXlVlpaLMvoytmXJiXmZ/AcL6aesbn8bZ8FZzTfkvz7Cf2/fcraorve7t6u7gZvYFTezs/l2d7/a8G6+v78ddsf3/H04zKoPVdnyfYXb7v//KP71fxT57NefWzt8bnFo0Go3/Ljevl9tzn5f/bTmnFbL2Uc=",
+            "data": "m=edit&p=7Zbfb9s2FIXf/VcEfOaDRVIipZch65q9eOm2ZCgKwwgcz129OXXnxEWnIP97P1LHc4e5+9EABQYMtukjSp/uuRLvlW5/3c23S1uN89cnyz+fUKXyc6kpv7E+l6u79bI7sae7u1ebLcLaZ2dn9uV8fbscTXXUbHTft11/avuvu6mpjDWOX2Vmtv+uu++/6fpz21+wy9jA3GQ4yCGfHuTzsj+rJ8NkNUafoz0a+QK5WG0X6+XVZJj5tpv2l9bkOF8WOktzs3m7NPKRtxebm+tVnrie35HM7avVG+253f24+WWnY6vZg+1PB7uTI3b9wW6Wg92sjtjNWTza7nr1evnumNN29vDAFf8er1fdNNv+4SDTQV5094znZay6e9OOA2cI2Qs65bN9UZyZtnJseenmoN0Y7aQzvZ/PNOsma/8B6zOr40Nm8zGEf1FMnJXRlfESj7b3ZfyqjOMy1mWclGOeYtpVzjrHaR2rqvLoKB3Q2Ci6RrfSLGBP6KIjupJmcWerRbdoP2g3RpNa0bDZdtGwQayDDWIdbBDrYYNYX6FraTwHefZ4DvLs8RzkOcDWYgNsLTbA1mIDbC02wNZ7lnxr5Rvw3MhzwHMjzwHPjTzXsI3YGrYRW8NGsTVsFFvDxj1LvlH5NniO8tzgOcpzg+coz01uImIb2CQ2wiaxETaJjbBJbCTfpHwjnpM8RzwneY54buU5wbZiE2wrNsG2YhNsK5bG5sd7NqKVb0poeU4tWp5bOmQumqJhK7EtbCW2hc3lUzRsNbDEQQ8scdBDvsRBD56Jgx48Ewc9eCaO9bncioZ1YqkFr1ogDlosteBVC8RBD/kSx3rVAnHQg2fioAfPxEGLdbBeLLXgVQvEQYulFrxqgTho5UsteNUCcdDyTC141QJxrK/FethaLLXgVQvEQYulFrxqgTho5UsteNUCcdDyTC34fS1wf39fP9xH12b/NJXnpbU8KWMoY1NaTsxN8x+2Ve6W6cKHzfXTepwJnoxYQYaM8gXzReXUUFRhTswPnfBvrU+5A/lR/sdP/d+bm42m5mK3fTlfLHn8TXgMnpxvtjfzNVvnu5vr5Xa/zYvHw8i8M+WXn0E8sP9/F/ns7yL56o8/4Y3kMS8Gj63kaX9Bb7f9M2ve7K7mV4sNy4vL9lfzlOa/mj9+nsm+2j++kwbwkZ1DTzi+k2bypx2f/arTh8x2+dNq83q+Pvlt/vOKpWNmo/c=",
         },
         {
             "url": "https://puzz.link/p?yajilin-regions/11/18/c6c69alhlhg1lhhh4h91gdict8jomt4aemu3001i3tk00uuff1g3vovve81oiu2k1sfvmrto68g2g22g222g222111111111g11g11111h",

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid
 from noqx.rule.helper import tag_encode
 from noqx.rule.loop import intersect_loop
@@ -32,7 +32,8 @@ def loop_intersect_connected(color: str = "black") -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -43,9 +44,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent_loop_intersect())
     solver.add_program_line(loop_intersect_connected(color="pipelink"))
 
-    for r, c, _ in puzzle.line:
+    for r, c, _, d in puzzle.line:
         for d in "lurd":
-            if (r, c, d) in puzzle.line:
+            if Point(r, c, pos=d) in puzzle.line:
                 solver.add_program_line(f'grid_direction({r}, {c}, "{d}").')
             else:
                 solver.add_program_line(f'not grid_direction({r}, {c}, "{d}").')

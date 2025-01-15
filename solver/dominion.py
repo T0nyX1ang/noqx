@@ -2,15 +2,16 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -19,14 +20,15 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(":- grid(R, C), black(R, C), #count{ (R1, C1): adj_4(R, C, R1, C1), black(R1, C1) } != 1.")
     solver.add_program_line(avoid_unknown_src(adj_type=4, color="not black"))
 
-    for (r, c), letter in puzzle.text.items():
+    tag = tag_encode("reachable", "grid", "src", "adj", 4, "not black")
+    for (r, c, d, pos), letter in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f"not black({r}, {c}).")
         if letter != "?":
             solver.add_program_line(grid_src_color_connected((r, c), color="not black"))
 
-    tag = tag_encode("reachable", "grid", "src", "adj", 4, "not black")
-    for (r, c), letter in puzzle.text.items():
-        for (r1, c1), letter1 in puzzle.text.items():
+        for (r1, c1, _, _), letter1 in puzzle.text.items():
             if (r1, c1) == (r, c) or letter == "?" or letter1 == "?":
                 continue
             if letter1 == letter:
@@ -34,10 +36,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             else:
                 solver.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())

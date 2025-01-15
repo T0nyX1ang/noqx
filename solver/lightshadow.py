@@ -1,15 +1,17 @@
 """The Light and Shadow solver."""
 
-from typing import List
+from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -18,25 +20,25 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_unknown_src(color="black"))
     solver.add_program_line(avoid_unknown_src(color="not black"))
 
-    all_src = []
-    for (r, c), clue in puzzle.text.items():
+    all_src: List[Tuple[int, int]] = []
+    for (r, c, d, pos), _ in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         all_src.append((r, c))
-    assert len(all_src) > 0, "No clues found."
 
-    for (r, c), clue in puzzle.text.items():
-        assert isinstance(clue, int) or (isinstance(clue, str) and clue == "?"), "Clue must be an integer or '?'."
+    for (r, c, _, _), num in puzzle.text.items():
         current_excluded = [src for src in all_src if src != (r, c)]
-        color = "black" if puzzle.surface.get((r, c)) == 4 else "not black"
+        color = "black" if puzzle.surface.get(Point(r, c)) == Color.BLACK else "not black"
         solver.add_program_line(f"{color}({r}, {c}).")
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=current_excluded, color=color))
 
-        if clue != "?":
-            solver.add_program_line(count_reachable_src(clue, (r, c), color=color))
+        if isinstance(num, int):
+            solver.add_program_line(count_reachable_src(num, (r, c), color=color))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))

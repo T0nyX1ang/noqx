@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -32,28 +33,30 @@ def simple_shade_path(color: str = "black", adj_type: int = 4) -> str:
     return constraint
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
-
-    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):  # filter top number
-        assert isinstance(num, int), "TOP clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="col", _id=c))
-
-    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):  # filter left number
-        assert isinstance(num, int), "LEFT clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="row", _id=r))
-
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(grid_color_connected(color="gray"))
     solver.add_program_line(exclude_checkboard_shape(color="gray"))
     solver.add_program_line(avoid_rect(2, 2, color="gray"))
     solver.add_program_line(simple_shade_path(color="gray"))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+
+        if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
+            solver.add_program_line(count(num, color="gray", _type="col", _id=c))
+
+        if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
+            solver.add_program_line(count(num, color="gray", _type="row", _id=r))
+
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "circle_L__1":
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(f":- dead_end({r}, {c}).")
@@ -61,10 +64,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"gray({r}, {c}).")
             solver.add_program_line(f":- not dead_end({r}, {c}).")
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
@@ -78,7 +81,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VRRb5swEH7Pr6j87AfbQCC8ZV2zlyzdlkxVhKKIMKpEJSODME2O8t/73UFHO5C2aVqeKuPTd9/Z+ON8XPmtiotUapceJ5BKagzPVzxdf8hTNWOxO2ZpeCXH1XGbFwBS3k4m8j7OynQQ0U6M1eBkR6EdS/sujIQWUhhMLVbSfgxP9n1ol9LOERIyADetFxnAmxbecZzQdU1qBTxrMOASMNkVSZaupzXzIYzsQgo65w3vJij2+fdUNDrIT/L9ZkfEJj7iY8rt7tBEyupL/lA1a/XqLO24ljvvkeu0cgnWcgn1yKWv+He52SHvEzpanc9I+CdIXYcRqf7cwqCF8/AEOwtPwtXY6uGm+E6E68ANWteFa1p3CBfF8eQGcJ2frqdeuD7tpRqoXa0p3L5aDynevswoij/zHTrs6Wyo1ax5Cc2ez5GXKRQjkt5htR6xjF9pFttD00u6dEAndmijTC9t+lc7vUcat3+153VpfP+Es2DYLnCZ0jps37JVbD22U15zw/aO7TVbl+2Q1/hUDn9YMJz2APcKYaaunue38p+0RZ5fN5LOeOWbBhuJeVXcx0mKjjCr9pu0uJrlxT7O4M+38SEVaMLngfghePIv6r725Yv3ZUq++qvufIH/6zdyIuQVf6C9leJQreN1kqOqkDXifa/DX1w9GoQov8YPVOOP",
+            "data": "m=edit&p=7VXPj9o8EL3zV6x89iG2E/LjUtHt0gvNtg2fVihCKKRZgTY0NCFVZcT/vjPjbMNuLPVbVeW0MhnNex7bz2N7aH60WV1w4eJPBdzhAprnO/S5/pg+p2vz7aEsois+aQ+bqgaH89vplN9nZVOMUhwJbTk66jDSE64/RikTjDMJn2BLrr9ER/0p0guuE+hiPABuZoIkuDe9e0f96F0bUjjgx50P7gLcfFvnZbGaGeZzlOo5Z7jOexqNLttVPwvW6UCcV7v1Fol1doDNNJvtvutp2m/VQ9vFiuWJ64mRm1jkql4uukYueha5uIu/l1vuK5vQcHk6QcK/gtRVlKLq/3o36N0kOoKNoyNTIQ59ByrMqTBXAOH1UAEMeugClD0cA4Tb8gQDgOo39JznEIPPl/JxMrwlBgqB8f1aYoz9/ezSwf4zrHDCJzGwH0G7WsCuPJ96nieZhbiXASsEpgAmeUGTeguNkwzpAFcc0NKRVlrao5V1Senaoz1vSMP+p5QFSXYOx821IvuBrEPWIzujmBuyd2SvybpkxxTj44X5n1eK0h7AuYIwae7X+an8I22p55tSM2hvfFeCU5a09X2WF1Az4na3LuqruKp3WQk42WT7gkGZPo3YL0YfvVn3rXJfvHJj8p1X1e8LvK8/yEkhr/AC9S1n+3aVrfIKbhVkDXnfs/MqfA0fI09/HFC7qfLbAl4OvHiaoBKx5nv2gI/pEQ==",
         },
         {"url": "https://puzz.link/p?snake/11/11/00000000000000000000000000000000000000000957664857598o9", "test": False},
         {
