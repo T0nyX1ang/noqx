@@ -49,8 +49,13 @@ def int_or_str(data: Union[int, str]) -> Union[int, str]:
     return int(data) if isinstance(data, int) or data.isdigit() else data
 
 
+def style_convert(style: List[int]) -> int:
+    """Convert a boolean list of style to integer format."""
+    return int("".join(map(str, style)), 2)
+
+
 def category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, Direction]:
-    """Convert the coordination with category to standard d."""
+    """Convert the coordination with category to standard direction."""
     if category == 0:
         return (r, c, Direction.CENTER)
 
@@ -139,8 +144,12 @@ class PenpaPuzzle(Puzzle):
         """Unpack the text element from the board."""
         for index, (style, shape, _) in self.problem["symbol"].items():
             (r, c), category = self.index_to_coord(int(index))
-            symbol_name = f"{shape}__{style}"
-            self.symbol[Point(*category_to_direction(r, c, category))] = symbol_name
+            if isinstance(style, list):
+                symbol_name = f"{shape}__{style_convert(style)}"
+                self.symbol[Point(*category_to_direction(r, c, category), "multiple")] = symbol_name
+            else:
+                symbol_name = f"{shape}__{style}"
+                self.symbol[Point(*category_to_direction(r, c, category))] = symbol_name
 
     def _unpack_edge(self):
         """Unpack the edge/helper_x element from the board."""
