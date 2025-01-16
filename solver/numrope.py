@@ -3,23 +3,24 @@
 from typing import List
 
 from noqx.puzzle import Color, Point, Puzzle
-from noqx.rule.common import defined, display, grid
+from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.solution import solver
 
 
-def numrope_constraint(color: str = "black") -> str:
+def numrope_constraint() -> str:
     """
     Generate a constraint for the number rope.
 
     An adj_loop rule should be defined first.
     """
-    mutual = f"adj_loop(R, C, R1, C1), {color}(R1, C1)"
-    rule = f"adj_count(R, C, N) :- grid(R, C), {color}(R, C), N = #count {{ R1, C1 : {mutual} }}.\n"
+    rule = "adj_count(R, C, N) :- grid(R, C), N = #count { R1, C1 : adj_loop(R, C, R1, C1) }.\n"
     rule += ":- adj_count(R, C, N), N > 2.\n"
     rule += ":- adj_count(R, C, 1), number(R, C, N), number(R1, C1, N1), adj_loop(R, C, R1, C1), |N - N1| != 1.\n"
-    rule += f":- adj_count(R, C, 2), number(R, C, N), N * 2 != #sum {{ N1, R1, C1 : number(R1, C1, N1), {mutual} }}.\n"
+    rule += (
+        ":- adj_count(R, C, 2), number(R, C, N), N * 2 != #sum { N1, R1, C1 : number(R1, C1, N1), adj_loop(R, C, R1, C1) }.\n"
+    )
     return rule.strip()
 
 
@@ -27,13 +28,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
-    solver.add_program_line(defined(item="black"))
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line("{ number(R, C, 1..9) } = 1 :- grid(R, C), not black(R, C).")
+    solver.add_program_line(defined(item="hole"))
+    solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+    solver.add_program_line(fill_num(_range=range(1, 10)))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(avoid_num_adjacent(adj_type=4))
-    solver.add_program_line(numrope_constraint(color="not black"))
+    solver.add_program_line(numrope_constraint())
 
     for (r, c, _, d), draw in puzzle.line.items():
         fail_false(draw, f"Line must be drawn at ({r}, {c}).")
@@ -41,7 +42,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     for (r, c, _, _), color in puzzle.surface.items():
         fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-        solver.add_program_line(f"black({r}, {c}).")
+        solver.add_program_line(f"hole({r}, {c}).")
 
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
@@ -49,9 +50,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
         if Point(r, c) in puzzle.surface:
-            solver.add_program_line(
-                f":- #sum {{ N, R, C: number(R, C, N), adj_4({r}, {c}, R, C), not black(R, C) }} != {num}."
-            )
+            solver.add_program_line(f":- #sum {{ N, R, C: number(R, C, N), |{r} - R| + |{c} - C| = 1 }} != {num}.")
         else:
             solver.add_program_line(f"number({r}, {c}, {num}).")
 
