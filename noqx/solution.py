@@ -13,7 +13,10 @@ from noqx.puzzle import Color, Direction, Point, Puzzle
 
 def clingo_logging_handler(code: MessageCode, message: str) -> None:  # pragma: no cover
     """Handle clingo logging."""
-    logger.error(f"[Clingo] {code.name}: {message.strip()}")
+    if code == MessageCode.RuntimeError:
+        logger.error(f"[Clingo] {code.name}: {message.strip()}")
+    else:
+        logger.warning(f"[Clingo] {code.name}: {message.strip()}")
 
 
 class Config:
