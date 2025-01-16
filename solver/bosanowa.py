@@ -2,10 +2,16 @@
 
 from typing import List
 
-from noqx.puzzle import Color, Point, Puzzle
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
+
+
+def bosanowa_constraint(adj_type: int = 4) -> str:
+    """Generate bosanowa constraints."""
+    return f":- number(R, C, N), N != #sum {{ |N - N1|, R1, C1: number(R1, C1, N1), adj_{adj_type}(R, C, R1, C1) }}."
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
@@ -17,40 +23,12 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(defined(item="hole"))
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(fill_num(_range=range(1, lmt_num + 1)))
+    solver.add_program_line(adjacent(_type=4))
+    solver.add_program_line(bosanowa_constraint())
 
     for (r, c, _, _), color in puzzle.surface.items():
         fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
         solver.add_program_line(f"hole({r}, {c}).")
-
-    # the #sum aggregate function is somewhat problematic, so we need to generate the constraints manually
-    for r in range(puzzle.row):
-        for c in range(puzzle.col):
-            if Point(r, c) not in puzzle.surface:
-                num_list = [f"number({r}, {c}, N)"]
-                sum_list = []
-                label_list = []
-
-                if Point(r + 1, c) not in puzzle.surface and r < puzzle.row - 1:
-                    num_list.append(f"number({r + 1}, {c}, N1)")
-                    sum_list.append("|N - N1|")
-                    label_list.append("N1")
-
-                if Point(r - 1, c) not in puzzle.surface and r > 0:
-                    num_list.append(f"number({r - 1}, {c}, N2)")
-                    sum_list.append("|N - N2|")
-                    label_list.append("N2")
-
-                if Point(r, c + 1) not in puzzle.surface and c < puzzle.col - 1:
-                    num_list.append(f"number({r}, {c + 1}, N3)")
-                    sum_list.append("|N - N3|")
-                    label_list.append("N3")
-
-                if Point(r, c - 1) not in puzzle.surface and c > 0:
-                    num_list.append(f"number({r}, {c - 1}, N4)")
-                    sum_list.append("|N - N4|")
-                    label_list.append("N4")
-
-                solver.add_program_line(f":- {', '.join(num_list)}, N != {' + '.join(sum_list)}.")
 
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
