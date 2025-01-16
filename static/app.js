@@ -20,7 +20,6 @@ function imp(penpa) {
   urlstring = urlstring.replace("fourcells", "nawabari");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("hinge", "aqre");
-  urlstring = urlstring.replace("kramma/c", "yinyang");
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nothing", "moonsun");
   urlstring = urlstring.replace("nothree", "tentaisho");
