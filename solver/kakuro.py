@@ -47,7 +47,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for sum_clue, coord_list in sums:
         solver.add_program_line(area(_id=area_id, src_cells=coord_list))
         solver.add_program_line(fill_num(_range=range(1, 10), _type="area", _id=area_id))
-        solver.add_program_line(f":- #sum {{ N: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
+        solver.add_program_line(f":- #sum {{ N, R, C: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
         area_id += 1
 
     solver.add_program_line(unique_num(_type="area", color="grid"))

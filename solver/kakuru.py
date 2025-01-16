@@ -24,7 +24,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         validate_type(pos, "normal")
         solver.add_program_line(f":- number(_, _, N), {{ grid(R, C): number(R, C, N), adj_8(R, C, {r}, {c}) }} > 1.")
         if isinstance(num, int):
-            solver.add_program_line(f":- #sum {{ N: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {num}.")
+            solver.add_program_line(f":- #sum {{ N, R, C: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {num}.")
 
     for (r, c, _, _), color in puzzle.surface.items():
         fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

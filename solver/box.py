@@ -10,12 +10,12 @@ from noqx.solution import solver
 
 def count_box_col(target: int, c: int, color: str = "black") -> str:
     """Generate a rule to count the number of 'boxes' in each column."""
-    return f":- #sum {{ N: box_col(R, N), {color}(R, {c}) }} != {target}."
+    return f":- #sum {{ N, R: box_col(R, N), {color}(R, {c}) }} != {target}."
 
 
 def count_box_row(target: int, r: int, color: str = "black") -> str:
     """Generate a rule to count the number of 'boxes' in each column."""
-    return f":- #sum {{ N: box_row(C, N), {color}({r}, C) }} != {target}."
+    return f":- #sum {{ N, C: box_row(C, N), {color}({r}, C) }} != {target}."
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:

@@ -29,12 +29,12 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         if r == -1 and 0 <= c < n and isinstance(num, int):
             begin_r = f"Rb = #min {{ R: black(R, {c}) }}"
             end_r = f"Re = #max {{ R: black(R, {c}) }}"
-            solver.add_program_line(f":- {begin_r}, {end_r}, #sum {{ N: number(R, {c}, N), R > Rb, R < Re }} != {num}.")
+            solver.add_program_line(f":- {begin_r}, {end_r}, #sum {{ N, R: number(R, {c}, N), R > Rb, R < Re }} != {num}.")
 
         if c == -1 and 0 <= r < n and isinstance(num, int):
             begin_c = f"Cb = #min {{ C: black({r}, C) }}"
             end_c = f"Ce = #max {{ C: black({r}, C) }}"
-            solver.add_program_line(f":- {begin_c}, {end_c}, #sum {{ N: number({r}, C, N), C > Cb, C < Ce }} != {num}.")
+            solver.add_program_line(f":- {begin_c}, {end_c}, #sum {{ N, C: number({r}, C, N), C > Cb, C < Ce }} != {num}.")
 
         if 0 <= c < n and 0 <= r < n:
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
