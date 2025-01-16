@@ -26,11 +26,11 @@ def kropki_constraint() -> str:
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
-    n = puzzle.row
-
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
     solver.add_program_line(defined(item="white_h"))
     solver.add_program_line(defined(item="white_v"))
     solver.add_program_line(defined(item="black_h"))

@@ -11,8 +11,6 @@ from noqx.solution import solver
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
-    mine_count = puzzle.param["mine_count"]
-
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -26,6 +24,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f"not sun_moon__4({r}, {c}).")
         solver.add_program_line(count_adjacent(int(num), (r, c), color="sun_moon__4", adj_type=8))
 
+    mine_count = puzzle.param["mine_count"]
     if mine_count:
         fail_false(isinstance(mine_count, str) and mine_count.isdigit(), "Please provide a valid mine count.")
         solver.add_program_line(count(int(mine_count), color="sun_moon__4", _type="grid"))
