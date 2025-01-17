@@ -149,7 +149,9 @@ class PenpaPuzzle(Puzzle):
                 self.symbol[Point(*category_to_direction(r, c, category), "multiple")] = symbol_name
             else:
                 symbol_name = f"{shape}__{style}"
-                self.symbol[Point(*category_to_direction(r, c, category))] = symbol_name
+                # special case for nondango (which problem/solution symbols are on the same coordinates)
+                pos = "nondango_mark" if self.puzzle_name == "nondango" and symbol_name == "circle_M__4" else "normal"
+                self.symbol[Point(*category_to_direction(r, c, category), pos)] = symbol_name
 
     def _unpack_edge(self):
         """Unpack the edge/helper_x element from the board."""
@@ -262,7 +264,9 @@ class PenpaPuzzle(Puzzle):
             shape, style = symbol_name.split("__")
             coord = (point.r, point.c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of symbols are all in the center
-            if not self.problem["symbol"].get(f"{index}"):  # avoid overwriting the original stuff
+            if self.puzzle_name == "nondango":
+                self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
+            elif not self.problem["symbol"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
 
     def _pack_edge(self):
