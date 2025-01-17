@@ -2,10 +2,10 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.neighbor import adjacent, area_adjacent, avoid_area_adjacent
+from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import area_color_connected
 from noqx.solution import solver
 
@@ -21,33 +21,43 @@ def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str
     return f":- area_adj_{adj_type}(A, A1), A < A1, {size_count}, {size1_count}, N = N1."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent())
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not gray({r}, {c}).")
+    solver.add_program_line(area_color_connected(color="gray"))
+    solver.add_program_line(area_adjacent())
+    solver.add_program_line(adjacent_area_different_size(color="gray"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
+        flag = True
         if rc:
-            data = puzzle.text[rc]
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count(data, color="gray", _type="area", _id=i))
-        else:
-            solver.add_program_line(count(("ge", 1), color="gray", _type="area", _id=i))
+            num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
+            if isinstance(num, int):
+                flag = False
+                solver.add_program_line(count(num, color="gray", _type="area", _id=i))
 
-    solver.add_program_line(area_color_connected(color="gray"))
-    solver.add_program_line(avoid_area_adjacent(color="gray"))
-    solver.add_program_line(area_adjacent())
-    solver.add_program_line(adjacent_area_different_size(color="gray"))
+        if flag:
+            solver.add_program_line(count(("gt", 0), color="gray", _type="area", _id=i))
+
+    for (r, c, d, _), draw in puzzle.edge.items():
+        if d == Direction.TOP and r > 0 and draw:
+            solver.add_program_line(f":- gray({r}, {c}), gray({r - 1}, {c}).")
+
+        if d == Direction.LEFT and c > 0 and draw:
+            solver.add_program_line(f":- gray({r}, {c}), gray({r}, {c - 1}).")
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"gray({r}, {c}).")
+        else:
+            solver.add_program_line(f"not gray({r}, {c}).")
+
     solver.add_program_line(display(item="gray"))
     solver.solve()
 
@@ -60,8 +70,9 @@ __metadata__ = {
     "aliases": ["islands"],
     "examples": [
         {
-            "data": "m=edit&p=7VVbT9tMEH3Pr0D71Er74L359kZp6AsN/Ro+IWRFkQkGoiaEJriqHOW/c2Z3FhcViVZVqSpVSdbHk9mZ4zkz683ntl43UiX0NbnEFR+rcv/Teep/CX9O5neLptyT++3d9WoNIOXx4aG8rBebZlCx12Sw7Yqy25fdu7ISSkih8VNiIrv/ym33vuyGshvjLyFz2I6CkwYc9vDU/0/oIBhVAjxiDHgGOJuvZ4tmehQsH8qqO5GC8rzxuwmK5epLI5gH3c9Wy/M5Gc7rOzzM5np+y/9s2ovVp5Z91WQnu/1Ad/wEXdPTJRjoEnqCLj3Fb6ZbTHY7lP0jCE/Lirj/38O8h+Nyi3VUboVJsFVDa6+MMObRrdLF43ub4Z5ag+4RQvlAZ3499Kv26wnyyM749a1fE786vx55nyHSa2Wk1giq0R7KAueM0XHEzeMMWDFGNxodsIbdsl3DbtluEmDLWAE7xho4ZYxclnNZYBexA8ZDewwOKXOwiJ9yfAf/lP0dfDL2cfDJ2CdFroxzpTRBbM/ALWduGXxy9skQp+A4OewF23PkKjgXJtAk0acAhliEC9gV24scOOSCL3DIBV/gUGf4SqPZrhRwqA/2AYe82Acc8mKfNFx/7ANmu3bAoVbYJ40NHLAPmDngLDEuYnB2gTN8gZmDBTfHPUAaURN6jN4wUUfUwUQdC2gXdSGtuQcsac11tqQ1x0H8h35wwJzX6+g4piPdueakaeTj0GOxN0jf2BsOHGJvpOCQMocUHGKfpNgb+8SfoBwzhz2PduoNjglNH3qgQMyCa56gbqyv106xnbSLWlPNaVg9hj/PDq69dpgFw7ODK/A3WnANce21Qw2hTa8R1xBXYO4ZzIvhmcIVmJ4Rw33qR/zAr9avqR/9jA6gHzyi/OGU04OGmDivfv3IeZZbhZLRCff44/4+22RQiXG7vqxnDd4Vw4urZm+0Wi/rBe5G7fK8Wcd7vKp3A/FV+F9l6M3/7+39h97eJEHyU+/wF5iJZ+hUqC6mpjuW4rad1tPZCj2G2nm7+s7+4uwx1AJFX9ZX7c1879V8s6hvLjavxWRwDw==",
+            "data": "m=edit&p=7VZda9tKEH33rwj71MI+aL/09VLS1OlL6tzWuYQgjFEcJTG149SOSpHxf8+Z3dnohhtIS2lKodjaPRrPzh7NmVl586Wt141UCX1NLjHjY1XuL52n/kr4czK/WzTlntxv765XawApjw8P5WW92DSDir0mg21XlN2+7N6XlVBCCo1LiYnsPpbb7kPZDWU3xk9C5rAdBScNOOzhqf+d0EEwqgR4xBjwDHA2X88WzfQoWP4pq+5ECtrnrV9NUCxXXxvBPOh+tlqez8lwXt/hYTbX81v+ZdNerD637KsmO9ntB7rjJ+iani7BQJfQE3TpKX4x3WKy2yHtn0B4WlbE/d8e5j0cl1uMo3IrTIKlGlp7ZYQxj28zCvwGTNmgdPHIQVnyoFqhe8RUPvKZHw/9qP14go1lZ/z4zo+JH50fj7zPEHy0MlJrBNWoF2WBc8YoQSLrcQasGKM8jQ5Yw27ZrmG3bDcJsGWsgB1jDZwyxl6W97LALmIHjIf2GBxS5mARP+X4Dv4p+zv4ZOzj4JOxT4q9Mt4rpZZiewZuOXPL4JOzT4Y4BcfJYS/YnmOvgvdCS5ok+hTAUI9wAbtie5EDh73gCxz2gi9wyDN8pdFsVwo45AfrgMO+WAcc9sU6aTj/WAfMdu2AQ66wThobOGAdMHPA4WJcxODsAmf4AjMHC26Oa4A0oqr0GLVhoo7Ig4k6FtAu6kJacw1Y0przbElrjoP4D/XggHlfr6PjmI5055yTppGPQ43F2iB9Y204cIi1kYJDyhxScIh1kmJtrBN/pHLMHPY82qk2OCY0faiBAjELznmCvLG+XjvFdtIuak05p2b1GP7cO5h77dALhnsHM/B/tOAcYu61Qw6hTa8R5xAzMNcM+sVwT2EGpmdEc5/6Fj/wo/Vj6ls/oxPpO88sf1rl9KAhJg6wnz9ynuVWIWV0wj3+uD/PNhlUYtyuL+tZg5fH8OKq2Rut1st6gbtRuzxv1vEe7+7dQHwT/qoM/RX4+zr/Ta9zkiD5oZf6C/TEM3QqZBdd0x1LcdtO6+lshRpD7rxd/c/+4uzR1AJJX9ZX7c1879V8s6hvLjavxWRwDw==",
         },
+        {"url": "https://puzz.link/p?shimaguni/10/10/tbqnmfcip5kb8m1e2o003v00vesf00v3v6sfzh3", "test": False},
         {
             "url": "https://puzz.link/p?shimaguni/15/12/55a19a6l11nhcnqlddnqkr5cmajmaoeahc3gqv3nftavvke414681sk3e7cekml25fok2o43g1s",
             "test": False,

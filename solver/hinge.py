@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
-from noqx.rule.helper import Direction, full_bfs
+from noqx.rule.helper import full_bfs
 from noqx.rule.neighbor import adjacent
 from noqx.solution import solver
 
@@ -23,7 +23,8 @@ def symmetry_hinge(color: str = "black") -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -35,9 +36,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for r in range(1, puzzle.row):
         c = 0
         while c < puzzle.col:
-            if (r, c, Direction.TOP) in puzzle.edge:
+            if Point(r, c, Direction.TOP) in puzzle.edge:
                 c0 = c
-                while c < puzzle.col and (r, c, Direction.TOP) in puzzle.edge:
+                while c < puzzle.col and Point(r, c, Direction.TOP) in puzzle.edge:
                     solver.add_program_line(f"edge_top({r}, {c}).")
                     solver.add_program_line(f'symmetry_axis({r}, {c}, {r}, {c0}, "H").')
                     c += 1
@@ -47,9 +48,9 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for c in range(1, puzzle.col):
         r = 0
         while r < puzzle.row:
-            if (r, c, Direction.LEFT) in puzzle.edge:
+            if Point(r, c, Direction.LEFT) in puzzle.edge:
                 r0 = r
-                while r < puzzle.row and (r, c, Direction.LEFT) in puzzle.edge:
+                while r < puzzle.row and Point(r, c, Direction.LEFT) in puzzle.edge:
                     solver.add_program_line(f"edge_left({r}, {c}).")
                     solver.add_program_line(f'symmetry_axis({r}, {c}, {r0}, {c}, "V").')
                     r += 1
@@ -59,18 +60,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
-            data = puzzle.text[rc]
+            num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
+            if isinstance(num, int):
+                solver.add_program_line(count(num, color="gray", _type="area", _id=i))
 
-            if data == "?":
-                continue
-
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count(data, color="gray", _type="area", _id=i))
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))

@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
+from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -38,7 +39,8 @@ def exclude_border_color_changes(rows: int, cols: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -47,6 +49,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_rect(2, 2, color="circle_M__1"))
     solver.add_program_line(avoid_rect(2, 2, color="circle_M__2"))
+    solver.add_program_line(grid_color_connected(color="circle_M__1", grid_size=(puzzle.row, puzzle.col)))
+    solver.add_program_line(grid_color_connected(color="circle_M__2", grid_size=(puzzle.row, puzzle.col)))
 
     # exclude checkerboard shape
     solver.add_program_line(exclude_checkboard_shape())
@@ -54,15 +58,12 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     # exclude border color changes more than twice
     solver.add_program_line(exclude_border_color_changes(puzzle.row, puzzle.col))
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "circle_M__1":
             solver.add_program_line(f"circle_M__1({r}, {c}).")
         else:
             solver.add_program_line(f"not circle_M__1({r}, {c}).")
-
-    solver.add_program_line(grid_color_connected(color="circle_M__1", grid_size=(puzzle.row, puzzle.col)))
-    solver.add_program_line(grid_color_connected(color="circle_M__2", grid_size=(puzzle.row, puzzle.col)))
 
     solver.add_program_line(display(item="circle_M__1"))
     solver.add_program_line(display(item="circle_M__2"))

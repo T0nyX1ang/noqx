@@ -2,50 +2,52 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
 def count_box_col(target: int, c: int, color: str = "black") -> str:
     """Generate a rule to count the number of 'boxes' in each column."""
-    return f":- #sum {{ N: box_col(R, N), {color}(R, {c}) }} != {target}."
+    return f":- #sum {{ N, R: box_col(R, N), {color}(R, {c}) }} != {target}."
 
 
 def count_box_row(target: int, r: int, color: str = "black") -> str:
     """Generate a rule to count the number of 'boxes' in each column."""
-    return f":- #sum {{ N: box_row(C, N), {color}({r}, C) }} != {target}."
+    return f":- #sum {{ N, C: box_row(C, N), {color}({r}, C) }} != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
 
-    for c in range(puzzle.col):
-        target = puzzle.text.get((puzzle.row, c))
-        assert isinstance(target, int), "BOTTOM clue must be an integer."
-        solver.add_program_line(f"box_row({c}, {target}).")
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
+        num = int(num)
 
-    for (r, c), num in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.text.items()):
-        assert isinstance(num, int), "LEFT clue must be an integer."
-        solver.add_program_line(count_box_row(num, r, color="black"))
+        if r == -1 and 0 <= c < puzzle.col:
+            solver.add_program_line(count_box_col(num, c, color="black"))
 
-    for r in range(puzzle.row):
-        target = puzzle.text.get((r, puzzle.col))
-        assert isinstance(target, int), "RIGHT clue must be an integer."
-        solver.add_program_line(f"box_col({r}, {target}).")
+        if r == puzzle.row and 0 <= c < puzzle.col:
+            solver.add_program_line(f"box_row({c}, {num}).")
 
-    for (r, c), num in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.text.items()):
-        assert isinstance(num, int), "TOP clue must be an integer."
-        solver.add_program_line(count_box_col(num, c, color="black"))
+        if c == -1 and 0 <= r < puzzle.row:
+            solver.add_program_line(count_box_row(num, r, color="black"))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f":- not black({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f":- black({r}, {c}).")
+        if c == puzzle.col and 0 <= r < puzzle.row:
+            solver.add_program_line(f"box_col({r}, {num}).")
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"black({r}, {c}).")
+        else:
+            solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())
     solver.solve()

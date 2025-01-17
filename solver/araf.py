@@ -2,9 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 from noqx.solution import solver
@@ -30,38 +30,40 @@ def araf_region_count(src_cell: Tuple[int, int]) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
 
-    assert len(puzzle.text), "No clues found."
+    fail_false(len(puzzle.text) > 0, "No clues found.")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type="edge"))
     solver.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."  # ignore clues with ?
+    for (r, c, d, tp), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(tp, "normal")
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
         exclude = []
-        for (r1, c1), num1 in puzzle.text.items():
-            assert isinstance(num1, int), "Clue must be an integer."  # ignore clues with ?
-            if abs(r - r1) + abs(c - c1) >= max(num, num1):
+        for (r1, c1, d1, tp1), num1 in puzzle.text.items():
+            validate_direction(r1, c1, d1)
+            validate_type(tp1, "normal")
+            fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
+            if abs(r - r1) + abs(c - c1) >= max(int(num), int(num1)):
                 exclude.append((r1, c1))
 
-            if (r, c) != (r1, c1) and abs(num - num1) <= 1:
+            if (r, c) != (r1, c1) and abs(int(num) - int(num1)) <= 1:
                 exclude.append((r1, c1))
 
-        solver.add_program_line(f"clue({r}, {c}, {num}).")
+        solver.add_program_line(f"clue({r}, {c}, {int(num)}).")
         solver.add_program_line(grid_src_color_connected((r, c), exclude_cells=exclude, color=None, adj_type="edge"))
         solver.add_program_line(araf_region_clue_count((r, c)))
         solver.add_program_line(araf_region_count((r, c)))
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))

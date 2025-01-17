@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid, invert_c
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_num_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
@@ -25,7 +25,8 @@ def bulb_num_color_connected(color: str = "white", adj_type: int = 4) -> str:
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -36,16 +37,18 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_num_adjacent())
     solver.add_program_line(bulb_num_color_connected(color="white"))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue should be integer."
-        solver.add_program_line(f"number({r}, {c}, {num}).")
-
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d == Direction.CENTER, "The symbol should be placed in the center."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
         if symbol_name == "ox_E__1":
             solver.add_program_line(f"not white({r}, {c}).")
         if symbol_name in ("ox_E__4", "ox_E__7"):
             solver.add_program_line(f"white({r}, {c}).")
+
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
+        solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

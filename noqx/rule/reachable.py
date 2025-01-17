@@ -3,7 +3,7 @@
 from math import log2
 from typing import List, Optional, Tuple, Union
 
-from .helper import tag_encode, target_encode, validate_type
+from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 
 def grid_color_connected(
@@ -117,12 +117,12 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     r, c = src_cell
     initial = f"{tag}({r}, {c}, {r}, {c})."
 
+    bulb_constraint = ""
     if adj_type == 4:
         bulb_constraint = f"{color}(R, C), adj_{adj_type}(R, C, R1, C1), (R - {r}) * (C - {c}) == 0"
-    elif adj_type == "edge":
+
+    if adj_type == "edge":
         bulb_constraint = f"adj_{adj_type}(R, C, R1, C1), (R - {r}) * (C - {c}) == 0"
-    else:
-        raise AssertionError("Invalid adjacent type, must be one of '4', 'edge'.")
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {bulb_constraint}."
     return initial + "\n" + propagation
@@ -147,7 +147,7 @@ def count_reachable_src(
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
-        raise AssertionError("Invalid main type, must be one of 'grid', 'bulb'.")
+        raise ValueError("Invalid main type, must be one of 'grid', 'bulb'.")
 
     src_r, src_c = src_cell
 

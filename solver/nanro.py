@@ -2,9 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, fill_num, grid
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -23,36 +23,43 @@ def nanro_avoid_adjacent() -> str:
     return f"{area_adj}, number(R, C, N), number(R1, C1, N)."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent())
     solver.add_program_line(grid_color_connected(color="not gray"))
     solver.add_program_line(avoid_rect(2, 2, color="not gray"))
+    solver.add_program_line(nanro_fill_constraint(color="not gray"))
+    solver.add_program_line(nanro_avoid_adjacent())
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.sudoku)
-    for i, (ar, rc) in enumerate(areas.items()):
+    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+    for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
         solver.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i, color="gray"))
 
-        if rc:
-            data = puzzle.sudoku[rc].get(0)
-            assert isinstance(data, int), "Signpost clue should be integer."
-            solver.add_program_line(count(data, color="not gray", _type="area", _id=i))
-        else:
+        unclued = True
+        for r, c in ar:
+            if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
+                unclued = False
+                num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
+                solver.add_program_line(count(int(num), color="not gray", _type="area", _id=i))
+
+            if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
+                unclued = False
+                num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
+                fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
+                solver.add_program_line(f"number({r}, {c}, {num}).")
+
+        if unclued:
             solver.add_program_line(count(("gt", 0), color="not gray", _type="area", _id=i))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"gray({r}, {c}).")
+    for (r, c, _, _), color in puzzle.surface.items():
+        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+        solver.add_program_line(f"gray({r}, {c}).")
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue should be integer."
-        solver.add_program_line(f"number({r}, {c}, {num}).")
-
-    solver.add_program_line(nanro_fill_constraint(color="not gray"))
-    solver.add_program_line(nanro_avoid_adjacent())
     solver.add_program_line(display(item="gray", size=2))
     solver.add_program_line(display(item="number", size=3))
     solver.solve()

@@ -2,9 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import target_encode
+from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
 from noqx.rule.loop import separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
@@ -56,7 +56,8 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     return f":- { vertex_count }, { edge_count }, C1 - C2 {rop} {num}."
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
@@ -74,26 +75,25 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     if puzzle.param["swslither"]:
         solver.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
 
-    for (r, c), clue in puzzle.text.items():
+    for (r, c, d, pos), clue in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         if puzzle.param["swslither"] and clue == "W":
             solver.add_program_line(f"wolf({r}, {c}).")
         elif puzzle.param["swslither"] and clue == "S":
             solver.add_program_line(f"sheep({r}, {c}).")
         else:
-            assert isinstance(clue, int), "Clue should be an integer or wolf/sheep with varient enabled."
+            fail_false(isinstance(clue, int), "Clue should be an integer or wolf/sheep with varient enabled.")
 
             if puzzle.param["vslither"]:
-                solver.add_program_line(count_adjacent_vertices(clue, (r, c)))
+                solver.add_program_line(count_adjacent_vertices(int(clue), (r, c)))
             elif puzzle.param["tslither"]:
-                solver.add_program_line(count_adjacent_segments(clue, (r, c)))
+                solver.add_program_line(count_adjacent_segments(int(clue), (r, c)))
             else:
-                solver.add_program_line(count_adjacent_edges(clue, (r, c)))
+                solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
-
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))

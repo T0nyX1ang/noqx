@@ -2,27 +2,31 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(adjacent(_type=8, include_self=True))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
-        solver.add_program_line(count_adjacent(num, (r, c), color="gray", adj_type=8))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        if isinstance(num, int):
+            solver.add_program_line(count_adjacent(num, (r, c), color="gray", adj_type=8))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
@@ -37,7 +41,7 @@ __metadata__ = {
     "aliases": ["fillapix", "mosiak"],
     "examples": [
         {
-            "data": "m=edit&p=7VdNbxoxEL3zKyKffdix9/uWpkkvKWlLqihaIUToRkEFkUKoqkX894yfaXfWm0rtoUkPEexoeJ7xvBnP2mbzbTtd15oS97W5jjTxJ41yPJTzb35+fi7nD4u6PNLH24e71ZoVrS/OzvTtdLGpB9XBajzYNUXZHOvmXVkpUloZfkiNdfOx3DXvy2aomxEPKZ0zdu6NDKunrXqFcaedeJAi1ocHndVrVmfz9WxRT8498qGsmkutXJw38HaqWq6+1+rAw/2erZY3cwfcTB84mc3d/P4wstl+WX3dHmxpvNfNsac7eoKubek61dN12hN0XRb/mG4x3u+57J+Y8KSsHPfPrZq36qjcsRyWOxVHzpVXhvzaqNg4wAogDoE0BHIHxAIoHJC0QIIoEqDAJUGUqAXSkEcKC+GSgocAMvBwVT8AeZhcjrDSAlGkhQ2BMP08CS3AQwJZABTgIZgW4CEmLVAxAVAUmlAEah0EVETRiMJIZMI6kgE9sRhkULhMIBYzSxvbs/Gtk0oEtRKJU4LayHmS3jxJ2C2Uhu1Caa8afvU7NshL5p6GDUEZaii9Mswj+fg2kojvAYkUfQTRc4lgnqJFjF/TDoJ5OggqL6pqCF6CsyFkIaIbgpeIbgh8Ojaos4xlMI/0MmFexoYdZSxsJEPfGx0EsSQS9zj7bpF5+V1BevltoWPTq0+KWDKLDJxlLL/uHSTscJOF74XxndCZuRfL7yCyPnnPK4eXjF4guvTq9Y/xe4LgY33/iPfL+vddvBeWwOeXF2/zhM3+GvIM0kBe8lmgGwv5FjKCTCDPYXMKeQV5AhlDprDJ3Gnyh+cNTpqczwbOwfjD5xm4VbG/yfzuw/ed19H/e3Q8qNRou76dzmq+8gy3y5t6fTRcrZfTheI75n6gfig8lWXz+PXa+ULXTrcE0V9dPl9+b6q4urxDNBda3W8n08lstVD8z0UDpx7+7Ox5AxsPHgE=",
+            "data": "m=edit&p=7VdPbxo/EL3zKSKffdix9/+lStOkl5T0V1JF0QohQjcKKogUQlUt4rtn/Ex/O+tNpfbQpIcIdjQ8z3jejGdts/m2na5rTYn72lxHmviTRjkeyvk3Pz8/l/OHRV0e6ePtw91qzYrWF2dn+na62NSD6mA1HuyaomyOdfO+rBQprQw/pMa6+a/cNR/KZqibEQ8pnTN27o0Mq6eteoVxp514kCLWhwed1WtWZ/P1bFFPzj3ysayaS61cnLfwdqparr7X6sDD/Z6tljdzB9xMHziZzd38/jCy2X5Zfd0ebGm8182xpzt6gq5t6TrV03XaE3RdFn+ZbjHe77nsn5jwpKwc98+tmrfqqNyxHJY7FUfOlVeG/Nqo2DjACiAOgTQEcgfEAigckLRAgigSoMAlQZSoBVK4vBFASCyFi5gjBTEBZCDmluEA5GG2OXhIC0SRFjYEwnrkSWgBHhLIAqAAD8G0AA8xaYESCoCi0IQiUOsgoCKqSBRGIhPWkQzoidUhg8JlArGYWdrYno3vpVQiqJVInBLURs6T9OZJwvYh3wwdpFcNv/odG+Qlc0/DhqAMNZReGeaRfHwbScT3gESKPoLouUQwT9Eixq9pB8E8HQSVF1U1BC/B2RCyENENwUtENwQ+HRvUWcYymEd6mTAvY8OOMhY2kqHvjQ6CWBKJe5x9t8i8/DYhvfw+0bHp1SdFLJlFBs4yll/3DhJ2uMnC98L4TujM3IvldxBZn7znlcNLRi8QXXr1+sf4PUHwsb5/xPtl/fsu3gtL4PO/F+/7hN3/GvIM0kBe8uGgGwv5DjKCTCDPYXMKeQV5AhlDprDJ3PHymwcQjp6cDwvOwfjT6Bm4VbG/2vzqwxeg19F/e3Q8qNRou76dzmq+Aw23y5t6fTRcrZfTheJL536gfig8lWXz+PUe+kL3ULcE0R/dRl9+b6q4urxDNBda3W8n08lstVD8V0YDpx7+7Ox5AxsPHgE=",
         },
     ],
 }

@@ -2,28 +2,15 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
-from noqx.rule.helper import full_bfs
-from noqx.rule.shape import area_same_color
+from noqx.rule.helper import full_bfs, validate_direction, validate_type
+from noqx.rule.neighbor import area_same_color
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
-    top_clues = {}
-    for c in range(puzzle.col):
-        data = puzzle.sudoku.get((-1, c))
-        data = data.get(2) if data else 0
-        assert isinstance(data, int), "Clue must be an integer."
-        top_clues[c] = (data,)
-
-    left_clues = {}
-    for r in range(puzzle.row):
-        data = puzzle.sudoku.get((r, -1))
-        data = data.get(1) if data else 0
-        assert isinstance(data, int), "Clue must be an integer."
-        left_clues[r] = (data,)
-
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -34,20 +21,21 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, _) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
 
-    for (r, c), clue in filter(lambda x: x[0][0] == -1 and x[0][1] >= 0, puzzle.sudoku.items()):  # filter top number
-        num = clue.get(2)
-        assert isinstance(num, int), "TOP clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="col", _id=c))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
 
-    for (r, c), clue in filter(lambda x: x[0][1] == -1 and x[0][0] >= 0, puzzle.sudoku.items()):  # filter left number
-        num = clue.get(1)
-        assert isinstance(num, int), "LEFT clue must be an integer."
-        solver.add_program_line(count(num, color="gray", _type="row", _id=r))
+        if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
+            validate_type(pos, "sudoku_2")
+            solver.add_program_line(count(num, color="gray", _type="col", _id=c))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+        if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
+            validate_type(pos, "sudoku_1")
+            solver.add_program_line(count(num, color="gray", _type="row", _id=r))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
@@ -61,7 +49,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=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",
+            "data": "m=edit&p=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",
         }
     ],
 }

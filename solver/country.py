@@ -2,16 +2,26 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
-from noqx.rule.neighbor import adjacent, avoid_area_adjacent
+from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
+    """
+    Generates a constraint to avoid same {color} cells on the both sides of an area.
+
+    An adjacent rule and an area fact should be defined first.
+    """
+    return f":- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1, {color}(R, C), {color}(R1, C1)."
+
+
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -22,17 +32,28 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(grid_color_connected(color="country_road", adj_type="loop"))
     solver.add_program_line(single_loop(color="country_road"))
+    solver.add_program_line(avoid_area_adjacent(color="not country_road", adj_type=4))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count_area_pass(1, ar))
+        solver.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
+        solver.add_program_line(count_area_pass(1, _id=i))
         if rc:
-            data = puzzle.text[rc]
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count(data, color="country_road", _type="area", _id=i))
+            num = puzzle.text[Point(*rc, Direction.CENTER, "normal")]
+            if isinstance(num, int):
+                solver.add_program_line(count(num, color="country_road", _type="area", _id=i))
 
-    solver.add_program_line(avoid_area_adjacent(color="not country_road", adj_type=4))
+    for (r, c, d, _), draw in puzzle.edge.items():
+        if d == Direction.TOP and r > 0 and draw:
+            solver.add_program_line(f":- not country_road({r}, {c}), not country_road({r - 1}, {c}).")
+
+        if d == Direction.LEFT and c > 0 and draw:
+            solver.add_program_line(f":- not country_road({r}, {c}), not country_road({r}, {c - 1}).")
+
+    for (r, c, _, d), draw in puzzle.line.items():
+        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
     solver.add_program_line(display(item="grid_direction", size=3))
     solver.solve()
 
@@ -45,8 +66,9 @@ __metadata__ = {
     "aliases": ["countryroad"],
     "examples": [
         {
-            "data": "m=edit&p=7ZZPbxs3FMTv/hTGnnnYXfKRXN3cxO7Fdf/ERRAIQuA/amPUjlrZKlIZ/u75PfJRClADRREUzSEQRA2pWb5Zcma5939sLtZLN4xuiM5n17uBT5iCiyG6kMB8e/uc3zzcLmeH7mjz8G61Bjj3/cmJ++Xi9n55MDfW4uBxO822R2777WzeDZ3rRr5Dt3DbH2eP2+9m22O3fcVfnRsYO62kEXi8h6/L/4pe1MGhB58ZBr4BXt2sr26Xb0/ryA+z+fbcdVrnm3K1wu5u9eeyMx3av1rdXd7owOXFAzdz/+7md/vnfnO9+m1j3GHx5LZHVe7pM3L9Xq7CKlfRM3L1Lj5b7u3N++Xqw3NSp8XTE0v+E2Lfzuaq++c9zHv4avZIezZ77GLi0hTY6LIt3ThGBvwn/Ym+7Pve01djtL7Qj9Zn0qFM/aa0J6UdS3tOZbf1pX1Z2r60UtrTwjlGkMd5XkI3G13nwwBGYcEjOBv2YIQVHJyPveEERqBiEefTYBhDp9EwnNQ41EpWSyYwN6M49mAWomA0JNMQ0ZBMQ6RutroJfjZ+gpONk6g1Wa0MZzJOJk+96ZnIVW/zTyPYrp3gDJUDF1zHGXNhbHhyQTdA8ZhcCLVW8MEFqdoC6xNsfRgDVw2MkeeGqZWtVhIyX9eN/8E2nj24rnnIk5Pe6k492OZBv5j+MGUnQ11b6eEMlSN9cDJWPcwBrrW4Dmz8gXFv49yj2D1yHdjmGT246oHrJNQ1FI+GUDWIhxMah7q2JswHtvl9BNd7FJ/AdQ0FH4r5UAJ1xeryLJRofPwm5jdqgo0v6NFkFYyeaHoEPdH0CHqS6cGrYl6lDtjmj/CT8fGbmN8kws/GZ+/E9o6aYNMT0ZNNT2QNs60hXhXzKnXApg1/ivlTcnKxbxnB52K50By1PGpGouVLc9Fyh2aysc9FyyBnxy6DCU7LHX7bZU3z0vKVyWa2jOM3P1nW8BuZ2eWl5YsM7bJDVsiLeVVz0fKiuWh54RlCNvYZCTau/m+5yGTN1lM9j9d3nt9lRDPbNEzUmpr/NSPN5+yd5YWsgM0baG55IStkxDjq/5YXDmMZjD/At+cAv2DzxojfRvPAyJ6O5gHNSMvUqDlq/tccNf/D14d6y0jLmmakZU0z4lu+qLvLHXMGmzOAW77Uw+aT4lV75gj7K7a//O69rd5rfmbNdx7mmbPzcFb/m7as/m9eVf9bLXxb/cxh8rocKS9KG0oby1GT9Aj8V4fk559q/yhnzsrrofr3jx69X8f/8/HFwbw75b3q8Gy1vru45eXq+PrXT3pnm7vL5br1ea99Oug+dOVb3pbC11fd/+FVV5e//9Ky/KXJ4enCgm7eP6z/OlyvLq67xcFH",
+            "data": "m=edit&p=7ZZPbxs3EMXv/hTGnnnYXf5dXQo3tXtxnbZxEQSCYMi22gi1o1S2inQNf/f8hhxKQWMjNYIml0AQ9UiOdh7J94Z789dmvl6YrjddMDaZ1nR83OBMcMG4CObb6ud0eXu1mOybg83t69UaYMzzoyPz+/zqZrE31ajZ3t04TMYDM/44mTZdY5qeb9fMzPjL5G78aTIemvEFU43pGDsuQT3wcAdf5nlBz8pg14JPFANfAS+W64urxdlxGfl5Mh1PTSN5vs//Fthcr/5eNMpD+her6/OlDJzPb1nMzevlW5252Vyu/txobDe7N+NBoXv8AF27oyuw0BX0AF1ZxWfTvVq+WazePUR1mN3fs+W/QvZsMhXev+1g2sEXkzvak8ld45389Tt4lHNpfPjXQIgMRLft971E2A/6A32/61tLX6RT+55+0D5pu5z8VW6Pctvn9hRuZrS5/SG3bW59bo9zzCGULdq0wrs3jXUdGIYZ9+Ck2IIhlrEzNrSKIxiCgr03NnaKkXzsFRMTawy5oubyA5jFCA4tmI3IGA5ROQQ4ROUQyJs0byQ+aXwkJmlMJNeguRIxg8YkHNcqnwHntfr8oQfrfwdiuhJDLLiMM2ZcX/FgnByA4D4a50ouZ51xvnBz7I/T/WEMXDgwhuMrJlfSXNFTFcq+MQ/W8WTBZc9dGoxvNe/QgvU58PfK3w3J+K7srW+J6UqMb53xfeHDM8AlF/8Da3zHuNVx1uh1jfwPrM/pLbjwIdZ4V/bQWzi4wsFbYlyNIa/uCc8D6/NtAJc1ehvBZQ89OvSqQ+/IK9bJmPig8ejNq97ICdZ4Dx9xVsbwCcrHwycoHw+fqHzQqletkgeszw/ER41Hb1715gPxSeM5O69nR06w8gnwSconsIdJ9xCtetUqecDKDX161adP0YS2egSde/WF+Kj6UTwS1F/ii+o7OOONnS+qB7ldth6MxFTfobet18Qv1V8Jbyb1OHqzg3oNveGZrV+qv/DQ1jt4Bb+oVsUX1S/ii+oXagje2HnE6bjov/oi4TXdT9E8Wt9qfusR8WzlMJBrqPoXj1Sdc3bqF7wCVm3AufoFr+ARjRH9V79wXftO4zvitQ7wC1Zt9OitVw30nGmvGhCPVE/14qOqf/FR1T/xUtSrR6rXxCPVa+IRW/1F3q3veKbTZzpw9ZdoWHWStao1x3O+Xs+X3522RXtVz+z5VsPUnK2Gk+hfuSXRf9Wq6F9zoduiZy6Tl/lKeZZbl9uQr5ool+STrtHPudWaKPtPLWy6VqqzIFwqC7QZSWkQlIwsFMQ6ZZmCrJGCC0JLnWjJlkvyk6ubcpByR3/8kZv82/j/Pj7bmzbHvMjtn6zW1/Mr3uYOL//4oHeyuT5frGufF+n7veZdk7/55ct9e7f+Cu/Wsv3tFysN/9HLn6AzZWe1opjxuWnebs7mZxcrRMbm1UmKzMOTkbeup01IGXvqjFa3RyZLwXtsMtfARya1LD6VDiX5o4kvfqoUaXS5eXO7/md/vZpfNrO99w==",
         },
+        {"url": "https://puzz.link/p?country/10/12/d4ibeqt5abl75ajb6m94i80400vvvvk5vvufvv9h7sci34h21h21t6j6h", "test": False},
         {
             "url": "https://puzz.link/p?country/17/17/4si5d6t8fa2heg0ch42pfar88vioeikf7s4665a6g69g2bo2rc2qk0g5jrmll2p6kk62qsfhflvrakghu0pq13l87qg5huhgj407o09p0557vg4g4j-19o-362k2q1g",
             "test": False,

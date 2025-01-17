@@ -1,6 +1,6 @@
 """Utility for loops."""
 
-from typing import Iterable, Tuple
+from typing import Tuple
 
 
 def single_loop(color: str = "white", path: bool = False) -> str:
@@ -35,7 +35,7 @@ def intersect_loop(color: str = "white", path: bool = False) -> str:
     rule += "pass_by_loop(R, C) :- intersection(R, C).\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
-    if path:
+    if path:  # pragma: no cover
         visit_constraints.append("not dead_end(R, C)")
         rule += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
 
@@ -76,20 +76,13 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     return constraint.strip()
 
 
-def count_area_pass(target: int, ar: Iterable[Tuple[int, int]]) -> str:
+def count_area_pass(target: int, _id: int) -> str:
     """
     Generate a rule that counts the times that a loop passes through an area.
 
-    A direction fact should be defined first.
+    An area_border fact should be defined first.
     """
-    edges = []
-    for r, c in ar:
-        for dr, dc, direc in ((0, -1, "l"), (-1, 0, "u"), (0, 1, "r"), (1, 0, "d")):
-            r1, c1 = r + dr, c + dc
-            if (r1, c1) not in ar:
-                edges.append(f'grid_direction({r}, {c}, "{direc}")')
-    edges = "; ".join(edges)
-    return f":- {{ {edges} }} != {2 * target}."
+    return f":- #count {{ R, C, D: area_border({_id}, R, C, D), grid_direction(R, C, D) }} != {2 * target}."
 
 
 def separate_item_from_loop(inside_item: str, outside_item: str) -> str:

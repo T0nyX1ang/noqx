@@ -2,9 +2,9 @@
 
 from typing import List, Tuple
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_src_color_connected
 from noqx.rule.shape import all_rect_region
@@ -12,6 +12,7 @@ from noqx.solution import solver
 
 
 def count_patchwork_src(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
+    """Generate a constraint to count the reachable patchwork cells starting from a source."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     src_r, src_c = src_cell
     return f":- #count{{ R, C: {tag}({src_r}, {src_c}, R, C), {color}(R, C) }} != {target}."
@@ -24,7 +25,8 @@ def avoid_area_adjacent(color: str = "black") -> str:
     return constraint.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -35,21 +37,20 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(avoid_area_adjacent(color="black"))
     solver.add_program_line(avoid_area_adjacent(color="white"))
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue must be an integer."
-        solver.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
-        solver.add_program_line(count_patchwork_src(target=num, src_cell=(r, c), color="black"))
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        if isinstance(num, int):
+            solver.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
+            solver.add_program_line(count_patchwork_src(num, (r, c), color="black"))
 
-    for r, c, d in puzzle.edge:
-        solver.add_program_line(f":- not edge_{d.value}({r}, {c}).")
+    for (r, c, d, _), draw in puzzle.edge.items():
+        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
 
-    for r, c, d in puzzle.helper_x:
-        solver.add_program_line(f":- edge_{d.value}({r}, {c}).")
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color == Color.GRAY:  # shaded color (DG, GR, LG, BK)
             solver.add_program_line(f"gray({r}, {c}).")
-        elif color_code == 4:  # black color
+        elif color == Color.BLACK:  # black color
             solver.add_program_line(f"black({r}, {c}).")
             solver.add_program_line(f"not gray({r}, {c}).")
         else:  # safe color (others)
@@ -69,7 +70,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VbNbtNAEL7nKao978H7Y8f2rRSXS0mBFFWVZUVu6tKIRClJjdBGeffOzxbXEDcNgSIk5Hjm8zezuzOz63GWX+pyUUkV4M/EEjRcVsV06ziiO/DX2eRuWqUH8rC+u5kvAEh5enwsr8vpsurl3qvorVySukPp3qS50ELSrUQh3ft05d6mbiDdEExCxsCdAFJCaoBZA8/JjuiISRUAHngM8ALgeLIYT6vRCTPv0tydSYHrvKLRCMVs/rUSPIyex/PZ5QSJcno99dyyvpp/rr2XKtbSHXKg2UOgtgnU+EAtQw4U0YZAMf69A70s76Dqy5vJ7aZwk2K9hoJ/gIBHaY6xf2xg3MBhuhImEGkshTGsElLWsuqTCmNSEbv0meyzZ6xYRaQSdklCUirguVWgveYxSvH0SvEopXgBZbyf4SWU9XzIi6jQ+0feL8J1II8B5gFzc635XFEOdNS+EzBrywPzahGYYWsIJpkL0xCYZ2sI5dQaQ1nlInzEYF4/MBTL41GYa5vBrNtrYf6PwoHMVboCeUHymKQmeQYbLJ0h+ZpkQDIkeUI+GclzkkckLcmIfPp4RJ59iCBUC6cH8tRQaNgWeLIQrebd2T9SYTVMnuCh1DA9Am0SqS0cMQPYBoAhCsTKSK2hwIh13/NbU80N97n2Ff57XNHLxbBeXJfjCppDdvWpOhjMF7MSO9ugnl1Wi4dn6Mrrnvgm6M4NNvn/jfrFGzUWP3jmm/a7Xqd9X/zcDaVR0p1KcVuPytF4DtsBtSNe/2F+13V39LdhBx9t4rOmEXWZfW/qMvsW1WX23Wyz2WrbZTC7GvpxhyHZWKhMRirZ0bAlm621eLKS8IX4e7Xo3Iit279nRZTUIfyz+BXzE4en0/Dzu/HinQk+1UXvHg==",
+            "data": "m=edit&p=7VZNb9s8DL7nVxQ662B9+PMyZJ27S5duS4eiMIzATd01WAJ3Tj0MCvLfS1LqHL+Lm+bN1mHA4Jh8/JCSSEqms/zaFHXJhYc/FXHQcGkR0S2jgG7PXeez+3mZHPFhc39b1QA4Pzs54TfFfFkOMueVD1YmTsyQm7dJxiTjdAuWc/MhWZl3iRlxMwYT4xFwp4AE4xJg2sILsiM6tqTwAI8cBngJcDqrp/NycmqZ90lmzjnDdV7TaIRsUX0rmR1Gz9NqcTVDopjfzB23bK6rL43zEvmam6ENNH0MVLeBqjZQhDZQRFsCxfgPDvSquIeqL29nd9vCjfP1Ggr+EQKeJBnG/qmFUQvHyYopjyURZ0pZFZPS2qqQlB+RCqxLaMnQekbCqoBUbF1in5Tw7NzCk07bMULY6YWwo4SwCwjl/JRdQmjH+3YR4Tv/wPkFuA7kMcI8YG5ba3uuKAc6aj8ImLXjgXl1CMywMwSTzJhqCcyzM4Ry6oyh7DL2apOhUf4Gg5n+h6HoNufB7LsM1qG7OlZkI0CohUhWIC9JnpCUJM9hy7lRJN+Q9Ej6JE/JJyV5QfKYpCYZkE+Ih+bZxwpC1XCeIE8JpYeNgicN0Uq7X4dHyrSEyWM8phKmRyBVzKWGQ6cAaw8wRIFYKC4lFBixDB2/M9VM2c7Xvfy/j8sHGRs39U0xLaFdpNefy6NRVS8K7HWjZnFV1o/P0KfXA/ad0Z0pbPv/WveLt24svvfMN+1XvU6HvviZGXMluDnj7K6ZFJNpBdsBtSNe/mZ+33X39Nd+Dx9s49O2EfWZXW/qM7sW1Wd23Wy7WUvdZ1D7GsKoxxBvLVTKAxHvadiRzc5aPFlJ+EL8uVr0bsTO7T+wIoJLH/5Z/B/zE4en1/Dzu/HinQk+1fngAQ==",
         },
     ],
 }

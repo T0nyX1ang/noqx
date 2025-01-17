@@ -2,7 +2,7 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.neighbor import adjacent
@@ -11,7 +11,8 @@ from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -27,18 +28,14 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     for i, (ar, rc) in enumerate(areas.items()):
         solver.add_program_line(area(_id=i, src_cells=ar))
         if rc:
-            data = puzzle.text[rc]
+            num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
+            if isinstance(num, int):
+                solver.add_program_line(count(num, color="gray", _type="area", _id=i))
 
-            if data == "?":
-                continue
-
-            assert isinstance(data, int), "Clue must be an integer."
-            solver.add_program_line(count(data, color="gray", _type="area", _id=i))
-
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
             solver.add_program_line(f"gray({r}, {c}).")
-        else:  # safe color (others)
+        else:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
@@ -52,7 +49,7 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VbRa9s+EH7PX1H0rAdLJzmOX0bWtb+XLt2WjlKMCW7m0rCEtE49hkP+9346n+NfR1lbxjoGw7H86XQ6f/edZGVzWxdVqU0UfpRoPHE5k/Btk5jvSK6zxd2yTA/0uL67XlcAWp8eH+urYrkpB5l45YNtM0qbsW7+SzNllFYWt1G5bj6m2+Z92kx0M8WQ0glsJ62TBTzq4TmPB3TYGk0EPBEMeAE4X1TzZTk7aS0f0qw50yq85y3PDlCt1t9KJTxCf75eXS6C4bK4QzKb68WNjGzqL+uvtfiafKebcUt3+ghd6ukG2NIN6BG6IYvfTHeU73aQ/RMIz9IscP/cw6SH03SLdpJuFRGmWtSaK6NoGCK9AbXOMHow7hy6Sd9NHowa+0OfgntYS9J39n99MDDM44LbY24tt2egqRvi9h23Ebee2xP2OQJ7a6y2NlapxeoyDhgEGA+1JSN4BIw0A7YRMEgxht2JnWAPuTFGTCcxCTFDkgE70tZDH8bYFDGSASZjNFkv2AK3c8l4YMjHONZEkeAhcMuNsLmIJI51wO27EA9Y5lrMdTIXnEk4Yx6wvMth1/qWPznE8RLHIY5v41jE3GtlwV+4sQ7CjXXodAs6dLohpnVtjnj2+vigiejm4ePFx8PHdz74eHS6edRFuOEJLBw8OMTCIQaHWDjEZq8znsCSewQdTKcncjednqiF6eoCfYz4GwIWfbBOUJu+RqarF+piRLdQF9Ppj7lW5kKffe3wmdzXCGsDuveasz5YpOe8VA+5ddzGvISHYR8+c6ciWyGl0qTdtr++dZ7kliHVcAY8vPzfZ8sHmZrW1VUxL/HJnNSry7I6mKyrVbFUOKN2A/Vd8Z1ROPL+HVt/6NgKJYhedHi9wi54gk4GdWmom1OtbupZMZuvlwr/fPRP7dEL7ebZ/q+uDj4TqritSpUP7gE=",
+            "data": "m=edit&p=7VXPT9tMEL3nr0B73oNnfziOL1VKQy80tA0VQlYUmWBK9CUKOLiqHOV/5+14HJcKFdCnUlWqEo/fjmfHb97seje3VV4WmqLwt4nGHT9HCV8mifmK5He6uFsW6YEeVnfX6xJA65OjI32VLzdFL5OoaW9bD9J6qOv3aaZIaWVwkZrq+lO6rT+k9UjXEzxSOoHvuAkygKMOnvHzgA4bJ0XAY8GA54DzRTlfFrPjxvMxzepTrcJ73vLsANVq/a1QwiOM5+vVxSI4LvI7FLO5XtzIk011uf6vklia7nQ9bOhOHqFrO7oBNnQDeoRuqOI30x1MdzvI/hmEZ2kWuH/pYNLBSbqFHadbZS2mGvSaO6NsP2R6A2qtY/DguXMYJt0wefCUzE9jG8LDWpKxMz+MwYCYxznbI7aG7Slo6tqyfcc2YuvZHnPMCOwNGW1MrFKD1UUOGAQY97WxJHgAjDIDNhEwSDGG34nfwh9qY4ycTnJa5AxFBuysNh76MMamiFEMsCXS1njBBriZa8kDQz7GsbY2EtwHbrhZbC5rJY9xwM27kA9Y5hrMdTIXnK1wxjxgeZfDrvUNf+uQx0sehzy+yWOQc6+VAX/hxjoIN9ah1S3o0OqGnMY1NeLe6eODJqKbR4yXGI8Y38bg49Hq5tEX4YY7sHDw4BALhxgcYuEQ015n3IGl9gg6UKsnaqdWT/SC2r5AH5J4ssCiD9YJetP1iNp+oS8kuoW+UKs/5hqZC332vcNnct8jrA3o3mnO+mCRnvFSPWTr2Ma8hPthHz5zp6JaIaXSpNm2/3/rPMktQ6nhDHj483+fb9rL1KQqr/J5gU/m6PJrcTBel6t8idG4Wl0UZTvGibXrqe+Kr8yGA/DfIfaHDrHQguhFR9kr7Ikn6GRQ1/Z1faLVTTXLZ/M11hi0+6U/eqGfnh3/6urgo6Hy27JQ0949",
         },
         {
             "url": "https://puzz.link/p?aqre/18/18/aba2qqg6mi2nhodt6jfc57m8qt96l6a1828b1j6ucn7p5bspeseknpl0od86h00o00svvhe3e41s3g8r2gr3v9u0241vvvrufs3gf3soc0m1g21c3o3k3sn000s0g1g1g22g11g2g22g1g2212g1g1112233355g555355g3g3g355",

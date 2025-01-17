@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Direction, Puzzle, Solution
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid, unique_num
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
@@ -23,12 +24,13 @@ def kropki_constraint() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
-    assert puzzle.row == puzzle.col, "This puzzle must be square."
-    n = puzzle.row
-
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
+
+    fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+    n = puzzle.row
     solver.add_program_line(defined(item="white_h"))
     solver.add_program_line(defined(item="white_v"))
     solver.add_program_line(defined(item="black_h"))
@@ -40,8 +42,8 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(unique_num(_type="col", color="grid"))
     solver.add_program_line(kropki_constraint())
 
-    for (r, c, d), symbol_name in puzzle.symbol.items():
-        assert d in (Direction.TOP, Direction.LEFT), "Symbol direction should be top or left."
+    for (r, c, d, _), symbol_name in puzzle.symbol.items():
+        fail_false(d in (Direction.TOP, Direction.LEFT), f"Symbol direction at ({r}, {c}) should be top or left.")
         tag_d = "h" if d == Direction.TOP else "v"
 
         if symbol_name == "circle_SS__1":
@@ -52,8 +54,10 @@ def solve(puzzle: Puzzle) -> List[Solution]:
             solver.add_program_line(f"black_{tag_d}({r}, {c}).")
             solver.add_program_line(f"not white_{tag_d}({r}, {c}).")
 
-    for (r, c), num in puzzle.text.items():
-        assert isinstance(num, int), "Clue should be integer."
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
+        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))

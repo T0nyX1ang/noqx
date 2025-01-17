@@ -2,8 +2,9 @@
 
 from typing import List
 
-from noqx.penpa import Puzzle, Solution
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.rule.reachable import (
     count_reachable_src,
@@ -14,7 +15,8 @@ from noqx.rule.shape import all_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Solution]:
+def solve(puzzle: Puzzle) -> List[Puzzle]:
+    """Solve the puzzle."""
     solver.reset()
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -23,19 +25,21 @@ def solve(puzzle: Puzzle) -> List[Solution]:
     solver.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
     solver.add_program_line(all_rect(color="black", square=True))
 
-    for (r, c), color_code in puzzle.surface.items():
-        if color_code in [1, 3, 4, 8]:  # shaded color (DG, GR, LG, BK)
-            solver.add_program_line(f"black({r}, {c}).")
-        else:  # safe color (others)
-            solver.add_program_line(f"not black({r}, {c}).")
-
-    for (r, c), num in puzzle.text.items():
+    for (r, c, d, pos), num in puzzle.text.items():
+        validate_direction(r, c, d)
+        validate_type(pos, "normal")
         solver.add_program_line(f"not black({r}, {c}).")
         if isinstance(num, int):
             solver.add_program_line(grid_src_color_connected((r, c), color="black"))
             solver.add_program_line(count_reachable_src(num + 1, (r, c), color="black"))
         else:
             solver.add_program_line(count_adjacent(("gt", 0), (r, c), color="black"))
+
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            solver.add_program_line(f"black({r}, {c}).")
+        else:
+            solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))
     solver.solve()

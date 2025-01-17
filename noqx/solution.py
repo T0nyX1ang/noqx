@@ -1,18 +1,22 @@
 """Generate solutions for the given problem."""
 
+from copy import deepcopy
 from typing import List, Optional
 
 from clingo import MessageCode
 from clingo.control import Control
 from clingo.solving import Model
 
-from .logging import logger
-from .penpa import Direction, Puzzle, Solution
+from noqx.logging import logger
+from noqx.puzzle import Color, Direction, Point, Puzzle
 
 
 def clingo_logging_handler(code: MessageCode, message: str) -> None:  # pragma: no cover
     """Handle clingo logging."""
-    logger.error(f"[Clingo] {code.name}: {message.strip()}")
+    if code == MessageCode.RuntimeError:
+        logger.error(f"[Clingo] {code.name}: {message.strip()}")
+    else:
+        logger.warning(f"[Clingo] {code.name}: {message.strip()}")
 
 
 class Config:
@@ -32,7 +36,7 @@ class ClingoSolver:
         self.program: str = ""
         self.model: List[str] = []
         self.puzzle: Optional[Puzzle] = None
-        self.solutions: List[Solution] = []
+        self.solutions: List[Puzzle] = []
 
     def register_puzzle(self, puzzle: Puzzle):
         """Register the puzzle to the solution."""
@@ -49,49 +53,50 @@ class ClingoSolver:
             raise PermissionError("Puzzle not registered.")
 
         solution_data = tuple(str(model_str).split())  # raw solution converted from clingo
-        solution = Solution(self.puzzle)
+        solution = deepcopy(self.puzzle)
+        solution.clear()
 
         for item in solution_data:
             _type, _data = item.replace("(", " ").replace(")", " ").split()
             data = _data.split(",")
 
-            r, c = data[:2]  # ensure the first two elements of data is the row and column
+            r, c = tuple(map(int, data[:2]))  # ensure the first two elements of data is the row and column
 
             if _type.startswith("edge_"):
                 for d in Direction:
                     if _type == f"edge_{d.value}":
-                        solution.edge.add((int(r), int(c), d))
+                        solution.edge[Point(r, c, d)] = True
 
             elif _type.startswith("grid_"):
                 grid_direction = str(data[2]).replace('"', "")
-                if self.puzzle.puzzle_type == "hashi":
-                    solution.line.add((int(r), int(c), f"{grid_direction}_{data[3]}"))
+                if self.puzzle.puzzle_name == "hashi":
+                    solution.line[Point(r, c, pos=f"{grid_direction}_{data[3]}")] = True
                 else:
-                    solution.line.add((int(r), int(c), grid_direction))
+                    solution.line[Point(r, c, pos=grid_direction)] = True
 
             elif _type.startswith("number"):
-                if self.puzzle.puzzle_type == "easyasabc":  # convert penpa number to letter
-                    solution.text[(int(r), int(c))] = self.puzzle.param["letters"][int(data[2]) - 1]
+                if self.puzzle.puzzle_name == "easyasabc":  # convert penpa number to letter
+                    solution.text[Point(r, c, Direction.CENTER, "normal")] = self.puzzle.param["letters"][int(data[2]) - 1]
                 else:
-                    solution.text[(int(r), int(c))] = int(data[2])
+                    solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
 
             elif _type.startswith("content"):
-                solution.text[(int(r), int(c))] = str(data[2]).replace('"', "")
+                solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
 
             elif _type == "triangle":
                 shaka_dict = {'"ul"': "1", '"ur"': "4", '"dl"': "2", '"dr"': "3"}
-                solution.symbol[(int(r), int(c), Direction.CENTER)] = f"tri__{shaka_dict[data[2]]}"
+                solution.symbol[Point(r, c, Direction.CENTER)] = f"tri__{shaka_dict[data[2]]}"
 
             elif _type == "gray":
-                solution.surface[(int(r), int(c))] = 8
+                solution.surface[Point(r, c)] = Color.GRAY
             elif _type == "black":
-                solution.surface[(int(r), int(c))] = 4
+                solution.surface[Point(r, c)] = Color.BLACK
 
             elif len(data) == 2:
-                solution.symbol[(int(r), int(c), Direction.CENTER)] = str(_type)
+                solution.symbol[Point(r, c, Direction.CENTER)] = str(_type)
 
             else:  # pragma: no cover
-                solution.text[(int(r), int(c))] = int(data[2])  # for debugging
+                solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])  # for debugging
 
         self.solutions.append(solution)
 

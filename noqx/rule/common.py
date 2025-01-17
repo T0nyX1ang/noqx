@@ -2,7 +2,7 @@
 
 from typing import Iterable, Optional, Tuple, Union
 
-from .helper import target_encode
+from noqx.rule.helper import target_encode
 
 
 def display(item: str = "black", size: int = 2) -> str:
@@ -119,7 +119,7 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: Union[int, str] = 
     if _type == "area":
         return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- area({_id}, R, C)."
 
-    raise AssertionError("Invalid type, must be one of 'grid', 'area'.")
+    raise ValueError("Invalid type, must be one of 'grid', 'area'.")
 
 
 def unique_num(color: str = "black", _type: str = "row") -> str:
@@ -138,7 +138,7 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     if _type == "area":
         return f":- area(A, _, _), number(_, _, N), {{ {color}(R, C) : area(A, R, C), number(R, C, N) }} > 1."
 
-    raise AssertionError("Invalid type, must be one of 'row', 'col', 'area'.")
+    raise ValueError("Invalid type, must be one of 'row', 'col', 'area'.")
 
 
 def count(
@@ -166,4 +166,4 @@ def count(
     if _type == "area":
         return f":- #count {{ R, C : area({_id}, R, C), {color}(R, C) }} {rop} {num}."
 
-    raise AssertionError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
+    raise ValueError("Invalid type, must be one of 'grid', 'row', 'col', 'area'.")
