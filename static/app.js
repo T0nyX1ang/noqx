@@ -212,7 +212,7 @@ $(document).ready(function () {
 
           let exampleData = body[puzzleName].examples[exampleSelect.value];
           puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
-          imp(puzzleContent, exampleData.url !== undefined);
+          imp(puzzleContent);
 
           if (body[puzzleName].parameters) {
             for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
@@ -329,7 +329,7 @@ $(document).ready(function () {
 
       resetButton.addEventListener("click", () => {
         if (puzzleContent !== null) {
-          imp(`${urlBase}${puzzleContent}`);
+          imp(puzzleContent.includes(urlBase) ? puzzleContent : `${urlBase}${puzzleContent}`);
         } else {
           pu.reset_board();
           pu.redraw();
