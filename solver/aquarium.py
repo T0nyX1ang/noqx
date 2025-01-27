@@ -24,11 +24,11 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
+    solver.add_program_line(area_gravity(color="gray"))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
     for i, ar in enumerate(areas):
         solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(area_gravity(color="gray"))
 
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
