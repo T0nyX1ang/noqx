@@ -124,6 +124,7 @@ def area_same_color(color: str = "black") -> str:
 def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Point, bool]) -> str:
     """Generates a fact for the border of an area."""
     edges = set()
+    src_cells = set(src_cells)
     for r, c in src_cells:
         if edge.get(Point(r, c, Direction.TOP)) is True:
             edges.add(f'area_border({_id}, {r}, {c}, "u").')
