@@ -11,15 +11,6 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generates a constraint to avoid same {color} cells on the both sides of an area.
-
-    An adjacent rule and an area fact should be defined first.
-    """
-    return f":- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1, {color}(R, C), {color}(R1, C1)."
-
-
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
     solver.reset()
@@ -32,7 +23,6 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(adjacent(_type="loop"))
     solver.add_program_line(grid_color_connected(color="country_road", adj_type="loop"))
     solver.add_program_line(single_loop(color="country_road"))
-    solver.add_program_line(avoid_area_adjacent(color="not country_road", adj_type=4))
 
     areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
     for i, (ar, rc) in enumerate(areas.items()):
