@@ -75,10 +75,7 @@ class ClingoSolver:
                     solution.line[Point(r, c, pos=grid_direction)] = True
 
             elif _type.startswith("number"):
-                if self.puzzle.puzzle_name == "easyasabc":  # convert penpa number to letter
-                    solution.text[Point(r, c, Direction.CENTER, "normal")] = self.puzzle.param["letters"][int(data[2]) - 1]
-                else:
-                    solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
+                solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
 
             elif _type.startswith("content"):
                 solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
