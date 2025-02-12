@@ -5,22 +5,13 @@ from typing import List
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import validate_direction
-from noqx.rule.loop import directed_loop
+from noqx.rule.loop import convert_direction_to_edge, directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 drdc = {"1": (0, 1), "2": (1, 0), "3": (0, -1), "4": (-1, 0)}
 dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
-
-
-def convert_direction_to_edge() -> str:
-    """Convert (directed) grid direction fact to edge fact."""
-    rule = 'edge_top(R, C) :- grid_out(R, C, "r").\n'
-    rule += 'edge_top(R, C) :- grid_in(R, C, "r").\n'
-    rule += 'edge_left(R, C) :- grid_out(R, C, "d").\n'
-    rule += 'edge_left(R, C) :- grid_in(R, C, "d").\n'
-    return rule.strip()
 
 
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
@@ -55,7 +46,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(adjacent(_type="loop_directed"))
     solver.add_program_line(directed_loop(color="firefly"))
     solver.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
-    solver.add_program_line(convert_direction_to_edge())
+    solver.add_program_line(convert_direction_to_edge(directed=True))
 
     for (r, c, d, _), symbol_name in puzzle.symbol.items():
         validate_direction(r, c, d, Direction.TOP_LEFT)

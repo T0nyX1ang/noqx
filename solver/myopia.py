@@ -5,17 +5,10 @@ from typing import List
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.loop import single_loop
+from noqx.rule.loop import convert_direction_to_edge, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
-
-
-def convert_direction_to_edge() -> str:
-    """Convert grid direction fact to edge fact."""
-    rule = 'edge_top(R, C) :- grid_direction(R, C, "r").\n'
-    rule += 'edge_left(R, C) :- grid_direction(R, C, "d").\n'
-    return rule.strip()
 
 
 def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:

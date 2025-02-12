@@ -5,17 +5,10 @@ from typing import List, Tuple
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
-from noqx.rule.loop import separate_item_from_loop, single_loop
+from noqx.rule.loop import convert_direction_to_edge, separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
-
-
-def convert_direction_to_edge() -> str:
-    """Convert grid direction fact to edge fact."""
-    rule = 'edge_top(R, C) :- grid_direction(R, C, "r").\n'
-    rule += 'edge_left(R, C) :- grid_direction(R, C, "d").\n'
-    return rule.strip()
 
 
 def passed_vertex() -> str:
