@@ -6,7 +6,7 @@ from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
+from noqx.rule.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
 from noqx.rule.variety import nori_adjacent
 from noqx.solution import solver
 
@@ -19,6 +19,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(shade_c("black"))
 
     solver.add_program_line(adjacent())
+    solver.add_program_line(avoid_unknown_src("not black"))
     solver.add_program_line(nori_adjacent(color="black"))
 
     all_src: List[Tuple[int, int]] = []
@@ -52,7 +53,8 @@ __metadata__ = {
     "category": "shade",
     "examples": [
         {
-            "data": "m=edit&p=7VVRj5NAEH7nV1zmeR5YWJDui6nn1ZfKqa25XAhpKHI5IpVKu8Zs0/9+MwOKp33QmNSYXLb79ZtvB/ox7E53n23RVah8/oQJ0jcNrRKZQRLL9IexrPdNZS5wavf3bUcE8Xo2w7ui2VVeNmTl3sFNjJuie2UyUIAQ0FSQo3trDu61cSm6BS0BatLmfVJA9GqkN7LO7LIXlU88HTjRW6Jl3ZVNtZr3yhuTuSUC/84LuZopbNovFQw+OC7bzbpmYV3s6WF29/V2WNnZD+1HO+Sq/Ihu2ttdnLAbjnaZ9naZnbDLT/H3dptte8roJD8eqeDvyOrKZOz6/UiTkS7MgTA1BwgVXRrTW5Z3AjqmMPkeRiHf+Dl5HISY1wPeF32sggkJvGG+CTogQf8Q/5wQ60f3JB9K3NwKzgQDwSWZRRcKvhT0BSPBueRcCd4IXgpqwVhynvHj/mZBIPTBBFSCCIzuq3MGb1nYH7LHI/r/tNzLYGG7u6KsaGemdrOuuou07TZFA9QEjh58BZlZyD3lqS+cvS9w8f0/6g7//mxmVFc6Ie4aYWtXxapsG6A/FWRdR7/oZ3dPBxg+2a5etxZy7wE=",
-        }
+            "data": "m=edit&p=7VVNj9MwEL3nV6A5zyGO3TT1BZWy5VJ2gRatVlFUpSGrjUhxSRuEXPW/78wk2sCyBz6kIiTk+vW98Vh9nsTT/ec2b0pUIX90gvRNw6hEZpTEMsN+rKpDXdpnOG0Pd64hgng1n+NtXu/LIO2zsuDoJ9ZP0b+yKShAiGgqyNC/tUf/2vol+iUtASqKLbqkiOjFQK9lndmsC6qQ+GXPid4QLaqmqMv1oou8salfIfDvvJDdTGHrvpTQ+2BduO2m4sAmP9Bh9nfVrl/Ztx/cx7bPVdkJ/fSRXTPY1YNdpp1dZk/Y5VP8ud16554yOslOJyr4O7K6tim7fj/QZKBLeyS8tEfQIW99Ti66pwKjiAL8BvQ6Zj15kGOW8YOcjB5tV2pMkdGgtSGdfKN5fTxoo0lHg47ZkOk1mVRi9UZwLhgJrugk6LXgS8FQcCS4kJwLwWvBmaARjCVnzLX4yWqBVmAjBEOnMV3pzuAt1d0N/H5wcf+xWBaksGyb27wo6bWdue3O7atDCdQdTgF8BZmp5mbzv2GcvWFw8cNfaht//16mVFet0F8h7Np1vi5cDfRvg78TN+aH+NlPS5cdPrVNtXEtZME9",
+        },
+        {"url": "https://puzz.link/p?norinuri/10/10/o.zt9g8lcg5zt.o", "test": False},
     ],
 }
