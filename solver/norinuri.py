@@ -7,16 +7,8 @@ from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
+from noqx.rule.variety import nori_adjacent
 from noqx.solution import solver
-
-
-def nori_adjacent(color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generates a constraint for Norinori puzzles.
-
-    A grid rule and an adjacent rule should be defined first.
-    """
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
 def solve(puzzle: Puzzle) -> List[Puzzle]:
