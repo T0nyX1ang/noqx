@@ -39,7 +39,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        locations[clue] = locations.get(clue, []) + [(r, c)]
+        locations.setdefault(clue, [])
+        locations[clue].append((r, c))
 
     fail_false(len(locations) > 0, "No clues found.")
     for n, pair in locations.items():
