@@ -1,4 +1,4 @@
-﻿"""The Simple Loop solver."""
+﻿"""The Pipe Link solver."""
 
 from typing import List
 
