@@ -9,12 +9,10 @@ from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.solution import solver
 
-neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
-
 
 def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
     """
-    Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
+    Generate n * (n - 1) / 2 constraints and n rules to enforce identical adjacent cell maps.
 
     A grid fact and an adjacent rule should be defined first. n is the number of known source cells.
     """

@@ -1,4 +1,4 @@
-"""The Nonogram solver."""
+"""The Tilepaint solver."""
 
 from typing import List
 
