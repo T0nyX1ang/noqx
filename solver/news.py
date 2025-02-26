@@ -8,14 +8,6 @@ from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_
 from noqx.solution import solver
 
 
-def news_refine(solution: Puzzle) -> Puzzle:
-    """Refine the solution of NEWS."""
-    rev_news_dict = {1: "N", 2: "E", 3: "W", 4: "S"}
-    for (r, c, d, pos), num in solution.text.items():
-        solution.text[Point(r, c, d, pos)] = rev_news_dict[int(num)]
-    return solution
-
-
 def news_constraint() -> str:
     """Generate a constraint for NEWS."""
     mutual = "area(A, R, C), area(A, R1, C1)"
@@ -60,10 +52,15 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(display(item="number", size=3))
     solver.solve()
 
-    for solution in solver.solutions:
-        news_refine(solution)
-
     return solver.solutions
+
+
+def refine(solution: Puzzle) -> Puzzle:
+    """Refine the solution."""
+    rev_news_dict = {1: "N", 2: "E", 3: "W", 4: "S"}
+    for (r, c, d, pos), num in solution.text.items():
+        solution.text[Point(r, c, d, pos)] = rev_news_dict[int(num)]
+    return solution
 
 
 __metadata__ = {

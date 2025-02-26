@@ -52,7 +52,12 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     puzzle: Puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
     puzzle.decode()
 
-    solutions: List[str] = list(map(lambda x: x.encode(), module.solve(puzzle)))
+    solutions: List[Puzzle] = module.solve(puzzle)  # type: ignore
+    if hasattr(module, "refine"):  # refine the solution if possible
+        for solution in solutions:
+            module.refine(solution)
+
+    final: List[str] = list(map(lambda x: x.encode(), solutions))
     stop = time.perf_counter()
 
     if (stop - start) >= Config.time_limit:
@@ -62,4 +67,4 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     logger.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
     logger.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
 
-    return {"url": solutions}  # return the first solution
+    return {"url": final}

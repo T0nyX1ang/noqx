@@ -8,14 +8,6 @@ from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
-def easyas_refine(puzzle: Puzzle, letters: str) -> Puzzle:
-    """Refine the easyas solution."""
-    for (r, c, d, pos), letter in puzzle.text.items():
-        puzzle.text[Point(r, c, d, pos)] = letters[int(letter) - 1]
-
-    return puzzle
-
-
 def solve(puzzle: Puzzle) -> List[Puzzle]:
     """Solve the puzzle."""
     solver.reset()
@@ -64,10 +56,16 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(display(item="number", size=3))
     solver.solve()
 
-    for solution in solver.solutions:
-        easyas_refine(solution, letters)
-
     return solver.solutions
+
+
+def refine(puzzle: Puzzle) -> Puzzle:
+    """Refine the solution."""
+    letters: str = puzzle.param["letters"]
+    for (r, c, d, pos), letter in puzzle.text.items():
+        puzzle.text[Point(r, c, d, pos)] = letters[int(letter) - 1]
+
+    return puzzle
 
 
 __metadata__ = {
