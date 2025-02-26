@@ -1,7 +1,5 @@
 """The Magnets solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_cc
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
@@ -19,10 +17,9 @@ def magnet_constraint() -> str:
     return constraint.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_cc(["math_G__2", "math_G__3", "gray"]))
     solver.add_program_line(adjacent())
@@ -57,8 +54,7 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(display(item="math_G__2"))
     solver.add_program_line(display(item="math_G__3"))
     solver.add_program_line(display(item="gray"))
-    solver.solve()
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

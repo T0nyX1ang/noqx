@@ -1,7 +1,5 @@
 """The Mochikoro solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
@@ -11,10 +9,9 @@ from noqx.rule.shape import all_rect, avoid_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(invert_c(color="black", invert="green"))
@@ -43,9 +40,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")
     solver.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(display(item="black"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

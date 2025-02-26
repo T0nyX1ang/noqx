@@ -1,7 +1,5 @@
 """Akari (Light up) solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
@@ -24,10 +22,9 @@ def lightup(color: str = "black") -> str:
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line("{ sun_moon__3(R, C) } :- grid(R, C), not black(R, C).")
@@ -52,9 +49,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="sun_moon__3"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -31,11 +31,9 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
     raise ValueError("Invalid line type, must be one of 'row', 'col'.")
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.row % 2 == 0 and puzzle.col % 2 == 0, "total rows and columns must both be even!")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="circle_M__1"))
@@ -58,9 +56,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="circle_M__1"))
     solver.add_program_line(display(item="circle_M__2"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

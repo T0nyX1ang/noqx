@@ -1,7 +1,5 @@
 """The Juosan solver."""
 
-from typing import List
-
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
 from noqx.rule.helper import full_bfs
@@ -25,10 +23,9 @@ def count_lines(area_id: int, num1: int, num2: int = 0):
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
     solver.add_program_line(jousan_constraint())
@@ -42,9 +39,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
                 solver.add_program_line(count_lines(i, num, len(ar) - num))
 
     solver.add_program_line(display(item="content", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

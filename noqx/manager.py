@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from noqx.logging import logger
 from noqx.puzzle import Puzzle
 from noqx.puzzle.penpa import PenpaPuzzle
-from noqx.solution import Config
+from noqx.solution import Config, instance
 
 modules: Dict[str, ModuleType] = {}
 
@@ -45,14 +45,21 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     """Run the solver."""
     module = modules[puzzle_name]
 
-    if not hasattr(module, "solve"):
-        raise NotImplementedError("Solver not implemented.")
+    if not hasattr(module, "program"):
+        raise NotImplementedError("Solver program not implemented.")
 
     start = time.perf_counter()
     puzzle: Puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
     puzzle.decode()
 
-    solutions: List[Puzzle] = module.solve(puzzle)  # type: ignore
+    program: str = module.program(puzzle)
+    logger.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
+
+    instance.reset()
+    instance.register_puzzle(puzzle)
+    instance.solve(program)
+    solutions: List[Puzzle] = instance.solutions
+
     if hasattr(module, "refine"):  # refine the solution if possible
         for solution in solutions:
             module.refine(solution)

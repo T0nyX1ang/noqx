@@ -1,7 +1,5 @@
 """The Putteria solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
@@ -24,10 +22,9 @@ def avoid_num_adjacent(adj_type: int = 4) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent())
     solver.add_program_line(avoid_num_adjacent())
@@ -54,9 +51,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(putteria_fill_constraint())
     solver.add_program_line(display(item="gray", size=2))
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

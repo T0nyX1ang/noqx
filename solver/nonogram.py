@@ -1,6 +1,6 @@
 """The Nonogram solver."""
 
-from typing import Dict, List, Tuple, Union
+from typing import Dict, Tuple, Union
 
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, shade_c
@@ -63,11 +63,9 @@ def nono_col(row: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "b
     return "\n".join(constraints)
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     top_clues = {}
     for c in range(puzzle.col):
         top_clues[c] = tuple(
@@ -100,9 +98,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

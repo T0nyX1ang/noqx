@@ -16,10 +16,9 @@ from noqx.rule.shape import avoid_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
     solver.add_program_line(adjacent())
@@ -48,9 +47,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

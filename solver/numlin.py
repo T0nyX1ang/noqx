@@ -30,11 +30,9 @@ def no_2x2_path_bit() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
@@ -79,9 +77,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

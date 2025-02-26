@@ -26,10 +26,9 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
     return rules + "\n" + constraints
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="tents__2"))
     solver.add_program_line(adjacent(_type=4))
@@ -58,9 +57,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(identical_adjacent_map(all_trees, color="tents__2", adj_type=4))
     solver.add_program_line(count(len(all_trees), color="tents__2", _type="grid"))
     solver.add_program_line(display(item="tents__2"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

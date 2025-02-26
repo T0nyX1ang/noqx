@@ -1,6 +1,6 @@
 """The Balance Loop solver."""
 
-from typing import List, Tuple
+from typing import Tuple
 
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
@@ -35,10 +35,9 @@ def count_balance(target: int, src_cell: Tuple[int, int]) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
     solver.add_program_line(defined(item="white"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -73,9 +72,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -34,10 +34,9 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="myopia"))
@@ -63,9 +62,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

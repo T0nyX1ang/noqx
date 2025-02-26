@@ -152,7 +152,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
   - `edge`: the borders in the puzzle.
   - `line`: the lines in the puzzle.
 
-- Create a `solve` function and write the ASP program needed.
+- Create a `program` function and write the ASP program needed.
 
 - (Optional) Create a `refine` function if extra refinement is needed after program solving.
 

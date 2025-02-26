@@ -1,6 +1,6 @@
 """The Tetrominous solver."""
 
-from typing import Dict, List
+from typing import Dict
 
 from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
@@ -24,11 +24,9 @@ def avoid_adj_same_omino(omino_num: int = 4, color: str = "grid") -> str:
     return constraint
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     shaded = len(puzzle.surface)
     fail_false((puzzle.row * puzzle.col - shaded) % 4 == 0, "The grid cannot be divided into 4-ominoes!")
     solver.add_program_line(defined(item="hole"))
@@ -64,9 +62,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

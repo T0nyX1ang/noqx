@@ -1,7 +1,5 @@
 """The Stostone solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs
@@ -21,11 +19,9 @@ def valid_stostone(color: str = "black") -> str:
     return f":- {below_C}, {below_C1}, BC != BC1."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.row % 2 == 0, "The stostone puzzle must have an even number of rows.")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
@@ -61,9 +57,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -1,7 +1,5 @@
 """The Yin-Yang solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.helper import validate_direction
@@ -39,10 +37,9 @@ def exclude_border_color_changes(rows: int, cols: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="circle_M__1"))
     solver.add_program_line(invert_c(color="circle_M__1", invert="circle_M__2"))
@@ -67,9 +64,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="circle_M__1"))
     solver.add_program_line(display(item="circle_M__2"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -1,6 +1,6 @@
 """The Heyawake solver."""
 
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, Tuple, Union
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
@@ -92,10 +92,9 @@ def area_border_connected(_id: int, color: str = "black", adj_type: Union[int, s
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c("gray"))
     solver.add_program_line(adjacent(_type=4))
@@ -143,9 +142,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

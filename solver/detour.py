@@ -1,7 +1,5 @@
 """The Detour solver."""
 
-from typing import List
-
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, direction, display, fill_path, grid
 from noqx.rule.helper import full_bfs
@@ -11,10 +9,9 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("detour(R, C) :- grid(R, C).")
@@ -37,9 +34,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

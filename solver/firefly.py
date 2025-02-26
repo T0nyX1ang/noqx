@@ -1,7 +1,5 @@
 """The Firefly (Hotaru Beam) solver."""
 
-from typing import List
-
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import validate_direction
@@ -33,10 +31,9 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="dead_end"))
     solver.add_program_line(defined(item="firefly_all"))
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
@@ -69,9 +66,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

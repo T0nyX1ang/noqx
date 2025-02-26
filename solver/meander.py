@@ -1,7 +1,5 @@
 """The Meandering Numbers solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
@@ -22,11 +20,9 @@ def meander_constraint(_id: int, area_size: int) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
     n = puzzle.row
     solver.add_program_line(grid(n, n))
@@ -48,9 +44,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

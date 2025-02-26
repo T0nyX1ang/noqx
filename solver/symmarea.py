@@ -1,7 +1,5 @@
 """Solve Symmetry Area puzzles."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
@@ -110,10 +108,9 @@ def symmetry_area(fast: bool = False) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type=4))
@@ -147,9 +144,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="number", size=3))
     solver.add_program_line(display(item="numberx", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -1,7 +1,5 @@
 """The Star Battle solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
@@ -9,11 +7,9 @@ from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.param["stars"].isdigit(), "Invalid star count.")
     num_stars = int(puzzle.param["stars"])
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -38,9 +34,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not star__2({r}, {c}).")
 
     solver.add_program_line(display(item="star__2"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

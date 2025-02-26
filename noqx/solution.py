@@ -27,13 +27,29 @@ class Config:
     parallel_threads: int = 1
 
 
+class ClingoProgram:
+    """A program for clingo."""
+
+    def __init__(self):
+        """Initialize a program."""
+        self.program: str = ""
+
+    def add_program_line(self, line: str):
+        """Add a line to the program."""
+        if line != "":
+            self.program += line + "\n"
+
+    def reset(self):
+        """Clear the program."""
+        self.program = ""
+
+
 class ClingoSolver:
     """A solver using clingo."""
 
     def __init__(self):
         """Initialize a solver."""
         self.clingo_instance: Control = Control(logger=clingo_logging_handler)
-        self.program: str = ""
         self.model: List[str] = []
         self.puzzle: Optional[Puzzle] = None
         self.solutions: List[Puzzle] = []
@@ -97,27 +113,21 @@ class ClingoSolver:
 
         self.solutions.append(solution)
 
-    def add_program_line(self, line: str):
-        """Add a line to the program."""
-        if line != "":
-            self.program += line + "\n"
-
     def reset(self):
         """Reset the program."""
         self.clingo_instance = Control(logger=clingo_logging_handler)
-        self.program = ""
         self.model = []
         self.puzzle = None
         self.solutions = []
 
-    def solve(self):
+    def solve(self, program: str):
         """Solve the problem."""
         self.clingo_instance.configuration.sat_prepro = 2
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
         self.clingo_instance.configuration.asp.eq = 1  # type: ignore
         self.clingo_instance.configuration.solve.parallel_mode = Config.parallel_threads  # type: ignore
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
-        self.clingo_instance.add(program=self.program)
+        self.clingo_instance.add(program=program)
         self.clingo_instance.ground()
         with self.clingo_instance.solve(on_model=self.store_model, async_=True) as handle:  # type: ignore
             handle.wait(Config.time_limit)
@@ -127,4 +137,5 @@ class ClingoSolver:
             self.store_solutions(model_str)
 
 
-solver = ClingoSolver()
+solver = ClingoProgram()
+instance = ClingoSolver()

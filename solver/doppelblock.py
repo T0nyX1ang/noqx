@@ -1,18 +1,14 @@
 """The Doppelblock solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import count, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
     n = puzzle.row
     solver.add_program_line(grid(n, n))
@@ -46,9 +42,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="number", size=3))
     solver.add_program_line(display(item="black", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

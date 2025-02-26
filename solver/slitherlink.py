@@ -1,6 +1,6 @@
 """The Slitherlink solver."""
 
-from typing import List, Tuple
+from typing import Tuple
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
@@ -49,10 +49,9 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     return f":- { vertex_count }, { edge_count }, C1 - C2 {rop} {num}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="slither"))
@@ -90,9 +89,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -1,7 +1,5 @@
 """The Uso-one solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
@@ -20,10 +18,9 @@ def uso_one_constraints(adj_type: int = 4, color: str = "black") -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="clue", size=4))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
@@ -59,9 +56,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(display(item="gray"))
     solver.add_program_line(display(item="ox_E__1"))
     solver.add_program_line(display(item="ox_E__7"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

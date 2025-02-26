@@ -1,7 +1,5 @@
 """The Nanro solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, fill_num, grid
 from noqx.rule.helper import fail_false, full_bfs
@@ -23,10 +21,9 @@ def nanro_avoid_adjacent() -> str:
     return f"{area_adj}, number(R, C, N), number(R1, C1, N)."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent())
     solver.add_program_line(grid_color_connected(color="not gray"))
@@ -62,9 +59,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="gray", size=2))
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {
