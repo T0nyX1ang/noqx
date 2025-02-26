@@ -119,11 +119,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
         fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
-        clue_dict.setdefault((r, c), [])
-        clue_dict[(r, c)].append(clue)
 
-        solver.add_program_line(f"not black({r}, {c}).")
-        solver.add_program_line(valid_tapa(r, c))
+        if (r, c) not in clue_dict:
+            solver.add_program_line(f"not black({r}, {c}).")
+            solver.add_program_line(valid_tapa(r, c))
+            clue_dict.setdefault((r, c), [])
+
+        clue_dict[(r, c)].append(clue)
 
     for (r, c), clue in clue_dict.items():
         solver.add_program_line(parse_clue(r, c, clue))
