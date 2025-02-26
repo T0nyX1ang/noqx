@@ -41,7 +41,7 @@ def list_solver_metadata() -> Dict[str, Any]:
     return metadata
 
 
-def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
+async def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
     """Run the solver."""
     module = modules[puzzle_name]
 
@@ -57,7 +57,7 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
 
     instance.reset()
     instance.register_puzzle(puzzle)
-    instance.solve(program)
+    await instance.solve(program)
     solutions: List[Puzzle] = instance.solutions
 
     if hasattr(module, "refine"):  # refine the solution if possible

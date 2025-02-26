@@ -120,7 +120,7 @@ class ClingoSolver:
         self.puzzle = None
         self.solutions = []
 
-    def solve(self, program: str):
+    async def solve(self, program: str):
         """Solve the problem."""
         self.clingo_instance.configuration.sat_prepro = 2
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
