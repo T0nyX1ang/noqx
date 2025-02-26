@@ -48,7 +48,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["noqx", "noqx.rule"]
+packages = ["noqx", "noqx.puzzle", "noqx.rule"]
 
 [tool.black]
 line-length = 127
