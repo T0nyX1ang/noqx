@@ -7,9 +7,10 @@ import time
 from types import ModuleType
 from typing import Any, Dict, List
 
+from noqx.clingo import ClingoSolver, Config
 from noqx.puzzle import Puzzle
 from noqx.puzzle.penpa import PenpaPuzzle
-from noqx.solution import Config, instance
+from noqx.solution import store_solutions
 
 modules: Dict[str, ModuleType] = {}
 
@@ -55,14 +56,16 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     program: str = module.program(puzzle)
     logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
 
-    instance.reset()
-    instance.register_puzzle(puzzle)
+    instance = ClingoSolver()
     instance.solve(program)
-    solutions: List[Puzzle] = instance.solutions
+    solutions: List[Puzzle] = []
 
-    if hasattr(module, "refine"):  # refine the solution if possible
-        for solution in solutions:
+    for model_str in instance.solution():
+        solution = store_solutions(puzzle, model_str)
+        if hasattr(module, "refine"):  # refine the solution if possible
             module.refine(solution)
+
+        solutions.append(solution)
 
     final: List[str] = list(map(lambda x: x.encode(), solutions))
     stop = time.perf_counter()
