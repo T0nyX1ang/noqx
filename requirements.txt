@@ -2,8 +2,6 @@
 #    uv pip compile pyproject.toml --no-deps --extra web --universal --python-version 3.7 -o requirements.txt
 clingo==5.7.1
     # via noqx (pyproject.toml)
-loguru==0.7.2
-    # via noqx (pyproject.toml)
 starlette==0.29.0 ; python_full_version < '3.8'
     # via noqx (pyproject.toml)
 starlette==0.41.3 ; python_full_version >= '3.8'
