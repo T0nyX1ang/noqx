@@ -35,7 +35,7 @@ async def solver_api(request: Request) -> JSONResponse:
         puzzle_name: str = body["puzzle_name"]
         puzzle: str = body["puzzle"]
         param: Dict[str, Any] = body["param"]
-        result = await run_solver(puzzle_name, puzzle, param)
+        result = run_solver(puzzle_name, puzzle, param)
         return JSONResponse(result)
     except ValueError as err:
         logger.error(traceback.format_exc())
