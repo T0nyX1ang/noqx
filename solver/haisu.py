@@ -1,7 +1,5 @@
 """The Haisu solver."""
 
-from typing import List
-
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
@@ -51,11 +49,9 @@ def haisu_count() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
     solver.add_program_line(defined(item="number", size=3))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -92,9 +88,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="grid_in", size=3))
     solver.add_program_line(display(item="grid_out", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

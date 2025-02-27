@@ -1,7 +1,5 @@
 """The Box solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -18,10 +16,9 @@ def count_box_row(target: int, r: int, color: str = "black") -> str:
     return f":- #sum {{ N, C: box_row(C, N), {color}({r}, C) }} != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c())
 
@@ -50,8 +47,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display())
-    solver.solve()
-    return solver.solutions
+
+    return solver.program
 
 
 __metadata__ = {

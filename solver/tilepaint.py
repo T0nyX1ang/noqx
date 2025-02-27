@@ -1,6 +1,4 @@
-"""The Nonogram solver."""
-
-from typing import List
+"""The Tilepaint solver."""
 
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
@@ -9,10 +7,9 @@ from noqx.rule.neighbor import area_same_color
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="gray"))
     solver.add_program_line(area_same_color(color="gray"))
@@ -39,9 +36,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

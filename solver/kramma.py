@@ -1,7 +1,5 @@
 """The KaitoRamma solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction
@@ -19,10 +17,9 @@ def straight_line() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
     solver.add_program_line(defined(item="white"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -49,9 +46,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

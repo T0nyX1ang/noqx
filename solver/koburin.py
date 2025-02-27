@@ -1,7 +1,5 @@
 """The Koburin solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -11,10 +9,9 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="gray"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
@@ -42,9 +39,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="black"))
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

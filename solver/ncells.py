@@ -1,7 +1,5 @@
 """The N Cells solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
@@ -21,11 +19,9 @@ def count_reachable_edge(target: int) -> str:
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.param["region_size"].isdigit(), "Invalid region size.")
     size = int(puzzle.param["region_size"])
     fail_false(puzzle.row * puzzle.col % size == 0, "It's impossible to divide grid into regions of this size!")
@@ -46,9 +42,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

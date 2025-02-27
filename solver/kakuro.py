@@ -8,11 +8,9 @@ from noqx.rule.helper import fail_false, validate_direction
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     sums: List[Tuple[int, List[Tuple[int, int]]]] = []
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d)
@@ -52,9 +50,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(unique_num(_type="area", color="grid"))
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

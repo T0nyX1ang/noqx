@@ -1,21 +1,17 @@
 """The Easy As solver."""
 
-from typing import List
-
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import count, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
     n = puzzle.row
-    letters = puzzle.param["letters"]
+    letters: str = puzzle.param["letters"]
     rev_letters = {v: k + 1 for k, v in enumerate(letters)}
     solver.add_program_line(grid(n, n))
     solver.add_program_line(fill_num(_range=range(1, len(letters) + 1), color="white"))
@@ -25,9 +21,10 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(count(n - len(letters), _type="col", color="white"))
 
     for (r, c, d, pos), letter in puzzle.text.items():
+        letter = str(letter)
         validate_direction(r, c, d)
         validate_type(pos, "normal")
-        fail_false(isinstance(letter, str) and len(letter) == 1, f"Clue at ({r}, {c}) should be a letter.")
+        fail_false(len(letter) == 1, f"Clue at ({r}, {c}) should be a letter.")
 
         if r == -1 and 0 <= c < puzzle.col:
             solver.add_program_line(
@@ -53,9 +50,17 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"number({r}, {c}, {rev_letters[letter]}).")
 
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
+
+
+def refine(puzzle: Puzzle) -> Puzzle:
+    """Refine the solution."""
+    letters: str = puzzle.param["letters"]
+    for (r, c, d, pos), letter in puzzle.text.items():
+        puzzle.text[Point(r, c, d, pos)] = letters[int(letter) - 1]
+
+    return puzzle
 
 
 __metadata__ = {

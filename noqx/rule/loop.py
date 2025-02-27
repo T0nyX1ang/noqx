@@ -163,3 +163,19 @@ def loop_turning(color: str = "white") -> str:
     for d1, d2 in ("lu", "ld", "ru", "rd"):
         rule += f'turning(R, C) :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
     return rule.strip()
+
+
+def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) -> str:
+    """Convert grid direction fact to edge fact."""
+    dir_dict = {"diag_down": "dr", "diag_up": "ur"} if diagonal else {"top": "r", "left": "d"}
+
+    rule = ""
+    for d, pos in dir_dict.items():
+        new_row = "R + 1" if d == "diag_up" else "R"
+        if directed:
+            rule += f'edge_{d}(R, C) :- grid_in({new_row}, C, "{pos}").\n'
+            rule += f'edge_{d}(R, C) :- grid_out({new_row}, C, "{pos}").\n'
+        else:
+            rule += f'edge_{d}(R, C) :- grid_direction({new_row}, C, "{pos}").\n'
+
+    return rule.strip()

@@ -1,19 +1,9 @@
 """The NEWS solver."""
 
-from typing import List
-
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import area, count, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.solution import solver
-
-
-def news_refine(solution: Puzzle) -> Puzzle:
-    """Refine the solution of NEWS."""
-    rev_news_dict = {1: "N", 2: "E", 3: "W", 4: "S"}
-    for (r, c, d, pos), num in solution.text.items():
-        solution.text[Point(r, c, d, pos)] = rev_news_dict[int(num)]
-    return solution
 
 
 def news_constraint() -> str:
@@ -26,11 +16,9 @@ def news_constraint() -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     news_dict = {"N": 1, "E": 2, "W": 3, "S": 4}
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(unique_num(color="grid", _type="row"))
@@ -58,12 +46,16 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f"number({r}, {c}, {news_dict[str(letter)]}).")
 
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    for solution in solver.solutions:
-        news_refine(solution)
+    return solver.program
 
-    return solver.solutions
+
+def refine(solution: Puzzle) -> Puzzle:
+    """Refine the solution."""
+    rev_news_dict = {1: "N", 2: "E", 3: "W", 4: "S"}
+    for (r, c, d, pos), num in solution.text.items():
+        solution.text[Point(r, c, d, pos)] = rev_news_dict[int(num)]
+    return solution
 
 
 __metadata__ = {

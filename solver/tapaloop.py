@@ -142,10 +142,9 @@ def valid_tapaloop(r: int, c: int) -> str:
     return rule
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
@@ -166,11 +165,13 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     for (r, c, d, pos), clue in puzzle.text.items():
         validate_direction(r, c, d)
         fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
-        clue_dict.setdefault((r, c), [])
-        clue_dict[(r, c)].append(clue)
 
-        solver.add_program_line(f"black({r}, {c}).")
-        solver.add_program_line(valid_tapaloop(r, c))
+        if (r, c) not in clue_dict:
+            solver.add_program_line(f"black({r}, {c}).")
+            solver.add_program_line(valid_tapaloop(r, c))
+            clue_dict.setdefault((r, c), [])
+
+        clue_dict[(r, c)].append(clue)
 
     for (r, c), clue in clue_dict.items():
         solver.add_program_line(parse_clue(r, c, clue))
@@ -179,9 +180,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

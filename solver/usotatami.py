@@ -1,7 +1,5 @@
 """The Uso-tatami solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
@@ -16,11 +14,9 @@ def rect_constraint() -> str:
     return ":- upleft(R, C), left(R + 1, C), up(R, C + 1)."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(len(puzzle.text) > 0, "No clues found.")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
@@ -46,9 +42,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

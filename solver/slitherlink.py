@@ -1,21 +1,14 @@
 """The Slitherlink solver."""
 
-from typing import List, Tuple
+from typing import Tuple
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
-from noqx.rule.loop import separate_item_from_loop, single_loop
+from noqx.rule.loop import convert_direction_to_edge, separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
 from noqx.solution import solver
-
-
-def convert_direction_to_edge() -> str:
-    """Convert grid direction fact to edge fact."""
-    rule = 'edge_top(R, C) :- grid_direction(R, C, "r").\n'
-    rule += 'edge_left(R, C) :- grid_direction(R, C, "d").\n'
-    return rule.strip()
 
 
 def passed_vertex() -> str:
@@ -56,10 +49,9 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     return f":- { vertex_count }, { edge_count }, C1 - C2 {rop} {num}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="slither"))
@@ -97,9 +89,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_top", size=2))
     solver.add_program_line(display(item="edge_left", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

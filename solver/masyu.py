@@ -1,7 +1,5 @@
 """The Masyu solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import validate_direction
@@ -33,10 +31,9 @@ def masyu_white_rule() -> str:
     return white_rule
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="black"))
     solver.add_program_line(defined(item="white"))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
@@ -63,9 +60,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

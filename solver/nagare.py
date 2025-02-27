@@ -1,7 +1,5 @@
 """The Nagare solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction
@@ -15,6 +13,7 @@ rev_direction = {"l": "r", "r": "l", "u": "d", "d": "u"}
 
 
 def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
+    """Generate a constraint for the wind direction."""
     if d in ("l", "r"):
         cols = range(0, c) if d == "l" else range(puzzle.col - 1, c, -1)
 
@@ -44,10 +43,9 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
     raise ValueError("Invalid direction.")
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line(shade_c(color="nagare"))
@@ -75,9 +73,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="grid_in", size=3))
     solver.add_program_line(display(item="grid_out", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

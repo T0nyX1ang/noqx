@@ -1,6 +1,6 @@
 """The Martini solver."""
 
-from typing import List, Tuple
+from typing import Tuple
 
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import area, display, grid, shade_c
@@ -25,10 +25,9 @@ def count_reachable_src_white_circle(target: int, src_cell: Tuple[int, int], col
     return f":- #count{{ R, C: {tag}({src_r}, {src_c}, R, C), white_circle(R, C) }} {rop} {num}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c("gray"))
     solver.add_program_line(adjacent(_type=4))
@@ -71,9 +70,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

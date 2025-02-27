@@ -1,7 +1,5 @@
 """The Tasquare solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
@@ -15,10 +13,9 @@ from noqx.rule.shape import all_rect
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="black"))
     solver.add_program_line(adjacent())
@@ -42,9 +39,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not black({r}, {c}).")
 
     solver.add_program_line(display(item="black"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {
@@ -56,6 +52,7 @@ __metadata__ = {
         },
         {
             "url": "https://puzz.link/p?tasquare/21/15/g.k..k4k.x.h.i8j2q.u4i2l2jar.2l.h.zhak8i8h9j2.x1m.n2g.h.l.j2h3g1k2g4r.o1i3h.i.j.l1zj2g4i..g.i.h./",
+            "test": False,
         },
     ],
 }

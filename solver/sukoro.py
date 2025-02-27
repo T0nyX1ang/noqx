@@ -1,7 +1,5 @@
 """The Sukoro solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid, invert_c
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -15,10 +13,9 @@ def num_count_adjacent(color: str = "black", adj_type: int = 4) -> str:
     return f":- number(R, C, N), N != #count {{ R1, C1 : adj_{adj_type}(R, C, R1, C1), {color}(R1, C1) }}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(fill_num(_range=range(0, 5), color="white"))
     solver.add_program_line(invert_c(color="white", invert="black"))
@@ -41,9 +38,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

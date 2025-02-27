@@ -1,6 +1,4 @@
-﻿"""The Simple Loop solver."""
-
-from typing import List
+﻿"""The Pipe Link solver."""
 
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid
@@ -32,10 +30,9 @@ def loop_intersect_connected(color: str = "black") -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lurd"))
     solver.add_program_line("pipelink(R, C) :- grid(R, C).")
@@ -53,9 +50,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
                 solver.add_program_line(f'not grid_direction({r}, {c}, "{d}").')
 
     solver.add_program_line(display(item="grid_direction", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

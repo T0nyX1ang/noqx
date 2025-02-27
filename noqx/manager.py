@@ -1,15 +1,16 @@
 """Manager of all the solvers as a plugin."""
 
 import importlib
+import logging
 import pkgutil
 import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from noqx.logging import logger
+from noqx.clingo import ClingoSolver, Config
 from noqx.puzzle import Puzzle
 from noqx.puzzle.penpa import PenpaPuzzle
-from noqx.solution import Config
+from noqx.solution import store_solutions
 
 modules: Dict[str, ModuleType] = {}
 
@@ -45,21 +46,34 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     """Run the solver."""
     module = modules[puzzle_name]
 
-    if not hasattr(module, "solve"):
-        raise NotImplementedError("Solver not implemented.")
+    if not hasattr(module, "program"):
+        raise NotImplementedError("Solver program not implemented.")
 
     start = time.perf_counter()
     puzzle: Puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
     puzzle.decode()
 
-    solutions: List[str] = list(map(lambda x: x.encode(), module.solve(puzzle)))
+    program: str = module.program(puzzle)
+    logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
+
+    instance = ClingoSolver()
+    instance.solve(program)
+
+    solutions: List[str] = []
+    for model_str in instance.solution():
+        solution = store_solutions(puzzle, model_str)
+        if hasattr(module, "refine"):  # refine the solution if possible
+            module.refine(solution)
+
+        solutions.append(solution.encode())
+
     stop = time.perf_counter()
 
     if (stop - start) >= Config.time_limit:
-        logger.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
+        logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
         raise TimeoutError("Time limit exceeded.")
 
-    logger.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
-    logger.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
+    logging.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
+    logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
 
-    return {"url": solutions}  # return the first solution
+    return {"url": solutions}

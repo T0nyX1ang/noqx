@@ -1,10 +1,9 @@
 """The Gokigen solver."""
 
-from typing import List
-
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid
 from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.loop import convert_direction_to_edge
 from noqx.solution import solver
 
 
@@ -33,23 +32,15 @@ def no_loop() -> str:
     return rule.strip()
 
 
-def convert_direction_to_edge() -> str:
-    """Convert (diagonal) grid direction fact to edge fact."""
-    rule = 'edge_diag_down(R, C) :- grid_direction(R, C, "dr").\n'
-    rule += 'edge_diag_up(R, C) :- grid_direction(R + 1, C, "ur").\n'
-    return rule.strip()
-
-
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
     solver.add_program_line(direction(["ul", "ur", "dl", "dr"]))
     solver.add_program_line(fill_path(color="grid"))
     solver.add_program_line(slant_rule())
     solver.add_program_line(no_loop())
-    solver.add_program_line(convert_direction_to_edge())
+    solver.add_program_line(convert_direction_to_edge(diagonal=True))
 
     for (r, c, d, pos), num in puzzle.text.items():
         validate_direction(r, c, d, Direction.TOP_LEFT)
@@ -59,9 +50,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_diag_down", size=2))
     solver.add_program_line(display(item="edge_diag_up", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

@@ -1,27 +1,16 @@
 """The Norinori solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.neighbor import adjacent
+from noqx.rule.variety import nori_adjacent
 from noqx.solution import solver
 
 
-def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
-    """
-    Generates a constraint for Norinori puzzles.
-
-    A grid rule and an adjacent rule should be defined first.
-    """
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
-
-
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c("gray"))
 
@@ -40,9 +29,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f"not gray({r}, {c}).")
 
     solver.add_program_line(display(item="gray"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

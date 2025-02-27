@@ -152,6 +152,10 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
   - `edge`: the borders in the puzzle.
   - `line`: the lines in the puzzle.
 
+- Create a `program` function and write the ASP program needed.
+
+- (Optional) Create a `refine` function if extra refinement is needed after program solving.
+
 - (Optional) Append a `__metadata__` variable in the end of the solver file. The keys of `__metadata__` are:
 
   - `name`: the name of the solver.

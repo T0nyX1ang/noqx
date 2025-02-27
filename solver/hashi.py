@@ -1,7 +1,5 @@
 """The Hashi solver."""
 
-from typing import List
-
 from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
@@ -47,10 +45,9 @@ def hashi_bridge() -> str:
     return rule + adj.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="number", size=3))
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(direction("lrud"))
@@ -72,9 +69,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f':- not grid_direction({r}, {c}, "{d[0]}", 1).')
 
     solver.add_program_line(display(item="grid_direction", size=4))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

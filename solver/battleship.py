@@ -1,7 +1,5 @@
 """The Battleship solver."""
 
-from typing import List
-
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -10,47 +8,9 @@ from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
 from noqx.solution import solver
 
 
-def battleship_refine(solution: Puzzle) -> Puzzle:
-    """Refine the battleship solution."""
-    for (r, c, d, pos), _ in solution.symbol.items():
-        has_top_neighbor = (r - 1, c, d, pos) in solution.symbol
-        has_left_neighbor = (r, c - 1, d, pos) in solution.symbol
-        has_bottom_neighbor = (r + 1, c, d, pos) in solution.symbol
-        has_right_neighbor = (r, c + 1, d, pos) in solution.symbol
-
-        fleet_name = solution.symbol[Point(r, c, d, pos)].split("__")[0]
-
-        # center part
-        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
-            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__1"
-
-        # middle part
-        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
-            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__2"
-
-        # left part
-        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, not has_right_neighbor} == {False}:
-            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__3"
-
-        # top part
-        if {has_top_neighbor, has_left_neighbor, has_right_neighbor, not has_bottom_neighbor} == {False}:
-            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__4"
-
-        # right part
-        if {has_top_neighbor, has_bottom_neighbor, has_right_neighbor, not has_left_neighbor} == {False}:
-            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__5"
-
-        # bottom part
-        if {has_bottom_neighbor, has_left_neighbor, has_right_neighbor, not has_top_neighbor} == {False}:
-            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__6"
-
-    return solution
-
-
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
 
     fleet_name = "battleship_B"  # set a default battleship fleet name
@@ -121,12 +81,45 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(count(num, color=fleet_name, _type="row", _id=r))
 
     solver.add_program_line(display(item=fleet_name))
-    solver.solve()
 
-    for solution in solver.solutions:
-        battleship_refine(solution)
+    return solver.program
 
-    return solver.solutions
+
+def refine(solution: Puzzle) -> Puzzle:
+    """Refine the solution."""
+    for (r, c, d, pos), _ in solution.symbol.items():
+        has_top_neighbor = (r - 1, c, d, pos) in solution.symbol
+        has_left_neighbor = (r, c - 1, d, pos) in solution.symbol
+        has_bottom_neighbor = (r + 1, c, d, pos) in solution.symbol
+        has_right_neighbor = (r, c + 1, d, pos) in solution.symbol
+
+        fleet_name = solution.symbol[Point(r, c, d, pos)].split("__")[0]
+
+        # center part
+        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, has_right_neighbor} == {False}:
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__1"
+
+        # middle part
+        elif (has_top_neighbor and has_bottom_neighbor) or (has_left_neighbor and has_right_neighbor):
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__2"
+
+        # left part
+        if {has_top_neighbor, has_bottom_neighbor, has_left_neighbor, not has_right_neighbor} == {False}:
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__3"
+
+        # top part
+        if {has_top_neighbor, has_left_neighbor, has_right_neighbor, not has_bottom_neighbor} == {False}:
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__4"
+
+        # right part
+        if {has_top_neighbor, has_bottom_neighbor, has_right_neighbor, not has_left_neighbor} == {False}:
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__5"
+
+        # bottom part
+        if {has_bottom_neighbor, has_left_neighbor, has_right_neighbor, not has_top_neighbor} == {False}:
+            solution.symbol[Point(r, c, d, pos)] = f"{fleet_name}__6"
+
+    return solution
 
 
 __metadata__ = {

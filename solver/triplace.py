@@ -10,11 +10,9 @@ from noqx.rule.shape import OMINOES, all_shapes, general_shape
 from noqx.solution import solver
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false((puzzle.row * puzzle.col - len(puzzle.symbol)) % 3 == 0, "The grid cannot be divided into 3-ominoes!")
     sums: List[Tuple[int, List[Tuple[int, int]]]] = []
     for (r, c, d, pos), num in puzzle.text.items():
@@ -75,9 +73,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

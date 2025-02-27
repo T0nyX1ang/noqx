@@ -286,7 +286,7 @@ def all_rect_region(square: bool = False) -> str:
 
 
 def avoid_rect(
-    rect_r: int, rect_c: int, corner: Tuple[Optional[int], Optional[int]] = (None, None), color: str = "black"
+    rect_r: int, rect_c: int, color: str = "black", corner: Tuple[Optional[int], Optional[int]] = (None, None)
 ) -> str:
     """
     Generates a constraint to avoid rectangular patterned {color} cells.

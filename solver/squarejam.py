@@ -1,6 +1,6 @@
 """The Square Jam solver."""
 
-from typing import List, Tuple
+from typing import Tuple
 
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
@@ -19,11 +19,9 @@ def squarejam_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     return f":- {{ {tag}({src_r}, {src_c}, R, C) }} != {2 * target - 1}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     fail_false(len(puzzle.text) > 0, "No clues found.")
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
@@ -43,9 +41,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

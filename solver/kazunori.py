@@ -1,7 +1,5 @@
 """The Kazunori solver."""
 
-from typing import List
-
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import area, display, fill_num, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_type
@@ -28,10 +26,9 @@ def area_num_adjacent(adj_type: int = 4) -> str:
     return f":- area(A, R, C), number(R, C, N), #count {{ R1, C1: area(A, R1, C1), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(adjacent(_type=4))
     solver.add_program_line(number_appear_twice())
@@ -58,9 +55,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
             solver.add_program_line(f":- number({r}, {c}, N), number({r}, {c - 1}, N1), N + N1 != {num}.")
 
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

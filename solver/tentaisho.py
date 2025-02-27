@@ -1,7 +1,5 @@
 """The Tentaisho (Spiral Galaxies) solver."""
 
-from typing import List
-
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode
@@ -20,10 +18,9 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
     return rule.strip()
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(defined(item="hole"))
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
     solver.add_program_line(edge(puzzle.row, puzzle.col))
@@ -78,9 +75,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
 
     solver.add_program_line(display(item="edge_left", size=2))
     solver.add_program_line(display(item="edge_top", size=2))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

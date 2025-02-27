@@ -9,12 +9,10 @@ from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
 from noqx.solution import solver
 
-neighbor_offsets = ((-1, 0), (0, 1), (1, 0), (0, -1))
-
 
 def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
     """
-    Generate n * (n - 1) / 2 constraints and n rules to enfroce identical adjacent cell maps.
+    Generate n * (n - 1) / 2 constraints and n rules to enforce identical adjacent cell maps.
 
     A grid fact and an adjacent rule should be defined first. n is the number of known source cells.
     """
@@ -28,10 +26,9 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
     return rules + "\n" + constraints
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
     solver.add_program_line(grid(puzzle.row, puzzle.col))
     solver.add_program_line(shade_c(color="tents__2"))
     solver.add_program_line(adjacent(_type=4))
@@ -60,9 +57,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
     solver.add_program_line(identical_adjacent_map(all_trees, color="tents__2", adj_type=4))
     solver.add_program_line(count(len(all_trees), color="tents__2", _type="grid"))
     solver.add_program_line(display(item="tents__2"))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {

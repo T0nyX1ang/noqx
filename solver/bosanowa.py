@@ -1,7 +1,5 @@
 """Solve Bosanowa puzzles."""
 
-from typing import List
-
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -14,11 +12,9 @@ def bosanowa_constraint(adj_type: int = 4) -> str:
     return f":- number(R, C, N), N != #sum {{ |N - N1|, R1, C1: number(R1, C1, N1), adj_{adj_type}(R, C, R1, C1) }}."
 
 
-def solve(puzzle: Puzzle) -> List[Puzzle]:
-    """Solve the puzzle."""
+def program(puzzle: Puzzle) -> str:
+    """Generate a program for the puzzle."""
     solver.reset()
-    solver.register_puzzle(puzzle)
-
     lmt_num = int(puzzle.param["max_number"])
     solver.add_program_line(defined(item="hole"))
     solver.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
@@ -37,9 +33,8 @@ def solve(puzzle: Puzzle) -> List[Puzzle]:
         solver.add_program_line(f"number({r}, {c}, {num}).")
 
     solver.add_program_line(display(item="number", size=3))
-    solver.solve()
 
-    return solver.solutions
+    return solver.program
 
 
 __metadata__ = {
