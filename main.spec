@@ -16,7 +16,7 @@ a = Analysis(
     ["main.py"],
     pathex=[],
     binaries=[],
-    datas=[("./static/*", "./static"), ("./LICENSE.GPL", "./")],
+    datas=[("./penpa-edit/*", "./penpa-edit"), ("./LICENSE.GPL", "./")],
     hiddenimports=hiddle_imports,
     hookspath=[],
     hooksconfig={},

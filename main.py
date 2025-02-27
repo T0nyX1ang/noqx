@@ -86,7 +86,7 @@ routes = [
             Route("/solve/", endpoint=solver_api, methods=["POST"]),
         ],
     ),
-    Mount("/penpa-edit/", StaticFiles(directory="static", html=True), name="static"),
+    Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
     Route("/", root_redirect),
 ]
 app = Starlette(routes=routes)
