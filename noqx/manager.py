@@ -58,16 +58,15 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
 
     instance = ClingoSolver()
     instance.solve(program)
-    solutions: List[Puzzle] = []
 
+    solutions: List[str] = []
     for model_str in instance.solution():
         solution = store_solutions(puzzle, model_str)
         if hasattr(module, "refine"):  # refine the solution if possible
             module.refine(solution)
 
-        solutions.append(solution)
+        solutions.append(solution.encode())
 
-    final: List[str] = list(map(lambda x: x.encode(), solutions))
     stop = time.perf_counter()
 
     if (stop - start) >= Config.time_limit:
@@ -77,4 +76,4 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     logging.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
     logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
 
-    return {"url": final}
+    return {"url": solutions}
