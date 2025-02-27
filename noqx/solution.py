@@ -1,5 +1,6 @@
 """Generate solutions for the given problem."""
 
+import logging
 from copy import deepcopy
 from typing import List, Optional
 
@@ -7,16 +8,15 @@ from clingo import MessageCode
 from clingo.control import Control
 from clingo.solving import Model
 
-from noqx.logging import logger
 from noqx.puzzle import Color, Direction, Point, Puzzle
 
 
 def clingo_logging_handler(code: MessageCode, message: str) -> None:  # pragma: no cover
     """Handle clingo logging."""
     if code == MessageCode.RuntimeError:
-        logger.error(f"[Clingo] {code.name}: {message.strip()}")
+        logging.error(f"[Clingo] {code.name}: {message.strip()}")
     else:
-        logger.warning(f"[Clingo] {code.name}: {message.strip()}")
+        logging.warning(f"[Clingo] {code.name}: {message.strip()}")
 
 
 class Config:
@@ -57,7 +57,7 @@ class ClingoSolver:
     def register_puzzle(self, puzzle: Puzzle):
         """Register the puzzle to the solution."""
         self.puzzle = puzzle
-        logger.debug("[Solver] Puzzle registered.")
+        logging.debug("[Solver] Puzzle registered.")
 
     def store_model(self, model: Model):  # pragma: no cover
         """Store the model on solving."""

@@ -1,8 +1,8 @@
 """Test all solvers in Noqx."""
 
+import logging
 import unittest
 
-from noqx.logging import logger
 from noqx.manager import list_solver_metadata, load_solvers, run_solver
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
@@ -16,7 +16,7 @@ from solver.castle import wall_length
 from solver.heyawake import limit_border
 from solver.nagare import nagare_wind
 
-logger.remove()
+logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.CRITICAL)
 
 load_solvers("solver")
 metadata = list_solver_metadata()

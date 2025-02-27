@@ -1,7 +1,7 @@
 """Entry point for the noqx project."""
 
 import argparse
-import sys
+import logging
 import traceback
 from typing import Any, Dict
 
@@ -13,7 +13,6 @@ from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from noqx.logging import logger
 from noqx.manager import list_solver_metadata, load_solvers, run_solver
 from noqx.solution import Config
 
@@ -38,17 +37,14 @@ async def solver_api(request: Request) -> JSONResponse:
         result = run_solver(puzzle_name, puzzle, param)
         return JSONResponse(result)
     except ValueError as err:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         return JSONResponse({"detail": str(err)}, status_code=400)
     except TimeoutError as err:
         return JSONResponse({"detail": str(err)}, status_code=504)
     except Exception as err:  # pylint: disable=broad-except  # pragma: no cover
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         return JSONResponse({"detail": "Unknown error."}, status_code=500)
 
-
-# load default solver directory
-load_solvers("solver")
 
 # argument parser
 parser = argparse.ArgumentParser(description="noqx startup settings.")
@@ -63,18 +59,20 @@ Config.parallel_threads = args.parallel_threads
 
 # logging setup
 log_level = "DEBUG" if args.debug else "INFO"
-log_format = "<g>{time:MM-DD HH:mm:ss}</g> | <lvl>{level}</lvl> | {message}"
-LOGGING_CONFIG = {
+UVICORN_LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"default": {"class": "noqx.logging.LoguruHandler", "level": log_level}},
+    "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
     "loggers": {
         "uvicorn.error": {"handlers": ["default"], "level": log_level},
         "uvicorn.access": {"handlers": ["default"], "level": log_level},
     },
 }
-logger.remove()
-logger.add(sys.stdout, level=log_level, diagnose=False, format=log_format)
+logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
+
+
+# load default solver directory
+load_solvers("solver")
 
 # starlette app setup
 routes = [
@@ -100,5 +98,5 @@ if __name__ == "__main__":
         port=args.port,
         reload=args.debug,
         log_level=log_level.lower(),
-        log_config=LOGGING_CONFIG,
+        log_config=UVICORN_LOGGING_CONFIG,
     )

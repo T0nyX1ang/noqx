@@ -1,12 +1,12 @@
 """Manager of all the solvers as a plugin."""
 
 import importlib
+import logging
 import pkgutil
 import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from noqx.logging import logger
 from noqx.puzzle import Puzzle
 from noqx.puzzle.penpa import PenpaPuzzle
 from noqx.solution import Config, instance
@@ -53,7 +53,7 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     puzzle.decode()
 
     program: str = module.program(puzzle)
-    logger.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
+    logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
 
     instance.reset()
     instance.register_puzzle(puzzle)
@@ -68,10 +68,10 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     stop = time.perf_counter()
 
     if (stop - start) >= Config.time_limit:
-        logger.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
+        logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
         raise TimeoutError("Time limit exceeded.")
 
-    logger.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
-    logger.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
+    logging.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
+    logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
 
     return {"url": final}

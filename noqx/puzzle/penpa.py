@@ -1,12 +1,12 @@
 """Encoding for penpa-edit frontend."""
 
 import json
+import logging
 from base64 import b64decode, b64encode
 from functools import reduce
 from typing import Any, Dict, List, Optional, Tuple, Union
 from zlib import compress, decompress
 
-from noqx.logging import logger
 from noqx.puzzle import Color, Direction, Point, Puzzle
 
 PENPA_PREFIX = "m=edit&p="
@@ -102,7 +102,7 @@ class PenpaPuzzle(Puzzle):
         else:
             raise NotImplementedError("Unsupported cell shape. Current only square shape is supported.")
 
-        logger.debug(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {self.margin}.")
+        logging.debug(f"[Puzzle] Board initialized. Size: {self.row}x{self.col}. Margin: {self.margin}.")
 
     def _unpack_surface(self):
         """Unpack the surface element from the board."""
@@ -217,7 +217,7 @@ class PenpaPuzzle(Puzzle):
             self._unpack_symbol()
             self._unpack_edge()
             self._unpack_line()
-        logger.debug("[Puzzle] Board unpacked.")
+        logging.debug("[Puzzle] Board unpacked.")
 
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the penpa index to coordinate."""
@@ -316,7 +316,7 @@ class PenpaPuzzle(Puzzle):
         self._pack_symbol()
         self._pack_edge()
         self._pack_line()
-        logger.debug("[Solution] Board packed.")
+        logging.debug("[Solution] Board packed.")
 
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to penpa index."""
