@@ -3,6 +3,8 @@
 import argparse
 import json
 import logging
+import os
+import sys
 import traceback
 from typing import Any, Dict
 
@@ -49,6 +51,7 @@ parser.add_argument("-p", "--port", default=8000, type=int, help="the port to ru
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
+parser.add_argument("-po", "--pyscript_only", action="store_true", help="Only use Pyscript for client-side purposes.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -73,6 +76,18 @@ with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8") as f:
     # dump the metadata to a javascript file for further import
     f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
+if args.pyscript_only:
+    # generate pyscript files if needed
+    file_dict = {"files": {}}
+    for dirname in ["noqx", "noqx/puzzle", "noqx/rule", "solver"]:
+        for filename in os.listdir(dirname):
+            if filename.endswith(".py") and filename != "clingo.py":
+                file_dict["files"][f"../{dirname}/{filename}"] = f"{dirname}/{filename}"
+
+    with open("pyscript.json", "w", encoding="utf-8") as f:
+        json.dump(file_dict, f, indent=2)
+
+    sys.exit(0)
 
 # starlette app setup
 routes = [

@@ -113,6 +113,12 @@ function make_param(id, type, name, value) {
 }
 
 $(document).ready(function () {
+  const CLINGO_WEB_WORKER_URL = "./clingo.web.worker.js";
+  const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
+  if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+    clingo.init(CLINGO_WASM_URL);
+  }
+
   const urlBase = "./penpa-edit/#";
   const issueMessage =
     "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.";
@@ -239,7 +245,7 @@ $(document).ready(function () {
     window.open(`https://puzz.link/rules.html?${puzzleName !== "yajilin_regions" ? puzzleName : "yajilin-regions"}`);
   });
 
-  solveButton.addEventListener("click", () => {
+  solveButton.addEventListener("click", async () => {
     if (!typeSelect.value) {
       Swal.fire({
         icon: "question",
@@ -266,64 +272,111 @@ $(document).ready(function () {
         }
       }
 
-      fetch("/api/solve/", {
-        method: "POST",
-        body: JSON.stringify({
-          puzzle_name: puzzleName,
-          puzzle: puzzleContent,
-          param: puzzleParameters,
-        }),
-        headers: { "Content-type": "application/json" },
-      })
-        .then(async (response) => {
-          let body = await response.json();
-          if (response.status === 400 || response.status === 500) {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: body.detail || "Unknown error.",
-              footer: issueMessage,
-            });
-            solveButton.textContent = "Solve";
-            return;
-          } else if (response.status === 504) {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Time limit exceeded.",
-              footer: issueMessage,
-            });
-            solveButton.textContent = "Solve";
-            return;
-          } else {
-            solutionList = body.url;
-            if (solutionList.length === 0) {
+      if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+        try {
+          const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
+          const program = generate_program(puzzle);
+
+          const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
+          const result = await clingo.run(program, options);
+
+          if (result.Result === "ERROR") {
+            console.error(result.Error);
+            throw new Error("Clingo program error.");
+          }
+
+          if (result.Result === "UNSATISFIABLE") {
+            throw new Error("No solution found.");
+          }
+
+          const puz_name = solver_metadata[puzzle.puzzle_name].name;
+          console.info(`[Solver] ${puz_name} puzzle solved.`);
+          console.info(`[Solver] ${puz_name} solver took ${result.Time.Total} seconds.`);
+
+          solutionList = [];
+          for (const solution_data of result.Call[0].Witnesses) {
+            const solution = store_solution(puzzle, solution_data.Value.join(" ")).encode();
+            solutionList.push(solution);
+          }
+
+          solutionPointer = 0;
+          load(solutionList[solutionPointer]);
+        } catch (e) {
+          console.log(e);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: e.message,
+            footer: issueMessage,
+          });
+        } finally {
+          if (solutionList) {
+            solveButton.textContent = `Solution (${solutionPointer + 1}/${
+              solutionList.length === 10 ? "10+" : solutionList.length
+            })`;
+            solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
+          }
+        }
+      } else {
+        fetch("/api/solve/", {
+          method: "POST",
+          body: JSON.stringify({
+            puzzle_name: puzzleName,
+            puzzle: puzzleContent,
+            param: puzzleParameters,
+          }),
+          headers: { "Content-type": "application/json" },
+        })
+          .then(async (response) => {
+            let body = await response.json();
+            if (response.status === 400 || response.status === 500) {
               Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "No solution found.",
+                text: body.detail || "Unknown error.",
                 footer: issueMessage,
               });
+              solveButton.textContent = "Solve";
               return;
+            } else if (response.status === 504) {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Time limit exceeded.",
+                footer: issueMessage,
+              });
+              solveButton.textContent = "Solve";
+              return;
+            } else {
+              solutionList = body.url;
+              if (solutionList.length === 0) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "No solution found.",
+                  footer: issueMessage,
+                });
+                return;
+              }
+              solutionPointer = 0;
+              load(solutionList[solutionPointer]);
             }
-            solutionPointer = 0;
-            load(solutionList[solutionPointer]);
-          }
-        })
-        .catch((e) => {
-          Swal.fire({
-            icon: "question",
-            title: "Unexpected error",
-            text: e,
-            footer: issueMessage,
+          })
+          .catch((e) => {
+            Swal.fire({
+              icon: "question",
+              title: "Unexpected error",
+              text: e,
+              footer: issueMessage,
+            });
+          })
+          .finally(() => {
+            solveButton.textContent = `Solution (${solutionPointer + 1}/${
+              solutionList.length === 10 ? "10+" : solutionList.length
+            })`;
+            solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
           });
-        })
-        .finally(() => {
-          solveButton.textContent = `Solution (${solutionPointer + 1}/${
-            solutionList.length === 10 ? "10+" : solutionList.length
-          })`;
-          solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
-        });
+      }
     } else {
       solutionPointer++;
       if (solutionPointer >= solutionList.length) {
@@ -336,8 +389,13 @@ $(document).ready(function () {
     }
   });
 
-  resetButton.addEventListener("click", () => {
+  resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
+      if (ENABLE_CLINGO_WITH_PYSCRIPT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+        clingo.worker.terminate(); // terminate the web worker
+        clingo.worker = new Worker(CLINGO_WEB_WORKER_URL); // respawn a new web worker
+        await clingo.init(CLINGO_WASM_URL); // reinitialize clingo-wasm
+      }
       imp(puzzleContent.includes(urlBase) ? puzzleContent : `${urlBase}${puzzleContent}`);
       choicesType.enable();
       choicesExample.enable();
