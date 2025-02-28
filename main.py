@@ -1,6 +1,7 @@
 """Entry point for the noqx project."""
 
 import argparse
+import json
 import logging
 import traceback
 from typing import Any, Dict
@@ -20,11 +21,6 @@ from noqx.manager import list_solver_metadata, load_solvers
 async def root_redirect(_: Request) -> RedirectResponse:
     """Redirect root page to penpa-edit page."""
     return RedirectResponse(url="/penpa-edit/")
-
-
-async def list_puzzles_api(_: Request) -> JSONResponse:
-    """List the available puzzles."""
-    return JSONResponse(list_solver_metadata())
 
 
 async def solver_api(request: Request) -> JSONResponse:
@@ -73,16 +69,17 @@ logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt=
 
 # load default solver directory
 load_solvers("solver")
+with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8") as f:
+    # dump the metadata to a javascript file for further import
+    f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=4)};")
+
 
 # starlette app setup
 routes = [
     Mount(
         "/api",
         name="api",
-        routes=[
-            Route("/list/", endpoint=list_puzzles_api, methods=["GET"]),
-            Route("/solve/", endpoint=solver_api, methods=["POST"]),
-        ],
+        routes=[Route("/solve/", endpoint=solver_api, methods=["POST"])],
     ),
     Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
     Route("/", root_redirect),

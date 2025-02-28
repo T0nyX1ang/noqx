@@ -160,27 +160,21 @@ $(document).ready(function () {
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
   puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
 
-  let body = undefined; // store the puzzle list
+  // solver_metadata is defined in solver_metadata.js
+  for (const [ptype, pvalue] of Object.entries(solver_metadata)) {
+    typeOption = {
+      value: ptype,
+      label: pvalue.name,
+      customProperties: { aliases: pvalue.aliases },
+    };
+    puzzleTypeDict[pvalue.category].choices.push(typeOption);
+  }
 
-  fetch("/api/list/").then((response) => {
-    response.json().then((_body) => {
-      for (const [ptype, pvalue] of Object.entries(_body)) {
-        typeOption = {
-          value: ptype,
-          label: pvalue.name,
-          customProperties: { aliases: pvalue.aliases },
-        };
-        puzzleTypeDict[pvalue.category].choices.push(typeOption);
-      }
+  for (const [k, _] of Object.entries(categoryName)) {
+    if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
+  }
 
-      for (const [k, _] of Object.entries(categoryName)) {
-        if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
-      }
-
-      choicesType.setChoices(Object.values(puzzleTypeDict));
-      body = _body;
-    });
-  });
+  choicesType.setChoices(Object.values(puzzleTypeDict));
 
   typeSelect.addEventListener("change", () => {
     ruleButton.disabled = false;
@@ -193,9 +187,9 @@ $(document).ready(function () {
         parameterBox.removeChild(parameterBox.lastChild);
       }
 
-      if (body[puzzleName].parameters) {
+      if (solver_metadata[puzzleName].parameters) {
         parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramDiv = make_param(k, v.type, v.name, v.default);
           parameterBox.appendChild(paramDiv);
         }
@@ -203,7 +197,9 @@ $(document).ready(function () {
 
       choicesExample.clearStore();
       let exampleList = [{ value: "", label: "Choose Example", selected: true }];
-      exampleList.push(...body[puzzleName].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
+      exampleList.push(
+        ...solver_metadata[puzzleName].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` }))
+      );
       choicesExample.setChoices(exampleList);
     }
   });
@@ -215,13 +211,13 @@ $(document).ready(function () {
       solutionList = null;
       solutionPointer = -1;
 
-      let exampleData = body[puzzleName].examples[exampleSelect.value];
+      let exampleData = solver_metadata[puzzleName].examples[exampleSelect.value];
       puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
       imp(puzzleContent);
 
-      if (body[puzzleName].parameters) {
-        for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
-          const config = body[puzzleName].examples[exampleSelect.value].config;
+      if (solver_metadata[puzzleName].parameters) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
+          const config = solver_metadata[puzzleName].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") paramInput.checked = value;
@@ -251,8 +247,8 @@ $(document).ready(function () {
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
-      if (body[puzzleName].parameters) {
-        for (const [k, _] of Object.entries(body[puzzleName].parameters)) {
+      if (solver_metadata[puzzleName].parameters) {
+        for (const [k, _] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
           else puzzleParameters[k] = paramInput.value;
