@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import os
+import shutil
 import sys
 import traceback
 from typing import Any, Dict
@@ -78,11 +79,18 @@ with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") 
 
 if args.pyscript_only:
     # generate pyscript files if needed
+    os.makedirs("dist/page", exist_ok=True)
+
+    target_dirs = ["noqx", "noqx/puzzle", "noqx/rule", "solver", "penpa-edit"]
+    for dirname in target_dirs:
+        os.makedirs(f"dist/page/{dirname}", exist_ok=True)
+
     file_dict = {"files": {}}
     for dirname in ["noqx", "noqx/puzzle", "noqx/rule", "solver"]:
         for filename in os.listdir(dirname):
             if filename.endswith(".py") and filename != "clingo.py":
                 file_dict["files"][f"../{dirname}/{filename}"] = f"{dirname}/{filename}"
+                shutil.copy(f"./{dirname}/{filename}", f"./dist/page/{dirname}/{filename}")
 
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
@@ -92,6 +100,12 @@ if args.pyscript_only:
 
     with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = false", "ENABLE_CLINGO_WITH_PYSCRIPT = true"))
+
+    for filename in os.listdir("penpa-edit"):
+        shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")
+
+    for filename in ["index.html", "pyscript.json", "main_pyscript.py"]:
+        shutil.copy(f"./{filename}", f"./dist/page/{filename}")
 
     sys.exit(0)
 
