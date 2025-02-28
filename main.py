@@ -37,7 +37,7 @@ async def solver_api(request: Request) -> JSONResponse:
         return JSONResponse({"detail": str(err)}, status_code=400)
     except TimeoutError as err:
         return JSONResponse({"detail": str(err)}, status_code=504)
-    except Exception as err:  # pylint: disable=broad-except  # pragma: no cover
+    except Exception:  # pylint: disable=broad-except  # pragma: no cover
         logging.error(traceback.format_exc())
         return JSONResponse({"detail": "Unknown error."}, status_code=500)
 
@@ -71,7 +71,7 @@ logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt=
 load_solvers("solver")
 with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8") as f:
     # dump the metadata to a javascript file for further import
-    f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=4)};")
+    f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
 
 # starlette app setup
