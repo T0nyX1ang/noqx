@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -36,11 +36,14 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
       - name: Generate artifact
-        run: python3 main.py -po
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python3 main.py -po
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist/page'
+          path: "./dist/page"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
