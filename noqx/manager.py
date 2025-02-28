@@ -42,32 +42,51 @@ def list_solver_metadata() -> Dict[str, Any]:
     return metadata
 
 
-def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
-    """Run the solver."""
-    module = modules[puzzle_name]
+def prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Puzzle:
+    """Prepare the puzzle."""
+    puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
+    puzzle.decode()
 
+    return puzzle
+
+
+def generate_program(puzzle: Puzzle) -> str:
+    """Generate the solver program."""
+    module = modules[puzzle.puzzle_name]
     if not hasattr(module, "program"):
         raise NotImplementedError("Solver program not implemented.")
 
-    start = time.perf_counter()
-    puzzle: Puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
-    puzzle.decode()
+    logging.debug(f"[Solver] {str(puzzle.puzzle_name).capitalize()} puzzle program generated.")
+    return module.program(puzzle)
 
-    program: str = module.program(puzzle)
-    logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
 
-    instance = ClingoSolver()
-    instance.solve(program)
+def refine_solution(puzzle: Puzzle, raw_solutions: List[str]) -> List[str]:
+    """Refine every solution."""
+    module = modules[puzzle.puzzle_name]
 
     solutions: List[str] = []
-    for model_str in instance.solution():
+    for model_str in raw_solutions:
         solution = store_solutions(puzzle, model_str)
         if hasattr(module, "refine"):  # refine the solution if possible
             module.refine(solution)
 
         solutions.append(solution.encode())
 
-    stop = time.perf_counter()
+    return solutions
+
+
+def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
+    """Run the solver."""
+    start = time.perf_counter()  # start the counter
+    puzzle = prepare_puzzle(puzzle_name, puzzle_content, param)
+    program = generate_program(puzzle)
+
+    instance = ClingoSolver()
+    instance.solve(program)
+    raw_solutions: List[str] = instance.solution()
+
+    solutions = refine_solution(puzzle, raw_solutions)
+    stop = time.perf_counter()  # stop the counter
 
     if (stop - start) >= Config.time_limit:
         logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
