@@ -2,7 +2,6 @@
 
 import importlib
 import pkgutil
-from copy import deepcopy
 from types import ModuleType
 from typing import Any, Dict, List
 
@@ -61,7 +60,8 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
     module = modules[puzzle.puzzle_name]
 
     solution_data = tuple(str(model_str).split())  # raw solution converted from clingo
-    solution = deepcopy(puzzle)
+    solution = PenpaPuzzle(puzzle.puzzle_name, puzzle.content, puzzle.param)
+    solution.decode()
     solution.clear()
 
     for item in solution_data:
