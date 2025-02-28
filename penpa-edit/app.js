@@ -113,6 +113,12 @@ function make_param(id, type, name, value) {
 }
 
 $(document).ready(function () {
+  const CLINGO_WEB_WORKER_URL = "./clingo.web.worker.js";
+  const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
+  if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+    clingo.init(CLINGO_WASM_URL);
+  }
+
   const urlBase = "./penpa-edit/#";
   const issueMessage =
     "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.";
@@ -160,27 +166,21 @@ $(document).ready(function () {
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
   puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
 
-  let body = undefined; // store the puzzle list
+  // solver_metadata is defined in solver_metadata.js
+  for (const [ptype, pvalue] of Object.entries(solver_metadata)) {
+    typeOption = {
+      value: ptype,
+      label: pvalue.name,
+      customProperties: { aliases: pvalue.aliases },
+    };
+    puzzleTypeDict[pvalue.category].choices.push(typeOption);
+  }
 
-  fetch("/api/list/").then((response) => {
-    response.json().then((_body) => {
-      for (const [ptype, pvalue] of Object.entries(_body)) {
-        typeOption = {
-          value: ptype,
-          label: pvalue.name,
-          customProperties: { aliases: pvalue.aliases },
-        };
-        puzzleTypeDict[pvalue.category].choices.push(typeOption);
-      }
+  for (const [k, _] of Object.entries(categoryName)) {
+    if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
+  }
 
-      for (const [k, _] of Object.entries(categoryName)) {
-        if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
-      }
-
-      choicesType.setChoices(Object.values(puzzleTypeDict));
-      body = _body;
-    });
-  });
+  choicesType.setChoices(Object.values(puzzleTypeDict));
 
   typeSelect.addEventListener("change", () => {
     ruleButton.disabled = false;
@@ -193,9 +193,9 @@ $(document).ready(function () {
         parameterBox.removeChild(parameterBox.lastChild);
       }
 
-      if (body[puzzleName].parameters) {
+      if (solver_metadata[puzzleName].parameters) {
         parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramDiv = make_param(k, v.type, v.name, v.default);
           parameterBox.appendChild(paramDiv);
         }
@@ -203,7 +203,12 @@ $(document).ready(function () {
 
       choicesExample.clearStore();
       let exampleList = [{ value: "", label: "Choose Example", selected: true }];
-      exampleList.push(...body[puzzleName].examples.map((_, i) => ({ value: i, label: `Example #${i + 1}` })));
+      exampleList.push(
+        ...solver_metadata[puzzleName].examples.map((_, i) => ({
+          value: i,
+          label: `Example #${i + 1}`,
+        }))
+      );
       choicesExample.setChoices(exampleList);
     }
   });
@@ -215,19 +220,23 @@ $(document).ready(function () {
       solutionList = null;
       solutionPointer = -1;
 
-      let exampleData = body[puzzleName].examples[exampleSelect.value];
+      let exampleData = solver_metadata[puzzleName].examples[exampleSelect.value];
       puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
       imp(puzzleContent);
 
-      if (body[puzzleName].parameters) {
-        for (const [k, v] of Object.entries(body[puzzleName].parameters)) {
-          const config = body[puzzleName].examples[exampleSelect.value].config;
+      if (solver_metadata[puzzleName].parameters) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
+          const config = solver_metadata[puzzleName].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") paramInput.checked = value;
           else paramInput.value = value;
         }
       }
+    } else {
+      create_newboard();
+      advancecontrol_toggle();
+      advancecontrol_toggle();
     }
   });
 
@@ -236,7 +245,7 @@ $(document).ready(function () {
     window.open(`https://puzz.link/rules.html?${puzzleName !== "yajilin_regions" ? puzzleName : "yajilin-regions"}`);
   });
 
-  solveButton.addEventListener("click", () => {
+  solveButton.addEventListener("click", async () => {
     if (!typeSelect.value) {
       Swal.fire({
         icon: "question",
@@ -246,78 +255,130 @@ $(document).ready(function () {
       return;
     }
 
+    puzzleName = typeSelect.value;
+
     if (solutionPointer === -1) {
       puzzleContent = exp();
+      choicesType.disable();
+      choicesExample.disable();
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
-      if (body[puzzleName].parameters) {
-        for (const [k, _] of Object.entries(body[puzzleName].parameters)) {
+      if (solver_metadata[puzzleName].parameters) {
+        for (const [k, _] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
           else puzzleParameters[k] = paramInput.value;
         }
       }
 
-      fetch("/api/solve/", {
-        method: "POST",
-        body: JSON.stringify({
-          puzzle_name: puzzleName,
-          puzzle: puzzleContent,
-          param: puzzleParameters,
-        }),
-        headers: { "Content-type": "application/json" },
-      })
-        .then(async (response) => {
-          let body = await response.json();
-          if (response.status === 400 || response.status === 500) {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: body.detail || "Unknown error.",
-              footer: issueMessage,
-            });
-            solveButton.textContent = "Solve";
-            return;
-          } else if (response.status === 504) {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Time limit exceeded.",
-              footer: issueMessage,
-            });
-            solveButton.textContent = "Solve";
-            return;
-          } else {
-            solutionList = body.url;
-            if (solutionList.length === 0) {
+      if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+        try {
+          const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
+          const program = generate_program(puzzle);
+
+          const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
+          const result = await clingo.run(program, options);
+
+          if (result.Result === "ERROR") {
+            console.error(result.Error);
+            throw new Error("Clingo program error.");
+          }
+
+          if (result.Result === "UNSATISFIABLE") {
+            throw new Error("No solution found.");
+          }
+
+          const puz_name = solver_metadata[puzzle.puzzle_name].name;
+          console.info(`[Solver] ${puz_name} puzzle solved.`);
+          console.info(`[Solver] ${puz_name} solver took ${result.Time.Total} seconds.`);
+
+          solutionList = [];
+          for (const solution_data of result.Call[0].Witnesses) {
+            const solution = store_solution(puzzle, solution_data.Value.join(" ")).encode();
+            solutionList.push(solution);
+          }
+
+          solutionPointer = 0;
+          load(solutionList[solutionPointer]);
+        } catch (e) {
+          console.log(e);
+
+          const message_idx = e.message.indexOf("RuntimeWarning:");
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: e.message.slice(message_idx + 15, e.message.length - 1),
+            footer: issueMessage,
+          });
+        } finally {
+          if (solutionList) {
+            solveButton.textContent = `Solution (${solutionPointer + 1}/${
+              solutionList.length === 10 ? "10+" : solutionList.length
+            })`;
+            solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
+          }
+        }
+      } else {
+        fetch("/api/solve/", {
+          method: "POST",
+          body: JSON.stringify({
+            puzzle_name: puzzleName,
+            puzzle: puzzleContent,
+            param: puzzleParameters,
+          }),
+          headers: { "Content-type": "application/json" },
+        })
+          .then(async (response) => {
+            let body = await response.json();
+            if (response.status === 400 || response.status === 500) {
               Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "No solution found.",
+                text: body.detail || "Unknown error.",
                 footer: issueMessage,
               });
+              solveButton.textContent = "Solve";
               return;
+            } else if (response.status === 504) {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Time limit exceeded.",
+                footer: issueMessage,
+              });
+              solveButton.textContent = "Solve";
+              return;
+            } else {
+              solutionList = body.url;
+              if (solutionList.length === 0) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "No solution found.",
+                  footer: issueMessage,
+                });
+                return;
+              }
+              solutionPointer = 0;
+              load(solutionList[solutionPointer]);
             }
-            solutionPointer = 0;
-            load(solutionList[solutionPointer]);
-          }
-        })
-        .catch((e) => {
-          Swal.fire({
-            icon: "question",
-            title: "Unexpected error",
-            text: e,
-            footer: issueMessage,
+          })
+          .catch((e) => {
+            Swal.fire({
+              icon: "question",
+              title: "Unexpected error",
+              text: e,
+              footer: issueMessage,
+            });
+          })
+          .finally(() => {
+            solveButton.textContent = `Solution (${solutionPointer + 1}/${
+              solutionList.length === 10 ? "10+" : solutionList.length
+            })`;
+            solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
           });
-        })
-        .finally(() => {
-          choicesExample.setChoiceByValue("");
-          solveButton.textContent = `Solution (${solutionPointer + 1}/${
-            solutionList.length === 10 ? "10+" : solutionList.length
-          })`;
-          solveButton.disabled = solutionList.length === 1 || solutionList.length === 0;
-        });
+      }
     } else {
       solutionPointer++;
       if (solutionPointer >= solutionList.length) {
@@ -330,12 +391,20 @@ $(document).ready(function () {
     }
   });
 
-  resetButton.addEventListener("click", () => {
+  resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
+      if (ENABLE_CLINGO_WITH_PYSCRIPT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+        clingo.worker.terminate(); // terminate the web worker
+        clingo.worker = new Worker(CLINGO_WEB_WORKER_URL); // respawn a new web worker
+        await clingo.init(CLINGO_WASM_URL); // reinitialize clingo-wasm
+      }
       imp(puzzleContent.includes(urlBase) ? puzzleContent : `${urlBase}${puzzleContent}`);
+      choicesType.enable();
+      choicesExample.enable();
     } else {
-      pu.reset_board();
-      pu.redraw();
+      create_newboard();
+      advancecontrol_toggle();
+      advancecontrol_toggle();
     }
     puzzleContent = null;
     solutionList = [];

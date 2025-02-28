@@ -1,16 +1,12 @@
 """Manager of all the solvers as a plugin."""
 
 import importlib
-import logging
 import pkgutil
-import time
 from types import ModuleType
 from typing import Any, Dict, List
 
-from noqx.clingo import ClingoSolver, Config
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.puzzle.penpa import PenpaPuzzle
-from noqx.solution import store_solutions
 
 modules: Dict[str, ModuleType] = {}
 
@@ -42,38 +38,72 @@ def list_solver_metadata() -> Dict[str, Any]:
     return metadata
 
 
-def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
-    """Run the solver."""
-    module = modules[puzzle_name]
+def prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Puzzle:
+    """Prepare the puzzle."""
+    puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
+    puzzle.decode()
 
+    return puzzle
+
+
+def generate_program(puzzle: Puzzle) -> str:
+    """Generate the solver program."""
+    module = modules[puzzle.puzzle_name]
     if not hasattr(module, "program"):
         raise NotImplementedError("Solver program not implemented.")
 
-    start = time.perf_counter()
-    puzzle: Puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
-    puzzle.decode()
+    return module.program(puzzle)
 
-    program: str = module.program(puzzle)
-    logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle program generated.")
 
-    instance = ClingoSolver()
-    instance.solve(program)
+def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
+    """Store and refine the solution."""
+    module = modules[puzzle.puzzle_name]
 
-    solutions: List[str] = []
-    for model_str in instance.solution():
-        solution = store_solutions(puzzle, model_str)
-        if hasattr(module, "refine"):  # refine the solution if possible
-            module.refine(solution)
+    solution_data = tuple(str(model_str).split())  # raw solution converted from clingo
+    solution = PenpaPuzzle(puzzle.puzzle_name, puzzle.content, puzzle.param)
+    solution.decode()
+    solution.clear()
 
-        solutions.append(solution.encode())
+    for item in solution_data:
+        _type, _data = item.replace("(", " ").replace(")", " ").split()
+        data = _data.split(",")
 
-    stop = time.perf_counter()
+        r, c = tuple(map(int, data[:2]))  # ensure the first two elements of data is the row and column
 
-    if (stop - start) >= Config.time_limit:
-        logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
-        raise TimeoutError("Time limit exceeded.")
+        if _type.startswith("edge_"):
+            for d in Direction:
+                if _type == f"edge_{d.value}":
+                    solution.edge[Point(r, c, d)] = True
 
-    logging.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
-    logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
+        elif _type.startswith("grid_"):
+            grid_direction = str(data[2]).replace('"', "")
+            if puzzle.puzzle_name == "hashi":
+                solution.line[Point(r, c, pos=f"{grid_direction}_{data[3]}")] = True
+            else:
+                solution.line[Point(r, c, pos=grid_direction)] = True
 
-    return {"url": solutions}
+        elif _type.startswith("number"):
+            solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
+
+        elif _type.startswith("content"):
+            solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
+
+        elif _type == "triangle":
+            shaka_dict = {'"ul"': "1", '"ur"': "4", '"dl"': "2", '"dr"': "3"}
+            solution.symbol[Point(r, c, Direction.CENTER)] = f"tri__{shaka_dict[data[2]]}"
+
+        elif _type == "gray":
+            solution.surface[Point(r, c)] = Color.GRAY
+        elif _type == "black":
+            solution.surface[Point(r, c)] = Color.BLACK
+
+        elif len(data) == 2:
+            solution.symbol[Point(r, c, Direction.CENTER)] = str(_type)
+
+        else:  # pragma: no cover
+            solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])  # for debugging
+
+    if hasattr(module, "refine"):  # refine the solution if possible
+        module.refine(solution)
+
+    return solution

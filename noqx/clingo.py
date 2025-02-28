@@ -1,11 +1,14 @@
 """Generate solutions for the given problem."""
 
 import logging
-from typing import List
+import time
+from typing import Any, Dict, List
 
 from clingo import MessageCode
 from clingo.control import Control
 from clingo.solving import Model
+
+from noqx.manager import generate_program, prepare_puzzle, store_solution
 
 
 def clingo_logging_handler(code: MessageCode, message: str) -> None:  # pragma: no cover
@@ -52,3 +55,29 @@ class ClingoSolver:
     def solution(self) -> List[str]:
         """Get the solutions."""
         return self.model
+
+
+def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
+    """Run the clingo solver."""
+    start = time.perf_counter()  # start the counter
+    puzzle = prepare_puzzle(puzzle_name, puzzle_content, param)
+    program = generate_program(puzzle)
+
+    instance = ClingoSolver()
+    instance.solve(program)
+
+    solutions: List[str] = []
+    for solution in instance.solution():
+        solution = store_solution(puzzle, solution)
+        solutions.append(solution.encode())
+
+    stop = time.perf_counter()  # stop the counter
+
+    if (stop - start) >= Config.time_limit:
+        logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
+        raise TimeoutError("Time limit exceeded.")
+
+    logging.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
+    logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
+
+    return {"url": solutions}
