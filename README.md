@@ -22,6 +22,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Obtain uniform data structures in every puzzle. (See issue [#88](https://github.com/T0nyX1ang/noqx/issues/84)).
 
+- Deploy the entire solver to Github Pages with the help of Pyscript.
+
 ### New usages from Penpa-edit
 
 - Select puzzle type.
