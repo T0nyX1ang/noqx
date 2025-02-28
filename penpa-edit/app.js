@@ -303,10 +303,12 @@ $(document).ready(function () {
           load(solutionList[solutionPointer]);
         } catch (e) {
           console.log(e);
+
+          const message_idx = e.message.indexOf("RuntimeWarning:");
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: e.message,
+            text: e.message.slice(message_idx + 15, e.message.length - 1),
             footer: issueMessage,
           });
         } finally {
