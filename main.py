@@ -72,7 +72,7 @@ logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt=
 
 # load default solver directory
 load_solvers("solver")
-with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8") as f:
+with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
     # dump the metadata to a javascript file for further import
     f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
@@ -84,10 +84,24 @@ if args.pyscript_only:
             if filename.endswith(".py") and filename != "clingo.py":
                 file_dict["files"][f"../{dirname}/{filename}"] = f"{dirname}/{filename}"
 
-    with open("pyscript.json", "w", encoding="utf-8") as f:
+    with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
 
+    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+        fin = f.read()
+
+    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = false", "ENABLE_CLINGO_WITH_PYSCRIPT = true"))
+
     sys.exit(0)
+
+else:
+    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+        fin = f.read()
+
+    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = true", "ENABLE_CLINGO_WITH_PYSCRIPT = false"))
+
 
 # starlette app setup
 routes = [
