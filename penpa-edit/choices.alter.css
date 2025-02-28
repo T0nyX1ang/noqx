@@ -15,6 +15,17 @@
   display: none !important;
 }
 
+.choices.is-disabled .choices__inner,
+.choices.is-disabled .choices__input {
+  cursor: not-allowed;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.choices.is-disabled .choices__item {
+  cursor: not-allowed;
+}
+
 .choices:last-child {
   margin-bottom: 0;
 }
@@ -111,6 +122,13 @@
 
 .choices__item--selectable {
   cursor: pointer;
+}
+
+.choices__item--disabled {
+  cursor: not-allowed;
+  -webkit-user-select: none;
+  user-select: none;
+  opacity: 0.5;
 }
 
 .choices__heading {
