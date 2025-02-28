@@ -3,8 +3,8 @@
 import logging
 import unittest
 
-from noqx.clingo import Config
-from noqx.manager import list_solver_metadata, load_solvers, run_solver
+from noqx.clingo import Config, run_solver
+from noqx.manager import list_solver_metadata, load_solvers
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type

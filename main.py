@@ -13,8 +13,8 @@ from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
-from noqx.clingo import Config
-from noqx.manager import list_solver_metadata, load_solvers, run_solver
+from noqx.clingo import Config, run_solver
+from noqx.manager import list_solver_metadata, load_solvers
 
 
 async def root_redirect(_: Request) -> RedirectResponse:
