@@ -52,7 +52,7 @@ parser.add_argument("-p", "--port", default=8000, type=int, help="the port to ru
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
-parser.add_argument("-po", "--pyscript_only", action="store_true", help="Only use Pyscript for client-side purposes.")
+parser.add_argument("-pd", "--pyscript_deploy", action="store_true", help="Deploy Pyscript for client-side purposes.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -77,20 +77,21 @@ with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") 
     # dump the metadata to a javascript file for further import
     f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
-if args.pyscript_only:
+if args.pyscript_deploy:
     # generate pyscript files if needed
-    os.makedirs("dist/page", exist_ok=True)
+    shutil.rmtree("dist/page", ignore_errors=True)
+    os.makedirs("dist/page/penpa-edit", exist_ok=True)
 
-    target_dirs = ["noqx", "noqx/puzzle", "noqx/rule", "solver", "penpa-edit"]
+    target_dirs = ["noqx", "noqx/puzzle", "noqx/rule", "solver"]
     for dirname in target_dirs:
-        os.makedirs(f"dist/page/{dirname}", exist_ok=True)
+        os.makedirs(f"dist/page/penpa-edit/{dirname}", exist_ok=True)
 
     file_dict = {"files": {}}
     for dirname in ["noqx", "noqx/puzzle", "noqx/rule", "solver"]:
         for filename in os.listdir(dirname):
             if filename.endswith(".py") and filename != "clingo.py":
-                file_dict["files"][f"../{dirname}/{filename}"] = f"{dirname}/{filename}"
-                shutil.copy(f"./{dirname}/{filename}", f"./dist/page/{dirname}/{filename}")
+                file_dict["files"][f"./{dirname}/{filename}"] = f"{dirname}/{filename}"
+                shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
 
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
@@ -104,8 +105,10 @@ if args.pyscript_only:
     for filename in os.listdir("penpa-edit"):
         shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")
 
-    for filename in ["index.html", "pyscript.json", "main_pyscript.py"]:
-        shutil.copy(f"./{filename}", f"./dist/page/{filename}")
+    for filename in ["pyscript.json", "main_pyscript.py"]:
+        shutil.copy(f"./{filename}", f"./dist/page/penpa-edit/{filename}")
+
+    shutil.copy("./index.html", "./dist/page/index.html")
 
     sys.exit(0)
 
