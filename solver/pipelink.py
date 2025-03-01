@@ -1,4 +1,4 @@
-﻿"""The Pipe Link solver."""
+"""The Pipe Link solver."""
 
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid
