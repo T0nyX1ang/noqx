@@ -12,8 +12,6 @@ modules: Dict[str, "Solver"] = {}
 
 def load_solvers(solver_dir: str):
     """Load the solvers from a valid directory."""
-    modules.clear()
-
     puzzle_names: List[str] = []
     for module_info in pkgutil.iter_modules([solver_dir]):
         puzzle_names.append(module_info.name)

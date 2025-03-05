@@ -61,7 +61,7 @@ Config.parallel_threads = args.parallel_threads
 log_level = "DEBUG" if args.debug else "INFO"
 UVICORN_LOGGING_CONFIG = {
     "version": 1,
-    "disable_existing_loggers": False,
+    "disable_existing_loggers": True,
     "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
     "loggers": {
         "uvicorn.error": {"handlers": ["default"], "level": log_level},
@@ -70,13 +70,22 @@ UVICORN_LOGGING_CONFIG = {
 }
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
+if __name__ == "main":
+    # load the solvers
+    logging.debug("Loading solvers...")
+    load_solvers("solver")
 
-# load default solver directory
-logging.debug("Loading solvers...")
-load_solvers("solver")
-with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
-    # dump the metadata to a javascript file for further import
-    f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
+    with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
+        # dump the metadata to a javascript file for further import
+        logging.debug("Dumping solver metadata...")
+        f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
+
+    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+        fin = f.read()
+
+    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = true", "ENABLE_CLINGO_WITH_PYSCRIPT = false"))
+
 
 if args.pyscript_deploy:
     # generate pyscript files if needed
@@ -113,13 +122,6 @@ if args.pyscript_deploy:
 
     sys.exit(0)
 
-else:
-    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
-        fin = f.read()
-
-    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = true", "ENABLE_CLINGO_WITH_PYSCRIPT = false"))
-
 
 # starlette app setup
 routes = [
@@ -133,6 +135,7 @@ routes = [
 ]
 app = Starlette(routes=routes)
 environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
+
 
 # start the server
 if __name__ == "__main__":
