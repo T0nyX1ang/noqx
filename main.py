@@ -72,6 +72,7 @@ logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt=
 
 
 # load default solver directory
+logging.debug("Loading solvers...")
 load_solvers("solver")
 with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
     # dump the metadata to a javascript file for further import

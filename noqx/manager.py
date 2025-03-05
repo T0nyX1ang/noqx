@@ -1,39 +1,45 @@
 """Manager of all the solvers as a plugin."""
 
-import importlib
 import pkgutil
-from types import ModuleType
+from abc import ABC
 from typing import Any, Dict, List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.puzzle.penpa import PenpaPuzzle
 
-modules: Dict[str, ModuleType] = {}
+modules: Dict[str, "Solver"] = {}
 
 
 def load_solvers(solver_dir: str):
     """Load the solvers from a valid directory."""
+    modules.clear()
+
     puzzle_names: List[str] = []
     for module_info in pkgutil.iter_modules([solver_dir]):
         puzzle_names.append(module_info.name)
 
     for pt in sorted(puzzle_names):
-        modules[pt] = importlib.import_module(f"{solver_dir}.{pt}")
+        __import__(f"{solver_dir}.{pt}")
+
+    for solver_cls in Solver.__subclasses__():
+        puzzle_type = solver_cls.__name__.lower().replace("solver", "")
+        if puzzle_type in modules:  # pragma: no cover
+            raise ValueError(f"Solver for {puzzle_type} already exists.")
+
+        modules[puzzle_type] = solver_cls()
 
 
 def list_solver_metadata() -> Dict[str, Any]:
     """List all available solver metadata."""
     metadata = {}
     for puzzle_name, module in modules.items():
-        if hasattr(module, "__metadata__"):
-            metadata[puzzle_name] = module.__metadata__
-        else:
-            metadata[puzzle_name] = {
-                "name": puzzle_name.capitalize().replace("_", " "),
-                "category": "unk",
-                "aliases": [],
-                "examples": [],
-            }
+        metadata[puzzle_name] = {
+            "name": module.name,
+            "category": module.category,
+            "aliases": module.aliases,
+            "examples": module.examples,
+            "parameters": module.parameters,
+        }
 
     return metadata
 
@@ -49,9 +55,6 @@ def prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any])
 def generate_program(puzzle: Puzzle) -> str:
     """Generate the solver program."""
     module = modules[puzzle.puzzle_name]
-    if not hasattr(module, "program"):
-        raise NotImplementedError("Solver program not implemented.")
-
     return module.program(puzzle)
 
 
@@ -103,7 +106,36 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
         else:  # pragma: no cover
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])  # for debugging
 
-    if hasattr(module, "refine"):  # refine the solution if possible
-        module.refine(solution)
-
+    module.refine(solution)
     return solution
+
+
+class Solver(ABC):
+    """Base class to create solvers."""
+
+    def __init__(self):
+        """Initialize a program."""
+        self.asp_program: str = ""
+
+    def add_program_line(self, line: str):
+        """Add a line to the program."""
+        if line != "":
+            self.asp_program += line + "\n"
+
+    def reset(self):
+        """Clear the program."""
+        self.asp_program = ""
+
+    def program(self, _: Puzzle) -> str:
+        """Generate the solver program."""
+        raise NotImplementedError("Solver program not implemented.")
+
+    def refine(self, solution: Puzzle) -> Puzzle:
+        """Refine the solution."""
+        return solution
+
+    name: str = "Unknown"
+    category: str = "unk"
+    aliases: List[str] = []
+    examples: List[Dict[str, Any]] = []
+    parameters: Dict[str, Any] = {}

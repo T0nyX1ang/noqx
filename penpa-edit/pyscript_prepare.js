@@ -1,4 +1,4 @@
-const ENABLE_CLINGO_WITH_PYSCRIPT = true;
+const ENABLE_CLINGO_WITH_PYSCRIPT = false;
 
 if (ENABLE_CLINGO_WITH_PYSCRIPT) {
   const CLINGO_SRC = ["./clingo.web.js", "./clingo.web.worker.js"];
