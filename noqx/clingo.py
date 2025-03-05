@@ -61,6 +61,8 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     """Run the clingo solver."""
     start = time.perf_counter()  # start the counter
     puzzle = prepare_puzzle(puzzle_name, puzzle_content, param)
+    logging.debug(f"[Solver] {str(puzzle_name).capitalize()} board unpacked.")
+
     program = generate_program(puzzle)
 
     instance = ClingoSolver()
@@ -70,6 +72,7 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     for solution in instance.solution():
         solution = store_solution(puzzle, solution)
         solutions.append(solution.encode())
+        logging.debug(f"[Solver] {str(puzzle_name).capitalize()} board packed.")
 
     stop = time.perf_counter()  # stop the counter
 
