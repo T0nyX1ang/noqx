@@ -224,7 +224,7 @@ $(window).on("load", function () {
       puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
       imp(puzzleContent);
 
-      if (solver_metadata[puzzleName].parameters) {
+      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const config = solver_metadata[puzzleName].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
@@ -264,12 +264,14 @@ $(window).on("load", function () {
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
-      if (solver_metadata[puzzleName].parameters) {
+      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         for (const [k, _] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
           else puzzleParameters[k] = paramInput.value;
         }
+      } else {
+        puzzleParameters = {}; // reset parameters
       }
 
       if (ENABLE_CLINGO_WITH_PYSCRIPT) {
