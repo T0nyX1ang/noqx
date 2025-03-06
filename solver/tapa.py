@@ -2,13 +2,13 @@
 
 from typing import Dict, List, Set, Tuple, Union
 
+from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
-from noqx.solution import solver
 
 direc = ((0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1))
 pattern_ref: Dict[Tuple[int, ...], List[int]] = {}
@@ -103,50 +103,49 @@ def valid_tapa(r: int, c: int) -> str:
     return rule
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color="black"))
-    solver.add_program_line(color_to_binary(puzzle.row, puzzle.col, color="black"))
-    solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="black", grid_size=(puzzle.row, puzzle.col)))
-    solver.add_program_line(avoid_rect(2, 2, color="black"))
-    solver.add_program_line(tapa_pattern_rule())
+class TapaSolver(Solver):
+    """The Tapa solver."""
 
-    clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
-    for (r, c, d, pos), clue in puzzle.text.items():
-        validate_direction(r, c, d)
-        fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
-
-        if (r, c) not in clue_dict:
-            solver.add_program_line(f"not black({r}, {c}).")
-            solver.add_program_line(valid_tapa(r, c))
-            clue_dict.setdefault((r, c), [])
-
-        clue_dict[(r, c)].append(clue)
-
-    for (r, c), clue in clue_dict.items():
-        solver.add_program_line(parse_clue(r, c, clue))
-
-    for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
-        else:
-            solver.add_program_line(f"not black({r}, {c}).")
-
-    solver.add_program_line(display(item="black"))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Tapa",
-    "category": "shade",
-    "examples": [
+    name = "Tapa"
+    category = "shade"
+    examples = [
         {
             "data": "m=edit&p=7VZNj9owEL3zK1Y+zyG243xdKrpdeqFsW6hWqyhCgWa1qEGhgVSVEf99x+O0MQFVW1WiFxQxery88bwx/mD7vcnrAgQH7oOMwANEEMkAVIiYc2GD1z6z1a4skhsYNrvnqkYAcD8awVNebotB2qqywV7HiR6Cfp+kjDNgAj+cZaA/JXv9IdET0FN8xcBHbmxFAuFdBx/ovUG3luQe4gliHzHCR4TLVb0si/nYMh+TVM+AmTpvKdtAtq5+FKz1Yb4vq/ViZYhFvsNmts+rTftm23ytvjWtlmcH0ENrd3rGruzsGmjtGnTGruni3+2Wm+qc0Tg7HHDCP6PVeZIa1186GHVwmuwxTpI9U4FJfYMuAN3heCoyBP5Iv4iICNkRMe8R3JPEuBSnLFwvDicoUQinGpct51I+UUepga3pVghIdlwh7Jvn8am1mFp2GOFZxskTXtz3JWRofbkUqbCHjlKn7oUimdO2CGgs10NAGjcr7M+ziKwDx5T0qJzZBr8ZasbVcNK4LiWnkY4Y27BLSdUfyac0pxGp7Pw6jG3NHSfy+lkRZblzJE+WmYyp/BFzPDQuYU4L+ZHiiKKgOMN1DlpSfEfRo6gojklzR/GB4i1Fn2JAmtDslFfuJaYES3xgZvkJu7Eu4C1VeCC/8lFX5VX5pycbpGza1E/5ssCLZdKsF0V9M6nqdV4yvMMPA/aT0SeVKPev1/rFr3Uz+d5fXe7//3xMcV7xlNL3wDbNPJ8vq5Lhf0IwfBid8Bd3j4co2+WbnGWDFw==",
         },
         {"url": "https://puzz.link/p?tapa/10/10/i0ha0t1h2hb0t3h4h.q.h5h6ha0o.g.h7h8g.o./", "test": False},
-    ],
-}
+    ]
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(shade_c(color="black"))
+        self.add_program_line(color_to_binary(puzzle.row, puzzle.col, color="black"))
+        self.add_program_line(adjacent())
+        self.add_program_line(grid_color_connected(color="black", grid_size=(puzzle.row, puzzle.col)))
+        self.add_program_line(avoid_rect(2, 2, color="black"))
+        self.add_program_line(tapa_pattern_rule())
+
+        clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
+        for (r, c, d, pos), clue in puzzle.text.items():
+            validate_direction(r, c, d)
+            fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
+
+            if (r, c) not in clue_dict:
+                self.add_program_line(f"not black({r}, {c}).")
+                self.add_program_line(valid_tapa(r, c))
+                clue_dict.setdefault((r, c), [])
+
+            clue_dict[(r, c)].append(clue)
+
+        for (r, c), clue in clue_dict.items():
+            self.add_program_line(parse_clue(r, c, clue))
+
+        for (r, c, _, _), color in puzzle.surface.items():
+            if color in Color.DARK:
+                self.add_program_line(f"black({r}, {c}).")
+            else:
+                self.add_program_line(f"not black({r}, {c}).")
+
+        self.add_program_line(display(item="black"))
+
+        return self.program

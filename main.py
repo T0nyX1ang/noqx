@@ -52,7 +52,7 @@ parser.add_argument("-p", "--port", default=8000, type=int, help="the port to ru
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
-parser.add_argument("-pd", "--pyscript_deploy", action="store_true", help="Deploy Pyscript for client-side purposes.")
+parser.add_argument("-D", "--enable_deployment", action="store_true", help="Enable deployment for client-side purposes.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -61,7 +61,7 @@ Config.parallel_threads = args.parallel_threads
 log_level = "DEBUG" if args.debug else "INFO"
 UVICORN_LOGGING_CONFIG = {
     "version": 1,
-    "disable_existing_loggers": False,
+    "disable_existing_loggers": True,
     "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
     "loggers": {
         "uvicorn.error": {"handlers": ["default"], "level": log_level},
@@ -70,14 +70,24 @@ UVICORN_LOGGING_CONFIG = {
 }
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
+if __name__ == "main":
+    # load the solvers
+    logging.debug("Loading solvers...")
+    load_solvers("solver")
 
-# load default solver directory
-load_solvers("solver")
-with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
-    # dump the metadata to a javascript file for further import
-    f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
+    with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
+        # dump the metadata to a javascript file for further import
+        logging.debug("Dumping solver metadata...")
+        f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
-if args.pyscript_deploy:
+    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+        fin = f.read()
+
+    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
+
+
+if args.enable_deployment:
     # generate pyscript files if needed
     shutil.rmtree("dist/page", ignore_errors=True)
     os.makedirs("dist/page/penpa-edit", exist_ok=True)
@@ -93,31 +103,27 @@ if args.pyscript_deploy:
                 file_dict["files"][f"./{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
 
-    with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(file_dict, f, indent=2)
-
-    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = false", "ENABLE_CLINGO_WITH_PYSCRIPT = true"))
+    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
 
     for filename in os.listdir("penpa-edit"):
         shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")
 
-    for filename in ["pyscript.json", "main_pyscript.py"]:
+    for filename in ["main_deploy.py"]:
         shutil.copy(f"./{filename}", f"./dist/page/penpa-edit/{filename}")
 
     shutil.copy("./index.html", "./dist/page/index.html")
 
-    sys.exit(0)
-
-else:
-    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = true", "ENABLE_CLINGO_WITH_PYSCRIPT = false"))
+    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
+
+    sys.exit(0)
 
 
 # starlette app setup
@@ -132,6 +138,7 @@ routes = [
 ]
 app = Starlette(routes=routes)
 environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
+
 
 # start the server
 if __name__ == "__main__":

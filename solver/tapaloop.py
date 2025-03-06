@@ -2,13 +2,13 @@
 
 from typing import Dict, List, Optional, Set, Tuple, Union
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.solution import solver
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
@@ -142,53 +142,13 @@ def valid_tapaloop(r: int, c: int) -> str:
     return rule
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(defined(item="black"))
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
+class TapaloopSolver(Solver):
+    """The Tapa-like Loop solver."""
 
-    if puzzle.param["visit_all"]:
-        solver.add_program_line("tapaloop(R, C) :- grid(R, C), not black(R, C).")
-    else:
-        solver.add_program_line("{ tapaloop(R, C) } :- grid(R, C), not black(R, C).")
-
-    solver.add_program_line(direction("lurd"))
-    solver.add_program_line(fill_path(color="tapaloop"))
-    solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(grid_color_connected(color="tapaloop", adj_type="loop"))
-    solver.add_program_line(single_loop(color="tapaloop"))
-    solver.add_program_line(direction_to_binary(puzzle.row, puzzle.col))
-    solver.add_program_line(tapaloop_pattern_rule())
-
-    clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
-    for (r, c, d, pos), clue in puzzle.text.items():
-        validate_direction(r, c, d)
-        fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
-
-        if (r, c) not in clue_dict:
-            solver.add_program_line(f"black({r}, {c}).")
-            solver.add_program_line(valid_tapaloop(r, c))
-            clue_dict.setdefault((r, c), [])
-
-        clue_dict[(r, c)].append(clue)
-
-    for (r, c), clue in clue_dict.items():
-        solver.add_program_line(parse_clue(r, c, clue))
-
-    for (r, c, _, d), draw in puzzle.line.items():
-        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
-
-    solver.add_program_line(display(item="grid_direction", size=3))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Tapa-Like Loop",
-    "category": "loop",
-    "aliases": ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like", "tll"],
-    "examples": [
+    name = "Tapa-Like Loop"
+    category = "loop"
+    aliases = ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like", "tll"]
+    examples = [
         {
             "data": "m=edit&p=7ZRRb5swEMff+RSVn/2AMSHEL1XWNXthdFszVRVCEcmYikrmjISpcpTv3rszaZyGh02tOk2aiC/Hz4b735nz+mdbNCUXPv5kzOEfrlDENII4ouF317Ta1KU64+N2c6cbcDi/mkz496Jel17Wrcq9rRkpM+bmg8qYYJwFMATLufmstuajMik31zDFuACW2EUBuJcH94bm0buwUPjgp+CH9rFbcBdVs6jLWWLJJ5WZKWcY5x09jS5b6l8l63Tg/UIv5xWCebGBZNZ31aqbWbff9H3brRX5jpuxlZv0yJUHuehauej1yMUsXiy3rn6U+qFP6ijf7aDkX0DsTGWo++vBjQ/utdqCTdWWSR8fhV0RHPTB++ToGYgEAUxkTwIk5+cOkSckJEnCQUNC0iUUyyVxTMEcInyKJh0iIormkICywM/hiZBqN7ywqR6RwXPZIuxBNtwRGp4iUu6SiF71VEkouKCy35KdkA3ITmFXuJFk35P1yQ7IJrTmkuwN2QuyIdmI1gxxX/9o518iB/YbNmUUw9cCBwSkKclDKH9Taibt8XJ8Df49lnsZS6Ahz1LdLIsaujJtl/Oy2d/DEbjz2AOjkUk8Uf+fin/hVMTy+2/WIa/TsBlUtmsxbq44W7WzYrbQ8JFB8faT0HX9k9CkJxNvniB0OtsUq6Ku7sta6xXLvUc=",
         },
@@ -200,8 +160,45 @@ __metadata__ = {
             "url": "https://puzz.link/p?tapaloop/17/17/g2h3h2yarhajh2x4h2haiyaihaih3xabhajh+2lyaihaih2w3h3h2y3haihabx2hajhaiyajhaihajx2hajhajy2h2h3g",
             "test": False,
         },
-    ],
-    "parameters": {
-        "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False},
-    },
-}
+    ]
+    parameters = {"visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False}}
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(defined(item="black"))
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+
+        if puzzle.param["visit_all"]:
+            self.add_program_line("tapaloop(R, C) :- grid(R, C), not black(R, C).")
+        else:
+            self.add_program_line("{ tapaloop(R, C) } :- grid(R, C), not black(R, C).")
+
+        self.add_program_line(direction("lurd"))
+        self.add_program_line(fill_path(color="tapaloop"))
+        self.add_program_line(adjacent(_type="loop"))
+        self.add_program_line(grid_color_connected(color="tapaloop", adj_type="loop"))
+        self.add_program_line(single_loop(color="tapaloop"))
+        self.add_program_line(direction_to_binary(puzzle.row, puzzle.col))
+        self.add_program_line(tapaloop_pattern_rule())
+
+        clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
+        for (r, c, d, pos), clue in puzzle.text.items():
+            validate_direction(r, c, d)
+            fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
+
+            if (r, c) not in clue_dict:
+                self.add_program_line(f"black({r}, {c}).")
+                self.add_program_line(valid_tapaloop(r, c))
+                clue_dict.setdefault((r, c), [])
+
+            clue_dict[(r, c)].append(clue)
+
+        for (r, c), clue in clue_dict.items():
+            self.add_program_line(parse_clue(r, c, clue))
+
+        for (r, c, _, d), draw in puzzle.line.items():
+            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
+        self.add_program_line(display(item="grid_direction", size=3))
+
+        return self.program

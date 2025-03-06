@@ -2,13 +2,13 @@
 
 from typing import Tuple
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
 from noqx.rule.loop import convert_direction_to_edge, separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
-from noqx.solution import solver
 
 
 def passed_vertex() -> str:
@@ -49,55 +49,13 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     return f":- { vertex_count }, { edge_count }, C1 - C2 {rop} {num}."
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-    solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="slither"))
-    solver.add_program_line(fill_path(color="slither"))
-    solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
-    solver.add_program_line(single_loop(color="slither"))
-    solver.add_program_line(convert_direction_to_edge())
+class SlitherlinkSolver(Solver):
+    """The Slitherlink solver."""
 
-    if puzzle.param["vslither"] or puzzle.param["tslither"]:
-        solver.add_program_line(passed_vertex())
-
-    if puzzle.param["swslither"]:
-        solver.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
-
-    for (r, c, d, pos), clue in puzzle.text.items():
-        validate_direction(r, c, d)
-        validate_type(pos, "normal")
-        if puzzle.param["swslither"] and clue == "W":
-            solver.add_program_line(f"wolf({r}, {c}).")
-        elif puzzle.param["swslither"] and clue == "S":
-            solver.add_program_line(f"sheep({r}, {c}).")
-        else:
-            fail_false(isinstance(clue, int), "Clue should be an integer or wolf/sheep with varient enabled.")
-
-            if puzzle.param["vslither"]:
-                solver.add_program_line(count_adjacent_vertices(int(clue), (r, c)))
-            elif puzzle.param["tslither"]:
-                solver.add_program_line(count_adjacent_segments(int(clue), (r, c)))
-            else:
-                solver.add_program_line(count_adjacent_edges(int(clue), (r, c)))
-
-    for (r, c, d, _), draw in puzzle.edge.items():
-        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
-
-    solver.add_program_line(display(item="edge_top", size=2))
-    solver.add_program_line(display(item="edge_left", size=2))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Slitherlink",
-    "category": "loop",
-    "aliases": ["slither", "touchslither", "vertexslither", "sheepwolfslither"],
-    "examples": [
+    name = "Slitherlink"
+    category = "loop"
+    aliases = ["slither", "touchslither", "vertexslither", "sheepwolfslither"]
+    examples = [
         {
             "data": "m=edit&p=7VRNb9pAEL3zK6I978Efa7B9oyn0Qp22oYoiy0KGuMWKqVODq2gR/z1vxqaLVUdRRcWpMh692fdmmZ3Z8fZnnVaZHOFRnrSkjccdWvw2v+Mzz3dFFl7Jcb1blxWAlDfTqfyWFttsELeqZLDXQajHUn8IY+EKKWy8jkik/hzu9cdQR1LfghLSxtoMCAIHcGLgHfOErptF2wKOWgx4D7jKq1WRLWbNyqcw1nMp6H/ecTRBsSl/ZaIJY39VbpY5LSzTHQ6zXedPLbOtH8rHutXayUHqcZPupCdd16RLsEmXUE+6dIqz080evmfPfZkGyeGAin9BroswprS/GugbeBvuYaNwLxwPoS6ajHDs5gRwqeeN6xLrGHcIl+5E6466bDdWWR2xsjtiRbFG7HXZIW1lshq5XZdYI/bpj8xWPm1lxD7FnrCq63aPH1CsYYPT46NgNpftnu2UrcN2jqpK7bJ9z9Zi67GdsWbC9o7tNVvFdsiaEfXlrzp3fjroPc4X+Oicj8YSsF0lbYVVt8V0ARh7WIeIsDpq3jxP7EB68mCTf+0lg1hMMA5XUVlt0gJDEdWbZVYdfXyADgPxLPjlTqv/36TLf5Oo+taF7/e54xajsL8nQuobKZ7qRbpYlbhlqJ6hMSSv0s3c9NOYv34C8/jahu3w/UFfvHaYbrEt8t06q4r8x6NIBi8=",
         },
@@ -117,10 +75,51 @@ __metadata__ = {
             "url": "http://pzv.jp/p.html?slither/25/15/i5di5di6bg3ad13dc13bd3cg5bi7ci7dhai6bi6ci7b02bd33cc23d8ci8ai6cibh6di6bi7dg1ca31ab10dc3dg6bi6ai6chai7ci7ci8d33dc33cc20d8bi7di7cidh8di5ci6cg3dd03cb02ad3dg6bi7ci6bg",
             "test": False,
         },
-    ],
-    "parameters": {
+    ]
+    parameters = {
         "swslither": {"name": "Sheep/Wolf Variant", "type": "checkbox", "default": False},
         "tslither": {"name": "Touch Variant", "type": "checkbox", "default": False},
         "vslither": {"name": "Vertex Variant", "type": "checkbox", "default": False},
-    },
-}
+    }
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
+        self.add_program_line(direction("lurd"))
+        self.add_program_line(shade_c(color="slither"))
+        self.add_program_line(fill_path(color="slither"))
+        self.add_program_line(adjacent(_type="loop"))
+        self.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
+        self.add_program_line(single_loop(color="slither"))
+        self.add_program_line(convert_direction_to_edge())
+
+        if puzzle.param["vslither"] or puzzle.param["tslither"]:
+            self.add_program_line(passed_vertex())
+
+        if puzzle.param["swslither"]:
+            self.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
+
+        for (r, c, d, pos), clue in puzzle.text.items():
+            validate_direction(r, c, d)
+            validate_type(pos, "normal")
+            if puzzle.param["swslither"] and clue == "W":
+                self.add_program_line(f"wolf({r}, {c}).")
+            elif puzzle.param["swslither"] and clue == "S":
+                self.add_program_line(f"sheep({r}, {c}).")
+            else:
+                fail_false(isinstance(clue, int), "Clue should be an integer or wolf/sheep with varient enabled.")
+
+                if puzzle.param["vslither"]:
+                    self.add_program_line(count_adjacent_vertices(int(clue), (r, c)))
+                elif puzzle.param["tslither"]:
+                    self.add_program_line(count_adjacent_segments(int(clue), (r, c)))
+                else:
+                    self.add_program_line(count_adjacent_edges(int(clue), (r, c)))
+
+        for (r, c, d, _), draw in puzzle.edge.items():
+            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+
+        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge_left", size=2))
+
+        return self.program

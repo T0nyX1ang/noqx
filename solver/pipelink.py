@@ -1,10 +1,10 @@
 """The Pipe Link solver."""
 
+from noqx.manager import Solver
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, tag_encode
 from noqx.rule.loop import intersect_loop
-from noqx.solution import solver
 
 
 def adjacent_loop_intersect() -> str:
@@ -30,36 +30,35 @@ def loop_intersect_connected(color: str = "black") -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(direction("lurd"))
-    solver.add_program_line("pipelink(R, C) :- grid(R, C).")
-    solver.add_program_line(fill_path(color="pipelink"))
-    solver.add_program_line(intersect_loop(color="pipelink"))
-    solver.add_program_line(adjacent_loop_intersect())
-    solver.add_program_line(loop_intersect_connected(color="pipelink"))
+class PipeLinkSolver(Solver):
+    """The Pipe Link solver."""
 
-    for (r, c, _, d), draw in puzzle.line.items():
-        fail_false(draw, f"Line must be drawn at ({r}, {c}).")
-        for d in "lurd":
-            if Point(r, c, pos=d) in puzzle.line:
-                solver.add_program_line(f'grid_direction({r}, {c}, "{d}").')
-            else:
-                solver.add_program_line(f'not grid_direction({r}, {c}, "{d}").')
-
-    solver.add_program_line(display(item="grid_direction", size=3))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Pipe Link",
-    "category": "loop",
-    "examples": [
+    name = "Pipe Link"
+    category = "loop"
+    examples = [
         {
             "data": "m=edit&p=7ZVNb9NMEMfv+RTVnuewby+2b3lKwyWEB1pUVZZVpcGoEQmBpEHIUb57Z2fGciqBxAUoEnJ2/Mt6dvY/48lm92U/37ZgdP64AvCOlzcFDVtEGlquq+XDqq3OYLx/uN9sEQBeTybwYb7ataNavJrRoSurbgzdy6pWRoGyOIxqoHtTHbpXVTeF7hIfKTA4N0UKCiziBftnvKbnmc550mjkmTDiDeJiuV2s2tspz/xf1d0VqLzPf7Q6o1pvvrZKdOTvi836bpkn7uYPmMzufvlZnuz27zcf9+JrmiN04x/LdYPcjCw303fk5ix+sdyyOR6x7G9R8G1VZ+3vBiwGvKwOaGdkDdkbshOyluwVukLnyL4gq8kGstPqoFyAaJ2qLGT0NhH68gl602N0cUBxiIgcgdATBoNY9ug9O8SIyA6IMcishejZN2PQhMlDjLZHH3njIkFMHIEw9OjjgImDGa2Ri4FLDmdsCclwPGbOJHPQJ2w5b+M9JHfKEgc52BOW4pioIXmJgxycaMD6nHKSWhmTcF/RjJw0p2I05l1KTOQo+kssaGR3xCjZpgLrxQsRfeB1Jb7UxGXOWIgqjc5lv0vmfhdcWQwcNL8LY3HLUhQiJy1ZOAfJig9xXyWsqvRH5kAdhA15QW15TfacrCcbqSFT7uzf1vs/Kad2fJA+vcLfN9eMajVdfmrPZpvter5SeLgfR+qbolG7/F/x77z/Q+d9fgX6uXX+c5ODv8Vm9Ag=",
-        }
-    ],
-}
+        },
+    ]
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(direction("lurd"))
+        self.add_program_line("pipelink(R, C) :- grid(R, C).")
+        self.add_program_line(fill_path(color="pipelink"))
+        self.add_program_line(intersect_loop(color="pipelink"))
+        self.add_program_line(adjacent_loop_intersect())
+        self.add_program_line(loop_intersect_connected(color="pipelink"))
+
+        for (r, c, _, d), draw in puzzle.line.items():
+            fail_false(draw, f"Line must be drawn at ({r}, {c}).")
+            for d in "lurd":
+                if Point(r, c, pos=d) in puzzle.line:
+                    self.add_program_line(f'grid_direction({r}, {c}, "{d}").')
+                else:
+                    self.add_program_line(f'not grid_direction({r}, {c}, "{d}").')
+
+        self.add_program_line(display(item="grid_direction", size=3))
+
+        return self.program

@@ -9,6 +9,7 @@ from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
+from noqx.rule.reachable import count_reachable_src
 from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape, get_neighbor
 from noqx.rule.variety import yaji_count
 from solver.binairo import unique_linecolor
@@ -131,3 +132,7 @@ class TestExtraFunction(unittest.TestCase):
         self.assertRaises(ValueError, fill_num, [0], "unknown", 0, "unknown")
         self.assertRaises(ValueError, unique_num, "black", "unknown")
         self.assertRaises(ValueError, count, 0, "black", "unknown", None)
+
+    def test_reachable_rules(self):
+        """Test reachable rules."""
+        self.assertRaises(ValueError, count_reachable_src, 0, (0, 0), "unknown")
