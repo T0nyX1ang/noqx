@@ -117,6 +117,7 @@ $(window).on("load", function () {
   const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
   if (ENABLE_DEPLOYMENT) {
     window.solver_metadata = solver_metadata;
+    brython();
     clingo.init(CLINGO_WASM_URL);
   }
 
@@ -278,10 +279,17 @@ $(window).on("load", function () {
       if (ENABLE_DEPLOYMENT) {
         try {
           const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
-          const program = generate_program(puzzle);
+          if (!puzzle.success) {
+            throw new Error(puzzle.result);
+          }
+
+          const program = generate_program(puzzle.result);
+          if (!program.success) {
+            throw new Error(program.result);
+          }
 
           const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
-          const result = await clingo.run(program, options);
+          const result = await clingo.run(program.result, options);
 
           if (result.Result === "ERROR") {
             console.error(result.Error);
@@ -292,14 +300,18 @@ $(window).on("load", function () {
             throw new Error("No solution found.");
           }
 
-          const puz_name = solver_metadata[puzzle.puzzle_name].name;
+          const puz_name = solver_metadata[puzzleName].name;
           console.info(`[Solver] ${puz_name} puzzle solved.`);
           console.info(`[Solver] ${puz_name} solver took ${result.Time.Total} seconds.`);
 
           solutionList = [];
           for (const solution_data of result.Call[0].Witnesses) {
-            const solution = store_solution(puzzle, solution_data.Value.join(" ")).encode();
-            solutionList.push(solution);
+            const solution = store_solution(puzzle.result, solution_data.Value.join(" "));
+            if (!solution.success) {
+              throw new Error(solution.message);
+            }
+
+            solutionList.push(solution.result);
           }
 
           solutionPointer = 0;
@@ -307,11 +319,10 @@ $(window).on("load", function () {
         } catch (e) {
           console.log(e);
 
-          const message_idx = e.message.indexOf("RuntimeWarning:");
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: e.message.slice(message_idx + 15, e.message.length - 1),
+            text: e.message,
             footer: issueMessage,
           });
         } finally {

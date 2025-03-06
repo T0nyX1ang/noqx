@@ -103,9 +103,6 @@ if args.enable_deployment:
                 file_dict["files"][f"./{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
 
-    with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(file_dict, f, indent=2)
-
     with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
@@ -115,10 +112,16 @@ if args.enable_deployment:
     for filename in os.listdir("penpa-edit"):
         shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")
 
-    for filename in ["pyscript.json", "main_deploy.py"]:
+    for filename in ["main_deploy.py"]:
         shutil.copy(f"./{filename}", f"./dist/page/penpa-edit/{filename}")
 
     shutil.copy("./index.html", "./dist/page/index.html")
+
+    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+        fin = f.read()
+
+    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 
     sys.exit(0)
 
