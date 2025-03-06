@@ -112,7 +112,7 @@ if args.enable_deployment:
     for filename in os.listdir("penpa-edit"):
         shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")
 
-    for filename in ["main_deploy.py"]:
+    for filename in ["pyscript.json", "main_deploy.py"]:
         shutil.copy(f"./{filename}", f"./dist/page/penpa-edit/{filename}")
 
     shutil.copy("./index.html", "./dist/page/index.html")

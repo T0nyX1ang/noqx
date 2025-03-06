@@ -116,8 +116,6 @@ $(window).on("load", function () {
   const CLINGO_WEB_WORKER_URL = "./clingo.web.worker.js";
   const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
   if (ENABLE_DEPLOYMENT) {
-    window.solver_metadata = solver_metadata;
-    brython();
     clingo.init(CLINGO_WASM_URL);
   }
 
