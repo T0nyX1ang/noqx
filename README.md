@@ -154,11 +154,13 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
   - `edge`: the borders in the puzzle.
   - `line`: the lines in the puzzle.
 
-- Create a `program` function and write the ASP program needed.
+- Create a class inheriting the base class `noqx.manager.Solver`.
 
-- (Optional) Create a `refine` function if extra refinement is needed after program solving.
+- Implement a `solve` function and write the ASP program needed.
 
-- (Optional) Append a `__metadata__` variable in the end of the solver file. The keys of `__metadata__` are:
+- (Optional) Implement a `refine` function if extra refinement is needed after program solving.
+
+- (Optional) Set static values of the solver, where these values are:
 
   - `name`: the name of the solver.
   - `category`: the category of the solver, should be `shade` (Shading), `loop` (Loop / Path), `region` (Area Division), `num` (Number), `var` (Variety), `draw` (Drawing), `unk` (Unknown).
