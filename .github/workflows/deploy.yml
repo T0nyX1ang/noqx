@@ -47,8 +47,6 @@ jobs:
           python3 main.py -D
       - name: Setup Brython
         run: |
-          ls ./penpa-edit
-
           cd ./dist
           mkdir brython
           cd ./brython
