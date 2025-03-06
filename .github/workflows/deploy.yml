@@ -41,11 +41,14 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install brython==3.13.1
+      - name: Build deploy content
+        run: |
           python3 main.py -D
       - name: Setup Brython
         run: |
           ls ./penpa-edit
-          pip install brython==3.13.1
+
           cd ./dist
           mkdir brython
           cd ./brython
