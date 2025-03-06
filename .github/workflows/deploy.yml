@@ -6,9 +6,6 @@ on:
   push:
     branches: [$default-branch]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -41,7 +38,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
-          python3 main.py -pd
+          python3 main.py -D
       - name: Setup Brython
         run: |
           pip install brython==3.13.1
