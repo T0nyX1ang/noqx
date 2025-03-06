@@ -2,12 +2,12 @@
 
 from typing import Union
 
+from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, area_border
-from noqx.solution import solver
 
 
 def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) -> str:
@@ -43,46 +43,12 @@ def onsen_global_rule() -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="onsen_loop"))
-    solver.add_program_line(fill_path(color="onsen_loop"))
-    solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(single_loop(color="onsen_loop"))
+class OnsenSolver(Solver):
+    """The Onsen-Meguri solver."""
 
-    onsen_id = 0
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-    for i, ar in enumerate(areas):
-        solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
-        solver.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))
-
-        for r, c in ar:
-            if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
-                num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
-                solver.add_program_line(f"onsen_loop({r}, {c}).")
-                solver.add_program_line(onsen_rule(num if isinstance(num, int) else "?", onsen_id, i, r, c))
-
-                onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
-
-    fail_false(onsen_id > 0, "No onsen clues found.")
-    solver.add_program_line(onsen_global_rule())
-
-    for (r, c, _, d), draw in puzzle.line.items():
-        solver.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
-
-    solver.add_program_line(display(item="grid_direction", size=3))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Onsen-Meguri",
-    "category": "loop",
-    "examples": [
+    name = "Onsen-Meguri"
+    category = "loop"
+    examples = [
         {
             "data": "m=edit&p=7VRRb9owEH7nVyA/30McJ46dN9bRvTC6rUxVFUUIaLaiQdNBM1VB/Pd+di5LpFXqpm48TSaXz+fzcd/nc/bfq8WuoARDGQpIYqgg8o8O3K8ds/XDpkiHNKoebssdANHF+Tl9WWz2xSDjqHxwqG1aj6h+l2YiFOQfKXKqP6aH+n1aj6m+xJIgCd8ESAoKAccdvPLrDp01ThkATxusAa8BV+vdalPMJ02iD2lWz0i4/3njdzsotuWPQjTb/HxVbpdr51guHkBmf7u+55V9dVN+qzhW5keqR025k2fKVV25DjblOvSvyt2s74rH5yq1+fEIxT+h1nmaubI/d9B08DI9wE7Tg4gCbMXRNocitJuKIepkh3EOxVPskX7ntbfn3obezpCYauXtW28Db2NvJz5mjP+TKiEZGZGGyBjFJGPNGP649Rtg2+AYPaglY8RojoktyQTFOYyulAnHaHRsEjJGjCPgcIIYwzEJ8hvOnyDGcoxBjOUYEwIrxpbCgGOsBOb8NgTmGBsBxx5jnULJfscxajlq4KTj2+rgOMYtx54mjm+riePrTsfzQh7NeXRPEw1euuXV08HxTdhv4DfsdxxNy1EBR8ylpwM4/tQBHKVtOErbaeL5sg54Azd58GZNcPhXvgXOvI281b41EteRf9Szr+lCoQx0swbFxaQgs2r68sUCsxDcewOn9Ldn+SATE9zs4bTcbRcb3O/xzdfebFptl8WunePLehyIR+Ef3FBJ0f+P7ek/tk794GTt+5vN+kI5GYTl/qf6gsR9NV/MVyV6DNq9bhHX65eFk7PHbRXl3b64E/ngCQ==",
         },
@@ -92,5 +58,38 @@ __metadata__ = {
             "url": "https://puzz.link/p?onsen/15/15/9018m2kqm9jbr3a9f853qcfj996k6esa8alac2v892cvv0sj4086g5lb4a6qqeh7q2404c5nvq8cvi30m098zzzzzzj.u..zzzzi",
             "test": False,
         },
-    ],
-}
+    ]
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(direction("lurd"))
+        self.add_program_line(shade_c(color="onsen_loop"))
+        self.add_program_line(fill_path(color="onsen_loop"))
+        self.add_program_line(adjacent(_type="loop"))
+        self.add_program_line(single_loop(color="onsen_loop"))
+
+        onsen_id = 0
+        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(areas):
+            self.add_program_line(area(_id=i, src_cells=ar))
+            self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
+            self.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))
+
+            for r, c in ar:
+                if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
+                    num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
+                    self.add_program_line(f"onsen_loop({r}, {c}).")
+                    self.add_program_line(onsen_rule(num if isinstance(num, int) else "?", onsen_id, i, r, c))
+
+                    onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now
+
+        fail_false(onsen_id > 0, "No onsen clues found.")
+        self.add_program_line(onsen_global_rule())
+
+        for (r, c, _, d), draw in puzzle.line.items():
+            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+
+        self.add_program_line(display(item="grid_direction", size=3))
+
+        return self.program

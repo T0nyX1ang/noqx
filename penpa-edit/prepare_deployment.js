@@ -1,6 +1,6 @@
-const ENABLE_CLINGO_WITH_PYSCRIPT = true;
+const ENABLE_DEPLOYMENT = false;
 
-if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+if (ENABLE_DEPLOYMENT) {
   const CLINGO_SRC = ["./clingo.web.js", "./clingo.web.worker.js"];
   for (const src_name of CLINGO_SRC) {
     const script = document.createElement("script");
@@ -23,7 +23,7 @@ if (ENABLE_CLINGO_WITH_PYSCRIPT) {
 
   const user_script = document.createElement("script");
   user_script.type = "py";
-  user_script.src = "./main_pyscript.py";
+  user_script.src = "./main_deploy.py";
   user_script.async = false;
   user_script.setAttribute("config", "./pyscript.json");
   document.head.appendChild(user_script);

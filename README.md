@@ -98,8 +98,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Additional Usage
 
 ```text
-    usage: main.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
-    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
+    usage: main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D]
+    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -107,9 +107,11 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
       -p PORT, --port PORT  the port to run the server on.
       -d, --debug           whether to enable debug mode with auto-reloading.
       -tl TIME_LIMIT, --time_limit TIME_LIMIT
-                            time limit in seconds (default = 30).
+                            time limit in seconds. (default = 30)
       -pt PARALLEL_THREADS, --parallel_threads PARALLEL_THREADS
-                            parallel threads (default = 1).
+                            parallel threads. (default = 1)
+      -D, --enable_deployment
+                            Deploy Pyscript for client-side purposes.
 ```
 
 ## How to contribute
@@ -154,11 +156,13 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
   - `edge`: the borders in the puzzle.
   - `line`: the lines in the puzzle.
 
-- Create a `program` function and write the ASP program needed.
+- Create a class inheriting the base class `noqx.manager.Solver`.
 
-- (Optional) Create a `refine` function if extra refinement is needed after program solving.
+- Implement a `solve` function and write the ASP program needed.
 
-- (Optional) Append a `__metadata__` variable in the end of the solver file. The keys of `__metadata__` are:
+- (Optional) Implement a `refine` function if extra refinement is needed after program solving.
+
+- (Optional) Set static values of the solver, where these values are:
 
   - `name`: the name of the solver.
   - `category`: the category of the solver, should be `shade` (Shading), `loop` (Loop / Path), `region` (Area Division), `num` (Number), `var` (Variety), `draw` (Drawing), `unk` (Unknown).

@@ -1,11 +1,11 @@
-"""Solve Fillomino puzzles."""
+"""The Fillomino solver."""
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
-from noqx.solution import solver
 
 
 def fillomino_constraint() -> str:
@@ -63,48 +63,12 @@ def fillomino_filtered(fast: bool = True) -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(edge(puzzle.row, puzzle.col))
-    solver.add_program_line(adjacent(_type=4))
-    solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(fillomino_constraint())
-    solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
+class FillominoSolver(Solver):
+    """The Fillomino solver."""
 
-    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
-    solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
-
-    for (r, c, d, pos), num in puzzle.text.items():
-        validate_direction(r, c, d)
-        validate_type(pos, "normal")
-        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be an integer.")
-        solver.add_program_line(f"number({r}, {c}, {num}).")
-        solver.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
-        solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
-
-        if num == 1:
-            solver.add_program_line(f":- not edge_left({r}, {c}).")
-            solver.add_program_line(f":- not edge_top({r}, {c}).")
-            solver.add_program_line(f":- not edge_left({r}, {c + 1}).")
-            solver.add_program_line(f":- not edge_top({r + 1}, {c}).")
-
-    for (r, c, d, _), draw in puzzle.edge.items():
-        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
-
-    solver.add_program_line(display(item="edge_left", size=2))
-    solver.add_program_line(display(item="edge_top", size=2))
-    solver.add_program_line(display(item="number", size=3))
-    solver.add_program_line(display(item="numberx", size=3))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Fillomino",
-    "category": "num",
-    "examples": [
+    name = "Fillomino"
+    category = "num"
+    examples = [
         {
             "data": "m=edit&p=7VNNj9MwEL3nV1Q+zyF2vrq+laXlUsLHFlWrKKrSNstGJASSBiFH+e87M0kxleAAEtADsvz0nj2jeeOP9nOXNTmEOLw5uCBxqDDkKX2fpzuNTXEqcz2DRXd6rBskAK9WK3jIyjZ3kikqdXpzo80CzAudCCWApxQpmDe6Ny+1icHc4ZYAiWtrZFKAQrq0dMv7xG7HRekijyeO9B7poWgOZb5bjyuvdWI2IKjOM84mKqr6Sy7GNNaHutoXtLDPTthM+1h8mnba7lh/6KZYmQ5gFj+361m7REe7xH5gl7r4w3Zv0mHAY3+Lhnc6Ie/vLJ1beqd7xFj3QilMpbvmmxHKR6msDC92PQ/l3MoAZfRN+pRrg/3oQgaXhQLKtTKkXM9KqmtlRHVtcES51mT0fSFsS3Jz94wrRsW4wd7BeIzPGV3GgHHNMUvGLeMto88YckxEp/dL5/sX7CSKjuI8gt/nqZOI5fF9PovrpspKfF9xV+3z5qzxQw+O+Cp48u34///4P/rjdAXutb3Ea7ODf0M8FGVZV8XHWqTOEw==",
             "config": {"fast_mode": False},
@@ -120,6 +84,41 @@ __metadata__ = {
             "url": "https://puzz.link/p?fillomino/9/9/rb-134k-13i-13i7k5h-13k-13h8k6i-13i-13k9-13am2j",
             "test": False,
         },
-    ],
-    "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": True}},
-}
+    ]
+    parameters = {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": True}}
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(edge(puzzle.row, puzzle.col))
+        self.add_program_line(adjacent(_type=4))
+        self.add_program_line(adjacent(_type="edge"))
+        self.add_program_line(fillomino_constraint())
+        self.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
+
+        numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
+        self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
+
+        for (r, c, d, pos), num in puzzle.text.items():
+            validate_direction(r, c, d)
+            validate_type(pos, "normal")
+            fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be an integer.")
+            self.add_program_line(f"number({r}, {c}, {num}).")
+            self.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
+            self.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
+
+            if num == 1:
+                self.add_program_line(f":- not edge_left({r}, {c}).")
+                self.add_program_line(f":- not edge_top({r}, {c}).")
+                self.add_program_line(f":- not edge_left({r}, {c + 1}).")
+                self.add_program_line(f":- not edge_top({r + 1}, {c}).")
+
+        for (r, c, d, _), draw in puzzle.edge.items():
+            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+
+        self.add_program_line(display(item="edge_left", size=2))
+        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="number", size=3))
+        self.add_program_line(display(item="numberx", size=3))
+
+        return self.program

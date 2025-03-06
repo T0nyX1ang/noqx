@@ -1,12 +1,12 @@
 """The Yin-Yang solver."""
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
-from noqx.solution import solver
 
 
 def exclude_checkboard_shape() -> str:
@@ -37,41 +37,12 @@ def exclude_border_color_changes(rows: int, cols: int) -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color="circle_M__1"))
-    solver.add_program_line(invert_c(color="circle_M__1", invert="circle_M__2"))
-    solver.add_program_line(adjacent())
-    solver.add_program_line(avoid_rect(2, 2, color="circle_M__1"))
-    solver.add_program_line(avoid_rect(2, 2, color="circle_M__2"))
-    solver.add_program_line(grid_color_connected(color="circle_M__1", grid_size=(puzzle.row, puzzle.col)))
-    solver.add_program_line(grid_color_connected(color="circle_M__2", grid_size=(puzzle.row, puzzle.col)))
+class YinyangSolver(Solver):
+    """The Yin-Yang solver."""
 
-    # exclude checkerboard shape
-    solver.add_program_line(exclude_checkboard_shape())
-
-    # exclude border color changes more than twice
-    solver.add_program_line(exclude_border_color_changes(puzzle.row, puzzle.col))
-
-    for (r, c, d, _), symbol_name in puzzle.symbol.items():
-        validate_direction(r, c, d)
-        if symbol_name == "circle_M__1":
-            solver.add_program_line(f"circle_M__1({r}, {c}).")
-        else:
-            solver.add_program_line(f"not circle_M__1({r}, {c}).")
-
-    solver.add_program_line(display(item="circle_M__1"))
-    solver.add_program_line(display(item="circle_M__2"))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Yin-Yang",
-    "category": "shade",
-    "examples": [
+    name = "Yin-Yang"
+    category = "shade"
+    examples = [
         {
             "data": "m=edit&p=7VVda9tAEHzXryj7vAWtTifL9+a6cV+c9CMuIQgRHFdtRO2o9UfbnNF/995K4IAXCqWloRR5h/Hcenck7+k2X3fzdYVE4WNyjJEZpjaTIEok4v6a1dtl5Z7haLe9a9ZMEF9PJvhxvtxUUdFnldHeD50foX/lCiBASDgISvRv3d6fO1g0q9sa0F/yOiDxwrTLTJieHemVrAc27kSKmV/0nOk100W9Xiyrm2mnvHGFnyGEZi/k14HCqvlWQW8mfO8MsHC7/H7Xa5vdh+bzrs+iskU/+olbc3QbaOc2MMVtuIlHbs9/q9th2bb80N+x3xtXBOvvjzQ/0ku3Z7wQJMFrtwcz4DIJt3lsDWyiqpmmZqmqqnWzoabmsaqq3YZqBYrVdhTnuqwXIdJl9WEQWV1WbRPpBpOQTSey0Q2mRs1O9ZZWN2h1Jza0PK090G9+EGqfZudKbR60iYxbIjjjaURvBF8KxoJWcCo5Z4JXgmPBVDCTnEGY51+e+D9kpzD8slQu+++qZVTAuFl9aTb1tgJ+8bcR/ACJwoRz5P9Z8FfOgvAHxE9tfzw1O7xj4aG+f/4wv/8EZXQA",
         },
@@ -79,5 +50,33 @@ __metadata__ = {
             "url": "https://puzz.link/p?yinyang/22/18/00000000000000030190030000900003000000900130020006000l0000090000i0020009400030200060000002empf01900001009901030130900031009a00009000",
             "test": False,
         },
-    ],
-}
+    ]
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(shade_c(color="circle_M__1"))
+        self.add_program_line(invert_c(color="circle_M__1", invert="circle_M__2"))
+        self.add_program_line(adjacent())
+        self.add_program_line(avoid_rect(2, 2, color="circle_M__1"))
+        self.add_program_line(avoid_rect(2, 2, color="circle_M__2"))
+        self.add_program_line(grid_color_connected(color="circle_M__1", grid_size=(puzzle.row, puzzle.col)))
+        self.add_program_line(grid_color_connected(color="circle_M__2", grid_size=(puzzle.row, puzzle.col)))
+
+        # exclude checkerboard shape
+        self.add_program_line(exclude_checkboard_shape())
+
+        # exclude border color changes more than twice
+        self.add_program_line(exclude_border_color_changes(puzzle.row, puzzle.col))
+
+        for (r, c, d, _), symbol_name in puzzle.symbol.items():
+            validate_direction(r, c, d)
+            if symbol_name == "circle_M__1":
+                self.add_program_line(f"circle_M__1({r}, {c}).")
+            else:
+                self.add_program_line(f"not circle_M__1({r}, {c}).")
+
+        self.add_program_line(display(item="circle_M__1"))
+        self.add_program_line(display(item="circle_M__2"))
+
+        return self.program

@@ -115,7 +115,8 @@ function make_param(id, type, name, value) {
 $(window).on("load", function () {
   const CLINGO_WEB_WORKER_URL = "./clingo.web.worker.js";
   const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
-  if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+  if (ENABLE_DEPLOYMENT) {
+    window.solver_metadata = solver_metadata;
     clingo.init(CLINGO_WASM_URL);
   }
 
@@ -193,7 +194,7 @@ $(window).on("load", function () {
         parameterBox.removeChild(parameterBox.lastChild);
       }
 
-      if (solver_metadata[puzzleName].parameters) {
+      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         parameterButton.disabled = false;
         for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramDiv = make_param(k, v.type, v.name, v.default);
@@ -224,7 +225,7 @@ $(window).on("load", function () {
       puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
       imp(puzzleContent);
 
-      if (solver_metadata[puzzleName].parameters) {
+      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const config = solver_metadata[puzzleName].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
@@ -264,15 +265,17 @@ $(window).on("load", function () {
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
-      if (solver_metadata[puzzleName].parameters) {
+      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         for (const [k, _] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
           else puzzleParameters[k] = paramInput.value;
         }
+      } else {
+        puzzleParameters = {}; // reset parameters
       }
 
-      if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+      if (ENABLE_DEPLOYMENT) {
         try {
           const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
           const program = generate_program(puzzle);
@@ -393,7 +396,7 @@ $(window).on("load", function () {
 
   resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
-      if (ENABLE_CLINGO_WITH_PYSCRIPT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+      if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         clingo.worker.terminate(); // terminate the web worker
         clingo.worker = new Worker(CLINGO_WEB_WORKER_URL); // respawn a new web worker
         await clingo.init(CLINGO_WASM_URL); // reinitialize clingo-wasm

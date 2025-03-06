@@ -2,9 +2,9 @@
 
 from typing import Dict, Tuple, Union
 
+from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, shade_c
-from noqx.solution import solver
 
 
 def nono_row(col: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):
@@ -63,49 +63,12 @@ def nono_col(row: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "b
     return "\n".join(constraints)
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    top_clues = {}
-    for c in range(puzzle.col):
-        top_clues[c] = tuple(
-            clue
-            for (r1, c1, d1, pos1), clue in puzzle.text.items()
-            if r1 <= -1 and c1 == c and d1 == Direction.CENTER and pos1 == "normal"
-        )
+class NonogramSolver(Solver):
+    """The Nonogram solver."""
 
-    left_clues = {}
-    for r in range(puzzle.row):
-        left_clues[r] = tuple(
-            clue
-            for (r1, c1, d1, pos1), clue in puzzle.text.items()
-            if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
-        )
-
-    solver.add_program_line(f"grid(-1..{puzzle.row}, -1..{puzzle.col}).")
-    solver.add_program_line(shade_c())
-    solver.add_program_line(f"not black(-1, -1..{puzzle.col}).")
-    solver.add_program_line(f"not black(-1..{puzzle.row}, -1).")
-    solver.add_program_line(f"not black({puzzle.row}, -1..{puzzle.col}).")
-    solver.add_program_line(f"not black(-1..{puzzle.row}, {puzzle.col}).")
-    solver.add_program_line(nono_row(puzzle.col, left_clues))
-    solver.add_program_line(nono_col(puzzle.row, top_clues))
-
-    for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"black({r}, {c}).")
-        else:
-            solver.add_program_line(f"not black({r}, {c}).")
-
-    solver.add_program_line(display())
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Nonogram",
-    "category": "shade",
-    "examples": [
+    name = "Nonogram"
+    category = "shade"
+    examples = [
         {
             "data": "m=edit&p=7VU9b9swEN31K4KbbxD1YUtcCteNu7hKW7sIAkEwZFVBjMpQKltFQUP/PXcnKQ7YDM3QZCloPj8/8sjHIw8+/GzzpsQpNT9CFxU13w2kT1z+jG29O1alvsBZe7yrGyKIV4sF3ubVoXRSn2ZQz5yTibWZofmoU1CA4FFXkKH5ok/mkzYJmhUNAQakLftJHtHLM72WcWbzXlQu8WTgRG+IFrumqMrNslc+69SsEXif9xLNFPb1rxIGH/y7qPfbHQvb/EiHOdzt7oeRQ/u9/tEOc1XWoZn1dlejXbYz2PXPdpn2dpk9Y5fD/rHdOOs6SvtXMrzRKXv/dqbRma70iTDRJ/AjDn1HXvq7AT+2hMC1BTUmZxTskNAOCe2Q0GOBHsSjYPsI7UWn9qKRCE8WjexdYhGehMSy7aNAOVCSiRvBhaAnuKZEofEFPwi6gqHgUuZcCl4LzgUDwYnMmXKq//IyYEJnCeiMZNjrb+YVvKVU0lzkCqPnvzMnhVXb3OZFSa8taffbsrlI6mafV0Dl3TnwG6RTzSuq4v8V/zYVz1fgvqju3/7lp5Rden/mCuG+3eSboq6A/jRQdPUyffqn/uqnpXLKnAc=",
         },
@@ -113,5 +76,41 @@ __metadata__ = {
             "url": "https://puzz.link/p?nonogram/31/13/m513j1111i531q55k11111h5111p55k111j131q55k11k55k11k135j1l55k111j55r35k311j35r51k115j51zn3353133o11111111111k131113133m11111111111k11111111333zg3113313311l111111111111111g3331111133l111112121111j11111111111111x",
             "test": False,
         },
-    ],
-}
+    ]
+
+    def solve(self, puzzle: Puzzle) -> str:
+        self.reset()
+        top_clues = {}
+        for c in range(puzzle.col):
+            top_clues[c] = tuple(
+                clue
+                for (r1, c1, d1, pos1), clue in puzzle.text.items()
+                if r1 <= -1 and c1 == c and d1 == Direction.CENTER and pos1 == "normal"
+            )
+
+        left_clues = {}
+        for r in range(puzzle.row):
+            left_clues[r] = tuple(
+                clue
+                for (r1, c1, d1, pos1), clue in puzzle.text.items()
+                if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
+            )
+
+        self.add_program_line(f"grid(-1..{puzzle.row}, -1..{puzzle.col}).")
+        self.add_program_line(shade_c())
+        self.add_program_line(f"not black(-1, -1..{puzzle.col}).")
+        self.add_program_line(f"not black(-1..{puzzle.row}, -1).")
+        self.add_program_line(f"not black({puzzle.row}, -1..{puzzle.col}).")
+        self.add_program_line(f"not black(-1..{puzzle.row}, {puzzle.col}).")
+        self.add_program_line(nono_row(puzzle.col, left_clues))
+        self.add_program_line(nono_col(puzzle.row, top_clues))
+
+        for (r, c, _, _), color in puzzle.surface.items():
+            if color in Color.DARK:
+                self.add_program_line(f"black({r}, {c}).")
+            else:
+                self.add_program_line(f"not black({r}, {c}).")
+
+        self.add_program_line(display())
+
+        return self.program
