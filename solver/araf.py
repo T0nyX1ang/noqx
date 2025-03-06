@@ -44,7 +44,7 @@ class ArafSolver(Solver):
         {"url": "https://pzplus.tck.mn/p?araf/10/11/1l6p7q4467h5g55q7g7647g1q-108g-10h-1075-10q9p-10ld", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(len(puzzle.text) > 0, "No clues found.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -79,4 +79,4 @@ class ArafSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

@@ -20,7 +20,7 @@ class HakoiriSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_cc(colors=["ox_E__1", "ox_E__2", "ox_E__3", "white"]))
@@ -52,4 +52,4 @@ class HakoiriSolver(Solver):
         self.add_program_line(display(item="ox_E__2"))
         self.add_program_line(display(item="ox_E__3"))
 
-        return self.asp_program
+        return self.program

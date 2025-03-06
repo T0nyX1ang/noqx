@@ -49,7 +49,7 @@ class BalanceSolver(Solver):
         {"url": "https://puzz.link/p?balance/10/10/0g00zg0l0m0k0k0k0k0h0m0k0n0l0h", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="black"))
         self.add_program_line(defined(item="white"))
@@ -86,4 +86,4 @@ class BalanceSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=3))
 
-        return self.asp_program
+        return self.program

@@ -28,7 +28,7 @@ class AnglersSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(len(puzzle.symbol) > 0, "No clues found.")
         fail_false(len(puzzle.text) == len(puzzle.symbol), "Unmatched clues.")
@@ -72,4 +72,4 @@ class AnglersSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=3))
 
-        return self.asp_program
+        return self.program

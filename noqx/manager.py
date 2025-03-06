@@ -53,7 +53,7 @@ def prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any])
 def generate_program(puzzle: Puzzle) -> str:
     """Generate the solver program."""
     module = modules[puzzle.puzzle_name]
-    return module.program(puzzle)
+    return module.solve(puzzle)
 
 
 def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
@@ -113,18 +113,18 @@ class Solver(ABC):
 
     def __init__(self):
         """Initialize a program."""
-        self.asp_program: str = ""
+        self.program: str = ""
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
         if line != "":
-            self.asp_program += line + "\n"
+            self.program += line + "\n"
 
     def reset(self):
         """Clear the program."""
-        self.asp_program = ""
+        self.program = ""
 
-    def program(self, _: Puzzle) -> str:
+    def solve(self, _: Puzzle) -> str:
         """Generate the solver program."""
         raise NotImplementedError("Solver program not implemented.")
 

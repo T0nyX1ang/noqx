@@ -68,7 +68,7 @@ class HaisuSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
         self.add_program_line(defined(item="number", size=3))
@@ -107,4 +107,4 @@ class HaisuSolver(Solver):
         self.add_program_line(display(item="grid_in", size=3))
         self.add_program_line(display(item="grid_out", size=3))
 
-        return self.asp_program
+        return self.program

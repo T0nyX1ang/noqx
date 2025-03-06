@@ -115,7 +115,7 @@ class TapaSolver(Solver):
         {"url": "https://puzz.link/p?tapa/10/10/i0ha0t1h2hb0t3h4h.q.h5h6ha0o.g.h7h8g.o./", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -148,4 +148,4 @@ class TapaSolver(Solver):
 
         self.add_program_line(display(item="black"))
 
-        return self.asp_program
+        return self.program

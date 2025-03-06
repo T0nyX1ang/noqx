@@ -38,7 +38,7 @@ class JuosanSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c())
@@ -54,4 +54,4 @@ class JuosanSolver(Solver):
 
         self.add_program_line(display(item="content", size=3))
 
-        return self.asp_program
+        return self.program

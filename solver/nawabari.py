@@ -21,7 +21,7 @@ class NawabariSolver(Solver):
         {"url": "https://puzz.link/p?nawabari/10/10/b4c1d2b1c2c2j4b0b1a3b3j3b1a2b0b4j2c3c2b1d1c3b", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(len(puzzle.text) > 0, "No clues found.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -47,4 +47,4 @@ class NawabariSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

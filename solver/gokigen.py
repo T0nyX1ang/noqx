@@ -48,7 +48,7 @@ class GokigenSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(direction(["ul", "ur", "dl", "dr"]))
@@ -66,4 +66,4 @@ class GokigenSolver(Solver):
         self.add_program_line(display(item="edge_diag_down", size=2))
         self.add_program_line(display(item="edge_diag_up", size=2))
 
-        return self.asp_program
+        return self.program

@@ -32,7 +32,7 @@ class DotchiSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="white"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -63,4 +63,4 @@ class DotchiSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=3))
 
-        return self.asp_program
+        return self.program

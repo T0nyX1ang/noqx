@@ -30,7 +30,7 @@ class BosanowaSolver(Solver):
     ]
     parameters = {"max_number": {"name": "Max number", "type": "number", "default": 10}}
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         lmt_num = int(puzzle.param["max_number"])
         self.add_program_line(defined(item="hole"))
@@ -51,4 +51,4 @@ class BosanowaSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

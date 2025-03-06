@@ -49,7 +49,7 @@ class CaveSolver(Solver):
     ]
     parameters = {"product": {"name": "Product", "type": "checkbox", "default": False}}
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -77,4 +77,4 @@ class CaveSolver(Solver):
 
         self.add_program_line(display())
 
-        return self.asp_program
+        return self.program

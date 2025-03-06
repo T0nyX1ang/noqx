@@ -40,7 +40,7 @@ class MartiniSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c("gray"))
@@ -85,4 +85,4 @@ class MartiniSolver(Solver):
 
         self.add_program_line(display(item="gray"))
 
-        return self.asp_program
+        return self.program

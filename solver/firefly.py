@@ -44,7 +44,7 @@ class FireflySolver(Solver):
         {"url": "https://puzz.link/p?firefly/10/10/4.40g20c32j1.b3.h32d41a23c4.d3.b2.g3.j2.a3.e1.d1.b10h30", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="dead_end"))
         self.add_program_line(defined(item="firefly_all"))
@@ -79,4 +79,4 @@ class FireflySolver(Solver):
         self.add_program_line(display(item="edge_top", size=2))
         self.add_program_line(display(item="edge_left", size=2))
 
-        return self.asp_program
+        return self.program

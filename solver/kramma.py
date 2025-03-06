@@ -27,7 +27,7 @@ class KaitoRammaSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="black"))
         self.add_program_line(defined(item="white"))
@@ -56,4 +56,4 @@ class KaitoRammaSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

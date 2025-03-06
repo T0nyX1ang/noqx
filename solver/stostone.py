@@ -35,7 +35,7 @@ class StostoneSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.row % 2 == 0, "The stostone puzzle must have an even number of rows.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -73,4 +73,4 @@ class StostoneSolver(Solver):
 
         self.add_program_line(display(item="gray"))
 
-        return self.asp_program
+        return self.program

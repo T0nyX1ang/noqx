@@ -38,7 +38,7 @@ class TentsSolver(Solver):
         {"url": "https://puzz.link/p?tents/13/13/h3g03h1g2j3h32g24g2g55233hi11131331f78625243a872550", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="tents__2"))
@@ -69,4 +69,4 @@ class TentsSolver(Solver):
         self.add_program_line(count(len(all_trees), color="tents__2", _type="grid"))
         self.add_program_line(display(item="tents__2"))
 
-        return self.asp_program
+        return self.program

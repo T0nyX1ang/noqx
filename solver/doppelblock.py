@@ -17,7 +17,7 @@ class DoppelblockSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
         n = puzzle.row
@@ -53,4 +53,4 @@ class DoppelblockSolver(Solver):
         self.add_program_line(display(item="number", size=3))
         self.add_program_line(display(item="black", size=2))
 
-        return self.asp_program
+        return self.program

@@ -24,7 +24,7 @@ class MinesSolver(Solver):
     ]
     parameters = {"mine_count": {"name": "Mines", "type": "number", "default": ""}}
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="sun_moon__4"))
@@ -49,4 +49,4 @@ class MinesSolver(Solver):
 
         self.add_program_line(display(item="sun_moon__4"))
 
-        return self.asp_program
+        return self.program

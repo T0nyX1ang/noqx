@@ -19,7 +19,7 @@ class EasyAsABCSolver(Solver):
     ]
     parameters = {"letters": {"name": "Letters", "type": "text", "default": "ABC"}}
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
         n = puzzle.row
@@ -63,7 +63,7 @@ class EasyAsABCSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program
 
     def refine(self, solution: Puzzle) -> None:
         """Refine the solution."""

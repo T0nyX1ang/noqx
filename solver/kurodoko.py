@@ -25,7 +25,7 @@ class KurodokoSolver(Solver):
         {"url": "https://puzz.link/p?kurodoko/9/9/h3j4g3j4l.j4g3j.ldl.j5g6j.l7j5g6j5h", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c())
@@ -50,4 +50,4 @@ class KurodokoSolver(Solver):
 
         self.add_program_line(display())
 
-        return self.asp_program
+        return self.program

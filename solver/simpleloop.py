@@ -21,7 +21,7 @@ class SimpleLoopSolver(Solver):
         {"url": "https://puzz.link/p?simpleloop/15/15/124000400000a0004g0002008h12000482008400004i1", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="black"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -41,4 +41,4 @@ class SimpleLoopSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=3))
 
-        return self.asp_program
+        return self.program

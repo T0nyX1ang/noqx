@@ -25,7 +25,7 @@ class SukoroRoomSolver(Solver):
         {"url": "https://puzz.link/p?sukororoom/10/10/nrnfdbp5timpmpdnns4svecvuufnvsbvtst7g1zzzn", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(fill_num(_range=range(0, 5), color="white"))
@@ -55,4 +55,4 @@ class SukoroRoomSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

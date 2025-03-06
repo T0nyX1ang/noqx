@@ -31,7 +31,7 @@ class NCellsSolver(Solver):
     ]
     parameters = {"region_size": {"name": "Region Size", "type": "number", "default": 5}}
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.param["region_size"].isdigit(), "Invalid region size.")
         size = int(puzzle.param["region_size"])
@@ -54,4 +54,4 @@ class NCellsSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

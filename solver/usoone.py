@@ -33,7 +33,7 @@ class UsooneSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="clue", size=4))
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -71,4 +71,4 @@ class UsooneSolver(Solver):
         self.add_program_line(display(item="ox_E__1"))
         self.add_program_line(display(item="ox_E__7"))
 
-        return self.asp_program
+        return self.program

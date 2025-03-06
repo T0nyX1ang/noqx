@@ -36,7 +36,7 @@ class CoralSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         top_clues = {}
         for c in range(puzzle.col):
@@ -84,4 +84,4 @@ class CoralSolver(Solver):
 
         self.add_program_line(display())
 
-        return self.asp_program
+        return self.program

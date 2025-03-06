@@ -25,7 +25,7 @@ class NondangoSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="drawable"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -60,4 +60,4 @@ class NondangoSolver(Solver):
         self.add_program_line(display(item="circle_M__1"))
         self.add_program_line(display(item="circle_M__2"))
 
-        return self.asp_program
+        return self.program

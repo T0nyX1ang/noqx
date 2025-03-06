@@ -33,7 +33,7 @@ class HeterominoSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false((puzzle.row * puzzle.col - len(puzzle.surface)) % 3 == 0, "The grid cannot be divided into 3-ominoes!")
         self.add_program_line(defined(item="hole"))
@@ -61,4 +61,4 @@ class HeterominoSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

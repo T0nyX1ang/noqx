@@ -27,7 +27,7 @@ class NewsSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         news_dict = {"N": 1, "E": 2, "W": 3, "S": 4}
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -57,7 +57,7 @@ class NewsSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program
 
     def refine(self, solution: Puzzle) -> Puzzle:
         """Refine the solution."""

@@ -34,7 +34,7 @@ class TetrochainSolver(Solver):
         {"url": "https://puzz.link/p?tetrochain/9/9/c33d37k32d35k31d32k22d41t34", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -65,4 +65,4 @@ class TetrochainSolver(Solver):
 
         self.add_program_line(display(item="black"))
 
-        return self.asp_program
+        return self.program

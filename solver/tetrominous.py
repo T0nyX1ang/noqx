@@ -35,7 +35,7 @@ class TetrominousSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         shaded = len(puzzle.surface)
         fail_false((puzzle.row * puzzle.col - shaded) % 4 == 0, "The grid cannot be divided into 4-ominoes!")
@@ -73,4 +73,4 @@ class TetrominousSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

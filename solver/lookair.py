@@ -46,7 +46,7 @@ class LookAirSolver(Solver):
         {"url": "https://pzplus.tck.mn/p?lookair/20/10/1b2f12b1c3d2l2zzg2a1b4a3zzg2l4d2c1b32f3b2", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
@@ -69,4 +69,4 @@ class LookAirSolver(Solver):
 
         self.add_program_line(display(item="gray"))
 
-        return self.asp_program
+        return self.program

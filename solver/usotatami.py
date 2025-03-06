@@ -26,7 +26,7 @@ class UsotatamiSolver(Solver):
         {"url": "https://puzz.link/p?usotatami/8/8/7b23b6b4b2f2d4a21a2b4b3a3e8e5b3b2b32b3", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(len(puzzle.text) > 0, "No clues found.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -54,4 +54,4 @@ class UsotatamiSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

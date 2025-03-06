@@ -51,7 +51,7 @@ class MoonSunSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="moon"))
         self.add_program_line(defined(item="sun"))
@@ -85,4 +85,4 @@ class MoonSunSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=3))
 
-        return self.asp_program
+        return self.program

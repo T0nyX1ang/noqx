@@ -61,7 +61,7 @@ class HashiSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -85,4 +85,4 @@ class HashiSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=4))
 
-        return self.asp_program
+        return self.program

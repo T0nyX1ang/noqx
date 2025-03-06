@@ -45,7 +45,7 @@ class NoribouSolver(Solver):
         {"url": "https://puzz.link/p?nuribou/20/15/h5o6zs6k3i3h6zg4p4zi.pbzl7h3zz4k4l9v7zn4h.l4k4o4q7i2", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -77,4 +77,4 @@ class NoribouSolver(Solver):
 
         self.add_program_line(display(item="black"))
 
-        return self.asp_program
+        return self.program

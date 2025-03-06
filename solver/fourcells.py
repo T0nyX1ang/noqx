@@ -20,7 +20,7 @@ class FourCellsSolver(Solver):
         {"url": "https://puzz.link/p?fourcells/10/10/d3g1c3g1c3b1a3b1j3a13a3j1b1a3b1c3g1c3g1d", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.row * puzzle.col % 4 == 0, "It's impossible to divide grid into regions of this size!")
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -45,4 +45,4 @@ class FourCellsSolver(Solver):
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 
-        return self.asp_program
+        return self.program

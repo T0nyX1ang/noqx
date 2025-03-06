@@ -24,7 +24,7 @@ class MochikoroSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -55,4 +55,4 @@ class MochikoroSolver(Solver):
         self.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
         self.add_program_line(display(item="black"))
 
-        return self.asp_program
+        return self.program

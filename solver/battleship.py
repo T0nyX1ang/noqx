@@ -19,7 +19,7 @@ class BattleshipSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
 
@@ -92,7 +92,7 @@ class BattleshipSolver(Solver):
 
         self.add_program_line(display(item=fleet_name))
 
-        return self.asp_program
+        return self.program
 
     def refine(self, solution: Puzzle) -> None:
         """Refine the solution."""

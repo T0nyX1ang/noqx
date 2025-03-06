@@ -25,7 +25,7 @@ class CreekSolver(Solver):
         {"url": "https://puzz.link/p?creek/10/10/qbdccdbdbibiceeeddcblbbcdcdddboabbb", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
@@ -46,4 +46,4 @@ class CreekSolver(Solver):
 
         self.add_program_line(display(item="gray"))
 
-        return self.asp_program
+        return self.program

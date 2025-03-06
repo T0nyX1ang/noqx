@@ -18,7 +18,7 @@ class CojunSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type=4))
@@ -39,4 +39,4 @@ class CojunSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

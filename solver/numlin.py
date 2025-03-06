@@ -54,7 +54,7 @@ class NumlinSolver(Solver):
         "no_2x2": {"name": "No 2x2 path", "type": "checkbox", "default": True},
     }
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
         for (r, c, d, pos), clue in puzzle.text.items():
@@ -101,4 +101,4 @@ class NumlinSolver(Solver):
 
         self.add_program_line(display(item="grid_direction", size=3))
 
-        return self.asp_program
+        return self.program

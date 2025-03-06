@@ -36,7 +36,7 @@ class NanroSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(adjacent())
@@ -74,4 +74,4 @@ class NanroSolver(Solver):
         self.add_program_line(display(item="gray", size=2))
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

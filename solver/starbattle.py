@@ -24,7 +24,7 @@ class StarBattleSolver(Solver):
     ]
     parameters = {"stars": {"name": "Stars", "type": "number", "default": 2}}
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.param["stars"].isdigit(), "Invalid star count.")
         num_stars = int(puzzle.param["stars"])
@@ -51,4 +51,4 @@ class StarBattleSolver(Solver):
 
         self.add_program_line(display(item="star__2"))
 
-        return self.asp_program
+        return self.program

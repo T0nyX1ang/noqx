@@ -28,7 +28,7 @@ class HanareSolver(Solver):
         {"url": "https://puzz.link/p?hanare/10/10/3162k3o9gjhb7mfbiie020t0a0vv2e400l8q6zzzzm9q", "text": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(hanare_constraint())
@@ -52,4 +52,4 @@ class HanareSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

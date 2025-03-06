@@ -23,7 +23,7 @@ class KakuroSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         sums: List[Tuple[int, List[Tuple[int, int]]]] = []
         for (r, c, d, pos), num in puzzle.text.items():
@@ -65,4 +65,4 @@ class KakuroSolver(Solver):
         self.add_program_line(unique_num(_type="area", color="grid"))
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

@@ -35,7 +35,7 @@ class ViewSolver(Solver):
         {"url": "https://puzz.link/p?view/9/9/g0i0t0i0q0h0i0p0i0q0g0i0j", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(fill_num(_range=range(0, puzzle.row + puzzle.col), color="white"))
@@ -60,4 +60,4 @@ class ViewSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

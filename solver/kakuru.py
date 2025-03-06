@@ -21,7 +21,7 @@ class KakuruSolver(Solver):
         },
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="black"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
@@ -42,4 +42,4 @@ class KakuruSolver(Solver):
 
         self.add_program_line(display(item="number", size=3))
 
-        return self.asp_program
+        return self.program

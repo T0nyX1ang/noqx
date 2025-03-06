@@ -31,7 +31,7 @@ class NuriuzuSolver(Solver):
         {"url": "https://puzz.link/p?nuriuzu/10/10/iaaeztepexewezwepexewezzseezzj", "test": False},
     ]
 
-    def program(self, puzzle: Puzzle) -> str:
+    def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -78,4 +78,4 @@ class NuriuzuSolver(Solver):
 
         self.add_program_line(display())
 
-        return self.asp_program
+        return self.program
