@@ -1,11 +1,11 @@
 """Solve Symmetry Area puzzles."""
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
-from noqx.solution import solver
 
 
 def fillomino_constraint() -> str:
@@ -108,50 +108,13 @@ def symmetry_area(fast: bool = False) -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(edge(puzzle.row, puzzle.col))
-    solver.add_program_line(adjacent(_type=4))
-    solver.add_program_line(adjacent(_type="edge"))
-    solver.add_program_line(fillomino_constraint())
-    solver.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
-    solver.add_program_line(symmetry_area(fast=puzzle.param["fast_mode"]))
+class SymmareaSolver(Solver):
+    """The Symmetry Area solver."""
 
-    numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
-    solver.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
-
-    for (r, c, d, pos), num in puzzle.text.items():
-        validate_direction(r, c, d)
-        validate_type(pos, "normal")
-        fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
-        solver.add_program_line(f"number({r}, {c}, {num}).")
-        solver.add_program_line(f"clue({r}, {c}).")
-        solver.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
-        solver.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
-
-        if num == 1:
-            solver.add_program_line(f"edge_left({r}, {c}).")
-            solver.add_program_line(f"edge_top({r}, {c}).")
-            solver.add_program_line(f"edge_left({r}, {c + 1}).")
-            solver.add_program_line(f"edge_top({r + 1}, {c}).")
-
-    for (r, c, d, _), draw in puzzle.edge.items():
-        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
-
-    solver.add_program_line(display(item="edge_left", size=2))
-    solver.add_program_line(display(item="edge_top", size=2))
-    solver.add_program_line(display(item="number", size=3))
-    solver.add_program_line(display(item="numberx", size=3))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Symmetry Area",
-    "category": "num",
-    "examples": [
+    name = "Symmetry Area"
+    category = "var"
+    aliases = ["symmetryarea"]
+    examples = [
         {
             "data": "m=edit&p=7VTRbtMwFH3PV0x+vg+xnaad38pIeSkZsKJpsqIo7TIWkeCRNgi56r/v+jpRqqoIgcTgAVk+Ojk+bs51fLv92hVtCTEOOYMQOA4RxzR5FNEM+7GqdnWpLmDe7R5NiwTgerGAh6LeloHuXVmwt5fKzsG+UZoJBjQ5y8C+V3v7VtkU7A0uMeCoLZFxBgJpMtJbWnfsyos8RJ72HOkd0k3VbuoyX3rlndJ2Bcy95xXtdpQ15lvJ/DZ63phmXTlhXeywmO1j9dSvbLt787nrvTw7gJ37uMmZuHKM66iP69iZuK6KPxz3Mjsc8Ng/YOBcaZf940hnI71Re8RU7ZmQQ6X+2zAxPREkOeIjgRyzUYiEE/DrDsKEHJNRiMkhj4T4xDElx9Frp+SIBgHjcgp9R7ggFIQrrAmsJHxNGBJOCJfkSQhvCa8II8KYPFN3Kr90bi8QRwtBTejH5Pd5FmiW3H8qL1LTNkWN9ybtmnXZDs/YqIeAfWc0tcQt0f/e/Uu96z5B+K/dxJ/E0XgZhAR/Tn33PnV5kW8MXjY8RGeQzoB/Ij804C/Y6/MbT/UXrx+bkT1UdW2a6othWfAM",
         },
@@ -166,6 +129,43 @@ __metadata__ = {
         },
         {"url": "https://pzplus.tck.mn/p?symmarea/10/10/h1i5j4g4g1g1h1g2g1i1h4g4g1g1j4k1h4i9g1h1i4t1j1l1i1j", "test": False},
         {"url": "https://pzplus.tck.mn/p?symmarea/12/12/z1lbj3k17j736x12p26y15j584j-1bj-14q1u", "test": False},
-    ],
-    "parameters": {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False}},
-}
+    ]
+    parameters = {"fast_mode": {"name": "Fast Mode", "type": "checkbox", "default": False}}
+
+    def program(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(edge(puzzle.row, puzzle.col))
+        self.add_program_line(adjacent(_type=4))
+        self.add_program_line(adjacent(_type="edge"))
+        self.add_program_line(fillomino_constraint())
+        self.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
+        self.add_program_line(symmetry_area(fast=puzzle.param["fast_mode"]))
+
+        numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
+        self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
+
+        for (r, c, d, pos), num in puzzle.text.items():
+            validate_direction(r, c, d)
+            validate_type(pos, "normal")
+            fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
+            self.add_program_line(f"number({r}, {c}, {num}).")
+            self.add_program_line(f"clue({r}, {c}).")
+            self.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
+            self.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
+
+            if num == 1:
+                self.add_program_line(f"edge_left({r}, {c}).")
+                self.add_program_line(f"edge_top({r}, {c}).")
+                self.add_program_line(f"edge_left({r}, {c + 1}).")
+                self.add_program_line(f"edge_top({r + 1}, {c}).")
+
+        for (r, c, d, _), draw in puzzle.edge.items():
+            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+
+        self.add_program_line(display(item="edge_left", size=2))
+        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="number", size=3))
+        self.add_program_line(display(item="numberx", size=3))
+
+        return self.asp_program

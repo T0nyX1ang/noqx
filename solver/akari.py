@@ -1,4 +1,4 @@
-"""Akari (Light up) self."""
+"""Akari (Light up) solver."""
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle

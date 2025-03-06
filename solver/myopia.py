@@ -2,13 +2,13 @@
 
 from typing import List
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import convert_direction_to_edge, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.solution import solver
 
 
 def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
@@ -34,44 +34,43 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-    solver.add_program_line(direction("lurd"))
-    solver.add_program_line(shade_c(color="myopia"))
-    solver.add_program_line(fill_path(color="myopia"))
-    solver.add_program_line(adjacent(_type="loop"))
-    solver.add_program_line(grid_color_connected(color="myopia", adj_type="loop"))
-    solver.add_program_line(single_loop(color="myopia"))
-    solver.add_program_line(convert_direction_to_edge())
+class MyopiaSolver(Solver):
+    """The Myopia solver."""
 
-    for (r, c, d, pos), symbol_name in puzzle.symbol.items():
-        validate_direction(r, c, d)
-        validate_type(pos, "multiple")
-        symbol, style = symbol_name.split("__")
-        style = int(style)
-        validate_type(symbol, "arrow_cross")
-
-        # direction order: top, left, bottom, right
-        mask = [bool(style & 64), bool(style & 128), bool(style & 16), bool(style & 32)]
-        solver.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1))
-
-    for (r, c, d, _), draw in puzzle.edge.items():
-        solver.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
-
-    solver.add_program_line(display(item="edge_top", size=2))
-    solver.add_program_line(display(item="edge_left", size=2))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Myopia",
-    "category": "loop",
-    "examples": [
+    name = "Myopia"
+    category = "loop"
+    examples = [
         {
             "data": "m=edit&p=7VVRb9owEH7Pr6j8fA92HCDxG+tgLx3dBlOFrChKaTbQQGEJ2SYj/nvPF0O0rSVRq3V7mEw+fdgf9nfnO1J+rdIigwiHDIGDwCFDTk8Y2A93Y7barTN1AcNqt8wLJADX4zF8Stdl5mmnir29iZQZgnmjNJMMmMDHZzGY92pv3iozBzPFJQYC566QocBHOmroDa1bdllPCo584jjSOdK0KPLvyaLIy7KefKe0mQGzR72iDSxlm/xbxupf0vdFvrld2YnbdIfxlMvV1q2U1V3+pXJaER/ADGvHowccy8axpbVjyx5wbAP5846j+HDA5H9Az4nS1v7HhoYNnao94oRQEM7VnvkRboOXaK9fHK8cj/jVM5OBFdaS88JeR2HgdjyJHhW6HVuF/cHx6JZgBv5xxzYhHd0hPaHs6DHqNx7PCgXnHbcUXHRWUobqs8/GI7grjNZcCkGnd1FKSvtPuseUVBudlKcCPhsRlvuYit4nnGFPgJGErwk5YY/wijQjwhvCS8KAsE+age2qJ/fd0+ywXoAZjEIMO5QgbCnJVovaD135NqP3b83Enmaju8/ZxSQvNuka/+Wmy3SbMXypHDz2g9GjMWII/r9n/up7xl4Ef+Gqf24TakzwqWHAXAPbVkmaLHIsNMzi85exK39bePEcYKPH3j0=",
-        }
-    ],
-}
+        },
+    ]
+
+    def program(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
+        self.add_program_line(direction("lurd"))
+        self.add_program_line(shade_c(color="myopia"))
+        self.add_program_line(fill_path(color="myopia"))
+        self.add_program_line(adjacent(_type="loop"))
+        self.add_program_line(grid_color_connected(color="myopia", adj_type="loop"))
+        self.add_program_line(single_loop(color="myopia"))
+        self.add_program_line(convert_direction_to_edge())
+
+        for (r, c, d, pos), symbol_name in puzzle.symbol.items():
+            validate_direction(r, c, d)
+            validate_type(pos, "multiple")
+            symbol, style = symbol_name.split("__")
+            style = int(style)
+            validate_type(symbol, "arrow_cross")
+
+            # direction order: top, left, bottom, right
+            mask = [bool(style & 64), bool(style & 128), bool(style & 16), bool(style & 32)]
+            self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1))
+
+        for (r, c, d, _), draw in puzzle.edge.items():
+            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+
+        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge_left", size=2))
+
+        return self.asp_program

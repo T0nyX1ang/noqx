@@ -2,12 +2,12 @@
 
 from typing import Tuple
 
+from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.solution import solver
 
 
 def distance_in_area(grid_size: Tuple[int, int]) -> str:
@@ -33,44 +33,43 @@ def mannequin_constraint(color: str = "black") -> str:
     return rule.strip()
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color="gray"))
-    solver.add_program_line(adjacent())
-    solver.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
-    solver.add_program_line(area_adjacent())
-    solver.add_program_line(distance_in_area(grid_size=(puzzle.row, puzzle.col)))
-    solver.add_program_line(mannequin_constraint(color="gray"))
+class MannequinSolver(Solver):
+    """The Mannequin Gate solver."""
 
-    areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-    for i, (ar, rc) in enumerate(areas.items()):
-        solver.add_program_line(area(_id=i, src_cells=ar))
-        solver.add_program_line(count(target=2, color="gray", _type="area", _id=i))
-        if rc:
-            num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
-            if isinstance(num, int):
-                solver.add_program_line(f"area_num({i}, {num}).")
-
-    for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            solver.add_program_line(f"gray({r}, {c}).")
-        else:
-            solver.add_program_line(f"not gray({r}, {c}).")
-
-    solver.add_program_line(display(item="gray"))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Mannequin Gate",
-    "category": "shade",
-    "aliases": ["mannequingate", "manekingeto"],
-    "examples": [
+    name = "Mannequin Gate"
+    category = "shade"
+    aliases = ["mannequingate", "manekingeto"]
+    examples = [
         {
             "data": "m=edit&p=7VRBb9pMEL3zK6I9z2F3bRrbl4qm8F0oaQtVFFkWMsRpUKHmM7iqFvHf82a8liuVKGkjcaoWj57fzozfzA67+7/Oq4L6WEFEmgyWtZE8oeZfu2ar/bpILmhQ7x/KCoDoejSi+3y9K3qp98p6BxcnbkDuvyRVRpGyeIzKyH1KDu5D4obkpthSFIEbN04WcNjBG9lndNWQRgNPPAa8BVyuquW6mI8b5mOSuhkp/s47iWaoNuWPQnkd/L4sN4sVE4t8j2J2D6ut39nVd+W32vua7Ehu0MidnpAbdHIZNnIZnZDLVbxe7npbnhIaZ8cjGv4ZUudJyqq/dDDq4DQ5wE6Sg7KaQwOoaE5F2aAt2hPhJRNvO6IvIbolkMhIuluxI7FW7AxfIxeIfS9Wi+2LHYvPECLiEC3Cdy0S6oCMsQ02FtjzhvnQ+8TAUCEYA/or1j5Wc6zxsezT5oyAY4+RhxvA2GLUrfe38Lfe3yIP96TlA+8fwD/gPKjhRiq5EhuKfSMVXnK3X3gechJIbJEzag7n9Z19VlvKZfvVfxnKeqma1tV9viwwgsO7r8XFpKw2+Rpvk3qzKKr2Hf/9Y0/9VPKkOD8K/10HZ78OuPn6jy6FM8zdM3JSjEF7K5C7JrWt5/l8WWLG0DvZbS+KJ7b/PnhKNn6C17/xZ+8b/rLqe12tFmWtst4j",
         },
-    ],
-}
+    ]
+
+    def program(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(shade_c(color="gray"))
+        self.add_program_line(adjacent())
+        self.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
+        self.add_program_line(area_adjacent())
+        self.add_program_line(distance_in_area(grid_size=(puzzle.row, puzzle.col)))
+        self.add_program_line(mannequin_constraint(color="gray"))
+
+        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(areas.items()):
+            self.add_program_line(area(_id=i, src_cells=ar))
+            self.add_program_line(count(target=2, color="gray", _type="area", _id=i))
+            if rc:
+                num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
+                if isinstance(num, int):
+                    self.add_program_line(f"area_num({i}, {num}).")
+
+        for (r, c, _, _), color in puzzle.surface.items():
+            if color in Color.DARK:
+                self.add_program_line(f"gray({r}, {c}).")
+            else:
+                self.add_program_line(f"not gray({r}, {c}).")
+
+        self.add_program_line(display(item="gray"))
+
+        return self.asp_program

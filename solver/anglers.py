@@ -1,4 +1,4 @@
-"""The Anglers self."""
+"""The Anglers solver."""
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle

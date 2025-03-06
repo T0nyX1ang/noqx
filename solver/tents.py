@@ -3,11 +3,11 @@
 import itertools
 from typing import List, Tuple
 
+from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_adjacent_color
-from noqx.solution import solver
 
 
 def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
@@ -26,48 +26,47 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
     return rules + "\n" + constraints
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(shade_c(color="tents__2"))
-    solver.add_program_line(adjacent(_type=4))
-    solver.add_program_line(adjacent(_type=8))
-    solver.add_program_line(avoid_adjacent_color(color="tents__2", adj_type=8))
+class TentsSolver(Solver):
+    """The Tents solver."""
 
-    for (r, c, d, pos), num in puzzle.text.items():
-        validate_direction(r, c, d)
-        validate_type(pos, "normal")
-
-        if r == -1 and 0 <= c < puzzle.col and isinstance(num, int) and isinstance(num, int):
-            solver.add_program_line(count(num, color="tents__2", _type="col", _id=c))
-
-        if c == -1 and 0 <= r < puzzle.row and isinstance(num, int) and isinstance(num, int):
-            solver.add_program_line(count(num, color="tents__2", _type="row", _id=r))
-
-    all_trees: List[Tuple[int, int]] = []
-    for (r, c, d, _), symbol_name in puzzle.symbol.items():
-        validate_direction(r, c, d)
-        if symbol_name == "tents__1":
-            all_trees.append((r, c))
-            solver.add_program_line(f"not tents__2({r}, {c}).")
-        if symbol_name == "tents__2":
-            solver.add_program_line(f"tents__2({r}, {c}).")
-
-    solver.add_program_line(identical_adjacent_map(all_trees, color="tents__2", adj_type=4))
-    solver.add_program_line(count(len(all_trees), color="tents__2", _type="grid"))
-    solver.add_program_line(display(item="tents__2"))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Tents",
-    "category": "var",
-    "examples": [
+    name = "Tents"
+    category = "var"
+    examples = [
         {
             "data": "m=edit&p=7VZNj9owEL3nV6x89iF2PpzkUtHt0gvNtoXVCkURCjQVqNBQIFVlxH/fmUlW2Ti+FKnby8p4NPM89rwZ2zHHX3VxKLkI8OdF3OUCWuhG1EUENvTnNtuctmVyw0f1aV0dQOH8fjzm34vtsXQynAktd846TvSI649JxgTjTEIXLOf6S3LWnxKdcj2FIQa+XE8aJwnqXac+0jhqtw0oXNDTVgd1Dupqc1hty8WkQT4nmZ5xhnHe02xU2a76XbKWB9qrarfcILAsTpDMcb3ZtyPH+lv1o259RX7hetTQnVvoeh1dVBu6qFnoYhZI91T+PB2v4trOHNKM88sFyv0ViC6SDDk/dGrUqdPkDDJNzswXMFXCPtGOMF+C6XWmhwu/A5LPgN8fD8HEXW7MwO2NBrj2C7O/dhD3IqvICCUCjNU5iBjnd7aM1Iv1IB1BSc0hqRADA95VmIWYiQEhgT6khhOjYADFSLUPCRdTNzGLn7D4SUzMxDB5A/MwYQPzLRhV1sAsJRGWmghliRs1u9zDYhs2jCvdYW7SG8aVltwknU0DU8P6ScuuSWWJa8lNquH2SjXMTdLxNDFLvpHJD47kmA6mJDmDC8i1R/IDSZdkQHJCPnckH0nekvRJhuSj8Ar/1SXv3Q0iKP89wSxs3g5bU28j14zkTsbSercsDzdpddgVW3gCputiXzJ4Yy8O+8Oo0zfRf3t2X/nZxdK7V9/L//OZyKCq8H9O33O2rxfFYlXBmXLzV2cJn4u2urnzBA==",
         },
         {"url": "https://puzz.link/p?tents/13/13/h3g03h1g2j3h32g24g2g55233hi11131331f78625243a872550", "test": False},
-    ],
-}
+    ]
+
+    def program(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(shade_c(color="tents__2"))
+        self.add_program_line(adjacent(_type=4))
+        self.add_program_line(adjacent(_type=8))
+        self.add_program_line(avoid_adjacent_color(color="tents__2", adj_type=8))
+
+        for (r, c, d, pos), num in puzzle.text.items():
+            validate_direction(r, c, d)
+            validate_type(pos, "normal")
+
+            if r == -1 and 0 <= c < puzzle.col and isinstance(num, int) and isinstance(num, int):
+                self.add_program_line(count(num, color="tents__2", _type="col", _id=c))
+
+            if c == -1 and 0 <= r < puzzle.row and isinstance(num, int) and isinstance(num, int):
+                self.add_program_line(count(num, color="tents__2", _type="row", _id=r))
+
+        all_trees: List[Tuple[int, int]] = []
+        for (r, c, d, _), symbol_name in puzzle.symbol.items():
+            validate_direction(r, c, d)
+            if symbol_name == "tents__1":
+                all_trees.append((r, c))
+                self.add_program_line(f"not tents__2({r}, {c}).")
+            if symbol_name == "tents__2":
+                self.add_program_line(f"tents__2({r}, {c}).")
+
+        self.add_program_line(identical_adjacent_map(all_trees, color="tents__2", adj_type=4))
+        self.add_program_line(count(len(all_trees), color="tents__2", _type="grid"))
+        self.add_program_line(display(item="tents__2"))
+
+        return self.asp_program

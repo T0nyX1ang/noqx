@@ -1,10 +1,10 @@
 """The Shakashaka solver."""
 
+from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.solution import solver
 
 
 def shaka() -> str:
@@ -67,34 +67,12 @@ def shade_shaka() -> str:
     return rule
 
 
-def program(puzzle: Puzzle) -> str:
-    """Generate a program for the puzzle."""
-    solver.reset()
-    solver.add_program_line(defined(item="black"))
-    solver.add_program_line(grid(puzzle.row, puzzle.col))
-    solver.add_program_line(adjacent(_type=4))
-    solver.add_program_line(shade_shaka())
-    solver.add_program_line(shaka())
+class ShakashakaSolver(Solver):
+    """The Shakashaka solver."""
 
-    for (r, c, d, pos), num in puzzle.text.items():
-        validate_direction(r, c, d)
-        validate_type(pos, "normal")
-        if isinstance(num, int):
-            solver.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {num}.")
-
-    for (r, c, _, _), color in puzzle.surface.items():
-        fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-        solver.add_program_line(f"black({r}, {c}).")
-
-    solver.add_program_line(display(item="triangle", size=3))
-
-    return solver.program
-
-
-__metadata__ = {
-    "name": "Shakashaka",
-    "category": "var",
-    "examples": [
+    name = "Shakashaka"
+    category = "var"
+    examples = [
         {
             "data": "m=edit&p=7VRNi9swEL37V4Q5z8HyVxzd0u2ml222bVKWIExQsl5sNsGpHZeikP++o5GJU9jSQotpoSh68zSjj6fJWM2XVtc5Ct/+whTJUotEyj1IE+5+15blcZfLEU7bY1HVRBDvZzN80rsm91Q3K/NOZiLNFM07qSAA5C4gQ/NRnsx7aVZoFhQCjMh3R0wABkRve/rAcctunFP4xOcdJ7oieqxLN/gglVki2CPe8EJLYV99zcGt4PG22m9K69joI92jKcpDF2nax+q57eaK7Ixm+mOlYa/UUqfUsleU2gv8jtKm0M/6NZGT7HymPH8imWuprOLPPU17upAniH2QEcI4ZjMJ2Ag/6uzE2Th1NrFxWjnvVqoAx+7v4x2UuAztTgpGcHHwnlcTeO+r9XzGddyedRnTmUKeCFeMM8aAcUmXQRMyvmX0GWPGO55zy/jAeMMYMSY8Z2zT8YsJc5cfQI4K3ef2fYv/PV/mKVi09ZPe5lSs83a/yevRvKr3ekfjRaEPOdCzcPbgG3BXoX1l/r8UQ70UNuf+31b+P5GjKKf0gZh7hEO71uttRcVEGfuTfpEM7h88y/TOuOpwJZJ5Lw==",
         },
@@ -102,5 +80,26 @@ __metadata__ = {
             "url": "https://puzz.link/p?shakashaka/30/30/kcodzzzgchbjbgbgbgbzzzobmcclbhblbobr.zkbncczzpbobgbgbscvczzu.lbgbgbobzgddkcsbzzndibiddbjbkcw.ztbzpbhbgbgbgb.zwbzgczzhegdobycgdlbhdx",
             "test": False,
         },
-    ],
-}
+    ]
+
+    def program(self, puzzle: Puzzle) -> str:
+        self.reset()
+        self.add_program_line(defined(item="black"))
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(adjacent(_type=4))
+        self.add_program_line(shade_shaka())
+        self.add_program_line(shaka())
+
+        for (r, c, d, pos), num in puzzle.text.items():
+            validate_direction(r, c, d)
+            validate_type(pos, "normal")
+            if isinstance(num, int):
+                self.add_program_line(f":- #count{{ R, C: adj_4({r}, {c}, R, C), triangle(R, C, _) }} != {num}.")
+
+        for (r, c, _, _), color in puzzle.surface.items():
+            fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+            self.add_program_line(f"black({r}, {c}).")
+
+        self.add_program_line(display(item="triangle", size=3))
+
+        return self.asp_program

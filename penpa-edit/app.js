@@ -193,7 +193,7 @@ $(window).on("load", function () {
         parameterBox.removeChild(parameterBox.lastChild);
       }
 
-      if (solver_metadata[puzzleName].parameters) {
+      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         parameterButton.disabled = false;
         for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
           const paramDiv = make_param(k, v.type, v.name, v.default);

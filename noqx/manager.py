@@ -20,7 +20,7 @@ def load_solvers(solver_dir: str):
         __import__(f"{solver_dir}.{pt}")
 
     for solver_cls in Solver.__subclasses__():
-        puzzle_type = solver_cls.__name__.lower().replace("solver", "")
+        puzzle_type = solver_cls.__module__.lower().replace(solver_dir, "").replace(".", "")
         if puzzle_type in modules:  # pragma: no cover
             raise ValueError(f"Solver for {puzzle_type} already exists.")
 
