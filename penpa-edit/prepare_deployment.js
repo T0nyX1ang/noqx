@@ -1,6 +1,6 @@
-const ENABLE_CLINGO_WITH_PYSCRIPT = false;
+const ENABLE_DEPLOYMENT = false;
 
-if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+if (ENABLE_DEPLOYMENT) {
   const CLINGO_SRC = ["./clingo.web.js", "./clingo.web.worker.js"];
   for (const src_name of CLINGO_SRC) {
     const script = document.createElement("script");

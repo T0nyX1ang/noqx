@@ -98,8 +98,8 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 ### Additional Usage
 
 ```text
-    usage: main.py [-h] [-d] [-H HOST] [-p PORT] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
-    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS]
+    usage: main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D]
+    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -107,9 +107,11 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
       -p PORT, --port PORT  the port to run the server on.
       -d, --debug           whether to enable debug mode with auto-reloading.
       -tl TIME_LIMIT, --time_limit TIME_LIMIT
-                            time limit in seconds (default = 30).
+                            time limit in seconds. (default = 30)
       -pt PARALLEL_THREADS, --parallel_threads PARALLEL_THREADS
-                            parallel threads (default = 1).
+                            parallel threads. (default = 1)
+      -D, --enable_deployment
+                            Deploy Pyscript for client-side purposes.
 ```
 
 ## How to contribute

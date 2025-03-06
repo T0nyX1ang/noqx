@@ -52,7 +52,7 @@ parser.add_argument("-p", "--port", default=8000, type=int, help="the port to ru
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
-parser.add_argument("-pd", "--pyscript_deploy", action="store_true", help="Deploy Pyscript for client-side purposes.")
+parser.add_argument("-D", "--enable_deployment", action="store_true", help="Enable deployment for client-side purposes.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -80,14 +80,14 @@ if __name__ == "main":
         logging.debug("Dumping solver metadata...")
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
-    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = true", "ENABLE_CLINGO_WITH_PYSCRIPT = false"))
+    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 
 
-if args.pyscript_deploy:
+if args.enable_deployment:
     # generate pyscript files if needed
     shutil.rmtree("dist/page", ignore_errors=True)
     os.makedirs("dist/page/penpa-edit", exist_ok=True)
@@ -106,11 +106,11 @@ if args.pyscript_deploy:
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
 
-    with open("./penpa-edit/pyscript_prepare.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/pyscript_prepare.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_CLINGO_WITH_PYSCRIPT = false", "ENABLE_CLINGO_WITH_PYSCRIPT = true"))
+    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
 
     for filename in os.listdir("penpa-edit"):
         shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")

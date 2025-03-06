@@ -115,7 +115,7 @@ function make_param(id, type, name, value) {
 $(window).on("load", function () {
   const CLINGO_WEB_WORKER_URL = "./clingo.web.worker.js";
   const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
-  if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+  if (ENABLE_DEPLOYMENT) {
     clingo.init(CLINGO_WASM_URL);
   }
 
@@ -274,7 +274,7 @@ $(window).on("load", function () {
         puzzleParameters = {}; // reset parameters
       }
 
-      if (ENABLE_CLINGO_WITH_PYSCRIPT) {
+      if (ENABLE_DEPLOYMENT) {
         try {
           const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
           const program = generate_program(puzzle);
@@ -395,7 +395,7 @@ $(window).on("load", function () {
 
   resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
-      if (ENABLE_CLINGO_WITH_PYSCRIPT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+      if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         clingo.worker.terminate(); // terminate the web worker
         clingo.worker = new Worker(CLINGO_WEB_WORKER_URL); // respawn a new web worker
         await clingo.init(CLINGO_WASM_URL); // reinitialize clingo-wasm
