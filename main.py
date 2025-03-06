@@ -70,10 +70,7 @@ UVICORN_LOGGING_CONFIG = {
 }
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
-with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
-    # dump the metadata to a javascript file for further import
-    logging.debug("Dumping solver metadata...")
-    f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
+raise ValueError(__name__)
 
 if __name__ == "main":
     # load the solvers
