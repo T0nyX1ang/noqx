@@ -70,9 +70,7 @@ UVICORN_LOGGING_CONFIG = {
 }
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
-raise ValueError(__name__)
-
-if __name__ == "main":
+if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
     # load the solvers
     logging.debug("Loading solvers...")
     load_solvers("solver")
