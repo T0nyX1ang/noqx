@@ -277,17 +277,17 @@ $(window).on("load", function () {
       if (ENABLE_DEPLOYMENT) {
         try {
           const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
-          if (!puzzle.success) {
-            throw new Error(puzzle.result);
+          if (!puzzle.get("success")) {
+            throw new Error(puzzle.get("result"));
           }
 
-          const program = generate_program(puzzle.result);
-          if (!program.success) {
-            throw new Error(program.result);
+          const program = generate_program(puzzle.get("result"));
+          if (!program.get("success")) {
+            throw new Error(program.get("result"));
           }
 
           const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
-          const result = await clingo.run(program.result, options);
+          const result = await clingo.run(program.get("result"), options);
 
           if (result.Result === "ERROR") {
             console.error(result.Error);
@@ -304,12 +304,12 @@ $(window).on("load", function () {
 
           solutionList = [];
           for (const solution_data of result.Call[0].Witnesses) {
-            const solution = store_solution(puzzle.result, solution_data.Value.join(" "));
-            if (!solution.success) {
-              throw new Error(solution.message);
+            const solution = store_solution(puzzle.get("result"), solution_data.Value.join(" "));
+            if (!solution.get("success")) {
+              throw new Error(solution.get("result"));
             }
 
-            solutionList.push(solution.result);
+            solutionList.push(solution.get("result"));
           }
 
           solutionPointer = 0;

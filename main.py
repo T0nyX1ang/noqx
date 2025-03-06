@@ -103,6 +103,9 @@ if args.enable_deployment:
                 file_dict["files"][f"./{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
 
+    with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(file_dict, f, indent=2)
+
     with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
