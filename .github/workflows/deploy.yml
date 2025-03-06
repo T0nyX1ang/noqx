@@ -49,8 +49,8 @@ jobs:
           mkdir brython
           cd ./brython
           brython-cli --install
-          mv brython.js ../page
-          mv brython_stdlib.js ../page
+          mv brython.js ../page/penpa-edit
+          mv brython_stdlib.js ../page/penpa-edit
           cd ../page/penpa-edit
           brython-cli make_modules
           rm brython_stdlib.js
