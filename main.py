@@ -89,6 +89,11 @@ if __name__ == "main":
 
 if args.enable_deployment:
     # generate pyscript files if needed
+    with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
+        # dump the metadata to a javascript file for further import
+        logging.debug("Dumping solver metadata...")
+        f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
+
     shutil.rmtree("dist/page", ignore_errors=True)
     os.makedirs("dist/page/penpa-edit", exist_ok=True)
 
