@@ -1,15 +1,6 @@
 const ENABLE_DEPLOYMENT = false;
 
 if (ENABLE_DEPLOYMENT) {
-  const CLINGO_SRC = ["./clingo.web.js", "./clingo.web.worker.js"];
-  for (const src_name of CLINGO_SRC) {
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = src_name;
-    script.async = false;
-    document.head.appendChild(script);
-  }
-
   const script = document.createElement("script");
   script.type = "module";
   script.src = "https://pyscript.net/releases/2025.2.4/core.js";

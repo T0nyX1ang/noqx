@@ -113,8 +113,7 @@ function make_param(id, type, name, value) {
 }
 
 $(window).on("load", function () {
-  const CLINGO_WEB_WORKER_URL = "./clingo.web.worker.js";
-  const CLINGO_WASM_URL = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.1.1/dist/clingo.wasm";
+  const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.2.1/dist/clingo.wasm`;
   if (ENABLE_DEPLOYMENT) {
     clingo.init(CLINGO_WASM_URL);
   }
@@ -406,9 +405,7 @@ $(window).on("load", function () {
   resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
       if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
-        clingo.worker.terminate(); // terminate the web worker
-        clingo.worker = new Worker(CLINGO_WEB_WORKER_URL); // respawn a new web worker
-        await clingo.init(CLINGO_WASM_URL); // reinitialize clingo-wasm
+        await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
       imp(puzzleContent.includes(urlBase) ? puzzleContent : `${urlBase}${puzzleContent}`);
       choicesType.enable();
