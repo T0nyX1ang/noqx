@@ -113,7 +113,7 @@ function make_param(id, type, name, value) {
 }
 
 $(window).on("load", function () {
-  const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.2.1/dist/clingo.wasm`;
+  const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
   if (ENABLE_DEPLOYMENT) {
     clingo.init(CLINGO_WASM_URL);
   }
