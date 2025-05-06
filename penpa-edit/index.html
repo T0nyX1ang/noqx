@@ -9,68 +9,96 @@
   <meta name="description" content="Noqx: extended logic puzzle solver." />
 
   <!-- styles -->
-  <link rel="stylesheet" type="text/css" id="color_theme"
-    href="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/css/light_theme.css">
-  <link rel="stylesheet" type="text/css" id="base_structure"
-    href="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/css/base-structure.css">
-  <link rel="stylesheet" type="text/css" id="tab_setting_css"
-    href="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/css/vanillaSelectBox.css">
-  <link rel="stylesheet" type="text/css" id="custom_color_css"
-    href="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/css/spectrum.css">
-  <link rel="stylesheet" type="text/css" id="constraints_settings_css"
-    href="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/css/select2.css">
+  <script src="./penpa_const.js"></script>
+  <script>
+    let style_sources = [
+      "./css/light_theme.css",
+      "./css/base-structure.css",
+      "./css/vanillaSelectBox.css",
+      "./css/spectrum.css",
+      "./css/select2.css"
+    ];
+    let style_sources_ids = [
+      "color_theme",
+      "base_structure",
+      "tab_setting_css",
+      "custom_color_css",
+      "constraints_settings_css"
+    ];
+    for (let i = 0; i < style_sources.length; i++) {
+      let style = document.createElement('link');
+      style.rel = "stylesheet";
+      style.type = "text/css";
+      style.id = style_sources_ids[i];
+      style.href = penpa_edit_prefix + style_sources[i];
+      style.async = false;
+      document.head.appendChild(style);
+      style_tag_cache[style_sources_ids[i]] = style;
+    }
+  </script>
   <link rel="stylesheet" type="text/css" href="./style.css">
   <link rel="stylesheet" type="text/css" href="./choices.alter.css">
 
   <!-- Online libs -->
-  <script src="./prepare_deployment.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.web.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/purify.min.js"></script>
-  <script
-    src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/CanvasRenderingContext2D.ext.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/encoding.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/vanillaSelectBox.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/zlib.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/spectrum.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/canvas2svg.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/select2.full.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/gif.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/libs/easytimer.min.js"></script>
+  <script type="text/javascript">
+    let script_sources = [
+      "./js/libs/md5.min.js",
+      "./js/libs/sweetalert2@11.js",
+      "./js/libs/purify.min.js",
+      "./js/libs/CanvasRenderingContext2D.ext.js",
+      "./js/libs/encoding.js",
+      "./js/libs/vanillaSelectBox.js",
+      "./js/libs/zlib.js",
+      "./js/libs/spectrum.js",
+      "./js/libs/canvas2svg.js",
+      "./js/libs/select2.full.js",
+      "./js/libs/gif.js",
+      "./js/libs/easytimer.min.js",
+      "./js/settings.js",
+      "./js/interface.js",
+      "./js/conflicts.js",
+      "./js/puzzlink.js",
+      "./js/modes.js",
+      "./js/genre_tags.js",
+      "./js/constraints.js",
+      "./js/main.js",
+      "./js/class_p.js",
+      "./js/class_square.js",
+      "./js/class_hex.js",
+      "./js/class_tri.js",
+      "./js/class_pyramid.js",
+      "./js/class_uniform.js",
+      "./js/class_panel.js",
+      "./js/style.js",
+      "./js/general.js",
+      "./js/customcolor.js",
+      "./js/translate.js",
+      "./js/timer.js",
+      "./js/conversion.js",
+    ];
 
-  <script src="./penpa_const.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/settings.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/interface.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/conflicts.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/puzzlink.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/modes.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/genre_tags.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/constraints.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_p.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_square.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_hex.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_tri.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_pyramid.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_uniform.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/class_panel.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/style.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/general.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/customcolor.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/translate.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/timer.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@master/docs/js/conversion.js"></script>
+    for (let i = 0; i < script_sources.length; i++) {
+      let script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = penpa_edit_prefix + script_sources[i];
+      script.async = false;
+      document.head.appendChild(script);
+    }
+  </script>
+
+  <script src="./prepare_deployment.js"></script>
   <script src="./solver_metadata.js"></script>
 </head>
 
 <body>
   <header id="header">
     <span id="title">Setter Mode</span>
-    <span id="version-info"><a href="http://github.com/T0nyX1ang/noqx" target="_blank">Noqx</a> &copy; 2023-2024 /
-      <a href="https://github.com/swaroopg92/penpa-edit" target="_blank">Penpa+</a> &copy; 2020-2024
+    <span id="version-info"><a href="http://github.com/T0nyX1ang/noqx" target="_blank">Noqx</a> &copy; 2023-2025 /
+      <a href="https://github.com/swaroopg92/penpa-edit" target="_blank">Penpa+</a> &copy; 2020-2025
       <button id="page_help" style="display: none;">Help</button> </span>
   </header>
 
@@ -783,6 +811,7 @@
           <option value="cairo_pentagonal" id="nb_gridtype11_lb"> Cairo pentagonal </option>
           <option value="rhombitrihexagonal" id="nb_gridtype12_lb"> Rhombitrihexagonal </option>
           <option value="deltoidal_trihexagonal" id="nb_gridtype13_lb"> Deltoidal trihexagonal </option>
+          <option value="penrose_P3" id="nb_gridtype14_lb"> Penrose P3 </option>
         </select>
       </span><br>
       <h4><label class="label_nb" id="nb_size_lb">Size:</label></h4>
@@ -801,6 +830,8 @@
         <span><label class="label_nb" id="nb_sudoku3_lb">Outside clues (top/left)</label></span>
         <input type="checkbox" name="nb_sudoku3" id="nb_sudoku3">
         <br>
+        <span><label class="label_nb" id="nb_penrose1_lb">Rotational asymmetry</label></span>
+        <input type="number" pattern="\d*" name="nb_penrose1" id="nb_penrose1" value="0" min="0" max="30" step="1">
         <span><label class="label_nb" id="nb_sudoku8_lb">Size 4x4</label></span>
         <input type="checkbox" name="nb_sudoku8" id="nb_sudoku8">
         <span><label class="label_nb" id="nb_sudoku5_lb">Size 6x6</label></span>
@@ -808,6 +839,11 @@
         <span><label class="label_nb" id="nb_sudoku6_lb">Size 8x8</label></span>
         <input type="checkbox" name="nb_sudoku6" id="nb_sudoku6">
         <br>
+        <span><label class="label_nb" id="nb_penrose2_lb">Tiling seed</label></span>
+        <input type="number" pattern="\d*" name="nb_penrose2" id="nb_penrose2" value="0.1" min="0.001" max="0.999"
+          step="0.001" oninput="nb_penrose2_sl.value = nb_penrose2.value">
+        <input type="range" id="nb_penrose2_sl" value="0.1" min="0.001" max="0.999" step="0.001"
+          oninput="nb_penrose2.value = nb_penrose2_sl.value">
         <span><label class="label_nb" id="nb_sudoku7_lb"></label></span>
       </span>
       <br>
