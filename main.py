@@ -75,15 +75,15 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
     logging.debug("Loading solvers...")
     load_solvers("solver")
 
-    with open("penpa-edit/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
+    with open("penpa-edit/js/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
         # dump the metadata to a javascript file for further import
         logging.debug("Dumping solver metadata...")
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
 
-    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 
 
@@ -106,24 +106,27 @@ if args.enable_deployment:
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
 
-    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
 
-    for filename in os.listdir("penpa-edit"):
-        shutil.copy(f"./penpa-edit/{filename}", f"./dist/page/penpa-edit/{filename}")
+    for dirname in ["css", "js"]:
+        os.makedirs(f"./dist/page/penpa-edit/{dirname}", exist_ok=True)
+        for filename in os.listdir(f"penpa-edit/{dirname}"):
+            shutil.copy(f"./penpa-edit/{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
 
     for filename in ["pyscript.json", "main_deploy.py"]:
         shutil.copy(f"./{filename}", f"./dist/page/penpa-edit/{filename}")
 
     shutil.copy("./index.html", "./dist/page/index.html")
+    shutil.copy("./penpa-edit/index.html", "./dist/page/penpa-edit/index.html")
 
-    with open("./penpa-edit/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 
     sys.exit(0)

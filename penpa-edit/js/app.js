@@ -55,12 +55,18 @@ function clear_info() {
   document.getElementById("saveinfosource").value = "";
   document.getElementById("saveinforules").value = "";
   document.getElementById("puzzleinfo").style.display = "none";
+  document.title = "Noqx - Extended logic puzzle solver";
 }
 
 function hook_update_display() {
   for (let i = 0; i < pu.space.length; i++) {
     pu.space[i] = parseInt(document.getElementById(`nb_space${i + 1}`).value, 10);
   }
+}
+
+function hook_load(data) {
+  load(data);
+  clear_info();
 }
 
 function invoke_param_box() {
@@ -312,7 +318,7 @@ $(window).on("load", function () {
           }
 
           solutionPointer = 0;
-          load(solutionList[solutionPointer]);
+          hook_load(solutionList[solutionPointer]);
         } catch (e) {
           console.log(e);
 
@@ -372,7 +378,7 @@ $(window).on("load", function () {
                 return;
               }
               solutionPointer = 0;
-              load(solutionList[solutionPointer]);
+              hook_load(solutionList[solutionPointer]);
             }
           })
           .catch((e) => {
@@ -398,7 +404,7 @@ $(window).on("load", function () {
       solveButton.textContent = `Solution (${solutionPointer + 1}/${
         solutionList.length === 10 ? "10+" : solutionList.length
       })`;
-      load(solutionList[solutionPointer]);
+      hook_load(solutionList[solutionPointer]);
     }
   });
 
