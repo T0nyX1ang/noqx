@@ -4,7 +4,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 ## Current Maintainers
 
-- [@T0nyX1ang](https://github.com/T0nyX1ang): backend, frontend, new solver implementations, bug fixes
+- [@T0nyX1ang](https://github.com/T0nyX1ang): backend, frontend, refactor, new solver implementations, bug fixes
 
 - [@zhuyaoyu](https://github.com/zhuyaoyu): (huge) solver optimizations, new solver implementations, bug fixes
 
