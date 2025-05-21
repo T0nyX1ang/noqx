@@ -164,5 +164,5 @@ cython_debug/
 .pdm-python
 
 # Auto-generated solver metadata file
-penpa-edit/solver_metadata.js
+solver_metadata.js
 pyscript.json
