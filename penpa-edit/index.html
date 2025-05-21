@@ -9,7 +9,7 @@
   <meta name="description" content="Noqx: extended logic puzzle solver." />
 
   <!-- styles -->
-  <script src="./penpa_const.js"></script>
+  <script src="./js/penpa_const.js"></script>
   <script>
     let style_sources = [
       "./css/light_theme.css",
@@ -30,14 +30,17 @@
       style.rel = "stylesheet";
       style.type = "text/css";
       style.id = style_sources_ids[i];
-      style.href = penpa_edit_prefix + style_sources[i];
+      if (i === 0)
+        style.href = style_sources[i];
+      else
+        style.href = penpa_edit_prefix + style_sources[i];
       style.async = false;
       document.head.appendChild(style);
       style_tag_cache[style_sources_ids[i]] = style;
     }
   </script>
-  <link rel="stylesheet" type="text/css" href="./style.css">
-  <link rel="stylesheet" type="text/css" href="./choices.alter.css">
+  <link rel="stylesheet" type="text/css" href="./css/style.css">
+  <link rel="stylesheet" type="text/css" href="./css/choices.alter.css">
 
   <!-- Online libs -->
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -90,8 +93,8 @@
     }
   </script>
 
-  <script src="./prepare_deployment.js"></script>
-  <script src="./solver_metadata.js"></script>
+  <script src="./js/prepare_deployment.js"></script>
+  <script src="./js/solver_metadata.js"></script>
 </head>
 
 <body>
@@ -102,7 +105,7 @@
       <button id="page_help" style="display: none;">Help</button> </span>
   </header>
 
-  <script src="./app.js"></script>
+  <script src="./js/app.js"></script>
 
   <div id="app-container">
     <div id="tool-container">
@@ -115,6 +118,7 @@
           <button id="savetext">Share</button>
           <a id="download_link"></a>
           <button id="duplicate" onclick="duplicate();" style="display: none;">Clone</button>
+          <button id="edit_bg_image">Edit Background</button>
           <button id="input_sudoku">I/O Sudoku</button>
           <button id="input_url">Load</button>
           <button id="page_settings" style="font-size: 11.5px;">⚙️</button>
@@ -154,6 +158,8 @@
             <label class="label_mode" id="mode_txt">Mode:</label>
             <input type="radio" name="mode" id="mo_surface" checked="checked" />
             <label for="mo_surface" class="label" id="mo_surface_lb">Surface</label>
+            <input type="radio" name="mode" id="mo_multicolor" />
+            <label for="mo_multicolor" class="label" id="mo_multicolor_lb">Multicolor</label>
             <input type="radio" name="mode" id="mo_line" />
             <label for="mo_line" class="label" id="mo_line_lb">Line</label>
             <input type="radio" name="mode" id="mo_lineE" />
@@ -182,6 +188,7 @@
             <span class="tab" id="tab_selection">
               <select id="mode_choices" multiple size="0"></select>
             </span>
+            <!-- <button id="toggle_panel_visibility" onclick="panel_toggle();">👁️</button> -->
           </div>
           <hr size="1" noshade>
           <div id="submode_button">
@@ -199,7 +206,7 @@
               <input type="radio" name="mode_line" value="5" id="sub_line5">
               <label for="sub_line5" class="labelL" id="sub_line5_lb">Middle</label>
               <input type="radio" name="mode_line" value="4" id="sub_line4">
-              <label for="sub_line4" class="labelL" id="sub_line4_lb">Helper_×</label>
+              <label for="sub_line4" class="labelL" id="sub_line4_lb">Helper (x)</label>
             </span>
             <span id="mode_lineE" style="display:none;">
               <input type="radio" name="mode_lineE" value="1" id="sub_lineE1" checked="checked">
@@ -209,7 +216,7 @@
               <input type="radio" name="mode_lineE" value="3" id="sub_lineE3">
               <label for="sub_lineE3" class="labelL" id="sub_lineE3_lb">Free</label>
               <input type="radio" name="mode_lineE" value="4" id="sub_lineE4">
-              <label for="sub_lineE4" class="labelL" id="sub_lineE4_lb">Helper_×</label>
+              <label for="sub_lineE4" class="labelL" id="sub_lineE4_lb">Helper (x)</label>
               <input type="radio" name="mode_lineE" value="5" id="sub_lineE5">
               <label for="sub_lineE5" class="labelL" id="sub_lineE5_lb">Erase</label>
             </span>
@@ -241,8 +248,7 @@
               <ul class="nav">
                 <li><span id="ms1" class="labelS">Shape</span>
                   <ul id="mode_symbolul1">
-                    <li id="li_circle"><span id="ms1_circle">&#x26AB; &#x26AA; &#x25CF;
-                        &#x25CB;</span>
+                    <li id="li_circle"><span id="ms1_circle">&#x26AB; &#x26AA; &#x25CF; &#x25CB;</span>
                       <ul>
                         <li id="li_circle_L"><span id="ms_circle_L">L</span></li>
                         <li id="li_circle_M"><span id="ms_circle_M">M</span></li>
@@ -250,8 +256,7 @@
                         <li id="li_circle_SS"><span id="ms_circle_SS">XS</span></li>
                       </ul>
                     </li>
-                    <li id="li_square"><span id="ms1_square">&#x2B1B; &#x2B1C; &#x25FC;
-                        &#x25FB;</span>
+                    <li id="li_square"><span id="ms1_square">&#x2B1B; &#x2B1C; &#x25FC; &#x25FB;</span>
                       <ul>
                         <li id="li_square_LL"><span id="ms_square_LL">XL</span></li>
                         <li id="li_square_L"><span id="ms_square_L">L</span></li>
@@ -260,8 +265,7 @@
                         <li id="li_square_SS"><span id="ms_square_SS">XS</span></li>
                       </ul>
                     </li>
-                    <li id="li_triup"><span id="ms1_triup">&#x25B2; &#x25B3; &#x25B4;
-                        &#x25B5;</span>
+                    <li id="li_triup"><span id="ms1_triup">&#x25B2; &#x25B3; &#x25B4; &#x25B5;</span>
                       <ul>
                         <li><span id="ms_triup_L">L</span></li>
                         <li><span id="ms_triup_M">M</span></li>
@@ -269,8 +273,7 @@
                         <li><span id="ms_triup_SS">XS</span></li>
                       </ul>
                     </li>
-                    <li id="li_tridown"><span id="ms1_tridown">&#x25BC; &#x25BD; &#x25BE;
-                        &#x25BF;</span>
+                    <li id="li_tridown"><span id="ms1_tridown">&#x25BC; &#x25BD; &#x25BE; &#x25BF;</span>
                       <ul>
                         <li><span id="ms_tridown_L">L</span></li>
                         <li><span id="ms_tridown_M">M</span></li>
@@ -278,8 +281,7 @@
                         <li><span id="ms_tridown_SS">XS</span></li>
                       </ul>
                     </li>
-                    <li id="li_triright"><span id="ms1_triright">&#9655; &#11208; &#9657;
-                        &#9656;</span>
+                    <li id="li_triright"><span id="ms1_triright">&#9655; &#11208; &#9657; &#9656;</span>
                       <ul>
                         <li><span id="ms_triright_L">L</span></li>
                         <li><span id="ms_triright_M">M</span></li>
@@ -287,8 +289,7 @@
                         <li><span id="ms_triright_SS">XS</span></li>
                       </ul>
                     </li>
-                    <li id="li_trileft"><span id="ms1_trileft">&#9665; &#11207; &#9667;
-                        &#9666;</span>
+                    <li id="li_trileft"><span id="ms1_trileft">&#9665; &#11207; &#9667; &#9666;</span>
                       <ul>
                         <li><span id="ms_trileft_L">L</span></li>
                         <li><span id="ms_trileft_M">M</span></li>
@@ -296,8 +297,7 @@
                         <li><span id="ms_trileft_SS">XS</span></li>
                       </ul>
                     </li>
-                    <li id="li_diamond"><span id="ms1_diamond">&#x2B25; &#x2B26; &#x25C6;
-                        &#x25C7;</span>
+                    <li id="li_diamond"><span id="ms1_diamond">&#x2B25; &#x2B26; &#x25C6; &#x25C7;</span>
                       <ul>
                         <li><span id="ms_diamond_L">L</span></li>
                         <li><span id="ms_diamond_M">M</span></li>
@@ -340,8 +340,7 @@
                         <li><span id="ms_bars_W">White</span></li>
                       </ul>
                     </li>
-                    <li id="li_tri"><span id="ms_tri">&#x25E2; &#x25E3; &#x25E4; &#x25E5;</span>
-                    </li>
+                    <li id="li_tri"><span id="ms_tri">&#x25E2; &#x25E3; &#x25E4; &#x25E5;</span></li>
                   </ul>
                 </li>
                 <li><span id="ms2" class="labelS">Number</span>
@@ -353,8 +352,7 @@
                       </ul>
                     </li>
                     <li><span id="ms_inequality">&#xFF1C; &#xFF1E; ^ v </span></li>
-                    <li id=msli_degital><span id="ms1_degital">&brvbar;-&brvbar; &brvbar;
-                        '-&brvbar;</span>
+                    <li id=msli_degital><span id="ms1_degital">&brvbar;-&brvbar; &brvbar; '-&brvbar;</span>
                       <ul id="ul_degital">
                         <li><span id="ms_degital_B">Black</span></li>
                         <li><span id="ms_degital_E">Green</span></li>
@@ -422,8 +420,7 @@
                       </ul>
                     </li>
                     <li id="li_kakuro"><span id="ms_kakuro">Kakuro</span></li>
-                    <li id="li_tents"><span id="ms_tents">&#127794; &#9650; &#8779; &#128031;</span>
-                    </li>
+                    <li id="li_tents"><span id="ms_tents">&#127794; &#9650; &#8779; &#128031;</span></li>
                     <li id="li_star"><span id="ms_star">&#10022; &#9734; &#9733;</span></li>
                     <li id="li_compass"><span id="ms_compass">Compass</span></li>
                     <li id="li_sudokuetc"><span id="ms_sudokuetc">Sudoku</span></li>
@@ -451,15 +448,13 @@
               <input type="radio" name="mode_special" value="thermo" id="sub_specialthermo" checked="checked">
               <label for="sub_specialthermo" class="labelL" id="sub_specialthermo_lb">Thermo</label>
               <input type="radio" name="mode_special" value="nobulbthermo" id="sub_specialnobulbthermo">
-              <label for="sub_specialnobulbthermo" class="labelL" id="sub_specialnobulbthermo_lb">No Bulb
-                Thermo</label>
+              <label for="sub_specialnobulbthermo" class="labelL" id="sub_specialnobulbthermo_lb">No Bulb Thermo</label>
               <input type="radio" name="mode_special" value="arrows" id="sub_specialarrows">
               <label for="sub_specialarrows" class="labelL" id="sub_specialarrows_lb">Sudoku Arrow</label>
               <input type="radio" name="mode_special" value="direction" id="sub_specialdirection">
               <label for="sub_specialdirection" class="labelL" id="sub_specialdirection_lb">Arrow</label>
               <input type="radio" name="mode_special" value="squareframe" id="sub_specialsquareframe">
-              <label for="sub_specialsquareframe" class="labelL" id="sub_specialsquareframe_lb">Rectangle
-                frame</label>
+              <label for="sub_specialsquareframe" class="labelL" id="sub_specialsquareframe_lb">Rectangle frame</label>
               <input type="radio" name="mode_special" value="polygon" id="sub_specialpolygon">
               <label for="sub_specialpolygon" class="labelL" id="sub_specialpolygon_lb">Polygon</label>
             </span>
@@ -505,16 +500,14 @@
                 </li>
                 <li><span id="subc4" class="labelS">Object</span>
                   <ul>
-                    <li id="combili_battleship"><span id="combisub_battleship">Battleship</span>
-                    </li>
+                    <li id="combili_battleship"><span id="combisub_battleship">Battleship</span></li>
                     <li id="combili_star"><span id="combisub_star">Star Battle</span></li>
                     <li id="combili_tents"><span id="combisub_tents">Tent</span></li>
                     <li id="combili_magnets"><span id="combisub_magnets">Magnets</span></li>
                     <li id="combili_mines"><span id="combisub_mines">Minesweeper</span></li>
                     <li id="combili_akari"><span id="combisub_akari">Akari</span></li>
                     <li id="combili_arrowS"><span id="combisub_arrowS">Arrows</span></li>
-                    <li id="combili_doublemines"><span id="combisub_doublemines">DoubleMines</span>
-                    </li>
+                    <li id="combili_doublemines"><span id="combisub_doublemines">DoubleMines</span></li>
                   </ul>
                 </li>
                 <li><span id="subc5" class="labelS">Number logic</span>
@@ -534,6 +527,12 @@
               <label for="sub_sudoku3" class="labelSu" id="sub_sudoku3_lb">Centre</label>
             </span>
           </div>
+          <div id="style_combi" style="display:none;">
+            <span class="combimode_display">
+              <span id="panel_buttonc0" class="label">Selection:</span>
+              <b><span id="combimode_content" class="combimode_content">blpo</span></b>
+            </span>
+          </div>
           <div id="stylemode_button">
             <span>
               <label class="label_mode tooltip" id="style_txt">Style:<span id="style_text" class="tooltiptext">Choose
@@ -542,29 +541,29 @@
             <span id="style_surface" style="display:'inline-block';">
               <!-- Adding superscript was affecting the color selection as it did not had id, so defined new id and followed same structure as parent. Its important to have only two characters at the end after _ because of the way, window_click is setup in main.js for stylemode_check-->
               <input type="radio" name="style_surface" value="1" id="st_surface1" checked="checked">
-              <label for="st_surface1" class="labelL" id="st_surface1_lb">DG</label>
+              <label for="st_surface1" class="labelL" id="st_surface1_lb">DG<sup id="st_surface1_sp">1</sup></label>
               <input type="radio" name="style_surface" value="8" id="st_surface8">
-              <label for="st_surface8" class="labelL" id="st_surface8_lb">GR</label>
+              <label for="st_surface8" class="labelL" id="st_surface8_lb">GR<sup id="st_surface8_sp">2</sup></label>
               <input type="radio" name="style_surface" value="3" id="st_surface3">
-              <label for="st_surface3" class="labelL" id="st_surface3_lb">LG</label>
+              <label for="st_surface3" class="labelL" id="st_surface3_lb">LG<sup id="st_surface3_sp">3</sup></label>
               <input type="radio" name="style_surface" value="4" id="st_surface4">
-              <label for="st_surface4" class="labelL" id="st_surface4_lb">BK</label>
+              <label for="st_surface4" class="labelL" id="st_surface4_lb">BK<sup id="st_surface4_sp">4</sup></label>
               <input type="radio" name="style_surface" value="2" id="st_surface2">
-              <label for="st_surface2" class="labelL" id="st_surface2_lb">GN</label>
+              <label for="st_surface2" class="labelL" id="st_surface2_lb">GN<sup id="st_surface2_sp">5</sup></label>
               <input type="radio" name="style_surface" value="5" id="st_surface5">
-              <label for="st_surface5" class="labelL" id="st_surface5_lb">BL</label>
+              <label for="st_surface5" class="labelL" id="st_surface5_lb">BL<sup id="st_surface5_sp">6</sup></label>
               <input type="radio" name="style_surface" value="6" id="st_surface6">
-              <label for="st_surface6" class="labelL" id="st_surface6_lb">RE</label>
+              <label for="st_surface6" class="labelL" id="st_surface6_lb">RE<sup id="st_surface6_sp">7</sup></label>
               <input type="radio" name="style_surface" value="7" id="st_surface7">
-              <label for="st_surface7" class="labelL" id="st_surface7_lb">YE</label>
+              <label for="st_surface7" class="labelL" id="st_surface7_lb">YE<sup id="st_surface7_sp">8</sup></label>
               <input type="radio" name="style_surface" value="9" id="st_surface9">
-              <label for="st_surface9" class="labelL" id="st_surface9_lb">PI</label>
+              <label for="st_surface9" class="labelL" id="st_surface9_lb">PI<sup id="st_surface9_sp">9</sup></label>
               <input type="radio" name="style_surface" value="10" id="st_surface10">
-              <label for="st_surface10" class="labelL" id="st_surface10_lb">OR</label>
+              <label for="st_surface10" class="labelL" id="st_surface10_lb">OR<sup id="st_surface10_sp">0</sup></label>
               <input type="radio" name="style_surface" value="11" id="st_surface11">
-              <label for="st_surface11" class="labelL" id="st_surface11_lb">PU</label>
+              <label for="st_surface11" class="labelL" id="st_surface11_lb">PU<sup id="st_surface11_sp">11</sup></label>
               <input type="radio" name="style_surface" value="12" id="st_surface12">
-              <label for="st_surface12" class="labelL" id="st_surface12_lb">BR</label>
+              <label for="st_surface12" class="labelL" id="st_surface12_lb">BR<sup id="st_surface12_sp">12</sup></label>
             </span>
             <span id="style_line" style="display:none;">
               <input type="radio" name="style_line" value="3" id="st_line3" checked="checked">
@@ -666,12 +665,6 @@
                 <b><span id="symmode_content" class="symmode_content">circle_L</span></b>
               </span>
             </span>
-            <span id="style_combi" style="display:none;">
-              <span class="combimode_display">
-                <span id="panel_buttonc0" class="label">Selection:</span>
-                <b><span id="combimode_content" class="combimode_content">blpo</span></b>
-              </span>
-            </span>
             <span id="style_cage" style="display:none;">
               <input type="radio" name="style_cage" value="10" id="st_cage10" checked="checked">
               <label for="st_cage10" class="labelL" id="st_cage10_lb">Dotted line</label>
@@ -709,8 +702,7 @@
         <label id="puzzletitle" class="info"></label>
         <label id="puzzleauthor" class="info"></label>
         <div><input type="button" id="puzzlerules" value="Show Rules" /></div>
-        <div><a id="puzzlesourcelink" href="" target="_blank"><label id="puzzlesource" class="info"></label></a>
-        </div>
+        <div><a id="puzzlesourcelink" href="" target="_blank"><label id="puzzlesource" class="info"></label></a></div>
         <div><label id="solution_check" class="info" /></label></div>
       </div>
       <div id="dvique" class="dvique">
@@ -731,8 +723,7 @@
         </span>
         <span class="tooltip">
           <button id="tb_reset" class="button">Erase selected mode</button>
-          <span id="eraseselect_text" class="tooltiptext">Erase elements that belongs to the selected
-            mode</span>
+          <span id="eraseselect_text" class="tooltiptext">Erase elements that belongs to the selected mode</span>
         </span>
         <span class="tooltip">
           <button id="tb_delete" class="button">Delete all</button>
@@ -894,8 +885,7 @@
       <br><br>
       <div class="nb_button">
         <input type="button" id="closeBtn_nb1" value="New grid" />
-        <input type="button" id="closeBtn_nb2" value="Update display" onmousedown="hook_update_display();"
-          ontouchstart="hook_update_display();" />
+        <input type="button" id="closeBtn_nb2" value="Update display" />
         <input type="button" id="closeBtn_nb3" value="Close" />
       </div>
     </div>
@@ -927,6 +917,61 @@
           <button class="addbottom" id="rt_addbottom_r">+ &#9660;</button>
           <button class="subbottom" id="rt_subbottom_r">&ndash; &#9650;</button>
         </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-bg-image" class="modal">
+    <div id="modal-bg-image-content" class="modal-content">
+      <h3 class="modal-header">Set Background Image</h3>
+      <div>
+        <table style="width: 100%">
+          <colgroup>
+            <col width="50%" />
+            <col width="50%" />
+          </colgroup>
+          <tr>
+            <td colspan="2"><label id='bg_image_url_lb'>Image URL:</label></td>
+          </tr>
+          <tr>
+            <td colspan="2"><input type="text" id="bg_image_url" /> </td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_x_lb">X position:</label></td>
+            <td><input type="text" value="0" id="bg_image_x" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_y_lb">Y position:</label></td>
+            <td><input type="text" value="0" id="bg_image_y" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_width_lb">Width:</label></td>
+            <td><input type="text" id="bg_image_width" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_height_lb">Height:</label></td>
+            <td><input type="text" id="bg_image_height" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_opacity_lb">Opacity:</label></td>
+            <td><input type="text" value="100" id="bg_image_opacity" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_foreground_lb">Draw in foreground:</label></td>
+            <td><input type="checkbox" id="bg_image_foreground" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_mask_white_lb">Mask out white from image:</label></td>
+            <td><input type="checkbox" id="bg_image_mask_white" /></td>
+          </tr>
+          <tr>
+            <td><label id="bg_image_threshold_lb">White mask threshold:</label></td>
+            <td><input type="text" value="240" id="bg_image_threshold" /></td>
+          </tr>
+        </table>
+      </div>
+      <br>
+      <div class="nb_button">
+        <input type="button" id="closeBtn_bg_image" value="Close" />
       </div>
     </div>
   </div>
@@ -1026,10 +1071,10 @@
       <h5 class="modal-subheader" id="saveinfo_lb">Puzzle Information</h5>
       <div id="modal-save-info">
         <span class="DM"><span id="save1_lb">Title:</span><input type="text" placeholder="e.g. Thermo Sudoku or Yajilin"
-            value="" id="saveinfotitle" class="right"></span>
+            value="" id="saveinfotitle" class="right" onchange="update_title()"></span>
         <br>
         <span class="DM"><span id="save2_lb">Author:</span><input type="text" placeholder="Puzzle creator name" value=""
-            id="saveinfoauthor"></span>
+            id="saveinfoauthor" onchange="update_title()"></span>
         <br>
         <span class="DM"><span id="save3_lb">Rules:</span><textarea class="text_area" rows="1" cols="10"
             placeholder="e.g. Classic sudoku rules." value="" id="saveinforules"></textarea></span>
@@ -1038,8 +1083,7 @@
         <br>
         <span class="DM">
           <span id="source_lb">Source:</span>
-          <span id="sourcewarning">* If you are not the author of the puzzle, please specify the source
-            URL</span>
+          <span id="sourcewarning">* If you are not the author of the puzzle, please specify the source URL</span>
           <input type="text" placeholder="https://example.com" id="saveinfosource"></span>
       </div>
       <h5 class="modal-subheader" id="generate_lb">Generate URL</h5>
@@ -1092,33 +1136,248 @@
         <div class="nb_button">
           <div>
             <input type="radio" name="constraints" value="and" id=and_tmp checked="checked" />
-            <label class="label" id="and_tmp_lb">All constraints</label>
+            <label for="and_tmp_lb" class="label" id="and_tmp_lb">All constraints</label>
             <input type="radio" name="constraints" value="or" id="or_tmp" />
-            <label class="label" id="or_tmp_lb">Any of the constraints</label>
+            <label for="or_tmp_lb" class="label" id="or_tmp_lb">Any of the constraints</label>
           </div>
-          <div id="answersetting">
-            <span><label id="sol_surface_lb">Shading - DG (Dark Grey), GR, LG, BL (Black):</label></span><br>
-            <span><label id="sol_number_lb">Number - Normal, L, M, S - Green, Blue, Red <br> Sudoku
-                - Normal, Centre - Green, Blue, Red:</label></span>
-            <span><label id="sol_loopline_lb">Line - Green, Double:</label></span><br>
-            <span><label id="sol_ignoreloopline_lb">Line - Ignore Given Line Segments:</label></span><br>
-            <span><label id="sol_or_loopline_lb">Line - Green, Double:</label></span><br>
-            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span><br>
-            <span><label id="sol_ignoreborder_lb">Edge - Ignore Edges on Grid Border / Givens:</label></span><br>
-            <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span><br>
-            <span><label id="sol_wall_lb">Wall - Green:</label></span><br>
-            <span><label id="sol_square_lb">Shape - Shape - Square - Option 2:</label></span><br>
-            <span><label id="sol_circle_lb">Shape - Shape - Circle - M size - Options 1 & 2:</label></span><br>
-            <span><label id="sol_tri_lb">Shape - Shape - Corner triangle - Options 1 to 4:</label></span><br>
-            <span><label id="sol_arrow_lb">Shape - Arrow - Small - Options 1 to 8:</label></span><br>
-            <span><label id="sol_math_lb">Shape - Number - Math - Black, Green - Options 2 & 3:</label></span><br>
-            <span><label id="sol_battleship_lb">Shape - Special 1 - Battleship - Black - Options 1
-                to 6 <br> and Curvy Black - Options 1 to 4:</label></span><br>
-            <span><label id="sol_tent_lb">Shape - Special 1 - Tent - Option 2:</label></span><br>
-            <span><label id="sol_star_lb">Shape - Special 1 - Star - Options 1 to 3:</label></span><br>
-            <span><label id="sol_akari_lb">Shape - Special 2 - Lightbulb - Option 3:</label></span><br>
-            <span><label id="sol_mine_lb">Shape - Special 2 - Minesweeper - Option 4:</label></span><br>
-          </div>
+          <table id="answersetting">
+            <tr>
+              <td>
+                <span><label id="sol_surface_exact_lb">Surface - Match exact colors:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_surface_exact" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution" id="sol_or_surface_exact" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_surface_lb">Shading - DG (Dark Grey), GR, LG, BL (Black):</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_surface" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_surface" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_number_lb">Number - Normal, L, M, S - Green, Blue, Red <br> Sudoku - Normal, Centre
+                    - Green, Blue, Red:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_number" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_number" class="solcheck_or">
+              </td>
+            </tr>
+            <tr class="solcheck_show_and">
+              <td>
+                <span><label id="sol_loopline_exact_lb">Line - Match exact styles:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_loopline_exact" class="solcheck">
+              </td>
+            </tr>
+            <tr class="solcheck_show_and">
+              <td>
+                <span><label id="sol_loopline_lb">Line - Green, Double only:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_loopline" class="solcheck">
+              </td>
+            </tr>
+            <tr class="solcheck_show_and">
+              <td>
+                <span><label id="sol_ignoreloopline_lb">Line - Ignore Given Line Segments:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_ignoreloopline" class="solcheck">
+              </td>
+            </tr>
+            <tr class="solcheck_show_or">
+              <td>
+                <span><label id="sol_loopline_exact_lb">Line - Match exact styles:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_or_loopline_exact" class="solcheck_or">
+              </td>
+            </tr>
+            <tr class="solcheck_show_or">
+              <td>
+                <span><label id="sol_or_loopline_lb">Line - Green, Double:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution_or" id="sol_or_loopline" class="solcheck_or">
+              </td>
+            </tr>
+            <tr class="solcheck_show_and">
+              <td>
+                <span><label id="sol_loopedge_exact_lb">Edge - Match exact styles:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_loopedge_exact" class="solcheck">
+              </td>
+            </tr>
+            <tr class="solcheck_show_and">
+              <td>
+                <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_loopedge" class="solcheck">
+              </td>
+            </tr>
+            <tr class="solcheck_show_and">
+              <td>
+                <span><label id="sol_ignoreborder_lb">Edge - Ignore Edges on Grid Border / Givens:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_ignoreborder" class="solcheck">
+              </td>
+            </tr>
+            <tr class="solcheck_show_or">
+              <td>
+                <span><label id="sol_loopedge_exact_lb">Edge - Match exact styles:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution" id="sol_or_loopedge_exact" class="solcheck_or">
+              </td>
+            </tr>
+            <tr class="solcheck_show_or">
+              <td>
+                <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
+              </td>
+              <td>
+                <input type="checkbox" name="solution_or" id="sol_or_loopedge" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_wall_lb">Wall - Green:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_wall" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_wall" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_square_lb">Shape - Shape - Square - Option 2:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_square" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_square" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_circle_lb">Shape - Shape - Circle - M size - Options 1 & 2:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_circle" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_circle" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_tri_lb">Shape - Shape - Corner triangle - Options 1 to 4:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_tri" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_tri" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_arrow_lb">Shape - Arrow - Small - Options 1 to 8:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_arrow" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_arrow" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_math_lb">Shape - Number - Math - Black, Green - Options 2 & 3:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_math" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_math" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_battleship_lb">Shape - Special 1 - Battleship - Black - Options 1 to 6 <br> and
+                    Curvy Black - Options 1 to 4:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_battleship" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_battleship" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_tent_lb">Shape - Special 1 - Tent - Option 2:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_tent" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_tent" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_star_lb">Shape - Special 1 - Star - Options 1 to 3:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_star" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_star" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_akari_lb">Shape - Special 2 - Lightbulb - Option 3:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_akari" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_akari" class="solcheck_or">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><label id="sol_mine_lb">Shape - Special 2 - Minesweeper - Option 4:</label></span>
+              </td>
+              <td class="solcheck_show_and">
+                <input type="checkbox" name="solution" id="sol_mine" class="solcheck">
+              </td>
+              <td class="solcheck_show_or">
+                <input type="checkbox" name="solution_or" id="sol_or_mine" class="solcheck_or">
+              </td>
+            </tr>
+          </table>
           <h5 id="custom_lb">Custom Message</h5>
           <textarea class="text_area" rows="1" cols="50"
             placeholder="Custom Congratulation Message on answer check pop up" id="custom_message"></textarea>
@@ -1168,8 +1427,8 @@
           placeholder="9">
       </div>
       <div>
-        <span><label class="label_nb" id="ignore_pencilmarks_lb" for="ignore_pencilmarks">Ignore Pencil Marks
-            (L, M, S values)</label></span>
+        <span><label class="label_nb" id="ignore_pencilmarks_lb" for="ignore_pencilmarks">Ignore Pencil Marks (L, M, S
+            values)</label></span>
         <input type="checkbox" name="ignore_pencilmarks" id="ignore_pencilmarks">
       </div>
       <div>
@@ -1178,8 +1437,8 @@
         <input type="checkbox" name="sudokuIgnoreSpaces" id="sudokuIgnoreSpaces">
       </div>
       <div>
-        <span><label class="label_nb" id="sudokuIgnoreNotSquare_lb" for="sudokuIgnoreNotSquare">Skip Import
-            Non-Square Check</label></span>
+        <span><label class="label_nb" id="sudokuIgnoreNotSquare_lb" for="sudokuIgnoreNotSquare">Skip Import Non-Square
+            Check</label></span>
         <input type="checkbox" name="sudokuIgnoreNotSquare" id="sudokuIgnoreNotSquare">
       </div>
       <div id="sudokuIOFail" class="is_hidden error_msg">Error: it contains non-alpha-numeric characters</div>
@@ -1196,7 +1455,7 @@
         <textarea class="text_area" rows="1" cols="81" id="urlstring" value=""></textarea>
       </div>
       <div class="nb_button">
-        <input type="button" id="load_url" value="Load URL" onclick="imp();" />
+        <input type="button" id="load_url" value="Load URL" onclick="import_url();" />
       </div>
     </div>
   </div>
@@ -1220,7 +1479,7 @@
               <td>
                 <select name="theme_mode" id="theme_mode_opt">
                   <option value="1" selected="selected" id="lb_settings_display_theme_light">Light</option>
-                  <option value="2" disabled id="lb_settings_display_theme_dark">Dark</option>
+                  <option value="2" id="lb_settings_display_theme_dark">Dark</option>
                 </select>
               </td>
             </tr>
@@ -1268,8 +1527,7 @@
               </td>
               <td>
                 <select name="sudoku_settings" id="sudoku_settings_opt">
-                  <option value="1" selected="selected" id="lb_settings_sudoku_marks_dynamic">Dynamic
-                  </option>
+                  <option value="1" selected="selected" id="lb_settings_sudoku_marks_dynamic">Dynamic</option>
                   <option value="2" id="lb_settings_sudoku_marks_large">Large</option>
                   <option value="3" id="lb_settings_sudoku_marks_small">Small</option>
                 </select>
@@ -1281,9 +1539,19 @@
               </td>
               <td>
                 <select name="sudoku_settings_normal" id="sudoku_settings_normal_opt">
-                  <option value="1" selected="selected" id="lb_settings_sudoku_normal_centered">
-                    Centered</option>
+                  <option value="1" selected="selected" id="lb_settings_sudoku_normal_centered">Centered</option>
                   <option value="2" id="lb_settings_sudoku_normal_bottom">Bottom</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label id="lb_settings_textoutline">Outline on Text:</label>
+              </td>
+              <td>
+                <select name="outline_text" id="outline_text_opt">
+                  <option value="1">ON</option>
+                  <option value="0" selected="selected">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1293,13 +1561,23 @@
               </td>
               <td>
                 <select name="starbattle_settings" id="starbattle_settings_opt">
-                  <option value="1" selected="selected" id="lb_settings_starbattle_dots_high_range">
-                    High Range</option>
+                  <option value="1" selected="selected" id="lb_settings_starbattle_dots_high_range">High Range</option>
                   <option value="2" id="lb_settings_starbattle_dots_low_range">Low Range</option>
                   <option value="3" id="lb_settings_starbattle_dots_disable">Disable</option>
                 </select>
               </td>
             </tr>
+            <!-- <tr>
+                            <td>
+                                <h4><label id="multitab_settings_lb">Solution Tab Setting:</label></h4>
+                            </td>
+                            <td>
+                                <select name="multitab_settings" id="multitab_settings_opt">
+                                    <option value="1" selected="selected">No</option>
+                                    <option value="2">Yes</option>
+                                </select>
+                            </td>
+                        </tr> -->
             <tr id="secondcolor_settings_lb">
               <td>
                 <label id="lb_settings_surface_second">Surface Second Color:</label>
@@ -1310,8 +1588,7 @@
                   <option value="8" id="lb_settings_surface_second_grey">Grey</option>
                   <option value="3" id="lb_settings_surface_second_light">Light Grey</option>
                   <option value="4" id="lb_settings_surface_second_black">Black</option>
-                  <option value="2" selected="selected" id="lb_settings_surface_second_green">Green
-                  </option>
+                  <option value="2" selected="selected" id="lb_settings_surface_second_green">Green</option>
                   <option value="5" id="lb_settings_surface_second_blue">Blue</option>
                   <option value="6" id="lb_settings_surface_second_red">Red</option>
                   <option value="7" id="lb_settings_surface_second_yellow">Yellow</option>
@@ -1372,6 +1649,28 @@
                 </select>
               </td>
             </tr>
+            <!-- <tr>
+                            <td>
+                                <label>Draw on Edges/Corners:</label>
+                            </td>
+                            <td>
+                                <select name="edgebutton" id="edge_button">
+                                    <option value="1">ON</option>
+                                    <option value="2" selected="selected">OFF</option>
+                                </select>
+                            </td>
+                        </tr> -->
+            <!-- <tr>
+                            <td>
+                                <label>PenpaLite:</label>
+                            </td>
+                            <td>
+                                <select name="advancebutton" id="advance_button">
+                                    <option value="1">ON</option>
+                                    <option value="2" selected="selected">OFF</option>
+                                </select>
+                            </td>
+                        </tr> -->
             <tr>
               <th colspan="2" class="modal-subheader" id="lb_settings_input_options">Input Options</th>
             </tr>
@@ -1411,6 +1710,33 @@
             </tr>
             <tr>
               <td>
+                <label id="lb_settings_pencil_marks">Check pencil marks:</label>
+              </td>
+              <td>
+                <select name="check_pencil_marks" id="check_pencil_marks_opt">
+                  <option value="1">ON</option>
+                  <option value="0" selected="selected">OFF</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="nb_button">
+                <input type="button" id="saveinfogenre2" value="Edit tags for conflict checker" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label id="lb_settings_lineanycolor">Any color can match green line/edge in solution:</label>
+              </td>
+              <td>
+                <select name="ignore_line_style" id="ignore_line_style_opt">
+                  <option value="1">ON</option>
+                  <option value="0" selected="selected">OFF</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <label id="lb_settings_sudoku_keys">Sudoku Z/Y & XCV Keys:</label>
               </td>
               <td>
@@ -1428,8 +1754,18 @@
                 <label id="lb_settings_saved_settings">Saved Settings:</label>
               </td>
               <td>
-                <button id="clear_settings" onclick="UserSettings.clearSettings()">Clear
-                  cookies</button>
+                <button id="clear_settings" onclick="UserSettings.clearSettings()">Clear cookies</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Auto-save puzzle in browser history:</label>
+              </td>
+              <td>
+                <select name="auto_save_history" id="auto_save_history_opt">
+                  <option value="1">ON</option>
+                  <option value="0" selected="selected">OFF</option>
+                </select>
               </td>
             </tr>
             <tr>
@@ -1437,8 +1773,8 @@
                 <label id="lb_settings_local_storage">Local Storage:</label>
               </td>
               <td>
-                <em id="local_storage_browser_message" class="is_hidden">Your browser has disabled or
-                  doesn't support local storage.</em>
+                <em id="local_storage_browser_message" class="is_hidden">Your browser has disabled or doesn't support
+                  local storage.</em>
                 <select id="allow_local_storage">
                   <option value="1" selected="selected" class="lb_generic_on">ON</option>
                   <option value="4" class="lb_generic_off">OFF</option>
