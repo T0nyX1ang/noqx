@@ -94,14 +94,14 @@ if args.enable_deployment:
 
     target_dirs = ["noqx", "noqx/puzzle", "noqx/rule", "solver"]
     for dirname in target_dirs:
-        os.makedirs(f"dist/page/penpa-edit/{dirname}", exist_ok=True)
+        os.makedirs(f"dist/page/penpa-edit/py/{dirname}", exist_ok=True)
 
     file_dict = {"files": {}}
     for dirname in ["noqx", "noqx/puzzle", "noqx/rule", "solver"]:
         for filename in os.listdir(dirname):
             if filename.endswith(".py") and filename != "clingo.py":
-                file_dict["files"][f"./{dirname}/{filename}"] = f"{dirname}/{filename}"
-                shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
+                file_dict["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
+                shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/py/{dirname}/{filename}")
 
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
@@ -117,9 +117,8 @@ if args.enable_deployment:
         for filename in os.listdir(f"penpa-edit/{dirname}"):
             shutil.copy(f"./penpa-edit/{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
 
-    for filename in ["pyscript.json", "main_deploy.py"]:
-        shutil.copy(f"./{filename}", f"./dist/page/penpa-edit/{filename}")
-
+    shutil.copy("./pyscript.json", "./dist/page/penpa-edit/pyscript.json")
+    shutil.copy("./main_deploy.py", "./dist/page/penpa-edit/py/main_deploy.py")
     shutil.copy("./index.html", "./dist/page/index.html")
     shutil.copy("./penpa-edit/index.html", "./dist/page/penpa-edit/index.html")
 
