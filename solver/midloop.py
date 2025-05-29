@@ -13,7 +13,7 @@ def midloop_constraint(r: int, c: int, d: Direction) -> str:
     """
     Generate a midloop constraint.
 
-    A loop_straight rule, a loop_turning rule, and an adjacent rule should be defined first.
+    A loop_turning rule should be defined first.
     """
     rule = ""
 
