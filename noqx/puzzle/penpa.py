@@ -175,6 +175,15 @@ class PenpaPuzzle(Puzzle):
             elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
                 self.edge[Point(coord_2[0], coord_2[1], Direction.DIAG_DOWN)] = True
 
+        for index, _ in self.problem["deleteedge"].items():  # edge deletion mark, stronger than helper_x
+            index_1, index_2 = map(int, index.split(","))
+            coord_1, _ = self.index_to_coord(index_1)
+            coord_2, _ = self.index_to_coord(index_2)
+            if coord_1[0] == coord_2[0]:  # row equal, horizontal line, set pos to `delete` as indicator
+                self.edge[Point(coord_2[0] + 1, coord_2[1], Direction.TOP, "delete")] = False
+            elif coord_1[1] == coord_2[1]:  # col equal, vertical line, set pos to `delete` as indicator
+                self.edge[Point(coord_2[0], coord_2[1] + 1, Direction.LEFT, "delete")] = False
+
     def _unpack_line(self):
         """Unpack the line element from the board."""
         for index, data in self.problem["line"].items():
