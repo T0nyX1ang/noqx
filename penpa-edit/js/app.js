@@ -419,7 +419,7 @@ $(window).on("load", function () {
     } else {
       create_newboard();
       advancecontrol_toggle();
-      advancecontrol_toggle();
+      choicesExample.setChoiceByValue("");
     }
     puzzleContent = null;
     solutionList = [];
