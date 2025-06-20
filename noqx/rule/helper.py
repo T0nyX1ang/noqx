@@ -43,10 +43,10 @@ def validate_type(_type: Optional[Union[int, str]], target_type: Union[int, str,
         raise ValueError(f"Invalid type '{_type}'.")
 
 
-def validate_direction(r: int, c: int, d: Optional[Direction], target: Direction = Direction.CENTER):
+def validate_direction(r: int, c: int, d: Optional[str], target: str = Direction.CENTER):
     """Validate the direction of any element."""
     if d != target:
-        raise ValueError(f"The element in ({r}, {c}) should be placed in the {target.value}.")
+        raise ValueError(f"The element in ({r}, {c}) should be placed in the {target}.")
 
 
 def fail_false(express: bool, msg: str):

@@ -1,27 +1,26 @@
 """Initializations of the base encodings."""
 
-from enum import Enum, Flag, auto
 from typing import Any, Dict, NamedTuple, Optional, Tuple, Union
 
 
-class Color(Flag):
+class Color:
     """Enumeration for colors."""
 
-    GREEN = auto()
-    GRAY = auto()
-    BLACK = auto()
-    DARK = GRAY | BLACK
+    GREEN: int = 0
+    GRAY: int = 1
+    BLACK: int = 2
+    DARK: Tuple[int, int] = (GRAY, BLACK)
 
 
-class Direction(Enum):
+class Direction:
     """Enumeration for directions."""
 
-    CENTER = "center"
-    TOP = "top"
-    LEFT = "left"
-    TOP_LEFT = "top_left"
-    DIAG_UP = "diag_up"
-    DIAG_DOWN = "diag_down"
+    CENTER: str = "center"
+    TOP: str = "top"
+    LEFT: str = "left"
+    TOP_LEFT: str = "top_left"
+    DIAG_UP: str = "diag_up"
+    DIAG_DOWN: str = "diag_down"
 
 
 class Point(NamedTuple):
@@ -29,7 +28,7 @@ class Point(NamedTuple):
 
     r: int
     c: int
-    d: Direction = Direction.CENTER
+    d: str = Direction.CENTER
     pos: str = "normal"
 
 
@@ -46,7 +45,7 @@ class Puzzle:
         self.row: int = 0
         self.margin: Tuple[int, int, int, int] = (0, 0, 0, 0)  # top, bottom, left, right
 
-        self.surface: Dict[Point, Color] = {}
+        self.surface: Dict[Point, int] = {}
         self.text: Dict[Point, Union[int, str]] = {}
         self.symbol: Dict[Point, str] = {}
         self.edge: Dict[Point, bool] = {}
