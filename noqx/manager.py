@@ -1,7 +1,6 @@
 """Manager of all the solvers as a plugin."""
 
 import pkgutil
-from abc import ABC
 from typing import Any, Dict, List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
@@ -108,7 +107,7 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
     return solution
 
 
-class Solver(ABC):
+class Solver:
     """Base class to create solvers."""
 
     def __init__(self):

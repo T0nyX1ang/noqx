@@ -1,6 +1,5 @@
 """Initializations of the base encodings."""
 
-from abc import ABC
 from enum import Enum, Flag, auto
 from typing import Any, Dict, NamedTuple, Optional, Tuple, Union
 
@@ -34,7 +33,7 @@ class Point(NamedTuple):
     pos: str = "normal"
 
 
-class Puzzle(ABC):
+class Puzzle:
     """Base class for puzzle encodings."""
 
     def __init__(self, name: str, content: str, param: Optional[Dict[str, Any]] = None):
