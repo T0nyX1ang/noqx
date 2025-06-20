@@ -1,6 +1,7 @@
 """Initializations of the base encodings."""
 
-from typing import Any, Dict, NamedTuple, Optional, Tuple, Union
+from collections import namedtuple
+from typing import Any, Dict, Optional, Tuple, Union
 
 
 class Color:
@@ -23,13 +24,15 @@ class Direction:
     DIAG_DOWN: str = "diag_down"
 
 
-class Point(NamedTuple):
+_Point = namedtuple("Point", ["r", "c", "d", "pos"])  # basic point structure
+
+
+class Point(_Point):
     """A point with row number, column number, direction and inner position."""
 
-    r: int
-    c: int
-    d: str = Direction.CENTER
-    pos: str = "normal"
+    def __new__(cls, r: int, c: int, d: str = Direction.CENTER, pos: str = "normal"):
+        """Create a new Point instance."""
+        return super().__new__(cls, r, c, d, pos)
 
 
 class Puzzle:
