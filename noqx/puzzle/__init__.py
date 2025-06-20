@@ -27,12 +27,9 @@ class Direction:
 _Point = namedtuple("Point", ["r", "c", "d", "pos"])  # basic point structure
 
 
-class Point(_Point):
-    """A point with row number, column number, direction and inner position."""
-
-    def __new__(cls, r: int, c: int, d: str = Direction.CENTER, pos: str = "normal"):
-        """Create a new Point instance."""
-        return super().__new__(cls, r, c, d, pos)
+def Point(r: int, c: int, d: str = Direction.CENTER, pos: str = "normal") -> _Point:
+    """Create a new Point instance."""
+    return _Point(r, c, d, pos)
 
 
 class Puzzle:
@@ -48,11 +45,11 @@ class Puzzle:
         self.row: int = 0
         self.margin: Tuple[int, int, int, int] = (0, 0, 0, 0)  # top, bottom, left, right
 
-        self.surface: Dict[Point, int] = {}
-        self.text: Dict[Point, Union[int, str]] = {}
-        self.symbol: Dict[Point, str] = {}
-        self.edge: Dict[Point, bool] = {}
-        self.line: Dict[Point, bool] = {}
+        self.surface: Dict[_Point, int] = {}
+        self.text: Dict[_Point, Union[int, str]] = {}
+        self.symbol: Dict[_Point, str] = {}
+        self.edge: Dict[_Point, bool] = {}
+        self.line: Dict[_Point, bool] = {}
 
     def clear(self):
         """Clear the puzzle structure."""

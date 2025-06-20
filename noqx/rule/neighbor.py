@@ -2,7 +2,7 @@
 
 from typing import Dict, Iterable, Optional, Tuple, Union
 
-from noqx.puzzle import Direction, Point
+from noqx.puzzle import Direction, Point, _Point
 from noqx.rule.helper import tag_encode, target_encode
 
 
@@ -121,7 +121,7 @@ def area_same_color(color: str = "black") -> str:
     return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
 
 
-def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Point, bool]) -> str:
+def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[_Point, bool]) -> str:
     """Generates a fact for the border of an area."""
     edges = set()
     src_cells = set(src_cells)
