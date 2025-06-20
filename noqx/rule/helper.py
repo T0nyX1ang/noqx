@@ -85,7 +85,7 @@ def full_bfs(
         connected_component = {start_cell}
         unexplored_cells.remove(start_cell)
 
-        queue = deque([start_cell])  # make a deque for BFS
+        queue = deque([start_cell], rows * cols)  # make a deque for BFS
         while queue:
             r, c = queue.popleft()
             for neighbor in get_neighbors(r, c):
