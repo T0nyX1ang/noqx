@@ -12,7 +12,7 @@ def _prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]
     try:
         return {
             "success": True,
-            "result": prepare_puzzle(puzzle_name, puzzle_content, param.to_py()),
+            "result": prepare_puzzle(puzzle_name, puzzle_content, param),
         }
     except Exception as e:  # pylint: disable=broad-except
         return {
