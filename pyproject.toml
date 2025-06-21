@@ -82,4 +82,5 @@ dev-dependencies = [
   "pylint<2.14.0; python_version<'3.8'",
   "pylint>=2.14.0; python_version>='3.8'",
   "ruff>=0.6.8",
+  "python-minifier>=2.11.0",
 ]
