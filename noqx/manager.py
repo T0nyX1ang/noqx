@@ -9,6 +9,22 @@ from noqx.puzzle.penpa import PenpaPuzzle
 modules: Dict[str, "Solver"] = {}
 
 
+def load_solver(solver_dir: str, solver_name: str):
+    "Load a solver from a valid directory."
+    if solver_name in modules:
+        raise ValueError(f"Solver for {solver_name} already exists.")
+
+    module = __import__(f"{solver_dir}.{solver_name}")
+    module_attr = getattr(module, solver_name)
+
+    for attr_name in dir(module_attr):
+        attr = getattr(module_attr, attr_name)
+
+        if isinstance(attr, type) and issubclass(attr, Solver) and attr is not Solver:
+            puzzle_name = solver_name.lower()
+            modules[puzzle_name] = attr()
+
+
 def load_solvers(solver_dir: str):
     """Load the solvers from a valid directory."""
     puzzle_names: List[str] = []
