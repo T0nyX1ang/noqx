@@ -1,10 +1,11 @@
 """Test all solvers in Noqx."""
 
 import logging
+import pkgutil
 import unittest
 
 from noqx.clingo import Config, run_solver
-from noqx.manager import list_solver_metadata, load_solvers
+from noqx.manager import list_solver_metadata, load_solver
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -19,7 +20,9 @@ from solver.nagare import nagare_wind
 
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.CRITICAL)
 
-load_solvers("solver")
+for module_info in pkgutil.iter_modules(["solver"]):
+    load_solver("solver", module_info.name)
+
 metadata = list_solver_metadata()
 
 

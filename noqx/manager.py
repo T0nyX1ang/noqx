@@ -1,6 +1,5 @@
 """Manager of all the solvers as a plugin."""
 
-import pkgutil
 from typing import Any, Dict, List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
@@ -23,23 +22,6 @@ def load_solver(solver_dir: str, solver_name: str):
         if isinstance(attr, type) and issubclass(attr, Solver) and attr is not Solver:
             puzzle_name = solver_name.lower()
             modules[puzzle_name] = attr()
-
-
-def load_solvers(solver_dir: str):
-    """Load the solvers from a valid directory."""
-    puzzle_names: List[str] = []
-    for module_info in pkgutil.iter_modules([solver_dir]):
-        puzzle_names.append(module_info.name)
-
-    for pt in sorted(puzzle_names):
-        __import__(f"{solver_dir}.{pt}")
-
-    for solver_cls in Solver.__subclasses__():
-        puzzle_type = solver_cls.__module__.lower().replace(solver_dir, "").replace(".", "")
-        if puzzle_type in modules:  # pragma: no cover
-            raise ValueError(f"Solver for {puzzle_type} already exists.")
-
-        modules[puzzle_type] = solver_cls()
 
 
 def list_solver_metadata() -> Dict[str, Any]:
