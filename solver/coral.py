@@ -1,7 +1,5 @@
 """The Coral solver."""
 
-from collections import Counter
-
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
@@ -64,16 +62,26 @@ class CoralSolver(Solver):
 
         for r, clue in left_clues.items():
             if clue:
-                for num, count in Counter(clue).items():
+                count_dict = {}  # Replace collections.Counter with manual counting
+                for num in clue:
+                    count_dict[num] = count_dict.get(num, 0) + 1
+
+                for num, count in count_dict.items():
                     self.add_program_line(f":- #count{{ C: grid({r}, C), len_horizontal({r}, C, {num}) }} != {count}.")
-                forbidden_len = ",".join([f"N != {x}" for x in Counter(clue).keys()])
+
+                forbidden_len = ",".join([f"N != {x}" for x in count_dict])
                 self.add_program_line(f":- grid({r}, C), len_horizontal({r}, C, N), {forbidden_len}.")
 
         for c, clue in top_clues.items():
             if clue:
-                for num, count in Counter(clue).items():
+                count_dict = {}  # Replace collections.Counter with manual counting
+                for num in clue:
+                    count_dict[num] = count_dict.get(num, 0) + 1
+
+                for num, count in count_dict.items():
                     self.add_program_line(f":- #count{{ R: grid(R, {c}), len_vertical(R, {c}, {num}) }} != {count}.")
-                forbidden_len = ",".join([f"N != {x}" for x in Counter(clue).keys()])
+
+                forbidden_len = ",".join([f"N != {x}" for x in count_dict])
                 self.add_program_line(f":- grid(R, {c}), len_vertical(R, {c}, N), {forbidden_len}.")
 
         for (r, c, _, _), color in puzzle.surface.items():
