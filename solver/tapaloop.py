@@ -76,7 +76,8 @@ def parse_shape_clue(inner: Tuple[int, ...], outer: Tuple[int, ...]) -> Optional
 def tapaloop_pattern_rule() -> str:
     """Generate pattern reference dictionary and tapaloop pattern map."""
     for i in range(4096):
-        pat = bin(i)[2:].zfill(12)
+        binary = bin(i)[2:]
+        pat = "0" * (12 - len(binary)) + binary
         inner = tuple(map(int, pat[:8]))
         outer = tuple(map(int, pat[8:]))
         parsed = parse_shape_clue(inner, outer)

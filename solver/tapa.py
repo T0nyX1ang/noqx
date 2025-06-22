@@ -42,7 +42,8 @@ def parse_pattern(pattern: str) -> Tuple[int, ...]:
 def tapa_pattern_rule() -> str:
     """Generate pattern reference dictionary and tapa pattern map."""
     for i in range(256):
-        pat = bin(i)[2:].zfill(8)
+        binary = bin(i)[2:]
+        pat = "0" * (8 - len(binary)) + binary
         parsed = parse_pattern(pat)
 
         if pattern_ref.get(parsed):
