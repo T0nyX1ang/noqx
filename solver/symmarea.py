@@ -112,7 +112,7 @@ class SymmareaSolver(Solver):
     """The Symmetry Area solver."""
 
     name = "Symmetry Area"
-    category = "var"
+    category = "num"
     aliases = ["symmetryarea"]
     examples = [
         {

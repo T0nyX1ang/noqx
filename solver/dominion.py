@@ -6,6 +6,7 @@ from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
+from noqx.rule.variety import nori_adjacent
 
 
 class DominionSolver(Solver):
@@ -28,7 +29,7 @@ class DominionSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
         self.add_program_line(adjacent())
-        self.add_program_line(":- grid(R, C), black(R, C), #count{ (R1, C1): adj_4(R, C, R1, C1), black(R1, C1) } != 1.")
+        self.add_program_line(nori_adjacent(color="black"))
         self.add_program_line(avoid_unknown_src(adj_type=4, color="not black"))
 
         tag = tag_encode("reachable", "grid", "src", "adj", 4, "not black")
