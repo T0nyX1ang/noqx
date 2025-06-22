@@ -46,7 +46,7 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     # segment count = vertex count - edge count
     vertex_count = count_adjacent_vertices(target, src_cell).replace(f"{rop} {num}.", "= C1").replace(":-", "").strip()
     edge_count = count_adjacent_edges(target, src_cell).replace(f"{rop} {num}.", "= C2").replace(":-", "").strip()
-    return f":- { vertex_count }, { edge_count }, C1 - C2 {rop} {num}."
+    return f":- {vertex_count}, {edge_count}, C1 - C2 {rop} {num}."
 
 
 class SlitherlinkSolver(Solver):
