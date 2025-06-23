@@ -11,7 +11,7 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
 
 direc = ((0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1))
-pattern_ref: Dict[Tuple[int, ...], List[int]] = {}
+pattern_ref: Dict[Tuple[int, ...], Set[int]] = {}
 pattern_idx: Dict[Tuple[int, ...], int] = {}
 
 
@@ -46,9 +46,9 @@ def tapa_pattern_rule() -> str:
         parsed = parse_pattern(pat)
 
         if pattern_ref.get(parsed):
-            pattern_ref[parsed].append(i)
+            pattern_ref[parsed].add(i)
         else:
-            pattern_ref[parsed] = [i]
+            pattern_ref[parsed] = {i}
 
     rule = ""
     for i, (pat, vals) in enumerate(pattern_ref.items()):

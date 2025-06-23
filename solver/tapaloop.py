@@ -12,7 +12,7 @@ from noqx.rule.reachable import grid_color_connected
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
-pattern_ref: Dict[Tuple[int, ...], List[int]] = {}
+pattern_ref: Dict[Tuple[int, ...], Set[int]] = {}
 pattern_idx: Dict[Tuple[int, ...], int] = {}
 
 
@@ -85,9 +85,9 @@ def tapaloop_pattern_rule() -> str:
             continue
 
         if pattern_ref.get(parsed):
-            pattern_ref[parsed].append(i)
+            pattern_ref[parsed].add(i)
         else:
-            pattern_ref[parsed] = [i]
+            pattern_ref[parsed] = {i}
 
     rule = ""
     for i, (pat, vals) in enumerate(pattern_ref.items()):
