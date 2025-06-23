@@ -110,16 +110,21 @@ class Solver:
 
     def __init__(self):
         """Initialize a program."""
-        self.program: str = ""
+        self._program: List[str] = []
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
         if line != "":
-            self.program += line + "\n"
+            self._program.append(line)
+
+    @property
+    def program(self) -> str:
+        """Get the program as a string."""
+        return "\n".join(self._program)
 
     def reset(self):
         """Clear the program."""
-        self.program = ""
+        self._program.clear()
 
     def solve(self, _: Puzzle) -> str:
         """Generate the solver program."""
