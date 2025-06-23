@@ -11,53 +11,14 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
 
 direc = ((0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1))
-pattern_ref: Dict[Tuple[int, ...], Set[int]] = {}
-pattern_idx: Dict[Tuple[int, ...], int] = {}
+pattern_ref = "())*)+*,)++-*-,.)++-+/-0*--1,0.2)++-+/-0+//3-304*--1-315,005.426)++-+/-0+//3-304+//3/738-339084:*--1-315-339195;,005085<.44;2:6=)*+,+--.+-/0-102+-/0/334-1350546+-/0/334/378398:-135399;058<4;:=*,-.-012-0341556-034389:159;5<;=,.020456048:5;<=.2464:;=26:=6==>"  # fmt: skip  # formula: chr(pattern_idx.value()) + 40 (invalid patterns are "!")
 
-
-def parse_pattern(pattern: str) -> Tuple[int, ...]:
-    """Parse 8-neighboring pattern to tapa clue sorted in increasing order."""
-    if pattern == "11111111":
-        return (8,)
-    if pattern == "00000000":
-        return (0,)
-
-    idx = pattern.find("0")
-    pattern = pattern[idx:] + pattern[:idx]
-
-    result: List[int] = []
-    cur = 0
-    while cur < len(pattern):
-        total = 0
-        if pattern[cur] == "1":
-            while cur < len(pattern) and pattern[cur] == "1":
-                total += 1
-                cur += 1
-            result.append(total)
-        cur += 1
-
-    return tuple(sorted(result))
+pattern_idx: Dict[Tuple[int, ...], int] = {(0,): 0, (1,): 1, (2,): 2, (1, 1): 3, (3,): 4, (1, 2): 5, (4,): 6, (1, 1, 1): 7, (1, 3): 8, (2, 2): 9, (5,): 10, (1, 1, 2): 11, (1, 4): 12, (2, 3): 13, (6,): 14, (1, 1, 1, 1): 15, (1, 1, 3): 16, (1, 2, 2): 17, (1, 5): 18, (2, 4): 19, (3, 3): 20, (7,): 21, (8,): 22}  # fmt: skip
 
 
 def tapa_pattern_rule() -> str:
     """Generate pattern reference dictionary and tapa pattern map."""
-    for i in range(256):
-        binary = bin(i)[2:]
-        pat = "0" * (8 - len(binary)) + binary
-        parsed = parse_pattern(pat)
-
-        if pattern_ref.get(parsed):
-            pattern_ref[parsed].add(i)
-        else:
-            pattern_ref[parsed] = {i}
-
-    rule = ""
-    for i, (pat, vals) in enumerate(pattern_ref.items()):
-        pattern_idx[pat] = i
-        for v in vals:
-            rule += f"valid_tapa_map({i}, {v}).\n"
-
-    return rule.strip()
+    return "\n".join(f"valid_tapa_map({ord(pattern_ref[v]) - 40}, {v})." for v in range(256) if pattern_ref[v] != "!")
 
 
 def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
@@ -75,14 +36,11 @@ def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
 def parse_clue(r: int, c: int, clue: List[Union[int, str]]) -> str:
     """Parse tapa clue to binary pattern."""
     result: Set[int] = set()
-    for pattern in filter(lambda x: len(x) == len(clue), pattern_ref.keys()):
+    for pattern in filter(lambda x: len(x) == len(clue), pattern_idx.keys()):
         if clue_in_target(clue, list(pattern)):
             result.add(pattern_idx[pattern])
 
-    rule = ""
-    for num in result:
-        rule += f"valid_tapa({r}, {c}, {num}).\n"
-    return rule.strip()
+    return "\n".join(f"valid_tapa({r}, {c}, {num})." for num in result)
 
 
 def color_to_binary(r: int, c: int, color: str = "black") -> str:
