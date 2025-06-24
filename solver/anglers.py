@@ -47,9 +47,9 @@ class AnglersSolver(Solver):
             self.add_program_line(f"dead_end({r}, {c}).")
 
         tag = tag_encode("reachable", "grid", "src", "adj", "loop", "anglers")
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if not (0 <= r < puzzle.row and 0 <= c < puzzle.col):  # coordinations out of bounds
                 self.add_program_line(f"grid({r}, {c}).")
 

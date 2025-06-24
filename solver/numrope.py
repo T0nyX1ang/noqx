@@ -51,9 +51,9 @@ class NumRopeSolver(Solver):
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"hole({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
             if Point(r, c) in puzzle.surface:

@@ -26,9 +26,9 @@ class KakuroSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         sums: List[Tuple[int, List[Tuple[int, int]]]] = []
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            if pos == "sudoku_1" and isinstance(num, int):
+            if label == "sudoku_1" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = c + 1
                 while cur < puzzle.col and not puzzle.symbol.get(Point(r, cur, Direction.CENTER)):
@@ -38,7 +38,7 @@ class KakuroSolver(Solver):
                 fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if pos == "sudoku_2" and isinstance(num, int):
+            if label == "sudoku_2" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = r + 1
                 while cur < puzzle.row and not puzzle.symbol.get(Point(cur, c, Direction.CENTER)):
@@ -48,7 +48,7 @@ class KakuroSolver(Solver):
                 fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if pos == "normal" and isinstance(num, int):
+            if label == "normal" and isinstance(num, int):
                 self.add_program_line(f"number({r}, {c}, {num}).")  # initial conditions
 
         self.add_program_line(defined(item="area", size=3))

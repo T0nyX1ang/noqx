@@ -33,9 +33,9 @@ class KoburinSolver(Solver):
         self.add_program_line(grid_color_connected(color="white", adj_type="loop"))
         self.add_program_line(single_loop(color="white"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"gray({r}, {c}).")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent(target=num, src_cell=(r, c), color="black", adj_type=4))

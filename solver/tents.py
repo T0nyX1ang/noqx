@@ -49,9 +49,9 @@ class TentsSolver(Solver):
         self.add_program_line(adjacent(_type=8))
         self.add_program_line(avoid_adjacent_color(color="tents__2", adj_type=8))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int) and isinstance(num, int):
                 self.add_program_line(count(num, color="tents__2", _type="col", _id=c))

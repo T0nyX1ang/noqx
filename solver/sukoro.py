@@ -42,9 +42,9 @@ class SukoroSolver(Solver):
             if symbol_name in ("ox_E__4", "ox_E__7"):
                 self.add_program_line(f"white({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f"number({r}, {c}, {num}).")
 

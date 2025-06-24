@@ -58,9 +58,9 @@ class NumlinSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             locations.setdefault(clue, [])
             locations[clue].append((r, c))
 

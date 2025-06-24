@@ -24,12 +24,12 @@ class Direction:
     DIAG_DOWN: str = "diag_down"
 
 
-_Point = namedtuple("Point", ["r", "c", "d", "pos"])  # basic point structure
+_Point = namedtuple("Point", ["r", "c", "d", "label"])  # basic point structure
 
 
-def Point(r: int, c: int, d: str = Direction.CENTER, pos: str = "normal") -> _Point:
+def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> _Point:
     """Create a new Point instance."""
-    return _Point(r, c, d, pos)
+    return _Point(r, c, d, label)
 
 
 class Puzzle:

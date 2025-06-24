@@ -95,9 +95,9 @@ class CBananaSolver(Solver):
         self.add_program_line(all_rect(color="gray"))
         self.add_program_line(no_rect(color="white"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(grid_src_same_color_connected(src_cell=(r, c), color="white"))
                 self.add_program_line(count_reachable_src(num, src_cell=(r, c), color="white"))

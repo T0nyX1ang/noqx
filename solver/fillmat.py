@@ -40,9 +40,9 @@ class FillmatSolver(Solver):
         self.add_program_line(
             f":- grid(R, C), grid(R1, C1), adj_4(R, C, R1, C1), not adj_edge(R, C, R1, C1), {tag_be}(R, C, N, _), {tag_be}(R1, C1, N, _)."
         )
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(f":- not {tag_be}({r}, {c}, {num}, _).")
 

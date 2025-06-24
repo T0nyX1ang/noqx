@@ -70,9 +70,9 @@ class HashiSolver(Solver):
         self.add_program_line(hashi_bridge())
         self.add_program_line(grid_color_connected(color="hashi", adj_type="loop"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"hashi({r}, {c}).")
             self.add_program_line(f"number({r}, {c}, {num if isinstance(num, int) else -1}).")
 

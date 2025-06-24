@@ -45,9 +45,9 @@ class BorderBlockSolver(Solver):
             self.add_program_line(f"dot({r}, {c}).")
 
         tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-        for (r, c, d, pos), letter in puzzle.text.items():
+        for (r, c, d, label), letter in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if letter != "?":
                 self.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
 

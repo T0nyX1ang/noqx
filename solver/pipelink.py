@@ -54,7 +54,7 @@ class PipeLinkSolver(Solver):
         for (r, c, _, d), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
             for d in "lurd":
-                if Point(r, c, pos=d) in puzzle.line:
+                if Point(r, c, label=d) in puzzle.line:
                     self.add_program_line(f'grid_direction({r}, {c}, "{d}").')
                 else:
                     self.add_program_line(f'not grid_direction({r}, {c}, "{d}").')

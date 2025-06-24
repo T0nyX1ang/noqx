@@ -36,9 +36,9 @@ class FiveCellsSolver(Solver):
         self.add_program_line(all_shapes("omino_5", color="grid"))
         self.add_program_line(count_shape(target=puzzle.row * puzzle.col // 5, name="omino_5", color="grid"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent_edges(num, (r, c)))
 

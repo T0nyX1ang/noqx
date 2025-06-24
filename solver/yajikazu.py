@@ -34,9 +34,9 @@ class YajiKazuSolver(Solver):
         self.add_program_line(grid_color_connected(color="not gray"))
         self.add_program_line(count(("gt", 0), color="gray", _type="grid"))
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
             num, d = clue.split("_")
             fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")

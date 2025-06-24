@@ -42,9 +42,9 @@ class NCellsSolver(Solver):
         self.add_program_line(grid_branch_color_connected(color=None, adj_type="edge"))
         self.add_program_line(count_reachable_edge(size))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent_edges(num, (r, c)))
 

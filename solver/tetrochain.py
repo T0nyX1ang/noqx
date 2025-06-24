@@ -47,9 +47,9 @@ class TetrochainSolver(Solver):
         for i, o_shape in enumerate(OMINOES[4].values()):
             self.add_program_line(general_shape("omino_4", i, o_shape, color="black", _type="grid", adj_type=4))
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
 
             fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")

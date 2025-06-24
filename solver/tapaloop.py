@@ -102,9 +102,9 @@ class TapaloopSolver(Solver):
         self.add_program_line(tapaloop_pattern_rule())
 
         clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
+            fail_false(isinstance(label, str) and label.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
 
             if (r, c) not in clue_dict:
                 self.add_program_line(f"black({r}, {c}).")

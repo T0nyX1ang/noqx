@@ -147,8 +147,8 @@ class PenpaPuzzle(Puzzle):
             else:
                 symbol_name = f"{shape}__{style}"
                 # special case for nondango (which problem/solution symbols are on the same coordinates)
-                pos = "nondango_mark" if self.puzzle_name == "nondango" and symbol_name == "circle_M__4" else "normal"
-                self.symbol[Point(*category_to_direction(r, c, category), pos)] = symbol_name
+                label = "nondango_mark" if self.puzzle_name == "nondango" and symbol_name == "circle_M__4" else "normal"
+                self.symbol[Point(*category_to_direction(r, c, category), label)] = symbol_name
 
     def _unpack_edge(self):
         """Unpack the edge/helper_x element from the board."""
@@ -179,9 +179,9 @@ class PenpaPuzzle(Puzzle):
             index_1, index_2 = map(int, index.split(","))
             coord_1, _ = self.index_to_coord(index_1)
             coord_2, _ = self.index_to_coord(index_2)
-            if coord_1[0] == coord_2[0]:  # row equal, horizontal line, set pos to `delete` as indicator
+            if coord_1[0] == coord_2[0]:  # row equal, horizontal line, set label to `delete` as indicator
                 self.edge[Point(coord_2[0] + 1, coord_2[1], Direction.TOP, "delete")] = False
-            elif coord_1[1] == coord_2[1]:  # col equal, vertical line, set pos to `delete` as indicator
+            elif coord_1[1] == coord_2[1]:  # col equal, vertical line, set label to `delete` as indicator
                 self.edge[Point(coord_2[0], coord_2[1] + 1, Direction.LEFT, "delete")] = False
 
     def _unpack_line(self):
@@ -190,12 +190,12 @@ class PenpaPuzzle(Puzzle):
             if "," not in index:  # helper(x) lines
                 coord, category = self.index_to_coord(int(index))
                 if category == 2:
-                    self.line[Point(coord[0], coord[1], pos="d")] = False
-                    self.line[Point(coord[0] + 1, coord[1], pos="u")] = False
+                    self.line[Point(coord[0], coord[1], label="d")] = False
+                    self.line[Point(coord[0] + 1, coord[1], label="u")] = False
 
                 if category == 3:
-                    self.line[Point(coord[0], coord[1], pos="r")] = False
-                    self.line[Point(coord[0], coord[1] + 1, pos="l")] = False
+                    self.line[Point(coord[0], coord[1], label="r")] = False
+                    self.line[Point(coord[0], coord[1] + 1, label="l")] = False
 
                 continue
 
@@ -206,12 +206,12 @@ class PenpaPuzzle(Puzzle):
             hashi_num = (self.puzzle_name == "hashi") * ("_2" if data == 30 else "_1")  # hashi has two types of lines
             if category == 0:
                 dd = "rl" if coord_1[0] == coord_2[0] else "du"
-                self.line[Point(*coord_1, pos=f"{dd[0]}{hashi_num}")] = True
-                self.line[Point(*coord_2, pos=f"{dd[1]}{hashi_num}")] = True
+                self.line[Point(*coord_1, label=f"{dd[0]}{hashi_num}")] = True
+                self.line[Point(*coord_2, label=f"{dd[1]}{hashi_num}")] = True
             else:
                 eqxy = coord_1 == coord_2
                 d = ("d" if eqxy else "u") if category == 2 else ("r" if eqxy else "l")
-                self.line[Point(*coord_1, pos=f"{d}{hashi_num}")] = True
+                self.line[Point(*coord_1, label=f"{d}{hashi_num}")] = True
 
     def _unpack_board(self):
         """Initialize the content of the puzzle."""
@@ -298,19 +298,19 @@ class PenpaPuzzle(Puzzle):
         """Pack the line element into the board."""
         for point in self.line:
             index_1 = self.coord_to_index((point.r, point.c), category=0)
-            if point.pos.startswith("r"):
+            if point.label.startswith("r"):
                 index_2 = self.coord_to_index((point.r, point.c), category=3)
-            elif point.pos.startswith("d"):
+            elif point.label.startswith("d"):
                 index_2 = self.coord_to_index((point.r, point.c), category=2)
-            elif point.pos.startswith("l"):
+            elif point.label.startswith("l"):
                 index_2 = self.coord_to_index((point.r, point.c - 1), category=3)
-            elif point.pos.startswith("u"):
+            elif point.label.startswith("u"):
                 index_2 = self.coord_to_index((point.r - 1, point.c), category=2)
             else:
                 raise ValueError("Unsupported line direction.")
 
             if self.puzzle_name == "hashi":
-                self.solution["line"][f"{index_1},{index_2}"] = 3 if point.pos.endswith("_1") else 30
+                self.solution["line"][f"{index_1},{index_2}"] = 3 if point.label.endswith("_1") else 30
             elif not self.problem["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.solution["line"][f"{index_1},{index_2}"] = 3
 

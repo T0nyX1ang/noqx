@@ -57,9 +57,9 @@ class CastleSolver(Solver):
         self.add_program_line(single_loop(color="castle"))
         self.add_program_line(separate_item_from_loop(inside_item="white", outside_item="black"))
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if Point(r, c) not in puzzle.surface:
                 self.add_program_line(f"white({r}, {c}).")
                 self.add_program_line(f"not castle({r}, {c}).")

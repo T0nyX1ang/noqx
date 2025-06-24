@@ -33,9 +33,9 @@ class DominionSolver(Solver):
         self.add_program_line(avoid_unknown_src(adj_type=4, color="not black"))
 
         tag = tag_encode("reachable", "grid", "src", "adj", 4, "not black")
-        for (r, c, d, pos), letter in puzzle.text.items():
+        for (r, c, d, label), letter in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             if letter != "?":
                 self.add_program_line(grid_src_color_connected((r, c), color="not black"))

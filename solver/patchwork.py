@@ -46,9 +46,9 @@ class PatchworkSolver(Solver):
         self.add_program_line(avoid_area_adjacent(color="black"))
         self.add_program_line(avoid_area_adjacent(color="white"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
                 self.add_program_line(count_patchwork_src(num, (r, c), color="black"))

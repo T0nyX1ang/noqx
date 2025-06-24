@@ -39,9 +39,9 @@ class YajilinSolver(Solver):
         self.add_program_line(grid_color_connected(color="white", adj_type="loop"))
         self.add_program_line(single_loop(color="white"))
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"gray({r}, {c}).")
 
             # empty clue or space or question mark clue (for compatibility)

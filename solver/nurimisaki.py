@@ -60,9 +60,9 @@ class NurimisakiSolver(Solver):
         self.add_program_line(count(("gt", 0), color="black", _type="grid"))
 
         all_src: List[Tuple[int, int]] = []
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             self.add_program_line(count_adjacent(1, (r, c), color="not black"))
             all_src.append((r, c))

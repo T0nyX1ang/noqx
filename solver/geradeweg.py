@@ -48,9 +48,9 @@ class GeradewegSolver(Solver):
         self.add_program_line(single_loop(color="geradeweg"))
         self.add_program_line(loop_sign(color="geradeweg"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(loop_segment((r, c)))
             self.add_program_line(f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != |{c} - N2|.')
 

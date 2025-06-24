@@ -57,9 +57,9 @@ class CaveSolver(Solver):
         self.add_program_line(grid_color_connected(color="not black"))
         self.add_program_line(border_color_connected(puzzle.row, puzzle.col, color="black"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             self.add_program_line(bulb_src_color_connected((r, c), color="not black"))
 

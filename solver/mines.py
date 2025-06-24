@@ -30,9 +30,9 @@ class MinesSolver(Solver):
         self.add_program_line(shade_c(color="sun_moon__4"))
         self.add_program_line(adjacent(_type=8))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f"not sun_moon__4({r}, {c}).")
             self.add_program_line(count_adjacent(int(num), (r, c), color="sun_moon__4", adj_type=8))

@@ -67,9 +67,9 @@ class YajitatamiSolver(Solver):
         self.add_program_line(rect_constraint())
         self.add_program_line(avoid_region_border_crossover())
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
             fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
             num, d = clue.split("_")

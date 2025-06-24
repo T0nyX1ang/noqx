@@ -28,15 +28,15 @@ class TilepaintSolver(Solver):
         for i, (ar, _) in enumerate(areas.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
-                validate_type(pos, "sudoku_2")
+                validate_type(label, "sudoku_2")
                 self.add_program_line(count(num, color="gray", _type="col", _id=c))
 
             if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
-                validate_type(pos, "sudoku_1")
+                validate_type(label, "sudoku_1")
                 self.add_program_line(count(num, color="gray", _type="row", _id=r))
 
         for (r, c, _, _), color in puzzle.surface.items():
