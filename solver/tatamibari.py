@@ -57,7 +57,7 @@ class TamamibariSolver(Solver):
                 self.add_program_line(tatamibari_cell_constraint("gt", (r, c)))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         self.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")

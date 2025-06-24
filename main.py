@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import os
+import pkgutil
 import shutil
 import sys
 import traceback
@@ -18,7 +19,7 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from noqx.clingo import Config, run_solver
-from noqx.manager import list_solver_metadata, load_solvers
+from noqx.manager import list_solver_metadata, load_solver
 
 
 async def root_redirect(_: Request) -> RedirectResponse:
@@ -73,12 +74,14 @@ logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt=
 if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
     # load the solvers
     logging.debug("Loading solvers...")
-    load_solvers("solver")
+    for module_info in pkgutil.iter_modules(["solver"]):
+        load_solver("solver", module_info.name)
 
     with open("penpa-edit/js/solver_metadata.js", "w", encoding="utf-8", newline="\n") as f:
         # dump the metadata to a javascript file for further import
         logging.debug("Dumping solver metadata...")
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
+        f.write("window.puzzle_list = Object.keys(solver_metadata);")
 
     with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()

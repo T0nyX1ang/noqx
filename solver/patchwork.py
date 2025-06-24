@@ -54,7 +54,7 @@ class PatchworkSolver(Solver):
                 self.add_program_line(count_patchwork_src(num, (r, c), color="black"))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
             if color == Color.GRAY:  # shaded color (DG, GR, LG, BK)

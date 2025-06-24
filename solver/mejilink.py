@@ -58,7 +58,7 @@ class MejilinkSolver(Solver):
                 edges[Point(r, c, Direction.TOP)] = True
 
         for (r, c, d, pos), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
             if pos == "delete" and not draw:
                 edges[Point(r, c, d)] = False
 

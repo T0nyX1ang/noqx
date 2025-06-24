@@ -19,10 +19,11 @@ def no_2x2_path_bit() -> str:
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
     tag = tag_encode("reachable", "grid", "bit", "adj", "loop")
-    rule = f"bit_same(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'{tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    rule += (
-        f"bit_no(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'not {tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    )
+    same_str = ", ".join(f"{tag}(R + {r}, C + {c}, B)" for r, c in points)
+    no_str = ", ".join(f"not {tag}(R + {r}, C + {c}, B)" for r, c in points)
+
+    rule = f"bit_same(R, C, B) :- grid(R, C), bit_range(B), {same_str}.\n"
+    rule += f"bit_no(R, C, B) :- grid(R, C), bit_range(B), {no_str}.\n"
     rule += "bit_same(R, C, B) :- bit_no(R, C, B).\n"
     rule += "no_2x2(R, C) :- grid(R, C), bit_range(B), not bit_same(R, C, B).\n"
     rule += "no_empty(R, C) :- grid(R, C), bit_range(B), not bit_no(R, C, B).\n"
@@ -70,7 +71,7 @@ class NumlinSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
 
-        rule, nbit = num_binary_range(len(locations.items()))
+        rule, nbit = num_binary_range(len(locations))
         self.add_program_line(rule)
 
         if puzzle.param["visit_all"]:

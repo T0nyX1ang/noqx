@@ -53,7 +53,7 @@ def style_convert(style: List[int]) -> int:
     return int("".join(map(str, style)), 2)
 
 
-def category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, Direction]:
+def category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, str]:
     """Convert the coordination with category to standard direction."""
     if category == 0:
         return (r, c, Direction.CENTER)

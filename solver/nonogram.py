@@ -1,9 +1,9 @@
 """The Nonogram solver."""
 
-from typing import Dict, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Direction, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import display, shade_c
 
 
@@ -82,19 +82,21 @@ class NonogramSolver(Solver):
         self.reset()
         top_clues = {}
         for c in range(puzzle.col):
-            top_clues[c] = tuple(
-                clue
-                for (r1, c1, d1, pos1), clue in puzzle.text.items()
-                if r1 <= -1 and c1 == c and d1 == Direction.CENTER and pos1 == "normal"
-            )
+            r1 = -1
+            clue: List[Union[int, str]] = []
+            while (r1, c, Direction.CENTER, "normal") in puzzle.text:
+                clue.append(puzzle.text[Point(r1, c, Direction.CENTER, "normal")])
+                r1 -= 1
+            top_clues[c] = tuple(reversed(clue))
 
         left_clues = {}
         for r in range(puzzle.row):
-            left_clues[r] = tuple(
-                clue
-                for (r1, c1, d1, pos1), clue in puzzle.text.items()
-                if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
-            )
+            c1 = -1
+            clue: List[Union[int, str]] = []
+            while (r, c1, Direction.CENTER, "normal") in puzzle.text:
+                clue.append(puzzle.text[Point(r, c1, Direction.CENTER, "normal")])
+                c1 -= 1
+            left_clues[r] = tuple(reversed(clue))
 
         self.add_program_line(f"grid(-1..{puzzle.row}, -1..{puzzle.col}).")
         self.add_program_line(shade_c())
