@@ -139,3 +139,8 @@ class TestExtraFunction(unittest.TestCase):
     def test_reachable_rules(self):
         """Test reachable rules."""
         self.assertRaises(ValueError, count_reachable_src, 0, (0, 0), "unknown")
+
+    def test_repeated_imports(self):
+        """Test repeated imports."""
+        self.assertRaises(ValueError, load_solver, "solver", "aqre")
+        self.assertRaises(ValueError, load_solver, "solver", "yinyang")
