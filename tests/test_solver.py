@@ -63,11 +63,11 @@ class TestSolver(unittest.TestCase):
         response = run_solver("nonogram", payload, {})
         self.assertEqual(len(response["url"]), 1)
 
-    # def test_nurimisaki_edge_case(self):
-    #     """Test nurimisaki edge case."""
-    #     payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
-    #     response = run_solver("nurimisaki", payload, {})
-    #     self.assertEqual(len(response["url"]), 1)
+    def test_nurimisaki_edge_case(self):
+        """Test nurimisaki edge case."""
+        payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
+        response = run_solver("nurimisaki", payload, {})
+        self.assertEqual(len(response["url"]), 1)
 
     def test_statuepark_all_shapes(self):
         """Test statuepark all shapes."""

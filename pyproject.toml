@@ -24,7 +24,8 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "clingo>=5.8,<6",
+  "clingo>=5.6",
+  "cffi>=1.17.0; python_version>'3.12'",
 ]
 requires-python = ">=3.7"
 
