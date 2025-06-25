@@ -4,7 +4,7 @@ import random
 from collections import deque
 from typing import Dict, Iterable, Iterator, Optional, Tuple, Union
 
-from noqx.puzzle import Direction, Point, _Point
+from noqx.puzzle import Direction, Point
 
 
 def tag_encode(name: str, *data: Union[str, int, None]) -> str:
@@ -58,8 +58,8 @@ def fail_false(express: bool, msg: str):
 def full_bfs(
     rows: int,
     cols: int,
-    edges: Dict[_Point, bool],
-    clues: Optional[Dict[_Point, Union[int, str]]] = None,
+    edges: Dict[Tuple[int, int, str, str], bool],
+    clues: Optional[Dict[Tuple[int, int, str, str], Union[int, str]]] = None,
 ) -> Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]]:
     """Generate a dict of rooms with their unique clue."""
     unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}

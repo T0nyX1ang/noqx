@@ -1,6 +1,5 @@
 """Initializations of the base encodings."""
 
-from collections import namedtuple
 from typing import Any, Dict, Optional, Tuple, Union
 
 
@@ -24,12 +23,9 @@ class Direction:
     DIAG_DOWN: str = "diag_down"
 
 
-_Point = namedtuple("Point", ["r", "c", "d", "label"])  # basic point structure
-
-
-def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> _Point:
-    """Create a new Point instance."""
-    return _Point(r, c, d, label)
+def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> Tuple[int, int, str, str]:
+    """Create a point tuple with row, column, direction, and label."""
+    return (r, c, d, label)
 
 
 class Puzzle:
@@ -45,11 +41,11 @@ class Puzzle:
         self.row: int = 0
         self.margin: Tuple[int, int, int, int] = (0, 0, 0, 0)  # top, bottom, left, right
 
-        self.surface: Dict[_Point, int] = {}
-        self.text: Dict[_Point, Union[int, str]] = {}
-        self.symbol: Dict[_Point, str] = {}
-        self.edge: Dict[_Point, bool] = {}
-        self.line: Dict[_Point, bool] = {}
+        self.surface: Dict[Tuple[int, int, str, str], int] = {}
+        self.text: Dict[Tuple[int, int, str, str], Union[int, str]] = {}
+        self.symbol: Dict[Tuple[int, int, str, str], str] = {}
+        self.edge: Dict[Tuple[int, int, str, str], bool] = {}
+        self.line: Dict[Tuple[int, int, str, str], bool] = {}
 
     def clear(self):
         """Clear the puzzle structure."""
