@@ -241,8 +241,8 @@ class PenpaPuzzle(Puzzle):
 
     def _pack_surface(self):
         """Pack the surface element into the board."""
-        for point, color in self.surface.items():
-            coord = (point.r, point.c)
+        for (r, c, _, _), color in self.surface.items():
+            coord = (r, c)
             index = self.coord_to_index(coord)
 
             color_code = None
@@ -257,17 +257,17 @@ class PenpaPuzzle(Puzzle):
 
     def _pack_text(self):
         """Pack the text/number element into the board."""
-        for point, data in self.text.items():
-            coord = (point.r, point.c)
+        for (r, c, _, _), data in self.text.items():
+            coord = (r, c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of texts are all in the center
             if not self.problem["number"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.solution["number"][f"{index}"] = [str(data), 2, "1"]
 
     def _pack_symbol(self):
         """Pack the symbol element into the board."""
-        for point, symbol_name in self.symbol.items():
+        for (r, c, _, _), symbol_name in self.symbol.items():
             shape, style = symbol_name.split("__")
-            coord = (point.r, point.c)
+            coord = (r, c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of symbols are all in the center
             if self.puzzle_name == "nondango":
                 self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
@@ -276,18 +276,18 @@ class PenpaPuzzle(Puzzle):
 
     def _pack_edge(self):
         """Pack the edge element into the board."""
-        for point in self.edge:
-            coord_1 = (point.r - 1, point.c - 1)
-            coord_2 = (point.r - 1, point.c - 1)
-            if point.d == Direction.TOP:
-                coord_2 = (point.r - 1, point.c)
-            if point.d == Direction.LEFT:
-                coord_2 = (point.r, point.c - 1)
-            if point.d == Direction.DIAG_UP:
-                coord_1 = (point.r, point.c - 1)
-                coord_2 = (point.r - 1, point.c)
-            if point.d == Direction.DIAG_DOWN:
-                coord_2 = (point.r, point.c)
+        for r, c, d, _ in self.edge:
+            coord_1 = (r - 1, c - 1)
+            coord_2 = (r - 1, c - 1)
+            if d == Direction.TOP:
+                coord_2 = (r - 1, c)
+            if d == Direction.LEFT:
+                coord_2 = (r, c - 1)
+            if d == Direction.DIAG_UP:
+                coord_1 = (r, c - 1)
+                coord_2 = (r - 1, c)
+            if d == Direction.DIAG_DOWN:
+                coord_2 = (r, c)
 
             index_1 = self.coord_to_index(coord_1, category=1)
             index_2 = self.coord_to_index(coord_2, category=1)
@@ -296,21 +296,21 @@ class PenpaPuzzle(Puzzle):
 
     def _pack_line(self):
         """Pack the line element into the board."""
-        for point in self.line:
-            index_1 = self.coord_to_index((point.r, point.c), category=0)
-            if point.label.startswith("r"):
-                index_2 = self.coord_to_index((point.r, point.c), category=3)
-            elif point.label.startswith("d"):
-                index_2 = self.coord_to_index((point.r, point.c), category=2)
-            elif point.label.startswith("l"):
-                index_2 = self.coord_to_index((point.r, point.c - 1), category=3)
-            elif point.label.startswith("u"):
-                index_2 = self.coord_to_index((point.r - 1, point.c), category=2)
+        for r, c, _, label in self.line:
+            index_1 = self.coord_to_index((r, c), category=0)
+            if label.startswith("r"):
+                index_2 = self.coord_to_index((r, c), category=3)
+            elif label.startswith("d"):
+                index_2 = self.coord_to_index((r, c), category=2)
+            elif label.startswith("l"):
+                index_2 = self.coord_to_index((r, c - 1), category=3)
+            elif label.startswith("u"):
+                index_2 = self.coord_to_index((r - 1, c), category=2)
             else:
                 raise ValueError("Unsupported line direction.")
 
             if self.puzzle_name == "hashi":
-                self.solution["line"][f"{index_1},{index_2}"] = 3 if point.label.endswith("_1") else 30
+                self.solution["line"][f"{index_1},{index_2}"] = 3 if label.endswith("_1") else 30
             elif not self.problem["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.solution["line"][f"{index_1},{index_2}"] = 3
 
