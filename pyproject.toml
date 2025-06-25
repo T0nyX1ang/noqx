@@ -1,19 +1,17 @@
 [project]
 name = "noqx"
-version = "0.6.0"
+version = "0.7.0"
 description = "Extended logic puzzle solver of Noq."
 authors = [
   {name = "Yaoyu Zhu"},
   {name = "Tony Xiang"},
 ]
 readme = "README.md"
-license = {text = "Apache-2.0 OR GPL-3.0-or-later"}
+license = "Apache-2.0 OR GPL-3.0-or-later"
 keywords = ["solver", "clingo", "logic puzzle"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
@@ -25,7 +23,8 @@ classifiers = [
 ]
 dependencies = [
   "clingo>=5.6",
-  "cffi>=1.17.0; python_version>='3.12'",
+  "cffi>=1.15.0; python_version<'3.8'",
+  "cffi>=1.17.0; python_version>='3.8'",
 ]
 requires-python = ">=3.7"
 

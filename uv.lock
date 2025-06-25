@@ -161,11 +161,9 @@ version = "1.15.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version < '3.8'",
-    "python_full_version >= '3.8' and python_full_version < '3.11'",
-    "python_full_version == '3.11.*'",
 ]
 dependencies = [
-    { name = "pycparser", marker = "python_full_version < '3.12'" },
+    { name = "pycparser", marker = "python_full_version < '3.8'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2b/a8/050ab4f0c3d4c1b8aaa805f70e26e84d0e27004907c5b8ecc1d31815f92a/cffi-1.15.1.tar.gz", hash = "sha256:d400bfb9a37b1351253cb402671cea7e89bdecc294e8016a707f6d1d8ac934f9", size = 508501 }
 wheels = [
@@ -224,10 +222,12 @@ name = "cffi"
 version = "1.17.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
+    "python_full_version >= '3.8' and python_full_version < '3.11'",
+    "python_full_version == '3.11.*'",
     "python_full_version >= '3.12'",
 ]
 dependencies = [
-    { name = "pycparser", marker = "python_full_version >= '3.12'" },
+    { name = "pycparser", marker = "python_full_version >= '3.8'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fc/97/c783634659c2920c3fc70419e3af40972dbaf758daa229a7d6ea6135c90d/cffi-1.17.1.tar.gz", hash = "sha256:1c39c6016c32bc48dd54561950ebd6836e1670f2ae46128f67cf49e789c52824", size = 516621 }
 wheels = [
@@ -323,115 +323,11 @@ wheels = [
 
 [[package]]
 name = "clingo"
-version = "5.7.1"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version < '3.8'",
-]
-dependencies = [
-    { name = "cffi", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3b/b3/c7b464426f70fe100cb4f3e5b45623e3eb82ea50f1dffdc2f820f1418fe0/clingo-5.7.1.tar.gz", hash = "sha256:17400a1894da46b2d4941a4a85012c98fa8b3c67a5c6b4c73dcd8c8facbc059f", size = 1866665 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/b5/fa156cdb8eeca3cc7117d24c20b392359cdfc6a4dbc5a7e5599cf1550c55/clingo-5.7.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a594f94970fe42a33e3b2269e8acbb4ee8d0a8cb4266a4de00c4b8b66efe40a2", size = 1720452 },
-    { url = "https://files.pythonhosted.org/packages/7f/e8/7997282d7a82f7e84947ba4a64a8625f783f399a4da72f48c097ad49024e/clingo-5.7.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:42759e82d3e62cd4ad5d229c01f57d4626580aef7e9fa867a59941d4b41ca5a0", size = 1567311 },
-    { url = "https://files.pythonhosted.org/packages/db/96/d568e77206ff82338d802d5d0fc37b5d0956209128278617571cd757ee24/clingo-5.7.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:55eb971cc01f277dd9338725f5ec2349b792e2406a576e9fe9c30f56ab592d3f", size = 2133493 },
-    { url = "https://files.pythonhosted.org/packages/d8/25/f925d7b03e58c9b07ed72332ec42be8f2a02c942a3520419cc062c001584/clingo-5.7.1-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:05d5dbfd4c1d72914e81779ba8f74cbba97c6319cb4672c7f58b12efdfdd1c6f", size = 2389603 },
-    { url = "https://files.pythonhosted.org/packages/3e/27/e0b6d4055ec77b8933945eba4133be6fd9bebbab93a9833547f2f0f305fa/clingo-5.7.1-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:27a75b43ff40bc9c2d60805e6e58832aa49489dd1980329515e69550b3d5c14b", size = 2488293 },
-    { url = "https://files.pythonhosted.org/packages/3b/6d/d7b7021f53ae54ea0059c802230bc4a020eda6afb9f816e4244f46d0ccc5/clingo-5.7.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c5aa2d966c52c49530714d04abce50528f420c8acd2265618b1243f12e4b0a1d", size = 2232070 },
-    { url = "https://files.pythonhosted.org/packages/c7/af/bae2cfcf121d09c8b7b5b6b36fca0fbf2efcd3fe1a6de0a48faf66488612/clingo-5.7.1-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:09dc133060ba859cdb4bfdc438aa0efe1bca256dba214a07521c7c54cef90746", size = 2976558 },
-    { url = "https://files.pythonhosted.org/packages/0b/7f/a8143f55bfc1834ed8b1f5b006fa22533f0a3ac6b4c442b98a655b90b064/clingo-5.7.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:4c724bacf4b4bc4d9e474270c0065e9cf1b8fc164ccbca4e3c7f17c97a1be843", size = 2789839 },
-    { url = "https://files.pythonhosted.org/packages/9b/ea/27428a12ad6c7949fe0c46c666888403939b11319ec8d5e14bc099a9c031/clingo-5.7.1-cp310-cp310-win32.whl", hash = "sha256:633720f64dbea34ac8a5a5007254cd730f8995d482819fc41543d8e8e89b6623", size = 1156637 },
-    { url = "https://files.pythonhosted.org/packages/de/a4/81fe10d3dd39fa193f1f45b929eb3e886296be394da4b7a96eb4b5e24189/clingo-5.7.1-cp310-cp310-win_amd64.whl", hash = "sha256:8704a299d1da57999c5bbd3685dd88a383262eadb26a30ddaaf713a7d0f1b180", size = 1359594 },
-    { url = "https://files.pythonhosted.org/packages/63/b8/a8c071e59cf1b331c427d8dee01273cc5e36e18deac5b8e8e7044ab33651/clingo-5.7.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:156cbb56869eead2b46cdf58b4d05244f47dc6d20cb6e6051f407572fc93b572", size = 1720451 },
-    { url = "https://files.pythonhosted.org/packages/17/7f/08ef395c988ce21db18d6e00cc3b715f9dcabbecea765f9ea03b1c7ae609/clingo-5.7.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:d8d46dd3e45b53de15f2bd656ecf7f02469c4928b03c068f79fad2371c0940b5", size = 1567311 },
-    { url = "https://files.pythonhosted.org/packages/97/28/356a27134ac3f8feb0d3f2842571865c57ac7bec4d79cafae85c775a8ad4/clingo-5.7.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:427e266a7567407cee3a6b12ad9a8564ebc6cd9c51282fc00ce6436929a615a8", size = 2133492 },
-    { url = "https://files.pythonhosted.org/packages/c8/f1/535a2b3b29a4bd38dfe1eea53e250c4fc822af3cfa35c93944871c524aef/clingo-5.7.1-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0c6260a5d29886109f90a67c134399b4b54992dda6fd508c9bac6eea98801f33", size = 2389608 },
-    { url = "https://files.pythonhosted.org/packages/3f/3b/95be28cccf0c8f3f72bb67e1e3ce6e62fbee86e4a674e8815fd47ee0c0c4/clingo-5.7.1-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:34b640dc78625811c28dd19e98272085b8032369a79316a9db2e1d4131836d31", size = 2488297 },
-    { url = "https://files.pythonhosted.org/packages/05/28/7e059dcd0aaac30d0aeef2ca62e11680844dfab432c8b16dd0a929dc209f/clingo-5.7.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fa0a2c9ab3fa4d93fae7bebcf0e1f78fa65949e1cf3e13867af76ebb9dd40796", size = 2232071 },
-    { url = "https://files.pythonhosted.org/packages/8d/52/c77e37aac2d64454e766d29e85ce9d268d925cd3d815f7d7cabece9cf8ed/clingo-5.7.1-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:afac6e08334d91af7061e4899fe0fbf1889e6b9224d298e9260b8d1295bea0d1", size = 2976558 },
-    { url = "https://files.pythonhosted.org/packages/63/e1/e29edf3be5b8487f8febf81f9d692a48b1ba29ef90c52fb11943debd4763/clingo-5.7.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:9325031c81077081c30725cf04406e7cdf9984723b20878fc61b1de24ead39a0", size = 2789842 },
-    { url = "https://files.pythonhosted.org/packages/05/fe/875b9337ecc36e075d925a088b8876de33048bd35af3993bc641f31372e2/clingo-5.7.1-cp311-cp311-win32.whl", hash = "sha256:2b765126f45cc84eac6f301f40567c2fbaefa16092b1d603cbab14b25f68ac96", size = 1156618 },
-    { url = "https://files.pythonhosted.org/packages/01/2c/5f336aed61987d31d9c3dc43566138549c554a62a9dbbf241f7b7dcf89b8/clingo-5.7.1-cp311-cp311-win_amd64.whl", hash = "sha256:8f7d195e84ac4154372d2707b46f52bba41295d7e5dd7d3dffd29807c67404b4", size = 1359639 },
-    { url = "https://files.pythonhosted.org/packages/43/4f/64b5b32c00fb81e2bf0f963b4fc891421f3d61ca22a07e19de43c9b1717c/clingo-5.7.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:83d1e6005ebaccb7e1dc7ca733effd7d6ab063bd37fc5eb17f97705ad0a86ec6", size = 1720425 },
-    { url = "https://files.pythonhosted.org/packages/33/db/2239d5c48d9b4c9188dcd4934fab9ad020b94098ad59ee55dcb4b6c7544e/clingo-5.7.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:2518a6118f084c0cbec5b79d035c6a93257cb41d8ee1a30147b8685e3fac2871", size = 1567353 },
-    { url = "https://files.pythonhosted.org/packages/fa/cd/26e58197fd25f4113a3929417c00fc8e94991cf2c64480569aaabf045c8b/clingo-5.7.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1faf6db10bf92df965c309dbad15ad5394ee0d2954b152619564e4facbb5cc5f", size = 2133826 },
-    { url = "https://files.pythonhosted.org/packages/1f/5c/18ef803ea95f2ce45e57ccbf85e5bed73a0a6645fcc0f44dbbab663ba302/clingo-5.7.1-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:17472ae3db51071e984eac04437eea3c192d897f6ad79a9af0e618d172a89afd", size = 2389577 },
-    { url = "https://files.pythonhosted.org/packages/6c/3a/bdfb7abb540729ce87da48c17f0af261d305554377d37a709566b5be0f8e/clingo-5.7.1-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:198fa526995acef61c5ff95d898a10b3b4616041507b617b95feb677e960870c", size = 2488372 },
-    { url = "https://files.pythonhosted.org/packages/80/c2/51e8241492bc6ce6b5c16b165480b6d27359d41791d98dd0ab6ba5fc0696/clingo-5.7.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:11f3c784139ed56e0ec9c4cf1e090c839998d23704014a248d2a52da83471def", size = 2232126 },
-    { url = "https://files.pythonhosted.org/packages/bd/86/4bdc651f2e0ff3113e370b46228e200190e7b5aad5be30df5a9ed816b432/clingo-5.7.1-cp312-cp312-musllinux_1_1_i686.whl", hash = "sha256:3d83f6979c2f9e5b7c8e2db0d0f4ed83525926dbf4ad11802f539e423cc0e53a", size = 2976627 },
-    { url = "https://files.pythonhosted.org/packages/5b/d8/74a7ed8048a317cffaf05db19747b1fff05ce639e28a4d0b45aea274fc68/clingo-5.7.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:4b6d3a79bd65e5cec0139d8d481366c3d4fc7921afe54bd014b61b52394b6394", size = 2789582 },
-    { url = "https://files.pythonhosted.org/packages/ee/60/972b9eaf520010123df52524e6c9aa9ac473fb881a0cee37539a532e41ad/clingo-5.7.1-cp312-cp312-win32.whl", hash = "sha256:e8532b567f4a2ffb82d59a5d9e09ab304c1fabb5597a70a5eaef249ba728313c", size = 1156641 },
-    { url = "https://files.pythonhosted.org/packages/e0/48/03f90c67dc9859309c9df572d77c2a874db1c81a9a8e894b67c91ec0bbcd/clingo-5.7.1-cp312-cp312-win_amd64.whl", hash = "sha256:353782221883ab9a9ac7caeb4a2f82cd46d46c50291c7b6fdfb17a2df95dcf8c", size = 1359953 },
-    { url = "https://files.pythonhosted.org/packages/e7/d7/f594ee738b1040ea827bd8c82c80b65d95afe883cd8c029be9e3c01aa182/clingo-5.7.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:9e64b943df5840a392da187a61eaa35996c1f1be73a74a6cd80e4bb7d7da42ee", size = 1756390 },
-    { url = "https://files.pythonhosted.org/packages/b1/e8/7e7724286636df53be434e92747ac2fd6dcabad4240eb489fa6b784c31c4/clingo-5.7.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:802ed131322f30f8c44bf9a4df7da6c8cdcd15395b6f46c8274afc278de962f4", size = 1603166 },
-    { url = "https://files.pythonhosted.org/packages/e2/14/a0277d10c44654193783c9eae0a65c8d4b94603fe1545217da2ab6ec04e1/clingo-5.7.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d0a0218203365ef7177729d159bed64f4a62d11caabd971c85271a4d4e34b820", size = 2133775 },
-    { url = "https://files.pythonhosted.org/packages/fc/53/cb0fa752655896b52bd7a3d784c21fee4ecb6162fda99d6cb9bfb477f09b/clingo-5.7.1-cp313-cp313-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:31da4314debdb53732dc2487e0da7519610a803de3deeca97c9be4d91cf05aa1", size = 2389530 },
-    { url = "https://files.pythonhosted.org/packages/18/96/f04da45c6ea710d824e3203115522b22c6b1bdae712f90576983ae1f4fff/clingo-5.7.1-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:1f9d6c9ce5e36e44146f117bd6a9dac7803658eea2a22abe7b9e0ed0bfdd3127", size = 2488327 },
-    { url = "https://files.pythonhosted.org/packages/27/15/bf778cd158b727a056048ae4f59d1f85be87edc4c284ea9d326f62129687/clingo-5.7.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:acc3ba0c73bdce99f85b57ac25950bccd6177e5a668ec089c3d9636da6f00608", size = 2232080 },
-    { url = "https://files.pythonhosted.org/packages/be/04/5aa5a2c4d964a31170ddea966dfb6d3c86e13af8bb39b732d4a486b88edb/clingo-5.7.1-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:d19c83d8a8d0b645d2703e691b69d72f13920868e518de6966eb11768e84383e", size = 3498441 },
-    { url = "https://files.pythonhosted.org/packages/d1/37/8c8990c63d4f60f81ec60a989ac99adf4d8e0822b5542718922e64b5018a/clingo-5.7.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:36536a9e1ba913815a54430532489225d6abc7f66f66527eb301ed496287986e", size = 3229095 },
-    { url = "https://files.pythonhosted.org/packages/bb/ca/af602faf639155bcbdc155cd84ece41c317efde3fd80ff850357a00d3f81/clingo-5.7.1-cp313-cp313-win32.whl", hash = "sha256:6dc9990c8b0488523968508d860601bebb7f513a89c6596cc512adb065f3c04f", size = 1156707 },
-    { url = "https://files.pythonhosted.org/packages/1e/6a/49fe64d11245d7f40543befebed50c356f9d892da17945624a6fcc790993/clingo-5.7.1-cp313-cp313-win_amd64.whl", hash = "sha256:d89c70a8e196b69265ac01f579f9ea98991c0d776abaf5ef82cf4ae4265d42e8", size = 1359905 },
-    { url = "https://files.pythonhosted.org/packages/c4/3b/293288faa0fc90892943aaa25fc8c78c11d50d197eed80a721519e4041a1/clingo-5.7.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:9bb32288cd541dd829381d3f9a5fbddec700531bc922e31a32f260f88ec3fef6", size = 1720426 },
-    { url = "https://files.pythonhosted.org/packages/82/61/f324c14ee7f65bbe5bbcda60d03f2d41b126f58f2873830949fd9c197ed7/clingo-5.7.1-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:42cf649b625831db64b7505400e90226eda189fca0993f5d72ff0f20db547acd", size = 2133666 },
-    { url = "https://files.pythonhosted.org/packages/99/d1/bcd9efb8c4d05e4d30dbaa56de04d9ca62f7141869b4055cf5ffe19ce8c7/clingo-5.7.1-cp37-cp37m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:deb86b54914f17dde406d992db1bc2647aa7d67f8a426bb699a27c30d2ef3c4e", size = 2389397 },
-    { url = "https://files.pythonhosted.org/packages/28/59/d97311fd60b5f45a3c79fdeb6cca677d69021d34455e7a0c8799e56fe4a2/clingo-5.7.1-cp37-cp37m-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:2ba4570fab0a9a5e9ecd3762e264aee0b37330dae9529c2f7613414b72bd200e", size = 2488382 },
-    { url = "https://files.pythonhosted.org/packages/35/cd/63b89a69a30f80be61b6187d78b57113365bae62bd85b44864a825227de6/clingo-5.7.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:63fb2aa6b7ad21a78e3958e6db38c842a4c2087c943b47e9a1a8e3776b1b443c", size = 2231887 },
-    { url = "https://files.pythonhosted.org/packages/c1/fa/18e0ee2f9333498954627b14b31b7debbdc39366a2dec3a2e6bc52e788ac/clingo-5.7.1-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:19b0f9337365172b440c332ec00439abc5db97dcfa22ee3767d75080e19d6a1a", size = 2976553 },
-    { url = "https://files.pythonhosted.org/packages/0b/7b/73f206be7139c3e451cf329dd0eb56986f070c3b6d9671c2626ced548c01/clingo-5.7.1-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:75cc4c248c047709d2ef53c2fceea9d5370779acb477d626375563f9beed4ec3", size = 2789814 },
-    { url = "https://files.pythonhosted.org/packages/d0/97/1f97cc57b083657348af580a1fd3bd25c04c88014b470aae6cd61ca27c59/clingo-5.7.1-cp37-cp37m-win32.whl", hash = "sha256:ec78875585becad9da5ed9cdc0ea88b1eb6573d20fb33137510e273d4d5c884d", size = 1156607 },
-    { url = "https://files.pythonhosted.org/packages/62/9f/25294bc384c00172f23bdbde6294f4327e388701a7136ae8381f9b6d65fe/clingo-5.7.1-cp37-cp37m-win_amd64.whl", hash = "sha256:0eafa58e3c5b2e2cbd2a72a3789eac3aa0153a6bddaaca40d9dbed0cdce0bcaa", size = 1359728 },
-    { url = "https://files.pythonhosted.org/packages/22/42/b1e3d27332864db55c00d0f652ee06455a0e30c480f1f3549e2a34caa36f/clingo-5.7.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:c045787f76444030564343a07c170508b2a9ea1c25a49ea1700d7de9e5f0fc11", size = 1720444 },
-    { url = "https://files.pythonhosted.org/packages/8f/04/9cb6e31cee628d200167c502e99e124f2173529a1dc9fe7131f5c491a667/clingo-5.7.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:bc59334cfe4c332900bbdc6fba532f6572e5e23387ac35f1758317e6a39addbc", size = 1567305 },
-    { url = "https://files.pythonhosted.org/packages/51/90/afc339f82416864a59d01179c1bfbb19ba3529655f006a6cd9f89bc997cf/clingo-5.7.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0560e99f4a17468aa23ae65255055a6349b09e25bda9e79cbce9e42222cddc72", size = 2133486 },
-    { url = "https://files.pythonhosted.org/packages/f5/32/37d18bed844b40ba97885ab6f54f3fd481420c92ec839a819681e3f566ea/clingo-5.7.1-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8bbfbf21ba87ef103f77abaaff0f26cf2542c77c7dd45202d19ff97ecd4fe7de", size = 2389609 },
-    { url = "https://files.pythonhosted.org/packages/88/9e/79f33c57e7073ab8152c787bbfbfc7687ab6237b94e0cfa2c17508cf8464/clingo-5.7.1-cp38-cp38-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:4932eb445f517019a093887d2163a5ee4f0a1e00c15143c9b20d8ba0b2392de7", size = 2488290 },
-    { url = "https://files.pythonhosted.org/packages/1f/d3/320deb98ce7ff1f8bcfad408bd565a85ba88e7cd444997f53f993846356b/clingo-5.7.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be3786952ea7771a8381facec9a40e8aa73fb9a28b9352fa9b1e099124307478", size = 2232059 },
-    { url = "https://files.pythonhosted.org/packages/42/86/4010f87a10e62908eb5daf8b152195e95c609d279a368a5a9a091ffdfffc/clingo-5.7.1-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:e5425e06287b4fa16ec50453c938d8500fb9ba7f6be22de029d52655f2aeace2", size = 2976551 },
-    { url = "https://files.pythonhosted.org/packages/16/a4/a8c89f96d9c52dc118ae137fe087eda27e06bd1ed53050834ce98570ae5f/clingo-5.7.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:c57aac454cd70f491eb289ce12c8c7f33da08804be7c05c76a63199d22ab0e76", size = 2789835 },
-    { url = "https://files.pythonhosted.org/packages/14/52/64fadc787030eafabcf84957769e505a5c14dd1c86c74a8ca40de7aeed71/clingo-5.7.1-cp38-cp38-win32.whl", hash = "sha256:32956e6ce12209cd610067877f5424243af12dd43aa567e3c487e5d5f975f981", size = 1156595 },
-    { url = "https://files.pythonhosted.org/packages/3a/3f/68f8eef76c728141fdc5b45fb55527334a81000ba44eb8e33738e6bd6af3/clingo-5.7.1-cp38-cp38-win_amd64.whl", hash = "sha256:ea34388a885e4cfaf865abc2ae47ed9e9a3e1f2eb11f7cc03cf8310171239926", size = 1359617 },
-    { url = "https://files.pythonhosted.org/packages/f4/21/f022d93d722cba4c1f66cc31cc7d999765183124a1cc0da1ba618a93f39e/clingo-5.7.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5298d3733f24076b65f05c957b0d9842e926a95022610910212c30c0b91639f6", size = 1720447 },
-    { url = "https://files.pythonhosted.org/packages/c7/4b/4992b3933e96600cc3a5f93681444c9a0565a4ee2e6d76bb7ab85cdd1363/clingo-5.7.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:ff245e19bc4cb25d8b5e01eddc8d23ba3852ecd9aa57edb077013bdefdb51344", size = 1567304 },
-    { url = "https://files.pythonhosted.org/packages/b8/69/d3d169209d8b3556e79b4a98a98158333b9d93d10f3481e2d84a95baa6cc/clingo-5.7.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ce1e7ff1961ab6be2b4f56b8fe98c7e4842fb4395e87ee8dbee3c0bec04b19af", size = 2133484 },
-    { url = "https://files.pythonhosted.org/packages/f6/d0/76be57df18de6cbd8aa01b7de3c26e37e7a1aff0efde7149d9c835d14875/clingo-5.7.1-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:34f1d923b91d84930c5b1eb92ed8cdda9ef8a45fc219d58efc2d6725d96862c6", size = 2389612 },
-    { url = "https://files.pythonhosted.org/packages/d2/08/3ee69b2df23aa40f8809e77f6c1968b6eca2694529a221ef16fd04512284/clingo-5.7.1-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:d0ae917589bc34c973dae90e408a96f5eee231c05319d6fd6c90814e0d8d82ab", size = 2488291 },
-    { url = "https://files.pythonhosted.org/packages/e8/65/f5322de1cedad62854ea0aefe9fcbeea5db2befd51dbe4b79bb8e03a21be/clingo-5.7.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0aa5a64df5a545c5ae8ccda76ad05893d304726a6f18e0f53f02e436ad058485", size = 2232061 },
-    { url = "https://files.pythonhosted.org/packages/0d/50/c7c1ab0d535c3d0951c91d2946f2c9b8f8fafe65606dd166b4976ff3d6c1/clingo-5.7.1-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:8ef3c005c1a6e9379a2db870421e99f5dc61878e4880583c128a7ef66ab9f46c", size = 2976552 },
-    { url = "https://files.pythonhosted.org/packages/41/fd/9c433d0bbd70baa3dfa88c4f7a8f6eca0a4480977ce10fd84b2f41c024a3/clingo-5.7.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:47f9e7c08e02dd2e6de1d1ed9fd23be3550fc282b6fc307c8199a5e9fea53a1f", size = 2789833 },
-    { url = "https://files.pythonhosted.org/packages/50/dd/f6c0e3471cd3eaa600ba3e12c75766f51503f7e0c75a6c9f65d7427250f5/clingo-5.7.1-cp39-cp39-win32.whl", hash = "sha256:3d1af3f7947128eac37983bca5a2ea9a423fedfe7acf050eda4a7467ab011369", size = 1156556 },
-    { url = "https://files.pythonhosted.org/packages/59/16/d628ca2e857d35b635a9f15a4ea9d23f0348ad17c66dff2f73651bdd9e72/clingo-5.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:489a2e6246f0a66ea4e34fb61986115d6d76362bedbf1faa3240d6bee3c82333", size = 1359752 },
-    { url = "https://files.pythonhosted.org/packages/0a/ff/68d36bb604686714c280773c13ced67feb948dba128ef5a31e87e62b1a44/clingo-5.7.1-pp310-pypy310_pp73-macosx_10_9_x86_64.whl", hash = "sha256:b3635895af2fb5f6e11bed1f69945a15f3f4e5a25db2a8204300312d7c0477c8", size = 1679563 },
-    { url = "https://files.pythonhosted.org/packages/7e/80/0be5891d2ad21afce2582c1e44013aa61c6fbe2ea13aaed8a7498f98208d/clingo-5.7.1-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a6b02279c69a49604a905fee6a95930257fff6cb3a305222902f1cdc7f6a7ced", size = 2102153 },
-    { url = "https://files.pythonhosted.org/packages/8f/b5/9b1152500d5a8b6a8ae755abd6508cb55cb48cb8dfbae9d097bc28ce1471/clingo-5.7.1-pp310-pypy310_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:12a14f054581bf4230eb809cad28096e091c2994ffc8dbe25fd3bcbc52183662", size = 2357526 },
-    { url = "https://files.pythonhosted.org/packages/2c/e1/50166be7c1d7505192b24de70b30b6fb394292e5b645f17e96293ef9f405/clingo-5.7.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e51a44d5ec631b847dd749697ab23a0dfdb838cfd8c34f9be6a962d2a8c42e4d", size = 2190801 },
-    { url = "https://files.pythonhosted.org/packages/99/42/f32c063b4fc8a2bf4f01ca8c44e1e7137df25e41d132338e0bc8b219de17/clingo-5.7.1-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:7c95e647c37c8544f189333f5518853d9f6544c1cd09769b0cee75394c1b0233", size = 1679556 },
-    { url = "https://files.pythonhosted.org/packages/fa/60/de25c17c8c5c92a47102b3cf7b14721699721a8e1b58d8f81efd0cd5595d/clingo-5.7.1-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6596448d279282bee77da133739ad16fa48f5b2bb3d1090457ead720c3b9729e", size = 2102151 },
-    { url = "https://files.pythonhosted.org/packages/62/13/87c43ca586df1cd132a9d8ea2f099164995523674ab5783138d276bf9a82/clingo-5.7.1-pp37-pypy37_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:db58a18090abaa1968bda7c6fe420c8d95e1544d51265f86e379a3f4732089de", size = 2357512 },
-    { url = "https://files.pythonhosted.org/packages/97/d1/c51323578750e14099acf710a1b0438c381ade81047d5dfd0d51380ef8d8/clingo-5.7.1-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:19c2a664dbda2ef357c9649cff77471912ee5f1860e1f0c9446e139a04ac43da", size = 2190793 },
-    { url = "https://files.pythonhosted.org/packages/e3/72/0f9c64351aeb12b2f2a2a28d2a27c138dcbcbf4c68def7585ca820b9e89f/clingo-5.7.1-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:f29d2a9b26b507dbedb77af4705a9c7f8a76836be326a67ca79aa6011c8c2f78", size = 1679554 },
-    { url = "https://files.pythonhosted.org/packages/7d/ef/1e73a87e562dbf0065233c6d3bd87da907fae8d6b6970f960217bbdafec5/clingo-5.7.1-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5eae9169de31fbf67423fba78164996aefc6fad7f75abc44aa943e78cf087530", size = 2102154 },
-    { url = "https://files.pythonhosted.org/packages/c2/da/a8a49a8a7135c15f0d066b42ca8e1f10575d99b5f4cde1b5144bd71b9996/clingo-5.7.1-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f9c98fb287283fe2e246761daf220613aeb3a47debb894479a6d13375de1ef0c", size = 2357515 },
-    { url = "https://files.pythonhosted.org/packages/ed/6a/315d4ec8201eeba836ed98acbed9b1e8948eb485cc79e5be5b7bab6ef43e/clingo-5.7.1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c4d2041eeb33597629c4652c904240b7a875da57bd5aab3f4929070d4c23b51d", size = 2190794 },
-    { url = "https://files.pythonhosted.org/packages/02/5a/22144904cc1a15f742ebdbcb1ce58f7d0049fedb3dc7e89521e85fbb8435/clingo-5.7.1-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:4b107d39cd1bc1300c04589918e4dad6efb5530f286fd4b01da02ae4e03e67b9", size = 1679557 },
-    { url = "https://files.pythonhosted.org/packages/5b/59/9a0bbb579a60208183a7b6829f5ff47434822901ff99894720df361b050c/clingo-5.7.1-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:db99f43b339b04f29877bf6f7a439f003c04f6f238bcc0d0d3b09318d5848070", size = 2102149 },
-    { url = "https://files.pythonhosted.org/packages/88/b4/df237bad6ffc2beea0cd135f22287128425a19baf96cc1f5f103e2dbd250/clingo-5.7.1-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c1a748fb50bf9cc665d96bb15bf3e1094d1224734c064d6568d106a98661bc85", size = 2357515 },
-    { url = "https://files.pythonhosted.org/packages/90/91/2613356cae54d5dc510275aefd3e99bc7fd712d3dc21f95c7af73502c4d9/clingo-5.7.1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7e4c36857d15cc5a83187b97345d28fb0fae82f47df6c06634b1d0436a04391c", size = 2190794 },
-]
-
-[[package]]
-name = "clingo"
 version = "5.8.0"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.8' and python_full_version < '3.11'",
-    "python_full_version == '3.11.*'",
-    "python_full_version >= '3.12'",
-]
 dependencies = [
-    { name = "cffi", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8' and python_full_version < '3.12'" },
-    { name = "cffi", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "cffi", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "cffi", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f0/05/1a8a34eea27e73e4c6f7c9d0654b4fd7f509a5fbbb7b3eae7735e5ecd1c2/clingo-5.8.0.tar.gz", hash = "sha256:e557d0ab209bfe185e4ae9dde531ca777be1b72a1a13a5d169926a1f9e4c4480", size = 1910050 }
 wheels = [
@@ -802,12 +698,12 @@ wheels = [
 
 [[package]]
 name = "noqx"
-version = "0.6.0"
+version = "0.7.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "cffi", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "clingo", version = "5.7.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "clingo", version = "5.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8'" },
+    { name = "cffi", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "cffi", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.8'" },
+    { name = "clingo" },
 ]
 
 [package.optional-dependencies]
@@ -836,7 +732,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cffi", marker = "python_full_version >= '3.12'", specifier = ">=1.17.0" },
+    { name = "cffi", marker = "python_full_version < '3.8'", specifier = ">=1.15.0" },
+    { name = "cffi", marker = "python_full_version >= '3.8'", specifier = ">=1.17.0" },
     { name = "clingo", specifier = ">=5.6" },
     { name = "starlette", marker = "python_full_version >= '3.8' and extra == 'web'", specifier = ">=0.30.0,<1" },
     { name = "starlette", marker = "python_full_version < '3.8' and extra == 'web'", specifier = "<0.30.0" },
