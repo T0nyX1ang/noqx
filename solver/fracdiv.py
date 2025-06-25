@@ -50,7 +50,7 @@ class FractionalDivisionSolver(Solver):
         all_src = set((r, c) for (r, c, _, _) in puzzle.text)
         frac_dict: Dict[Tuple[int, int], SimpleFraction] = {}
 
-        for (r, c, d, tp), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
 
             if (r, c) not in frac_dict:
@@ -60,14 +60,14 @@ class FractionalDivisionSolver(Solver):
                 )
                 frac_dict[(r, c)] = SimpleFraction()
 
-            if tp == "normal" and isinstance(num, int):
+            if label == "normal" and isinstance(num, int):
                 frac_dict[(r, c)].numerator = num
                 frac_dict[(r, c)].denominator = 1
 
-            if tp == "sudoku_0" and isinstance(num, int):
+            if label == "sudoku_0" and isinstance(num, int):
                 frac_dict[(r, c)].numerator = num
 
-            if tp == "sudoku_3" and isinstance(num, int):
+            if label == "sudoku_3" and isinstance(num, int):
                 frac_dict[(r, c)].denominator = num
 
         for (r, c), frac in frac_dict.items():
@@ -80,7 +80,7 @@ class FractionalDivisionSolver(Solver):
                 )
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))

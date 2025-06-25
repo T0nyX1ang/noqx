@@ -52,8 +52,8 @@ class KazunoriSolver(Solver):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, len(ar) // 2 + 1), _type="area", _id=i))
 
-        for (r, c, d, pos), num in puzzle.text.items():
-            validate_type(pos, "normal")
+        for (r, c, d, label), num in puzzle.text.items():
+            validate_type(label, "normal")
 
             if d == Direction.CENTER:
                 fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")

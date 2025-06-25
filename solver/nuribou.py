@@ -56,9 +56,9 @@ class NoribouSolver(Solver):
         self.add_program_line(all_rect(color="black"))
 
         all_src: List[Tuple[int, int]] = []
-        for (r, c, d, pos), _ in puzzle.text.items():
+        for (r, c, d, label), _ in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             all_src.append((r, c))
 
         for (r, c, _, _), num in puzzle.text.items():

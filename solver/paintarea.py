@@ -38,9 +38,9 @@ class PaintareaSolver(Solver):
         for i, (ar, _) in enumerate(areas.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent(num, (r, c), color="gray"))
 

@@ -57,9 +57,9 @@ class GokigenSolver(Solver):
         self.add_program_line(no_loop())
         self.add_program_line(convert_direction_to_edge(diagonal=True))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(f":- #count{{ D: grid_direction({r}, {c}, D) }} != {num}.")
 

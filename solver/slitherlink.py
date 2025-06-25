@@ -46,7 +46,7 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     # segment count = vertex count - edge count
     vertex_count = count_adjacent_vertices(target, src_cell).replace(f"{rop} {num}.", "= C1").replace(":-", "").strip()
     edge_count = count_adjacent_edges(target, src_cell).replace(f"{rop} {num}.", "= C2").replace(":-", "").strip()
-    return f":- { vertex_count }, { edge_count }, C1 - C2 {rop} {num}."
+    return f":- {vertex_count}, {edge_count}, C1 - C2 {rop} {num}."
 
 
 class SlitherlinkSolver(Solver):
@@ -99,9 +99,9 @@ class SlitherlinkSolver(Solver):
         if puzzle.param["swslither"]:
             self.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if puzzle.param["swslither"] and clue == "W":
                 self.add_program_line(f"wolf({r}, {c}).")
             elif puzzle.param["swslither"] and clue == "S":
@@ -117,7 +117,7 @@ class SlitherlinkSolver(Solver):
                     self.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_top", size=2))
         self.add_program_line(display(item="edge_left", size=2))

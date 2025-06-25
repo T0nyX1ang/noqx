@@ -9,7 +9,7 @@ from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
-def mukkonn_constraint(r: int, c: int, pos: str, num: int) -> str:
+def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
     """
     Generate a mukkonn constraint.
 
@@ -17,19 +17,19 @@ def mukkonn_constraint(r: int, c: int, pos: str, num: int) -> str:
     """
 
     rule = ""
-    if pos == "sudoku_4":
+    if label == "sudoku_4":
         max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
         rule += f':- grid_direction({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
-    if pos == "sudoku_5":
+    if label == "sudoku_5":
         min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
         rule += f':- grid_direction({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
-    if pos == "sudoku_6":
+    if label == "sudoku_6":
         max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
         rule += f':- grid_direction({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
-    if pos == "sudoku_7":
+    if label == "sudoku_7":
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
         rule += f':- grid_direction({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
@@ -61,11 +61,11 @@ class MukkonnSolver(Solver):
         self.add_program_line(single_loop(color="mukkonn"))
         self.add_program_line(loop_turning(color="mukkonn"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
-            if pos and isinstance(num, int) and num > 0:
-                self.add_program_line(mukkonn_constraint(r, c, pos, num))
+            validate_type(label, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
+            if label and isinstance(num, int) and num > 0:
+                self.add_program_line(mukkonn_constraint(r, c, label, num))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

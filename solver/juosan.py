@@ -11,7 +11,7 @@ def jousan_constraint():
     # black for horizontal, not black for vertical
     rule = ":- grid(R, C), grid(R + 2, C), black(R, C), black(R + 1, C), black(R + 2, C).\n"
     rule += ":- grid(R, C), grid(R, C + 2), not black(R, C), not black(R, C + 1), not black(R, C + 2).\n"
-    rule += 'content(R, C, "——") :- grid(R, C), black(R, C).\n'
+    rule += 'content(R, C, "--") :- grid(R, C), black(R, C).\n'
     rule += 'content(R, C, "|") :- grid(R, C), not black(R, C).'
     return rule
 

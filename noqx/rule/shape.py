@@ -1,6 +1,5 @@
 """Rules and constraints to detect certain shapes."""
 
-import itertools
 from typing import Iterable, Optional, Set, Tuple, Union
 
 from noqx.rule.helper import tag_encode, target_encode, validate_type
@@ -98,8 +97,9 @@ def get_variants(
     while not all_shapes_covered:
         new_shapes = set()
         current_num_shapes = len(result)
-        for f, s in itertools.product(functions, result):
-            new_shapes.add(f(s))
+        for f in functions:
+            new_shapes.update(f(s) for s in result)
+
         result = result.union(new_shapes)
         all_shapes_covered = current_num_shapes == len(result)
     return result

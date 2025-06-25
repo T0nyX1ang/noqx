@@ -67,9 +67,9 @@ class PentopiaSolver(Solver):
             self.add_program_line(general_shape("omino_5", i, o_shape, color="black", adj_type=4))
             self.add_program_line(count_shape(("le", 1), name="omino_5", _id=i, color="black"))
 
-        for (r, c, d, pos), symbol_name in puzzle.symbol.items():
+        for (r, c, d, label), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
-            validate_type(pos, "multiple")
+            validate_type(label, "multiple")
             symbol, style = symbol_name.split("__")
             style = int(style)
             validate_type(symbol, "arrow_cross")

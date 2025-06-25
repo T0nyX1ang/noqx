@@ -92,9 +92,9 @@ class HaisuSolver(Solver):
                 if puzzle.text.get(Point(r, c, Direction.CENTER, "normal")) == "S":
                     s_index = ar
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if clue == "S":
                 self.add_program_line(f"path_start({r}, {c}).")
 

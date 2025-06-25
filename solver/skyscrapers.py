@@ -26,9 +26,9 @@ class SkyscrapersSolver(Solver):
         self.add_program_line(unique_num(_type="row", color="grid"))
         self.add_program_line(unique_num(_type="col", color="grid"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
             if r == -1 and 0 <= c < puzzle.col:

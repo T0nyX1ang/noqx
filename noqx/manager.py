@@ -1,7 +1,5 @@
 """Manager of all the solvers as a plugin."""
 
-import pkgutil
-from abc import ABC
 from typing import Any, Dict, List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
@@ -10,21 +8,20 @@ from noqx.puzzle.penpa import PenpaPuzzle
 modules: Dict[str, "Solver"] = {}
 
 
-def load_solvers(solver_dir: str):
-    """Load the solvers from a valid directory."""
-    puzzle_names: List[str] = []
-    for module_info in pkgutil.iter_modules([solver_dir]):
-        puzzle_names.append(module_info.name)
+def load_solver(solver_dir: str, solver_name: str):
+    "Load a solver from a valid directory."
+    if solver_name in modules:
+        raise ValueError(f"Solver for {solver_name} already exists.")
 
-    for pt in sorted(puzzle_names):
-        __import__(f"{solver_dir}.{pt}")
+    module = __import__(f"{solver_dir}.{solver_name}")
+    module_attr = getattr(module, solver_name)
 
-    for solver_cls in Solver.__subclasses__():
-        puzzle_type = solver_cls.__module__.lower().replace(solver_dir, "").replace(".", "")
-        if puzzle_type in modules:  # pragma: no cover
-            raise ValueError(f"Solver for {puzzle_type} already exists.")
+    for attr_name in dir(module_attr):
+        attr = getattr(module_attr, attr_name)
 
-        modules[puzzle_type] = solver_cls()
+        if isinstance(attr, type) and issubclass(attr, Solver) and attr is not Solver:
+            puzzle_name = solver_name.lower()
+            modules[puzzle_name] = attr()
 
 
 def list_solver_metadata() -> Dict[str, Any]:
@@ -72,16 +69,16 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
         r, c = tuple(map(int, data[:2]))  # ensure the first two elements of data is the row and column
 
         if _type.startswith("edge_"):
-            for d in Direction:
-                if _type == f"edge_{d.value}":
+            for d in [Direction.TOP, Direction.LEFT, Direction.TOP_LEFT, Direction.DIAG_UP, Direction.DIAG_DOWN]:
+                if _type == f"edge_{d}":
                     solution.edge[Point(r, c, d)] = True
 
         elif _type.startswith("grid_"):
             grid_direction = str(data[2]).replace('"', "")
             if puzzle.puzzle_name == "hashi":
-                solution.line[Point(r, c, pos=f"{grid_direction}_{data[3]}")] = True
+                solution.line[Point(r, c, label=f"{grid_direction}_{data[3]}")] = True
             else:
-                solution.line[Point(r, c, pos=grid_direction)] = True
+                solution.line[Point(r, c, label=grid_direction)] = True
 
         elif _type.startswith("number"):
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
@@ -108,21 +105,26 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
     return solution
 
 
-class Solver(ABC):
+class Solver:
     """Base class to create solvers."""
 
     def __init__(self):
         """Initialize a program."""
-        self.program: str = ""
+        self._program: List[str] = []
 
     def add_program_line(self, line: str):
         """Add a line to the program."""
         if line != "":
-            self.program += line + "\n"
+            self._program.append(line)
+
+    @property
+    def program(self) -> str:
+        """Get the program as a string."""
+        return "\n".join(self._program)
 
     def reset(self):
         """Clear the program."""
-        self.program = ""
+        self._program.clear()
 
     def solve(self, _: Puzzle) -> str:
         """Generate the solver program."""

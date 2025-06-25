@@ -10,11 +10,11 @@ from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 
 
-def compass_constraint(r: int, c: int, pos: str, num: Union[int, str]) -> str:
+def compass_constraint(r: int, c: int, label: str, num: Union[int, str]) -> str:
     """Generate a compass constraint."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
     constraint = {"sudoku_4": f"R < {r}", "sudoku_6": f"C < {c}", "sudoku_7": f"R > {r}", "sudoku_5": f"C > {c}"}
-    rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[pos]} }} != {num}."
+    rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[label]} }} != {num}."
 
     return rule.strip()
 
@@ -51,11 +51,11 @@ class CompassSolver(Solver):
                 grid_src_color_connected((r, c), exclude_cells=current_excluded, color=None, adj_type="edge")
             )
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
-            if pos and isinstance(num, int):
-                self.add_program_line(compass_constraint(r, c, pos, num))
+            validate_type(label, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
+            if label and isinstance(num, int):
+                self.add_program_line(compass_constraint(r, c, label, num))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
@@ -67,7 +67,7 @@ class CompassSolver(Solver):
                 self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))

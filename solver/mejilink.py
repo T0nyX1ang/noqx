@@ -57,9 +57,9 @@ class MejilinkSolver(Solver):
             for c in range(puzzle.col):
                 edges[Point(r, c, Direction.TOP)] = True
 
-        for (r, c, d, pos), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
-            if pos == "delete" and not draw:
+        for (r, c, d, label), draw in puzzle.edge.items():
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            if label == "delete" and not draw:
                 edges[Point(r, c, d)] = False
 
         areas = full_bfs(puzzle.row, puzzle.col, edges)

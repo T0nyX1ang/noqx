@@ -56,9 +56,9 @@ class MyopiaSolver(Solver):
         self.add_program_line(single_loop(color="myopia"))
         self.add_program_line(convert_direction_to_edge())
 
-        for (r, c, d, pos), symbol_name in puzzle.symbol.items():
+        for (r, c, d, label), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
-            validate_type(pos, "multiple")
+            validate_type(label, "multiple")
             symbol, style = symbol_name.split("__")
             style = int(style)
             validate_type(symbol, "arrow_cross")
@@ -68,7 +68,7 @@ class MyopiaSolver(Solver):
             self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_top", size=2))
         self.add_program_line(display(item="edge_left", size=2))

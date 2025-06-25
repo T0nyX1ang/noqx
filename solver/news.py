@@ -49,9 +49,9 @@ class NewsSolver(Solver):
             fail_false(style in ["4", "7", "8"], f"Invalid symbol at ({r}, {c}).")
             self.add_program_line(f"white({r}, {c}).")
 
-        for (r, c, d, pos), letter in puzzle.text.items():
+        for (r, c, d, label), letter in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(letter in ("N", "E", "W", "S"), f"Clue at ({r}, {c}) must be in 'NEWS'.")
             self.add_program_line(f"number({r}, {c}, {news_dict[str(letter)]}).")
 
@@ -62,6 +62,6 @@ class NewsSolver(Solver):
     def refine(self, solution: Puzzle) -> Puzzle:
         """Refine the solution."""
         rev_news_dict = {1: "N", 2: "E", 3: "W", 4: "S"}
-        for (r, c, d, pos), num in solution.text.items():
-            solution.text[Point(r, c, d, pos)] = rev_news_dict[int(num)]
+        for (r, c, d, label), num in solution.text.items():
+            solution.text[Point(r, c, d, label)] = rev_news_dict[int(num)]
         return solution

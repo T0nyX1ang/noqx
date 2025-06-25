@@ -1,9 +1,9 @@
 """The Coral solver."""
 
-from collections import Counter
+from typing import List, Union
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Direction, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import border_color_connected, grid_color_connected
@@ -40,19 +40,21 @@ class CoralSolver(Solver):
         self.reset()
         top_clues = {}
         for c in range(puzzle.col):
-            top_clues[c] = tuple(
-                clue
-                for (r1, c1, d1, pos1), clue in puzzle.text.items()
-                if r1 <= -1 and c1 == c and d1 == Direction.CENTER and pos1 == "normal"
-            )
+            r1 = -1
+            clue: List[Union[int, str]] = []
+            while (r1, c, Direction.CENTER, "normal") in puzzle.text:
+                clue.append(puzzle.text[Point(r1, c, Direction.CENTER, "normal")])
+                r1 -= 1
+            top_clues[c] = tuple(reversed(clue))
 
         left_clues = {}
         for r in range(puzzle.row):
-            left_clues[r] = tuple(
-                clue
-                for (r1, c1, d1, pos1), clue in puzzle.text.items()
-                if r1 == r and c1 <= -1 and d1 == Direction.CENTER and pos1 == "normal"
-            )
+            c1 = -1
+            clue: List[Union[int, str]] = []
+            while (r, c1, Direction.CENTER, "normal") in puzzle.text:
+                clue.append(puzzle.text[Point(r, c1, Direction.CENTER, "normal")])
+                c1 -= 1
+            left_clues[r] = tuple(reversed(clue))
 
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
@@ -64,16 +66,26 @@ class CoralSolver(Solver):
 
         for r, clue in left_clues.items():
             if clue:
-                for num, count in Counter(clue).items():
+                count_dict = {}  # Replace collections.Counter with manual counting
+                for num in clue:
+                    count_dict[num] = count_dict.get(num, 0) + 1
+
+                for num, count in count_dict.items():
                     self.add_program_line(f":- #count{{ C: grid({r}, C), len_horizontal({r}, C, {num}) }} != {count}.")
-                forbidden_len = ",".join([f"N != {x}" for x in Counter(clue).keys()])
+
+                forbidden_len = ",".join([f"N != {x}" for x in count_dict])
                 self.add_program_line(f":- grid({r}, C), len_horizontal({r}, C, N), {forbidden_len}.")
 
         for c, clue in top_clues.items():
             if clue:
-                for num, count in Counter(clue).items():
+                count_dict = {}  # Replace collections.Counter with manual counting
+                for num in clue:
+                    count_dict[num] = count_dict.get(num, 0) + 1
+
+                for num, count in count_dict.items():
                     self.add_program_line(f":- #count{{ R: grid(R, {c}), len_vertical(R, {c}, {num}) }} != {count}.")
-                forbidden_len = ",".join([f"N != {x}" for x in Counter(clue).keys()])
+
+                forbidden_len = ",".join([f"N != {x}" for x in count_dict])
                 self.add_program_line(f":- grid(R, {c}), len_vertical(R, {c}, N), {forbidden_len}.")
 
         for (r, c, _, _), color in puzzle.surface.items():

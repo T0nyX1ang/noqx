@@ -60,15 +60,15 @@ class TetrominousSolver(Solver):
             shape_dict[o_name] = i
             self.add_program_line(general_shape("omino_4", i, o_shape, color="grid", adj_type="edge"))
 
-        for (r, c, d, pos), shape_name in puzzle.text.items():
+        for (r, c, d, label), shape_name in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(shape_name in shape_dict, f"Shape {shape_name} is not defined!")
             t_be = tag_encode("belong_to_shape", "omino_4", "grid")
             self.add_program_line(f":- not {t_be}({r}, {c}, {shape_dict[str(shape_name)]}, _).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))

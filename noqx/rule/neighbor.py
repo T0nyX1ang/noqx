@@ -121,7 +121,7 @@ def area_same_color(color: str = "black") -> str:
     return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."
 
 
-def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Point, bool]) -> str:
+def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple[int, int, str, str], bool]) -> str:
     """Generates a fact for the border of an area."""
     edges = set()
     src_cells = set(src_cells)

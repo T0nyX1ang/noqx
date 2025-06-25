@@ -32,9 +32,9 @@ class CreekSolver(Solver):
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(grid_color_connected(color="not gray"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(creek_covering(num, r, c, color="gray"))
 

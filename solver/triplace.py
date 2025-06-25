@@ -25,9 +25,9 @@ class TriplaceSolver(Solver):
         self.reset()
         fail_false((puzzle.row * puzzle.col - len(puzzle.symbol)) % 3 == 0, "The grid cannot be divided into 3-ominoes!")
         sums: List[Tuple[int, List[Tuple[int, int]]]] = []
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            if pos == "sudoku_1" and isinstance(num, int):
+            if label == "sudoku_1" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = c + 1
                 while cur < puzzle.col and not puzzle.symbol.get(Point(r, cur, Direction.CENTER)):
@@ -37,7 +37,7 @@ class TriplaceSolver(Solver):
                 fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if pos == "sudoku_2" and isinstance(num, int):
+            if label == "sudoku_2" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = r + 1
                 while cur < puzzle.row and not puzzle.symbol.get(Point(cur, c, Direction.CENTER)):
@@ -56,13 +56,13 @@ class TriplaceSolver(Solver):
         for i, o_shape in enumerate(OMINOES[3].values()):
             self.add_program_line(general_shape("omino_3", i, o_shape, color="grid", adj_type="edge"))
 
-        for (r, c, d, pos), symbol_name in puzzle.symbol.items():
+        for (r, c, d, label), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
             fail_false(symbol_name.startswith("kakuro"), f"Invalid symbol at ({r}, {c}).")
             self.add_program_line(f"hole({r}, {c}).")
 
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
-                prefix = "not " if (Point(r1, c1, d, pos), symbol_name) in puzzle.symbol.items() else ""
+                prefix = "not " if (Point(r1, c1, d, label), symbol_name) in puzzle.symbol.items() else ""
                 direc = "left" if c1 != c else "top"
                 self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
 
@@ -79,7 +79,7 @@ class TriplaceSolver(Solver):
             area_id += 1
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))

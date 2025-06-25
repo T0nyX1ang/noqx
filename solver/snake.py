@@ -57,9 +57,9 @@ class SnakeSolver(Solver):
         self.add_program_line(avoid_rect(2, 2, color="gray"))
         self.add_program_line(simple_shade_path(color="gray"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
                 self.add_program_line(count(num, color="gray", _type="col", _id=c))

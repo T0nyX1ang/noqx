@@ -55,9 +55,9 @@ class LookAirSolver(Solver):
         self.add_program_line(square_size(color="gray"))
         self.add_program_line(avoid_same_size_square_see(color="gray"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent(num, (r, c), color="gray", adj_type=4))
 

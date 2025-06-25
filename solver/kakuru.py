@@ -29,9 +29,9 @@ class KakuruSolver(Solver):
         self.add_program_line(adjacent(_type=8))
         self.add_program_line(avoid_num_adjacent(adj_type=8))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f":- number(_, _, N), {{ grid(R, C): number(R, C, N), adj_8(R, C, {r}, {c}) }} > 1.")
             if isinstance(num, int):
                 self.add_program_line(f":- #sum {{ N, R, C: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {num}.")

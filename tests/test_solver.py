@@ -1,10 +1,11 @@
 """Test all solvers in Noqx."""
 
 import logging
+import pkgutil
 import unittest
 
 from noqx.clingo import Config, run_solver
-from noqx.manager import list_solver_metadata, load_solvers
+from noqx.manager import list_solver_metadata, load_solver
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -19,7 +20,9 @@ from solver.nagare import nagare_wind
 
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.CRITICAL)
 
-load_solvers("solver")
+for module_info in pkgutil.iter_modules(["solver"]):
+    load_solver("solver", module_info.name)
+
 metadata = list_solver_metadata()
 
 
@@ -136,3 +139,8 @@ class TestExtraFunction(unittest.TestCase):
     def test_reachable_rules(self):
         """Test reachable rules."""
         self.assertRaises(ValueError, count_reachable_src, 0, (0, 0), "unknown")
+
+    def test_repeated_imports(self):
+        """Test repeated imports."""
+        self.assertRaises(ValueError, load_solver, "solver", "aqre")
+        self.assertRaises(ValueError, load_solver, "solver", "yinyang")

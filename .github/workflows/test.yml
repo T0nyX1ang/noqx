@@ -39,7 +39,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run tests
-        run: uv run coverage run -m --branch unittest
+        run: uv run coverage run -m --branch unittest -vv
 
       - name: Export coverage report
         run: uv run coverage xml

@@ -1,40 +1,34 @@
 """Initializations of the base encodings."""
 
-from abc import ABC
-from enum import Enum, Flag, auto
-from typing import Any, Dict, NamedTuple, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 
-class Color(Flag):
+class Color:
     """Enumeration for colors."""
 
-    GREEN = auto()
-    GRAY = auto()
-    BLACK = auto()
-    DARK = GRAY | BLACK
+    GREEN: int = 0
+    GRAY: int = 1
+    BLACK: int = 2
+    DARK: Tuple[int, int] = (GRAY, BLACK)
 
 
-class Direction(Enum):
+class Direction:
     """Enumeration for directions."""
 
-    CENTER = "center"
-    TOP = "top"
-    LEFT = "left"
-    TOP_LEFT = "top_left"
-    DIAG_UP = "diag_up"
-    DIAG_DOWN = "diag_down"
+    CENTER: str = "center"
+    TOP: str = "top"
+    LEFT: str = "left"
+    TOP_LEFT: str = "top_left"
+    DIAG_UP: str = "diag_up"
+    DIAG_DOWN: str = "diag_down"
 
 
-class Point(NamedTuple):
-    """A point with row number, column number, direction and inner position."""
-
-    r: int
-    c: int
-    d: Direction = Direction.CENTER
-    pos: str = "normal"
+def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> Tuple[int, int, str, str]:
+    """Create a point tuple with row, column, direction, and label."""
+    return (r, c, d, label)
 
 
-class Puzzle(ABC):
+class Puzzle:
     """Base class for puzzle encodings."""
 
     def __init__(self, name: str, content: str, param: Optional[Dict[str, Any]] = None):
@@ -47,11 +41,11 @@ class Puzzle(ABC):
         self.row: int = 0
         self.margin: Tuple[int, int, int, int] = (0, 0, 0, 0)  # top, bottom, left, right
 
-        self.surface: Dict[Point, Color] = {}
-        self.text: Dict[Point, Union[int, str]] = {}
-        self.symbol: Dict[Point, str] = {}
-        self.edge: Dict[Point, bool] = {}
-        self.line: Dict[Point, bool] = {}
+        self.surface: Dict[Tuple[int, int, str, str], int] = {}
+        self.text: Dict[Tuple[int, int, str, str], Union[int, str]] = {}
+        self.symbol: Dict[Tuple[int, int, str, str], str] = {}
+        self.edge: Dict[Tuple[int, int, str, str], bool] = {}
+        self.line: Dict[Tuple[int, int, str, str], bool] = {}
 
     def clear(self):
         """Clear the puzzle structure."""

@@ -32,9 +32,9 @@ class ContextSolver(Solver):
         self.add_program_line(avoid_adjacent_color(color="gray", adj_type=4))
         self.add_program_line(grid_color_connected(color="not gray", adj_type=4, grid_size=(puzzle.row, puzzle.col)))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f":- not gray({r}, {c}), #count {{ R, C: adj_4({r}, {c}, R, C), gray(R, C) }} != {num}.")
             self.add_program_line(f":- gray({r}, {c}), #count {{ R, C: adj_x({r}, {c}, R, C), gray(R, C) }} != {num}.")

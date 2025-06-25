@@ -45,9 +45,9 @@ class BorderBlockSolver(Solver):
             self.add_program_line(f"dot({r}, {c}).")
 
         tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-        for (r, c, d, pos), letter in puzzle.text.items():
+        for (r, c, d, label), letter in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if letter != "?":
                 self.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
 
@@ -60,7 +60,7 @@ class BorderBlockSolver(Solver):
                     self.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))

@@ -31,9 +31,9 @@ class AquapelagoSolver(Solver):
         self.add_program_line(avoid_rect(2, 2, color="not black"))
         self.add_program_line(grid_color_connected(color="not black", adj_type=4, grid_size=(puzzle.row, puzzle.col)))
 
-        for (r, c, d, tp), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(tp, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(grid_src_color_connected((r, c), color="black", adj_type="x"))
                 self.add_program_line(count_reachable_src(num, (r, c), color="black", adj_type="x"))

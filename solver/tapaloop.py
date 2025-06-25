@@ -1,6 +1,6 @@
 """The Tapa-like Loop solver."""
 
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
@@ -12,90 +12,13 @@ from noqx.rule.reachable import grid_color_connected
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
-pattern_ref: Dict[Tuple[int, ...], List[int]] = {}
-pattern_idx: Dict[Tuple[int, ...], int] = {}
-
-
-def single_shape(*shape_d: Optional[int]) -> Optional[str]:
-    """Returns the shape of the surroundings."""
-    # sum should be 0 or 2
-    n_edge = sum(0 if x is None else x for x in shape_d)
-    if not 0 <= n_edge <= 2:
-        return None
-    remain = 1 if n_edge == 1 else 0
-    shape_str = "".join(map(str, [remain if x is None else x for x in shape_d]))
-    return shape_str
-
-
-def parse_shape_clue(inner: Tuple[int, ...], outer: Tuple[int, ...]) -> Optional[Tuple[int, ...]]:
-    """Parse the shape of surroundings. Orders are in the `direction` array."""
-    shapes: List[Optional[str]] = [None for _ in range(8)]
-    shapes[0] = single_shape(outer[0], None, inner[0], inner[7])
-    shapes[1] = single_shape(inner[0], None, inner[1], 0)
-    shapes[2] = single_shape(inner[1], outer[1], None, inner[2])
-    shapes[3] = single_shape(0, inner[2], None, inner[3])
-    shapes[4] = single_shape(inner[4], inner[3], outer[2], None)
-    shapes[5] = single_shape(inner[5], 0, inner[4], None)
-    shapes[6] = single_shape(None, inner[6], inner[5], outer[3])
-    shapes[7] = single_shape(None, inner[7], 0, inner[6])
-
-    if None in shapes:
-        return None
-
-    if sum(inner) == 8:  # shading is all True
-        return (8,)
-
-    # choose a 0 to start
-    idx = 0
-    if sum(inner) != 0:
-        while inner[idx] == 0 or inner[(idx + 7) % 8] == 1:
-            idx += 1
-
-    clues = []
-    curr_num = 0
-    for i in range(idx, idx + 8):
-        e, s = inner[i % 8], shapes[i % 8]
-        if e:
-            curr_num += 1
-        else:
-            if curr_num > 0:
-                clues.append(curr_num + 1)
-            elif s != "0000":  # outer loop in corner
-                clues.append(1)
-            curr_num = 0
-
-    if curr_num > 0:  # pragma: no cover
-        clues.append(curr_num)  # it seems that this is never reached, but needs validation
-
-    if not clues:
-        clues = (0,)
-
-    return tuple(sorted(clues))
+pattern_ref = "())*)**+)**+*++,-.././/0-.././/0--....//..////001122223311222233--....//..////0044555566445555661!2!2!3!2!3!3!7!8!9!9!:!8!9!9!:!-.-.././././/0/045455656454556564444555555556666;;;;<<<<;;;;<<<<1111222222223333;;;;<<<<;;;;<<<<8!8!9!9!9!9!:!:!=!=!>!>!=!=!>!>!-.-.././././/0/045455656454556564444555555556666;;;;<<<<;;;;<<<<4444555555556666????@@@@????@@@@;!;!<!<!<!<!A!A!B!B!C!C!B!B!C!C!12!!23!!23!!37!!;<!!<A!!;<!!<A!!;;!!<<!!<<!!AA!!DD!!EE!!DD!!EE!!88!!99!!99!!::!!BB!!CC!!BB!!CC!!=!!!>!!!>!!!F!!!G!!!H!!!G!!!H!!!-../-.././/0.//045564556455645564455445555665566;;<<;;<<;;<<;;<<4455445555665566??@@??@@??@@??@@;!<!;!<!<!A!<!A!B!C!B!C!B!C!B!C!4545454556565656?@?@?@?@?@?@?@?@????????@@@@@@@@IIIIIIIIIIIIIIII;;;;;;;;<<<<<<<<IIIIIIIIIIIIIIIIB!B!B!B!C!C!C!C!J!J!J!J!J!J!J!J!1212121223232323;<;<;<;<;<;<;<;<;;;;;;;;<<<<<<<<DDDDDDDDDDDDDDDD;;;;;;;;<<<<<<<<IIIIIIIIIIIIIIIID!D!D!D!E!E!E!E!K!K!K!K!K!K!K!K!89!!89!!9:!!9:!!BC!!BC!!BC!!BC!!BB!!BB!!CC!!CC!!KK!!KK!!KK!!KK!!==!!==!!>>!!>>!!JJ!!JJ!!JJ!!JJ!!G!!!G!!!H!!!H!!!L!!!L!!!L!!!L!!!-../-.././/0.//045564556455645564455445555665566;;<<;;<<;;<<;;<<4455445555665566??@@??@@??@@??@@;!<!;!<!<!A!<!A!B!C!B!C!B!C!B!C!4545454556565656?@?@?@?@?@?@?@?@????????@@@@@@@@IIIIIIIIIIIIIIII;;;;;;;;<<<<<<<<IIIIIIIIIIIIIIIIB!B!B!B!C!C!C!C!J!J!J!J!J!J!J!J!4545454556565656?@?@?@?@?@?@?@?@????????@@@@@@@@IIIIIIIIIIIIIIII????????@@@@@@@@MMMMMMMMMMMMMMMMI!I!I!I!N!N!N!N!O!O!O!O!O!O!O!O!;<!!;<!!<A!!<A!!IN!!IN!!IN!!IN!!II!!II!!NN!!NN!!PP!!PP!!PP!!PP!!BB!!BB!!CC!!CC!!OO!!OO!!OO!!OO!!J!!!J!!!Q!!!Q!!!R!!!R!!!R!!!R!!!1223!!!!2337!!!!;<<A!!!!;<<A!!!!;;<<!!!!<<AA!!!!DDEE!!!!DDEE!!!!;;<<!!!!<<AA!!!!IINN!!!!IINN!!!!D!E!!!!!E!S!!!!!K!T!!!!!K!T!!!!!;<;<!!!!<A<A!!!!ININ!!!!ININ!!!!IIII!!!!NNNN!!!!PPPP!!!!PPPP!!!!DDDD!!!!EEEE!!!!PPPP!!!!PPPP!!!!K!K!!!!!T!T!!!!!U!U!!!!!U!U!!!!!8989!!!!9:9:!!!!BCBC!!!!BCBC!!!!BBBB!!!!CCCC!!!!KKKK!!!!KKKK!!!!BBBB!!!!CCCC!!!!OOOO!!!!OOOO!!!!K!K!!!!!T!T!!!!!V!V!!!!!V!V!!!!!=>!!!!!!>F!!!!!!JQ!!!!!!JQ!!!!!!JJ!!!!!!QQ!!!!!!UU!!!!!!UU!!!!!!GG!!!!!!HH!!!!!!RR!!!!!!RR!!!!!!L!!!!!!!W!!!!!!!X!!!!!!!X!!!!!!!-.././/0-.././/012232337!!!!!!!!4455556644555566889999::!!!!!!!!4455556644555566;;<<<<AA!!!!!!!!;!<!<!A!;!<!<!A!=!>!>!F!!!!!!!!!4545565645455656;<;<<A<A!!!!!!!!????@@@@????@@@@BBBBCCCC!!!!!!!!;;;;<<<<;;;;<<<<DDDDEEEE!!!!!!!!B!B!C!C!B!B!C!C!G!G!H!H!!!!!!!!!4545565645455656;<;<<A<A!!!!!!!!????@@@@????@@@@BBBBCCCC!!!!!!!!????@@@@????@@@@IIIINNNN!!!!!!!!I!I!N!N!I!I!N!N!J!J!Q!Q!!!!!!!!!;<!!<A!!;<!!<A!!DE!!ES!!!!!!!!!!II!!NN!!II!!NN!!KK!!TT!!!!!!!!!!BB!!CC!!BB!!CC!!KK!!TT!!!!!!!!!!J!!!Q!!!J!!!Q!!!L!!!W!!!!!!!!!!!4556455645564556;<<A;<<A!!!!!!!!??@@??@@??@@??@@BBCCBBCC!!!!!!!!??@@??@@??@@??@@IINNIINN!!!!!!!!I!N!I!N!I!N!I!N!J!Q!J!Q!!!!!!!!!?@?@?@?@?@?@?@?@ININININ!!!!!!!!MMMMMMMMMMMMMMMMOOOOOOOO!!!!!!!!IIIIIIIIIIIIIIIIPPPPPPPP!!!!!!!!O!O!O!O!O!O!O!O!R!R!R!R!!!!!!!!!;<;<;<;<;<;<;<;<DEDEDEDE!!!!!!!!IIIIIIIIIIIIIIIIKKKKKKKK!!!!!!!!IIIIIIIIIIIIIIIIPPPPPPPP!!!!!!!!P!P!P!P!P!P!P!P!U!U!U!U!!!!!!!!!BC!!BC!!BC!!BC!!KT!!KT!!!!!!!!!!OO!!OO!!OO!!OO!!VV!!VV!!!!!!!!!!JJ!!JJ!!JJ!!JJ!!UU!!UU!!!!!!!!!!R!!!R!!!R!!!R!!!X!!!X!!!!!!!!!!!1223122312231223899:899:!!!!!!!!;;<<;;<<;;<<;;<<==>>==>>!!!!!!!!;;<<;;<<;;<<;;<<BBCCBBCC!!!!!!!!D!E!D!E!D!E!D!E!G!H!G!H!!!!!!!!!;<;<;<;<;<;<;<;<BCBCBCBC!!!!!!!!IIIIIIIIIIIIIIIIJJJJJJJJ!!!!!!!!DDDDDDDDDDDDDDDDKKKKKKKK!!!!!!!!K!K!K!K!K!K!K!K!L!L!L!L!!!!!!!!!;<;<;<;<;<;<;<;<BCBCBCBC!!!!!!!!IIIIIIIIIIIIIIIIJJJJJJJJ!!!!!!!!IIIIIIIIIIIIIIIIOOOOOOOO!!!!!!!!P!P!P!P!P!P!P!P!R!R!R!R!!!!!!!!!DE!!DE!!DE!!DE!!KT!!KT!!!!!!!!!!PP!!PP!!PP!!PP!!UU!!UU!!!!!!!!!!KK!!KK!!KK!!KK!!VV!!VV!!!!!!!!!!U!!!U!!!U!!!U!!!X!!!X!!!!!!!!!!!899:!!!!899:!!!!=>>F!!!!!!!!!!!!BBCC!!!!BBCC!!!!GGHH!!!!!!!!!!!!BBCC!!!!BBCC!!!!JJQQ!!!!!!!!!!!!K!T!!!!!K!T!!!!!L!W!!!!!!!!!!!!!BCBC!!!!BCBC!!!!JQJQ!!!!!!!!!!!!OOOO!!!!OOOO!!!!RRRR!!!!!!!!!!!!KKKK!!!!KKKK!!!!UUUU!!!!!!!!!!!!V!V!!!!!V!V!!!!!X!X!!!!!!!!!!!!!=>=>!!!!=>=>!!!!GHGH!!!!!!!!!!!!JJJJ!!!!JJJJ!!!!LLLL!!!!!!!!!!!!JJJJ!!!!JJJJ!!!!RRRR!!!!!!!!!!!!U!U!!!!!U!U!!!!!X!X!!!!!!!!!!!!!GH!!!!!!GH!!!!!!LW!!!!!!!!!!!!!!RR!!!!!!RR!!!!!!XX!!!!!!!!!!!!!!LL!!!!!!LL!!!!!!XX!!!!!!!!!!!!!!X!!!!!!!X!!!!!!!X!!!!!!!!!!!!!!!"  # fmt: skip  # formula: chr(pattern_idx.value()) + 40 (invalid patterns are "!")
+pattern_idx: Dict[Tuple[int, ...], int] = {(0,): 0, (1,): 1, (1, 1): 2, (1, 1, 1): 3, (1, 1, 1, 1): 4, (2,): 5, (1, 2): 6, (1, 1, 2): 7, (1, 1, 1, 2): 8, (3,): 9, (1, 3): 10, (1, 1, 3): 11, (2, 2): 12, (1, 2, 2): 13, (1, 1, 2, 2): 14, (1, 1, 1, 3): 15, (4,): 16, (1, 4): 17, (1, 1, 4): 18, (2, 3): 19, (1, 2, 3): 20, (5,): 21, (1, 5): 22, (2, 2, 2): 23, (1, 2, 2, 2): 24, (1, 1, 2, 3): 25, (2, 4): 26, (1, 2, 4): 27, (3, 3): 28, (1, 3, 3): 29, (1, 1, 5): 30, (6,): 31, (1, 6): 32, (2, 2, 3): 33, (2, 5): 34, (3, 4): 35, (7,): 36, (2, 2, 2, 2): 37, (1, 2, 2, 3): 38, (2, 2, 4): 39, (2, 3, 3): 40, (1, 2, 5): 41, (2, 6): 42, (1, 1, 3, 3): 43, (1, 3, 4): 44, (3, 5): 45, (4, 4): 46, (1, 7): 47, (8,): 48}  # fmt: skip
 
 
 def tapaloop_pattern_rule() -> str:
     """Generate pattern reference dictionary and tapaloop pattern map."""
-    for i in range(4096):
-        pat = bin(i)[2:].zfill(12)
-        inner = tuple(map(int, pat[:8]))
-        outer = tuple(map(int, pat[8:]))
-        parsed = parse_shape_clue(inner, outer)
-
-        if not parsed:
-            continue
-
-        if pattern_ref.get(parsed):
-            pattern_ref[parsed].append(i)
-        else:
-            pattern_ref[parsed] = [i]
-
-    rule = ""
-    for i, (pat, vals) in enumerate(pattern_ref.items()):
-        pattern_idx[pat] = i
-        for v in vals:
-            rule += f"valid_tapaloop_map({i}, {v}).\n"
-
-    return rule.strip()
+    return "\n".join(f"valid_tapaloop_map({ord(pattern_ref[v]) - 40}, {v})." for v in range(4096) if pattern_ref[v] != "!")
 
 
 def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
@@ -113,14 +36,11 @@ def clue_in_target(clue: List[Union[int, str]], target: List[int]) -> bool:
 def parse_clue(r: int, c: int, clue: List[Union[int, str]]) -> str:
     """Parse tapa clue to binary pattern."""
     result: Set[int] = set()
-    for pattern in filter(lambda x: len(x) == len(clue), pattern_ref.keys()):
+    for pattern in filter(lambda x: len(x) == len(clue), pattern_idx.keys()):
         if clue_in_target(clue, list(pattern)):
             result.add(pattern_idx[pattern])
 
-    rule = ""
-    for num in result:
-        rule += f"valid_tapaloop({r}, {c}, {num}).\n"
-    return rule.strip()
+    return "\n".join(f"valid_tapaloop({r}, {c}, {num})." for num in result)
 
 
 def direction_to_binary(r: int, c: int) -> str:
@@ -182,9 +102,9 @@ class TapaloopSolver(Solver):
         self.add_program_line(tapaloop_pattern_rule())
 
         clue_dict: Dict[Tuple[int, int], List[Union[int, str]]] = {}
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            fail_false(isinstance(pos, str) and pos.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
+            fail_false(isinstance(label, str) and label.startswith("tapa"), f"Clue at {r, c} should be set to 'Tapa' sub.")
 
             if (r, c) not in clue_dict:
                 self.add_program_line(f"black({r}, {c}).")

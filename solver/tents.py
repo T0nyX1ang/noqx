@@ -1,6 +1,5 @@
 """The Tents solver."""
 
-import itertools
 from typing import List, Tuple
 
 from noqx.manager import Solver
@@ -20,10 +19,14 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
         f"{{ map_{r}_{c}(R, C): adj_{adj_type}(R, C, {r}, {c}), {color}(R, C) }} = 1 :- grid({r}, {c})."
         for r, c in known_cells
     )  # n rules are generated
-    constraints = "\n".join(
-        f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C). " for (r1, c1), (r2, c2) in itertools.combinations(known_cells, 2)
-    )  # n * (n - 1) / 2 constraints are generated
-    return rules + "\n" + constraints
+
+    constraints = ""
+    for i, (r1, c1) in enumerate(known_cells):
+        for j in range(i + 1, len(known_cells)):
+            r2, c2 = known_cells[j]
+            constraints += f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C).\n"
+
+    return rules + "\n" + constraints.strip()
 
 
 class TentsSolver(Solver):
@@ -46,9 +49,9 @@ class TentsSolver(Solver):
         self.add_program_line(adjacent(_type=8))
         self.add_program_line(avoid_adjacent_color(color="tents__2", adj_type=8))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int) and isinstance(num, int):
                 self.add_program_line(count(num, color="tents__2", _type="col", _id=c))

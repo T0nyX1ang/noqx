@@ -33,14 +33,14 @@ class FourCellsSolver(Solver):
         self.add_program_line(all_shapes("omino_4", color="grid"))
         self.add_program_line(count_shape(target=puzzle.row * puzzle.col // 4, name="omino_4", color="grid"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent_edges(num, (r, c)))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
