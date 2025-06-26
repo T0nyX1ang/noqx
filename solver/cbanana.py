@@ -42,7 +42,7 @@ def bulb_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
     return initial + "\n" + propagation
 
 
-def count_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
+def count_same_color_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
     """
     Generate a constraint to count the reachable cells starting from a source.
 
@@ -56,7 +56,7 @@ def count_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "bl
     return f":- {color}({src_r}, {src_c}), {{ {tag}({src_r}, {src_c}, R, C) }} {rop} {num}."
 
 
-def count_rect_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+def count_same_color_rect_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate a cell-relevant constraint for shikaku.
 
@@ -100,9 +100,9 @@ class CBananaSolver(Solver):
             validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(grid_src_same_color_connected(src_cell=(r, c), color="white"))
-                self.add_program_line(count_reachable_src(num, src_cell=(r, c), color="white"))
+                self.add_program_line(count_same_color_reachable_src(num, src_cell=(r, c), color="white"))
                 self.add_program_line(bulb_src_same_color_connected(src_cell=(r, c), color="gray"))
-                self.add_program_line(count_rect_src(num, src_cell=(r, c), color="gray"))
+                self.add_program_line(count_same_color_rect_src(num, src_cell=(r, c), color="gray"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             if color in Color.DARK:
