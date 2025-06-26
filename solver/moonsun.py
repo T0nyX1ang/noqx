@@ -29,7 +29,7 @@ def moon_sun_area() -> str:
 
     constraint = ":- area_adj_loop(A1, A2), sun_area(A1), sun_area(A2).\n"
     constraint += ":- area_adj_loop(A1, A2), not sun_area(A1), not sun_area(A2).\n"
-    return (rule + extra + constraint).strip()
+    return rule + extra + constraint
 
 
 class MoonSunSolver(Solver):

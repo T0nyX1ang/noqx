@@ -27,7 +27,7 @@ def loop_intersect_connected(color: str = "black") -> str:
     rule = f'{tag}(R, C, "H") :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
     rule += f"{tag}(R, C, T) :- {tag}(R1, C1, T1), grid(R, C), {color}(R, C), adj_loop_intersect(R, C, T, R1, C1, T1).\n"
     rule += f":- grid(R, C), {color}(R, C), direction_type(T), not {tag}(R, C, T).\n"
-    return rule.strip()
+    return rule
 
 
 class PipeLinkSolver(Solver):

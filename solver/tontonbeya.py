@@ -20,7 +20,7 @@ def tonton_cluster_rule() -> str:
     rule += f":- have_circle(A), have_triangle(A), N1 = {cnt_circle}, N2 = {cnt_triangle}, N1 != N2.\n"
     rule += f":- have_circle(A), have_square(A), N1 = {cnt_circle}, N2 = {cnt_square}, N1 != N2.\n"
     rule += f":- have_triangle(A), have_square(A), N1 = {cnt_triangle}, N2 = {cnt_square}, N1 != N2.\n"
-    return rule.strip()
+    return rule
 
 
 def tonton_adjacent_rule(adj_type: int = 4, color: str = "black") -> str:
@@ -29,7 +29,7 @@ def tonton_adjacent_rule(adj_type: int = 4, color: str = "black") -> str:
     tag = tag_encode("area_adj", adj_type, color)
     rule = f"{tag}(A1, A) :- {tag}(A, A1), A < A1.\n"
     rule += f":- have_{shape_dict[color]}(A), #count {{ A1: {tag}(A, A1) }} != 1.\n"
-    return rule.strip()
+    return rule
 
 
 class TontonbeyaSolver(Solver):

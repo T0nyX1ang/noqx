@@ -18,7 +18,7 @@ def distance_in_area(grid_size: Tuple[int, int]) -> str:
     # The following r + c upper bound is not rigorous.
     # TODO Actually it's better to pre-calculate the distance in python for this puzzle.
     rule += f"dist(R, C, R0, C0, N) :- grid(R, C), grid(R0, C0), N < {r + c}, (R0, C0) != (R, C), area(A, R, C), area(A, R0, C0), N - 1 = #min{{ N1 : adj_4(R0, C0, R1, C1), area(A, R1, C1), dist(R, C, R1, C1, N1) }}.\n"
-    return rule.strip()
+    return rule
 
 
 def mannequin_constraint(color: str = "black") -> str:
@@ -30,7 +30,7 @@ def mannequin_constraint(color: str = "black") -> str:
     rule = f"area_num(A, N) :- area(A, R0, C0), area(A, R1, C1), {color}(R0, C0), {color}(R1, C1), (R0, C0) < (R1, C1), dist(R0, C0, R1, C1, N).\n"
     rule += ":- area(A, _, _), area_num(A, N0), area_num(A, N1), N0 < N1.\n"
     rule += ":- area_adj_4(A1, A2), area_num(A1, N), area_num(A2, N).\n"
-    return rule.strip()
+    return rule
 
 
 class MannequinSolver(Solver):

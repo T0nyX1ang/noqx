@@ -18,7 +18,7 @@ def symmetry_hinge(color: str = "black") -> str:
 
     rule += ':- symmetry(R, C, R0, C0, "H"), not symmetry(R0 * 2 - 1 - R, C, R0, C0, "H").\n'
     rule += ':- symmetry(R, C, R0, C0, "V"), not symmetry(R, C0 * 2 - 1 - C, R0, C0, "V").\n'
-    return rule.strip()
+    return rule
 
 
 class HingeSolver(Solver):

@@ -73,7 +73,7 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     constraint += ':- grid(R, C), grid_out(R, C, "u"), not grid_in(R - 1, C, "d").\n'
     constraint += ':- grid(R, C), grid_out(R, C, "r"), not grid_in(R, C + 1, "l").\n'
     constraint += ':- grid(R, C), grid_out(R, C, "d"), not grid_in(R + 1, C, "u").\n'
-    return constraint.strip()
+    return constraint
 
 
 def count_area_pass(target: int, _id: int) -> str:
@@ -102,7 +102,7 @@ def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
     if len(outside_item) > 0:
         constraint += f":- {outside_item}(R, C), not outside_loop(R, C).\n"
 
-    return (rule + constraint).strip()
+    return rule + constraint
 
 
 def loop_sign(color: str = "white") -> str:
@@ -115,7 +115,7 @@ def loop_sign(color: str = "white") -> str:
     for d1, d2 in ("lu", "ld", "ru", "rd", "lr", "ud"):
         rule += f'loop_sign(R, C, "{d1}{d2}") :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
 
-    return rule.strip()
+    return rule
 
 
 def loop_segment(src_cell: Tuple[int, int]) -> str:
@@ -138,7 +138,7 @@ def loop_segment(src_cell: Tuple[int, int]) -> str:
     rule += f'segment({r}, {c}, N1, N2, "V") :- loop_sign({r}, {c}, "ud"), N1 = {max_u}, N2 = {min_d}.\n'
     rule += f'segment({r}, {c}, N1, N2, "H") :- loop_sign({r}, {c}, "lr"), N1 = {max_l}, N2 = {min_r}.\n'
 
-    return rule.strip()
+    return rule
 
 
 def loop_straight(color: str = "white") -> str:
@@ -150,7 +150,7 @@ def loop_straight(color: str = "white") -> str:
     rule = ""
     for d1, d2 in ("lr", "ud"):
         rule += f'straight(R, C) :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
-    return rule.strip()
+    return rule
 
 
 def loop_turning(color: str = "white") -> str:
@@ -162,7 +162,7 @@ def loop_turning(color: str = "white") -> str:
     rule = ""
     for d1, d2 in ("lu", "ld", "ru", "rd"):
         rule += f'turning(R, C) :- grid(R, C), {color}(R, C), grid_direction(R, C, "{d1}"), grid_direction(R, C, "{d2}").\n'
-    return rule.strip()
+    return rule
 
 
 def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) -> str:
@@ -178,4 +178,4 @@ def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) ->
         else:
             rule += f'edge_{d}(R, C) :- grid_direction({new_row}, C, "{label}").\n'
 
-    return rule.strip()
+    return rule

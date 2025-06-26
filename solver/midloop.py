@@ -32,7 +32,7 @@ def midloop_constraint(r: int, c: int, d: Direction) -> str:
     if d == Direction.LEFT:
         rule += f":- Cl = {max_l}, grid(_, Cl), Cr = {min_r}, grid(_, Cr), {c - 1} - Cl != Cr - {c}.\n"
 
-    return rule.strip()
+    return rule
 
 
 class MidLoopSolver(Solver):

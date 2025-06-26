@@ -21,7 +21,7 @@ def bypass_area_edges() -> str:
     rule += 'bypass_area_edges(A, R, C, "r") :- area_border(A, R, C, "r"), not edge_left(R, C + 1).\n'
     rule += 'bypass_area_edges(A, R, C, "u") :- area_border(A, R, C, "u"), not edge_top(R, C).\n'
     rule += 'bypass_area_edges(A, R, C, "d") :- area_border(A, R, C, "d"), not edge_top(R + 1, C).\n'
-    return rule.strip()
+    return rule
 
 
 class MejilinkSolver(Solver):

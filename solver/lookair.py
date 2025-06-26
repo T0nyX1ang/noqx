@@ -15,7 +15,7 @@ def square_size(color: str = "black") -> str:
     )
     rule += f"square_size(R, C, N) :- grid(R, C), {color}(R, C), square_size(R, C - 1, N).\n"
     rule += f"square_size(R, C, N) :- grid(R, C), {color}(R, C), square_size(R - 1, C, N).\n"
-    return rule.strip()
+    return rule
 
 
 def avoid_same_size_square_see(color: str = "black") -> str:
@@ -29,7 +29,7 @@ def avoid_same_size_square_see(color: str = "black") -> str:
     rule += "up_square(R, C, R0) :- grid(R, C), not up_square(R, C, R - 1), up_square(R - 1, C, R0).\n"
     rule += ":- upleft(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
     rule += ":- up(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
-    return rule.strip()
+    return rule
 
 
 class LookAirSolver(Solver):

@@ -25,7 +25,7 @@ def len_segment_area(color: str = "grid") -> str:
 
     rule += f"area_len(A, L) :- {color}(R, C), area(A, R, C), len_horizontal(R, C, L).\n"
     rule += f"area_len(A, L) :- {color}(R, C), area(A, R, C), len_vertical(R, C, L).\n"
-    return rule.strip()
+    return rule
 
 
 class RailPoolSolver(Solver):

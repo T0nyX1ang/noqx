@@ -15,7 +15,7 @@ def uso_one_constraints(adj_type: int = 4, color: str = "black") -> str:
     rule += ":- clue(A, _, _, _), { wrong_clue(A, R, C) } != 1.\n"
     rule += f":- clue(A, R, C, N), not wrong_clue(A, R, C), {count_adj} != N.\n"
     rule += f":- clue(A, R, C, N), wrong_clue(A, R, C), {count_adj} = N.\n"
-    return rule.strip()
+    return rule
 
 
 class UsooneSolver(Solver):

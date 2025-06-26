@@ -28,7 +28,7 @@ def no_2x2_path_bit() -> str:
     rule += "no_2x2(R, C) :- grid(R, C), bit_range(B), not bit_same(R, C, B).\n"
     rule += "no_empty(R, C) :- grid(R, C), bit_range(B), not bit_no(R, C, B).\n"
     rule += ":- grid(R, C), no_empty(R, C), not no_2x2(R, C).\n"
-    return rule.strip()
+    return rule
 
 
 class NumlinSolver(Solver):

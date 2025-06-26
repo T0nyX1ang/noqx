@@ -23,7 +23,7 @@ def grid_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
     r, c = src_cell
     initial = f"{tag}({r}, {c}, {r}, {c}).\n"
     propagation = f"{tag}({r}, {c}, R, C) :- {tag_ls}({r}, {c}), {tag}({r}, {c}, R1, C1), grid(R, C), {tag_ls}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
-    return initial + propagation.strip()
+    return initial + propagation
 
 
 def bulb_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:

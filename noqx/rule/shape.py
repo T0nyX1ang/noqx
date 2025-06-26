@@ -166,7 +166,7 @@ def general_shape(
         if _type == "area":
             data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
-    return data.strip()
+    return data
 
 
 def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
@@ -246,7 +246,7 @@ def all_rect(color: str = "black", square: bool = False) -> str:
         constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
 
     data = rule + upleft + left + up + remain + constraint
-    return data.strip()
+    return data
 
 
 def all_rect_region(square: bool = False) -> str:

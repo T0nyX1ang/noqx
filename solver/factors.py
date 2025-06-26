@@ -16,7 +16,7 @@ def area_product_aggregate(_id: int, src_cells: Iterable[Tuple[int, int]]) -> st
             rule += f"area_product({_id}, {i}, N) :- number({r}, {c}, N).\n"
         else:
             rule += f"area_product({_id}, {i}, N1 * N2) :- area_product({_id}, {i - 1}, N1), number({r}, {c}, N2).\n"
-    return rule.strip()
+    return rule
 
 
 def number_exclusion(target: int, grid_size: int, _id: int) -> str:
@@ -25,7 +25,7 @@ def number_exclusion(target: int, grid_size: int, _id: int) -> str:
     for num in range(1, grid_size + 1):
         if target % num != 0:  # exclusion for non-factorable numbers
             rule += f":- area({_id}, R, C), number(R, C, {num}).\n"
-    return rule.strip()
+    return rule
 
 
 class FactorsSolver(Solver):

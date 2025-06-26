@@ -22,7 +22,7 @@ def len_segment(color: str = "black") -> str:
     rule += f"len_horizontal(R, C, N) :- nth_horizontal(R, C, 1), nth_horizontal(R, C + N - 1, N), not {color}(R, C + N).\n"
     rule += f"len_vertical(R, C, N) :- nth_vertical(R, C, 1), nth_vertical(R + N - 1, C, N), not {color}(R + N, C).\n"
 
-    return rule.strip()
+    return rule
 
 
 class CoralSolver(Solver):

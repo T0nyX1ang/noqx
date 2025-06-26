@@ -19,7 +19,7 @@ def avoid_diamond_pattern(color: str = "black") -> str:
     rule += f":- grid(R, C), not {color}(R, C), {color}(R - 1, C), {color}(R, C - 1), not grid(R + 1, C), {color}(R, C + 1).\n"
     rule += f":- grid(R, C), not {color}(R, C), {color}(R - 1, C), {color}(R, C - 1), {color}(R + 1, C), not grid(R, C + 1).\n"
 
-    return rule.strip()
+    return rule
 
 
 def limit_area_2x2_rect(limit: int, _id: int, color: str = "black") -> str:
@@ -60,7 +60,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
 
         i += 1
 
-    return rule.strip()
+    return rule
 
 
 def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:

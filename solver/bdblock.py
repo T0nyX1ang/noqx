@@ -14,7 +14,7 @@ def border_block_constraint() -> str:
     rule = f":- ndot(R, C), {{ {mutual} }} = 1.\n"
     rule += f":- ndot(R, C), {{ {mutual} }} > 2.\n"  # 0 or 2 connected edges
     rule += f":- dot(R, C), {{ {mutual} }} < 3.\n"
-    return rule.strip()
+    return rule
 
 
 class BorderBlockSolver(Solver):

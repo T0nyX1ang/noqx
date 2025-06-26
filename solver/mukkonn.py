@@ -33,7 +33,7 @@ def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
         rule += f':- grid_direction({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
-    return rule.strip()
+    return rule
 
 
 class MukkonnSolver(Solver):

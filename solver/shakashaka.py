@@ -58,7 +58,7 @@ def shaka() -> str:
     constraint += ":- grid(R, C), white(R, C), not rect_ul(R, C), not rect_l(R, C), not rect_u(R, C), not remain(R, C).\n"
 
     data = definition + rule_rect + rule_slant + constraint
-    return data.replace("not not ", "").strip()
+    return data.replace("not not ", "")
 
 
 def shade_shaka() -> str:

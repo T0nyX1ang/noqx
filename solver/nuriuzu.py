@@ -16,7 +16,7 @@ def nuriuzu_constraint(glxr: int, glxc: int, adj_type: int = 4, color: str = "bl
     r, c = (glxr - 1) // 2, (glxc - 1) // 2
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
     rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1).\n"
-    return rule.strip()
+    return rule
 
 
 class NuriuzuSolver(Solver):
