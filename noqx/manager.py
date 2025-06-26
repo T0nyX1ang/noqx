@@ -115,7 +115,7 @@ class Solver:
     def add_program_line(self, line: str):
         """Add a line to the program."""
         if line != "":
-            self._program.append(line)
+            self._program.append(line.strip())
 
     @property
     def program(self) -> str:
