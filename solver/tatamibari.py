@@ -60,7 +60,7 @@ class TamamibariSolver(Solver):
             self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-        self.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
+        self.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
         self.add_program_line(avoid_region_border_crossover())
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
