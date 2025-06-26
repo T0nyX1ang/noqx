@@ -7,15 +7,19 @@ from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import bulb_src_color_connected, grid_src_color_connected
+from noqx.rule.reachable import bulb_src_color_connected
 from noqx.rule.shape import all_rect_region
 
 
 def count_family_photo_size(num: int, src_cell: Tuple[int, int], adj_type: Union[int, str] = "edge") -> str:
-    """Count the size of a family photo region."""
+    """
+    Count the size of a family photo region.
+
+    A bulb_src_color_connected rule should be defined first.
+    """
     src_r, src_c = src_cell
-    tag = tag_encode("reachable", "grid", "src", "adj", adj_type, None)
-    return f":- #count {{ (R, C): black(R, C), {tag}({src_r}, {src_c}, R, C) }} != {num}."
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, None)
+    return f":- #count {{ (R, C): black(R, C), {tag}({src_r}, {src_c}, {src_r}, C), {tag}({src_r}, {src_c}, R, {src_c}) }} != {num}."
 
 
 class FamilyPhotoSolver(Solver):
@@ -59,7 +63,6 @@ class FamilyPhotoSolver(Solver):
             validate_direction(r, c, d)
             validate_type(label, "normal")
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
-            self.add_program_line(grid_src_color_connected((r, c), color=None, adj_type="edge"))
 
             for r1, c1 in all_src:
                 self.add_program_line(f":- {tag}({r}, {c}, {r}, {c1}), {tag}({r1}, {c1}, {r}, {c1}).")
