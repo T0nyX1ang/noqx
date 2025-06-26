@@ -37,20 +37,25 @@ class UsotatamiSolver(Solver):
         self.add_program_line(avoid_region_border_crossover())
         self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
 
+        all_src = []
+        tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
-            self.add_program_line(f"clue({r}, {c}).")
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
+
+            for r1, c1 in all_src:
+                self.add_program_line(f":- {tag}({r}, {c}, {r}, {c1}), {tag}({r1}, {c1}, {r}, {c1}).")
+                self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if isinstance(num, int):
                 self.add_program_line(count_reachable_src(("ne", num), (r, c), main_type="bulb", color=None, adj_type="edge"))
 
+            all_src.append((r, c))
+
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
 
-        tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-        self.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
         self.add_program_line(display(item="edge_left", size=2))
         self.add_program_line(display(item="edge_top", size=2))
 

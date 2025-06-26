@@ -5,8 +5,8 @@ from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import bulb_src_color_connected, count_rect_src, grid_color_connected
-from noqx.rule.shape import all_rect, avoid_rect, no_rect
+from noqx.rule.reachable import bulb_src_color_connected, grid_color_connected
+from noqx.rule.shape import all_rect, avoid_rect, count_rect_size, no_rect
 
 
 class MochinyoroSolver(Solver):
@@ -36,15 +36,23 @@ class MochinyoroSolver(Solver):
         self.add_program_line(all_rect(color="green"))
         self.add_program_line(no_rect(color="black"))
 
+        all_src = []
+        tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")
         fail_false(len(puzzle.text) > 0, "No clues found.")
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
-            self.add_program_line(f"clue({r}, {c}).")
             self.add_program_line(bulb_src_color_connected((r, c), color="not black"))
+
+            for r1, c1 in all_src:
+                self.add_program_line(f":- {tag}({r}, {c}, {r}, {c1}), {tag}({r1}, {c1}, {r}, {c1}).")
+                self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
+
             if isinstance(num, int):
-                self.add_program_line(count_rect_src(num, (r, c), color="not black"))
+                self.add_program_line(count_rect_size(num, (r, c), color="not black"))
+
+            all_src.append((r, c))
 
         for (r, c, _, _), color in puzzle.surface.items():
             if color in Color.DARK:
@@ -52,8 +60,6 @@ class MochinyoroSolver(Solver):
             else:
                 self.add_program_line(f"not black({r}, {c}).")
 
-        tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")
-        self.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
         self.add_program_line(display(item="black"))
 
         return self.program

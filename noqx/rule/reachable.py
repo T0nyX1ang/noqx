@@ -157,30 +157,6 @@ def count_reachable_src(
     return f":- {{ {tag}({src_r}, {src_c}, R, C) }} {rop} {num}."
 
 
-def count_rect_src(
-    target: Union[int, Tuple[str, int]],
-    src_cell: Tuple[int, int],
-    color: Optional[str] = None,
-    adj_type: Union[int, str] = 4,
-) -> str:
-    """
-    Generate a constraint to count the reachable rectangular area starting from a source.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
-    if color is None:
-        validate_type(adj_type, ("edge",))
-
-    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
-    rop, num = target_encode(target)
-
-    src_r, src_c = src_cell
-    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
-    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
-
-    return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
-
-
 def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to avoid cells starting from unknown source.

@@ -327,6 +327,30 @@ def no_rect(color: str = "black") -> str:
     return initial + propagation + constraint
 
 
+def count_rect_size(
+    target: Union[int, Tuple[str, int]],
+    src_cell: Tuple[int, int],
+    color: Optional[str] = None,
+    adj_type: Union[int, str] = 4,
+) -> str:
+    """
+    Generate a constraint to count the size of a rectangular area starting from a source.
+
+    A bulb_src_color_connected rule should be defined first.
+    """
+    if color is None:
+        validate_type(adj_type, ("edge",))
+
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
+    rop, num = target_encode(target)
+
+    src_r, src_c = src_cell
+    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
+
+    return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
+
+
 def avoid_region_border_crossover() -> str:
     """Avoid the crossover of the region border."""
     no_rect_adjacent_by_point = [
