@@ -194,9 +194,8 @@ def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "
     """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
     validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
 
-    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
-    rule = f"{{ {tag}(R, C, B) }} :- grid(R, C), {color}(R, C), bit_range(B).\n"
-    rule += f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
+    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type, color)
+    rule = f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
     rule += f"not {tag}(R, C, B) :- grid(R, C), {color}(R, C), bit_range(B), clue(R, C), not clue_bit(R, C, B).\n"
     rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), grid(R, C), bit_range(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
     rule += f"not {tag}(R, C, B) :- not {tag}(R1, C1, B), grid(R, C), grid(R1, C1), bit_range(B), {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
@@ -209,7 +208,7 @@ def avoid_unknown_src_bit(color: str = "black", adj_type: Union[int, str] = 4) -
 
     Use this constraint with grid_bit_color_connected, and adj_type cannot be "edge".
     """
-    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type)
+    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type, color)
     return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _)."
 
 

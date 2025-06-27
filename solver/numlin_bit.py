@@ -18,7 +18,7 @@ def no_2x2_path_bit() -> str:
     A reachable path rule should be defined first.
     """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    tag = tag_encode("reachable", "grid", "bit", "adj", "loop")
+    tag = tag_encode("reachable", "grid", "bit", "adj", "loop", "numlin")
     same_str = ", ".join(f"{tag}(R + {r}, C + {c}, B)" for r, c in points)
     no_str = ", ".join(f"not {tag}(R + {r}, C + {c}, B)" for r, c in points)
 
