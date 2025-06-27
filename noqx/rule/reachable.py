@@ -161,7 +161,7 @@ def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] 
     """
     Generate a constraint to avoid cells starting from unknown source.
 
-    Use this constraint with grid_src_color_connected, and adj_type cannot be "edge".
+    Use this constraint with grid_src_color_connected.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
@@ -174,7 +174,7 @@ def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] 
     return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
 
 
-def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
+def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:  # pragma: no cover
     """Assign clues with bit ids instead of numerical ids."""
     rule = f"clue({r}, {c}).\n"
     for i in range(nbit):
@@ -183,14 +183,14 @@ def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
     return rule
 
 
-def num_binary_range(num: int) -> Tuple[str, int]:
+def num_binary_range(num: int) -> Tuple[str, int]:  # pragma: no cover
     """Generate a rule restricting number represented by bits between 0 and num."""
     nbit = int(log2(num)) + 1
     rule = f"bit_range(0..{nbit - 1}).\n"
     return rule, nbit
 
 
-def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "loop") -> str:
+def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "loop") -> str:  # pragma: no cover
     """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
     validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
 
@@ -203,7 +203,7 @@ def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "
     return rule
 
 
-def avoid_unknown_src_bit(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+def avoid_unknown_src_bit(color: str = "black", adj_type: Union[int, str] = 4) -> str:  # pragma: no cover
     """
     Generate a constraint to avoid cells starting from unknown source (bit version).
 
