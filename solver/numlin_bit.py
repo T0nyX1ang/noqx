@@ -36,7 +36,7 @@ class NumlinVBitSolver(Solver):
 
     name = "Numberlink (Bit Ver)"
     category = "loop"
-    aliases = ["numberlink"]
+    aliases = ["numberlink", "arukone", "flowfree"]
     examples = [
         {
             "data": "m=edit&p=7VPBbptAEL3zFdae58Cy2Ia9EcfuhZK2cRVFK4SwSxVUXFJsqmgt/3tmBizcyJVSJfKpWvP09s0svB3PbH+1eVPAFJcKwAWJS7k+PxOXfse1LHdVoUcQtbuHukECcLNYwPe82haO6bNSZ29DbSOwH7QRUoDw8JEiBftZ7+1HbROwtxgSIFGLuyQP6XygdxwnNutE6SJPeo70Hum6bNZVkcWd8kkbuwRB37ni00TFpv5diN4H7df1ZlWSsMp3eJntQ/nYR7btt/pH2+fK9AA26uzGZ+yqwS7Rzi6xM3bpFm+2W5U/i6dzTsP0cMCKf0GvmTZk++tAg4He6j1iovfCm9LRCG10f4tQExKuBsF3SZifCAEJ14Mw4YzZIExZOMkI5It3hJxx8tnQe/GOUP3hA+1KNn3PuGD0GJd4J7CK8ZrRZRwzxpwzZ7xjnDH6jBPOmVJV/qlub7Ej/DHeLQywTiFQIdQrDRrP53k8rvH771LHiBi7a5TUzSavsMeSdrMqmuMe5/ngiCfBj1F4xP8/4pcfcaq+e7GGfZ/5MVjYvuPB3oB4bLM8W9fYY1g7CuJY/C3gvz5w8VvjXKbOMw==",
@@ -48,6 +48,11 @@ class NumlinVBitSolver(Solver):
         {
             "url": "https://puzz.link/p?numlin/26/26/zz-15gdx-12nfs-16j8x4v-11zxes9kfs8zg4lbm6k5ubv2r-14n1q-10z5v7zeq3n3r1v-13u9k-11mdl6zgas2k-10sczxav-16x7jcs-15n-13x-14g-12zz",
             "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?arukone/14/9/zh-15h6heh3fe6-15-1354g4ci7g9u2zg3g9g-1351ch2i7g1j8of8n",
+            "test": False,
+            "config": {"visit_all": True, "no_2x2": False},
         },
     ]
     parameters = {

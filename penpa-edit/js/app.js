@@ -10,6 +10,7 @@ function imp(penpa) {
   let urlstring = penpa || document.getElementById("urlstring").value;
 
   // replace unsupported solver to supported solvers
+  urlstring = urlstring.replace("arukone", "numlin");
   urlstring = urlstring.replace("chocona", "aqre");
   urlstring = urlstring.replace("cocktail", "aqre");
   urlstring = urlstring.replace("context", "nuribou");
