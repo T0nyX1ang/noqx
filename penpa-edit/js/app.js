@@ -119,6 +119,31 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
+function reset_board(puzzleType) {
+  // default function
+
+  pu.mode.grid = ["1", "2", "1"];
+  document.getElementById("gridtype").value = "square"; // grid type
+  document.getElementById("nb_size1").value = 10; // columns
+  document.getElementById("nb_size2").value = 10; // rows
+  document.getElementById("nb_space1").value = 0; // over space
+  document.getElementById("nb_space2").value = 0; // under space
+  document.getElementById("nb_space3").value = 0; // left space
+  document.getElementById("nb_space4").value = 0; // right space
+
+  if (["box"].includes(puzzleType)) {
+    // white space in every direction
+    document.getElementById("nb_size1").value = 12; // columns
+    document.getElementById("nb_size2").value = 12; // rows
+    document.getElementById("nb_space1").value = 1; // over space
+    document.getElementById("nb_space2").value = 1; // under space
+    document.getElementById("nb_space3").value = 1; // left space
+    document.getElementById("nb_space4").value = 1; // right space
+  }
+
+  changetype();
+}
+
 $(window).on("load", function () {
   const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
   if (ENABLE_DEPLOYMENT) {
@@ -192,7 +217,8 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
-      create_newboard(); // reset the puzzle when puzzle type changes
+      reset_board(puzzleName); // reset the board when puzzle type changes
+      create_newboard();
       advancecontrol_toggle();
       advancecontrol_toggle();
 
