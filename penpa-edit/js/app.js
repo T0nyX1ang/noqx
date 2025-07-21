@@ -192,6 +192,10 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
+      create_newboard(); // reset the puzzle when puzzle type changes
+      advancecontrol_toggle();
+      advancecontrol_toggle();
+
       parameterBox.style.display = "none"; // hide parameter box if no parameters
       parameterButton.textContent = "Show parameters";
       parameterButton.disabled = true;
