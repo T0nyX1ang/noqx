@@ -699,7 +699,7 @@ wheels = [
 
 [[package]]
 name = "noqx"
-version = "0.7.0"
+version = "0.7.1"
 source = { virtual = "." }
 dependencies = [
     { name = "cffi", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
