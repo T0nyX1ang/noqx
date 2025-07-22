@@ -119,6 +119,64 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
+function reset_board(puzzleType) {
+  const puzzleCategory = solver_metadata[puzzleType].category;
+
+  // default function
+  document.getElementById("gridtype").value = "square"; // grid type
+
+  if (puzzleType === "kakuro") document.getElementById("gridtype").value = "kakuro";
+  if (puzzleType === "sudoku") document.getElementById("gridtype").value = "sudoku";
+  changetype();
+
+  pu.mode.grid = ["1", "2", "1"]; // default grid mode
+  if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
+
+  if (["shakashaka"].includes(puzzleType)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
+
+  if (["cave", "firefly", "gokigen"].includes(puzzleType)) pu.mode.grid = ["2", "2", "2"];
+
+  if (["hashi"].includes(puzzleType)) pu.mode.grid = ["3", "2", "2"];
+
+  if (["mejilink"].includes(puzzleType)) pu.mode.grid = ["2", "1", "2"];
+
+  if (["myopia", "slitherlink"].includes(puzzleType)) pu.mode.grid = ["3", "1", "2"];
+
+  document.getElementById("nb_size1").value = 10; // columns
+  document.getElementById("nb_size2").value = 10; // rows
+  document.getElementById("nb_space1").value = 0; // over space
+  document.getElementById("nb_space2").value = 0; // under space
+  document.getElementById("nb_space3").value = 0; // left space
+  document.getElementById("nb_space4").value = 0; // right space
+
+  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)) {
+    document.getElementById("nb_size1").value = 11; // columns
+    document.getElementById("nb_size2").value = 11; // rows
+    document.getElementById("nb_space1").value = 1; // over space
+    document.getElementById("nb_space3").value = 1; // left space
+  }
+
+  if (
+    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "magnets", "skyscrapers", "starbattle"].includes(
+      puzzleType
+    )
+  ) {
+    document.getElementById("nb_size1").value = 12; // columns
+    document.getElementById("nb_size2").value = 12; // rows
+    document.getElementById("nb_space1").value = 1; // over space
+    document.getElementById("nb_space2").value = 1; // under space
+    document.getElementById("nb_space3").value = 1; // left space
+    document.getElementById("nb_space4").value = 1; // right space
+  }
+
+  if (["coral", "nonogram"].includes(puzzleType)) {
+    document.getElementById("nb_size1").value = 15; // columns
+    document.getElementById("nb_size2").value = 15; // rows
+    document.getElementById("nb_space1").value = 5; // over space
+    document.getElementById("nb_space3").value = 5; // left space
+  }
+}
+
 $(window).on("load", function () {
   const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
   if (ENABLE_DEPLOYMENT) {
@@ -192,6 +250,10 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
+      reset_board(puzzleName); // reset the board when puzzle type changes
+      create_newboard();
+      advancecontrol_toggle();
+
       parameterBox.style.display = "none"; // hide parameter box if no parameters
       parameterButton.textContent = "Show parameters";
       parameterButton.disabled = true;
@@ -240,8 +302,8 @@ $(window).on("load", function () {
         }
       }
     } else {
+      reset_board(puzzleName); // reset the board when puzzle type changes
       create_newboard();
-      advancecontrol_toggle();
       advancecontrol_toggle();
     }
   });
