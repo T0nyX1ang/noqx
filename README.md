@@ -20,7 +20,7 @@ Extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
 - Change the frontend from Noq native to penpa-edit. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
 
-- Obtain uniform data structures in every puzzle. (See issue [#88](https://github.com/T0nyX1ang/noqx/issues/84)).
+- Obtain uniform data structures in every puzzle. (See issue [#84](https://github.com/T0nyX1ang/noqx/issues/84) and [#109](https://github.com/T0nyX1ang/noqx/issues/109)).
 
 - Deploy the entire solver to Github Pages with the help of `PyScript`.
 

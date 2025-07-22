@@ -31,7 +31,7 @@ def fillomino_constraint() -> str:
     rule += f"number(R, C, 1) :- {', '.join(mutual)}.\n"
     rule += ":- number(R, C, 1), number(R1, C1, 1), adj_4(R, C, R1, C1).\n"
 
-    return rule.strip()
+    return rule
 
 
 def fillomino_filtered(fast: bool = False) -> str:
@@ -60,7 +60,7 @@ def fillomino_filtered(fast: bool = False) -> str:
         ":- have_numberx(R, C), have_numberx(R + 1, C), numberx(R, C, N), not numberx(R + 1, C, N), not edge_top(R + 1, C).\n"
     )
 
-    return rule.strip()
+    return rule
 
 
 def symmetry_area(fast: bool = False) -> str:
@@ -105,7 +105,7 @@ def symmetry_area(fast: bool = False) -> str:
         rule += "symm_coord_sumx(R, C, SR, SC) :- grid(R, C), have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), min_cx(R, C, MINC), max_cx(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
         rule += f":- have_numberx(R, C), symm_coord_sumx(R, C, SR, SC), not {tag_numberx}(R, C, SR - R, SC - C).\n"
 
-    return rule.strip()
+    return rule
 
 
 class SymmareaSolver(Solver):

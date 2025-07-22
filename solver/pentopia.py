@@ -40,7 +40,7 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int, color: str = "bl
     rule = top + bottom + left + right
     rule += f"opia({r}, {c}) :- top({r}, {c}, N1), bottom({r}, {c}, N2), left({r}, {c}, N3), right({r}, {c}, N4), {cmp}.\n"
     rule += f":- not opia({r}, {c}).\n"
-    return rule.strip()
+    return rule
 
 
 class PentopiaSolver(Solver):
@@ -80,10 +80,7 @@ class PentopiaSolver(Solver):
             self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display(item="black"))
 

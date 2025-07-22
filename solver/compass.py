@@ -16,7 +16,7 @@ def compass_constraint(r: int, c: int, label: str, num: Union[int, str]) -> str:
     constraint = {"sudoku_4": f"R < {r}", "sudoku_6": f"C < {c}", "sudoku_7": f"R > {r}", "sudoku_5": f"C > {c}"}
     rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[label]} }} != {num}."
 
-    return rule.strip()
+    return rule
 
 
 class CompassSolver(Solver):

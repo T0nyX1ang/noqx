@@ -34,7 +34,7 @@ def exclude_border_color_changes(rows: int, cols: int) -> str:
         rule += f"changed({rows - 1}, {rev_c}) :- circle_M__2({rows - 1}, {rev_c}), circle_M__1({rows - 1}, {rev_c - 1}).\n"
 
     rule += ":- { changed(R, C) } > 2.\n"
-    return rule.strip()
+    return rule
 
 
 class YinyangSolver(Solver):

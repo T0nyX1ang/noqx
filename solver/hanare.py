@@ -12,7 +12,7 @@ def hanare_constraint(color: str = "white") -> str:
     rule += ":- row_pair(R, R1, C), number(R, C, N), number(R1, C, N1), |N - N1| != R1 - R - 1.\n"
     rule += f"col_pair(R, C, C1) :- number(R, C, _), number(R, C1, _), C1 > C, C1 - C - 1 = #count {{ C2: {color}(R, C2), C2 >= C, C2 <= C1 }}.\n"
     rule += ":- col_pair(R, C, C1), number(R, C, N), number(R, C1, N1), |N - N1| != C1 - C - 1.\n"
-    return rule.strip()
+    return rule
 
 
 class HanareSolver(Solver):

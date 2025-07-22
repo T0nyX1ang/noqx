@@ -42,7 +42,7 @@ def hashi_bridge() -> str:
     adj = 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), grid_direction(R, C, "l", _).\n'
     adj += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), grid_direction(R, C, "u", _).\n'
     adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
-    return rule + adj.strip()
+    return rule + adj
 
 
 class HashiSolver(Solver):

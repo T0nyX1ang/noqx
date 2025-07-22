@@ -31,7 +31,7 @@ def fillomino_constraint() -> str:
     rule += f"number(R, C, 1) :- {', '.join(mutual)}.\n"
     rule += ":- number(R, C, 1), number(R1, C1, 1), adj_4(R, C, R1, C1).\n"
 
-    return rule.strip()
+    return rule
 
 
 def fillomino_filtered(fast: bool = True) -> str:
@@ -60,7 +60,7 @@ def fillomino_filtered(fast: bool = True) -> str:
         ":- have_numberx(R, C), have_numberx(R + 1, C), numberx(R, C, N), not numberx(R + 1, C, N), not edge_top(R + 1, C).\n"
     )
 
-    return rule.strip()
+    return rule
 
 
 class FillominoSolver(Solver):

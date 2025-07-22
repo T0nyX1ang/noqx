@@ -11,7 +11,7 @@ def avoid_diagonal_3(color: str = "black") -> str:
     """Generate a constraint to avoid diagonal in a row of three."""
     rule = f":- {color}(R, C), {color}(R + 1, C + 1), {color}(R + 2, C + 2).\n"
     rule += f":- {color}(R, C), {color}(R + 1, C - 1), {color}(R + 2, C - 2).\n"
-    return rule.strip()
+    return rule
 
 
 class NondangoSolver(Solver):

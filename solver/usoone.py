@@ -15,7 +15,7 @@ def uso_one_constraints(adj_type: int = 4, color: str = "black") -> str:
     rule += ":- clue(A, _, _, _), { wrong_clue(A, R, C) } != 1.\n"
     rule += f":- clue(A, R, C, N), not wrong_clue(A, R, C), {count_adj} != N.\n"
     rule += f":- clue(A, R, C, N), wrong_clue(A, R, C), {count_adj} = N.\n"
-    return rule.strip()
+    return rule
 
 
 class UsooneSolver(Solver):
@@ -55,10 +55,7 @@ class UsooneSolver(Solver):
                     self.add_program_line(f"clue({i}, {r}, {c}, {num}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)

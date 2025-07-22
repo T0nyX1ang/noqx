@@ -43,10 +43,7 @@ class YajiKazuSolver(Solver):
             self.add_program_line(yaji_count(int(num), (r, c), int(d), color="gray", unshade_clue=False))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

@@ -26,7 +26,7 @@ def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "bla
             r2, c2 = known_cells[j]
             constraints += f":- map_{r1}_{c1}(R, C), map_{r2}_{c2}(R, C).\n"
 
-    return rules + "\n" + constraints.strip()
+    return rules + "\n" + constraints
 
 
 class TentsSolver(Solver):

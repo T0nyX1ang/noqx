@@ -13,7 +13,7 @@ def news_constraint() -> str:
     rule += f":- {mutual}, number(R, C, 2), number(R1, C1, N1), N1 != 2, C1 >= C.\n"  # eastest in area
     rule += f":- {mutual}, number(R, C, 3), number(R1, C1, N1), N1 != 3, C1 <= C.\n"  # westest in area
     rule += f":- {mutual}, number(R, C, 4), number(R1, C1, N1), N1 != 4, R1 >= R.\n"  # southest in area
-    return rule.strip()
+    return rule
 
 
 class NewsSolver(Solver):

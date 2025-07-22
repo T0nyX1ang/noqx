@@ -19,7 +19,7 @@ def numrope_constraint() -> str:
     rule += (
         ":- adj_count(R, C, 2), number(R, C, N), N * 2 != #sum { N1, R1, C1 : number(R1, C1, N1), adj_loop(R, C, R1, C1) }.\n"
     )
-    return rule.strip()
+    return rule
 
 
 class NumRopeSolver(Solver):

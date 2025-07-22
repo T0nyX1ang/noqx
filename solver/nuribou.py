@@ -30,7 +30,7 @@ def noribou_strip_different(color: str = "black") -> str:
     rule += "len_strip(R, C, L) :- left(R, C), nth(R, C, N), len_strip(R - N + 1, C, L).\n"
     rule += f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), len_strip(R, C, L), len_strip(R1, C1, L1), L = L1."
     rule += ":- grid(R, C), remain(R, C).\n"
-    return rule.strip()
+    return rule
 
 
 class NoribouSolver(Solver):
@@ -70,10 +70,7 @@ class NoribouSolver(Solver):
                 self.add_program_line(count_reachable_src(num, (r, c), color="not black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display(item="black"))
 

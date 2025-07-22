@@ -16,7 +16,7 @@ def nuriuzu_constraint(glxr: int, glxc: int, adj_type: int = 4, color: str = "bl
     r, c = (glxr - 1) // 2, (glxc - 1) // 2
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
     rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1).\n"
-    return rule.strip()
+    return rule
 
 
 class NuriuzuSolver(Solver):
@@ -71,10 +71,7 @@ class NuriuzuSolver(Solver):
         self.add_program_line(f":- grid(R, C), not black(R, C), {spawn_points}.")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display())
 

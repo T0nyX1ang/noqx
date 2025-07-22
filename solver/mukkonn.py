@@ -33,7 +33,7 @@ def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
         rule += f':- grid_direction({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
-    return rule.strip()
+    return rule
 
 
 class MukkonnSolver(Solver):
@@ -44,7 +44,7 @@ class MukkonnSolver(Solver):
     aliases = ["mukkonnenn"]
     examples = [
         {
-            "data": "m=edit&p=7VZbT+NIE33Pr0D9Oi19vl3alvYhMGR2ZkMIA4glEYqcYEgYB+fzBWaN+O9TVU5il21Gs9rVaB5WTlpVp7q6T5Xdx07/nwdJKD24TCU1qcNlKo3+ysKftr0uVlkU+geyn2fLOAFDytPBQN4FURrKT9fL4VHcf37f//NJZZOJ/kHLP2pXD4OHd5/Xf3xcmYk+GKnxyfhkZdz3fz86PHOO3znjPL3MwqeztX74cDm5uBtf3XvGX8ejiVVMTjX70+Tuf0/9y9960y2Hm95L4flFXxYf/KnQhRQG/HVxI4sz/6U48YtrWZxDSEgLsGE5yQDzuDKvKI7WUQnqGtgjsD2wwbwGcxGvN0GalsDYnxYXUuA2h5SMpljHT6HY0kAfUuYrBOZBBp1Kl6vNNpLmt/GXfDsXFhTrPMpWiziKEwQRe5VFv6xg2FGBWVWAZlkBWh0VYGH/tILw9j5M83kXfa+b/ivcmc9QwMyfYi2Xlakq89x/EcoSvgX2yH+BUQdEt5SG6xyUvQFX564BrrFzzMqxXYzsJ9ouxsydA/vUYzZzPYe7LncVd71qT8dkmY6JmfsY5u0dzKomEtddjJjWYoyrw7k62LF9pmrEOBtVZ6M4AY812fGod3B8ti6tu3Ndjd0CV2ONdjVG39WI/j6Xd8jlfXAtWnk/2WI0lME6r0zGWZmMlTKJhrlzbcZK2aypymaNUzaRtHaux3M9nls2p3Ipl/aFR/gaHmETq9DpAO3PnKAdm6CDJTRBtwukQ9ECkWcL7NpIYSebID3nTVA3unbSDayyhdLN5Sj0YECH2aDxAs66LEwa39Oo0WjTOKQ5xzRe0XhEo0WjQ3NcVIsf1JO6kpQ34+/SETbW5Cl4lyiJT6dJlgGPrfmDVKcwH9+b9cv+tZCb3lSc58ldsAhB1Yerx/BgFCfrIAJvlK/nYVL558tgEwp414o0jmZpmTULvwaLTPjl674eYdgjrcWgKI43EWzYscIuxMDV/WOchJ0hBPHd9MZSGOpYah4ntw1Oz0EU8VroM4hBi1WyiDiUJfB6rPlBksTPDFkH2ZIBtY8BtlL42GhmFnCKwZegsdu6asdrT3wV9McXnrT/+zD6dT+M8C5pP03O/h11nUK3t3ooi1MpNvksmEFhAr7B5S4IEtkdBEVtBX56gXRk4uQ7+lUFm3CHigH6HSGrRbvwNzSrFm3iLYFCsm2NArRDpgBtKhVAbbECsKVXgL0hWbhqU7WQVVO4cKuWduFWdfmqjuFN7xs=",
+            "data": "m=edit&p=7VZbT+NIE33Pr0D9Oi2tb5e2pX0IDJmd+UIIA4glEYqcYEgYB2d9gVkj/vtUlZPYZZvRrHY1modPTlpVp1zdp8ru007/yoMklB5cppKa1OEylUZ/ZeFP214XqywK/QPZz7NlnIAh5elgIO+CKA3lp+vl8CjuP7/v//mksslE/6DlH7Wrh8HDu8/r/31cmYk+GKnxyfhkZdz3/zg6PHOO3znjPL3MwqeztX74cDm5uBtf3XvG38ejiVVMTjX70+Tut6f+5e+96ZbDTe+l8PyiL4sP/lQYQtJfFzeyOPNfihO/uJbFOYSEtAAbgqULaYB5XJlXFEfrqAR1DewR2B7YYF6DuYjXmyBNS2DsT4sLKXCZQ0pGU6zjp1CUM5APKfMVAvMgg06ly9VmG0nz2/hLvr0XJhTrPMpWiziKEwQRe5VFv6xg2FGBWVWAZlkBWh0VYGH/toLw9j5M83kXfa+b/is8mc9QwMyfYi2Xlakq89x/EcoSvgX2yH+BUQdEt5SG8xyUvQFX564BrrFzzMqxXYzsb7RdjJk7B9apx2zmeg53Xe4q7nrVmo7JMh0TM/cxzNs7mFXdSFx3MWJaizGuDufqYMf2maoR42xUnY3iBDzWZMej3sH22bo07851NfYIXI012tUYfVcj+vtc3iGX98G1aOb9zRajoQzWeWUyzspkrJRJNMydazNWymZNVTZrnLKJpLVzPZ7r8dyyOZVLubQuvMLX8AqbWIVOG2i/5wSt2AQdLKEJul0gbYoWiDxbYNdCCjvZBOk9b4K60bWSbmCVLZQeLkehBwPazAaNF7DXZWHS+J5GjUabxiHdc0zjFY1HNFo0OnSPi2rxg3pSV5LyYfxTOsLGmjwFZ4mS+HaaZBnw2po/SHUK9+O5Wb/sXwu56U3FeZ7cBYsQVH24egwPRnGyDiLwRvl6HiaVf74MNqGAs1akcTRLy6xZ+DVYZMIvj/t6hGGPNBeDojjeRLBgxwy7EANX949xEnaGEMSz6Y2pMNQx1TxObhucnoMo4rXQZxCDFqtkEXEoS+B4rPlBksTPDFkH2ZIBtY8BNlP42GhmFnCKwZegsdq6asdrT3wV9McDT9r//zD6dT+M8ClpP03O/ht1nUK3t3ooi1MpNvksmEFhAr7B5S4IEtkdBEVtBX56gbRl4uQ7+lUFm3CHigH6HSGrRbvwNzSrFm3iLYFCsm2NArRDpgBtKhVAbbECsKVXgL0hWThrU7WQVVO4cKmWduFSdfmqtuFN7xs=",
         }
     ]
 

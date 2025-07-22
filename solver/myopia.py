@@ -31,7 +31,7 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
     rule = top + bottom + left + right
     rule += f"opia({r}, {c}) :- top({r}, {c}, N1), bottom({r}, {c}, N2), left({r}, {c}, N3), right({r}, {c}, N4), {cmp}.\n"
     rule += f":- not opia({r}, {c}).\n"
-    return rule.strip()
+    return rule
 
 
 class MyopiaSolver(Solver):

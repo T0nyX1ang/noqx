@@ -14,7 +14,7 @@ def magnet_constraint() -> str:
     constraint += ":- math_G__2(R, C), area(A, R, C), not math_G__3(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
     constraint += ":- math_G__3(R, C), area(A, R, C), not math_G__2(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
     constraint += ":- gray(R, C), area(A, R, C), not gray(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
-    return constraint.strip()
+    return constraint
 
 
 class MagnetsSolver(Solver):

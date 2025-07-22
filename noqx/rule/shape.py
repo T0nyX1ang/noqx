@@ -166,7 +166,7 @@ def general_shape(
         if _type == "area":
             data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
-    return data.strip()
+    return data
 
 
 def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
@@ -246,7 +246,7 @@ def all_rect(color: str = "black", square: bool = False) -> str:
         constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
 
     data = rule + upleft + left + up + remain + constraint
-    return data.strip()
+    return data
 
 
 def all_rect_region(square: bool = False) -> str:
@@ -325,6 +325,30 @@ def no_rect(color: str = "black") -> str:
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_4(R, C, R1, C1).\n"
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
     return initial + propagation + constraint
+
+
+def count_rect_size(
+    target: Union[int, Tuple[str, int]],
+    src_cell: Tuple[int, int],
+    color: Optional[str] = None,
+    adj_type: Union[int, str] = 4,
+) -> str:
+    """
+    Generate a constraint to count the size of a rectangular area starting from a source.
+
+    A bulb_src_color_connected rule should be defined first.
+    """
+    if color is None:
+        validate_type(adj_type, ("edge",))
+
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
+    rop, num = target_encode(target)
+
+    src_r, src_c = src_cell
+    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
+
+    return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
 
 
 def avoid_region_border_crossover() -> str:

@@ -22,7 +22,7 @@ def avoid_area_adjacent(color: str = "black") -> str:
     """Generate a constraint to avoid the same color in adjacent edges."""
     constraint = f":- grid(R, C), grid(R - 1, C), edge_top(R, C), {color}(R, C), {color}(R - 1, C).\n"
     constraint += f":- grid(R, C), grid(R, C - 1), edge_left(R, C), {color}(R, C), {color}(R, C - 1).\n"
-    return constraint.strip()
+    return constraint
 
 
 class PatchworkSolver(Solver):

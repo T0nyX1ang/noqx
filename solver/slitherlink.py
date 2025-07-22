@@ -17,7 +17,7 @@ def passed_vertex() -> str:
     rule += "passed_vertex(R, C) :- edge_left(R, C).\n"
     rule += "passed_vertex(R, C) :- grid(R, C), edge_top(R, C - 1).\n"
     rule += "passed_vertex(R, C) :- grid(R, C), edge_left(R - 1, C).\n"
-    return rule.strip()
+    return rule
 
 
 def count_adjacent_vertices(target: int, src_cell: Tuple[int, int]) -> str:
@@ -44,8 +44,8 @@ def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
     rop, num = target_encode(target)
 
     # segment count = vertex count - edge count
-    vertex_count = count_adjacent_vertices(target, src_cell).replace(f"{rop} {num}.", "= C1").replace(":-", "").strip()
-    edge_count = count_adjacent_edges(target, src_cell).replace(f"{rop} {num}.", "= C2").replace(":-", "").strip()
+    vertex_count = count_adjacent_vertices(target, src_cell).replace(f"{rop} {num}.", "= C1").replace(":-", "")
+    edge_count = count_adjacent_edges(target, src_cell).replace(f"{rop} {num}.", "= C2").replace(":-", "")
     return f":- {vertex_count}, {edge_count}, C1 - C2 {rop} {num}."
 
 

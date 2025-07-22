@@ -19,7 +19,7 @@ def kropki_constraint() -> str:
     rule += f":- grid(R, C), not white_v(R, C), not black_v(R, C), number(R, C - 1, N1), number(R, C, N2), {empty_rule}.\n"
     rule += f":- grid(R, C), not white_h(R, C), not black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {empty_rule}.\n"
 
-    return rule.strip()
+    return rule
 
 
 class KropkiSolver(Solver):

@@ -29,7 +29,7 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
         )
 
     rule += ":- onsen_loop(R, C), not onsen(_, R, C).\n"
-    return rule.strip()
+    return rule
 
 
 def onsen_global_rule() -> str:
@@ -40,7 +40,7 @@ def onsen_global_rule() -> str:
     # two different onsen loops cannot be connected
     rule += ":- onsen(O1, R, C), onsen(O2, R, C), O1 != O2.\n"
 
-    return rule.strip()
+    return rule
 
 
 class OnsenSolver(Solver):

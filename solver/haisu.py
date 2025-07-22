@@ -14,7 +14,7 @@ def adj_before() -> str:
     adj += 'adj_before(R - 1, C, R, C) :- grid(R, C), grid_in(R, C, "u").\n'
     adj += 'adj_before(R, C + 1, R, C) :- grid(R, C), grid_in(R, C, "r").\n'
     adj += 'adj_before(R + 1, C, R, C) :- grid(R, C), grid_in(R, C, "d").\n'
-    return adj.strip()
+    return adj
 
 
 def connected_directed_path(color: str = "white") -> str:
@@ -35,7 +35,7 @@ def haisu_rules() -> str:
     rule += "clue_area(A) :- clue(R, C), area(A, R, C).\n"
     rule += "area_max_num(A, N) :- clue_area(A), #max { N0 : area(A, R, C), number(R, C, N0) } = N.\n"
     rule += "area_possible_num(A, 0..N) :- clue_area(A), area_max_num(A, N).\n"
-    return rule.strip()
+    return rule
 
 
 def haisu_count() -> str:
@@ -46,7 +46,7 @@ def haisu_count() -> str:
     rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N - 1), area_in(A, R, C).\n"
     rule += ":- clue_area(A), grid(R, C), haisu_count(R, C, A, N1), haisu_count(R, C, A, N2), N1 < N2.\n"
     rule += ":- number(R, C, N), area(A, R, C), not haisu_count(R, C, A, N).\n"
-    return rule.strip()
+    return rule
 
 
 class HaisuSolver(Solver):

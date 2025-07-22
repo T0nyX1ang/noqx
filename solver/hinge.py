@@ -18,7 +18,7 @@ def symmetry_hinge(color: str = "black") -> str:
 
     rule += ':- symmetry(R, C, R0, C0, "H"), not symmetry(R0 * 2 - 1 - R, C, R0, C0, "H").\n'
     rule += ':- symmetry(R, C, R0, C0, "V"), not symmetry(R, C0 * 2 - 1 - C, R0, C0, "V").\n'
-    return rule.strip()
+    return rule
 
 
 class HingeSolver(Solver):
@@ -76,10 +76,7 @@ class HingeSolver(Solver):
                     self.add_program_line(count(num, color="gray", _type="area", _id=i))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

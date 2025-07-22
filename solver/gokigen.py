@@ -17,7 +17,7 @@ def slant_rule() -> str:
     rule += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not grid_direction(R, C, D).\n"
     rule += "grid_direc_num(R, C, D, 1) :- grid_direction(R, C, D).\n"
     rule += ':- grid(R, C), grid(R + 1, C + 1), { grid_direction(R, C, "dr"); grid_direction(R, C + 1, "dl") } != 1.'
-    return rule.strip()
+    return rule
 
 
 def no_loop() -> str:
@@ -29,7 +29,7 @@ def no_loop() -> str:
     rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C - 1), not grid_direction(R, C - 1, "dr").\n'
     rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C + 1), not grid_direction(R, C + 1, "dl").\n'
     rule += ":- grid(R, C), not reachable(R, C).\n"
-    return rule.strip()
+    return rule
 
 
 class GokigenSolver(Solver):
