@@ -252,7 +252,7 @@ $(window).on("load", function () {
     if (puzzleName !== "") {
       reset_board(puzzleName); // reset the board when puzzle type changes
       create_newboard();
-      advancecontrol_toggle("off");
+      advancecontrol_toggle();
 
       parameterBox.style.display = "none"; // hide parameter box if no parameters
       parameterButton.textContent = "Show parameters";
@@ -304,7 +304,7 @@ $(window).on("load", function () {
     } else {
       reset_board(puzzleName); // reset the board when puzzle type changes
       create_newboard();
-      advancecontrol_toggle("on");
+      advancecontrol_toggle();
     }
   });
 
