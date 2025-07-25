@@ -10,19 +10,22 @@ from noqx.rule.neighbor import adjacent
 def alternation_constraint() -> str:
     """Generates a rule to ensure that the colors alternate."""
 
-    rule = ":- grid(R, C0), grid(R, C1), grid(R, C2), ox_E__1(R, C0), ox_E__2(R, C1), ox_E__3(R, C2), C0 != C1, C0 != C2, C1 != C2.\n"
-    rule += ":- grid(R0, C), grid(R1, C), grid(R2, C), ox_E__1(R0, C), ox_E__2(R1, C), ox_E__3(R2, C), R0 != R1, R0 != R2, R1 != R2.\n"
+    # three shapes do not appear in the same row or column
+    rule = ":- grid(R, C0), grid(R, C1), grid(R, C2), ox_E__1(R, C0), ox_E__2(R, C1), ox_E__3(R, C2).\n"
+    rule += ":- grid(R0, C), grid(R1, C), grid(R2, C), ox_E__1(R0, C), ox_E__2(R1, C), ox_E__3(R2, C).\n"
 
+    # the same row and column does not only contain one of the three shapes
     rule += ":- grid(R, C), ox_E__1(R, C), not ox_E__2(R, _), not ox_E__3(R, _).\n"
     rule += ":- grid(R, C), ox_E__2(R, C), not ox_E__1(R, _), not ox_E__3(R, _).\n"
     rule += ":- grid(R, C), ox_E__3(R, C), not ox_E__1(R, _), not ox_E__2(R, _).\n"
 
-    rule += ":- grid(R, C), ox_E__1(R, C), C1 = #min { C0: grid(R, C0), ox_E__1(R, C0), C0 > C }, grid(R, C1), #count { C0: grid(R, C0), ox_E__2(R, C0), C0 > C, C0 < C1; C0: grid(R, C0), ox_E__3(R, C0), C0 > C, C0 < C1 } = 0.\n"
-    rule += ":- grid(R, C), ox_E__2(R, C), C1 = #min { C0: grid(R, C0), ox_E__2(R, C0), C0 > C }, grid(R, C1), #count { C0: grid(R, C0), ox_E__1(R, C0), C0 > C, C0 < C1; C0: grid(R, C0), ox_E__3(R, C0), C0 > C, C0 < C1 } = 0.\n"
-    rule += ":- grid(R, C), ox_E__3(R, C), C1 = #min { C0: grid(R, C0), ox_E__3(R, C0), C0 > C }, grid(R, C1), #count { C0: grid(R, C0), ox_E__1(R, C0), C0 > C, C0 < C1; C0: grid(R, C0), ox_E__2(R, C0), C0 > C, C0 < C1 } = 0.\n"
-    rule += ":- grid(R, C), ox_E__1(R, C), R1 = #min { R0: grid(R0, C), ox_E__1(R0, C), R0 > R }, grid(R1, C), #count { R0: grid(R0, C), ox_E__2(R0, C), R0 > R, R0 < R1; R0: grid(R0, C), ox_E__3(R0, C), R0 > R, R0 < R1 } = 0.\n"
-    rule += ":- grid(R, C), ox_E__2(R, C), R1 = #min { R0: grid(R0, C), ox_E__2(R0, C), R0 > R }, grid(R1, C), #count { R0: grid(R0, C), ox_E__1(R0, C), R0 > R, R0 < R1; R0: grid(R0, C), ox_E__3(R0, C), R0 > R, R0 < R1 } = 0.\n"
-    rule += ":- grid(R, C), ox_E__3(R, C), R1 = #min { R0: grid(R0, C), ox_E__3(R0, C), R0 > R }, grid(R1, C), #count { R0: grid(R0, C), ox_E__1(R0, C), R0 > R, R0 < R1; R0: grid(R0, C), ox_E__2(R0, C), R0 > R, R0 < R1 } = 0.\n"
+    # color alternation rules
+    rule += ":- grid(R, C), ox_E__1(R, C), grid(R, C1), ox_E__1(R, C1), C1 > C, #count { C0: grid(R, C0), ox_E__2(R, C0), C0 > C, C0 < C1; C0: grid(R, C0), ox_E__3(R, C0), C0 > C, C0 < C1 } = 0.\n"
+    rule += ":- grid(R, C), ox_E__2(R, C), grid(R, C1), ox_E__2(R, C1), C1 > C, #count { C0: grid(R, C0), ox_E__1(R, C0), C0 > C, C0 < C1; C0: grid(R, C0), ox_E__3(R, C0), C0 > C, C0 < C1 } = 0.\n"
+    rule += ":- grid(R, C), ox_E__3(R, C), grid(R, C1), ox_E__3(R, C1), C1 > C, grid(R, C1), #count { C0: grid(R, C0), ox_E__1(R, C0), C0 > C, C0 < C1; C0: grid(R, C0), ox_E__2(R, C0), C0 > C, C0 < C1 } = 0.\n"
+    rule += ":- grid(R, C), ox_E__1(R, C), grid(R1, C), ox_E__1(R1, C), R1 > R, grid(R1, C), #count { R0: grid(R0, C), ox_E__2(R0, C), R0 > R, R0 < R1; R0: grid(R0, C), ox_E__3(R0, C), R0 > R, R0 < R1 } = 0.\n"
+    rule += ":- grid(R, C), ox_E__2(R, C), grid(R1, C), ox_E__2(R1, C), R1 > R, grid(R1, C), #count { R0: grid(R0, C), ox_E__1(R0, C), R0 > R, R0 < R1; R0: grid(R0, C), ox_E__3(R0, C), R0 > R, R0 < R1 } = 0.\n"
+    rule += ":- grid(R, C), ox_E__3(R, C), grid(R1, C), ox_E__3(R1, C), R1 > R, grid(R1, C), #count { R0: grid(R0, C), ox_E__1(R0, C), R0 > R, R0 < R1; R0: grid(R0, C), ox_E__2(R0, C), R0 > R, R0 < R1 } = 0.\n"
 
     return rule.strip()
 
