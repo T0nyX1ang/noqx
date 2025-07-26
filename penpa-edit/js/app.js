@@ -132,7 +132,7 @@ function reset_board(puzzleType) {
   pu.mode.grid = ["1", "2", "1"]; // default grid mode
   if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
 
-  if (["juosan", "shakashaka"].includes(puzzleType)) pu.mode.grid = ["2", "2", "1"];
+  if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) pu.mode.grid = ["2", "2", "1"];
 
   if (["cave", "firefly", "gokigen"].includes(puzzleType)) pu.mode.grid = ["2", "2", "2"];
 
