@@ -157,7 +157,7 @@ def count_reachable_src(
     return f":- {{ {tag}({src_r}, {src_c}, R, C) }} {rop} {num}."
 
 
-def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
+def avoid_unknown_src(color: Optional[str] = "black", main_type: str = "grid", adj_type: Union[int, str] = 4) -> str:
     """
     Generate a constraint to avoid cells starting from unknown source.
 
@@ -165,11 +165,11 @@ def avoid_unknown_src(color: Optional[str] = "black", adj_type: Union[int, str] 
     """
     if color is None:
         validate_type(adj_type, ("edge",))
-        tag = tag_encode("reachable", "grid", "src", "adj", adj_type)
+        tag = tag_encode("reachable", main_type, "src", "adj", adj_type)
         return f":- grid(R, C), not {tag}(_, _, R, C)."
 
     validate_type(adj_type, (4, 8, "loop", "loop_directed"))
-    tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
+    tag = tag_encode("reachable", main_type, "src", "adj", adj_type, color)
 
     return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
 
