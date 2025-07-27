@@ -60,9 +60,11 @@ def full_bfs(
     cols: int,
     edges: Dict[Tuple[int, int, str, str], bool],
     clues: Optional[Dict[Tuple[int, int, str, str], Union[int, str]]] = None,
+    exclude: Optional[Iterable[Tuple[int, int]]] = None,
 ) -> Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]]:
     """Generate a dict of rooms with their unique clue."""
-    unexplored_cells = {(r, c) for c in range(cols) for r in range(rows)}
+    excluded_cells = set() if exclude is None else set(exclude)
+    unexplored_cells = {(r, c) for c in range(cols) for r in range(rows) if (r, c) not in excluded_cells}
     clue_to_room: Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]] = {}
     rc_set = {(r, c) for (r, c, _, _) in clues} if clues else set()
 
