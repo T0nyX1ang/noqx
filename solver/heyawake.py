@@ -1,6 +1,6 @@
 """The Heyawake solver."""
 
-from typing import Iterable, Tuple, Union
+from typing import Iterable, Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
@@ -54,7 +54,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
             segment += 1
             i += 1
 
-        minimum = segment // 2 - limit
+        minimum = (segment + 1) // 2 - limit
         if len(data) > n // 2 - 1 and minimum > 0:
             rule += f":- {{ {';'.join(data)} }} < {minimum}.\n"
 
@@ -65,7 +65,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
 
 def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
     """Generates a simpler fact for the border of an area."""
-    borders = set()
+    borders: Set[Tuple[int, int]] = set()
     for r, c in ar:
         for dr, dc in ((0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)):
             r1, c1 = r + dr, c + dc
