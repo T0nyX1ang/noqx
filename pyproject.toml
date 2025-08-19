@@ -41,6 +41,14 @@ web = [
   "uvicorn<1,>=0.23.0,!=0.29.0; python_version>='3.9'",
 ]
 
+docs = [
+  "mkdocs<2,>=1.5.0",
+  "mkdocs-material<10,>=9.2.0",
+  "mkdocstrings-python>=1.12.0; python_version>='3.9'",
+  "mkdocstrings-python>=1.0.0,<1.12.0; python_version<'3.9'",
+  "mkdocs-git-revision-date-localized-plugin<2,>=1.2.1",
+]
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
