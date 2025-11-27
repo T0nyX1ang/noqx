@@ -1,4 +1,13 @@
-"""Manager of all the solvers as a plugin."""
+"""This is the manager for all solvers.
+
+This module supports loading all possible solvers from a specified directory.
+It also provides a unified framework to prepare puzzles, generate solver programs,
+store solutions, and refine solutions in a sequence.
+
+To implement a new solver, the user should create a new module in the `solver` directory,
+create a class inheriting the `Solver` base class, and implement the `solve` method.
+The `refine` method can also be overridden if solution refinement is needed.
+"""
 
 from typing import Any, Dict, List
 

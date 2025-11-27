@@ -2,7 +2,7 @@ site_name: Noqx
 site_author: Tony Xiang
 site_description: Extended logic puzzle solver of Noq.
 nav:
-  - Noqx: README.md
+  - The Solver Manager: manager.md
 theme:
   name: material
   icon:
