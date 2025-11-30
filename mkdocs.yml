@@ -3,6 +3,7 @@ site_author: Tony Xiang
 site_description: Extended logic puzzle solver of Noq.
 nav:
   - The Solver Manager: manager.md
+  - The Clingo Backend: clingo.md
 theme:
   name: material
   icon:
