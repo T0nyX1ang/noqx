@@ -1,3 +1,3 @@
-# The Clingo Backend
+# Clingo Backend
 
 ::: noqx.clingo

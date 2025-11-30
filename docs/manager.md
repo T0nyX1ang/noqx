@@ -1,3 +1,3 @@
-# The Solver Manager
+# Solver Manager
 
 ::: noqx.manager
