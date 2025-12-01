@@ -1,11 +1,12 @@
 """This is the [Clingo](https://potassco.org/clingo/) backend that generates solutions
 for the given ASP problem.
 
-* Answer Set Programming (ASP): It's a declarative programming paradigm,
-ideal for logic puzzles and complex scheduling or configuration problems.
+* Here are the key concepts used in this module:
 
-* [Clingo](https://potassco.org/clingo/): A powerful ASP solver that combines grounding
-and solving capabilities.
+    * Answer Set Programming (ASP): It's a declarative programming paradigm,
+    ideal for logic puzzles and complex scheduling or configuration problems.
+    * [Clingo](https://potassco.org/clingo/): A powerful ASP solver that combines grounding
+    and solving capabilities.
 """
 
 import logging

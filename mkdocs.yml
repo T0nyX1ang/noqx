@@ -2,8 +2,8 @@ site_name: Noqx
 site_author: Tony Xiang
 site_description: Extended logic puzzle solver of Noq.
 nav:
-  - The Solver Manager: manager.md
-  - The Clingo Backend: clingo.md
+  - Puzzle Elements:
+      - Base Encodings: puzzle/base.md
   - Solver Manager: manager.md
   - Clingo Backend: clingo.md
 theme:

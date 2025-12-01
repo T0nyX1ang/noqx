@@ -1,10 +1,10 @@
 """This is the manager for all solvers.
 
-This module supports loading all possible solvers from a specified directory.
+* This module supports loading all possible solvers from a specified directory.
 It also provides a unified framework to prepare puzzles, generate solver programs,
 store solutions, and refine solutions in a sequence.
 
-To implement a new solver, the user should create a new module in the `solver` directory,
+* To implement a new solver, the user should create a new module in the `solver` directory,
 create a class inheriting the `Solver` base class, and implement the `solve` method.
 The `refine` method can also be overridden if solution refinement is needed.
 """
@@ -97,6 +97,10 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
     """Convert the solution from [Clingo](https://potassco.org/clingo/) to a `Puzzle` object and refine it.
 
     * The solution refiner is based on the puzzle name and the corresponding solver module. It does nothing by default.
+
+    * Since the solution from [Clingo](https://potassco.org/clingo/) is in a raw string format, this function
+      will parse the string and fill in the corresponding attributes of the `Puzzle` object. The parsing order
+      will be: edges, lines, texts (numbers/contents), triangle symbols, colors, other symbols and debugging elements.
 
     Args:
         puzzle: A `Puzzle` object without stored solution.
