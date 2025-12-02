@@ -34,8 +34,9 @@ theme:
     - navigation.instant.progress
     - navigation.top
     - navigation.tracking
-    - search.suggest
     - search.highlight
+    - search.suggest
+    - toc.follow
 copyright: Copyright &copy; 2023-2025 Tony Xiang and Yaoyu Zhu <br> Dual licensed under GPL 3.0 and Apache 2.0
 repo_url: https://github.com/T0nyX1ang/noqx
 repo_name: T0nyX1ang/noqx
@@ -48,12 +49,24 @@ plugins:
           options:
             docstring_section_style: table
             group_by_category: false
+            line_length: 88
             members_order: source
+            merge_init_into_class: true
+            parameter_headings: true
+            type_parameter_headings: true
+            separate_signature: true
+            show_bases: false
+            show_root_heading: true
+            show_signature_annotations: true
+            show_signature_type_parameters: true
+            show_source: true
             show_symbol_type_heading: true
             show_symbol_type_toc: true
+            signature_crossrefs: true
+            summary: true
   - git-revision-date-localized:
       type: timeago
-      locale: zh
+      locale: en
       fallback_to_build_date: true
 markdown_extensions:
   - admonition
