@@ -4,6 +4,7 @@ site_description: Extended logic puzzle solver of Noq.
 nav:
   - Puzzle Elements:
       - Base Encodings: puzzle/base.md
+      - Penpa Encodings: puzzle/penpa.md
   - Solver Manager: manager.md
   - Clingo Backend: clingo.md
 theme:
@@ -47,15 +48,14 @@ plugins:
       handlers:
         python:
           options:
-            docstring_section_style: table
-            group_by_category: false
+            docstring_section_style: list
+            filters: []
             line_length: 88
             members_order: source
-            merge_init_into_class: true
             parameter_headings: true
             type_parameter_headings: true
             separate_signature: true
-            show_bases: false
+            show_bases: true
             show_root_heading: true
             show_signature_annotations: true
             show_signature_type_parameters: true
@@ -85,5 +85,6 @@ markdown_extensions:
       slugify: !!python/object/apply:pymdownx.slugs.slugify
         kwds:
           case: lower
+
 watch:
   - noqx

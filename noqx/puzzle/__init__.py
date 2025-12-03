@@ -77,6 +77,10 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
                     **tapa-like** clues to indicate their positions inside a cell.
         * `sudoku_x`: The sudoku label with index x (x = 0 ~ 7). This label is often used for
                       **sudoku-like** clues to indicate their positions inside a cell.
+        * `symbol_x`: The symbol label with style x (x = 0 ~ n). This label is often used for
+                      indicating **symbols** inside a cell.
+        * `symbol_multiple_x`: The symbol label with style x (x = 0 ~ n). This label is often
+                               used for indicating **mulitple symbols** inside a cell.
         * other labels may be defined in specific puzzles, such as `hashi` and `nondango`.
 
     Args:
