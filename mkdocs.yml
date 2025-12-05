@@ -64,10 +64,6 @@ plugins:
             show_symbol_type_toc: true
             signature_crossrefs: true
             summary: true
-  - git-revision-date-localized:
-      type: timeago
-      locale: en
-      fallback_to_build_date: true
 markdown_extensions:
   - admonition
   - attr_list
