@@ -1,6 +1,6 @@
 """The Mejilink solver."""
 
-from typing import Dict
+from typing import Dict, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
@@ -48,7 +48,7 @@ class MejilinkSolver(Solver):
         self.add_program_line(bypass_area_edges())
 
         # construct the edge grid
-        edges: Dict[Point, bool] = {}
+        edges: Dict[Tuple[int, int, str, str], bool] = {}
         for r in range(puzzle.row):
             for c in range(puzzle.col + 1):
                 edges[Point(r, c, Direction.LEFT)] = True
