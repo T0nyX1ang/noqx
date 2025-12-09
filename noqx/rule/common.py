@@ -88,12 +88,42 @@ def fill_path(color: str = "black", directed: bool = False) -> str:
     return rule
 
 
-def fill_num(_range: Iterable[int], _type: str = "grid", _id: Union[int, str] = "A", color: Optional[str] = None) -> str:
-    """
-    Generate a rule that a cell numbered within {_range}.
-    {_range} should have the format "low..high", or "x;y;z" for a list of numbers.
+def fill_num(_range: Iterable[int], _type: str = "grid", _id: Optional[int] = None, color: Optional[str] = None) -> str:
+    """A rule for filling specified numbers in a grid or an area.
 
-    A grid fact or an area fact should be defined first.
+    * Filling numbers is similar to shading multiple colors in `shade_cc` rule, and the difference is that
+    the candidate number set is usually larger than the candidate color set. Meanwhile, the candidate number set
+    can be more flexible.
+
+    * The range is converted to the format `low..high` or `x;y;z` for a list of numbers in compliance with
+    [Clingo](https://potassco.org/clingo/) syntax. According to the performance tests in several puzzles,
+    it is recommended to **use continuous ranges** as much as possible.
+
+    Args:
+        _range: The range of numbers to be filled.
+        _type: The type of filling, can be either "grid" or "area".
+        _id: The ID of the area, only used when `_type` is "area".
+        color: The numbers **won't be filled in cells with** the specified color.
+
+    Raises:
+        ValueError: If the `_type` is other than "grid" or "area".
+
+    Example:
+        Here is a rule to fill numbers from `1` to `5` in a grid:
+        ```python
+            from noqx.rule.common import fill_num
+            rule = fill_num(_range=range(1, 6), _type="grid")
+        ```
+
+    Example:
+        Here is a rule to fill numbers `1`, `3`, `5`, `7` in an area with ID `2`, avoiding gray cells:
+        ```python
+            from noqx.rule.common import fill_num
+            rule = fill_num(_range=[1, 3, 5, 7], _type="area", _id=2, color="gray")
+        ```
+
+    Warning:
+        The `color` parameter is not intuitive in the current stage, please be cautious while using it.
     """
     color_part = "" if color is None else f"; {color}(R, C)"
 
@@ -116,7 +146,6 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: Union[int, str] = 
     if _type == "grid":
         return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- grid(R, C)."
 
-    if _type == "area":
         return f"{{ number(R, C, ({range_str})){color_part} }} = 1 :- area({_id}, R, C)."
 
     raise ValueError("Invalid type, must be one of 'grid', 'area'.")
