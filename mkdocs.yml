@@ -2,9 +2,11 @@ site_name: Noqx
 site_author: Tony Xiang
 site_description: Extended logic puzzle solver of Noq.
 nav:
-  - Puzzle Elements:
+  - Puzzle Encodings:
       - Base Encodings: puzzle/base.md
       - Penpa Encodings: puzzle/penpa.md
+  - Useful Rules:
+      - Common Rules: rule/common.md
   - Solver Manager: manager.md
   - Clingo Backend: clingo.md
 theme:
