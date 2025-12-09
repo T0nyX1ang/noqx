@@ -153,9 +153,6 @@ class Puzzle:
     def encode(self) -> str:  # pragma: no cover
         """Encode the puzzle object to the target content.
 
-        Returns:
-            The encoded puzzle content as a string.
-
         Raises:
             NotImplementedError: If this method is not implemented.
         """

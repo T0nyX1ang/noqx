@@ -101,7 +101,7 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
         ```
 
     Example:
-        Here is a rule to define multiple areas in a grid with the help of `full_bfs` function:
+        Here is a rule to define multiple areas in a grid with the help of `noqx.helper.full_bfs` function:
         ```python
             from noqx.rule.common import area
             from noqx.rule.helper import full_bfs

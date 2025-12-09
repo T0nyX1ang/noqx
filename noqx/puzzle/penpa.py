@@ -54,9 +54,6 @@ def _int_or_str(data: Union[int, str]) -> Union[int, str]:
 
     Args:
         data: The data to be converted.
-
-    Returns:
-        The converted integer or the original string.
     """
     return int(data) if isinstance(data, int) or data.isdigit() else data
 
@@ -70,9 +67,6 @@ def _style_convert(style: List[int]) -> int:
 
     Args:
         style: The style list to be converted.
-
-    Returns:
-        The converted integer style.
     """
     return int("".join(map(str, style)), 2)
 
@@ -88,9 +82,6 @@ def _category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, str
         r: The row index of the cell.
         c: The column index of the cell.
         category: The category code of the direction (allowed values: 0, 1, 2, 3).
-
-    Returns:
-        A tuple representing the converted coordination with stardard direction.
 
     Raises:
         ValueError: If the category code is invalid.
@@ -381,9 +372,6 @@ class PenpaPuzzle(Puzzle):
 
         Args:
             index: The [Penpa+](https://swaroopg92.github.io/penpa-edit/) index to be converted.
-
-        Returns:
-            A cascaded tuple representing the converted coordination (in tuple) and category.
         """
         top_margin, bottom_margin, left_margin, right_margin = self.margin
         real_row = self.row + top_margin + bottom_margin + 4
@@ -396,9 +384,6 @@ class PenpaPuzzle(Puzzle):
 
         * The process involves packing the puzzle elements into the solution dictionary,
         updating the relevant part of the Penpa+ content, and compressing it into a base64-encoded string.
-
-        Returns:
-            The encoded Penpa+ content.
         """
         self.solution = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[4]))
         self._pack_board()
@@ -530,9 +515,6 @@ class PenpaPuzzle(Puzzle):
         Args:
             coord: The coordination to be converted.
             category: The category code of the direction (default is 0).
-
-        Returns:
-            The converted [Penpa+](https://swaroopg92.github.io/penpa-edit/) index.
         """
         top_margin, bottom_margin, left_margin, right_margin = self.margin
         real_row = self.row + top_margin + bottom_margin + 4
