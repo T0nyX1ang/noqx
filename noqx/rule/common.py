@@ -399,7 +399,7 @@ def count(
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison. Available operators
-                are detailed in the `noqx.helper.target_encode` and `noqx.helper.reverse_op` function.
+                are detailed in the `noqx.helper.reverse_op` and `noqx.helper.target_encode` function.
         color: The specified color.
         _type: Acceptable region types, can be either `grid`, `row`, `col` or `area`.
         _id: The ID of the `area`, or the index of the `row` (from top to bottom) or `col` (from left to right).

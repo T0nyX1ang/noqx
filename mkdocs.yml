@@ -7,6 +7,7 @@ nav:
       - Penpa Encodings: puzzle/penpa.md
   - Useful Rules:
       - Common Rules: rule/common.md
+      - Helper Functions: rule/helper.md
   - Solver Manager: manager.md
   - Clingo Backend: clingo.md
 theme:
