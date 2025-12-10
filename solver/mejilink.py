@@ -62,8 +62,8 @@ class MejilinkSolver(Solver):
             if label == "delete" and not draw:
                 edges[Point(r, c, d)] = False
 
-        areas = full_bfs(puzzle.row, puzzle.col, edges)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, edges)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=edges))
             self.add_program_line(f":- #count {{ (R, C, D): bypass_area_edges({i}, R, C, D) }} != {len(ar)}.")

@@ -37,8 +37,8 @@ class StarBattleSolver(Solver):
         self.add_program_line(count(num_stars, color="star__2", _type="row"))
         self.add_program_line(count(num_stars, color="star__2", _type="col"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(num_stars, color="star__2", _type="area", _id=i))
 

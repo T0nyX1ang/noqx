@@ -36,8 +36,8 @@ class NewsSolver(Solver):
         self.add_program_line(unique_num(color="grid", _type="area"))
         self.add_program_line(news_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, 5), color="white", _type="area", _id=i))
             self.add_program_line(count(len(ar) - 2, color="white", _type="area", _id=i))

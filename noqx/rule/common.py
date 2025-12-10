@@ -106,8 +106,8 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
             from noqx.rule.common import area
             from noqx.rule.helper import full_bfs
             rule = ""
-            areas = full_bfs(...)  # detailed in the "full_bfs" documentation
-            for i, (ar, rc) in enumerate(areas.items()):
+            rooms = full_bfs(...)  # detailed in the "full_bfs" documentation
+            for i, (ar, rc) in enumerate(rooms.items()):
                 rule += area(_id=i, src_cells=ar) + "\\n"
         ```
     """

@@ -51,8 +51,8 @@ class RailPoolSolver(Solver):
         self.add_program_line(single_loop(color="railpool"))
         self.add_program_line(len_segment_area(color="railpool"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             if rc:
                 len_data = 0

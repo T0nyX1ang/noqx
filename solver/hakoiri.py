@@ -31,8 +31,8 @@ class HakoiriSolver(Solver):
         self.add_program_line(avoid_adjacent_color(color="ox_E__3", adj_type=8))
         self.add_program_line(grid_color_connected(color="not white", grid_size=(puzzle.row, puzzle.col)))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(1, color="ox_E__1", _type="area", _id=i))
             self.add_program_line(count(1, color="ox_E__2", _type="area", _id=i))

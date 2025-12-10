@@ -26,8 +26,8 @@ class CojunSolver(Solver):
         self.add_program_line(avoid_num_adjacent(adj_type=4))
         self.add_program_line(":- area(A, R, C), area(A, R + 1, C), number(R, C, N1), number(R + 1, C, N2), N1 < N2.")
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i))
 

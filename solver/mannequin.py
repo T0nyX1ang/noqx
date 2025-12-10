@@ -55,8 +55,8 @@ class MannequinSolver(Solver):
         self.add_program_line(distance_in_area(grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(mannequin_constraint(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(target=2, color="gray", _type="area", _id=i))
             if rc:

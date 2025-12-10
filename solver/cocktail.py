@@ -36,8 +36,8 @@ class CocktailSolver(Solver):
         self.add_program_line(area_color_connected(color="gray", adj_type=4))
         self.add_program_line(avoid_rect(2, 2, color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             if rc:
                 num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))

@@ -45,8 +45,8 @@ class UsooneSolver(Solver):
         self.add_program_line("ox_E__1(R, C) :- grid(R, C), clue(_, R, C, _), not wrong_clue(_, R, C).")
         self.add_program_line("ox_E__7(R, C) :- grid(R, C), clue(_, R, C, _), wrong_clue(_, R, C).")
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             for r, c in ar:
                 if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
                     num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]

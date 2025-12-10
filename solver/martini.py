@@ -49,8 +49,8 @@ class MartiniSolver(Solver):
         self.add_program_line(area_color_connected(color="gray", adj_type=4))
         self.add_program_line(grid_color_connected(color="gray", adj_type=8))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():

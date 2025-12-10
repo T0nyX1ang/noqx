@@ -42,8 +42,8 @@ class PutteriaSolver(Solver):
         self.add_program_line(unique_num(color="not gray", _type="row"))
         self.add_program_line(unique_num(color="not gray", _type="col"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(len(ar), len(ar) + 1), _type="area", _id=i, color="gray"))
 

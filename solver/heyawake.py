@@ -132,8 +132,8 @@ class HeyawakeSolver(Solver):
         self.add_program_line(avoid_diamond_pattern(color="gray"))
         self.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
             if rc:

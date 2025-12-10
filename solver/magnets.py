@@ -35,8 +35,8 @@ class MagnetsSolver(Solver):
         self.add_program_line(adjacent())
         self.add_program_line(magnet_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             fail_false(len(ar) == 2, "All regions must be of size 2.")
             self.add_program_line(area(_id=i, src_cells=ar))
 

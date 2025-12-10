@@ -204,7 +204,7 @@ def full_bfs(
         ```python
             from noqx.rule.helper import full_bfs
 
-            areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+            rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
         ```
     """
     excluded_cells = set() if exclude is None else set(exclude)

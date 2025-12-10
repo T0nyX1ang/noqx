@@ -31,8 +31,8 @@ class NorinoriSolver(Solver):
         self.add_program_line(adjacent())
         self.add_program_line(nori_adjacent(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(2, color="gray", _type="area", _id=i))
 

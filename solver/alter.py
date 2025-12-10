@@ -52,8 +52,8 @@ class AlterSolver(Solver):
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(alternation_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(1, color="ox_E__1", _type="area", _id=i))
             self.add_program_line(count(1, color="ox_E__2", _type="area", _id=i))
