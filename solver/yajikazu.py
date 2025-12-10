@@ -40,7 +40,7 @@ class YajiKazuSolver(Solver):
             fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
             num, d = clue.split("_")
             fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
-            self.add_program_line(yaji_count(int(num), (r, c), int(d), color="gray", unshade_clue=False))
+            self.add_program_line(yaji_count(int(num), (r, c), int(d), color="gray", unshade_src=False))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
