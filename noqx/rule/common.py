@@ -1,4 +1,4 @@
-"""Generating commonly used rules for the solver."""
+"""Generate commonly used rules for the solver."""
 
 from typing import Iterable, Optional, Tuple, Union
 
