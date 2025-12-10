@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, count, display, grid, shade_cc
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -26,9 +26,9 @@ class HakoiriSolver(Solver):
         self.add_program_line(shade_cc(colors=["ox_E__1", "ox_E__2", "ox_E__3", "white"]))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type=8))
-        self.add_program_line(avoid_adjacent_color(color="ox_E__1", adj_type=8))
-        self.add_program_line(avoid_adjacent_color(color="ox_E__2", adj_type=8))
-        self.add_program_line(avoid_adjacent_color(color="ox_E__3", adj_type=8))
+        self.add_program_line(avoid_same_color_adjacent(color="ox_E__1", adj_type=8))
+        self.add_program_line(avoid_same_color_adjacent(color="ox_E__2", adj_type=8))
+        self.add_program_line(avoid_same_color_adjacent(color="ox_E__3", adj_type=8))
         self.add_program_line(grid_color_connected(color="not white", grid_size=(puzzle.row, puzzle.col)))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)

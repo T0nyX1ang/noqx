@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 
 
 class StarBattleSolver(Solver):
@@ -32,7 +32,7 @@ class StarBattleSolver(Solver):
         self.add_program_line(shade_c(color="star__2"))
 
         self.add_program_line(adjacent(_type=8))
-        self.add_program_line(avoid_adjacent_color(color="star__2", adj_type=8))
+        self.add_program_line(avoid_same_color_adjacent(color="star__2", adj_type=8))
 
         self.add_program_line(count(num_stars, color="star__2", _type="row"))
         self.add_program_line(count(num_stars, color="star__2", _type="col"))

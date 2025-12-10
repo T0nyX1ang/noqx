@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -39,7 +39,7 @@ class UsooneSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
         self.add_program_line(adjacent())
-        self.add_program_line(avoid_adjacent_color(color="gray"))
+        self.add_program_line(avoid_same_color_adjacent(color="gray"))
         self.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(uso_one_constraints(color="gray"))
         self.add_program_line("ox_E__1(R, C) :- grid(R, C), clue(_, R, C, _), not wrong_clue(_, R, C).")

@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 def numrope_constraint() -> str:
@@ -40,7 +40,7 @@ class NumRopeSolver(Solver):
         self.add_program_line(fill_num(_range=range(1, 10)))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(avoid_num_adjacent(adj_type=4))
+        self.add_program_line(avoid_same_number_adjacent(adj_type=4))
         self.add_program_line(numrope_constraint())
 
         for (r, c, _, d), draw in puzzle.line.items():

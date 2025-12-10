@@ -12,7 +12,7 @@ def putteria_fill_constraint() -> str:
     return ":- area(A, _, _), #count { R, C : area(A, R, C), number(R, C, N) } != 1."
 
 
-def avoid_num_adjacent(adj_type: int = 4) -> str:
+def avoid_same_number_adjacent(adj_type: int = 4) -> str:
     """
     Generate a constraint to avoid adjacent cells with the same number.
 
@@ -38,7 +38,7 @@ class PutteriaSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(adjacent())
-        self.add_program_line(avoid_num_adjacent())
+        self.add_program_line(avoid_same_number_adjacent())
         self.add_program_line(unique_num(color="not gray", _type="row"))
         self.add_program_line(unique_num(color="not gray", _type="col"))
 

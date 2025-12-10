@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 def meander_constraint(_id: int, area_size: int) -> str:
@@ -43,7 +43,7 @@ class MeanderSolver(Solver):
         self.add_program_line(grid(n, n))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type=8))
-        self.add_program_line(avoid_num_adjacent(adj_type=8))
+        self.add_program_line(avoid_same_number_adjacent(adj_type=8))
         self.add_program_line(unique_num(_type="area", color="grid"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)

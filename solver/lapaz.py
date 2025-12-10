@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, edge, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.shape import OMINOES, all_shapes, general_shape
 
 
@@ -43,7 +43,7 @@ class LaPazSolver(Solver):
         self.add_program_line(shade_c(color="black"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="edge"))
-        self.add_program_line(avoid_adjacent_color(color="black", adj_type=4))
+        self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
         self.add_program_line(edge_surrounding_color(color="black"))
         self.add_program_line(lapaz_constraint(color="black"))
 
