@@ -8,6 +8,7 @@ nav:
   - Useful Rules:
       - Common Rules: rule/common.md
       - Adjacency Rules: rule/neighbor.md
+      - Connectivity Rules: rule/reachable.md
       - Miscellaneous Rules: rule/variety.md
       - Helper Functions: rule/helper.md
   - Solver Manager: manager.md
