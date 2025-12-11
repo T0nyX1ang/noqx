@@ -20,13 +20,6 @@ def tag_encode(name: str, *data: Union[str, int, None]) -> str:
         name: The name of the tag.
         *data: Additional data to be included in the tag. The recommended data sequence is `base` type,
               `region` type, `auxiliary` type, `adjacent` type and `color`. Moreover, `None` values are ignored.
-
-    Example:
-        Here is an example of generating a tag for four-way reachability for black cells in a grid:
-        ```python
-            from noqx.rule.helper import tag_encode
-            tag = tag_encode("reachable", "grid", None, "adj", 4, "black")
-        ```
     """
     tag_data = [name]
     for d in data:  # recommended data sequence: *_type, src_r, src_c, color
@@ -46,10 +39,7 @@ def reverse_op(op: str) -> str:
     * In most cases, this function does not need to be called, otherwise, the `target_encode` function is more
     frequently used.
 
-    Args:
-        op: The operator to be reversed. Available operators are: `eq`, `ge`, `gt`, `le`, `lt`, `ne`.
-
-    Example:
+    Note:
         Here is a function from the Tatamibari puzzle, which should include a manual rule to compare the
         height and the width of a rectangle.
         ```python
@@ -65,6 +55,9 @@ def reverse_op(op: str) -> str:
 
                 return f":- {count_r}, {count_c}, CR {rop} CC."
         ```
+
+    Args:
+        op: The operator to be reversed. Available operators are: `eq`, `ge`, `gt`, `le`, `lt`, `ne`.
     """
     op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
     return op_rev_dict[op]
@@ -78,9 +71,6 @@ def target_encode(target: Union[int, Tuple[str, int]]) -> Tuple[str, int]:
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
                 If the number is provided only, the `equivalent` operator is assumed.
-
-    Example:
-        `noqx.common.count` in the common rules is a good example to start with.
     """
     if isinstance(target, int):
         return ("!=", target)
@@ -99,22 +89,6 @@ def validate_type(_type: Optional[Union[int, str]], target_type: Union[int, str,
 
     Raises:
         ValueError: If the type does not match the target.
-
-    Example:
-        Here is an example to validate the adjacency type of a cell:
-        ```python
-            from noqx.rule.helper import validate_type
-
-            validate_type(adj_type, (4, 8, "x"))
-        ```
-
-    Example:
-        Here is an example to validate the label type of a cell:
-        ```python
-            from noqx.rule.helper import validate_type
-
-            validate_type(label, "normal")
-        ```
     """
     if _type is None:
         raise ValueError("Type cannot be 'None'.")
@@ -139,15 +113,6 @@ def validate_direction(r: int, c: int, d: Optional[str], target: str = Direction
 
     Raises:
         ValueError: If the direction does not match the target.
-
-    Example:
-        Here is an example to validate the element `(2, 3)` is placed in the left:
-        ```python
-            from noqx.rule.helper import validate_direction
-            from noqx.puzzle import Direction
-
-            validate_direction(2, 3, Direction.LEFT)
-        ```
     """
     if d != target:
         raise ValueError(f"The element in ({r}, {c}) should be placed in the {target}.")
@@ -164,15 +129,6 @@ def fail_false(expr: bool, msg: str):
 
     Raises:
         ValueError: If the expression is false.
-
-    Example:
-        Here is an example to check the color at `(2, 3)` is black:
-        ```python
-            from noqx.rule.helper import fail_false
-            from noqx.puzzle import Point, Direction
-            color = puzzle.surface.get(Point(2, 3, Direction.CENTER))
-            fail_false(color == "black", "The cell at (2, 3) should be black.")
-        ```
     """
     if expr is False:
         raise ValueError(msg)
@@ -198,14 +154,6 @@ def full_bfs(
         clues: The clues in the grid stored in a dictionary, the format is the same to the `text` attribute
                in the `Puzzle` class.
         exclude: The cells to be excluded from the BFS.
-
-    Example:
-        Here is an example to get all the rooms in a grid with clues:
-        ```python
-            from noqx.rule.helper import full_bfs
-
-            rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        ```
     """
     excluded_cells = set() if exclude is None else set(exclude)
     unexplored_cells = {(r, c) for c in range(cols) for r in range(rows) if (r, c) not in excluded_cells}

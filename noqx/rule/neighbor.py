@@ -25,13 +25,6 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
 
     Raises:
         ValueError: If the adjacency type is invalid.
-
-    Example:
-        Here is an example to define the 8-directional adjacency:
-        ```python
-            from noqx.rule.neighbor import adjacent
-            rule = adjacent(_type=8)
-        ```
     """
     rule = f"adj_{_type}(R, C, R, C) :- grid(R, C).\n" if include_self else ""
 
@@ -77,13 +70,6 @@ def avoid_same_color_adjacent(color: str = "black", adj_type: Union[int, str] = 
     Args:
         color: The color to be checked.
         adj_type: The type of adjacency.
-
-    Example:
-        Here is an example to avoid two adjacent (8-directional) gray cells in a grid:
-        ```python
-            from noqx.rule.neighbor import avoid_same_color_adjacent
-            rule = avoid_same_color_adjacent(color="gray", adj_type=8)
-        ```
     """
     return f":- {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1)."
 
@@ -93,13 +79,6 @@ def avoid_same_number_adjacent(adj_type: Union[int, str] = 4) -> str:
 
     Args:
         adj_type: The type of adjacency.
-
-    Example:
-        Here is an example to avoid two adjacent (4-directional) cells having the same number in a grid:
-        ```python
-            from noqx.rule.neighbor import avoid_same_number_adjacent
-            rule = avoid_same_number_adjacent(adj_type=4)
-        ```
     """
     rule = f":- number(R, C, N), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1)."
     return rule
@@ -115,13 +94,6 @@ def count_adjacent(
         src_cell: The source cell as a tuple of (`row`, `col`).
         color: The color to be checked.
         adj_type: The type of adjacency.
-
-    Example:
-        Here is an example to ensure there are two adjacent (4-directional) black cells around the cell (2, 3):
-        ```python
-            from noqx.rule.neighbor import count_adjacent
-            rule = count_adjacent(target=2, src_cell=(2, 3), color="black", adj_type=4)
-        ```
     """
     src_r, src_c = src_cell
     rop, num = target_encode(target)
@@ -134,13 +106,6 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
         src_cell: The source cell as a tuple of (`row`, `col`).
-
-    Example:
-        Here is an example to ensure there are at least three edges around the cell (2, 3):
-        ```python
-            from noqx.rule.neighbor import count_adjacent_edges
-            rule = count_adjacent_edges(target=("ge", 3), src_cell=(2, 3))
-        ```
     """
     src_r, src_c = src_cell
     rop, num = target_encode(target)
@@ -158,13 +123,7 @@ def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple
     Although it is possible to represent the borders with ASP logic, it is better to calculate the borders
     with Python for performance consideration.
 
-    Args:
-        _id: The ID of the area.
-        src_cells: The cells in the area as a list of tuples of (`row`, `col`).
-        edge: The edges of the grid stored in a dictionary, the format is the same to the `edge` attribute
-              in the `Puzzle` class.
-
-    Example:
+    Note:
         Here is an example to define the border of an area with the help of `noqx.helper.full_bfs` function:
         ```python
             from noqx.rule.neighbor import area_border
@@ -173,6 +132,12 @@ def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple
             for i, (ar, rc) in enumerate(rooms.items()):
                 self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
         ```
+
+    Args:
+        _id: The ID of the area.
+        src_cells: The cells in the area as a list of tuples of (`row`, `col`).
+        edge: The edges of the grid stored in a dictionary, the format is the same to the `edge` attribute
+              in the `Puzzle` class.
     """
     edges = set()
     src_cells = set(src_cells)
@@ -212,13 +177,6 @@ def area_adjacent(adj_type: Union[int, str] = 4, color: Optional[str] = None) ->
         adj_type: The type of adjacency.
         color: The color to be checked.
 
-    Example:
-        Here is an example to define the adjacent areas based on 4-directional adjacency and black color:
-        ```python
-            from noqx.rule.neighbor import area_adjacent
-            rule = area_adjacent(adj_type=4, color="black")
-        ```
-
     Warning:
         To simplify the grounding size, the adjacency of the areas is directional, i.e., area `A` is adjacent
         to area `B` if the ID of area `A` is less than the ID of area `B`, and there share at least one common edge.
@@ -235,12 +193,5 @@ def area_same_color(color: str = "black") -> str:
 
     Args:
         color: The color to be checked.
-
-    Example:
-        Here is an example to ensure all cells in the same area are black:
-        ```python
-            from noqx.rule.neighbor import area_same_color
-            rule = area_same_color(color="black")
-        ```
     """
     return f":- area(A, R, C), area(A, R1, C1), {color}(R, C), not {color}(R1, C1)."

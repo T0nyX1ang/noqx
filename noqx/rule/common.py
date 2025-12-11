@@ -13,14 +13,6 @@ def display(item: str = "black", size: int = 2) -> str:
     Args:
         item: The item to be displayed.
         size: The arity of the item.
-
-    Example:
-        If `gray(R, C)` is used to mark gray cells, then the following rule will display
-        all gray cells in the final output:
-        ```python
-            from noqx.rule.common import display
-            rule = display(item="gray")
-        ```
     """
     return f"#show {item}/{size}."
 
@@ -32,21 +24,17 @@ def defined(item: str, size: int = 2) -> str:
 
     * To mark multiple items as defined, call this function multiple times.
 
-    Args:
-        item: The item to be defined.
-        size: The arity of the item.
-
-    Example:
+    Note:
         Here is a rule to shade gray cells from a grid without black cells:
         ```
             { gray(R, C) } :- grid(R, C), not black(R, C).
         ```
         If there is no black cells in the puzzle, the solver may raise a warning that `black/2` is undefined.
-        To avoid this, we can add the following defined rule:
-        ```python
-            from noqx.rule.common import defined
-            rule = defined(item="black")
-        ```
+        To avoid this warning, the `defined` rule can be applied.
+
+    Args:
+        item: The item to be defined.
+        size: The arity of the item.
     """
     return f"#defined {item}/{size}."
 
@@ -65,15 +53,6 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
         rows: The number of rows in the grid.
         cols: The number of columns in the grid.
         with_holes: Whether the grid contains holes.
-
-    Example:
-        Here is a rule to define a `5 x 5` grid with holes at `(1, 2)` and `(3, 4)`:
-        ```python
-            from noqx.rule.common import grid
-            rule = "hole(1, 2)."
-            rule += "hole(3, 4)."
-            rule += grid(5, 5, with_holes=True)
-        ```
     """
     if with_holes:
         return f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
@@ -92,24 +71,6 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
     Args:
         _id: The unique ID of the area.
         src_cells: The cells belonging to the area.
-
-    Example:
-        Here is a rule to define an area with ID `1` and cells `(0, 0)`, `(0, 1)`, `(1, 0)`, `(1, 1)`:
-        ```python
-            from noqx.rule.common import area
-            rule = area(1, [(0, 0), (0, 1), (1, 0), (1, 1)])
-        ```
-
-    Example:
-        Here is a rule to define multiple areas in a grid with the help of `noqx.helper.full_bfs` function:
-        ```python
-            from noqx.rule.common import area
-            from noqx.rule.helper import full_bfs
-            rule = ""
-            rooms = full_bfs(...)  # detailed in the "full_bfs" documentation
-            for i, (ar, rc) in enumerate(rooms.items()):
-                rule += area(_id=i, src_cells=ar) + "\\n"
-        ```
     """
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
@@ -124,13 +85,6 @@ def shade_c(color: str = "black") -> str:
 
     Args:
         color: The color to be shaded.
-
-    Example:
-        Here is a rule to shade black cells from a grid:
-        ```python
-            from noqx.rule.common import shade_c
-            rule = shade_c(color="black")
-        ```
     """
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
@@ -144,13 +98,6 @@ def shade_cc(colors: Iterable[str]) -> str:
 
     Args:
         colors: The colors to be shaded.
-
-    Example:
-        Here is a rule to shade cells with either black, gray or green color from a grid:
-        ```python
-            from noqx.rule.common import shade_cc
-            rule = shade_cc(colors=["black", "gray", "green"])
-        ```
 
     Warning:
         If you only specify **one color**, all the cells in the grid will be shaded with this color.
@@ -176,13 +123,6 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
     Args:
         color: The specified color.
         invert: The inverted color.
-
-    Example:
-        Here is a rule to define green cells as the inverted color of black cells from a grid
-        ```python
-            from noqx.rule.common import invert_c
-            rule = invert_c(color="black", invert="green")
-        ```
     """
     return f"{invert}(R, C) :- grid(R, C), not {color}(R, C)."
 
@@ -196,18 +136,7 @@ def edge(rows: int, cols: int) -> str:
     * The outside border of a grid is automatically drawn. However, if there are holes in the grid,
     the edges around the holes need to be drawn manually.
 
-    Args:
-        rows: The number of rows in the grid.
-        cols: The number of columns in the grid.
-
-    Example:
-        Here is a rule to define edges around cells in a `5 x 5` grid:
-        ```python
-            from noqx.rule.common import edge
-            rule = edge(5, 5)
-        ```
-
-    Example:
+    Note:
         Assume there is a hole at `(r, c)`. To define edges around this hole, some additional codes
         should be written. Moreover, if there are another hole adjacent to this hole, the shared edge
         should not be drawn.
@@ -218,6 +147,10 @@ def edge(rows: int, cols: int) -> str:
                 direc = "left" if c1 != c else "top"
                 rule += f"{prefix}edge_{direc}({r2}, {c2}).\\n"
         ```
+
+    Args:
+        rows: The number of rows in the grid.
+        cols: The number of columns in the grid.
     """
     fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
@@ -233,24 +166,8 @@ def edge(rows: int, cols: int) -> str:
 def direction(directions: Union[str, list]) -> str:
     """A rule for all possible directions.
 
-    * The directions can be specified either as a string or as a list of strings.
-
     Args:
-        directions: The directions to be defined.
-
-    Example:
-        Here is a rule to define four cardinal directions:
-        ```python
-            from noqx.rule.common import direction
-            rule = direction(directions="lurd")
-        ```
-
-    Example:
-        Here is a rule to define four diagonal directions:
-        ```python
-            from noqx.rule.common import direction
-            rule = direction(directions=["lu", "ru", "ld", "rd"])
-        ```
+        directions: The directions to be defined, can be specified either as a string or as a list of strings.
 
     Warning:
         In [Clingo](https://potassco.org/clingo/), constant strings should be enclosed in double quotes.
@@ -273,13 +190,6 @@ def fill_path(color: str = "black", directed: bool = False) -> str:
     Args:
         color: The specified color.
         directed: Whether the path is directed.
-
-    Example:
-        Here is a rule to fill an undirected path with black color in a grid:
-        ```python
-            from noqx.rule.common import fill_path
-            rule = fill_path(color="black", directed=False)
-        ```
     """
     if directed:
         rule = f"{{ grid_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
@@ -309,20 +219,6 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: Optional[int] = No
 
     Raises:
         ValueError: If the `_type` is other than `grid` or `area`.
-
-    Example:
-        Here is a rule to fill numbers from `1` to `5` in a grid:
-        ```python
-            from noqx.rule.common import fill_num
-            rule = fill_num(_range=range(1, 6), _type="grid")
-        ```
-
-    Example:
-        Here is a rule to fill numbers `1`, `3`, `5`, `7` in an area with ID `2`, avoiding gray cells:
-        ```python
-            from noqx.rule.common import fill_num
-            rule = fill_num(_range=[1, 3, 5, 7], _type="area", _id=2, color="gray")
-        ```
 
     Warning:
         The `color` parameter is not intuitive in the current stage, please be cautious while using it.
@@ -367,13 +263,6 @@ def unique_num(color: str = "black", _type: str = "row") -> str:
     Raises:
         ValueError: If the `_type` is other than `row`, `col` or `area`.
 
-    Example:
-        Here is a rule to check the uniqueness of the numbers in every column, avoiding gray cells:
-        ```python
-            from noqx.rule.common import unique_num
-            rule = unique_num(color="gray", _type="col")
-        ```
-
     Warning:
         The `color` parameter is not intuitive in the current stage, please be cautious while using it.
     """
@@ -408,34 +297,6 @@ def count(
 
     Raises:
         ValueError: If the `_type` is other than `grid`, `row`, `col` or `area`.
-
-    Example:
-        Here is a rule to ensure that there are exactly `5` gray cells in the second row:
-        ```python
-            from noqx.rule.common import count
-            rule = count(target=5, color="gray", _type="row", _id=1)
-        ```
-
-    Example:
-        Here is a rule to ensure that there are at least `3` black cells in every column:
-        ```python
-            from noqx.rule.common import count
-            rule = count(target=("ge", 3), color="black", _type="col")
-        ```
-
-    Example:
-        Here is a rule to ensure that there are no more than `4` green cells in the area with ID `2`:
-        ```python
-            from noqx.rule.common import count
-            rule = count(target=("le", 4), color="green", _type="area", _id=2)
-        ```
-
-    Example:
-        Here is a rule to ensure that there are at least `1` black cell in a grid:
-        ```python
-            from noqx.rule.common import count
-            rule = count(target=("ge", 1), color="black", _type="grid")
-        ```
     """
     rop, num = target_encode(target)
 
