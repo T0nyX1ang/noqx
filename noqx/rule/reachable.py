@@ -98,7 +98,7 @@ def grid_src_color_connected(
     * The complexity of this cell is mainly based on the size of cells connected to the source cell.
 
     Args:
-        src_cell: The source cell in (`row`, `column`).
+        src_cell: The source cell in (`row`, `col`).
         include_cells: The list of cells to be included as reachable cells to the source cell.
         exclude_cells: The list of cells to be excluded from reachable cells to the source cell.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
@@ -144,7 +144,7 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     simplifies the grounding process.
 
     Args:
-        src_cell: The source cell in (`row`, `column`).
+        src_cell: The source cell in (`row`, `col`).
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `edge`).
     """
@@ -182,7 +182,7 @@ def count_reachable_src(
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
-        src_cell: The source cell in (`row`, `column`).
+        src_cell: The source cell in (`row`, `col`).
         main_type: The main type of the reachable rule (accepted types: `grid` or `bulb`).
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).

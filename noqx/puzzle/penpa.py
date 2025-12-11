@@ -368,7 +368,7 @@ class PenpaPuzzle(Puzzle):
         """Convert the [Penpa+](https://swaroopg92.github.io/penpa-edit/) index to coordinate.
 
         * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the coordination (with margins) and category of a cell is encoded
-        as a single integer index. This function helps to convert the index back to the ((`row`, `column`), `category`) format.
+        as a single integer index. This function helps to convert the index back to the ((`row`, `col`), `category`) format.
 
         Args:
             index: The [Penpa+](https://swaroopg92.github.io/penpa-edit/) index to be converted.
@@ -510,7 +510,7 @@ class PenpaPuzzle(Puzzle):
         """Convert the coordinate to [Penpa+](https://swaroopg92.github.io/penpa-edit/) index.
 
         * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the coordination (with margins) and category of a cell is encoded
-        as a single integer index. This function helps to convert the ((`row`, `column`), `category`) format back to the index.
+        as a single integer index. This function helps to convert the ((`row`, `col`), `category`) format back to the index.
 
         Args:
             coord: The coordination to be converted.

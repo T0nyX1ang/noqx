@@ -9,6 +9,7 @@ nav:
       - Common Rules: rule/common.md
       - Adjacency Rules: rule/neighbor.md
       - Connectivity Rules: rule/reachable.md
+      - Loop/Path Rules: rule/loop.md
       - Miscellaneous Rules: rule/variety.md
       - Helper Functions: rule/helper.md
   - Solver Manager: manager.md
