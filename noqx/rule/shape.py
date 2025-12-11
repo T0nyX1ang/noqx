@@ -361,8 +361,11 @@ def count_rect_size(
     return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
 
 
-def avoid_region_border_crossover() -> str:
-    """Avoid the crossover of the region border."""
+def avoid_edge_crossover() -> str:
+    """A rule to avoid the crossover shape of edges.
+
+    * This rule is useful in tatami-like puzzles.
+    """
     no_rect_adjacent_by_point = [
         "edge_left(R, C + 1)",
         "edge_left(R + 1, C + 1)",

@@ -5,7 +5,7 @@ from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.shape import OMINOES, all_shapes, avoid_region_border_crossover, general_shape
+from noqx.rule.shape import OMINOES, all_shapes, avoid_edge_crossover, general_shape
 
 
 class FillmatSolver(Solver):
@@ -34,7 +34,7 @@ class FillmatSolver(Solver):
         self.add_program_line(general_shape("fillmat", 3, OMINOES[3]["I"], color="grid", adj_type="edge"))
         self.add_program_line(general_shape("fillmat", 4, OMINOES[4]["I"], color="grid", adj_type="edge"))
         self.add_program_line(all_shapes("fillmat", color="grid"))
-        self.add_program_line(avoid_region_border_crossover())
+        self.add_program_line(avoid_edge_crossover())
 
         tag_be = tag_encode("belong_to_shape", "fillmat", "grid")
         self.add_program_line(
