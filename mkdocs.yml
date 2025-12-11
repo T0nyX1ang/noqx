@@ -3,18 +3,18 @@ site_author: Tony Xiang
 site_description: Extended logic puzzle solver of Noq.
 nav:
   - Puzzle Encodings:
-      - Base Encodings: puzzle/base.md
-      - Penpa Encodings: puzzle/penpa.md
+      - Base Encodings: noqx/puzzle/base.md
+      - Penpa Encodings: noqx/puzzle/penpa.md
   - Useful Rules:
-      - Common Rules: rule/common.md
-      - Adjacency Rules: rule/neighbor.md
-      - Connectivity Rules: rule/reachable.md
-      - Shape Rules: rule/shape.md
-      - Loop/Path Rules: rule/loop.md
-      - Miscellaneous Rules: rule/variety.md
-      - Helper Functions: rule/helper.md
-  - Solver Manager: manager.md
-  - Clingo Backend: clingo.md
+      - Common Rules: noqx/rule/common.md
+      - Adjacency Rules: noqx/rule/neighbor.md
+      - Connectivity Rules: noqx/rule/reachable.md
+      - Shape Rules: noqx/rule/shape.md
+      - Loop/Path Rules: noqx/rule/loop.md
+      - Miscellaneous Rules: noqx/rule/variety.md
+      - Helper Functions: noqx/rule/helper.md
+  - Solver Manager: noqx/manager.md
+  - Clingo Backend: noqx/clingo.md
 theme:
   name: material
   icon:
