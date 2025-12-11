@@ -24,29 +24,6 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     return constraint
 
 
-def intersect_loop(color: str = "white", path: bool = False) -> str:
-    """
-    Generate a loop (which can intersect itself) constraint with loop signs.
-
-    A grid fact and a grid_direction rule should be defined first.
-    """
-    rule = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 2.\n"
-    rule += "intersection(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 4.\n"
-    rule += "pass_by_loop(R, C) :- intersection(R, C).\n"
-
-    visit_constraints = ["not pass_by_loop(R, C)"]
-    if path:  # pragma: no cover
-        visit_constraints.append("not dead_end(R, C)")
-        rule += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
-
-    rule += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    rule += ':- grid(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").'
-    return rule
-
-
 def directed_loop(color: str = "white", path: bool = False) -> str:
     """
     Generate a directed loop constraint with loop signs.
