@@ -183,6 +183,9 @@ def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
         name: The name of the shape.
         color: The color to be checked.
         _type: The type of the shape rule (accepted types: "grid" or "area").
+
+    Warning:
+        The generated tags of the shapes are without the adjacency type and ID.
     """
     validate_type(_type, ("grid", "area"))
     tag = tag_encode("belong_to_shape", name, color)
@@ -206,9 +209,15 @@ def count_shape(
 ) -> str:
     """A rule to compare the number of certain shapes to a specified target.
 
-    Generates a constraint to count the number of a shape.
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        name: The name of the shape.
+        _id: The ID of the shape. If not provided, all the shapes with different IDs will be counted.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
 
-    A grid rule and a shape rule should be defined first.
+    Warning:
+        The generated tags of the shapes are without the adjacency type and ID.
     """
     validate_type(_type, ("grid", "area"))
     tag = tag_encode("shape", name, color)
@@ -226,10 +235,22 @@ def count_shape(
 
 
 def all_rect(color: str = "black", square: bool = False) -> str:
-    """
-    Generate a constraint to force rectangles.
+    """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
 
-    A grid rule should be defined first.
+    * The main concept of this rule is to define four helper predicates: `upleft`, `left`, `up`, and `remain`,
+    and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
+
+    * Due to technical reasons, the color cannot start with `not`, and the `noqx.common.invert_c` rule can help.
+
+    Args:
+        color: The color to be checked.
+        square: Whether to force the rectangles to be squares.
+
+    Raises:
+        ValueError: If the color starts with 'not'.
+
+    Warning:
+        This rule is available with only *one* color, since the helper predicates are not relevant to colors.
     """
     rule = ""
     if color.startswith("not"):
@@ -260,10 +281,10 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
 
 def all_rect_region(square: bool = False) -> str:
-    """
-    Generate a constraint to force rectangles.
+    """A rule to ensure that all the shapes (recognized by edges) in the grid are rectangles.
 
-    A grid rule and an edge rule should be defined first.
+    Args:
+        square: Whether to force the rectangles to be squares.
     """
     upleft = "upleft(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C).\n"
     left = "left(R, C) :- grid(R, C), upleft(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
@@ -298,10 +319,13 @@ def all_rect_region(square: bool = False) -> str:
 def avoid_rect(
     rect_r: int, rect_c: int, color: str = "black", corner: Tuple[Optional[int], Optional[int]] = (None, None)
 ) -> str:
-    """
-    Generates a constraint to avoid rectangular patterned {color} cells.
+    """A rule to avoid rectangular shapes of specified size in a grid.
 
-    A grid fact should be defined first.
+    Args:
+        rect_r: The height (rows) of the rectangle.
+        rect_c: The width (columns) of the rectangle.
+        color: The color to be checked.
+        corner: The corner of the rectangle in (`row`, `col`), set to `None` to check for any rows or cols.
     """
     corner_r, corner_c = corner
     corner_r = corner_r if corner_r is not None else "R"
@@ -318,10 +342,13 @@ def avoid_rect(
 
 
 def no_rect(color: str = "black") -> str:
-    """
-    Generate a constraint to avoid all-shaped rectangles.
+    """A rule to avoid rectangular shapes of any size in a grid.
 
-    A grid rule should be defined first.
+    * The main concept of this rule is to detect `L-shape` and ensure that
+    all the color cells are reachable through `L-shape`.
+
+    Args:
+        color: The color to be checked.
     """
     tag = tag_encode("reachable", "Lshape", "adj", 4, color)
 
@@ -343,10 +370,15 @@ def count_rect_size(
     color: Optional[str] = None,
     adj_type: Union[int, str] = 4,
 ) -> str:
-    """
-    Generate a constraint to count the size of a rectangular area starting from a source.
+    """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
 
-    A bulb_src_color_connected rule should be defined first.
+    * A `noqx.reachable.bulb_src_color_connected` rule should be applied first.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        src_cell: The source cell of the rectangle.
+        color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
     """
     if color is None:
         validate_type(adj_type, ("edge",))
