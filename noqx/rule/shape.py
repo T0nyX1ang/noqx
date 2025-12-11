@@ -39,23 +39,6 @@ OMINOES = {
 }
 
 
-def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[int, int]]:
-    """Get the neighbors of a cell."""
-    shape_4 = ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
-    shape_x = ((r - 1, c - 1), (r - 1, c + 1), (r + 1, c - 1), (r + 1, c + 1))
-
-    if _type == 4:
-        return shape_4
-
-    if _type == "x":
-        return shape_x
-
-    if _type == 8:
-        return shape_4 + shape_x
-
-    raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
-
-
 def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
     """
     Given a (possibly non-canonical) shape representation,
@@ -120,6 +103,23 @@ def general_shape(
 
     A grid rule and an adjacent rule should be defined first.
     """
+
+    def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[int, int]]:
+        """Get the neighbors of a cell."""
+        shape_4 = ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
+        shape_x = ((r - 1, c - 1), (r - 1, c + 1), (r + 1, c - 1), (r + 1, c + 1))
+
+        if _type == 4:
+            return shape_4
+
+        if _type == "x":
+            return shape_x
+
+        if _type == 8:
+            return shape_4 + shape_x
+
+        raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
+
     validate_type(_type, ("grid", "area"))
     if not deltas:
         raise ValueError("Shape coordinates must be provided.")
