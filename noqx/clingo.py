@@ -82,27 +82,21 @@ class ClingoSolver:
             handle.cancel()
 
     def solution(self) -> List[str]:
-        """Get the solutions from the model container.
-
-        Returns:
-            A list of solution strings by [Clingo](https://potassco.org/clingo/) models.
-        """
+        """Get the solutions from the model container."""
         return self.model
 
 
 def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
-    """A connector for the [Clingo](https://potassco.org/clingo/) solver, the puzzle, and the solutions.
+    """Run the solver and get the list of converted [Penpa+](https://swaroopg92.github.io/penpa-edit/) solution URLs.
 
-    * The connector prepares the puzzle, generates the program, runs the solver, and stores the solutions
+    * This is a connector for the [Clingo](https://potassco.org/clingo/) solver, the puzzle, and the solutions.
+    The connector prepares the puzzle, generates the program, runs the solver, and stores the solutions
     in a sequence. The solution time is also recorded for performance analysis.
 
     Args:
         puzzle_name: The name of the puzzle.
         puzzle_content: The puzzle content exported in [Penpa+](https://swaroopg92.github.io/penpa-edit/) format.
         param: Additional parameters for the puzzle.
-
-    Returns:
-        A dictionary containing the list of converted [Penpa+](https://swaroopg92.github.io/penpa-edit/) solution URLs.
 
     Raises:
         TimeoutError: If the solving process exceeds the time limit defined in `Config.time_limit`.
