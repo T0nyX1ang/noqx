@@ -48,8 +48,8 @@ class DoubleBackSolver(Solver):
             puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
             puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             arb = tuple(
                 filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar)
             )

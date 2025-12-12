@@ -44,8 +44,8 @@ class NothingSolver(Solver):
         self.add_program_line(avoid_area_adjacent(color="not anything"))
         self.add_program_line("nothing(A) :- area(A, R, C), not anything(R, C).")
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i).replace(":-", f":- not nothing({i}),"))

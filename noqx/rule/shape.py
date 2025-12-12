@@ -39,31 +39,19 @@ OMINOES = {
 }
 
 
-def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[int, int]]:
-    """Get the neighbors of a cell."""
-    shape_4 = ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
-    shape_x = ((r - 1, c - 1), (r - 1, c + 1), (r + 1, c - 1), (r + 1, c + 1))
-
-    if _type == 4:
-        return shape_4
-
-    if _type == "x":
-        return shape_x
-
-    if _type == 8:
-        return shape_4 + shape_x
-
-    raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
-
-
 def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
-    """
-    Given a (possibly non-canonical) shape representation,
+    """Convert a shape to its canonical representation.
 
-    Return the canonical representation of the shape, a tuple:
-        - in sorted order
-        - whose first element is (0, 0)
-        - whose other elements represent the offsets of the other cells from the first one
+    * The representation of a shape containing all the cells that consist of the shape, and:
+        * the first element can be any coordinate,
+        * the other element represent the offsets of the other cells from the first one.
+
+    * The **canonical** representation of the shape is a sorted tuple, and:
+        * the first element is `(0, 0)`,
+        * the other elements represent the offsets of the other cells from the first one.
+
+    Args:
+        shape: the representation of a shape.
     """
     shape = sorted(shape)
     root_r, root_c = shape[0]
@@ -74,25 +62,22 @@ def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, 
 def get_variants(
     shape: Iterable[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
 ) -> Set[Iterable[Tuple[int, int]]]:
-    """
-    Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
+    """Generate the equivalent variants for a shape.
 
-    allow_rotations = True iff shapes can be rotated
-    allow_reflections = True iff shapes can be reflected
+    Args:
+        shape: the representation of a shape.
+        allow_rotations: Whether the shapes can be rotated to build the variants.
+        allow_reflections: Whether the shapes can be reflected to build the variants.
     """
-    # build a set of functions that transform shapes
-    # in the desired ways
     functions = set()
     if allow_rotations:
         functions.add(lambda shape: canonicalize_shape((-c, r) for r, c in shape))
     if allow_reflections:
         functions.add(lambda shape: canonicalize_shape((-r, c) for r, c in shape))
 
-    # make a set of currently found shapes
     result = set()
     result.add(canonicalize_shape(shape))
 
-    # apply our functions to the items in this set
     all_shapes_covered = False
     while not all_shapes_covered:
         new_shapes = set()
@@ -114,19 +99,41 @@ def general_shape(
     adj_type: Union[int, str] = 4,
     simple: bool = False,
 ) -> str:
-    """
-    Generates a rule for general shapes (using bruteforce technique).
-    The deltas are the relative coordinates of the shape cells.
+    """A rule to define general shapes in a grid or an area.
 
-    A grid rule and an adjacent rule should be defined first.
+    * Two predicates will be generated, `shape` and `belong_to_shape`. The `shape` predicate
+    defines the shape pattern, while the `belong_to_shape` predicate defines whether a cell
+    belongs to a certain shape instance.
+
+    Args:
+        name: The name of the shape.
+        _id: The ID of the shape, needs to be unique.
+        deltas: The relative coordinates of the shape cells.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
+        simple: Whether to skip the adjacency re-checking.
+
+    Warning:
+        Although the shape representation does not require the connectivity of the shape,
+        it is recommended to ensure that the provided shape is connected. Some derived rules
+        may behave weird if the shape is not connected.
+
+    Warning:
+        The `simple` option is more efficient, but the use-case is limited. It is only recommended to use
+        in the `area` type, and every area only contains **one piece** of the shape.
     """
+
+    def get_neighbor(r: int, c: int) -> Iterable[Tuple[int, int]]:
+        """Get the 4-directional neighbors of a cell."""
+        return ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
+
     validate_type(_type, ("grid", "area"))
     if not deltas:
         raise ValueError("Shape coordinates must be provided.")
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
-    neighbor_type = adj_type if adj_type in [4, 8, "x"] else 4
     data = ""
 
     variants = get_variants(deltas, allow_rotations=True, allow_reflections=True)
@@ -147,7 +154,7 @@ def general_shape(
                     f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
                 )
 
-            for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
+            for nr, nc in get_neighbor(dr, dc):
                 if (nr, nc) in variant:
                     if adj_type not in [4, 8, "x"] and (dr, dc) < (nr, nc):
                         valid.add(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
@@ -170,10 +177,15 @@ def general_shape(
 
 
 def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
-    """
-    Generate a constraint to force all {color} cells are in defined shapes.
+    """A rule to ensure all the color cells belong to defined shapes in a grid or an area.
 
-    A grid rule and a shape/belong_to_shape rule should be defined first.
+    Args:
+        name: The name of the shape.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
+
+    Warning:
+        The generated tags of the shapes are without the adjacency type and ID.
     """
     validate_type(_type, ("grid", "area"))
     tag = tag_encode("belong_to_shape", name, color)
@@ -195,10 +207,17 @@ def count_shape(
     color: str = "black",
     _type: str = "grid",
 ) -> str:
-    """
-    Generates a constraint to count the number of a shape.
+    """A rule to compare the number of certain shapes to a specified target.
 
-    A grid rule and a shape rule should be defined first.
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        name: The name of the shape.
+        _id: The ID of the shape. If not provided, all the shapes with different IDs will be counted.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
+
+    Warning:
+        The generated tags of the shapes are without the adjacency type and ID.
     """
     validate_type(_type, ("grid", "area"))
     tag = tag_encode("shape", name, color)
@@ -210,16 +229,28 @@ def count_shape(
         rule = f":- {{ {tag}(R, C, {_id}, _) }} {rop} {num}."
 
     if _type == "area":
-        rule = f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
+        rule = f":- area(A, _, _), {{ {tag}(A, R, C, {_id}, _) }} {rop} {num}."
 
     return rule
 
 
 def all_rect(color: str = "black", square: bool = False) -> str:
-    """
-    Generate a constraint to force rectangles.
+    """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
 
-    A grid rule should be defined first.
+    * The main concept of this rule is to define four helper predicates: `upleft`, `left`, `up`, and `remain`,
+    and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
+
+    * Due to technical reasons, the color cannot start with `not`, and the `noqx.common.invert_c` rule can help.
+
+    Args:
+        color: The color to be checked.
+        square: Whether to force the rectangles to be squares.
+
+    Raises:
+        ValueError: If the color starts with 'not'.
+
+    Warning:
+        This rule is available with only *one* color, since the helper predicates are not relevant to colors.
     """
     rule = ""
     if color.startswith("not"):
@@ -250,10 +281,10 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
 
 def all_rect_region(square: bool = False) -> str:
-    """
-    Generate a constraint to force rectangles.
+    """A rule to ensure that all the shapes (recognized by edges) in the grid are rectangles.
 
-    A grid rule and an edge rule should be defined first.
+    Args:
+        square: Whether to force the rectangles to be squares.
     """
     upleft = "upleft(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C).\n"
     left = "left(R, C) :- grid(R, C), upleft(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
@@ -288,10 +319,13 @@ def all_rect_region(square: bool = False) -> str:
 def avoid_rect(
     rect_r: int, rect_c: int, color: str = "black", corner: Tuple[Optional[int], Optional[int]] = (None, None)
 ) -> str:
-    """
-    Generates a constraint to avoid rectangular patterned {color} cells.
+    """A rule to avoid rectangular shapes of specified size in a grid.
 
-    A grid fact should be defined first.
+    Args:
+        rect_r: The height (rows) of the rectangle.
+        rect_c: The width (columns) of the rectangle.
+        color: The color to be checked.
+        corner: The corner of the rectangle in (`row`, `col`), set to `None` to check for any rows or cols.
     """
     corner_r, corner_c = corner
     corner_r = corner_r if corner_r is not None else "R"
@@ -308,10 +342,13 @@ def avoid_rect(
 
 
 def no_rect(color: str = "black") -> str:
-    """
-    Generate a constraint to avoid all-shaped rectangles.
+    """A rule to avoid rectangular shapes of any size in a grid.
 
-    A grid rule should be defined first.
+    * The main concept of this rule is to detect `L-shape` and ensure that
+    all the color cells are reachable through `L-shape`.
+
+    Args:
+        color: The color to be checked.
     """
     tag = tag_encode("reachable", "Lshape", "adj", 4, color)
 
@@ -333,10 +370,15 @@ def count_rect_size(
     color: Optional[str] = None,
     adj_type: Union[int, str] = 4,
 ) -> str:
-    """
-    Generate a constraint to count the size of a rectangular area starting from a source.
+    """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
 
-    A bulb_src_color_connected rule should be defined first.
+    * A `noqx.reachable.bulb_src_color_connected` rule should be applied first.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        src_cell: The source cell of the rectangle.
+        color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
     """
     if color is None:
         validate_type(adj_type, ("edge",))
@@ -351,8 +393,11 @@ def count_rect_size(
     return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
 
 
-def avoid_region_border_crossover() -> str:
-    """Avoid the crossover of the region border."""
+def avoid_edge_crossover() -> str:
+    """A rule to avoid the crossover shape of edges.
+
+    * This rule is useful in tatami-like puzzles.
+    """
     no_rect_adjacent_by_point = [
         "edge_left(R, C + 1)",
         "edge_left(R + 1, C + 1)",

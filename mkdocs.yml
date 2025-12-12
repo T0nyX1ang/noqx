@@ -1,0 +1,95 @@
+site_name: Noqx
+site_author: Tony Xiang
+site_description: Extended logic puzzle solver of Noq.
+nav:
+  - Introduction: index.md
+  - Solver Manager: noqx/manager.md
+  - Puzzle Encodings:
+      - Base Encodings: noqx/puzzle/base.md
+      - Penpa Encodings: noqx/puzzle/penpa.md
+  - Useful Rules:
+      - Common Rules: noqx/rule/common.md
+      - Adjacency Rules: noqx/rule/neighbor.md
+      - Connectivity Rules: noqx/rule/reachable.md
+      - Shape Rules: noqx/rule/shape.md
+      - Loop/Path Rules: noqx/rule/loop.md
+      - Miscellaneous Rules: noqx/rule/variety.md
+      - Helper Functions: noqx/rule/helper.md
+  - Clingo Backend: noqx/clingo.md
+theme:
+  name: material
+  icon:
+    logo: material/puzzle-check
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: orange
+      toggle:
+        icon: material/weather-sunny
+        name: Dark
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: orange
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Light
+  language: en
+  features:
+    - content.code.copy
+    - navigation.footer
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
+copyright: Copyright &copy; 2023-2025 Tony Xiang and Yaoyu Zhu <br> Dual licensed under GPL 3.0 and Apache 2.0
+repo_url: https://github.com/T0nyX1ang/noqx
+repo_name: T0nyX1ang/noqx
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_section_style: list
+            filters: []
+            line_length: 88
+            members_order: source
+            parameter_headings: true
+            type_parameter_headings: true
+            separate_signature: true
+            show_bases: true
+            show_root_heading: true
+            show_signature_annotations: true
+            show_signature_type_parameters: true
+            show_source: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            signature_crossrefs: true
+            summary: true
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tilde
+  - toc:
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+
+watch:
+  - noqx

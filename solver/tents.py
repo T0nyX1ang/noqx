@@ -6,7 +6,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 
 
 def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
@@ -47,7 +47,7 @@ class TentsSolver(Solver):
         self.add_program_line(shade_c(color="tents__2"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type=8))
-        self.add_program_line(avoid_adjacent_color(color="tents__2", adj_type=8))
+        self.add_program_line(avoid_same_color_adjacent(color="tents__2", adj_type=8))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

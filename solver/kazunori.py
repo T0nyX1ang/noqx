@@ -46,8 +46,8 @@ class KazunoriSolver(Solver):
         self.add_program_line(avoid_2x2_number())
         self.add_program_line(area_num_adjacent(adj_type=4))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             fail_false(len(ar) % 2 == 0, f"Area {i} must have an even number of cells.")
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, len(ar) // 2 + 1), _type="area", _id=i))

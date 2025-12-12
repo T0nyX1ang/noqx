@@ -63,9 +63,9 @@ class MoonSunSolver(Solver):
         self.add_program_line(grid_color_connected(color="moon_sun", adj_type="loop"))
         self.add_program_line(single_loop(color="moon_sun"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        fail_false(len(areas) % 2 == 0, "The number of areas should be even.")
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        fail_false(len(rooms) % 2 == 0, "The number of areas should be even.")
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i))

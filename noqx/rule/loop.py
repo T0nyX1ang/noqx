@@ -1,13 +1,21 @@
-"""Utility for loops."""
+"""Generate loop- and path-relevant rules for the solver."""
 
-from typing import Tuple
+from typing import Tuple, Union
+
+from noqx.rule.helper import target_encode
 
 
 def single_loop(color: str = "white", path: bool = False) -> str:
-    """
-    Generate a single loop constraint with loop signs.
+    """A rule to ensure the route is a valid undirected loop or path.
 
-    A grid fact and a grid_direction rule should be defined first.
+    * A *loop* is that every cell has two lines connected to it, and there are no dead ends.
+
+    * A *path* is that there are two endpoints having only one line connected to them,
+    and other cells have two lines connected to them. The endpoints are marked as `dead_end`.
+
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
+        path: Whether the route is a path.
     """
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 2.\n"
 
@@ -24,34 +32,14 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     return constraint
 
 
-def intersect_loop(color: str = "white", path: bool = False) -> str:
-    """
-    Generate a loop (which can intersect itself) constraint with loop signs.
-
-    A grid fact and a grid_direction rule should be defined first.
-    """
-    rule = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 2.\n"
-    rule += "intersection(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 4.\n"
-    rule += "pass_by_loop(R, C) :- intersection(R, C).\n"
-
-    visit_constraints = ["not pass_by_loop(R, C)"]
-    if path:  # pragma: no cover
-        visit_constraints.append("not dead_end(R, C)")
-        rule += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
-
-    rule += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    rule += ':- grid(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").'
-    return rule
-
-
 def directed_loop(color: str = "white", path: bool = False) -> str:
-    """
-    Generate a directed loop constraint with loop signs.
+    """A rule to ensure the route is a valid undirected loop or path.
 
-    A grid fact and a grid_direction rule should be defined first.
+    * The definitions are the same as `single_loop`.
+
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
+        path: Whether the route is a path.
     """
     constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), #count {{ D: grid_in(R, C, D) }} = 1, #count {{ D: grid_out(R, C, D) }} = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
 
@@ -76,20 +64,25 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     return constraint
 
 
-def count_area_pass(target: int, _id: int) -> str:
-    """
-    Generate a rule that counts the times that a loop passes through an area.
+def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
+    """A rule that compares the times that a loop passes through an area to a specified target.
 
-    An area_border fact should be defined first.
+    * This rule should be used with the `noqx.neighbor.area_border`.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        _id: The ID of the area.
     """
-    return f":- #count {{ R, C, D: area_border({_id}, R, C, D), grid_direction(R, C, D) }} != {2 * target}."
+    rop, num = target_encode(target)
+    return f":- #count {{ R, C, D: area_border({_id}, R, C, D), grid_direction(R, C, D) }} {rop} {2 * num}."
 
 
 def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
-    """
-    Generate a constraint to make outside_items outside of the loop, and make inside_items inside of loop.
+    """A rule to separate two items from inside and outside of a loop.
 
-    A grid_direction fact should be defined first.
+    Args:
+        inside_item: The item that should be inside of the loop.
+        outside_item: The item that should be outside of the loop.
     """
     rule = "outside_loop(-1, C) :- grid(_, C).\n"
     rule += 'outside_loop(R, C) :- grid(R, C), outside_loop(R - 1, C), not grid_direction(R, C, "r").\n'
@@ -106,10 +99,13 @@ def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
 
 
 def loop_sign(color: str = "white") -> str:
-    """
-    Generate a constraint to generate general loop signs.
+    """A rule to define valid loop signs.
 
-    A grid fact and a grid_direction rule should be defined first.
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
+
+    Warning:
+        This rule only supports undirected routes.
     """
     rule = ""
     for d1, d2 in ("lu", "ld", "ru", "rd", "lr", "ud"):
@@ -119,10 +115,17 @@ def loop_sign(color: str = "white") -> str:
 
 
 def loop_segment(src_cell: Tuple[int, int]) -> str:
-    """
-    Generate a rule for a loop segment.
+    """A rule to define valid loop segments from a source cell.
 
-    A grid fact and a loop_sign rule should be defined first.
+    * The loop segment from the source cell is similar to the line of sight of a bulb.
+
+    * This rule requires the `loop_sign` rule first.
+
+    Args:
+        src_cell: The source cell in (`row`, `col`).
+
+    Warning:
+        This rule only supports undirected routes.
     """
     r, c = src_cell
 
@@ -142,10 +145,13 @@ def loop_segment(src_cell: Tuple[int, int]) -> str:
 
 
 def loop_straight(color: str = "white") -> str:
-    """
-    Generate a rule for straight passing through a cell.
+    """A rule to define all the cells that the route goes straight at.
 
-    A grid fact and a grid_direction rule should be defined first.
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
+
+    Warning:
+        This rule only supports undirected routes.
     """
     rule = ""
     for d1, d2 in ("lr", "ud"):
@@ -154,10 +160,13 @@ def loop_straight(color: str = "white") -> str:
 
 
 def loop_turning(color: str = "white") -> str:
-    """
-    Generate a rule for turning through a cell.
+    """A rule to define all the cells that the route make turns at.
 
-    A grid fact and a grid_direction rule should be defined first.
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
+
+    Warning:
+        This rule only supports undirected routes.
     """
     rule = ""
     for d1, d2 in ("lu", "ld", "ru", "rd"):
@@ -166,7 +175,15 @@ def loop_turning(color: str = "white") -> str:
 
 
 def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) -> str:
-    """Convert grid direction fact to edge fact."""
+    """A rule to convert the direction definitions to edge definitions.
+
+    * In some logic puzzles like `firefly` and `slitherlink`, the path is drawn on the edge
+    although they are loop/path puzzles. This rule helps to do the compatibility conversions.
+
+    Args:
+        directed: Whether the route is directed.
+        diagonal: Whether the route is diagonal.
+    """
     dir_dict = {"diag_down": "dr", "diag_up": "ur"} if diagonal else {"top": "r", "left": "d"}
 
     rule = ""

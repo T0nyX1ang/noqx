@@ -11,7 +11,7 @@ from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src
-from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape, get_neighbor
+from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape
 from noqx.rule.variety import yaji_count
 from solver.binairo import unique_linecolor
 from solver.castle import wall_length
@@ -97,8 +97,6 @@ class TestExtraFunction(unittest.TestCase):
         self.assertRaises(ValueError, count_shape, 0, "test", None, "black", "unknown")
         self.assertRaises(ValueError, general_shape, "test", 0, [(0, 0)], "black", "unknown", 4, False)
         self.assertRaises(ValueError, general_shape, "test", 0, None, "black", "grid", 4, False)
-        self.assertRaises(ValueError, get_neighbor, 0, 0, "unknown")
-        self.assertRaises(ValueError, get_neighbor, 0, 0, 1000)
 
     def test_binairo_unique_linecolor(self):
         """Test binairo unique linecolor."""

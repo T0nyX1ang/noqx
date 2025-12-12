@@ -5,7 +5,7 @@ from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.loop import single_loop
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color, count_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent, count_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -29,7 +29,7 @@ class KoburinSolver(Solver):
         self.add_program_line(fill_path(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(avoid_adjacent_color(color="black", adj_type=4))
+        self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
         self.add_program_line(grid_color_connected(color="white", adj_type="loop"))
         self.add_program_line(single_loop(color="white"))
 

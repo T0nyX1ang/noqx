@@ -53,8 +53,8 @@ class FactorsSolver(Solver):
         self.add_program_line(unique_num(_type="row", color="grid"))
         self.add_program_line(unique_num(_type="col", color="grid"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 

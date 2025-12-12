@@ -70,8 +70,8 @@ class OnsenSolver(Solver):
         self.add_program_line(single_loop(color="onsen_loop"))
 
         onsen_id = 0
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count(("gt", 0), _id=i, color="onsen_loop", _type="area"))

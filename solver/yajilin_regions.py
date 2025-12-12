@@ -5,7 +5,7 @@ from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_cc
 from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -33,12 +33,12 @@ class YajilinRegionsSolver(Solver):
         self.add_program_line(fill_path(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(avoid_adjacent_color(color="black", adj_type=4))
+        self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
         self.add_program_line(grid_color_connected(color="white", adj_type="loop"))
         self.add_program_line(single_loop(color="white"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
             if rc:

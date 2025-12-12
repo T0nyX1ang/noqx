@@ -35,8 +35,8 @@ class DetourSolver(Solver):
         self.add_program_line(single_loop(color="detour"))
         self.add_program_line(loop_turning(color="detour"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
             if rc:

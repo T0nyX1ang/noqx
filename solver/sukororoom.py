@@ -36,8 +36,8 @@ class SukoroRoomSolver(Solver):
         self.add_program_line(unique_num(color="black", _type="area"))
         self.add_program_line(area_same_color(color="black"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():

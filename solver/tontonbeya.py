@@ -58,8 +58,8 @@ class TontonbeyaSolver(Solver):
         self.add_program_line(area_color_connected(color="ox_E__2", adj_type=4))
         self.add_program_line(area_color_connected(color="ox_E__3", adj_type=4))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         self.add_program_line(tonton_cluster_rule())

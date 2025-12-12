@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
 
 
@@ -69,7 +69,7 @@ class BattleshipSolver(Solver):
         self.add_program_line(shade_c(color=fleet_name))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="x"))
-        self.add_program_line(avoid_adjacent_color(color=fleet_name, adj_type="x"))
+        self.add_program_line(avoid_same_color_adjacent(color=fleet_name, adj_type="x"))
         self.add_program_line(general_shape("battleship", 1, OMINOES[1]["."], color=fleet_name, adj_type=4))
         self.add_program_line(general_shape("battleship", 2, OMINOES[2]["I"], color=fleet_name, adj_type=4))
         self.add_program_line(general_shape("battleship", 3, OMINOES[3]["I"], color=fleet_name, adj_type=4))

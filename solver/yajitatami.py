@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
-from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover
 
 
 def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: int) -> str:
@@ -65,7 +65,7 @@ class YajitatamiSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
         self.add_program_line(rect_constraint())
-        self.add_program_line(avoid_region_border_crossover())
+        self.add_program_line(avoid_edge_crossover())
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)

@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 class KakuruSolver(Solver):
@@ -27,7 +27,7 @@ class KakuruSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line("{ number(R, C, (1..9)) } = 1 :- grid(R, C), not black(R, C).")
         self.add_program_line(adjacent(_type=8))
-        self.add_program_line(avoid_num_adjacent(adj_type=8))
+        self.add_program_line(avoid_same_number_adjacent(adj_type=8))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

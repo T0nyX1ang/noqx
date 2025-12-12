@@ -45,8 +45,8 @@ class StostoneSolver(Solver):
         self.add_program_line(area_color_connected(color="gray"))
         self.add_program_line(valid_stostone(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             flag = True
             if rc:

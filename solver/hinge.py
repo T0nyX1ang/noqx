@@ -67,8 +67,8 @@ class HingeSolver(Solver):
                         r += 1
                 r += 1
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             if rc:
                 num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
