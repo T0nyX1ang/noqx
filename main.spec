@@ -17,10 +17,9 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-      ("./penpa-edit/css/*", "./penpa-edit/css"),
-      ("./penpa-edit/js/*", "./penpa-edit/js"),
-      ("./penpa-edit/index.html", "./penpa-edit/"),
-      ("./LICENSE.GPL", "./")
+        ("./penpa-edit/", "./penpa-edit/"),
+        ("./site/", "./site/"),
+        ("./LICENSE.GPL", "./")
     ],
     hiddenimports=hiddle_imports,
     hookspath=[],

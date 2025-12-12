@@ -2,6 +2,8 @@
 
 [Noqx](https://github.com/T0nyX1ang/noqx) is an extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
+- Try it through this [portal](./penpa-edit/){:target="\_blank"}.
+
 ## New features
 
 ### New features from `Noq`
@@ -14,7 +16,7 @@
 
 - Obtain uniform data structures in every puzzle. (See issues [#84](https://github.com/T0nyX1ang/noqx/issues/84) and [#109](https://github.com/T0nyX1ang/noqx/issues/109)).
 
-- Deploy the entire solver to Github Pages with the help of `PyScript`. No backend server is needed in this mode.
+- Deploy the entire solver to GitHub Pages with the help of `PyScript`. No backend server is needed in this mode.
 
 ### New usages from `Penpa+`
 

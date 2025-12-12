@@ -14,17 +14,12 @@ import uvicorn
 from starlette.applications import Starlette
 from starlette.config import environ
 from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse
+from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from noqx.clingo import Config, run_solver
 from noqx.manager import list_solver_metadata, load_solver
-
-
-async def root_redirect(_: Request) -> RedirectResponse:
-    """Redirect root page to penpa-edit page."""
-    return RedirectResponse(url="/penpa-edit/")
 
 
 async def solver_api(request: Request) -> JSONResponse:
@@ -109,21 +104,13 @@ if args.enable_deployment:
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
 
-    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
-        fin = f.read()
-
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
 
-    for dirname in ["css", "js"]:
-        os.makedirs(f"./dist/page/penpa-edit/{dirname}", exist_ok=True)
-        for filename in os.listdir(f"penpa-edit/{dirname}"):
-            shutil.copy(f"./penpa-edit/{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
-
     shutil.copy("./pyscript.json", "./dist/page/penpa-edit/pyscript.json")
     shutil.copy("./main_deploy.py", "./dist/page/penpa-edit/py/main_deploy.py")
-    shutil.copy("./index.html", "./dist/page/index.html")
-    shutil.copy("./penpa-edit/index.html", "./dist/page/penpa-edit/index.html")
+    shutil.copytree("./penpa-edit/", "./dist/page/penpa-edit/", dirs_exist_ok=True)
+    shutil.copytree("./site/", "./dist/page/", dirs_exist_ok=True)
 
     with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
@@ -142,7 +129,7 @@ routes = [
         routes=[Route("/solve/", endpoint=solver_api, methods=["POST"])],
     ),
     Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
-    Route("/", root_redirect),
+    Mount("/", StaticFiles(directory="site", html=True), name="docs"),
 ]
 app = Starlette(routes=routes)
 environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
