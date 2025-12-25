@@ -34,8 +34,10 @@ class SudokuSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+
         n = puzzle.row
         sep = {9: (3, 3), 8: (2, 4), 6: (2, 3), 4: (2, 2)}
+        fail_false(n in sep, "Invalid sudoku board size.")
 
         self.add_program_line(grid(n, n))
         self.add_program_line(adjacent(_type="x"))
