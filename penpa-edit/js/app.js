@@ -46,9 +46,18 @@ function imp(penpa, load_info = true) {
     return;
   }
 
-  import_url(urlstring);
-  clear_info();
+  try {
+    import_url(urlstring);
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Import error",
+      text: "The URL may be invalid or corrupted.",
+    });
+    return;
+  }
 
+  clear_info();
   if (load_info) hook_load(exp()); // load twice to extract the information
 }
 
