@@ -201,21 +201,16 @@ class PenpaPuzzle(Puzzle):
         into the `text` attribute.
 
         * For **tapa-like** puzzles, the numbers are separately stored with the label `tapa_x`.
+        Single numbers will be converted to the `tapa_0` label automatically.
 
         * The **Candidates** submode in sudoku-like puzzles are neglected during unpacking.
-
-        Warning:
-            For **tapa-like** puzzles, the clues are parsed to a list of numbers.
-            However, if a clue only contains a single-digit number, it is stored as an integer with the
-            label `number` instead of `tapa_0` if the user selects the `Normal` submode instead of `Tapa`.
-            This inconsistency might cause failure in solvers and might be resolved in future versions.
         """
         for index, num_data in self.problem["number"].items():
             (r, c), category = self.index_to_coord(int(index))
             coord = _category_to_direction(r, c, category)
             # num_data: number, color, submode
 
-            if num_data[2] == "4":  # for tapa-like puzzles, convert to List[int]
+            if num_data[2] == "4" or self.puzzle_name in ["tapa", "tapaloop"]:  # for tapa-like puzzles, convert to List[int]
                 for i, data in enumerate(map(_int_or_str, list(num_data[0]))):
                     self.text[Point(*coord, f"tapa_{i}")] = data
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
