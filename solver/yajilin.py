@@ -18,7 +18,7 @@ class YajilinSolver(Solver):
     aliases = ["yajirin"]
     examples = [
         {
-            "data": "m=edit&p=7ZZ9T/o6FMf/51WY/msTNzZwLDE3PJoYRLng5epClgJFhoXqHpTfiO/d0xbuHhhGY3IfkhvY4exz2rNz2uxbgpeI+BTrmvgaFoZf+Ji6Ja+yVZWXtvsMvZBR+wTXo3DBfXAwvul08JywgOKr+2Wj9VR/a9f/PKs8GMZdb366bPXvlrPRH3pf8858rces9fVtq8FOL+OH60X9lbZp9Tbg0wWjZEbih9HVhq071uNirjevFk1rTtZa8GINa6+N/sVFydkVMi5t45od13F8aTuojLC8dDTGcd/extd23MPxAEIIW8C64OkIl8FtJ+5IxoXXVFDXwO+phDq49+BOPX/KqNtV5NZ24iFG4jkNOVu4aMVfKVIp5P2UryaeABMSwnoFC+95FwmiGX+KdmMhIVpFLPSmnHFfQMHecVxXLXT3LZhJC0bSgnBVC8IraEF09uMWmLemm6Lqa8XVv8PO/A71u7YjWrlLXCtxB/YWbM/eIkMTM3+DqWILIWVFl/ld0csOVQ2BDNdIkCWn6WlUK6tRqYm6JmeWXbGfe6ZXDpmxm6ulmGmqcWlWlXP/qhZ60GUn99J2pC1LO4RGcWxI25JWk7YibVeOaUs7krYprSltVY45F0v1xcVEZhXZplrSnxSFzDKsRM2CNdct5ZgmNqFrAyMDZEF4X6zcMZSUZD+V/x4blxw0iPw5mVJ4D7rwPpz0uL8iDO560WpC/f09qBIKOHMDNdqlGzINka3UMR3JsLXMkUGM82fx4hVk2Icy0Htcc58WhgSks8djqUSoINWE+7NcTW+EsWwv8uTIIKU0GRT6ICOpe+L7/C1DViRcZEBKNTOZ6Dq3mCHJlkieSO5pq2Q53ktog+TlGOKE+/8I+fceIWKXtG8dJP+8FDvxAJtVHN9g9By5xIWeEPxRwZ/y8yPc+iY/lqfwud29qh8JKqEvDsK5UByAk+Mg8LfvkHznuf+JACfBPC6QYaCfKHEqWsSPiG4qmucHCiuKPRRZoAU6CzQvtYAO1RbggeACO6K5ImtedkVVeeUVjzoQX/GotP466BdZerBeaFz6AA==",
+            "data": "m=edit&p=7Vbtb7pIEP7uX9Hs125yLCBFkl8u1mqvPWtt1XiVGIIWFQvSQ7Atpv97Z3b1eBGbXnq5/C65ILPDM7vztvCs6z9jO3Qok/Cn6BRGuFSm81vWNX5Lu6vvRp5jnNB6HC2CEBRKb1stOrO9tUOvHxbtRlB/uaj/sdGj0YhdSvGVNFy2lqf3/u9XrhKyVkfv3nRvXHle/61xfqc1T7VuvB5EzubOZ+fLwag/6w7nNfmt2RmpyehWql6PZr9s6oMfFXOXw7iyTWpGUqfJpWESmVB+MzKmyZ2xTW6MpEeTHpgI1QFrg8YIlUFtpuqQ21FrCJBJoHeEQwbqA6hTN5x6jtUWSNcwkz4lGOecr0aV+MHGIcIFf54G/sRFYGJH0Kr1wn3eWdbxY/AU7+aCQ+LHXuROAy8IEUTsnSZ1UUJ7X4KalqCkJaAqSkCtpASs7NsleO7KeS3Lvlae/TvszD3kbxkmljJIVT1Ve8aWVBkxdEo0hQ+6xIeazAcmCZSxqhiVHa6qMIKDDjhQYIlJfoWouPuQDXqE1Cxsww5C7yZRLCWFMBLOykAYFWdlFvIMoIsWvgp7DLMpYpgZrpUyGGaJ87KYxtf+lS3UwIwtyAcuW1zKXPahRzRRuLzgUuKyymWbz2lyOeSywaXKpcbnnGGXv7oPqkYMVbT0O0kRVYZO1HBHmS4UVaUqVK1QogCZoPbFzE1FEFD+qv73sHHFJL04nNlTBz6hNnxKJ50g9G0PnjqxP3HC/TMQGlkHnrUWsy3n1Z5GxBCcmrXksBX3kYO8IHjGb7bEw96UA935KgidUhOCzuP8mCs0lbiaBOFjIacX2/PytfDzJgcJkspBUQgMlHm2wzB4ySG+HS1yQIZwc56cVaGZkZ1P0X6yC9H8tB3vFfJK+G0qeC7+f/r8vKcP7pL0Re77Puv9M1RswvuiajS5peQ5tmwLaiLwH4d+ip8dwfW/iR/zUxq3vWf1I0ZB9OVGOBfKDXByHBj+9R3i33wQfkLAqbEIl9AwoJ8wccZahh8h3Yy1iB8wLCZ7SLKAlvAsoEWqBeiQbQE8IFzAjnAuei3SLmZVZF4MdUC+GCrLvyZ5s5cu9IuMKx8=",
         },
         {
             "url": "https://puzz.link/p?yajilin/19/13/g24g33f45o23d30g32z43k41y11a11a42zo33a14a12b11d31a32c21e11t36g31e21y",
@@ -55,7 +55,8 @@ class YajilinSolver(Solver):
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            if color == Color.BLACK:
+                self.add_program_line(f"black({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
