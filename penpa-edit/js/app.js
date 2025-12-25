@@ -6,7 +6,7 @@ function exp() {
   return result;
 }
 
-function imp(penpa) {
+function imp(penpa, load_info = true) {
   let urlstring = penpa || document.getElementById("urlstring").value;
 
   // replace unsupported solver to supported solvers
@@ -48,6 +48,8 @@ function imp(penpa) {
 
   import_url(urlstring);
   clear_info();
+
+  if (load_info) hook_load(exp()); // load twice to extract the information
 }
 
 function clear_info() {
@@ -294,7 +296,6 @@ $(window).on("load", function () {
 
       let exampleData = solver_metadata[puzzleName].examples[exampleSelect.value];
       imp(exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`);
-      hook_load(exp());
 
       if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
@@ -480,7 +481,7 @@ $(window).on("load", function () {
       if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
-      imp(puzzleContent.includes(urlBase) ? puzzleContent : `${urlBase}${puzzleContent}`);
+      hook_load(puzzleContent);
       choicesType.enable();
       choicesExample.enable();
     } else {
