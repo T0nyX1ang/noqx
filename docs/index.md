@@ -30,8 +30,6 @@
 
 - Solve/Reset the puzzle.
 
-**Note**: if the puzzle is imported from [puzz.link](https://puzz.link/list.html), you will need to change the edit mode to `Problem` to reset the puzzle itself.
-
 ## How to run locally
 
 ### Use `uv` with a virtual environment (Recommended)
@@ -56,7 +54,7 @@
     uv sync --extra web --no-dev
 ```
 
-- Run with uv:
+- Run with `uv`:
 
 ```bash
     uv run main.py

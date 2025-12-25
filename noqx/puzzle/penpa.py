@@ -375,10 +375,10 @@ class PenpaPuzzle(Puzzle):
         return (index // real_col - 2 - top_margin, index % real_col - 2 - left_margin), category
 
     def encode(self) -> str:
-        """Encode the puzzle into Penpa+ format.
+        """Encode the puzzle into [Penpa+](https://swaroopg92.github.io/penpa-edit/) format.
 
         * The process involves packing the puzzle elements into the solution dictionary,
-        updating the relevant part of the Penpa+ content, and compressing it into a base64-encoded string.
+        updating the relevant part of the [Penpa+](https://swaroopg92.github.io/penpa-edit/) content, and compressing it into a base64-encoded string.
         """
         self.solution = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[4]))
         self._pack_board()
