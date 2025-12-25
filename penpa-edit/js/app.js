@@ -119,15 +119,15 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
-function reset_board(puzzleType) {
+function reset_board(puzzleType, puzzleTypeFlag = 0) {
   const puzzleCategory = solver_metadata[puzzleType].category;
+  let typeFlag = 0; // a flag for extra margin sum
 
   // default function
   document.getElementById("gridtype").value = "square"; // grid type
 
   if (puzzleType === "kakuro") document.getElementById("gridtype").value = "kakuro";
   if (puzzleType === "sudoku") document.getElementById("gridtype").value = "sudoku";
-  changetype();
 
   pu.mode.grid = ["1", "2", "1"]; // default grid mode
   if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
@@ -142,16 +142,13 @@ function reset_board(puzzleType) {
 
   if (["myopia", "slitherlink"].includes(puzzleType)) pu.mode.grid = ["3", "1", "2"];
 
-  document.getElementById("nb_size1").value = 10; // columns
-  document.getElementById("nb_size2").value = 10; // rows
   document.getElementById("nb_space1").value = 0; // over space
   document.getElementById("nb_space2").value = 0; // under space
   document.getElementById("nb_space3").value = 0; // left space
   document.getElementById("nb_space4").value = 0; // right space
 
   if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)) {
-    document.getElementById("nb_size1").value = 11; // columns
-    document.getElementById("nb_size2").value = 11; // rows
+    typeFlag = 1;
     document.getElementById("nb_space1").value = 1; // over space
     document.getElementById("nb_space3").value = 1; // left space
   }
@@ -161,8 +158,7 @@ function reset_board(puzzleType) {
       puzzleType
     )
   ) {
-    document.getElementById("nb_size1").value = 12; // columns
-    document.getElementById("nb_size2").value = 12; // rows
+    typeFlag = 2;
     document.getElementById("nb_space1").value = 1; // over space
     document.getElementById("nb_space2").value = 1; // under space
     document.getElementById("nb_space3").value = 1; // left space
@@ -170,11 +166,17 @@ function reset_board(puzzleType) {
   }
 
   if (["coral", "nonogram"].includes(puzzleType)) {
-    document.getElementById("nb_size1").value = 15; // columns
-    document.getElementById("nb_size2").value = 15; // rows
+    typeFlag = 5;
     document.getElementById("nb_space1").value = 5; // over space
     document.getElementById("nb_space3").value = 5; // left space
   }
+
+  if (typeFlag !== puzzleTypeFlag) {
+    document.getElementById("nb_size1").value = 10 + typeFlag; // columns
+    document.getElementById("nb_size2").value = 10 + typeFlag; // rows
+  }
+
+  return typeFlag;
 }
 
 $(window).on("load", function () {
@@ -226,6 +228,7 @@ $(window).on("load", function () {
   let solutionList = null;
   let solutionPointer = -1;
   let puzzleParameters = {};
+  let puzzleTypeFlag = 0;
 
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
   puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
@@ -250,7 +253,8 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
-      reset_board(puzzleName); // reset the board when puzzle type changes
+      let newpuzzleTypeFlag = reset_board(puzzleName, puzzleTypeFlag); // reset the board when puzzle type changes
+      puzzleTypeFlag = newpuzzleTypeFlag;
       create_newboard();
       advancecontrol_toggle();
 
@@ -289,8 +293,8 @@ $(window).on("load", function () {
       solutionPointer = -1;
 
       let exampleData = solver_metadata[puzzleName].examples[exampleSelect.value];
-      puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
-      imp(puzzleContent);
+      imp(exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`);
+      hook_load(exp());
 
       if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
         for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
