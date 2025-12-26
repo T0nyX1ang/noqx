@@ -530,9 +530,18 @@ $(window).on("load", function () {
   const undoButton = document.getElementById("tb_undo");
   if (undoButton) {
     const updateChoicesType = () => {
+      const choicesContainer = choicesType.containerOuter.element;
       if (undoButton.disabled) {
-        if (!solutionList || solutionList.length === 0) choicesType.enable();
-        else choicesType.disable();
+        if (!solutionList || solutionList.length === 0) {
+          choicesType.enable();
+          choicesContainer.removeAttribute("title");
+        } else {
+          choicesType.disable();
+          choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
+        }
+      } else {
+        choicesType.disable();
+        choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
       }
     };
 
