@@ -167,6 +167,10 @@ class Solver:
 
         parameters: A dictionary of parameters of the solver, which will be passed to the solver
                     when it is created.
+
+    Warning:
+        When you directly draw the board in noqx, make sure to set the puzzle type first.
+        Currently, the puzzle type selection is **locked** if the user starts drawing the board.
     """
 
     def __init__(self):

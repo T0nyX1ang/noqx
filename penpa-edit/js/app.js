@@ -527,5 +527,24 @@ $(window).on("load", function () {
     solveButton.disabled = false;
   });
 
+  const undoButton = document.getElementById("tb_undo");
+  if (undoButton) {
+    const updateChoicesType = () => {
+      if (undoButton.disabled) {
+        if (!solutionList || solutionList.length === 0) choicesType.enable();
+        else choicesType.disable();
+      }
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "attributes" && mutation.attributeName === "disabled") {
+          updateChoicesType();
+        }
+      });
+    });
+    observer.observe(undoButton, { attributes: true });
+  }
+
   document.addEventListener("click", () => focus());
 });
