@@ -130,15 +130,23 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
+function reset_grid_type(puzzleType, gridTypeFlag = "square") {
+  document.getElementById("gridtype").value = "square"; // grid type
+  let typeFlag = "square";
+
+  if (puzzleType === "kakuro") typeFlag = "kakuro";
+  if (puzzleType === "sudoku") typeFlag = "sudoku";
+
+  if (typeFlag !== gridTypeFlag) {
+    document.getElementById("gridtype").value = typeFlag; // grid type
+    changetype();
+  }
+  return typeFlag;
+}
+
 function reset_board(puzzleType, puzzleTypeFlag = 0) {
   const puzzleCategory = solver_metadata[puzzleType].category;
   let typeFlag = 0; // a flag for extra margin sum
-
-  // default function
-  document.getElementById("gridtype").value = "square"; // grid type
-
-  if (puzzleType === "kakuro") document.getElementById("gridtype").value = "kakuro";
-  if (puzzleType === "sudoku") document.getElementById("gridtype").value = "sudoku";
 
   pu.mode.grid = ["1", "2", "1"]; // default grid mode
   if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
@@ -239,6 +247,7 @@ $(window).on("load", function () {
   let solutionList = null;
   let solutionPointer = -1;
   let puzzleParameters = {};
+  let puzzleGridTypeFlag = "square";
   let puzzleTypeFlag = 0;
 
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
@@ -264,8 +273,12 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
+      let newgridTypeFlag = reset_grid_type(puzzleName, puzzleGridTypeFlag); // reset the grid type when puzzle type changes
+      puzzleGridTypeFlag = newgridTypeFlag;
+
       let newpuzzleTypeFlag = reset_board(puzzleName, puzzleTypeFlag); // reset the board when puzzle type changes
       puzzleTypeFlag = newpuzzleTypeFlag;
+
       create_newboard();
       advancecontrol_toggle();
 
