@@ -130,23 +130,23 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
-function reset_grid_type(puzzleType, gridTypeFlag = "square") {
+function reset_grid_type(puzzleType, oldTypeFlag = "square") {
   document.getElementById("gridtype").value = "square"; // grid type
   let typeFlag = "square";
 
   if (puzzleType === "kakuro") typeFlag = "kakuro";
   if (puzzleType === "sudoku") typeFlag = "sudoku";
 
-  if (typeFlag !== gridTypeFlag) {
+  if (typeFlag !== oldTypeFlag) {
     document.getElementById("gridtype").value = typeFlag; // grid type
     changetype();
   }
   return typeFlag;
 }
 
-function reset_board(puzzleType, puzzleTypeFlag = 0) {
+function reset_board_size(puzzleType, oldSizeFlag = 0) {
   const puzzleCategory = solver_metadata[puzzleType].category;
-  let typeFlag = 0; // a flag for extra margin sum
+  let sizeFlag = 0; // a flag for extra margin sum
 
   pu.mode.grid = ["1", "2", "1"]; // default grid mode
   if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
@@ -167,7 +167,7 @@ function reset_board(puzzleType, puzzleTypeFlag = 0) {
   document.getElementById("nb_space4").value = 0; // right space
 
   if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)) {
-    typeFlag = 1;
+    sizeFlag = 1;
     document.getElementById("nb_space1").value = 1; // over space
     document.getElementById("nb_space3").value = 1; // left space
   }
@@ -177,7 +177,7 @@ function reset_board(puzzleType, puzzleTypeFlag = 0) {
       puzzleType
     )
   ) {
-    typeFlag = 2;
+    sizeFlag = 2;
     document.getElementById("nb_space1").value = 1; // over space
     document.getElementById("nb_space2").value = 1; // under space
     document.getElementById("nb_space3").value = 1; // left space
@@ -185,17 +185,17 @@ function reset_board(puzzleType, puzzleTypeFlag = 0) {
   }
 
   if (["coral", "nonogram"].includes(puzzleType)) {
-    typeFlag = 5;
+    sizeFlag = 5;
     document.getElementById("nb_space1").value = 5; // over space
     document.getElementById("nb_space3").value = 5; // left space
   }
 
-  if (typeFlag !== puzzleTypeFlag) {
-    document.getElementById("nb_size1").value = 10 + typeFlag; // columns
-    document.getElementById("nb_size2").value = 10 + typeFlag; // rows
+  if (sizeFlag !== oldSizeFlag) {
+    document.getElementById("nb_size1").value = 10 + sizeFlag; // columns
+    document.getElementById("nb_size2").value = 10 + sizeFlag; // rows
   }
 
-  return typeFlag;
+  return sizeFlag;
 }
 
 $(window).on("load", function () {
@@ -248,7 +248,7 @@ $(window).on("load", function () {
   let solutionPointer = -1;
   let puzzleParameters = {};
   let puzzleGridTypeFlag = "square";
-  let puzzleTypeFlag = 0;
+  let puzzleBoardSizeFlag = 0;
 
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
   puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
@@ -276,8 +276,8 @@ $(window).on("load", function () {
       let newgridTypeFlag = reset_grid_type(puzzleName, puzzleGridTypeFlag); // reset the grid type when puzzle type changes
       puzzleGridTypeFlag = newgridTypeFlag;
 
-      let newpuzzleTypeFlag = reset_board(puzzleName, puzzleTypeFlag); // reset the board when puzzle type changes
-      puzzleTypeFlag = newpuzzleTypeFlag;
+      let newBoardSizeFlag = reset_board_size(puzzleName, puzzleBoardSizeFlag); // reset the board when puzzle type changes
+      puzzleBoardSizeFlag = newBoardSizeFlag;
 
       create_newboard();
       advancecontrol_toggle();
@@ -329,7 +329,7 @@ $(window).on("load", function () {
         }
       }
     } else {
-      reset_board(puzzleName); // reset the board when puzzle type changes
+      reset_board_size(puzzleName); // reset the board when puzzle type changes
       create_newboard();
       advancecontrol_toggle();
     }
