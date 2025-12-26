@@ -131,7 +131,6 @@ function make_param(id, type, name, value) {
 }
 
 function reset_grid_type(puzzleType, oldTypeFlag = "square") {
-  document.getElementById("gridtype").value = "square"; // grid type
   let typeFlag = "square";
 
   if (puzzleType === "kakuro") typeFlag = "kakuro";
@@ -144,22 +143,28 @@ function reset_grid_type(puzzleType, oldTypeFlag = "square") {
   return typeFlag;
 }
 
-function reset_board_size(puzzleType, oldSizeFlag = 0) {
+function reset_grid_mode(puzzleType, oldModeFlag = ["1", "2", "1"]) {
+  let modeFlag = ["1", "2", "1"]; // default grid mode
   const puzzleCategory = solver_metadata[puzzleType].category;
+
+  if (["loop", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // loop/region mode
+
+  if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
+
+  if (["cave", "firefly", "gokigen"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+
+  if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
+
+  if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
+
+  if (["myopia", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
+
+  if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
+  return modeFlag;
+}
+
+function reset_board_size(puzzleType, oldSizeFlag = 0) {
   let sizeFlag = 0; // a flag for extra margin sum
-
-  pu.mode.grid = ["1", "2", "1"]; // default grid mode
-  if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
-
-  if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) pu.mode.grid = ["2", "2", "1"];
-
-  if (["cave", "firefly", "gokigen"].includes(puzzleType)) pu.mode.grid = ["2", "2", "2"];
-
-  if (["hashi"].includes(puzzleType)) pu.mode.grid = ["3", "2", "2"];
-
-  if (["mejilink"].includes(puzzleType)) pu.mode.grid = ["2", "1", "2"];
-
-  if (["myopia", "slitherlink"].includes(puzzleType)) pu.mode.grid = ["3", "1", "2"];
 
   document.getElementById("nb_space1").value = 0; // over space
   document.getElementById("nb_space2").value = 0; // under space
@@ -249,6 +254,7 @@ $(window).on("load", function () {
   let puzzleParameters = {};
   let puzzleGridTypeFlag = "square";
   let puzzleBoardSizeFlag = 0;
+  let puzzleGridModeFlag = ["1", "2", "1"];
 
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
   puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
@@ -278,6 +284,9 @@ $(window).on("load", function () {
 
       let newBoardSizeFlag = reset_board_size(puzzleName, puzzleBoardSizeFlag); // reset the board when puzzle type changes
       puzzleBoardSizeFlag = newBoardSizeFlag;
+
+      let newGridModeFlag = reset_grid_mode(puzzleName, puzzleGridModeFlag); // reset the grid mode when puzzle type changes
+      puzzleGridModeFlag = newGridModeFlag;
 
       create_newboard();
       advancecontrol_toggle();
