@@ -32,6 +32,8 @@
 
 ## How to run locally
 
+- Make sure the Microsoft Visual C++ Redistributable (v14) is installed on Windows.
+
 ### Use `uv` with a virtual environment (Recommended)
 
 - Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
@@ -107,6 +109,8 @@
 ```
 
 ## How to contribute
+
+- Make sure the Microsoft Visual C++ Redistributable (v14) is installed on Windows.
 
 ### Preparations
 
