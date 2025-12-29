@@ -92,20 +92,23 @@
 ### Additional Parameters
 
 ```text
-    usage: main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D]
-    usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D]
+  usage: main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D] [-B]
+  usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D] [-B]
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -H HOST, --host HOST  the host to run the server on.
-      -p PORT, --port PORT  the port to run the server on.
-      -d, --debug           whether to enable debug mode with auto-reloading.
-      -tl TIME_LIMIT, --time_limit TIME_LIMIT
-                            time limit in seconds. (default = 30)
-      -pt PARALLEL_THREADS, --parallel_threads PARALLEL_THREADS
-                            parallel threads. (default = 1)
-      -D, --enable_deployment
-                            Deploy Pyscript for client-side purposes.
+  noqx startup settings.
+
+  options:
+    -h, --help            show this help message and exit
+    -H HOST, --host HOST  the host to run the server on.
+    -p PORT, --port PORT  the port to run the server on.
+    -d, --debug           whether to enable debug mode with auto-reloading.
+    -tl TIME_LIMIT, --time_limit TIME_LIMIT
+                          time limit in seconds.
+    -pt PARALLEL_THREADS, --parallel_threads PARALLEL_THREADS
+                          parallel threads.
+    -D, --enable_deployment
+                          enable deployment for client-side purposes.
+    -B, --build-document  build the documentation site.
 ```
 
 ## How to contribute
