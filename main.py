@@ -84,11 +84,10 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 
-
 if args.enable_deployment:
     # generate files if needed
-    shutil.rmtree("dist/page", ignore_errors=True)
-    os.makedirs("dist/page/penpa-edit", exist_ok=True)
+    shutil.rmtree("./dist/page", ignore_errors=True)
+    os.makedirs("./dist/page/penpa-edit", exist_ok=True)
 
     target_dirs = ["noqx", "noqx/puzzle", "noqx/rule", "solver"]
     for dirname in target_dirs:
