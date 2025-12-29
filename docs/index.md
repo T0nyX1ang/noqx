@@ -53,7 +53,7 @@
 - Install non-development packages with `uv`:
 
 ```bash
-    uv sync --extra web --no-dev
+    uv sync --all-extras --no-dev
 ```
 
 - Run with `uv`:
@@ -83,17 +83,10 @@
     python3 main.py
 ```
 
-### Use prebuilt releases (Windows only)
-
-- Download the latest release [package](https://github.com/T0nyX1ang/noqx/releases).
-
-- A new version is released occasionally.
-
 ### Additional Parameters
 
 ```text
   usage: main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D] [-B]
-  usage: main.exe [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-D] [-B]
 
   noqx startup settings.
 
