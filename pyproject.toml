@@ -91,5 +91,13 @@ pythonPlatform = "All"
 typeCheckingMode = "basic"
 reportAttributeAccessIssue = false
 
+[tool.coverage.run]
+branch = true
+omit = [
+  "tests/*",
+  "main.py",
+  "main_deploy.py",
+]
+
 [tool.uv]
 package = false
