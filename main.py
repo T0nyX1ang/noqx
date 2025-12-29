@@ -10,36 +10,8 @@ import sys
 import traceback
 from typing import Any, Dict
 
-import uvicorn
-from starlette.applications import Starlette
-from starlette.config import environ
-from starlette.requests import Request
-from starlette.responses import JSONResponse
-from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
-
 from noqx.clingo import Config, run_solver
 from noqx.manager import list_solver_metadata, load_solver
-
-
-async def solver_api(request: Request) -> JSONResponse:
-    """The solver endpoint of the server."""
-    try:
-        body = await request.json()
-        puzzle_name: str = body["puzzle_name"]
-        puzzle: str = body["puzzle"]
-        param: Dict[str, Any] = body["param"]
-        result = run_solver(puzzle_name, puzzle, param)
-        return JSONResponse(result)
-    except ValueError as err:
-        logging.error(traceback.format_exc())
-        return JSONResponse({"detail": str(err)}, status_code=400)
-    except TimeoutError as err:
-        return JSONResponse({"detail": str(err)}, status_code=504)
-    except Exception:  # pylint: disable=broad-except  # pragma: no cover
-        logging.error(traceback.format_exc())
-        return JSONResponse({"detail": "Unknown error."}, status_code=500)
-
 
 # argument parser
 parser = argparse.ArgumentParser(description="noqx startup settings.")
@@ -56,15 +28,6 @@ Config.parallel_threads = args.parallel_threads
 
 # logging setup
 log_level = "DEBUG" if args.debug else "INFO"
-UVICORN_LOGGING_CONFIG = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
-    "loggers": {
-        "uvicorn.error": {"handlers": ["default"], "level": log_level},
-        "uvicorn.access": {"handlers": ["default"], "level": log_level},
-    },
-}
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
 if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
@@ -74,7 +37,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
             from mkdocs.commands import build
             from mkdocs.config import load_config
         except ImportError:
-            logging.error("mkdocs is not installed. Please install the 'docs' dependency group.")
+            logging.error("mkdocs is not installed. Please install the 'docs' optional dependencies.")
             sys.exit(1)
 
         config = load_config()
@@ -135,31 +98,67 @@ if args.enable_deployment:
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
+else:
+    # starlette app setup
+    try:
+        import uvicorn
+        from starlette.applications import Starlette
+        from starlette.config import environ
+        from starlette.requests import Request
+        from starlette.responses import JSONResponse
+        from starlette.routing import Mount, Route
+        from starlette.staticfiles import StaticFiles
+    except ImportError:
+        logging.error("starlette or uvicorn is not installed. Please install the 'web' optional dependencies.")
+        sys.exit(1)
 
-    sys.exit(0)
+    async def solver_api(request: Request) -> JSONResponse:
+        """The solver endpoint of the server."""
+        try:
+            body = await request.json()
+            puzzle_name: str = body["puzzle_name"]
+            puzzle: str = body["puzzle"]
+            param: Dict[str, Any] = body["param"]
+            result = run_solver(puzzle_name, puzzle, param)
+            return JSONResponse(result)
+        except ValueError as err:
+            logging.error(traceback.format_exc())
+            return JSONResponse({"detail": str(err)}, status_code=400)
+        except TimeoutError as err:
+            return JSONResponse({"detail": str(err)}, status_code=504)
+        except Exception:  # pylint: disable=broad-except  # pragma: no cover
+            logging.error(traceback.format_exc())
+            return JSONResponse({"detail": "Unknown error."}, status_code=500)
 
+    routes = [
+        Mount(
+            "/api",
+            name="api",
+            routes=[Route("/solve/", endpoint=solver_api, methods=["POST"])],
+        ),
+        Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
+        Mount("/", StaticFiles(directory="site", html=True), name="docs"),
+    ]
+    app = Starlette(routes=routes)
+    environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
 
-# starlette app setup
-routes = [
-    Mount(
-        "/api",
-        name="api",
-        routes=[Route("/solve/", endpoint=solver_api, methods=["POST"])],
-    ),
-    Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
-    Mount("/", StaticFiles(directory="site", html=True), name="docs"),
-]
-app = Starlette(routes=routes)
-environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
+    # start the server
+    if __name__ == "__main__":
+        UVICORN_LOGGING_CONFIG = {
+            "version": 1,
+            "disable_existing_loggers": True,
+            "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
+            "loggers": {
+                "uvicorn.error": {"handlers": ["default"], "level": log_level},
+                "uvicorn.access": {"handlers": ["default"], "level": log_level},
+            },
+        }
 
-
-# start the server
-if __name__ == "__main__":
-    uvicorn.run(
-        app="main:app",
-        host=args.host,
-        port=args.port,
-        reload=args.debug,
-        log_level=log_level.lower(),
-        log_config=UVICORN_LOGGING_CONFIG,
-    )
+        uvicorn.run(
+            app="main:app",
+            host=args.host,
+            port=args.port,
+            reload=args.debug,
+            log_level=log_level.lower(),
+            log_config=UVICORN_LOGGING_CONFIG,
+        )
