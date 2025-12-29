@@ -9,7 +9,7 @@ from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
-def midloop_constraint(r: int, c: int, d: Direction) -> str:
+def midloop_constraint(r: int, c: int, d: str) -> str:
     """
     Generate a midloop constraint.
 
