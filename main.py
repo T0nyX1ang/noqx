@@ -48,7 +48,8 @@ parser.add_argument("-p", "--port", default=8000, type=int, help="the port to ru
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
-parser.add_argument("-D", "--enable_deployment", action="store_true", help="Enable deployment for client-side purposes.")
+parser.add_argument("-D", "--enable_deployment", action="store_true", help="enable deployment for client-side purposes.")
+parser.add_argument("-B", "--build-document", action="store_true", help="build the documentation site.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -67,6 +68,24 @@ UVICORN_LOGGING_CONFIG = {
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
 if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
+    if args.build_document:
+        # build the documentation site
+        try:
+            from mkdocs.commands import build
+            from mkdocs.config import load_config
+        except ImportError:
+            logging.error("mkdocs is not installed. Please install the 'docs' dependency group.")
+            sys.exit(1)
+
+        config = load_config()
+        build.build(config)
+    else:
+        # build an empty redirect page
+        shutil.rmtree("./site", ignore_errors=True)
+        os.makedirs("./site", exist_ok=True)
+        with open("./site/index.html", "w", encoding="utf-8", newline="\n") as f:
+            f.write('<html><head><meta http-equiv="refresh" content="0; url=./penpa-edit/"></head><body></body></html>')
+
     # load the solvers
     logging.debug("Loading solvers...")
     for module_info in pkgutil.iter_modules(["solver"]):
