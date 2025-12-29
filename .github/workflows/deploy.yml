@@ -53,7 +53,7 @@ jobs:
 
       - name: Build deploy content with code simplification
         run: |
-          uv run main.py -D
+          uv run main.py -D -B
           uv run pyminify ./dist/page --in-place --remove-class-attribute-annotations --remove-literal-statements
           uv run ruff check --select F401 --fix --preview --unsafe-fixes ./dist/page
 
