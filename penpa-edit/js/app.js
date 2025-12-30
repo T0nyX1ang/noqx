@@ -8,6 +8,17 @@ function exp() {
 
 function imp(penpa, load_info = true) {
   let urlstring = penpa || document.getElementById("urlstring").value;
+  let puzzleType = null;
+
+  // replace unsupported host to supported host
+  urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
+
+  // pre-fetch the puzzle type for puzz.link relevant URL
+  if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
+    const parts = urlstring.split("?");
+    const urldata = parts[1].split("/");
+    puzzleType = urldata[0];
+  }
 
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("arukone", "numlin");
@@ -33,9 +44,6 @@ function imp(penpa, load_info = true) {
   urlstring = urlstring.replace("tslither", "slitherlink");
   urlstring = urlstring.replace("vslither", "slitherlink");
 
-  // replace unsupported host to supported host
-  urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
-
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
     Swal.fire({
@@ -58,7 +66,27 @@ function imp(penpa, load_info = true) {
   }
 
   clear_info();
-  if (load_info) hook_load(exp()); // load twice to extract the information
+  const currentContent = exp();
+
+  // manually set the puzzle type if pre-fetched
+  if (puzzleType) {
+    if (!(puzzleType in solver_metadata)) {
+      for (const [pid, data] of Object.entries(solver_metadata)) {
+        if (data.aliases && data.aliases.includes(puzzleType)) {
+          puzzleType = pid;
+          break;
+        }
+      }
+    }
+
+    if (puzzleType in solver_metadata) {
+      const typeSelect = document.getElementById("type");
+      typeSelect.value = puzzleType;
+      typeSelect.dispatchEvent(new Event("change"));
+    }
+  }
+
+  if (load_info) hook_load(currentContent);
 }
 
 function clear_info() {
@@ -276,6 +304,10 @@ $(window).on("load", function () {
   choicesType.setChoices(Object.values(puzzleTypeDict));
 
   typeSelect.addEventListener("change", () => {
+    if (choicesType.getValue(true) !== typeSelect.value) {
+      choicesType.setChoiceByValue(typeSelect.value);
+    }
+
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
