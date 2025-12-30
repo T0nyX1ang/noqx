@@ -364,7 +364,9 @@ $(window).on("load", function () {
     if (solutionPointer === -1) {
       puzzleContent = exp();
       choicesType.disable();
+      choicesType.containerOuter.element.setAttribute("title", "Reset the puzzle to change puzzle type.");
       choicesExample.disable();
+      choicesExample.containerOuter.element.setAttribute("title", "Reset the puzzle to change example.");
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
@@ -514,7 +516,9 @@ $(window).on("load", function () {
       }
       hook_load(puzzleContent);
       choicesType.enable();
+      choicesType.containerOuter.element.removeAttribute("title");
       choicesExample.enable();
+      choicesExample.containerOuter.element.removeAttribute("title");
     } else {
       create_newboard();
       advancecontrol_toggle();
@@ -531,17 +535,24 @@ $(window).on("load", function () {
   if (undoButton) {
     const updateChoicesType = () => {
       const choicesContainer = choicesType.containerOuter.element;
+      const choicesExampleContainer = choicesExample.containerOuter.element;
       if (undoButton.disabled) {
         if (!solutionList || solutionList.length === 0) {
           choicesType.enable();
           choicesContainer.removeAttribute("title");
+          choicesExample.enable();
+          choicesExampleContainer.removeAttribute("title");
         } else {
           choicesType.disable();
           choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
+          choicesExample.disable();
+          choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
         }
       } else {
         choicesType.disable();
         choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
+        choicesExample.disable();
+        choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
       }
     };
 
