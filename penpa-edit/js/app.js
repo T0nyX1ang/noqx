@@ -230,6 +230,10 @@ $(window).on("load", function () {
     clingo.init(CLINGO_WASM_URL);
   }
 
+  // Update the exact Penpa+ link according to the hash
+  const penpaLink = document.getElementById("penpa-link");
+  penpaLink.href = `https://github.com/swaroopg92/penpa-edit/tree/${penpa_edit_hash}`;
+
   const urlBase = "./penpa-edit/#";
   const issueMessage =
     "Submit an issue <a href='https://github.com/T0nyX1ang/noqx/issues/new/choose' target='_blank'>here</a> to help us improve.";
