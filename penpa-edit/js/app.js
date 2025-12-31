@@ -20,6 +20,16 @@ function imp(penpa, loadInfo = true) {
     puzzleType = urldata[0];
   }
 
+  // normalize the puzzle type
+  if (puzzleType && !(puzzleType in solver_metadata)) {
+    for (const [pid, data] of Object.entries(solver_metadata)) {
+      if (data.aliases && data.aliases.includes(puzzleType)) {
+        puzzleType = pid;
+        break;
+      }
+    }
+  }
+
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("arukone", "numlin");
   urlstring = urlstring.replace("chocona", "aqre");
@@ -56,6 +66,18 @@ function imp(penpa, loadInfo = true) {
 
   try {
     import_url(urlstring);
+    const importErrorDialog = document.getElementById("swal2-html-container");
+    if (
+      importErrorDialog &&
+      puzzleType in solver_metadata &&
+      importErrorDialog.textContent.startsWith("It currently does not support puzzle type")
+    ) {
+      resetGridType(puzzleType);
+      resetGridMode(puzzleType);
+      resetBoardSize(puzzleType);
+      create_newboard();
+      advancecontrol_toggle();
+    }
   } catch (error) {
     Swal.fire({
       icon: "error",
@@ -69,21 +91,10 @@ function imp(penpa, loadInfo = true) {
   const currentContent = exp();
 
   // manually set the puzzle type if pre-fetched
-  if (puzzleType) {
-    if (!(puzzleType in solver_metadata)) {
-      for (const [pid, data] of Object.entries(solver_metadata)) {
-        if (data.aliases && data.aliases.includes(puzzleType)) {
-          puzzleType = pid;
-          break;
-        }
-      }
-    }
-
-    if (puzzleType in solver_metadata) {
-      const typeSelect = document.getElementById("type");
-      typeSelect.value = puzzleType;
-      typeSelect.dispatchEvent(new Event("change"));
-    }
+  if (puzzleType in solver_metadata) {
+    const typeSelect = document.getElementById("type");
+    typeSelect.value = puzzleType;
+    typeSelect.dispatchEvent(new Event("change"));
   }
 
   if (loadInfo) hookLoad(currentContent);
