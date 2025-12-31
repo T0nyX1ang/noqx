@@ -83,9 +83,6 @@ function imp(penpa, loadInfo = true) {
       const typeSelect = document.getElementById("type");
       typeSelect.value = puzzleType;
       typeSelect.dispatchEvent(new Event("change"));
-    } else {
-      // create_newboard();
-      // advancecontrol_toggle();
     }
   }
 
@@ -307,7 +304,6 @@ $(window).on("load", function () {
       resetGridType(puzzleType);
       resetGridMode(puzzleType);
       resetBoardSize(puzzleType);
-
       create_newboard();
       advancecontrol_toggle();
 

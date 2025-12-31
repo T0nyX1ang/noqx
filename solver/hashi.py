@@ -50,7 +50,7 @@ class HashiSolver(Solver):
 
     name = "Hashi"
     category = "loop"
-    aliases = ["bridges", "hashiwokakero"]
+    aliases = ["bridges", "hashikake", "hashiwokakero"]
     examples = [
         {
             "data": "m=edit&p=7Vbdb9pADH/nr0B52qSTdl/5uLx1XbsXRre1U1VFCAHNVlRYOijbFMT/Xtuhyt2NVKWl7KWKYtn52b6fnYtz81+LwSxnImRSMJUwzgRcEU9YoiImVUw3X19n49tJnrbZweL2qpiBwtjJ8TH7PpjM81a29uq1lqVJywNWfkyzQAUskHT3WPklXZaf0rLLylOAAibgWQc0ETAJ6lGtnhOO2mH1UHDQu5UegXoB6mg8G03yfqdK9DnNyjMW4DrvKRrVYFr8zoMqjOxRMR2O8cFwcAvFzK/GN2tkvrgsrhdrX9FbsfKgotvZQFet6epKreii9lJ0rwZAdRNT01utoONfgWs/zZD2t1pNavU0XYLspstAcwxtAzEGCSCflvBA1aYGU9Zm5KKJY4aYrHYO3VQhpqrNBJ0tU3lEktjBjesupHDWEhLjbTx0bYXpdG1rjLdw7a8vNEZYKxB/28biLTvCjE6GyK1YRBjheMTGf5J4dRmXheQuLoVbtxRunVL4K0jqlJVBuXXBN+5H0Cax1gg9DiH22okIPdbUG4tV7HGIPX/jvw1pcI3aQ3HcibaHEi5LRZ1xPTDGyiHd/aqky0Ipl7VS/2SkXllrauw2zMx72+uUCt23pRK394o2vWUbf08p432QXg1aet+vRP+6Bi2xB7bt7mKtMJ+FK8xn45ivZgRjRNAwuSB5TFKSPINZw0pF8gNJTjIk2SGfI5LnJA9JapIR+cQ4rbaaZ8+hA7OQ4VRQUKVgOAdRixjOAcVBjRnOO8UfyTuDfPgDbbrCV/QV3T3aa2VBZ/wzb3eL2XQwgWNCdzEd5rN7G45kq1bwN6AbJgVs9ddT2v5Padh9vrfZtptRm0Fj17ORlScsuFn0B/1RAXsMeleBNEI3g0InelvkwYTPAR8s4oXAfRJ6NEz/t6bU9Mfb3dsUOor2gZhYbgk8cf1wW8QYsSUA3Wyq0qgtgeZcgDTW0oQY09Tl/wccPQEQXGzs/W6RfbWFN7xGzs0uQnZ42q7O2OXJY/9NcKKu/ql/iuvBdT4r2m/IfDecjS9/5PO3Qa91Bw==",

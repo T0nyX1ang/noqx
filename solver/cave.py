@@ -34,7 +34,7 @@ class CaveSolver(Solver):
 
     name = "Cave"
     category = "shade"
-    aliases = ["corral", "bag"]
+    aliases = ["bag", "corral", "correl"]
     examples = [
         {
             "data": "m=edit&p=7VRNb9swDL37VwQ682D560O3rGt2Sb2PZCgKwygcz0WDOXDnxMOgIP+9JG1PUZHLMKAohiHRwyNFUs+ipP2PvuxqkJL+fgIuIIMgjHhI6fFwx996e2hqNYN5f3hsOyQAHxcLeCibfe3kY1ThHHWq9Bz0B5ULT8A4CtCf1VHfKJ2BXuGUAIm+JTIpwEN6begtzxO7GpzSRZ6NHOkd0mrbVU19vxw8n1Su1yBonXecTVTs2p+1GNLYrtrdZkuOTXnAj9k/bp/GmX3/rf3ej7GyOIGeD3JXk9zAyPWNXKKDXGIX5NJX/L3c5qm9JDQtTifc8C8o9V7lpPqroYmhK3VEzNRR+B6mpthlTMdqfoBm/NsMXDSx85NJwaExEys4jKzZyA6OqLIpFVNlkxtTsJlNqdSZaS+Eh9ASLT07XHov4kNbigxJy5kdkRhJp31y2HJkRAXpWkyOmFb0jZ28SEhohcTYqf25Mj2Px1ZIbsgd44LRY1xjv0D7jO8ZXcaQcckx14y3jFeMAWPEMTF1/I/OxCvIyX18Si78qCf/qLdwcrHqu4eyqvHmZv1uU3ezrO12ZSPwkTw54pfgwccq+P9uvvq7SZvvvrWb8tbk4N0VVYnbWzjP"
