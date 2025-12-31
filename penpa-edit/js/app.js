@@ -1,12 +1,12 @@
 function exp() {
-  clear_info(); // clear every information created by penpa itself
+  clearInfo(); // clear every information created by penpa itself
   document.getElementById("save_undo").checked = true;
   let result = pu.maketext().split("#")[1];
   document.getElementById("save_undo").checked = false;
   return result;
 }
 
-function imp(penpa, load_info = true) {
+function imp(penpa, loadInfo = true) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
 
@@ -65,7 +65,7 @@ function imp(penpa, load_info = true) {
     return;
   }
 
-  clear_info();
+  clearInfo();
   const currentContent = exp();
 
   // manually set the puzzle type if pre-fetched
@@ -89,10 +89,10 @@ function imp(penpa, load_info = true) {
     }
   }
 
-  if (load_info) hook_load(currentContent);
+  if (loadInfo) hookLoad(currentContent);
 }
 
-function clear_info() {
+function clearInfo() {
   document.getElementById("saveinfotitle").value = "";
   document.getElementById("saveinfoauthor").value = "";
   document.getElementById("saveinfosource").value = "";
@@ -101,18 +101,18 @@ function clear_info() {
   document.title = "Noqx - Extended logic puzzle solver";
 }
 
-function hook_update_display() {
+function hookUpdateDisplay() {
   for (let i = 0; i < pu.space.length; i++) {
     pu.space[i] = parseInt(document.getElementById(`nb_space${i + 1}`).value, 10);
   }
 }
 
-function hook_load(data) {
+function hookLoad(data) {
   load(data);
-  clear_info();
+  clearInfo();
 }
 
-function invoke_param_box() {
+function invokeParamBox() {
   const parameterBox = document.getElementById("parameter_box");
   const parameterButton = document.getElementById("param");
 
@@ -125,7 +125,7 @@ function invoke_param_box() {
   }
 }
 
-function make_param(id, type, name, value) {
+function makeParam(id, type, name, value) {
   let paramDiv = document.createElement("div");
   paramDiv.className = "parameter_div";
 
@@ -161,7 +161,7 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
-function reset_grid_type(puzzleType) {
+function resetGridType(puzzleType) {
   const oldTypeFlag = document.getElementById("gridtype").value;
   let typeFlag = "square";
 
@@ -174,7 +174,7 @@ function reset_grid_type(puzzleType) {
   }
 }
 
-function reset_grid_mode(puzzleType) {
+function resetGridMode(puzzleType) {
   const puzzleCategory = solver_metadata[puzzleType].category;
   const oldModeFlag = pu.mode.grid;
   let modeFlag = ["1", "2", "1"]; // default grid mode
@@ -194,7 +194,7 @@ function reset_grid_mode(puzzleType) {
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
 }
 
-function reset_board_size(puzzleType) {
+function resetBoardSize(puzzleType) {
   const oldSizeFlag = [
     document.getElementById("nb_space1").value, // top space
     document.getElementById("nb_space2").value, // bottom space
@@ -304,9 +304,9 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
     if (puzzleType !== "") {
-      reset_grid_type(puzzleType);
-      reset_grid_mode(puzzleType);
-      reset_board_size(puzzleType);
+      resetGridType(puzzleType);
+      resetGridMode(puzzleType);
+      resetBoardSize(puzzleType);
 
       create_newboard();
       advancecontrol_toggle();
@@ -321,7 +321,7 @@ $(window).on("load", function () {
       if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
         parameterButton.disabled = false;
         for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
-          const paramDiv = make_param(k, v.type, v.name, v.default);
+          const paramDiv = makeParam(k, v.type, v.name, v.default);
           parameterBox.appendChild(paramDiv);
         }
       }
@@ -358,7 +358,7 @@ $(window).on("load", function () {
         }
       }
     } else {
-      reset_board_size(puzzleType); // reset the board when puzzle type changes
+      resetBoardSize(puzzleType); // reset the board when puzzle type changes
       create_newboard();
       advancecontrol_toggle();
     }
@@ -439,7 +439,7 @@ $(window).on("load", function () {
           }
 
           solutionPointer = 0;
-          hook_load(solutionList[solutionPointer]);
+          hookLoad(solutionList[solutionPointer]);
         } catch (e) {
           console.log(e);
 
@@ -499,7 +499,7 @@ $(window).on("load", function () {
                 return;
               }
               solutionPointer = 0;
-              hook_load(solutionList[solutionPointer]);
+              hookLoad(solutionList[solutionPointer]);
             }
           })
           .catch((e) => {
@@ -525,7 +525,7 @@ $(window).on("load", function () {
       solveButton.textContent = `Solution (${solutionPointer + 1}/${
         solutionList.length === 10 ? "10+" : solutionList.length
       })`;
-      hook_load(solutionList[solutionPointer]);
+      hookLoad(solutionList[solutionPointer]);
     }
   });
 
@@ -534,7 +534,7 @@ $(window).on("load", function () {
       if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
-      hook_load(puzzleContent);
+      hookLoad(puzzleContent);
       choicesType.enable();
       choicesType.containerOuter.element.removeAttribute("title");
       choicesExample.enable();
