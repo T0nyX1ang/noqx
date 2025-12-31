@@ -158,22 +158,23 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
-function reset_grid_type(puzzleType, oldTypeFlag = "square") {
+function reset_grid_type(puzzleType) {
+  const oldTypeFlag = document.getElementById("gridtype").value;
   let typeFlag = "square";
 
   if (puzzleType === "kakuro") typeFlag = "kakuro";
   if (puzzleType === "sudoku") typeFlag = "sudoku";
 
   if (typeFlag !== oldTypeFlag) {
-    document.getElementById("gridtype").value = typeFlag; // grid type
+    document.getElementById("gridtype").value = typeFlag; // set grid type
     changetype();
   }
-  return typeFlag;
 }
 
-function reset_grid_mode(puzzleType, oldModeFlag = ["1", "2", "1"]) {
-  let modeFlag = ["1", "2", "1"]; // default grid mode
+function reset_grid_mode(puzzleType) {
   const puzzleCategory = solver_metadata[puzzleType].category;
+  const oldModeFlag = pu.mode.grid;
+  let modeFlag = ["1", "2", "1"]; // default grid mode
 
   if (["loop", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // loop/region mode
 
@@ -188,44 +189,36 @@ function reset_grid_mode(puzzleType, oldModeFlag = ["1", "2", "1"]) {
   if (["myopia", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
 
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
-  return modeFlag;
 }
 
-function reset_board_size(puzzleType, oldSizeFlag = 0) {
-  let sizeFlag = 0; // a flag for extra margin sum
+function reset_board_size(puzzleType) {
+  const oldSizeFlag = [
+    document.getElementById("nb_space1").value, // top space
+    document.getElementById("nb_space2").value, // bottom space
+    document.getElementById("nb_space3").value, // left space
+    document.getElementById("nb_space4").value, // right space
+  ];
+  let sizeFlag = [0, 0, 0, 0]; // a flag for margin size
 
-  document.getElementById("nb_space1").value = 0; // over space
-  document.getElementById("nb_space2").value = 0; // under space
-  document.getElementById("nb_space3").value = 0; // left space
-  document.getElementById("nb_space4").value = 0; // right space
-
-  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)) {
-    sizeFlag = 1;
-    document.getElementById("nb_space1").value = 1; // over space
-    document.getElementById("nb_space3").value = 1; // left space
-  }
+  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType))
+    sizeFlag = [1, 0, 1, 0];
 
   if (
     ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "magnets", "skyscrapers", "starbattle"].includes(
       puzzleType
     )
-  ) {
-    sizeFlag = 2;
-    document.getElementById("nb_space1").value = 1; // over space
-    document.getElementById("nb_space2").value = 1; // under space
-    document.getElementById("nb_space3").value = 1; // left space
-    document.getElementById("nb_space4").value = 1; // right space
-  }
+  )
+    sizeFlag = [1, 1, 1, 1];
 
-  if (["coral", "nonogram"].includes(puzzleType)) {
-    sizeFlag = 5;
-    document.getElementById("nb_space1").value = 5; // over space
-    document.getElementById("nb_space3").value = 5; // left space
-  }
+  if (["coral", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
 
-  if (sizeFlag !== oldSizeFlag) {
-    document.getElementById("nb_size1").value = 10 + sizeFlag; // columns
-    document.getElementById("nb_size2").value = 10 + sizeFlag; // rows
+  if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
+    document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
+    document.getElementById("nb_size2").value = 10 + sizeFlag[2] + sizeFlag[3]; // rows
+    document.getElementById("nb_space1").value = sizeFlag[0]; // top space
+    document.getElementById("nb_space2").value = sizeFlag[1]; // bottom space
+    document.getElementById("nb_space3").value = sizeFlag[2]; // left space
+    document.getElementById("nb_space4").value = sizeFlag[3]; // right space
   }
 
   return sizeFlag;
@@ -280,9 +273,6 @@ $(window).on("load", function () {
   let solutionList = null;
   let solutionPointer = -1;
   let puzzleParameters = {};
-  let puzzleGridTypeFlag = "square";
-  let puzzleBoardSizeFlag = 0;
-  let puzzleGridModeFlag = ["1", "2", "1"];
 
   let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
   puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
@@ -311,14 +301,9 @@ $(window).on("load", function () {
     ruleButton.disabled = false;
     puzzleName = typeSelect.value;
     if (puzzleName !== "") {
-      let newgridTypeFlag = reset_grid_type(puzzleName, puzzleGridTypeFlag); // reset the grid type when puzzle type changes
-      puzzleGridTypeFlag = newgridTypeFlag;
-
-      let newBoardSizeFlag = reset_board_size(puzzleName, puzzleBoardSizeFlag); // reset the board when puzzle type changes
-      puzzleBoardSizeFlag = newBoardSizeFlag;
-
-      let newGridModeFlag = reset_grid_mode(puzzleName, puzzleGridModeFlag); // reset the grid mode when puzzle type changes
-      puzzleGridModeFlag = newGridModeFlag;
+      reset_grid_type(puzzleName);
+      reset_grid_mode(puzzleName);
+      reset_board_size(puzzleName);
 
       create_newboard();
       advancecontrol_toggle();
