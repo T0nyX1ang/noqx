@@ -83,6 +83,9 @@ function imp(penpa, load_info = true) {
       const typeSelect = document.getElementById("type");
       typeSelect.value = puzzleType;
       typeSelect.dispatchEvent(new Event("change"));
+    } else {
+      // create_newboard();
+      // advancecontrol_toggle();
     }
   }
 
@@ -268,7 +271,7 @@ $(window).on("load", function () {
     noChoicesText: "No examples found",
   });
 
-  let puzzleName = null;
+  let puzzleType = null;
   let puzzleContent = null;
   let solutionList = null;
   let solutionPointer = -1;
@@ -299,11 +302,11 @@ $(window).on("load", function () {
     }
 
     ruleButton.disabled = false;
-    puzzleName = typeSelect.value;
-    if (puzzleName !== "") {
-      reset_grid_type(puzzleName);
-      reset_grid_mode(puzzleName);
-      reset_board_size(puzzleName);
+    puzzleType = typeSelect.value;
+    if (puzzleType !== "") {
+      reset_grid_type(puzzleType);
+      reset_grid_mode(puzzleType);
+      reset_board_size(puzzleType);
 
       create_newboard();
       advancecontrol_toggle();
@@ -315,9 +318,9 @@ $(window).on("load", function () {
         parameterBox.removeChild(parameterBox.lastChild);
       }
 
-      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
+      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
         parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
           const paramDiv = make_param(k, v.type, v.name, v.default);
           parameterBox.appendChild(paramDiv);
         }
@@ -326,7 +329,7 @@ $(window).on("load", function () {
       choicesExample.clearStore();
       let exampleList = [{ value: "", label: "Choose Example", selected: true }];
       exampleList.push(
-        ...solver_metadata[puzzleName].examples.map((_, i) => ({
+        ...solver_metadata[puzzleType].examples.map((_, i) => ({
           value: i,
           label: `Example #${i + 1}`,
         }))
@@ -342,12 +345,12 @@ $(window).on("load", function () {
       solutionList = null;
       solutionPointer = -1;
 
-      let exampleData = solver_metadata[puzzleName].examples[exampleSelect.value];
+      let exampleData = solver_metadata[puzzleType].examples[exampleSelect.value];
       imp(exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`);
 
-      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
-        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
-          const config = solver_metadata[puzzleName].examples[exampleSelect.value].config;
+      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
+          const config = solver_metadata[puzzleType].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") paramInput.checked = value;
@@ -355,15 +358,15 @@ $(window).on("load", function () {
         }
       }
     } else {
-      reset_board_size(puzzleName); // reset the board when puzzle type changes
+      reset_board_size(puzzleType); // reset the board when puzzle type changes
       create_newboard();
       advancecontrol_toggle();
     }
   });
 
   ruleButton.addEventListener("click", () => {
-    if (ruleButton.disabled || !puzzleName) return;
-    window.open(`https://puzz.link/rules.html?${puzzleName !== "yajilin_regions" ? puzzleName : "yajilin-regions"}`);
+    if (ruleButton.disabled || !puzzleType) return;
+    window.open(`https://puzz.link/rules.html?${puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"}`);
   });
 
   solveButton.addEventListener("click", async () => {
@@ -376,7 +379,7 @@ $(window).on("load", function () {
       return;
     }
 
-    puzzleName = typeSelect.value;
+    puzzleType = typeSelect.value;
 
     if (solutionPointer === -1) {
       puzzleContent = exp();
@@ -387,8 +390,8 @@ $(window).on("load", function () {
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
-      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
-        for (const [k, _] of Object.entries(solver_metadata[puzzleName].parameters)) {
+      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
+        for (const [k, _] of Object.entries(solver_metadata[puzzleType].parameters)) {
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
           else puzzleParameters[k] = paramInput.value;
@@ -399,7 +402,7 @@ $(window).on("load", function () {
 
       if (ENABLE_DEPLOYMENT) {
         try {
-          const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
+          const puzzle = prepare_puzzle(puzzleType, puzzleContent, puzzleParameters);
           if (!puzzle["success"]) {
             throw new Error(puzzle["result"]);
           }
@@ -421,7 +424,7 @@ $(window).on("load", function () {
             throw new Error("No solution found.");
           }
 
-          const puz_name = solver_metadata[puzzleName].name;
+          const puz_name = solver_metadata[puzzleType].name;
           console.info(`[Solver] ${puz_name} puzzle solved.`);
           console.info(`[Solver] ${puz_name} solver took ${result.Time.Total} seconds.`);
 
@@ -458,7 +461,7 @@ $(window).on("load", function () {
         fetch("/api/solve/", {
           method: "POST",
           body: JSON.stringify({
-            puzzle_name: puzzleName,
+            puzzle_name: puzzleType,
             puzzle: puzzleContent,
             param: puzzleParameters,
           }),
