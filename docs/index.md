@@ -4,6 +4,44 @@
 
 - Try it through this [portal](./penpa-edit/){:target="\_blank"}.
 
+## Guide for First-time Users
+
+### Select a puzzle type
+
+- You can fuzzy search the puzzle type in the first dropdown box.
+
+- If you import the puzzle via a `puzz.link` URL, the puzzle type is automatically set.
+
+- If you want to see the examples, you can select them from the second dropdown box.
+
+- You can view the rules of a puzzle externally if it is indexed in `puzz.link`.
+
+- You can change the parameters of a puzzle if the `Show Parameters` button is available.
+
+- If you change the puzzle type, the whole board will be cleared. Please take care.
+
+### Draw the board
+
+- The operations are identical to the original `Penpa+` version.
+
+- If you draw something on the board, the puzzle type and examples cannot be changed. Reset the board if you want to change them.
+
+### Solve the puzzle
+
+- Click on the `Solve` button to solve the puzzle.
+
+- If the puzzle is **being solved**, the puzzle type and examples cannot be changed. If you use the `backend` version, please wait until the solver times out.
+  If you use the `static` version, you can reset the puzzle directly.
+
+- If the puzzle is **solved**, you can click on the original `Solve` button to switch between solutions if the puzzle have multiple solutions.
+  Meanwhile, the puzzle type and examples cannot be changed. Reset the board if you want to change them.
+
+### Reset the board
+
+- If you feel sure that the puzzle can be discarded, you can click the `Reset` button to clear the board.
+
+- Although the puzzle is reset, the style and size is cached for convenience.
+
 ## New features
 
 ### New features from `Noq`
@@ -157,12 +195,4 @@
 
 ```bash
     uv run coverage html
-```
-
-### Build documents
-
-- Build the documents with `uv`, `mkdocs-material` and `mkdocstrings-python`:
-
-```bash
-    uv run mkdocs build
 ```
