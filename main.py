@@ -14,14 +14,14 @@ from noqx.clingo import Config, run_solver
 from noqx.manager import list_solver_metadata, load_solver
 
 # argument parser
-parser = argparse.ArgumentParser(description="noqx startup settings.")
+parser = argparse.ArgumentParser(description="Noqx startup settings.")
 parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="the host to run the server on.")
 parser.add_argument("-p", "--port", default=8000, type=int, help="the port to run the server on.")
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
 parser.add_argument("-tl", "--time-limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel-threads", default=Config.parallel_threads, type=int, help="parallel threads.")
-parser.add_argument("-D", "--enable-deployment", action="store_true", help="enable deployment for client-side purposes.")
 parser.add_argument("-B", "--build-document", action="store_true", help="build the documentation site.")
+parser.add_argument("-D", "--enable-deployment", action="store_true", help="enable deployment for client-side purposes.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
