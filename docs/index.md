@@ -2,9 +2,9 @@
 
 [Noqx](https://github.com/T0nyX1ang/noqx) is an extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
 
-- Try it through this [portal](./penpa-edit/){:target="\_blank"}.
+- Try it through this [portal](./penpa-edit/){:target="\_blank"} for 140+ puzzle types and enhanced efficiency.
 
-## Guide for First-time Users
+## How to Use
 
 ### Select a puzzle type
 
@@ -41,32 +41,6 @@
 - If you feel sure that the puzzle can be discarded, you can click the `Reset` button to clear the board.
 
 - Although the puzzle is reset, the style and size is cached for convenience.
-
-## New features
-
-### New features from `Noq`
-
-- Acquire enhanced efficiency and more solvers (140+ currently).
-
-- Change the backend from `Django` to `Starlette` with `Uvicorn` (See issues [#31](https://github.com/T0nyX1ang/noqx/issues/31) and [#50](https://github.com/T0nyX1ang/noqx/issues/50)).
-
-- Change the frontend to `Penpa+`. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
-
-- Obtain uniform data structures in every puzzle. (See issues [#84](https://github.com/T0nyX1ang/noqx/issues/84) and [#109](https://github.com/T0nyX1ang/noqx/issues/109)).
-
-- Deploy the entire solver to GitHub Pages with the help of `PyScript`. No backend server is needed in this mode.
-
-### New usages from `Penpa+`
-
-- Select puzzle type.
-
-- Show rules in [puzz.link](https://puzz.link/list.html) if possible.
-
-- Choose example puzzle.
-
-- Show/Edit parameters of the solver if possible.
-
-- Solve/Reset the puzzle.
 
 ## How to contribute
 
