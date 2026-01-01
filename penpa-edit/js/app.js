@@ -244,6 +244,7 @@ $(window).on("load", function () {
   // Update the exact Penpa+ link according to the hash
   const penpaLink = document.getElementById("penpa-link");
   penpaLink.href = `https://github.com/swaroopg92/penpa-edit/tree/${penpa_edit_hash}`;
+  penpaLink.textContent = `(${penpa_edit_hash.slice(0, 7)})`;
 
   const urlBase = "./penpa-edit/#";
   const issueMessage =
