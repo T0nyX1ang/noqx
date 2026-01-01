@@ -39,3 +39,5 @@
 ## License
 
 - This project is dual-licensed under [Apache 2.0](./LICENSE.APACHE) and [GPL 3.0](./LICENSE.GPL) (or any later version). You can choose between one of them if you use this project.
+
+- The portion of [Penpa+](https://github.com/swaroopg92/penpa-edit) is licensed under the [MIT License](https://github.com/swaroopg92/penpa-edit/blob/master/LICENSE).
