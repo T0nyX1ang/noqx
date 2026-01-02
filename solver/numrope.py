@@ -45,7 +45,7 @@ class NumRopeSolver(Solver):
 
         for (r, c, _, d), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
-            self.add_program_line(f'grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f'grid_io({r}, {c}, "{d}").')
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

@@ -23,8 +23,8 @@ def midloop_constraint(r: int, c: int, d: str) -> str:
     min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 >= {r} }}"
 
     if d == Direction.CENTER:
-        rule += f':- grid_direction({r}, {c}, "u"), grid_direction({r}, {c}, "d"), Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r} - Ru != Rd - {r}.\n'
-        rule += f':- grid_direction({r}, {c}, "l"), grid_direction({r}, {c}, "r"), Cl = {max_l}, grid(_, Cl), Cr = {min_r}, grid(_, Cr), {c} - Cl != Cr - {c}.\n'
+        rule += f':- grid_io({r}, {c}, "u"), grid_io({r}, {c}, "d"), Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r} - Ru != Rd - {r}.\n'
+        rule += f':- grid_io({r}, {c}, "l"), grid_io({r}, {c}, "r"), Cl = {max_l}, grid(_, Cl), Cr = {min_r}, grid(_, Cr), {c} - Cl != Cr - {c}.\n'
 
     if d == Direction.TOP:
         rule += f":- Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r - 1} - Ru != Rd - {r}.\n"
@@ -70,18 +70,18 @@ class MidLoopSolver(Solver):
                 self.add_program_line(midloop_constraint(r, c, d))
 
             if d == Direction.TOP:
-                self.add_program_line(f':- not grid_direction({r}, {c}, "u").')
-                self.add_program_line(f':- not grid_direction({r - 1}, {c}, "d").')
+                self.add_program_line(f':- not grid_io({r}, {c}, "u").')
+                self.add_program_line(f':- not grid_io({r - 1}, {c}, "d").')
                 self.add_program_line(midloop_constraint(r, c, d))
 
             if d == Direction.LEFT:
-                self.add_program_line(f':- not grid_direction({r}, {c}, "l").')
-                self.add_program_line(f':- not grid_direction({r}, {c - 1}, "r").')
+                self.add_program_line(f':- not grid_io({r}, {c}, "l").')
+                self.add_program_line(f':- not grid_io({r}, {c - 1}, "r").')
                 self.add_program_line(midloop_constraint(r, c, d))
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="grid_io", size=3))
 
         return self.program

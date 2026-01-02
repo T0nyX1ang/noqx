@@ -35,7 +35,7 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
 def onsen_global_rule() -> str:
     """Generates global rules for an Onsen-Meguri puzzle."""
     # any area, any onsen area, go through border at most twice
-    rule = ":- area(A, _, _), onsen(O, _, _), #count { R, C, D: onsen(O, R, C), area_border(A, R, C, D), grid_direction(R, C, D) } > 2.\n"
+    rule = ":- area(A, _, _), onsen(O, _, _), #count { R, C, D: onsen(O, R, C), area_border(A, R, C, D), grid_io(R, C, D) } > 2.\n"
 
     # two different onsen loops cannot be connected
     rule += ":- onsen(O1, R, C), onsen(O2, R, C), O1 != O2.\n"
@@ -88,8 +88,8 @@ class OnsenSolver(Solver):
         self.add_program_line(onsen_global_rule())
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="grid_io", size=3))
 
         return self.program

@@ -16,13 +16,13 @@ def wall_length(r: int, c: int, d: int, num: int) -> str:
     A grid direction fact should be defined first.
     """
     if d == 0:
-        return f':- #count{{ R: grid_direction(R, {c}, "d"), R < {r} }} != {num}.'
+        return f':- #count{{ R: grid_io(R, {c}, "d"), R < {r} }} != {num}.'
     if d == 1:
-        return f':- #count{{ C: grid_direction({r}, C, "r"), C < {c} }} != {num}.'
+        return f':- #count{{ C: grid_io({r}, C, "r"), C < {c} }} != {num}.'
     if d == 2:
-        return f':- #count{{ C: grid_direction({r}, C, "r"), C > {c} }} != {num}.'
+        return f':- #count{{ C: grid_io({r}, C, "r"), C > {c} }} != {num}.'
     if d == 3:
-        return f':- #count{{ R: grid_direction(R, {c}, "d"), R > {r} }} != {num}.'
+        return f':- #count{{ R: grid_io(R, {c}, "d"), R > {r} }} != {num}.'
 
     raise ValueError("Invalid direction.")
 
@@ -80,8 +80,8 @@ class CastleSolver(Solver):
                 self.add_program_line(f"gray({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="grid_io", size=3))
 
         return self.program

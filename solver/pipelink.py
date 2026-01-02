@@ -14,28 +14,28 @@ def adjacent_loop_intersect() -> str:
     """
     adj = 'direction_type("H"; "V").\n'
     adj += 'adj_loop_intersect(R, C, "H", R, C, "V") :- grid(R, C), not intersection(R, C).\n'
-    adj += 'adj_loop_intersect(R, C, "H", R, C + 1, "H") :- grid(R, C), grid(R, C+1), grid_direction(R, C, "r").\n'
-    adj += 'adj_loop_intersect(R, C, "V", R + 1, C, "V") :- grid(R, C), grid(R+1, C), grid_direction(R, C, "d").\n'
+    adj += 'adj_loop_intersect(R, C, "H", R, C + 1, "H") :- grid(R, C), grid(R, C+1), grid_io(R, C, "r").\n'
+    adj += 'adj_loop_intersect(R, C, "V", R + 1, C, "V") :- grid(R, C), grid(R+1, C), grid_io(R, C, "d").\n'
     adj += "adj_loop_intersect(R0, C0, T0, R, C, T) :- adj_loop_intersect(R, C, T, R0, C0, T0)."
     return adj
 
 
 def intersect_loop(color: str = "white", path: bool = False) -> str:
     """A rule to ensure the route is a valid loop with intersection."""
-    rule = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 2.\n"
-    rule += "intersection(R, C) :- grid(R, C), #count { D: grid_direction(R, C, D) } = 4.\n"
+    rule = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_io(R, C, D) } = 2.\n"
+    rule += "intersection(R, C) :- grid(R, C), #count { D: grid_io(R, C, D) } = 4.\n"
     rule += "pass_by_loop(R, C) :- intersection(R, C).\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:  # pragma: no cover
         visit_constraints.append("not dead_end(R, C)")
-        rule += ":- dead_end(R, C), grid(R, C), #count { D: grid_direction(R, C, D) } != 1.\n"
+        rule += ":- dead_end(R, C), grid(R, C), #count { D: grid_io(R, C, D) } != 1.\n"
 
     rule += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    rule += ':- grid(R, C), grid_direction(R, C, "l"), not grid_direction(R, C - 1, "r").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "u"), not grid_direction(R - 1, C, "d").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "r"), not grid_direction(R, C + 1, "l").\n'
-    rule += ':- grid(R, C), grid_direction(R, C, "d"), not grid_direction(R + 1, C, "u").'
+    rule += ':- grid(R, C), grid_io(R, C, "l"), not grid_io(R, C - 1, "r").\n'
+    rule += ':- grid(R, C), grid_io(R, C, "u"), not grid_io(R - 1, C, "d").\n'
+    rule += ':- grid(R, C), grid_io(R, C, "r"), not grid_io(R, C + 1, "l").\n'
+    rule += ':- grid(R, C), grid_io(R, C, "d"), not grid_io(R + 1, C, "u").'
     return rule
 
 
@@ -73,10 +73,10 @@ class PipeLinkSolver(Solver):
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
             for d in "lurd":
                 if Point(r, c, label=d) in puzzle.line:
-                    self.add_program_line(f'grid_direction({r}, {c}, "{d}").')
+                    self.add_program_line(f'grid_io({r}, {c}, "{d}").')
                 else:
-                    self.add_program_line(f'not grid_direction({r}, {c}, "{d}").')
+                    self.add_program_line(f'not grid_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="grid_io", size=3))
 
         return self.program

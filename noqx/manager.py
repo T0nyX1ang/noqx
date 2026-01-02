@@ -104,11 +104,11 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
                     solution.edge[Point(r, c, d)] = True
 
         elif _type.startswith("grid_"):
-            grid_direction = str(data[2]).replace('"', "")
+            d = str(data[2]).replace('"', "")
             if puzzle.puzzle_name == "hashi":
-                solution.line[Point(r, c, label=f"{grid_direction}_{data[3]}")] = True
+                solution.line[Point(r, c, label=f"{d}_{data[3]}")] = True
             else:
-                solution.line[Point(r, c, label=grid_direction)] = True
+                solution.line[Point(r, c, label=d)] = True
 
         elif _type.startswith("number"):
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])

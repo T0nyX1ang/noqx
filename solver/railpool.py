@@ -13,13 +13,13 @@ def len_segment_area(color: str = "grid") -> str:
     """
     Generate a rule to get the length of segments.
     """
-    rule = 'nth_horizontal(R, C, 0) :- grid_direction(R, C, "r"), not grid_direction(R, C, "l").\n'
-    rule += 'nth_horizontal(R, C, N) :- grid_direction(R, C, "l"), nth_horizontal(R, C - 1, N - 1).\n'
-    rule += 'nth_vertical(R, C, 0) :- grid_direction(R, C, "d"), not grid_direction(R, C, "u").\n'
-    rule += 'nth_vertical(R, C, N) :- grid_direction(R, C, "u"), nth_vertical(R - 1, C, N - 1).\n'
+    rule = 'nth_horizontal(R, C, 0) :- grid_io(R, C, "r"), not grid_io(R, C, "l").\n'
+    rule += 'nth_horizontal(R, C, N) :- grid_io(R, C, "l"), nth_horizontal(R, C - 1, N - 1).\n'
+    rule += 'nth_vertical(R, C, 0) :- grid_io(R, C, "d"), not grid_io(R, C, "u").\n'
+    rule += 'nth_vertical(R, C, N) :- grid_io(R, C, "u"), nth_vertical(R - 1, C, N - 1).\n'
 
-    rule += f'len_horizontal(R, C, N) :- nth_horizontal(R, C, 0), {color}(R, C + N), nth_horizontal(R, C + N, N), not grid_direction(R, C + N, "r").\n'
-    rule += f'len_vertical(R, C, N) :- nth_vertical(R, C, 0), {color}(R + N, C), nth_vertical(R + N, C, N), not grid_direction(R + N, C, "d").\n'
+    rule += f'len_horizontal(R, C, N) :- nth_horizontal(R, C, 0), {color}(R, C + N), nth_horizontal(R, C + N, N), not grid_io(R, C + N, "r").\n'
+    rule += f'len_vertical(R, C, N) :- nth_vertical(R, C, 0), {color}(R + N, C), nth_vertical(R + N, C, N), not grid_io(R + N, C, "d").\n'
     rule += f"len_horizontal(R, C, L) :- {color}(R, C), nth_horizontal(R, C, N), len_horizontal(R, C - N, L).\n"
     rule += f"len_vertical(R, C, L) :- {color}(R, C), nth_vertical(R, C, N), len_vertical(R - N, C, L).\n"
 
@@ -69,8 +69,8 @@ class RailPoolSolver(Solver):
             self.add_program_line(f"black({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="grid_io", size=3))
 
         return self.program

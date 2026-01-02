@@ -45,8 +45,8 @@ class DetourSolver(Solver):
                     self.add_program_line(f":- #count {{ R, C: area({i}, R, C), turning(R, C) }} != {num}.")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="grid_io", size=3))
 
         return self.program
