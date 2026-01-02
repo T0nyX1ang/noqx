@@ -10,16 +10,13 @@ from noqx.puzzle import Direction, Point
 def tag_encode(name: str, *data: Union[str, int, None]) -> str:
     """Encode a valid tag predicate without spaces or hyphens.
 
-    * Since there are many predicates in the solver, this function aims to generate consistent tags.
-    This helps avoid errors due to inconsistent naming conventions.
+    * Since there are many predicates in the solver, this function aims to generate consistent tags. This helps avoid errors due to inconsistent naming conventions.
 
-    * To ensure compatibility with [Clingo](https://potassco.org/clingo/), all spaces and hyphens
-    in the tag are replaced with underscores.
+    * To ensure compatibility with [Clingo](https://potassco.org/clingo/), all spaces and hyphens in the tag are replaced with underscores.
 
     Args:
         name: The name of the tag.
-        *data: Additional data to be included in the tag. The recommended data sequence is `base` type,
-              `region` type, `auxiliary` type, `adjacent` type and `color`. Moreover, `None` values are ignored.
+        *data: Additional data to be included in the tag. The recommended data sequence is `base` type, `region` type, `auxiliary` type, `adjacent` type and `color`. Moreover, `None` values are ignored.
     """
     tag_data = [name]
     for d in data:  # recommended data sequence: *_type, src_r, src_c, color
@@ -32,16 +29,12 @@ def tag_encode(name: str, *data: Union[str, int, None]) -> str:
 def reverse_op(op: str) -> str:
     """Get the reverse symbolic representation of the given operator.
 
-    * In [Clingo](https://potassco.org/clingo/), all the **constraints** are represented in a double-negation form.
-    For example, the constraint `X >= 3` is represented as `:- X < 3.` in the solver. This function aims to do the
-    reversion in comparison-relevant cases.
+    * In [Clingo](https://potassco.org/clingo/), all the **constraints** are represented in a double-negation form. For example, the constraint `X >= 3` is represented as `:- X < 3.` in the solver. This function aims to do the reversion in comparison-relevant cases.
 
-    * In most cases, this function does not need to be called, otherwise, the `target_encode` function is more
-    frequently used.
+    * In most cases, this function does not need to be called, otherwise, the `target_encode` function is more frequently used.
 
     Note:
-        Here is a function from the Tatamibari puzzle, which should include a manual rule to compare the
-        height and the width of a rectangle.
+        Here is a function from the Tatamibari puzzle, which should include a manual rule to compare the height and the width of a rectangle.
         ```python
             from noqx.rule.helper import reverse_op, tag_encode
 
@@ -57,7 +50,7 @@ def reverse_op(op: str) -> str:
         ```
 
     Args:
-        op: The operator to be reversed. Available operators are: `eq`, `ge`, `gt`, `le`, `lt`, `ne`.
+        op: The operator to be reversed. Available operators are: `eq`, `ge`, `gt`, `le`, `lt`, and `ne`.
     """
     op_rev_dict = {"eq": "!=", "ge": "<", "gt": "<=", "le": ">", "lt": ">=", "ne": "="}
     return op_rev_dict[op]
@@ -143,16 +136,13 @@ def full_bfs(
 ) -> Dict[Tuple[Tuple[int, int], ...], Optional[Tuple[int, int]]]:
     """Generate a dictionary of connected components (rooms) with their unique clue by BFS.
 
-    * The rooms will be converted to a tuple and become the key of the result dictionary.
-    This ensures the consistency of the data structure.
+    * The rooms will be converted to a tuple and become the key of the result dictionary. This ensures the consistency of the data structure.
 
     Args:
         rows: The number of rows in the grid.
         cols: The number of columns in the grid.
-        edges: The edges of the grid stored in a dictionary, the format is the same to the `edge` attribute
-               in the `Puzzle` class.
-        clues: The clues in the grid stored in a dictionary, the format is the same to the `text` attribute
-               in the `Puzzle` class.
+        edges: The edges of the grid stored in a dictionary, the format is the same to the `edge` attribute in the `Puzzle` class.
+        clues: The clues in the grid stored in a dictionary, the format is the same to the `text` attribute in the `Puzzle` class.
         exclude: The cells to be excluded from the BFS.
     """
     excluded_cells = set() if exclude is None else set(exclude)

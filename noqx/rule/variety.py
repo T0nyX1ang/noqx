@@ -1,9 +1,7 @@
 """Generate miscellaneous rules which are not catagorized in other files.
 
 Warning:
-    This module is for rules that do not fit into other categories. If you find that a rule can be
-    categorized into an existing module, please consider moving it there. Moreover, the rules in
-    this category may be constantly changing, please take with great care.
+    This module is for rules that do not fit into other categories. If you find that a rule can be categorized into an existing module, please consider moving it there. Moreover, the rules in this category may be constantly changing, please take with great care.
 """
 
 from typing import Tuple

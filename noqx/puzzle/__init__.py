@@ -7,8 +7,7 @@ class Color:
     """Enumeration for colors.
 
     * Currently, only one color can be shaded on a single cell. Each cell can be categorized into
-    two types, **shaded** or **unshaded**. The unshaded cells are represented by the **green** color, while
-    the shaded cells can be either **gray** or **black** to distinguish region edges.
+    two types, **shaded** or **unshaded**. The unshaded cells are represented by the **green** color, while the shaded cells can be either **gray** or **black** to distinguish region edges.
 
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
@@ -28,24 +27,20 @@ class Color:
 class Direction:
     """Enumeration for directions.
 
-    * This `Direction` enumeration only involves with the direction of **adjacent** cells. For the directions
-    inside a cell, please refer to the `label` descriptor instead. According to symmetry, only 3 directions are needed
-    in the program: the top, left, and top-left directions.
+    * This `Direction` enumeration only involves with the direction of **adjacent** cells. For the directions inside a cell, please refer to the `label` descriptor instead. According to symmetry, only 3 directions are needed in the program: the top, left, and top-left directions.
 
-    * For edge visualizations, two additional directions are included in this enumeration, which are the upwards-diagonal
-    and downwards-diagonal directions. These two directions should be only used for edge visualizations.
+    * For edge visualizations, two additional directions are included in this enumeration, which are the upwards-diagonal and downwards-diagonal directions. These two directions should be only used for edge visualizations.
 
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
     Attributes:
         CENTER: The center direction. This is the default direction for most cells.
                 Using this direction will not have effects on visualizations.
-        TOP: The top direction. This indicates the adjacent cell is on the **top** side of a cell.
+        TOP: The top direction. This indicates something is on the **top** side of a cell.
              Also, this direction is used for **horizontal** edge visualizations.
-        LEFT: The left direction. This indicates the adjacent cell is on the **left** side of a cell.
+        LEFT: The left direction. This indicates the something is on the **left** side of a cell.
               Also, this direction is used for **vertical** edge visualizations.
-        TOP_LEFT: The top-left direction. This indicates the adjacent cell is on the **top-left** side of a cell.
-                  Using this direction will not have effects on visualizations.
+                  side of a cell. Using this direction will not have effects on visualizations.
         DIAG_UP: The downwards-diagonal direction. This is only used for edges that goes from **bottom-left** to **top-right**.
         DIAG_DOWN: The upwards-diagonal direction. This is only used for edges that goes from **top-left** to **bottom-right**.
     """
@@ -53,7 +48,9 @@ class Direction:
     CENTER: str = "center"
     TOP: str = "top"
     LEFT: str = "left"
+    BOTTOM: str = "bottom"
     TOP_LEFT: str = "top_left"
+    TOP_RIGHT: str = "top_right"
     DIAG_UP: str = "diag_up"
     DIAG_DOWN: str = "diag_down"
 
@@ -65,16 +62,11 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
 
     * The label descriptor is used for elements **inside** an cell. Common labels include:
 
-        * `normal`: The normal label. This is the default label for most elements.
-                    Using this direction will not have effects on visualizations.
-        * `l/u/r/d`: The left, up, right, and down labels. These labels are often used for
-                     **arrows**, **lines**, etc. to indicate their directions.
-        * `tapa_x`: The tapa label with index x (x = 0 ~ 3). This label is often used for
-                    **tapa-like** clues to indicate their positions inside a cell.
-        * `sudoku_x`: The sudoku label with index x (x = 0 ~ 7). This label is often used for
-                      **sudoku-like** clues to indicate their positions inside a cell.
-        * `multiple`: The symbol label with style x (x = 0 ~ n). This label is often
-                      used for indicating **mulitple symbols** inside a cell.
+        * `normal`: The normal label. This is the default label for most elements. Using this label will not have effects on visualizations.
+        * `l/u/r/d`: The left, up, right, and down labels. These labels are often used for **arrows**, **lines**, etc. to indicate their directions.
+        * `tapa_x`: The tapa label with index x (x = 0 ~ 3). This label is often used for **tapa-like** clues to indicate their positions inside a cell.
+        * `sudoku_x`: The sudoku label with index x (x = 0 ~ 7). This label is often used for **sudoku-like** clues to indicate their positions inside a cell.
+        * `multiple`: The symbol label with style x (x = 0 ~ n). This label is often used for indicating **multiple symbols** inside a cell.
         * `delete`: The delete label. This label is often used for **erased** edges.
         * other labels may be defined in specific puzzles, such as `hashi` and `nondango`.
 
@@ -90,22 +82,19 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
 class Puzzle:
     """Base class for puzzle encodings.
 
-    * The `decode` and `encode` method should be implemented in an inherited class,
-    such as the `PenpaPuzzle`.
+    * The `decode` and `encode` method should be implemented in an inherited class, such as the `PenpaPuzzle`.
     """
 
     def __init__(self, name: str, content: str, param: Optional[Dict[str, Any]] = None):
         """Initialize the puzzle.
 
-        * The atom element of a puzzle is a cell, and the data structures are all crafted around a cell.
-        In detail, a puzzle has the following elements:
+        * The atom element of a puzzle is a cell, and the data structures are all crafted around a cell. In detail, a puzzle has the following elements:
 
             * `puzzle_name`: the name of the puzzle, should be the same as the filename of the solver.
             * `param`: the parameters of the puzzle.
             * `row`: the number of rows in the puzzle.
             * `col`: the number of columns in the puzzle.
-            * `margin`: the margin of the puzzle, the order is a tuple of
-                        (`top-margin`, `bottom-margin`, `left-margin`, `right-margin`).
+            * `margin`: the margin of the puzzle, the order is a tuple of (`top-margin`, `bottom-margin`, `left-margin`, `right-margin`).
             * `surface`: the shaded cells in the puzzle stored in a dictionary.
             * `text`: the text clues in the puzzle stored in a dictionary.
             * `symbol`: the symbols in the puzzle stored in a dictionary.

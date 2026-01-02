@@ -10,8 +10,7 @@ def single_loop(color: str = "white", path: bool = False) -> str:
 
     * A *loop* is that every cell has two lines connected to it, and there are no dead ends.
 
-    * A *path* is that there are two endpoints having only one line connected to them,
-    and other cells have two lines connected to them. The endpoints are marked as `dead_end`.
+    * A *path* is that there are two endpoints having only one line connected to them, and other cells have two lines connected to them. The endpoints are marked as `dead_end`.
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
@@ -177,8 +176,7 @@ def loop_turning(color: str = "white") -> str:
 def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) -> str:
     """A rule to convert the direction definitions to edge definitions.
 
-    * In some logic puzzles like `firefly` and `slitherlink`, the path is drawn on the edge
-    although they are loop/path puzzles. This rule helps to do the compatibility conversions.
+    * In some logic puzzles like `firefly` and `slitherlink`, the path is drawn on the edge although they are loop/path puzzles. This rule helps to do the compatibility conversions.
 
     Args:
         directed: Whether the route is directed.

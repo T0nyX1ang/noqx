@@ -44,8 +44,7 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
 
     * The starting coordinate is `(0, 0)`. The grid is extended from left to right, and from top to bottom.
 
-    * The holes should be defined separately using their coordinates. Moreover, the mechanism for the holes
-    is to delete the corresponding cells from the grid.
+    * The holes should be defined separately using their coordinates. Moreover, the mechanism for the holes is to delete the corresponding cells from the grid.
 
     * This function cannot be used to define multiple grids.
 
@@ -63,8 +62,7 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
 def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
     """A rule for an area with several cells.
 
-    * The area may not be contiguous, but it is strongly suggested to call the `full_bfs` function before
-    defining an area to get all the connected regions in a grid.
+    * The area may not be contiguous, but it is strongly suggested to call the `full_bfs` function before defining an area to get all the connected regions in a grid.
 
     * The area is identified by `_id` parameter, to define multiple areas, make sure their IDs are different.
 
@@ -80,8 +78,7 @@ def shade_c(color: str = "black") -> str:
 
     * Every cell in the grid can be either shaded or unshaded with the `color`.
 
-    * In general, the color does not need to be a **real color**, it can be any label
-    representing a certain state, such as symbols used in specific puzzles.
+    * In general, the color does not need to be a **real color**, it can be any label representing a certain state, such as symbols used in specific puzzles.
 
     Args:
         color: The color to be shaded.
@@ -111,12 +108,9 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
     * An inverted color means that if a cell is not shaded with the specified color,
     it will be shaded with the inverted color.
 
-    * This rule is redundant in many cases, as [Clingo](https://potassco.org/clingo/) supports negation directly.
-    However, the negation may behave unexpectedly in some complex rules, so this rule is provided to define the
-    inverted color explicitly.
+    * This rule is redundant in many cases, as [Clingo](https://potassco.org/clingo/) supports negation directly. However, the negation may behave unexpectedly in some complex rules, so this rule is provided to define the inverted color explicitly.
 
-    * This rule can be called multiple times to define multiple inverted colors. Please make sure there
-    are no conflicts between different inverted colors.
+    * This rule can be called multiple times to define multiple inverted colors. Please make sure there are no conflicts between different inverted colors.
 
     * Similar to `shade_c`, the specified color and the inverted color do not need to be a **real color**.
 
@@ -130,16 +124,12 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
 def edge(rows: int, cols: int) -> str:
     """A rule for drawing edges around a cell.
 
-    * `edge_left(R, C)` represents the left edge of the cell `(R, C)`, and
-    `edge_top(R, C)` represents the top edge of the cell `(R, C)`.
+    * `edge_left(R, C)` represents the left edge of the cell `(R, C)`, and `edge_top(R, C)` represents the top edge of the cell `(R, C)`.
 
-    * The outside border of a grid is automatically drawn. However, if there are holes in the grid,
-    the edges around the holes need to be drawn manually.
+    * The outside border of a grid is automatically drawn. However, if there are holes in the grid, the edges around the holes need to be drawn manually.
 
     Note:
-        Assume there is a hole at `(r, c)`. To define edges around this hole, some additional codes
-        should be written. Moreover, if there are another hole adjacent to this hole, the shared edge
-        should not be drawn.
+        Assume there is a hole at `(r, c)`. To define edges around this hole, some additional codes should be written. Moreover, if there are another hole adjacent to this hole, the shared edge should not be drawn.
         ```python
             rule = ""
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
@@ -170,8 +160,7 @@ def direction(directions: Union[str, list]) -> str:
         directions: The directions to be defined, can be specified either as a string or as a list of strings.
 
     Warning:
-        In [Clingo](https://potassco.org/clingo/), constant strings should be enclosed in double quotes.
-        Hence, please take care of the direction string while writing a direction-relevant rule.
+        In [Clingo](https://potassco.org/clingo/), constant strings should be enclosed in double quotes. Hence, please take care of the direction string while writing a direction-relevant rule.
     """
     format_d = map(lambda x: f'"{x}"', tuple(directions))
     return f"direction({';'.join(format_d)})."
@@ -180,12 +169,9 @@ def direction(directions: Union[str, list]) -> str:
 def fill_path(color: str = "black", directed: bool = False) -> str:
     """A rule for filling a path with a specified color in a grid.
 
-    * To fill a path on a grid, two steps should be taken: shade the cells that have a line at first,
-    and then decide which directions to take for each cell. This rule helps to complete the **second** step.
-    So before using this rule, at least one shading rule should be defined.
+    * To fill a path on a grid, two steps should be taken: shade the cells that have a line at first, and then decide which directions to take for each cell. This rule helps to complete the **second** step. So before using this rule, at least one shading rule should be defined.
 
-    * If the path is undirected, only one predicate (`grid_direction`) is used to represent the directions.
-    Once the path is direction, two predicates (`grid_in` and `grid_out`) are used to represent the directions.
+    * If the path is undirected, only one predicate (`grid_direction`) is used to represent the directions. Once the path is direction, two predicates (`grid_in` and `grid_out`) are used to represent the directions.
 
     Args:
         color: The specified color.
@@ -203,13 +189,9 @@ def fill_path(color: str = "black", directed: bool = False) -> str:
 def fill_num(_range: Iterable[int], _type: str = "grid", _id: Optional[int] = None, color: Optional[str] = None) -> str:
     """A rule for filling specified numbers in a grid or an area.
 
-    * Filling numbers is similar to shading multiple colors in `shade_cc` rule, and the difference is that
-    the candidate number set is usually larger than the candidate color set. Meanwhile, the candidate number set
-    can be more flexible.
+    * Filling numbers is similar to shading multiple colors in `shade_cc` rule, and the difference is that the candidate number set is usually larger than the candidate color set. Meanwhile, the candidate number set can be more flexible.
 
-    * The range is converted to the format `low..high` or `x;y;z` for a list of numbers in compliance with
-    [Clingo](https://potassco.org/clingo/) syntax. According to the performance tests in several puzzles,
-    it is recommended to **use continuous ranges** as much as possible.
+    * The range is converted to the format `low..high` or `x;y;z` for a list of numbers in compliance with [Clingo](https://potassco.org/clingo/) syntax. According to the performance tests in several puzzles, it is recommended to **use continuous ranges** as much as possible.
 
     Args:
         _range: The range of numbers to be filled.
@@ -253,8 +235,7 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: Optional[int] = No
 def unique_num(color: str = "black", _type: str = "row") -> str:
     """A rule to check the uniqueness of the numbers in every row, column or area.
 
-    * This rule is usually used together with the `fill_num` rule to ensure that the filled numbers
-    are unique in *every* row, column or area.
+    * This rule is usually used together with the `fill_num` rule to ensure that the filled numbers are unique in *every* row, column or area.
 
     Args:
         color: The uniqueness of the numbers **won't be checked with the specified color**.
@@ -283,17 +264,13 @@ def count(
 ) -> str:
     """A rule to compare the number of colored cells in a grid, row, column or area to a specified target.
 
-    * Counting is one of the most commonly used constraints in logic puzzles, so this rule is designed for
-    a wide range of use cases.
+    * Counting is one of the most commonly used constraints in logic puzzles, so this rule is designed for a wide range of use cases.
 
     Args:
-        target: The target number or a tuple of (`operator`, `number`) for comparison. Available operators
-                are detailed in the `noqx.helper.reverse_op` and `noqx.helper.target_encode` function.
+        target: The target number or a tuple of (`operator`, `number`) for comparison. Available operators are detailed in the `noqx.helper.reverse_op` and `noqx.helper.target_encode` function.
         color: The specified color.
         _type: Acceptable region types, can be either `grid`, `row`, `col` or `area`.
-        _id: The ID of the `area`, or the index of the `row` (from top to bottom) or `col` (from left to right).
-             If `_id` is set to `None`, this rule will compare the colored cells in every row or column instead.
-             Also ignored when `_type` is `grid`.
+        _id: The ID of the `area`, or the index of the `row` (from top to bottom) or `col` (from left to right). If `_id` is set to `None`, this rule will compare the colored cells in every row or column instead. Also ignored when `_type` is set to `grid`.
 
     Raises:
         ValueError: If the `_type` is other than `grid`, `row`, `col` or `area`.

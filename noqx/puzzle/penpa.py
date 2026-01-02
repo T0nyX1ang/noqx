@@ -46,9 +46,7 @@ PENPA_ABBREVIATIONS = [
 def _int_or_str(data: Union[int, str]) -> Union[int, str]:
     """Convert the string to integer if possible.
 
-    * Since [Penpa+](https://swaroopg92.github.io/penpa-edit/) is a JavaScript-based application,
-    the clues are not strictly typed when exported. This function helps to convert the string data
-    to integer if it is actually an integer.
+    * Since [Penpa+](https://swaroopg92.github.io/penpa-edit/) is a JavaScript-based application, the clues are not strictly typed when exported. This function helps to convert the string data to integer if it is actually an integer.
 
     * This function uses `str.isdigit()` to check if the string can be converted to an integer.
 
@@ -61,9 +59,7 @@ def _int_or_str(data: Union[int, str]) -> Union[int, str]:
 def _style_convert(style: List[int]) -> int:
     """Convert a boolean list of style to integer format.
 
-    * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), there are basically two types of symbol styles:
-    the **integer** style (for single symbols), and the **boolean list** style (for cascaded multiple symbols).
-    To unify these styles, this function **binarized** the boolean list to a single integer.
+    * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), there are basically two types of symbol styles: the **integer** style (for single symbols), and the **boolean list** style (for cascaded multiple symbols). To unify these styles, this function **binarized** the boolean list to a single integer.
 
     Args:
         style: The style list to be converted.
@@ -74,9 +70,7 @@ def _style_convert(style: List[int]) -> int:
 def _category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, str]:
     """Convert the coordination with category to standard direction.
 
-    * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the relative directions of a cell is hard-coded
-    as a `category` code with a different placement in `noqx`. This function helps to convert the category code
-    to the standard direction format in `noqx`.
+    * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the relative directions of a cell is hard-coded as a `category` code with a different placement in `noqx`. This function helps to convert the category code to the standard direction format in `noqx`.
 
     Args:
         r: The row index of the cell.
@@ -104,20 +98,16 @@ def _category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, str
 class PenpaPuzzle(Puzzle):
     """The encodings for [Penpa+](https://swaroopg92.github.io/penpa-edit/) puzzles.
 
-    * The general process is decoding the raw [Penpa+](https://swaroopg92.github.io/penpa-edit/) format,
-    unpacking the board, running the solver, packing the board, and encoding back to
-    the raw [Penpa+](https://swaroopg92.github.io/penpa-edit/) format.
+    * The general process is decoding the raw [Penpa+](https://swaroopg92.github.io/penpa-edit/) format, unpacking the board, running the solver, packing the board, and encoding back to the raw [Penpa+](https://swaroopg92.github.io/penpa-edit/) format.
     """
 
     def __init__(self, name: str, content: str, param: Optional[Dict[str, Any]] = None):
         """Initialize the [Penpa+](https://swaroopg92.github.io/penpa-edit/) puzzle.
 
-        * To facilitate the interoperability with [Penpa+](https://swaroopg92.github.io/penpa-edit/), four extra
-        variables are included in this class:
+        * To facilitate the interoperability with [Penpa+](https://swaroopg92.github.io/penpa-edit/), four extra variables are included in this class:
 
             * `cell_shape`: The shape of the cell, currently only `square` shape is supported.
-            * `parts`: The decompressed parts of the [Penpa+](https://swaroopg92.github.io/penpa-edit/) content
-                       with a more readable format.
+            * `parts`: The decompressed parts of the [Penpa+](https://swaroopg92.github.io/penpa-edit/) content with a more readable format.
             * `problem`: The problem board extracted from `parts`.
             * `solution`: The solution board to be written into `parts`.
 
@@ -136,8 +126,7 @@ class PenpaPuzzle(Puzzle):
     def decode(self):
         """Decode the [Penpa+](https://swaroopg92.github.io/penpa-edit/) content into the puzzle elements.
 
-        * The process involves decompressing the base64-encoded content, parsing the JSON data,
-        initializing the puzzle size, and unpacking the board elements into the respective attributes.
+        * The process involves decompressing the base64-encoded content, parsing the JSON data, initializing the puzzle size, and unpacking the board elements into the respective attributes.
         """
         self.parts = decompress(b64decode(self.content[len(PENPA_PREFIX) :]), -15).decode().split("\n")
         self._init_size()
@@ -146,17 +135,13 @@ class PenpaPuzzle(Puzzle):
     def _init_size(self):
         """Initialize the size of the puzzle.
 
-        * This is usually the first step while parsing a puzzle from [Penpa+](https://swaroopg92.github.io/penpa-edit/).
-        The following attributes are set during the initialization:
-            * `cell_shape`: The shape of the cell, currently only `square` shape is supported.
-                            Equivalent shape types include `sudoku` and `kakuro`
-                            in [Penpa+](https://swaroopg92.github.io/penpa-edit/).
+        * This is usually the first step while parsing a puzzle from [Penpa+](https://swaroopg92.github.io/penpa-edit/). The following attributes are set during the initialization:
+            * `cell_shape`: The shape of the cell, currently only `square` shape is supported. Equivalent shape types include `sudoku` and `kakuro` in [Penpa+](https://swaroopg92.github.io/penpa-edit/).
             * `margin`: The margins of the puzzle in the order of (`top`, `bottom`, `left`, `right`).
             * `row`: The number of rows in the puzzle (excluding margins).
             * `col`: The number of columns in the puzzle (excluding margins).
 
-        * These attributes are essential for correctly interpreting the puzzle elements
-        and their positions on the board. For any grid puzzle, `(0, 0)` always refers to the top-left cell.
+        * These attributes are essential for correctly interpreting the puzzle elements and their positions on the board. For any grid puzzle, `(0, 0)` always refers to the top-left cell.
 
         Raises:
             NotImplementedError: If the `cell_shape` is other than `square`, `sudoku` and `kakuro`.
@@ -176,8 +161,7 @@ class PenpaPuzzle(Puzzle):
     def _unpack_surface(self):
         """Unpack surface elements from the board.
 
-        * Store the `color_code` in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode
-        into the `surface` attribute with `Color` enumeration.
+        * Store the `color_code` in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode into the `surface` attribute with `Color` enumeration.
 
         * Multicolor surfaces are **not supported** currently. These surfaces won't be unpacked.
         """
@@ -197,11 +181,9 @@ class PenpaPuzzle(Puzzle):
     def _unpack_text(self):
         """Unpack number/text elements from the board.
 
-        * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode
-        into the `text` attribute.
+        * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode into the `text` attribute.
 
-        * For **tapa-like** puzzles, the numbers are separately stored with the label `tapa_x`.
-        Single numbers will be converted to the `tapa_0` label automatically.
+        * For **tapa-like** puzzles, the numbers are separately stored with the label `tapa_x`. Single numbers will be converted to the `tapa_0` label automatically.
 
         * The **Candidates** submode in sudoku-like puzzles are neglected during unpacking.
         """
@@ -219,11 +201,9 @@ class PenpaPuzzle(Puzzle):
     def _unpack_sudoku(self):
         """Unpack sudoku elements from the board.
 
-        * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode,
-        `Sudoku` submode into the `text` attribute.
+        * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode, `Sudoku` submode into the `text` attribute.
 
-        * The numbers are stored with `sudoku_x` labels indicating their direction in the cell.
-        The direction `x` is translated as follows:
+        * The numbers are stored with `sudoku_x` labels indicating their direction in the cell. The direction `x` is translated as follows:
             * 0: `top-left`
             * 1: `top-right`
             * 2: `bottom-left`
@@ -234,8 +214,7 @@ class PenpaPuzzle(Puzzle):
             * 7: `bottom`
 
         Warning:
-            Since the `sudoku_x` label is hard-coded, the solvers must be very careful of these labels.
-            The label might be encoded more conveniently in future versions.
+            Since the `sudoku_x` label is hard-coded, the solvers must be very careful of these labels. The label might be encoded more conveniently in future versions.
         """
         for index, num_data in self.problem["sudoku"].items():
             (r, c), category = self.index_to_coord(int(index) // 4)
@@ -246,17 +225,12 @@ class PenpaPuzzle(Puzzle):
     def _unpack_symbol(self):
         """Unpack symbol elements from the board.
 
-        * Store the symbols in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Shape` mode
-        and `Composite` mode into the `symbol` attribute. Moreover, all the symbols are stored
-        with the format `shape__style`,
+        * Store the symbols in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Shape` mode and `Composite` mode into the `symbol` attribute. Moreover, all the symbols are stored with the format `shape__style`,
 
-        * For multiple symbols in a single cell, the symbols are stored as a boolean list, which are converted
-        to a single integer for easier processing.
+        * For multiple symbols in a single cell, the symbols are stored as a boolean list, which are converted to a single integer for easier processing.
 
         Warning:
-            Since the `symbol` and `style` is hard-coded, the solvers must be very careful of these labels.
-            For example, a medium-sized circle is not a large circle. The shape and style must be correctly identified.
-            The label might be encoded more conveniently in future versions.
+            Since the `symbol` and `style` is hard-coded, the solvers must be very careful of these labels. For example, a medium-sized circle is not a large circle. The shape and style must be correctly identified. The label might be encoded more conveniently in future versions.
         """
         for index, (style, shape, _) in self.problem["symbol"].items():
             (r, c), category = self.index_to_coord(int(index))
@@ -272,8 +246,7 @@ class PenpaPuzzle(Puzzle):
     def _unpack_edge(self):
         """Unpack edge elements from the board.
 
-        * Store the edges in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Edge` mode
-        into the `edge` attribute. Supported submodes are `Normal`, `Diagonal`, `Helper (x)` and `Erase`.
+        * Store the edges in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Edge` mode into the `edge` attribute. Supported submodes are `Normal`, `Diagonal`, `Helper (x)` and `Erase`.
         """
         for index, _ in self.problem["edge"].items():
             if "," not in index:  # helper(x) edges
@@ -310,13 +283,10 @@ class PenpaPuzzle(Puzzle):
     def _unpack_line(self):
         """Unpack line elements from the board.
 
-        * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode
-        into the `line` attribute. Supported submodes are `Normal`, `Middle`, and `Helper (x)`.
+        * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode into the `line` attribute. Supported submodes are `Normal`, `Middle`, and `Helper (x)`.
 
         Warning:
-            For **hashi** puzzles, there are two types of lines: single lines and double lines.
-            These two types of lines are differentiated by adding a suffix `_1` or `_2` to the label
-            respectively. The solvers must be very careful of these labels.
+            For **hashi** puzzles, there are two types of lines: single lines and double lines. These two types of lines are differentiated by adding a suffix `_1` or `_2` to the label respectively. The solvers must be very careful of these labels.
         """
         for index, data in self.problem["line"].items():
             if "," not in index:  # helper(x) lines
@@ -362,8 +332,7 @@ class PenpaPuzzle(Puzzle):
     def index_to_coord(self, index: int) -> Tuple[Tuple[int, int], int]:
         """Convert the [Penpa+](https://swaroopg92.github.io/penpa-edit/) index to coordinate.
 
-        * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the coordination (with margins) and category of a cell is encoded
-        as a single integer index. This function helps to convert the index back to the ((`row`, `col`), `category`) format.
+        * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the coordination (with margins) and category of a cell is encoded as a single integer index. This function helps to convert the index back to the ((`row`, `col`), `category`) format.
 
         Args:
             index: The [Penpa+](https://swaroopg92.github.io/penpa-edit/) index to be converted.
@@ -377,8 +346,7 @@ class PenpaPuzzle(Puzzle):
     def encode(self) -> str:
         """Encode the puzzle into [Penpa+](https://swaroopg92.github.io/penpa-edit/) format.
 
-        * The process involves packing the puzzle elements into the solution dictionary,
-        updating the relevant part of the [Penpa+](https://swaroopg92.github.io/penpa-edit/) content, and compressing it into a base64-encoded string.
+        * The process involves packing the puzzle elements into the solution dictionary, updating the relevant part of the [Penpa+](https://swaroopg92.github.io/penpa-edit/) content, and compressing it into a base64-encoded string.
         """
         self.solution = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[4]))
         self._pack_board()
@@ -388,9 +356,7 @@ class PenpaPuzzle(Puzzle):
     def _pack_surface(self):
         """Pack surface elements into the board.
 
-        * Store the `Color` enumeration in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode
-        with decicated `color_code`. The `GRAY` color will be converted to `color_code = 8` only,
-        but the original surfaces won't be overwritten.
+        * Store the `Color` enumeration in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode with decicated `color_code`. The `GRAY` color will be converted to `color_code = 8` only, but the original surfaces won't be overwritten.
 
         * Multicolor surfaces are **not supported** currently. These surfaces won't be packed.
         """
@@ -411,11 +377,9 @@ class PenpaPuzzle(Puzzle):
     def _pack_text(self):
         """Pack text/number elements into the board.
 
-        * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode
-        from the `text` attribute.
+        * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode from the `text` attribute.
 
-        * Currently all the solution texts are placed in the center with `Normal` submode,
-        the original texts won't be overwritten.
+        * Currently all the solution texts are placed in the center with `Normal` submode, the original texts won't be overwritten.
         """
         for (r, c, _, _), data in self.text.items():
             coord = (r, c)
@@ -426,11 +390,9 @@ class PenpaPuzzle(Puzzle):
     def _pack_symbol(self):
         """Pack symbol elements into the board.
 
-        * Store the symbols in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Shape` mode
-        from the `symbol` attribute.
+        * Store the symbols in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Shape` mode from the `symbol` attribute.
 
-        * Currently all the solution symbols are placed in the center without any submodes,
-        the original symbols won't be overwritten.
+        * Currently all the solution symbols are placed in the center without any submodes, the original symbols won't be overwritten.
         """
         for (r, c, _, _), symbol_name in self.symbol.items():
             shape, style = symbol_name.split("__")
@@ -444,9 +406,7 @@ class PenpaPuzzle(Puzzle):
     def _pack_edge(self):
         """Pack edge elements into the board.
 
-        * Store the edges in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Edge` mode
-        from the `edge` attribute. Supported submodes are `Normal` and `Diagonal`,
-        and the original edges won't be overwritten.
+        * Store the edges in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Edge` mode from the `edge` attribute. Supported submodes are `Normal` and `Diagonal`, and the original edges won't be overwritten.
         """
         for r, c, d, _ in self.edge:
             coord_1 = (r - 1, c - 1)
@@ -469,8 +429,7 @@ class PenpaPuzzle(Puzzle):
     def _pack_line(self):
         """Pack line elements into the board.
 
-        * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode
-        from the `line` attribute. Only `Normal` submode is supported, and the original lines won't be overwritten.
+        * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode from the `line` attribute. Only `Normal` submode is supported, and the original lines won't be overwritten.
         """
         for r, c, _, label in self.line:
             index_1 = self.coord_to_index((r, c), category=0)
@@ -504,8 +463,7 @@ class PenpaPuzzle(Puzzle):
     def coord_to_index(self, coord: Tuple[int, int], category: int = 0) -> int:
         """Convert the coordinate to [Penpa+](https://swaroopg92.github.io/penpa-edit/) index.
 
-        * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the coordination (with margins) and category of a cell is encoded
-        as a single integer index. This function helps to convert the ((`row`, `col`), `category`) format back to the index.
+        * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), the coordination (with margins) and category of a cell is encoded as a single integer index. This function helps to convert the ((`row`, `col`), `category`) format back to the index.
 
         Args:
             coord: The coordination to be converted.

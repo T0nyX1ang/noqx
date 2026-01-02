@@ -79,9 +79,7 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
 
     * The solution refiner is based on the puzzle name and the corresponding solver module. It does nothing by default.
 
-    * Since the solution from [Clingo](https://potassco.org/clingo/) is in a raw string format, this function
-      will parse the string and fill in the corresponding attributes of the `Puzzle` object. The parsing order
-      will be: edges, lines, texts (numbers/contents), triangle symbols, colors, other symbols and debugging elements.
+    * Since the solution from [Clingo](https://potassco.org/clingo/) is in a raw string format, this function will parse the string and fill in the corresponding attributes of the `Puzzle` object. The parsing order will be: edges, lines, texts (numbers/contents), triangle symbols, colors, other symbols and debugging elements.
 
     Args:
         puzzle: A `Puzzle` object without stored solution.
@@ -144,33 +142,24 @@ class Solver:
 
     Attributes:
         name: The name of the solver.
-        category: The category of the solver, should be `shade` (Shading), `loop`
-                  (Loop / Path), `region` (Area Division), `num` (Number), `var` (Variety),
-                  `draw` (Drawing), `unk` (Unknown).
+        category: The category of the solver, should be `shade` (Shading), `loop` (Loop / Path), `region` (Area Division), `num` (Number), `var` (Variety), `draw` (Drawing), `unk` (Unknown).
         aliases (List[str] = []): A list of alternative names for the solver.
-        examples (List[Dict[str, Any]] = []): A list of examples of the solver, each example can be created
-                                              in two conflicting ways, `data` and `url`:
+        examples (List[Dict[str, Any]] = []): A list of examples of the solver, each example can be created in two conflicting ways, `data` and `url`:
 
-            * `data`: directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`.
-                      The URL are suggested to be generated with the following conditions:
+            * `data`: directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`. The URL are suggested to be generated with the following conditions:
                 * contains **all** the required `modes` in this puzzle.
                 * contains the required `sub-types` in this puzzle.
                 * contains necessary initial conditions to pass the coverage tests.
                 * set `edit mode` to `solution mode` instead of `problem mode`.
-            * `url`: draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL`
-                     to get the board URL.
-            * `config` (Optional): the configuration of the solver, which will be passed to the solver
-                                   when it is created, and the keys of `config` are the same as `parameters` keys.
-            * `test` (Optional): whether the example is used as test case, the default value is `True`,
-                                 and cannot be used together with `url` way.
+            * `url`: draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL` to get the board URL.
+            * `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys.
+            * `test` (Optional): whether the example is used as test case, the default value is `True`, and cannot be used together with `url` way.
             * **Lots of** examples can be found at [pzplus](https://pzplus.tck.mn/db).
 
-        parameters: A dictionary of parameters of the solver, which will be passed to the solver
-                    when it is created.
+        parameters: A dictionary of parameters of the solver, which will be passed to the solver when it is created.
 
     Warning:
-        When you directly draw the board in noqx, make sure to set the puzzle type first.
-        Currently, the puzzle type selection is **locked** if the user starts drawing the board.
+        When you directly draw the board in noqx, make sure to set the puzzle type first. Currently, the puzzle type selection is **locked** if the user starts drawing the board.
     """
 
     def __init__(self):

@@ -115,13 +115,10 @@ def general_shape(
         simple: Whether to skip the adjacency re-checking.
 
     Warning:
-        Although the shape representation does not require the connectivity of the shape,
-        it is recommended to ensure that the provided shape is connected. Some derived rules
-        may behave weird if the shape is not connected.
+        Although the shape representation does not require the connectivity of the shape, it is recommended to ensure that the provided shape is connected. Some derived rules may behave weird if the shape is not connected.
 
     Warning:
-        The `simple` option is more efficient, but the use-case is limited. It is only recommended to use
-        in the `area` type, and every area only contains **one piece** of the shape.
+        The `simple` option is more efficient, but the use-case is limited. It is only recommended to use in the `area` type, and every area only contains **one piece** of the shape.
     """
 
     def get_neighbor(r: int, c: int) -> Iterable[Tuple[int, int]]:
@@ -237,8 +234,7 @@ def count_shape(
 def all_rect(color: str = "black", square: bool = False) -> str:
     """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
 
-    * The main concept of this rule is to define four helper predicates: `upleft`, `left`, `up`, and `remain`,
-    and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
+    * The main concept of this rule is to define four helper predicates: `upleft`, `left`, `up`, and `remain`, and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
 
     * Due to technical reasons, the color cannot start with `not`, and the `noqx.common.invert_c` rule can help.
 
@@ -344,8 +340,7 @@ def avoid_rect(
 def no_rect(color: str = "black") -> str:
     """A rule to avoid rectangular shapes of any size in a grid.
 
-    * The main concept of this rule is to detect `L-shape` and ensure that
-    all the color cells are reachable through `L-shape`.
+    * The main concept of this rule is to detect `L-shape` and ensure that all the color cells are reachable through `L-shape`.
 
     Args:
         color: The color to be checked.

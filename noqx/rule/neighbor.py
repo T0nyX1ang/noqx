@@ -119,9 +119,7 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
 def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple[int, int, str, str], bool]) -> str:
     """A rule to define the border of an area.
 
-    * This border rule is useful on the rules that limit the crossing time of a loop/path in the area.
-    Although it is possible to represent the borders with ASP logic, it is better to calculate the borders
-    with Python for performance consideration.
+    * This border rule is useful on the rules that limit the crossing time of a loop/path in the area. Although it is possible to represent the borders with ASP logic, it is better to calculate the borders with Python for performance consideration.
 
     Note:
         Here is an example to define the border of an area with the help of `noqx.helper.full_bfs` function:
@@ -169,17 +167,14 @@ def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple
 def area_adjacent(adj_type: Union[int, str] = 4, color: Optional[str] = None) -> str:
     """A rule to define the adjacent areas.
 
-    * The `color` parameter can be used to limit the adjacency check to areas with the specified color.
-    The area is adjacent if there exists at least one pair of adjacent cells with the same color from
-    different areas.
+    * The `color` parameter can be used to limit the adjacency check to areas with the specified color. The area is adjacent if there exists at least one pair of adjacent cells with the same color from different areas.
 
     Args:
         adj_type: The type of adjacency.
         color: The color to be checked.
 
     Warning:
-        To simplify the grounding size, the adjacency of the areas is directional, i.e., area `A` is adjacent
-        to area `B` if the ID of area `A` is less than the ID of area `B`, and there share at least one common edge.
+        To simplify the grounding size, the adjacency of the areas is directional, i.e., area `A` is adjacent to area `B` if the ID of area `A` is less than the ID of area `B`, and there share at least one common edge.
     """
     area_adj = f"area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1"
     if color:

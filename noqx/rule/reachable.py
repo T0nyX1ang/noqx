@@ -1,9 +1,7 @@
 """Generate rules for reachable things and connectivity tests.
 
 Note:
-    Every connectivity rule consists of three parts: **initialization**, **propagation**
-    and **constraint** (optional). This structure is similar to the flood-fill algorithm,
-    and it is recommended by the [Clingo](https://potassco.org/clingo/) documentation.
+    Every connectivity rule consists of three parts: **initialization**, **propagation** and **constraint** (optional). This structure is similar to the flood-fill algorithm, and it is recommended by the [Clingo](https://potassco.org/clingo/) documentation.
 """
 
 from typing import List, Optional, Tuple, Union
@@ -44,8 +42,7 @@ def grid_color_connected(
 def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """A rule to ensure all the color cells are connected to the borders of the whole grid.
 
-    * Similar to `grid_color_connected`, this is also a global constraint. The different is that
-    the propagation starts from the borders of the grid. Moreover, the color cells does not need
+    * Similar to `grid_color_connected`, this is also a global constraint. The difference is that the propagation starts from the borders of the grid. Moreover, the color cells do not need
     to be connected *inside* the grid.
 
     Args:
@@ -89,11 +86,9 @@ def grid_src_color_connected(
 ) -> str:
     """A rule to collect all the color cells that are reachable to a source cell in a grid.
 
-    * This rule is a local definition, and only does the collection part. To further utilize the rule,
-    a `count_reachable_src` rule may be applied to count the size of the whole connected region.
+    * This rule is a local definition, and only does the collection part. To further utilize the rule, a `count_reachable_src` rule may be applied to count the size of the whole connected region.
 
-    * This rule does not ensure that every cell belongs to the connected part of the source cell,
-    a `avoid_unknown_src` rule may be applied to ensure this constraint.
+    * This rule does not ensure that every cell belongs to the connected part of the source cell, an `avoid_unknown_src` rule may be applied to ensure this constraint.
 
     * The complexity of this cell is mainly based on the size of cells connected to the source cell.
 
@@ -135,13 +130,9 @@ def grid_src_color_connected(
 def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """A rule to collect all the color cells that are orthogonally connected to a source cell in a grid.
 
-    * The rule behaves like a **bulb**. It starts from the source cell and spread orthogonally until it hits
-    a cell without a specified color or the border of the grid, which like a **wall** in reality.
+    * The rule behaves like a **bulb**. It starts from the source cell and spread orthogonally until it hits a cell without a specified color or the border of the grid, which like a **wall** in reality.
 
-    * Since the connection pattern is limited in this rule, it is more efficient than `grid_src_color_connected`
-    with constraints. A typical use-case is to calculate the size of a rectangle: instead of spreading from the
-    source cell to the whole grid, it is possible to get the height and width of the rectangle only, which greatly
-    simplifies the grounding process.
+    * Since the connection pattern is limited in this rule, it is more efficient than `grid_src_color_connected` with constraints. A typical use-case is to calculate the size of a rectangle: instead of spreading from the source cell to the whole grid, it is possible to get the height and width of the rectangle only, which greatly simplifies the grounding process.
 
     Args:
         src_cell: The source cell in (`row`, `col`).
@@ -231,9 +222,7 @@ def avoid_unknown_src(color: Optional[str] = "black", main_type: str = "grid", a
 def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
     """A rule to collect all the color cells that are connected to any cells in a grid.
 
-    * This rule is similar to `grid_src_color_connected`, but it defines the connected branch
-    for every cell in a grid. Hence, this rule is **very inefficient** compared to other rules.
-    Unless no initial clue cells are given, please consider using `grid_src_color_connected` instead.
+    * This rule is similar to `grid_src_color_connected`, but it defines the connected branch for every cell in a grid. Hence, this rule is **very inefficient** compared to other rules. Unless no initial clue cells are given, please consider using `grid_src_color_connected` instead.
 
     Args:
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.

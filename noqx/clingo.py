@@ -89,9 +89,7 @@ class ClingoSolver:
 def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> Dict[str, List[str]]:
     """Run the solver and get the list of converted [Penpa+](https://swaroopg92.github.io/penpa-edit/) solution URLs.
 
-    * This is a connector for the [Clingo](https://potassco.org/clingo/) solver, the puzzle, and the solutions.
-    The connector prepares the puzzle, generates the program, runs the solver, and stores the solutions
-    in a sequence. The solution time is also recorded for performance analysis.
+    * This is a connector for the [Clingo](https://potassco.org/clingo/) solver, the puzzle, and the solutions. The connector prepares the puzzle, generates the program, runs the solver, and stores the solutions in a sequence. The solution time is also recorded for performance analysis.
 
     Args:
         puzzle_name: The name of the puzzle.
