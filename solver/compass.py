@@ -13,7 +13,7 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 def compass_constraint(r: int, c: int, label: str, num: Union[int, str]) -> str:
     """Generate a compass constraint."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    constraint = {"sudoku_4": f"R < {r}", "sudoku_6": f"C < {c}", "sudoku_7": f"R > {r}", "sudoku_5": f"C > {c}"}
+    constraint = {"corner_top": f"R < {r}", "corner_left": f"C < {c}", "corner_bottom": f"R > {r}", "corner_right": f"C > {c}"}
     rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[label]} }} != {num}."
 
     return rule
@@ -53,7 +53,7 @@ class CompassSolver(Solver):
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
+            validate_type(label, ("corner_top", "corner_left", "corner_bottom", "corner_right"))
             if label and isinstance(num, int):
                 self.add_program_line(compass_constraint(r, c, label, num))
 

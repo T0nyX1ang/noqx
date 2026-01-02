@@ -52,9 +52,9 @@ class NanroSolver(Solver):
 
             unclued = True
             for r, c in ar:
-                if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
+                if Point(r, c, Direction.CENTER, "corner_top_left") in puzzle.text:
                     unclued = False
-                    num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                    num = puzzle.text[Point(r, c, Direction.CENTER, "corner_top_left")]
                     fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                     self.add_program_line(count(int(num), color="not gray", _type="area", _id=i))
 

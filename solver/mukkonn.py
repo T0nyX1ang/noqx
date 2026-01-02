@@ -17,19 +17,19 @@ def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
     """
 
     rule = ""
-    if label == "sudoku_4":
+    if label == "corner_top":
         max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
         rule += f':- grid_direction({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
-    if label == "sudoku_5":
+    if label == "corner_right":
         min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
         rule += f':- grid_direction({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
-    if label == "sudoku_6":
+    if label == "corner_left":
         max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
         rule += f':- grid_direction({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
-    if label == "sudoku_7":
+    if label == "corner_bottom":
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
         rule += f':- grid_direction({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
@@ -63,7 +63,7 @@ class MukkonnSolver(Solver):
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
+            validate_type(label, ("corner_top", "corner_right", "corner_left", "corner_bottom"))
             if label and isinstance(num, int) and num > 0:
                 self.add_program_line(mukkonn_constraint(r, c, label, num))
 

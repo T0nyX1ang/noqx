@@ -203,7 +203,7 @@ class PenpaPuzzle(Puzzle):
 
         * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode, `Sudoku` submode into the `text` attribute.
 
-        * The numbers are stored with `sudoku_x` labels indicating their direction in the cell. The direction `x` is translated as follows:
+        * The numbers are stored with `corner_x` labels indicating their direction in the cell. The direction `x` is translated as follows:
             * 0: `top-left`
             * 1: `top-right`
             * 2: `bottom-left`
@@ -214,13 +214,23 @@ class PenpaPuzzle(Puzzle):
             * 7: `bottom`
 
         Warning:
-            Since the `sudoku_x` label is hard-coded, the solvers must be very careful of these labels. The label might be encoded more conveniently in future versions.
+            Since the `corner_x` label is hard-coded, the solvers must be very careful of these labels. The label might be encoded more conveniently in future versions.
         """
+        corner_convert = {
+            0: Direction.TOP_LEFT,
+            1: Direction.TOP_RIGHT,
+            2: Direction.BOTTOM_LEFT,
+            3: Direction.BOTTOM_RIGHT,
+            4: Direction.TOP,
+            5: Direction.RIGHT,
+            6: Direction.LEFT,
+            7: Direction.BOTTOM,
+        }
         for index, num_data in self.problem["sudoku"].items():
             (r, c), category = self.index_to_coord(int(index) // 4)
             coord = _category_to_direction(r, c, 0)
-            num_direction = (category - 1) * 4 + int(index) % 4
-            self.text[Point(*coord, f"sudoku_{num_direction}")] = _int_or_str(num_data[0])
+            corner_direction = corner_convert[(category - 1) * 4 + int(index) % 4]
+            self.text[Point(*coord, f"corner_{corner_direction}")] = _int_or_str(num_data[0])
 
     def _unpack_symbol(self):
         """Unpack symbol elements from the board.

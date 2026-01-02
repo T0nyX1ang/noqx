@@ -59,8 +59,8 @@ class FactorsSolver(Solver):
             self.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 
             for r, c in ar:
-                if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
-                    num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                if Point(r, c, Direction.CENTER, "corner_top_left") in puzzle.text:
+                    num = puzzle.text[Point(r, c, Direction.CENTER, "corner_top_left")]
                     fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                     self.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {num}).")
                     self.add_program_line(number_exclusion(int(num), grid_size=n, _id=i))
