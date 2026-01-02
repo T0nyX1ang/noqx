@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, direction, display, fill_path, grid
+from noqx.rule.common import area, direction, display, fill_line, grid
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
@@ -29,7 +29,7 @@ class DetourSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("detour(R, C) :- grid(R, C).")
-        self.add_program_line(fill_path(color="detour"))
+        self.add_program_line(fill_line(color="detour"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="detour", adj_type="loop"))
         self.add_program_line(single_loop(color="detour"))

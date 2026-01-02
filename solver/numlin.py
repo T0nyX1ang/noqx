@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
@@ -77,7 +77,7 @@ class NumlinSolver(Solver):
         else:
             self.add_program_line(shade_c(color="numlin"))
 
-        self.add_program_line(fill_path(color="numlin"))
+        self.add_program_line(fill_line(color="numlin"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(single_loop(color="numlin", path=True))
 

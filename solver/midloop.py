@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
@@ -55,7 +55,7 @@ class MidLoopSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="midloop"))
-        self.add_program_line(fill_path(color="midloop"))
+        self.add_program_line(fill_line(color="midloop"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="midloop", adj_type="loop"))
         self.add_program_line(single_loop(color="midloop"))

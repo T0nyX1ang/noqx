@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_cc
+from noqx.rule.common import area, count, direction, display, fill_line, grid, shade_cc
 from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
@@ -30,7 +30,7 @@ class YajilinRegionsSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_cc(colors=["black", "white"]))
-        self.add_program_line(fill_path(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))

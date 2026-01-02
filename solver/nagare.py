@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
@@ -60,7 +60,7 @@ class NagareSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="nagare"))
-        self.add_program_line(fill_path(color="nagare", directed=True))
+        self.add_program_line(fill_line(color="nagare", directed=True))
         self.add_program_line(adjacent(_type="loop_directed"))
         self.add_program_line(grid_color_connected(color="nagare", adj_type="loop_directed"))
         self.add_program_line(directed_loop(color="nagare"))

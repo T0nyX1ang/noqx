@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, defined, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_adjacent, area_border
@@ -58,7 +58,7 @@ class MoonSunSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="moon_sun"))
-        self.add_program_line(fill_path(color="moon_sun"))
+        self.add_program_line(fill_line(color="moon_sun"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="moon_sun", adj_type="loop"))
         self.add_program_line(single_loop(color="moon_sun"))
