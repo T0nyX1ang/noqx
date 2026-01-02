@@ -34,13 +34,15 @@ class Direction:
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
     Attributes:
-        CENTER: The center direction. This is the default direction for most cells.
-                Using this direction will not have effects on visualizations.
-        TOP: The top direction. This indicates something is on the **top** side of a cell.
-             Also, this direction is used for **horizontal** edge visualizations.
-        LEFT: The left direction. This indicates the something is on the **left** side of a cell.
-              Also, this direction is used for **vertical** edge visualizations.
-                  side of a cell. Using this direction will not have effects on visualizations.
+        CENTER: The center direction. This is the default direction for most cells. Using this direction will not have effects on visualizations.
+        TOP: The top direction. This indicates something is on the **top** side of a cell. Also, this direction is used for **horizontal** edge visualizations.
+        LEFT: The left direction. This indicates the something is on the **left** side of a cell.Also, this direction is used for **vertical** edge visualizations.
+        BOTTOM: The bottom direction. This indicates the something is on the **bottom** side of a cell.
+        RIGHT: The right direction. This indicates the something is on the **right** side of a cell.
+        TOP_LEFT: The top-left direction. This indicates the something is on the **top-left** side of a cell.
+        TOP_RIGHT: The top-right direction. This indicates the something is on the **top-right** side of a cell.
+        BOTTOM_LEFT: The bottom-left direction. This indicates the something is on the **bottom-left** side of a cell.
+        BOTTOM_RIGHT: The bottom-right direction. This indicates the something is on the **bottom-right** side of a cell.
         DIAG_UP: The downwards-diagonal direction. This is only used for edges that goes from **bottom-left** to **top-right**.
         DIAG_DOWN: The upwards-diagonal direction. This is only used for edges that goes from **top-left** to **bottom-right**.
     """
@@ -49,8 +51,11 @@ class Direction:
     TOP: str = "top"
     LEFT: str = "left"
     BOTTOM: str = "bottom"
+    RIGHT: str = "right"
     TOP_LEFT: str = "top_left"
     TOP_RIGHT: str = "top_right"
+    BOTTOM_LEFT: str = "bottom_left"
+    BOTTOM_RIGHT: str = "bottom_right"
     DIAG_UP: str = "diag_up"
     DIAG_DOWN: str = "diag_down"
 
