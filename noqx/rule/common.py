@@ -171,17 +171,17 @@ def fill_path(color: str = "black", directed: bool = False) -> str:
 
     * To fill a path on a grid, two steps should be taken: shade the cells that have a line at first, and then decide which directions to take for each cell. This rule helps to complete the **second** step. So before using this rule, at least one shading rule should be defined.
 
-    * If the path is undirected, only one predicate (`grid_io`) is used to represent the directions. Once the path is direction, two predicates (`grid_in` and `grid_out`) are used to represent the directions.
+    * If the path is undirected, only one predicate (`line_io`) is used to represent the directions. Once the path is direction, two predicates (`line_in` and `line_out`) are used to represent the directions.
 
     Args:
         color: The specified color.
         directed: Whether the path is directed.
     """
     if directed:
-        rule = f"{{ grid_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
-        rule += f"{{ grid_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
+        rule = f"{{ line_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ line_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
     else:
-        rule = f"{{ grid_io(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+        rule = f"{{ line_io(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 
     return rule
 

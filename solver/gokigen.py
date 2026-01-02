@@ -9,14 +9,14 @@ from noqx.rule.loop import convert_direction_to_edge
 
 def slant_rule() -> str:
     """Generate slant rules."""
-    rule = ':- grid(R, C), grid_io(R, C, "ul"), not grid_io(R - 1, C - 1, "dr").\n'
-    rule += ':- grid(R, C), grid_io(R, C, "ur"), not grid_io(R - 1, C + 1, "dl").\n'
-    rule += ':- grid(R, C), grid_io(R, C, "dl"), not grid_io(R + 1, C - 1, "ur").\n'
-    rule += ':- grid(R, C), grid_io(R, C, "dr"), not grid_io(R + 1, C + 1, "ul").\n'
+    rule = ':- grid(R, C), line_io(R, C, "ul"), not line_io(R - 1, C - 1, "dr").\n'
+    rule += ':- grid(R, C), line_io(R, C, "ur"), not line_io(R - 1, C + 1, "dl").\n'
+    rule += ':- grid(R, C), line_io(R, C, "dl"), not line_io(R + 1, C - 1, "ur").\n'
+    rule += ':- grid(R, C), line_io(R, C, "dr"), not line_io(R + 1, C + 1, "ul").\n'
 
-    rule += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not grid_io(R, C, D).\n"
-    rule += "grid_direc_num(R, C, D, 1) :- grid_io(R, C, D).\n"
-    rule += ':- grid(R, C), grid(R + 1, C + 1), { grid_io(R, C, "dr"); grid_io(R, C + 1, "dl") } != 1.'
+    rule += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not line_io(R, C, D).\n"
+    rule += "grid_direc_num(R, C, D, 1) :- line_io(R, C, D).\n"
+    rule += ':- grid(R, C), grid(R + 1, C + 1), { line_io(R, C, "dr"); line_io(R, C + 1, "dl") } != 1.'
     return rule
 
 
@@ -24,10 +24,10 @@ def no_loop() -> str:
     """Ensure there is no loop in the grid."""
     rule = "reachable(R, C) :- grid(R, C), not grid(R - 1, C - 1).\n"
     rule += "reachable(R, C) :- grid(R, C), not grid(R + 1, C + 1).\n"
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R - 1, C - 1), not grid_io(R, C - 1, "ur").\n'
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R - 1, C + 1), not grid_io(R, C + 1, "ul").\n'
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C - 1), not grid_io(R, C - 1, "dr").\n'
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C + 1), not grid_io(R, C + 1, "dl").\n'
+    rule += 'reachable(R, C) :- grid(R, C), reachable(R - 1, C - 1), not line_io(R, C - 1, "ur").\n'
+    rule += 'reachable(R, C) :- grid(R, C), reachable(R - 1, C + 1), not line_io(R, C + 1, "ul").\n'
+    rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C - 1), not line_io(R, C - 1, "dr").\n'
+    rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C + 1), not line_io(R, C + 1, "dl").\n'
     rule += ":- grid(R, C), not reachable(R, C).\n"
     return rule
 
@@ -61,7 +61,7 @@ class GokigenSolver(Solver):
             validate_direction(r, c, d, Direction.TOP_LEFT)
             validate_type(label, "normal")
             if isinstance(num, int):
-                self.add_program_line(f":- #count{{ D: grid_io({r}, {c}, D) }} != {num}.")
+                self.add_program_line(f":- #count{{ D: line_io({r}, {c}, D) }} != {num}.")
 
         self.add_program_line(display(item="edge_diag_down", size=2))
         self.add_program_line(display(item="edge_diag_up", size=2))

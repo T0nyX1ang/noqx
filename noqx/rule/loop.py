@@ -16,18 +16,18 @@ def single_loop(color: str = "white", path: bool = False) -> str:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
         path: Whether the route is a path.
     """
-    constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: grid_io(R, C, D) } = 2.\n"
+    constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:
         visit_constraints.append("not dead_end(R, C)")
-        constraint += ":- dead_end(R, C), grid(R, C), #count { D: grid_io(R, C, D) } != 1.\n"
+        constraint += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
 
     constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    constraint += ':- grid(R, C), grid_io(R, C, "l"), not grid_io(R, C - 1, "r").\n'
-    constraint += ':- grid(R, C), grid_io(R, C, "u"), not grid_io(R - 1, C, "d").\n'
-    constraint += ':- grid(R, C), grid_io(R, C, "r"), not grid_io(R, C + 1, "l").\n'
-    constraint += ':- grid(R, C), grid_io(R, C, "d"), not grid_io(R + 1, C, "u").'
+    constraint += ':- grid(R, C), line_io(R, C, "l"), not line_io(R, C - 1, "r").\n'
+    constraint += ':- grid(R, C), line_io(R, C, "u"), not line_io(R - 1, C, "d").\n'
+    constraint += ':- grid(R, C), line_io(R, C, "r"), not line_io(R, C + 1, "l").\n'
+    constraint += ':- grid(R, C), line_io(R, C, "d"), not line_io(R + 1, C, "u").'
     return constraint
 
 
@@ -40,26 +40,26 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
         path: Whether the route is a path.
     """
-    constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), #count {{ D: grid_in(R, C, D) }} = 1, #count {{ D: grid_out(R, C, D) }} = 1, grid_in(R, C, D0), not grid_out(R, C, D0).\n"
+    constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), #count {{ D: line_in(R, C, D) }} = 1, #count {{ D: line_out(R, C, D) }} = 1, line_in(R, C, D0), not line_out(R, C, D0).\n"
 
     visit_constraints = ["not pass_by_loop(R, C)"]
     if path:
         visit_constraints.append("not path_start(R, C)")
         visit_constraints.append("not path_end(R, C)")
-        constraint += ":- path_start(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 1.\n"
-        constraint += ":- path_start(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 0.\n"
-        constraint += ":- path_end(R, C), grid(R, C), #count { D: grid_in(R, C, D) } != 1.\n"
-        constraint += ":- path_end(R, C), grid(R, C), #count { D: grid_out(R, C, D) } != 0.\n"
+        constraint += ":- path_start(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 1.\n"
+        constraint += ":- path_start(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 0.\n"
+        constraint += ":- path_end(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 1.\n"
+        constraint += ":- path_end(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 0.\n"
 
     constraint += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    constraint += ':- grid(R, C), grid_in(R, C, "l"), not grid_out(R, C - 1, "r").\n'
-    constraint += ':- grid(R, C), grid_in(R, C, "u"), not grid_out(R - 1, C, "d").\n'
-    constraint += ':- grid(R, C), grid_in(R, C, "r"), not grid_out(R, C + 1, "l").\n'
-    constraint += ':- grid(R, C), grid_in(R, C, "d"), not grid_out(R + 1, C, "u").\n'
-    constraint += ':- grid(R, C), grid_out(R, C, "l"), not grid_in(R, C - 1, "r").\n'
-    constraint += ':- grid(R, C), grid_out(R, C, "u"), not grid_in(R - 1, C, "d").\n'
-    constraint += ':- grid(R, C), grid_out(R, C, "r"), not grid_in(R, C + 1, "l").\n'
-    constraint += ':- grid(R, C), grid_out(R, C, "d"), not grid_in(R + 1, C, "u").\n'
+    constraint += ':- grid(R, C), line_in(R, C, "l"), not line_out(R, C - 1, "r").\n'
+    constraint += ':- grid(R, C), line_in(R, C, "u"), not line_out(R - 1, C, "d").\n'
+    constraint += ':- grid(R, C), line_in(R, C, "r"), not line_out(R, C + 1, "l").\n'
+    constraint += ':- grid(R, C), line_in(R, C, "d"), not line_out(R + 1, C, "u").\n'
+    constraint += ':- grid(R, C), line_out(R, C, "l"), not line_in(R, C - 1, "r").\n'
+    constraint += ':- grid(R, C), line_out(R, C, "u"), not line_in(R - 1, C, "d").\n'
+    constraint += ':- grid(R, C), line_out(R, C, "r"), not line_in(R, C + 1, "l").\n'
+    constraint += ':- grid(R, C), line_out(R, C, "d"), not line_in(R + 1, C, "u").\n'
     return constraint
 
 
@@ -73,7 +73,7 @@ def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
         _id: The ID of the area.
     """
     rop, num = target_encode(target)
-    return f":- #count {{ R, C, D: area_border({_id}, R, C, D), grid_io(R, C, D) }} {rop} {2 * num}."
+    return f":- #count {{ R, C, D: area_border({_id}, R, C, D), line_io(R, C, D) }} {rop} {2 * num}."
 
 
 def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
@@ -84,8 +84,8 @@ def separate_item_from_loop(inside_item: str, outside_item: str) -> str:
         outside_item: The item that should be outside of the loop.
     """
     rule = "outside_loop(-1, C) :- grid(_, C).\n"
-    rule += 'outside_loop(R, C) :- grid(R, C), outside_loop(R - 1, C), not grid_io(R, C, "r").\n'
-    rule += 'outside_loop(R, C) :- grid(R, C), not outside_loop(R - 1, C), grid_io(R, C, "r").\n'
+    rule += 'outside_loop(R, C) :- grid(R, C), outside_loop(R - 1, C), not line_io(R, C, "r").\n'
+    rule += 'outside_loop(R, C) :- grid(R, C), not outside_loop(R - 1, C), line_io(R, C, "r").\n'
 
     constraint = ""
     if len(inside_item) > 0:
@@ -108,7 +108,7 @@ def loop_sign(color: str = "white") -> str:
     """
     rule = ""
     for d1, d2 in ("lu", "ld", "ru", "rd", "lr", "ud"):
-        rule += f'loop_sign(R, C, "{d1}{d2}") :- grid(R, C), {color}(R, C), grid_io(R, C, "{d1}"), grid_io(R, C, "{d2}").\n'
+        rule += f'loop_sign(R, C, "{d1}{d2}") :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
 
     return rule
 
@@ -154,7 +154,7 @@ def loop_straight(color: str = "white") -> str:
     """
     rule = ""
     for d1, d2 in ("lr", "ud"):
-        rule += f'straight(R, C) :- grid(R, C), {color}(R, C), grid_io(R, C, "{d1}"), grid_io(R, C, "{d2}").\n'
+        rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
     return rule
 
 
@@ -169,7 +169,7 @@ def loop_turning(color: str = "white") -> str:
     """
     rule = ""
     for d1, d2 in ("lu", "ld", "ru", "rd"):
-        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), grid_io(R, C, "{d1}"), grid_io(R, C, "{d2}").\n'
+        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
     return rule
 
 
@@ -188,9 +188,9 @@ def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) ->
     for d, label in dir_dict.items():
         new_row = "R + 1" if d == "diag_up" else "R"
         if directed:
-            rule += f'edge_{d}(R, C) :- grid_in({new_row}, C, "{label}").\n'
-            rule += f'edge_{d}(R, C) :- grid_out({new_row}, C, "{label}").\n'
+            rule += f'edge_{d}(R, C) :- line_in({new_row}, C, "{label}").\n'
+            rule += f'edge_{d}(R, C) :- line_out({new_row}, C, "{label}").\n'
         else:
-            rule += f'edge_{d}(R, C) :- grid_io({new_row}, C, "{label}").\n'
+            rule += f'edge_{d}(R, C) :- line_io({new_row}, C, "{label}").\n'
 
     return rule

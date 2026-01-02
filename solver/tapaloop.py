@@ -46,8 +46,8 @@ def parse_clue(r: int, c: int, clue: List[Union[int, str]]) -> str:
 def direction_to_binary(r: int, c: int) -> str:
     """Convert grid direction to numbers."""
     constraint = f"binary(R, C, D, 0) :- -1 <= R, R <= {r}, -1 <= C, C <= {c}, not grid(R, C), direction(D).\n"
-    constraint += "binary(R, C, D, 0) :- grid(R, C), direction(D), not grid_io(R, C, D).\n"
-    constraint += "binary(R, C, D, 1) :- grid(R, C), grid_io(R, C, D)."
+    constraint += "binary(R, C, D, 0) :- grid(R, C), direction(D), not line_io(R, C, D).\n"
+    constraint += "binary(R, C, D, 1) :- grid(R, C), line_io(R, C, D)."
     return constraint
 
 
@@ -117,8 +117,8 @@ class TapaloopSolver(Solver):
             self.add_program_line(parse_clue(r, c, clue))
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_io", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

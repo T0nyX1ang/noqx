@@ -103,7 +103,7 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
                 if _type == f"edge_{d}":
                     solution.edge[Point(r, c, d)] = True
 
-        elif _type.startswith("grid_"):
+        elif _type.startswith("line_"):
             d = str(data[2]).replace('"', "")
             if puzzle.puzzle_name == "hashi":
                 solution.line[Point(r, c, label=f"{d}_{data[3]}")] = True

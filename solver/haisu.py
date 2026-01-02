@@ -10,10 +10,10 @@ from noqx.rule.neighbor import area_border
 
 def adj_before() -> str:
     """Generate a rule to constrain adjacent connectivity."""
-    adj = 'adj_before(R, C - 1, R, C) :- grid(R, C), grid_in(R, C, "l").\n'
-    adj += 'adj_before(R - 1, C, R, C) :- grid(R, C), grid_in(R, C, "u").\n'
-    adj += 'adj_before(R, C + 1, R, C) :- grid(R, C), grid_in(R, C, "r").\n'
-    adj += 'adj_before(R + 1, C, R, C) :- grid(R, C), grid_in(R, C, "d").\n'
+    adj = 'adj_before(R, C - 1, R, C) :- grid(R, C), line_in(R, C, "l").\n'
+    adj += 'adj_before(R - 1, C, R, C) :- grid(R, C), line_in(R, C, "u").\n'
+    adj += 'adj_before(R, C + 1, R, C) :- grid(R, C), line_in(R, C, "r").\n'
+    adj += 'adj_before(R + 1, C, R, C) :- grid(R, C), line_in(R, C, "d").\n'
     return adj
 
 
@@ -41,7 +41,7 @@ def haisu_rules() -> str:
 def haisu_count() -> str:
     """Partial sum method for haisu."""
     rule = "haisu_count(R, C, A, 0) :- path_start(R, C), clue_area(A).\n"
-    rule += "area_in(A, R, C) :- area_border(A, R, C, D), grid_in(R, C, D).\n"
+    rule += "area_in(A, R, C) :- area_border(A, R, C, D), line_in(R, C, D).\n"
     rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N), not area_in(A, R, C).\n"
     rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N - 1), area_in(A, R, C).\n"
     rule += ":- clue_area(A), grid(R, C), haisu_count(R, C, A, N1), haisu_count(R, C, A, N2), N1 < N2.\n"
@@ -104,7 +104,7 @@ class HaisuSolver(Solver):
             if isinstance(clue, int):
                 self.add_program_line(f"number({r}, {c}, {clue - 1 if (r, c) in s_index else clue}).")  # special case
 
-        self.add_program_line(display(item="grid_in", size=3))
-        self.add_program_line(display(item="grid_out", size=3))
+        self.add_program_line(display(item="line_in", size=3))
+        self.add_program_line(display(item="line_out", size=3))
 
         return self.program

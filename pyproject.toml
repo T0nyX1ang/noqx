@@ -3,8 +3,8 @@ name = "noqx"
 version = "0.7.1"
 description = "Extended logic puzzle solver of Noq."
 authors = [
-  {name = "Yaoyu Zhu"},
   {name = "Tony Xiang"},
+  {name = "Yaoyu Zhu"},
 ]
 readme = "README.md"
 license = "Apache-2.0 OR GPL-3.0-or-later"

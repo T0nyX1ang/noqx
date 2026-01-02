@@ -24,7 +24,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
         if d == "r":
             c1, c2 = c2, c1
         return (
-            f':- nagare({r}, C), {c1} <= C, C <= {c2}, not grid_out({r}, C, "{d}"), not grid_in({r}, C, "{rev_direction[d]}").'
+            f':- nagare({r}, C), {c1} <= C, C <= {c2}, not line_out({r}, C, "{d}"), not line_in({r}, C, "{rev_direction[d]}").'
         )
 
     if d in ("u", "d"):
@@ -37,7 +37,7 @@ def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
         if d == "d":
             r1, r2 = r2, r1
         return (
-            f':- nagare(R, {c}), {r1} <= R, R <= {r2}, not grid_out(R, {c}, "{d}"), not grid_in(R, {c}, "{rev_direction[d]}").'
+            f':- nagare(R, {c}), {r1} <= R, R <= {r2}, not line_out(R, {c}, "{d}"), not line_in(R, {c}, "{rev_direction[d]}").'
         )
 
     raise ValueError("Invalid direction.")
@@ -72,8 +72,8 @@ class NagareSolver(Solver):
 
             if shape == "arrow_B_B":
                 self.add_program_line(f"nagare({r}, {c}).")
-                self.add_program_line(f'grid_in({r}, {c}, "{rev_direction[_d]}").')
-                self.add_program_line(f'grid_out({r}, {c}, "{_d}").')
+                self.add_program_line(f'line_in({r}, {c}, "{rev_direction[_d]}").')
+                self.add_program_line(f'line_out({r}, {c}, "{_d}").')
             if shape == "arrow_B_W":
                 self.add_program_line(f"not nagare({r}, {c}).")
                 self.add_program_line(nagare_wind(r, c, _d, puzzle))
@@ -82,7 +82,7 @@ class NagareSolver(Solver):
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"not nagare({r}, {c}).")
 
-        self.add_program_line(display(item="grid_in", size=3))
-        self.add_program_line(display(item="grid_out", size=3))
+        self.add_program_line(display(item="line_in", size=3))
+        self.add_program_line(display(item="line_out", size=3))
 
         return self.program

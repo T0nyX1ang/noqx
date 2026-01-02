@@ -19,19 +19,19 @@ def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
     rule = ""
     if label == "corner_top":
         max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
-        rule += f':- grid_io({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
+        rule += f':- line_io({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
     if label == "corner_right":
         min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
-        rule += f':- grid_io({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
+        rule += f':- line_io({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
     if label == "corner_left":
         max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
-        rule += f':- grid_io({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
+        rule += f':- line_io({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
     if label == "corner_bottom":
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
-        rule += f':- grid_io({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
+        rule += f':- line_io({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
     return rule
 
@@ -72,8 +72,8 @@ class MukkonnSolver(Solver):
             self.add_program_line(f"black({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_io({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_io", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program
