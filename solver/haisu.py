@@ -2,10 +2,10 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_path, grid
+from noqx.rule.common import area, defined, direction, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
-from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import area_border
+from noqx.rule.route import directed_loop
 
 
 def adj_before() -> str:
@@ -75,7 +75,7 @@ class HaisuSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("haisu(R, C) :- grid(R, C).")
-        self.add_program_line(fill_path(color="haisu", directed=True))
+        self.add_program_line(fill_line(color="haisu", directed=True))
         self.add_program_line(directed_loop(color="haisu", path=True))
         self.add_program_line(connected_directed_path(color="haisu"))
         self.add_program_line(haisu_rules())

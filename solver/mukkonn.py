@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_line, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import loop_turning, single_loop
 
 
 def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
@@ -55,7 +55,7 @@ class MukkonnSolver(Solver):
         self.add_program_line(direction("lurd"))
         self.add_program_line("mukkonn(R, C) :- grid(R, C), not black(R, C).")
 
-        self.add_program_line(fill_path(color="mukkonn"))
+        self.add_program_line(fill_line(color="mukkonn"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="mukkonn", adj_type="loop"))
         self.add_program_line(single_loop(color="mukkonn"))

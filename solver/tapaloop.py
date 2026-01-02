@@ -4,11 +4,11 @@ from typing import Dict, List, Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_line, grid
 from noqx.rule.helper import fail_false, validate_direction
-from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import single_loop
 
 direc = ((-1, -1, "r"), (-1, 0, "r"), (-1, 1, "d"), (0, 1, "d"), (1, 1, "l"), (1, 0, "l"), (1, -1, "u"), (0, -1, "u"))
 direc_outer = ((-1, -1, "l"), (-1, 1, "u"), (1, 1, "r"), (1, -1, "d"))
@@ -94,7 +94,7 @@ class TapaloopSolver(Solver):
             self.add_program_line("{ tapaloop(R, C) } :- grid(R, C), not black(R, C).")
 
         self.add_program_line(direction("lurd"))
-        self.add_program_line(fill_path(color="tapaloop"))
+        self.add_program_line(fill_line(color="tapaloop"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="tapaloop", adj_type="loop"))
         self.add_program_line(single_loop(color="tapaloop"))

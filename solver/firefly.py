@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_line, grid
 from noqx.rule.helper import validate_direction
-from noqx.rule.loop import convert_direction_to_edge, directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import convert_direction_to_edge, directed_loop
 
 drdc = {"1": (0, 1), "2": (1, 0), "3": (0, -1), "4": (-1, 0)}
 dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
@@ -51,7 +51,7 @@ class FireflySolver(Solver):
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(direction("lurd"))
         self.add_program_line("{ firefly(R, C) } :- grid(R, C), not dead_end(R, C).")
-        self.add_program_line(fill_path(color="firefly", directed=True))
+        self.add_program_line(fill_line(color="firefly", directed=True))
         self.add_program_line(adjacent(_type="loop_directed"))
         self.add_program_line(directed_loop(color="firefly"))
         self.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))

@@ -4,11 +4,11 @@ from typing import Dict, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import convert_direction_to_edge, single_loop
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import convert_direction_to_edge, single_loop
 
 
 def bypass_area_edges() -> str:
@@ -40,7 +40,7 @@ class MejilinkSolver(Solver):
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="mejilink"))
-        self.add_program_line(fill_path(color="mejilink"))
+        self.add_program_line(fill_line(color="mejilink"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="mejilink", adj_type="loop"))
         self.add_program_line(single_loop(color="mejilink"))
