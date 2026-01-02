@@ -11,11 +11,7 @@ from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
 
 
 def avoid_adjacent_omino(num: int = 5, color: str = "black") -> str:
-    """
-    Generates a constraint to avoid adjacent ominos.
-
-    An adjacent rule, an omino rule should be defined first.
-    """
+    """Generates a constraint to avoid adjacent ominos."""
     tag = tag_encode("belong_to_shape", "omino", num, color)
     return f":- adj_x(R, C, R1, C1), {tag}(R, C, T, _), {tag}(R1, C1, T1, _), T != T1."
 

@@ -77,11 +77,7 @@ def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
 
 
 def area_border_connected(_id: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells connected to borders of an area.
-
-    An adjacent rule and an area fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of {color} cells connected to borders of an area."""
     tag = tag_encode("reachable", "area", "border", "adj", adj_type, color)
     initial = f"{tag}({_id}, R, C) :- area_border({_id}, R, C), {color}(R, C)."
     propagation = (

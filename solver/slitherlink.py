@@ -21,11 +21,7 @@ def passed_vertex() -> str:
 
 
 def count_adjacent_vertices(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Return a rule that counts the adjacent vertices around a cell.
-
-    An edge rule should be defined first.
-    """
+    """Generate a rule that counts the adjacent vertices around a cell."""
     src_r, src_c = src_cell
     rop, num = target_encode(target)
     v_1 = f"passed_vertex({src_r}, {src_c})"
@@ -36,11 +32,7 @@ def count_adjacent_vertices(target: int, src_cell: Tuple[int, int]) -> str:
 
 
 def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Return a rule that counts the adjacent segments around a cell.
-
-    An edge rule should be defined first.
-    """
+    """Generate a rule that counts the adjacent segments around a cell."""
     rop, num = target_encode(target)
 
     # segment count = vertex count - edge count

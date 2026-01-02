@@ -18,11 +18,7 @@ def adj_before() -> str:
 
 
 def connected_directed_path(color: str = "white") -> str:
-    """
-    Generate a directed path rule to constrain connectivity.
-
-    A grid fact, a loop/path fact and an adjacent loop rule should be defined first.
-    """
+    """Generate a directed path rule to constrain connectivity."""
     initial = "reachable_path(R, C) :- path_start(R, C).\n"
     propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_before(R1, C1, R, C).\n"
     constraint = f":- grid(R, C), {color}(R, C), not reachable_path(R, C)."

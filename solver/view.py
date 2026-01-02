@@ -9,11 +9,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def bulb_num_color_connected(color: str = "white", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells starting from a bulb.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of {color} cells starting from a bulb."""
     tag = tag_encode("reachable", "bulb", "branch", "adj", adj_type, color)
 
     initial = f"{tag}(R, C, R, C) :- number(R, C, _)."

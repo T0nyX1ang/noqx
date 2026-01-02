@@ -12,11 +12,7 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 
 
 def no_2x2_path() -> str:
-    """
-    Generate a rule that no 2x2 path is allowed.
-
-    A reachable path rule should be defined first.
-    """
+    """Generate a rule that no 2x2 path is allowed."""
 
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
     tag = tag_encode("reachable", "grid", "src", "adj", "loop", "numlin")

@@ -10,11 +10,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def wall_length(r: int, c: int, d: int, num: int) -> str:
-    """
-    Constrain the castle length.
-
-    A grid direction fact should be defined first.
-    """
+    """Constrain the castle length."""
     if d == 0:
         return f':- #count{{ R: line_io(R, {c}, "d"), R < {r} }} != {num}.'
     if d == 1:

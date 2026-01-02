@@ -12,11 +12,7 @@ from noqx.rule.shape import all_rect_region, avoid_edge_crossover
 
 
 def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: int) -> str:
-    """
-    Generates a constraint for counting the number of {color} cells in a row / col.
-
-    A grid fact should be defined first.
-    """
+    """Generates a constraint for counting the number of {color} cells in a row / col."""
     src_r, src_c = src_cell
     rule = ""
 

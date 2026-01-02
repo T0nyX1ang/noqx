@@ -7,11 +7,7 @@ from noqx.rule.helper import full_bfs, validate_direction, validate_type
 
 
 def area_gravity(color: str = "black") -> str:
-    """
-    Generates a constraint to fill the {color} areas according to gravity.
-
-    A grid rule should be defined first.
-    """
+    """Generates a constraint to fill the {color} areas according to gravity."""
     target = f":- area(A, R, C), area(A, R1, C1), R1 >= R, {color}(R, C), not {color}(R1, C1)."
     return target.replace("not not ", "")
 

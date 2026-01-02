@@ -12,11 +12,7 @@ from noqx.rule.neighbor import adjacent
 
 
 def no_2x2_path_bit() -> str:
-    """
-    Generate a rule that no 2x2 path (bit version) is allowed.
-
-    A reachable path rule should be defined first.
-    """
+    """Generate a rule that no 2x2 path (bit version) is allowed."""
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
     tag = tag_encode("reachable", "grid", "bit", "adj", "loop", "numlin")
     same_str = ", ".join(f"{tag}(R + {r}, C + {c}, B)" for r, c in points)

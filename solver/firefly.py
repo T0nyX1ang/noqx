@@ -13,11 +13,7 @@ dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
 
 
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
-    """
-    Generate a rule to restrict the number of bends in the path.
-
-    A line_in/line_out rule should be defined first.
-    """
+    """Generate a rule to restrict the number of bends in the path."""
     rule = f"reachable({r}, {c}, {r}, {c}).\n"
     rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_loop_directed(R1, C1, R, C).\n"
     rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "l"), not line_out(R, C, "r").\n'

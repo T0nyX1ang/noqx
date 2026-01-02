@@ -11,11 +11,7 @@ from noqx.rule.variety import yaji_count
 
 
 def avoid_adjacent_same_omino(num: int = 4, color: str = "black") -> str:
-    """
-    Generates a constraint to avoid adjacent ominos with the same type.
-
-    An adjacent rule, an omino rule should be defined first.
-    """
+    """Generates a constraint to avoid adjacent ominos with the same type."""
     tag = tag_encode("belong_to_shape", "omino", num, color)
     rule = f":- not {color}(R, C + 1), not {color}(R + 1, C), {tag}(R, C, T, _), {tag}(R + 1, C + 1, T, _).\n"
     rule += f":- not {color}(R, C), not {color}(R + 1, C + 1), {tag}(R + 1, C, T, _), {tag}(R, C + 1, T, _)."

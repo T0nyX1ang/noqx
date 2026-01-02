@@ -7,11 +7,7 @@ from noqx.rule.helper import fail_false, tag_encode
 
 
 def adjacent_line_intersect() -> str:
-    """
-    Generate a constraint to check adjacent loop intersection.
-
-    An loop_intersect rule should be defined first.
-    """
+    """Generate a constraint to check adjacent loop intersection."""
     adj = 'direction_type("H"; "V").\n'
     adj += 'adj_line_intersect(R, C, "H", R, C, "V") :- grid(R, C), not intersection(R, C).\n'
     adj += 'adj_line_intersect(R, C, "H", R, C + 1, "H") :- grid(R, C), grid(R, C + 1), line_io(R, C, "r").\n'

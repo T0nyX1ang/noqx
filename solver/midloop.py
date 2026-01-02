@@ -10,11 +10,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def midloop_constraint(r: int, c: int, d: str) -> str:
-    """
-    Generate a midloop constraint.
-
-    A loop_turning rule should be defined first.
-    """
+    """Generate a midloop constraint."""
     rule = ""
 
     max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"

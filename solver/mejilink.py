@@ -12,11 +12,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def bypass_area_edges() -> str:
-    """
-    Get the edges that not pass through the area.
-
-    An area fact and an area_border fact should be defined first.
-    """
+    """Get the edges that not pass through the area."""
     rule = 'bypass_area_edges(A, R, C, "l") :- area_border(A, R, C, "l"), not edge_left(R, C).\n'
     rule += 'bypass_area_edges(A, R, C, "r") :- area_border(A, R, C, "r"), not edge_left(R, C + 1).\n'
     rule += 'bypass_area_edges(A, R, C, "u") :- area_border(A, R, C, "u"), not edge_top(R, C).\n'

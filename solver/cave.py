@@ -16,11 +16,7 @@ from noqx.rule.reachable import (
 
 
 def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
-    """
-    Product rule for cave.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
+    """Product rule for cave."""
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
     src_r, src_c = src_cell

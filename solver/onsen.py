@@ -11,11 +11,7 @@ from noqx.rule.neighbor import adjacent, area_border
 
 
 def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) -> str:
-    """
-    Generates a rule for an Onsen-Meguri puzzle.
-
-    An area fact, a grid direction fact and an area border fact should be defined first.
-    """
+    """Generates a rule for an Onsen-Meguri puzzle."""
     rule = f"onsen({_id}, {r}, {c}).\n"
     rule += f"onsen({_id}, R, C) :- grid(R, C), adj_loop(R, C, R1, C1), onsen({_id}, R1, C1).\n"
 

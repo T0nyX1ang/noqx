@@ -8,11 +8,7 @@ from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 def numrope_constraint() -> str:
-    """
-    Generate a constraint for the number rope.
-
-    An adj_loop rule should be defined first.
-    """
+    """Generate a constraint for the number rope."""
     rule = "adj_count(R, C, N) :- grid(R, C), N = #count { R1, C1 : adj_loop(R, C, R1, C1) }.\n"
     rule += ":- adj_count(R, C, N), N > 2.\n"
     rule += ":- adj_count(R, C, 1), number(R, C, N), number(R1, C1, N1), adj_loop(R, C, R1, C1), |N - N1| != 1.\n"

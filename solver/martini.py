@@ -11,11 +11,7 @@ from noqx.rule.reachable import area_color_connected, grid_color_connected, grid
 
 
 def count_reachable_src_white_circle(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
-    """
-    Generate a constraint to count the reachable white circles starting from a source.
-
-    A grid_src_color_connected should be defined first.
-    """
+    """Generate a constraint to count the reachable white circles starting from a source."""
 
     src_r, src_c = src_cell
 

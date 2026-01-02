@@ -13,11 +13,7 @@ def putteria_fill_constraint() -> str:
 
 
 def avoid_same_number_adjacent(adj_type: int = 4) -> str:
-    """
-    Generate a constraint to avoid adjacent cells with the same number.
-
-    An adjacent rule should be defined first.
-    """
+    """Generate a constraint to avoid adjacent cells with the same number."""
     rule = f":- number(R, C, _), number(R1, C1, _), adj_{adj_type}(R, C, R1, C1)."
     return rule
 

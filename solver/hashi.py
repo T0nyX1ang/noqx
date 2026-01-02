@@ -8,11 +8,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def hashi_bridge() -> str:
-    """
-    Generate a rule for hashi constraints.
-
-    A grid fact and a direction fact should be defined first.
-    """
+    """Generate a rule for hashi constraints."""
     rule = "num(1..2)."
     rule += "{ line_io(R, C, D, N) : direction(D), num(N) } :- grid(R, C), hashi(R, C).\n"
     rule += ":- N != -1, number(R, C, N), #sum{ N1, D: line_io(R, C, D, N1) } != N.\n"

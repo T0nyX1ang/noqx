@@ -8,11 +8,7 @@ from noqx.rule.neighbor import adjacent, count_adjacent
 
 
 def lightup(color: str = "black") -> str:
-    """
-    A lit rule specially designed for akari.
-
-    A grid fact and an adjacent rule should be defined first.
-    """
+    """A rule specially designed for akari."""
     tag = tag_encode("reachable", "sun_moon__3", "branch", "adj", 4, color)
     initial = f"{tag}(R0, C0, R, C) :- grid(R, C), sun_moon__3(R, C), R0 = R, C0 = C."
     propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), adj_4(R, C, R1, C1), (R - R0) * (C - C0) = 0."

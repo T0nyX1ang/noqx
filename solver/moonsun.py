@@ -14,8 +14,6 @@ def moon_sun_area() -> str:
     Genearate a constraint to determine the area of the moon or sun.
     A sun area should only contain sun cells, and a moon area should only contain moon cells.
     A sun area should be adjacent to a moon area, and vice versa.
-
-    A grid fact and an area adjacent rule should be defined first.
     """
     rule = "{ sun_area(A) } :- area(A, _, _).\n"
     rule += ":- sun_area(A), area(A, R, C), sun(R, C), not moon_sun(R, C).\n"

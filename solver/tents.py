@@ -12,8 +12,7 @@ from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 def identical_adjacent_map(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
     """
     Generate n * (n - 1) / 2 constraints and n rules to enforce identical adjacent cell maps.
-
-    A grid fact and an adjacent rule should be defined first. n is the number of known source cells.
+    n is the number of known source cells.
     """
     rules = "\n".join(
         f"{{ map_{r}_{c}(R, C): adj_{adj_type}(R, C, {r}, {c}), {color}(R, C) }} = 1 :- grid({r}, {c})."

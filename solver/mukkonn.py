@@ -10,11 +10,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
-    """
-    Generate a mukkonn constraint.
-
-    A loop_straight rule, a loop_turning rule, and an adjacent rule should be defined first.
-    """
+    """Generate a mukkonn constraint."""
 
     rule = ""
     if label == "corner_top":

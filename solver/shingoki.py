@@ -12,11 +12,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def count_shingoki(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Generate a constraint to count the length of "2-way" straight lines.
-
-    A shingoki loop rule should be defined first.
-    """
+    """Generate a constraint to count the length of "2-way" straight lines."""
     r, c = src_cell
     rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
     rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'

@@ -18,11 +18,7 @@ def avoid_2x2_number() -> str:
 
 
 def area_num_adjacent(adj_type: int = 4) -> str:
-    """
-    Generate a constraint to ensure adjacent cells with the same number in an area.
-
-    An adjacent rule should be defined first.
-    """
+    """Generate a constraint to ensure adjacent cells with the same number in an area."""
     return f":- area(A, R, C), number(R, C, N), #count {{ R1, C1: area(A, R1, C1), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 

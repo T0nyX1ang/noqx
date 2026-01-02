@@ -10,22 +10,14 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def masyu_black_rule() -> str:
-    """
-    Generate a rule for black masyu.
-
-    A straight rule, a turning rule, and an loop_adjacent rule should be defined first.
-    """
+    """Generate a rule for black masyu."""
     black_rule = ":- grid(R, C), black(R, C), not turning(R, C).\n"
     black_rule += ":- grid(R, C), black(R, C), turning(R, C), adj_loop(R, C, R1, C1), not straight(R1, C1).\n"
     return black_rule
 
 
 def masyu_white_rule() -> str:
-    """
-    Generate a rule for white masyu rule.
-
-    A straight rule and a turning rule should be defined first.
-    """
+    """Generate a rule for white masyu rule."""
     white_rule = ":- grid(R, C), white(R, C), not straight(R, C).\n"
     white_rule += ":- grid(R, C), white(R, C), straight(R, C), { turning(R1, C1): adj_loop(R, C, R1, C1) } = 0.\n"
     return white_rule

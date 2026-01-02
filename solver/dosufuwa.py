@@ -9,11 +9,7 @@ from noqx.rule.helper import fail_false, full_bfs, validate_direction
 
 
 def dosufuwa_gravity(float_color: str = "white", drown_color: str = "black") -> str:
-    """
-    Generates a constraint to fill the colors according to gravity.
-
-    A grid rule should be defined first.
-    """
+    """Generates a constraint to fill the colors according to gravity."""
     rule = f":- grid(R, C), {float_color}(R, C), grid(R - 1, C), not {float_color}(R - 1, C).\n"
     rule += f":- grid(R, C), {drown_color}(R, C), grid(R + 1, C), not {drown_color}(R + 1, C).\n"
 
