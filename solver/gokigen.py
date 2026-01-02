@@ -2,9 +2,9 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid
+from noqx.rule.common import direction, display, fill_path, grid
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.route import convert_direction_to_edge
+from noqx.rule.loop import convert_direction_to_edge
 
 
 def slant_rule() -> str:
@@ -52,7 +52,7 @@ class GokigenSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(direction(["ul", "ur", "dl", "dr"]))
-        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(fill_path(color="grid"))
         self.add_program_line(slant_rule())
         self.add_program_line(no_loop())
         self.add_program_line(convert_direction_to_edge(diagonal=True))

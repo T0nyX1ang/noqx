@@ -4,10 +4,10 @@ from typing import Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, count, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs
+from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, area_border
-from noqx.rule.route import single_loop
 
 
 def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) -> str:
@@ -65,7 +65,7 @@ class OnsenSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="onsen_loop"))
-        self.add_program_line(fill_line(color="onsen_loop"))
+        self.add_program_line(fill_path(color="onsen_loop"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(single_loop(color="onsen_loop"))
 

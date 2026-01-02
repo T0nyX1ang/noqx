@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid
+from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
+from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, count_reachable_src, grid_src_color_connected
-from noqx.rule.route import single_loop
 
 
 class AnglersSolver(Solver):
@@ -36,7 +36,7 @@ class AnglersSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("anglers(R, C) :- grid(R, C), not black(R, C).")
-        self.add_program_line(fill_line(color="anglers"))
+        self.add_program_line(fill_path(color="anglers"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(single_loop(color="anglers", path=True))
         self.add_program_line(avoid_unknown_src("anglers", adj_type="loop"))

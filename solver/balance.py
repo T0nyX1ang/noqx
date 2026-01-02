@@ -4,11 +4,11 @@ from typing import Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import validate_direction
+from noqx.rule.loop import loop_segment, loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.route import loop_segment, loop_sign, single_loop
 
 
 def balance_rule() -> str:
@@ -56,7 +56,7 @@ class BalanceSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="balance"))
-        self.add_program_line(fill_line(color="balance"))
+        self.add_program_line(fill_path(color="balance"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="balance", adj_type="loop"))
         self.add_program_line(single_loop(color="balance"))

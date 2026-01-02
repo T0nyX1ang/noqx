@@ -11,8 +11,8 @@ nav:
       - Common Rules: noqx/rule/common.md
       - Adjacency Rules: noqx/rule/neighbor.md
       - Connectivity Rules: noqx/rule/reachable.md
-      - Loop/Path Rules: noqx/rule/route.md
       - Shape Rules: noqx/rule/shape.md
+      - Loop/Path Rules: noqx/rule/loop.md
       - Miscellaneous Rules: noqx/rule/variety.md
       - Helper Functions: noqx/rule/helper.md
   - Clingo Backend: noqx/clingo.md

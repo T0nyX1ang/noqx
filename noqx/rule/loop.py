@@ -13,7 +13,7 @@ def single_loop(color: str = "white", path: bool = False) -> str:
     * A *path* is that there are two endpoints having only one line connected to them, and other cells have two lines connected to them. The endpoints are marked as `dead_end`.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
         path: Whether the route is a path.
     """
     constraint = "pass_by_loop(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
@@ -37,7 +37,7 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
     * The definitions are the same as `single_loop`.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
         path: Whether the route is a path.
     """
     constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), #count {{ D: line_in(R, C, D) }} = 1, #count {{ D: line_out(R, C, D) }} = 1, line_in(R, C, D0), not line_out(R, C, D0).\n"
@@ -101,7 +101,7 @@ def loop_sign(color: str = "white") -> str:
     """A rule to define valid loop signs.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
 
     Warning:
         This rule only supports undirected routes.
@@ -147,7 +147,7 @@ def loop_straight(color: str = "white") -> str:
     """A rule to define all the cells that the route goes straight at.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
 
     Warning:
         This rule only supports undirected routes.
@@ -162,7 +162,7 @@ def loop_turning(color: str = "white") -> str:
     """A rule to define all the cells that the route make turns at.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_path` rule.
 
     Warning:
         This rule only supports undirected routes.

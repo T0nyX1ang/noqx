@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction
+from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.route import loop_straight, loop_turning, single_loop
 
 
 def dotchi_constraint() -> str:
@@ -38,7 +38,7 @@ class DotchiSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="dotchi"))
-        self.add_program_line(fill_line(color="dotchi"))
+        self.add_program_line(fill_path(color="dotchi"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="dotchi", adj_type="loop"))
         self.add_program_line(single_loop(color="dotchi"))

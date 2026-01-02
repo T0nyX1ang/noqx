@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid
+from noqx.rule.common import defined, direction, display, fill_path, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.route import single_loop
 from noqx.rule.variety import yaji_count
 
 
@@ -32,7 +32,7 @@ class YajilinSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("{ black(R, C); white(R, C) } = 1 :- grid(R, C), not gray(R, C).")
-        self.add_program_line(fill_line(color="white"))
+        self.add_program_line(fill_path(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
