@@ -24,11 +24,11 @@ def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: i
         rule += f":- not edge_left({src_r}, {src_c + 1}).\n"
         rule += f":- #count {{ C1 : edge_left({src_r}, C1), C1 > {src_c} }} != {target}."
 
-    if arrow_direction == 0:  # up
+    if arrow_direction == 0:  # top
         rule += f":- not edge_top({src_r}, {src_c}).\n"
         rule += f":- #count {{ R1 : edge_top(R1, {src_c}), R1 <= {src_r} }} != {target}."
 
-    if arrow_direction == 3:  # down
+    if arrow_direction == 3:  # bottom
         rule += f":- not edge_top({src_r + 1}, {src_c}).\n"
         rule += f":- #count {{ R1 : edge_top(R1, {src_c}), R1 > {src_r} }} != {target}."
 
@@ -37,8 +37,8 @@ def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: i
 
 def rect_constraint() -> str:
     """Generate a cell relevant constraint for rectangles with the width/height of 1."""
-    rule = ":- upleft(R, C), left(R + 1, C), up(R, C + 1).\n"
-    rule += ":- grid(R, C), upleft(R, C), #count { R1, C1: adj_edge(R, C, R1, C1) } = 0."
+    rule = ":- topleft(R, C), left(R + 1, C), top(R, C + 1).\n"
+    rule += ":- grid(R, C), topleft(R, C), #count { R1, C1: adj_edge(R, C, R1, C1) } = 0."
     return rule
 
 

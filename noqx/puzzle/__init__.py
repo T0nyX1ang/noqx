@@ -68,7 +68,7 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
     * The label descriptor is used for elements **inside** an cell. Common labels include:
 
         * `normal`: The normal label. This is the default label for most elements. Using this label will not have effects on visualizations.
-        * `l/u/r/d`: The left, up, right, and down labels. These labels are often used for **arrows**, **lines**, etc. to indicate their directions.
+        * `l/u/r/d`: The left, top, right, and bottom labels. These labels are often used for **arrows**, **lines**, etc. to indicate their directions.
         * `tapa_x`: The tapa label with index x (x = 0 ~ 3). This label is often used for **tapa-like** clues to indicate their positions inside a cell.
         * `corner_x`: The corner label with index its direction x. This label is often used for **sudoku-like** clues to indicate a number in the corner inside a cell.
         * `multiple`: The symbol label with style x (x = 0 ~ n). This label is often used for indicating **multiple symbols** inside a cell.

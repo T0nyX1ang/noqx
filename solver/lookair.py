@@ -11,7 +11,7 @@ from noqx.rule.shape import all_rect
 def square_size(color: str = "black") -> str:
     """Generate a rule to determine the size of the square."""
     rule = (
-        f"square_size(R, C, N) :- upleft(R, C), MC = #min{{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}, N = MC - C.\n"
+        f"square_size(R, C, N) :- topleft(R, C), MC = #min{{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}, N = MC - C.\n"
     )
     rule += f"square_size(R, C, N) :- grid(R, C), {color}(R, C), square_size(R, C - 1, N).\n"
     rule += f"square_size(R, C, N) :- grid(R, C), {color}(R, C), square_size(R - 1, C, N).\n"
@@ -22,13 +22,13 @@ def avoid_same_size_square_see(color: str = "black") -> str:
     """Generate a constraint to avoid the same size square seeing each other."""
     rule = f"left_square(R, C, C - 1) :- grid(R, C), {color}(R, C - 1), not {color}(R, C).\n"
     rule += "left_square(R, C, C0) :- grid(R, C), not left_square(R, C, C - 1), left_square(R, C - 1, C0).\n"
-    rule += ":- upleft(R, C), left_square(R, C, MC), square_size(R, C, N), square_size(R, MC, N).\n"
+    rule += ":- topleft(R, C), left_square(R, C, MC), square_size(R, C, N), square_size(R, MC, N).\n"
     rule += ":- left(R, C), left_square(R, C, MC), square_size(R, C, N), square_size(R, MC, N).\n"
 
     rule += f"up_square(R, C, R - 1) :- grid(R, C), {color}(R - 1, C), not {color}(R, C).\n"
     rule += "up_square(R, C, R0) :- grid(R, C), not up_square(R, C, R - 1), up_square(R - 1, C, R0).\n"
-    rule += ":- upleft(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
-    rule += ":- up(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
+    rule += ":- topleft(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
+    rule += ":- top(R, C), up_square(R, C, MR), square_size(R, C, N), square_size(MR, C, N).\n"
     return rule
 
 

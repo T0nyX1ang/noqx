@@ -11,7 +11,7 @@ from noqx.rule.shape import all_rect_region, avoid_edge_crossover
 
 def rect_constraint() -> str:
     """Generate a cell relevant constraint for rectangles with the width/height of 1."""
-    return ":- upleft(R, C), left(R + 1, C), up(R, C + 1)."
+    return ":- topleft(R, C), left(R + 1, C), top(R, C + 1)."
 
 
 class UsotatamiSolver(Solver):
@@ -35,7 +35,7 @@ class UsotatamiSolver(Solver):
         self.add_program_line(all_rect_region())
         self.add_program_line(rect_constraint())
         self.add_program_line(avoid_edge_crossover())
-        self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(f":- {{ topleft(R, C) }} != {len(puzzle.text)}.")
 
         all_src = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)

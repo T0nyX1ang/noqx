@@ -234,7 +234,7 @@ def count_shape(
 def all_rect(color: str = "black", square: bool = False) -> str:
     """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
 
-    * The main concept of this rule is to define four helper predicates: `upleft`, `left`, `up`, and `remain`, and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
+    * The main concept of this rule is to define four helper predicates: `topleft`, `left`, `top`, and `remain`, and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
 
     * Due to technical reasons, the color cannot start with `not`, and the `noqx.common.invert_c` rule can help.
 
@@ -252,27 +252,27 @@ def all_rect(color: str = "black", square: bool = False) -> str:
     if color.startswith("not"):
         raise ValueError("Unsupported color prefix 'not', please define the color explicitly.")
 
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
+    topleft = f"topleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
+    left = f"left(R, C) :- grid(R, C), {color}(R, C), topleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
     left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
+    top = f"top(R, C) :- grid(R, C), {color}(R, C), topleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
+    top += f"top(R, C) :- grid(R, C), {color}(R, C), top(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), top(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), top(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
 
-    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
+    constraint = f":- grid(R, C), {color}(R, C), not topleft(R, C), not left(R, C), not top(R, C), not remain(R, C).\n"
     constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
 
     if square:
         c_min = f"#min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}"
         r_min = f"#min {{ R0: grid(R0 - 1, C), not {color}(R0, C), R0 > R }}"
-        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
-        constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
-        constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
+        constraint += f":- topleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
+        constraint += ":- topleft(R, C), left(R + 1, C), not top(R, C + 1).\n"
+        constraint += ":- topleft(R, C), not left(R + 1, C), top(R, C + 1).\n"
 
-    data = rule + upleft + left + up + remain + constraint
+    data = rule + topleft + left + top + remain + constraint
     return data
 
 
@@ -282,33 +282,33 @@ def all_rect_region(square: bool = False) -> str:
     Args:
         square: Whether to force the rectangles to be squares.
     """
-    upleft = "upleft(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C).\n"
-    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
+    topleft = "topleft(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C).\n"
+    left = "left(R, C) :- grid(R, C), topleft(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
     left += "left(R, C) :- grid(R, C), left(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
-    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
-    up += "up(R, C) :- grid(R, C), up(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
+    top = "top(R, C) :- grid(R, C), topleft(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
+    top += "top(R, C) :- grid(R, C), top(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
+    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), top(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
+    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), top(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
 
-    constraint = ":- grid(R, C), { upleft(R, C); left(R, C); up(R, C); remain(R, C) } != 1.\n"
+    constraint = ":- grid(R, C), { topleft(R, C); left(R, C); top(R, C); remain(R, C) } != 1.\n"
     constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not edge_left(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not edge_top(R + 1, C).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not edge_left(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not edge_top(R + 1, C).\n"
+    constraint += ":- grid(R, C), remain(R, C), top(R + 1, C), not edge_top(R + 1, C).\n"
+    constraint += ":- grid(R, C), remain(R, C), topleft(R, C + 1), not edge_left(R, C + 1).\n"
+    constraint += ":- grid(R, C), remain(R, C), topleft(R + 1, C), not edge_top(R + 1, C).\n"
 
     if square:
         c_min = "#min { C0: grid(R, C0 - 1), edge_left(R, C0), C0 > C }"
         r_min = "#min { R0: grid(R0 - 1, C), edge_top(R0, C), R0 > R }"
-        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
+        constraint += f":- topleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
 
     rect = ":- grid(R, C), left(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
     rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
-    rect += ":- grid(R, C), up(R, C), remain(R + 1, C), edge_top(R + 1, C).\n"
+    rect += ":- grid(R, C), top(R, C), remain(R + 1, C), edge_top(R + 1, C).\n"
     rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), edge_top(R + 1, C)."
 
-    data = upleft + left + up + remain + constraint + rect
+    data = topleft + left + top + remain + constraint + rect
     return data
 
 
