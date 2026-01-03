@@ -203,15 +203,7 @@ class PenpaPuzzle(Puzzle):
 
         * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode, `Sudoku` submode into the `text` attribute.
 
-        * The numbers are stored with `corner_x` labels indicating their direction in the cell. The direction `x` is translated as follows:
-            * 0: `top-left`
-            * 1: `top-right`
-            * 2: `bottom-left`
-            * 3: `bottom-right`
-            * 4: `top`
-            * 5: `right`
-            * 6: `left`
-            * 7: `bottom`
+        * The numbers are stored with `corner_x` labels indicating their direction in the cell. The direction `x` is translated by a conversion table.
 
         Warning:
             Since the `corner_x` label is hard-coded, the solvers must be very careful of these labels. The label might be encoded more conveniently in future versions.
