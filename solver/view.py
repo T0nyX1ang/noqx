@@ -4,16 +4,12 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import display, fill_num, grid, invert_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
 def bulb_num_color_connected(color: str = "white", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells starting from a bulb.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of {color} cells starting from a bulb."""
     tag = tag_encode("reachable", "bulb", "branch", "adj", adj_type, color)
 
     initial = f"{tag}(R, C, R, C) :- number(R, C, _)."
@@ -42,7 +38,7 @@ class ViewSolver(Solver):
         self.add_program_line(invert_c(color="white", invert="black"))
         self.add_program_line(adjacent())
         self.add_program_line(grid_color_connected(color="black", grid_size=(puzzle.row, puzzle.col)))
-        self.add_program_line(avoid_num_adjacent())
+        self.add_program_line(avoid_same_number_adjacent())
         self.add_program_line(bulb_num_color_connected(color="white"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():

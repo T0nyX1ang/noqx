@@ -12,11 +12,7 @@ from noqx.rule.shape import all_rect
 
 
 def noribou_strip_different(color: str = "black") -> str:
-    """
-    Generate a rule to ensure that no two adjacent cells have the same shaded strips.
-
-    An all_rect constraint should be defined first.
-    """
+    """Generate a rule to ensure that no two adjacent cells have the same shaded strips."""
     rule = "nth(R, C, 1) :- upleft(R, C).\n"
     rule += "nth(R, C, N) :- up(R, C), nth(R, C - 1, N - 1).\n"
     rule += "nth(R, C, N) :- left(R, C), nth(R - 1, C, N - 1).\n"

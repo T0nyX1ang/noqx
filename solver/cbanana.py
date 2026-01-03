@@ -11,11 +11,7 @@ from noqx.rule.shape import all_rect, no_rect
 
 
 def grid_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to check the reachability of same color cells starting from a source.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of same color cells starting from a source."""
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
     tag_ls = tag_encode("reachable", "Lshape", "adj", adj_type, color)
@@ -27,11 +23,7 @@ def grid_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
 
 
 def bulb_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells starting from a bulb.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of {color} cells starting from a bulb."""
 
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
@@ -43,11 +35,7 @@ def bulb_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
 
 
 def count_same_color_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
-    """
-    Generate a constraint to count the reachable cells starting from a source.
-
-    A grid_src_same_color_connected should be defined first.
-    """
+    """Generate a constraint to count the reachable cells starting from a source."""
     src_r, src_c = src_cell
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
@@ -57,11 +45,7 @@ def count_same_color_reachable_src(target: int, src_cell: Tuple[int, int], color
 
 
 def count_same_color_rect_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a cell-relevant constraint for shikaku.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
+    """Generate a cell-relevant constraint for choco banana."""
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
     src_r, src_c = src_cell

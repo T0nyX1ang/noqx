@@ -13,8 +13,6 @@ def unique_linecolor(colors: List[str], _type: str = "row") -> str:
     """
     Generates a constraint for unique row / column in a grid.
     At least one pair of cells in the same row / column should have different colors.
-
-    A grid rule should be defined first.
     """
     if _type == "row":
         colors_row = ", ".join(

@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, direction, display, fill_path, grid
+from noqx.rule.common import area, direction, display, fill_line, grid
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
@@ -29,24 +29,24 @@ class DetourSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("detour(R, C) :- grid(R, C).")
-        self.add_program_line(fill_path(color="detour"))
+        self.add_program_line(fill_line(color="detour"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="detour", adj_type="loop"))
         self.add_program_line(single_loop(color="detour"))
         self.add_program_line(loop_turning(color="detour"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
             if rc:
-                num = puzzle.text[Point(*rc, Direction.CENTER, "sudoku_0")]
+                num = puzzle.text[Point(*rc, Direction.CENTER, "corner_top_left")]
                 if isinstance(num, int):
                     self.add_program_line(f":- #count {{ R, C: area({i}, R, C), turning(R, C) }} != {num}.")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

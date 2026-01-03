@@ -24,19 +24,19 @@ class TilepaintSolver(Solver):
         self.add_program_line(shade_c(color="gray"))
         self.add_program_line(area_same_color(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
-                validate_type(label, "sudoku_2")
+                validate_type(label, "corner_bottom_left")
                 self.add_program_line(count(num, color="gray", _type="col", _id=c))
 
             if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
-                validate_type(label, "sudoku_1")
+                validate_type(label, "corner_top_right")
                 self.add_program_line(count(num, color="gray", _type="row", _id=r))
 
         for (r, c, _, _), color in puzzle.surface.items():

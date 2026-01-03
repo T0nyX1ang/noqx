@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border
@@ -33,7 +33,7 @@ class DoubleBackSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("doubleback(R, C) :- grid(R, C), not black(R, C).")
-        self.add_program_line(fill_path(color="doubleback"))
+        self.add_program_line(fill_line(color="doubleback"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="doubleback", adj_type="loop"))
         self.add_program_line(single_loop(color="doubleback"))
@@ -48,8 +48,8 @@ class DoubleBackSolver(Solver):
             puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
             puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             arb = tuple(
                 filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar)
             )
@@ -60,8 +60,8 @@ class DoubleBackSolver(Solver):
             self.add_program_line(count_area_pass(2, _id=i))
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

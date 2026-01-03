@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, defined, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
@@ -38,7 +38,7 @@ class DotchiSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="dotchi"))
-        self.add_program_line(fill_path(color="dotchi"))
+        self.add_program_line(fill_line(color="dotchi"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="dotchi", adj_type="loop"))
         self.add_program_line(single_loop(color="dotchi"))
@@ -46,8 +46,8 @@ class DotchiSolver(Solver):
         self.add_program_line(loop_turning(color="dotchi"))
         self.add_program_line(dotchi_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
@@ -59,8 +59,8 @@ class DotchiSolver(Solver):
                 self.add_program_line(f"not dotchi({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

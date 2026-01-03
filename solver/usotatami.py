@@ -6,7 +6,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
-from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover
 
 
 def rect_constraint() -> str:
@@ -34,7 +34,7 @@ class UsotatamiSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
         self.add_program_line(rect_constraint())
-        self.add_program_line(avoid_region_border_crossover())
+        self.add_program_line(avoid_edge_crossover())
         self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
 
         all_src = []

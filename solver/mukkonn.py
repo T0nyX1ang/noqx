@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.rule.common import defined, direction, display, fill_line, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
@@ -10,28 +10,24 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
-    """
-    Generate a mukkonn constraint.
-
-    A loop_straight rule, a loop_turning rule, and an adjacent rule should be defined first.
-    """
+    """Generate a mukkonn constraint."""
 
     rule = ""
-    if label == "sudoku_4":
+    if label == "corner_top":
         max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
-        rule += f':- grid_direction({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
+        rule += f':- line_io({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
-    if label == "sudoku_5":
+    if label == "corner_right":
         min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
-        rule += f':- grid_direction({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
+        rule += f':- line_io({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
-    if label == "sudoku_6":
+    if label == "corner_left":
         max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
-        rule += f':- grid_direction({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
+        rule += f':- line_io({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
-    if label == "sudoku_7":
+    if label == "corner_bottom":
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
-        rule += f':- grid_direction({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
+        rule += f':- line_io({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
     return rule
 
@@ -55,7 +51,7 @@ class MukkonnSolver(Solver):
         self.add_program_line(direction("lurd"))
         self.add_program_line("mukkonn(R, C) :- grid(R, C), not black(R, C).")
 
-        self.add_program_line(fill_path(color="mukkonn"))
+        self.add_program_line(fill_line(color="mukkonn"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="mukkonn", adj_type="loop"))
         self.add_program_line(single_loop(color="mukkonn"))
@@ -63,7 +59,7 @@ class MukkonnSolver(Solver):
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
+            validate_type(label, ("corner_top", "corner_right", "corner_left", "corner_bottom"))
             if label and isinstance(num, int) and num > 0:
                 self.add_program_line(mukkonn_constraint(r, c, label, num))
 
@@ -72,8 +68,8 @@ class MukkonnSolver(Solver):
             self.add_program_line(f"black({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

@@ -17,11 +17,7 @@ def exclude_checkboard_shape(color: str = "black") -> str:
 
 
 def simple_shade_path(color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a rule to ensure the shaded path is a simple path.
-
-    An adjacent rule should be defined first.
-    """
+    """Generate a rule to ensure the shaded path is a simple path."""
     adj_count = f"#count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }}"
 
     constraint = f"pass_by_loop(R, C) :- grid(R, C), {color}(R, C), {adj_count} = 2.\n"

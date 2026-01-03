@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import defined, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
@@ -10,22 +10,14 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def masyu_black_rule() -> str:
-    """
-    Generate a rule for black masyu.
-
-    A straight rule, a turning rule, and an loop_adjacent rule should be defined first.
-    """
+    """Generate a rule for black masyu."""
     black_rule = ":- grid(R, C), black(R, C), not turning(R, C).\n"
     black_rule += ":- grid(R, C), black(R, C), turning(R, C), adj_loop(R, C, R1, C1), not straight(R1, C1).\n"
     return black_rule
 
 
 def masyu_white_rule() -> str:
-    """
-    Generate a rule for white masyu rule.
-
-    A straight rule and a turning rule should be defined first.
-    """
+    """Generate a rule for white masyu rule."""
     white_rule = ":- grid(R, C), white(R, C), not straight(R, C).\n"
     white_rule += ":- grid(R, C), white(R, C), straight(R, C), { turning(R1, C1): adj_loop(R, C, R1, C1) } = 0.\n"
     return white_rule
@@ -54,7 +46,7 @@ class MasyuSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="masyu"))
-        self.add_program_line(fill_path(color="masyu"))
+        self.add_program_line(fill_line(color="masyu"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="masyu", adj_type="loop"))
         self.add_program_line(single_loop(color="masyu"))
@@ -72,8 +64,8 @@ class MasyuSolver(Solver):
                 self.add_program_line(f"black({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

@@ -7,11 +7,7 @@ from noqx.rule.helper import full_bfs, validate_direction, validate_type
 
 
 def area_gravity(color: str = "black") -> str:
-    """
-    Generates a constraint to fill the {color} areas according to gravity.
-
-    A grid rule should be defined first.
-    """
+    """Generates a constraint to fill the {color} areas according to gravity."""
     target = f":- area(A, R, C), area(A, R1, C1), R1 >= R, {color}(R, C), not {color}(R1, C1)."
     return target.replace("not not ", "")
 
@@ -34,8 +30,8 @@ class AquariumSolver(Solver):
         self.add_program_line(shade_c(color="gray"))
         self.add_program_line(area_gravity(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, label), num in puzzle.text.items():

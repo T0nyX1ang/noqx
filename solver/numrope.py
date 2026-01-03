@@ -4,15 +4,11 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 def numrope_constraint() -> str:
-    """
-    Generate a constraint for the number rope.
-
-    An adj_loop rule should be defined first.
-    """
+    """Generate a constraint for the number rope."""
     rule = "adj_count(R, C, N) :- grid(R, C), N = #count { R1, C1 : adj_loop(R, C, R1, C1) }.\n"
     rule += ":- adj_count(R, C, N), N > 2.\n"
     rule += ":- adj_count(R, C, 1), number(R, C, N), number(R1, C1, N1), adj_loop(R, C, R1, C1), |N - N1| != 1.\n"
@@ -40,12 +36,12 @@ class NumRopeSolver(Solver):
         self.add_program_line(fill_num(_range=range(1, 10)))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(avoid_num_adjacent(adj_type=4))
+        self.add_program_line(avoid_same_number_adjacent(adj_type=4))
         self.add_program_line(numrope_constraint())
 
         for (r, c, _, d), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
-            self.add_program_line(f'grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f'line_io({r}, {c}, "{d}").')
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

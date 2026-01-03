@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, defined, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_adjacent, area_border
@@ -14,8 +14,6 @@ def moon_sun_area() -> str:
     Genearate a constraint to determine the area of the moon or sun.
     A sun area should only contain sun cells, and a moon area should only contain moon cells.
     A sun area should be adjacent to a moon area, and vice versa.
-
-    A grid fact and an area adjacent rule should be defined first.
     """
     rule = "{ sun_area(A) } :- area(A, _, _).\n"
     rule += ":- sun_area(A), area(A, R, C), sun(R, C), not moon_sun(R, C).\n"
@@ -58,14 +56,14 @@ class MoonSunSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="moon_sun"))
-        self.add_program_line(fill_path(color="moon_sun"))
+        self.add_program_line(fill_line(color="moon_sun"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="moon_sun", adj_type="loop"))
         self.add_program_line(single_loop(color="moon_sun"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        fail_false(len(areas) % 2 == 0, "The number of areas should be even.")
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        fail_false(len(rooms) % 2 == 0, "The number of areas should be even.")
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i))
@@ -81,8 +79,8 @@ class MoonSunSolver(Solver):
         self.add_program_line(moon_sun_area())
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

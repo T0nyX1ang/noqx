@@ -1,0 +1,3 @@
+# Solver Manager
+
+::: noqx.manager

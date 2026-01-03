@@ -28,7 +28,7 @@ class KakuroSolver(Solver):
         sums: List[Tuple[int, List[Tuple[int, int]]]] = []
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            if label == "sudoku_1" and isinstance(num, int):
+            if label == "corner_top_right" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = c + 1
                 while cur < puzzle.col and not puzzle.symbol.get(Point(r, cur, Direction.CENTER)):
@@ -38,7 +38,7 @@ class KakuroSolver(Solver):
                 fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if label == "sudoku_2" and isinstance(num, int):
+            if label == "corner_bottom_left" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = r + 1
                 while cur < puzzle.row and not puzzle.symbol.get(Point(cur, c, Direction.CENTER)):

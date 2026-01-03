@@ -100,9 +100,9 @@
 <body>
   <header id="header">
     <span id="title">Setter Mode</span>
-    <span id="version-info"><a href="http://github.com/T0nyX1ang/noqx" target="_blank">Noqx</a> &copy; 2023-2025 /
-      <a href="https://github.com/swaroopg92/penpa-edit" target="_blank">Penpa+</a> &copy; 2020-2025
-      <button id="page_help" style="display: none;">Help</button> </span>
+    <span id="version-info"> <a href="http://github.com/T0nyX1ang/noqx" target="_blank">Noqx</a> |
+      Penpa+ (<a id="penpa-link" href="https://github.com/swaroopg92/penpa-edit" target="_blank">...</a>)
+      <button id="page_help">Help</button> </span>
   </header>
 
   <script src="./js/app.js"></script>
@@ -1455,7 +1455,7 @@
         <textarea class="text_area" rows="1" cols="81" id="urlstring" value=""></textarea>
       </div>
       <div class="nb_button">
-        <input type="button" id="load_url" value="Load URL" onclick="import_url();" />
+        <input type="button" id="load_url" value="Load URL" onclick="imp();" />
       </div>
     </div>
   </div>
@@ -1490,9 +1490,9 @@
               <td>
                 <select name="responsive_settings" id="responsive_settings_opt">
                   <option value="1" selected="selected" id="lb_settings_display_layout_classic">Classic</option>
-                  <option value="2" disabled id="lb_settings_display_layout_flex_left">Flex (Tools Left)</option>
-                  <option value="3" disabled id="lb_settings_display_layout_flex_right">Flex (Tools Right)</option>
-                  <option value="4" disabled id="lb_settings_display_layout_streaming1">Streaming 1 (beta)</option>
+                  <option value="2" id="lb_settings_display_layout_flex_left">Flex (Tools Left)</option>
+                  <option value="3" id="lb_settings_display_layout_flex_right">Flex (Tools Right)</option>
+                  <option value="4" id="lb_settings_display_layout_streaming1">Streaming 1 (beta)</option>
                 </select>
               </td>
             </tr>
@@ -1785,6 +1785,117 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+  <div id="modal-keys" class="modal">
+    <div id="modal-keys-content" class="modal-content modal-content-wide">
+      <h3 class="modal-header">Keyboard Shortcuts</h3>
+      <div class="modal-inner-wrapper">
+        <div>
+          <ul>
+            <li><kbd>Ctrl</kbd> + <kbd>z</kbd>: Undo</li>
+            <li><kbd>Ctrl</kbd> + <kbd>y</kbd>: Redo</li>
+            <li><kbd>Ctrl</kbd> + <kbd>d</kbd>: Clone</li>
+            <li><kbd>Ctrl</kbd> + <kbd>i</kbd>: To copy the previous number/alphabet/symbol from Number mode with PANEL:
+              ON</li>
+            <li><kbd>Ctrl</kbd> + <kbd>Space</kbd>: Delete numbers and symbols at the same time</li>
+            <li><kbd>Shift</kbd> + <kbd>Space</kbd>: Enter a space (Works in "Number" Mode => "L", "M", "S" and Long"
+              SubMode options only)</li>
+            <li><kbd>Ctrl</kbd> + <kbd>a</kbd>: Select all cells</li>
+            <li><kbd>Alt</kbd> + <kbd>drag</kbd>: For rectangular selection</li>
+            <li><kbd>F2</kbd>: Problem mode</li>
+            <li><kbd>F3</kbd>: Solution mode</li>
+            <li><kbd>F4</kbd>: Hide/Show Timer</li>
+            <li><kbd>Tab</kbd> or <kbd>Enter</kbd>: Cycle Input Tools</li>
+            <li><kbd>ESC</kbd>: To clear selection or exit open dialogues</li>
+            <li><kbd>?</kbd>: Show keyboard shortcuts</li>
+          </ul>
+          <h5 class="modal-subheader">In Multicolor Mode</h5>
+          <p>Use number keys <kbd>0</kbd> - <kbd>9</kbd> to fill colors in the selected cells. switch between styles.
+            For styles 11 and 12, press <kbd>ALT</kbd>+<kbd>1</kbd> or <kbd>ALT</kbd>+<kbd>2</kbd> respectively.</p>
+        </div>
+        <div>
+          <h5 class="modal-subheader">In Sudoku Mode</h5>
+          <ul>
+            <li><kbd>z</kbd>: Normal Submode*</li>
+            <li><kbd>x</kbd>: Corner Submode*</li>
+            <li><kbd>c</kbd>: Centre Submode*</li>
+            <li><kbd>v</kbd>: Shading*</li>
+            <li><kbd>Shift</kbd>: For Temporary Corner Submode</li>
+            <li><kbd>Shift</kbd> + <kbd>Delete</kbd>: Deletes only corner pencil marks from the selected cells</li>
+            <li><kbd>Ctrl</kbd> - For Temporary Centre Submode / Selecting Multiple Cells/ Deselecting selected cells
+            </li>
+            <li><kbd>Ctrl</kbd> + <kbd>Delete</kbd>: Deletes only centre pencil marks from the selected cells</li>
+            <li><kbd>Delete</kbd>: To delete all the contents of the cell</li>
+            <li><kbd>Space</kbd>: To delete only the selected submode contents. (E.g. If the cell contains both centre
+              and corner pencil marks, and if the current submode selection is "Corner submode", the pressing Spacebar
+              would delete only the corner pencil marks)</li>
+            <li><kbd>Double click</kbd>: Double clicking the number in a cell will select all instances of that number.
+              (applies to number mode as well)</li>
+          </ul>
+          <p class="modal-footnote">* These can be disabled from Settings.</p>
+          <h5 class="modal-subheader">In Surface Mode</h5>
+          <p>Use number keys <kbd>0</kbd> - <kbd>9</kbd> to quickly switch between styles. For styles 11 and 12, press
+            <kbd>1</kbd> and the second digit in quick succession.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-help" class="modal">
+    <div id="modal-help-content" class="modal-content">
+      <h3 class="modal-header">Welcome to Penpa+</h3>
+      <div id="modal-help-body">
+        <p>It's a web application and universal pencil puzzle editor capable of drawing many different kinds of pencil
+          puzzles. You can download your puzzles as images and save puzzle links in the form of URLs to share with
+          others.</p>
+        <h5 class="modal-subheader">Usage</h5>
+        <div class="nb_button" id="usageButtons">
+          <a class="button" onclick="show_shortcuts();">Shortcuts</a>
+          <a class="button" target="_blank" href="https://github.com/swaroopg92/penpa-edit/blob/master/README.md">Tool
+            Instructions</a>
+          <a class="button" target="_blank"
+            href="https://www.youtube.com/channel/UCAv0bBz7MTVJOlHzINnHhYQ/videos">Youtube Tutorials</a>
+          <a class="button" target="_blank"
+            href="https://github.com/swaroopg92/penpa-edit/blob/master/VIDEO_TUTORIALS.md">List of Youtube Tutorials</a>
+          <a class="button" target="_blank"
+            href="https://github.com/swaroopg92/penpa-edit/wiki/Steps-to-Create-Sudoku-or-Puzzle-in-Penpa">Steps to
+            Create a Sudoku/Puzzle</a>
+          <a class="button" target="_blank"
+            href="https://docs.google.com/document/d/12Mde0ogcpdtgM2nz6Z_nZYJnMJyUOMC5f3FUxzH9q74/edit">Frequently Asked
+            Questions</a>
+          <a class="button" target="_blank" href="https://discord.gg/BbN89j5">Discord Channel</a>
+          <a class="button" target="_blank"
+            href="javascript: (() => {let current_url = window.location.href;   if (current_url.includes('penpa-edit')){let current_url_parts = current_url.split('/penpa-edit/');   let new_url = 'https://swaroopg92.github.io/penpa-edit/'+ current_url_parts[1];   window.open(new_url);} else if (current_url.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)){let new_url = 'https://swaroopg92.github.io/penpa-edit/?m=edit&p='+current_url; window.open(new_url);} else{console.log('No support exist for ->', current_url)}})();">Bookmarklet
+            to Open Puzz.Link / PZV / pzprxs / OtherPenpaFork Puzzles in Penpa+</a>
+        </div>
+        <h5 class="modal-subheader">Development</h5>
+        <div class="nb_button">
+          <a class="button" target="_blank" onclick="load_feedback();">Provide Feedback</a>
+          <a class="button" target="_blank"
+            href="https://github.com/swaroopg92/penpa-edit/blob/master/CONTRIBUTING.md">Contribute to Project</a>
+          <a class="button" target="_blank" href="https://github.com/swaroopg92/penpa-edit/projects/1">Ongoing TO-DO
+            list</a>
+          <a class="button" target="_blank"
+            href="https://github.com/swaroopg92/penpa-edit/blob/master/CHANGELOG.md">Changelogs</a>
+          <a class="button" target="_blank"
+            href="https://github.com/swaroopg92/penpa-edit/blob/master/CREDITS.md">Credits</a>
+          <a class="button" target="_blank"
+            href="https://github.com/swaroopg92/penpa-edit/blob/master/LICENSE">License</a>
+        </div>
+        <h5 class="modal-subheader">Sudoku/Puzzle Rulesets</h5>
+        <p>Note: This is by no means an exhaustive list. Penpa+ is not affiliated with these sources. Please contact
+          respective owners for any further information.</p>
+        <div class="nb_button">
+          <a class="button" href="https://tinyurl.com/puzzlerules" target="_blank">Eric Fox - Dictionary of Rulesets</a>
+          <a class="button" href="https://wpcunofficial.miraheze.org/wiki/Category:Puzzle_Types" target="_blank">Ryotaro
+            Chiba - WPC Puzzles</a>
+          <a class="button" href="http://logicmastersindia.com/lmitests/dl.asp?attachmentid=669&v1" target="_blank">LMI
+            - WSC IB (Sudoku Variants)</a>
+          <a class="button" href="http://www.puzzleduel.club/archive/types" target="_blank">Puzzle Duel Club</a>
+          <a class="button" href="http://www.logic-puzzles.ropeko.ch/php/db/search.php" target="_blank">Ropeko - Logic
+            Puzzles List</a>
+        </div>
       </div>
     </div>
   </div>

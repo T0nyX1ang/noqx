@@ -1,10 +1,10 @@
 """The Mejilink solver."""
 
-from typing import Dict
+from typing import Dict, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import convert_direction_to_edge, single_loop
 from noqx.rule.neighbor import adjacent, area_border
@@ -12,11 +12,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def bypass_area_edges() -> str:
-    """
-    Get the edges that not pass through the area.
-
-    An area fact and an area_border fact should be defined first.
-    """
+    """Get the edges that not pass through the area."""
     rule = 'bypass_area_edges(A, R, C, "l") :- area_border(A, R, C, "l"), not edge_left(R, C).\n'
     rule += 'bypass_area_edges(A, R, C, "r") :- area_border(A, R, C, "r"), not edge_left(R, C + 1).\n'
     rule += 'bypass_area_edges(A, R, C, "u") :- area_border(A, R, C, "u"), not edge_top(R, C).\n'
@@ -40,7 +36,7 @@ class MejilinkSolver(Solver):
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="mejilink"))
-        self.add_program_line(fill_path(color="mejilink"))
+        self.add_program_line(fill_line(color="mejilink"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="mejilink", adj_type="loop"))
         self.add_program_line(single_loop(color="mejilink"))
@@ -48,7 +44,7 @@ class MejilinkSolver(Solver):
         self.add_program_line(bypass_area_edges())
 
         # construct the edge grid
-        edges: Dict[Point, bool] = {}
+        edges: Dict[Tuple[int, int, str, str], bool] = {}
         for r in range(puzzle.row):
             for c in range(puzzle.col + 1):
                 edges[Point(r, c, Direction.LEFT)] = True
@@ -62,8 +58,8 @@ class MejilinkSolver(Solver):
             if label == "delete" and not draw:
                 edges[Point(r, c, d)] = False
 
-        areas = full_bfs(puzzle.row, puzzle.col, edges)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, edges)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=edges))
             self.add_program_line(f":- #count {{ (R, C, D): bypass_area_edges({i}, R, C, D) }} != {len(ar)}.")

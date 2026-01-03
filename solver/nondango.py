@@ -38,8 +38,8 @@ class NondangoSolver(Solver):
         self.add_program_line(avoid_diagonal_3(color="circle_M__1"))
         self.add_program_line(avoid_diagonal_3(color="circle_M__2"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(1, color="circle_M__2", _type="area", _id=i))
 

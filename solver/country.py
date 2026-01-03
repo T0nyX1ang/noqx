@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, count, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border
@@ -31,14 +31,14 @@ class CountrySolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="country_road"))
-        self.add_program_line(fill_path(color="country_road"))
+        self.add_program_line(fill_line(color="country_road"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="country_road", adj_type="loop"))
         self.add_program_line(single_loop(color="country_road"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i))
@@ -55,8 +55,8 @@ class CountrySolver(Solver):
                 self.add_program_line(f":- not country_road({r}, {c}), not country_road({r}, {c - 1}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

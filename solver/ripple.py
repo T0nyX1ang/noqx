@@ -18,7 +18,7 @@ class RippleSolver(Solver):
 
     name = "Ripple Effect"
     category = "num"
-    aliases = ["rippleeffect"]
+    aliases = ["hakyukoka", "rippleeffect"]
     examples = [
         {
             "data": "m=edit&p=7ZdBb9tGE4bv/hUGz3sQubPkUjc3jXtx/bV1iiAQhMB2ZcSoDaey9aGQ4f+eZ5bvij2kKFCgbQ6BJPIVNZwZad95SD3+trvcbkIb/RlzWISWR4pdebVm5bXQ483t091meRxOdk8fHraIEP53ehpuLu8eN0crRa2Pnvfjcn8S9t8tV03bhKbj1TbrsP9x+bz/frk/D/sLPmpCy7GzKahDvp7l2/K5q1fTwXaBPpdGvkNe326v7zbvz6YjPyxX+zeh8TrflLNdNvcP/9806sPfXz/cX936gavLJ77M44fbj/rkcffLw687xbbrl7A/+fN249yuy6ldV59p17/FP9zuuH554Wf/iYbfL1fe+8+zzLO8WD6zPS/btmzfle1p2XZl+4bQsI9l+23ZLso2le1ZiXm9fG7iIofYpWbZhSa2LTpL9yHGKD2i+0l3HDcd7zjXdG5HjCkm4sK0kE7oTppzk861Dj1KW4h9K01MX2MGtEmTv1f+RJ+9+kzUGlQrETMopl+gB2lqDarVUyurVk9vWb311Mqq1ZMnK89Anqw8AzGjYga++6jvnokZFZPpbVRvmbqj6mYLtlDdnNCqm3u0vm8e0Mo/Et8qfiS+VfxITFtjMnrqgdzoqS650VNdcgfrpt+H3OgpJ7nRiocaFhXTEhNrDHXjVNda6sapLvnQ0/clH1p58IPJD4YfTH4gH1oxkfxJ+fGDyQ+GB0weIAdadfGDyQ+GH0x+IB9atfCGyRvkRqtW4nfo9TvgE5NPLJF/UH68YfIGdYJlxeATk0+og67x9JPVD54xeYY6aPWAZ0yesYF+svoZqJVVC/+Y/ENNtOLxjMkz5A5JniEfWrXyiFYtvJHkDRt7tHrDG0neSHggyQNpQXw3xXMeeqpFrF8sJs36Jq0vsWh5uGNeuj9woJPnO+aicsOZoJyFCfIVe7T8jB+iarGfOePckMfYozVfRrwp3rlR+ePcqPxxbpj6cW7Ib+zRlTP0U7mU6Ec+hE8zl5wblUW9c6bygZjKJXxy4JLzRD6ET+jKHOrKe3Hgd6tcGoipXHKGVC45QyqXnBvyGPuZS/gBdhwYcmAUDDkwCp9E+S2Ozh/lGclT2YU3KpcKB6p/8AMsmJkgzpTZr2zhWnDgCR4weYD9zBOf/coT1v3AE+dA5Qnrblp39jNbnAmVLdGZo5xGjNXZ53jliXNA61tmX9eaMvuVLT77Secm54/mzjmQNEes+4E/rPuBPz7vWtMy75UtPteVIT7LlSGDc0DfnWvBgRs+15UbrOmBG87/ygrnf2WFM3+sM85xXVN8rg98GJ0Dda6ZWbGCPVqzzLWA+Z85IIYUDogh7NGad9Y9ad3ZzwxxPrSK594gtTUeLskb7NGVJ/RWmeM80XWHvfjDDcjbchvyqmytbPtyezL4fc6/fCf0l+2scKbfVn/ukb5+8nc+WR+tmovd9ubyesP98Pnu/mqzPT5/2N5f3vH+otwb1/f8IXk5an5vymvFP51gX/+j/Ef/UXwJFl/afH5p7UCMZnv78ePd5nhzc7O5fmrWR58A",
@@ -42,8 +42,8 @@ class RippleSolver(Solver):
                 flag = True
                 self.add_program_line(f"black({r}, {c}).")
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             if flag:
                 self.add_program_line(f"{{ number(R, C, (1..{len(ar)})) }} = 1 :- area({i}, R, C), not black(R, C).")

@@ -8,11 +8,7 @@ from noqx.rule.neighbor import adjacent
 
 
 def shaka() -> str:
-    """
-    Generate a constraint to force rectangles.
-
-    A grid rule should be defined first.
-    """
+    """Generate a constraint to force rectangles."""
     definition = "white_down(R, C) :- grid(R, C), white(R, C).\n"
     definition += 'white_down(R, C) :- grid(R, C), triangle(R, C, "ul").\n'
     definition += 'white_down(R, C) :- grid(R, C), triangle(R, C, "ur").\n'

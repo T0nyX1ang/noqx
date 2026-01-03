@@ -1,12 +1,12 @@
 """The Heyawake solver."""
 
-from typing import Iterable, Tuple, Union
+from typing import Iterable, Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs, tag_encode
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
 
@@ -54,7 +54,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
             segment += 1
             i += 1
 
-        minimum = segment // 2 - limit
+        minimum = (segment + 1) // 2 - limit
         if len(data) > n // 2 - 1 and minimum > 0:
             rule += f":- {{ {';'.join(data)} }} < {minimum}.\n"
 
@@ -65,7 +65,7 @@ def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _typ
 
 def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
     """Generates a simpler fact for the border of an area."""
-    borders = set()
+    borders: Set[Tuple[int, int]] = set()
     for r, c in ar:
         for dr, dc in ((0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)):
             r1, c1 = r + dr, c + dc
@@ -77,11 +77,7 @@ def area_border_simple(_id: int, ar: Iterable[Tuple[int, int]]) -> str:
 
 
 def area_border_connected(_id: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells connected to borders of an area.
-
-    An adjacent rule and an area fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of {color} cells connected to borders of an area."""
     tag = tag_encode("reachable", "area", "border", "adj", adj_type, color)
     initial = f"{tag}({_id}, R, C) :- area_border({_id}, R, C), {color}(R, C)."
     propagation = (
@@ -97,6 +93,7 @@ class HeyawakeSolver(Solver):
 
     name = "Heyawake"
     category = "shade"
+    aliases = ["heyawacky"]
     examples = [
         {
             "data": "m=edit&p=7ZbPbhs3HITveoqAZx52Se7fS+Gmdi+u09YugkAQDFnZ1EZsKJWtpl3D756P5LAC2gBpUTS9BCtRI2o4/HE4S+39L/v1brK1iy/f28rWXGEI6e27Jr0rXRc3D7fT+Mwe7R+utzuAtS9OTuyb9e39tFiKtVo8zsM4H9n523FpamON412blZ1/GB/n78b52M7n/GRsT99pJjng8QG+TL9H9Dx31hX4TBj4Cri52W1up8vT3PP9uJwvrInzfJ1GR2jutr9ORnXE75vt3dVN7LhaP7CY++ubd/rlfv96+3Yvbr16svNRLvf8I+X6Q7kR5nIj+ki5cRX/cbnD6ukJ23+k4MtxGWv/6QD7AzwfH2nPxkcTmjj0K2pJe0NvnX57ldqT1LrUXjDUzj6136S2Sm2T2tPEOUbRdcG6oTKjY8cJjRtq4Q7shXtwyLivwK1wDe6EPXgQJoSVNIcKLP5Qg8UfPFj8GNq68FuwE+7AqmEYwCwfjDY4a6Jtvct8tMGZjzZY/Bq+Ez/eMa4XpgaXa0Dbep/XjjZYmg6+F9/B9+I7+EF8Bz8Ufg/OXqENVg2etYe8drTB0uT29Y34Hn4jfoDfiB/gN+IHvGqzV2iDVUNg7a3WHtBspdnEA0H8Jh4M4jfwO/Eb+J34LV518qqlhk41tKy909pbNHtpdvB78Tv4vfgd/F58MuaVsXQ4KWOeXHnlCm2w1k7GvDKGtg2VvO07sGruB7D4ZCwoY2iDVUM8EJUrtMGal4wFZQxtcPYWbXCuGW0bXOajDS58alDGQtWDc/3MA841MA8418A8YOmTn6D8MM6GkGtjHFj6Dv0gfbIUlCXG2aBsMA6suchGUDYYB5Y+OQnKCeNs0L4zDqy52PegfWccWPpkIJQMxL1Tf/5jKf1kvmSDs4K9POypcpK8qoq3zKX7nc8/9iXUcIr/NZzifw3HFX+it6rfRW+LV9FbeeWjt8Ur1u61Fs/avbzyrN1rXzzz6r7m87AvIfpcfIs+F9+Ytym+Rc81bxM9Lx4yb9ojDteX6Yh9ntqQ2jYdvV080//mqc+dbMbemlRD/gv490f+J2tbYl98nvjr1Xzpj9dqsTTn+92b9Wbib/349c/Ts7Pt7m59y7ez/d3VtCvfeap6WpjfTHovfXxI+/Kg9T89aMUtqP7R49ZnuNc+Uc4Sd7kb5xfWvNtfri83WzKGd7GfA+nP/Z+9eg4Lcz39vn6/fjuZ1eID",
@@ -128,12 +125,12 @@ class HeyawakeSolver(Solver):
         self.add_program_line(shade_c("gray"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="x"))
-        self.add_program_line(avoid_adjacent_color(color="gray"))
+        self.add_program_line(avoid_same_color_adjacent(color="gray"))
         self.add_program_line(avoid_diamond_pattern(color="gray"))
         self.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
             if rc:

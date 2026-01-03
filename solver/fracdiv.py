@@ -64,10 +64,10 @@ class FractionalDivisionSolver(Solver):
                 frac_dict[(r, c)].numerator = num
                 frac_dict[(r, c)].denominator = 1
 
-            if label == "sudoku_0" and isinstance(num, int):
+            if label == "corner_top_left" and isinstance(num, int):
                 frac_dict[(r, c)].numerator = num
 
-            if label == "sudoku_3" and isinstance(num, int):
+            if label == "corner_bottom_right" and isinstance(num, int):
                 frac_dict[(r, c)].denominator = num
 
         for (r, c), frac in frac_dict.items():

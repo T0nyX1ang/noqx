@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_path, grid
+from noqx.rule.common import area, defined, direction, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
@@ -13,13 +13,13 @@ def len_segment_area(color: str = "grid") -> str:
     """
     Generate a rule to get the length of segments.
     """
-    rule = 'nth_horizontal(R, C, 0) :- grid_direction(R, C, "r"), not grid_direction(R, C, "l").\n'
-    rule += 'nth_horizontal(R, C, N) :- grid_direction(R, C, "l"), nth_horizontal(R, C - 1, N - 1).\n'
-    rule += 'nth_vertical(R, C, 0) :- grid_direction(R, C, "d"), not grid_direction(R, C, "u").\n'
-    rule += 'nth_vertical(R, C, N) :- grid_direction(R, C, "u"), nth_vertical(R - 1, C, N - 1).\n'
+    rule = 'nth_horizontal(R, C, 0) :- line_io(R, C, "r"), not line_io(R, C, "l").\n'
+    rule += 'nth_horizontal(R, C, N) :- line_io(R, C, "l"), nth_horizontal(R, C - 1, N - 1).\n'
+    rule += 'nth_vertical(R, C, 0) :- line_io(R, C, "d"), not line_io(R, C, "u").\n'
+    rule += 'nth_vertical(R, C, N) :- line_io(R, C, "u"), nth_vertical(R - 1, C, N - 1).\n'
 
-    rule += f'len_horizontal(R, C, N) :- nth_horizontal(R, C, 0), {color}(R, C + N), nth_horizontal(R, C + N, N), not grid_direction(R, C + N, "r").\n'
-    rule += f'len_vertical(R, C, N) :- nth_vertical(R, C, 0), {color}(R + N, C), nth_vertical(R + N, C, N), not grid_direction(R + N, C, "d").\n'
+    rule += f'len_horizontal(R, C, N) :- nth_horizontal(R, C, 0), {color}(R, C + N), nth_horizontal(R, C + N, N), not line_io(R, C + N, "r").\n'
+    rule += f'len_vertical(R, C, N) :- nth_vertical(R, C, 0), {color}(R + N, C), nth_vertical(R + N, C, N), not line_io(R + N, C, "d").\n'
     rule += f"len_horizontal(R, C, L) :- {color}(R, C), nth_horizontal(R, C, N), len_horizontal(R, C - N, L).\n"
     rule += f"len_vertical(R, C, L) :- {color}(R, C), nth_vertical(R, C, N), len_vertical(R - N, C, L).\n"
 
@@ -45,14 +45,14 @@ class RailPoolSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line("railpool(R, C) :- grid(R, C), not black(R, C).")
-        self.add_program_line(fill_path(color="railpool"))
+        self.add_program_line(fill_line(color="railpool"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="railpool", adj_type="loop"))
         self.add_program_line(single_loop(color="railpool"))
         self.add_program_line(len_segment_area(color="railpool"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             if rc:
                 len_data = 0
@@ -69,8 +69,8 @@ class RailPoolSolver(Solver):
             self.add_program_line(f"black({r}, {c}).")
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

@@ -12,12 +12,8 @@ def putteria_fill_constraint() -> str:
     return ":- area(A, _, _), #count { R, C : area(A, R, C), number(R, C, N) } != 1."
 
 
-def avoid_num_adjacent(adj_type: int = 4) -> str:
-    """
-    Generate a constraint to avoid adjacent cells with the same number.
-
-    An adjacent rule should be defined first.
-    """
+def avoid_same_number_adjacent(adj_type: int = 4) -> str:
+    """Generate a constraint to avoid adjacent cells with the same number."""
     rule = f":- number(R, C, _), number(R1, C1, _), adj_{adj_type}(R, C, R1, C1)."
     return rule
 
@@ -38,12 +34,12 @@ class PutteriaSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(adjacent())
-        self.add_program_line(avoid_num_adjacent())
+        self.add_program_line(avoid_same_number_adjacent())
         self.add_program_line(unique_num(color="not gray", _type="row"))
         self.add_program_line(unique_num(color="not gray", _type="col"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(len(ar), len(ar) + 1), _type="area", _id=i, color="gray"))
 

@@ -16,11 +16,7 @@ from noqx.rule.shape import avoid_rect
 
 
 def avoid_unknown_misaki(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to avoid dead ends that does not have a record.
-
-    A grid rule and an adjacent rule should be defined first.
-    """
+    """Generate a constraint to avoid dead ends that does not have a record."""
 
     included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_cells)
     main = f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1"

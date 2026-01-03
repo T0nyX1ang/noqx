@@ -10,11 +10,7 @@ from noqx.rule.shape import OMINOES, all_shapes, avoid_rect, count_shape, genera
 
 
 def avoid_area_adjacent_same_omino(num: int = 4, color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generates a constraint to avoid area adjacent ominos with the same type.
-
-    An area adjacent rule, an omino rule should be defined first.
-    """
+    """Generates a constraint to avoid area adjacent ominos with the same type."""
     tag = tag_encode("belong_to_shape", "omino", num, color)
     tag_adj = tag_encode("area_adj", adj_type, color)
     return f":- {tag_adj}(A, A1), A < A1, {tag}(A, _, _, T, _), {tag}(A1, _, _, T, _)."
@@ -48,8 +44,8 @@ class LitsSolver(Solver):
         self.add_program_line(grid_color_connected(color="gray", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(avoid_rect(2, 2, color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         color = "not gray" if puzzle.param["invlitso"] else "gray"

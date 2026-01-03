@@ -38,7 +38,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install uv and enable caching
         uses: astral-sh/setup-uv@v3
@@ -48,9 +48,12 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Build the document
+        run: uv run mkdocs build
+
       - name: Build deploy content with code simplification
         run: |
-          uv run main.py -D
+          uv run main.py -D -B
           uv run pyminify ./dist/page --in-place --remove-class-attribute-annotations --remove-literal-statements
           uv run ruff check --select F401 --fix --preview --unsafe-fixes ./dist/page
 

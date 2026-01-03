@@ -10,68 +10,45 @@ import sys
 import traceback
 from typing import Any, Dict
 
-import uvicorn
-from starlette.applications import Starlette
-from starlette.config import environ
-from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse
-from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
-
 from noqx.clingo import Config, run_solver
 from noqx.manager import list_solver_metadata, load_solver
 
-
-async def root_redirect(_: Request) -> RedirectResponse:
-    """Redirect root page to penpa-edit page."""
-    return RedirectResponse(url="/penpa-edit/")
-
-
-async def solver_api(request: Request) -> JSONResponse:
-    """The solver endpoint of the server."""
-    try:
-        body = await request.json()
-        puzzle_name: str = body["puzzle_name"]
-        puzzle: str = body["puzzle"]
-        param: Dict[str, Any] = body["param"]
-        result = run_solver(puzzle_name, puzzle, param)
-        return JSONResponse(result)
-    except ValueError as err:
-        logging.error(traceback.format_exc())
-        return JSONResponse({"detail": str(err)}, status_code=400)
-    except TimeoutError as err:
-        return JSONResponse({"detail": str(err)}, status_code=504)
-    except Exception:  # pylint: disable=broad-except  # pragma: no cover
-        logging.error(traceback.format_exc())
-        return JSONResponse({"detail": "Unknown error."}, status_code=500)
-
-
 # argument parser
-parser = argparse.ArgumentParser(description="noqx startup settings.")
+parser = argparse.ArgumentParser(description="Noqx startup settings.")
 parser.add_argument("-H", "--host", default="127.0.0.1", type=str, help="the host to run the server on.")
 parser.add_argument("-p", "--port", default=8000, type=int, help="the port to run the server on.")
 parser.add_argument("-d", "--debug", action="store_true", help="whether to enable debug mode with auto-reloading.")
-parser.add_argument("-tl", "--time_limit", default=Config.time_limit, type=int, help="time limit in seconds.")
-parser.add_argument("-pt", "--parallel_threads", default=Config.parallel_threads, type=int, help="parallel threads.")
-parser.add_argument("-D", "--enable_deployment", action="store_true", help="Enable deployment for client-side purposes.")
+parser.add_argument("-tl", "--time-limit", default=Config.time_limit, type=int, help="time limit in seconds.")
+parser.add_argument("-pt", "--parallel-threads", default=Config.parallel_threads, type=int, help="parallel threads.")
+parser.add_argument("-B", "--build-document", action="store_true", help="build the documentation site.")
+parser.add_argument("-D", "--enable-deployment", action="store_true", help="enable deployment for client-side purposes.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
 
 # logging setup
 log_level = "DEBUG" if args.debug else "INFO"
-UVICORN_LOGGING_CONFIG = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
-    "loggers": {
-        "uvicorn.error": {"handlers": ["default"], "level": log_level},
-        "uvicorn.access": {"handlers": ["default"], "level": log_level},
-    },
-}
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
 if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
+    if args.build_document:
+        # build the documentation site
+        try:
+            from mkdocs.commands import build
+            from mkdocs.config import load_config
+        except ImportError:
+            logging.error("mkdocs is not installed. Please install the 'docs' optional dependencies.")
+            sys.exit(1)
+
+        config = load_config()
+        build.build(config)
+    else:
+        # build an empty redirect page
+        shutil.rmtree("./site", ignore_errors=True)
+        os.makedirs("./site", exist_ok=True)
+        with open("./site/index.html", "w", encoding="utf-8", newline="\n") as f:
+            f.write('<html><head><meta http-equiv="refresh" content="0; url=./penpa-edit/"></head><body></body></html>')
+
     # load the solvers
     logging.debug("Loading solvers...")
     for module_info in pkgutil.iter_modules(["solver"]):
@@ -89,11 +66,10 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 
-
 if args.enable_deployment:
     # generate files if needed
-    shutil.rmtree("dist/page", ignore_errors=True)
-    os.makedirs("dist/page/penpa-edit", exist_ok=True)
+    shutil.rmtree("./dist/page", ignore_errors=True)
+    os.makedirs("./dist/page/penpa-edit", exist_ok=True)
 
     target_dirs = ["noqx", "noqx/puzzle", "noqx/rule", "solver"]
     for dirname in target_dirs:
@@ -109,52 +85,80 @@ if args.enable_deployment:
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(file_dict, f, indent=2)
 
-    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
-        fin = f.read()
-
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
 
-    for dirname in ["css", "js"]:
-        os.makedirs(f"./dist/page/penpa-edit/{dirname}", exist_ok=True)
-        for filename in os.listdir(f"penpa-edit/{dirname}"):
-            shutil.copy(f"./penpa-edit/{dirname}/{filename}", f"./dist/page/penpa-edit/{dirname}/{filename}")
-
     shutil.copy("./pyscript.json", "./dist/page/penpa-edit/pyscript.json")
     shutil.copy("./main_deploy.py", "./dist/page/penpa-edit/py/main_deploy.py")
-    shutil.copy("./index.html", "./dist/page/index.html")
-    shutil.copy("./penpa-edit/index.html", "./dist/page/penpa-edit/index.html")
+    shutil.copytree("./penpa-edit/", "./dist/page/penpa-edit/", dirs_exist_ok=True)
+    shutil.copytree("./site/", "./dist/page/", dirs_exist_ok=True)
 
     with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
+else:
+    # starlette app setup
+    try:
+        import uvicorn
+        from starlette.applications import Starlette
+        from starlette.config import environ
+        from starlette.requests import Request
+        from starlette.responses import JSONResponse
+        from starlette.routing import Mount, Route
+        from starlette.staticfiles import StaticFiles
+    except ImportError:
+        logging.error("starlette or uvicorn is not installed. Please install the 'web' optional dependencies.")
+        sys.exit(1)
 
-    sys.exit(0)
+    async def solver_api(request: Request) -> JSONResponse:
+        """The solver endpoint of the server."""
+        try:
+            body = await request.json()
+            puzzle_name: str = body["puzzle_name"]
+            puzzle: str = body["puzzle"]
+            param: Dict[str, Any] = body["param"]
+            result = run_solver(puzzle_name, puzzle, param)
+            return JSONResponse(result)
+        except ValueError as err:
+            logging.error(traceback.format_exc())
+            return JSONResponse({"detail": str(err)}, status_code=400)
+        except TimeoutError as err:
+            return JSONResponse({"detail": str(err)}, status_code=504)
+        except Exception:  # pylint: disable=broad-except  # pragma: no cover
+            logging.error(traceback.format_exc())
+            return JSONResponse({"detail": "Unknown error."}, status_code=500)
 
+    routes = [
+        Mount(
+            "/api",
+            name="api",
+            routes=[Route("/solve/", endpoint=solver_api, methods=["POST"])],
+        ),
+        Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
+        Mount("/", StaticFiles(directory="site", html=True), name="docs"),
+    ]
+    app = Starlette(routes=routes)
+    environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
 
-# starlette app setup
-routes = [
-    Mount(
-        "/api",
-        name="api",
-        routes=[Route("/solve/", endpoint=solver_api, methods=["POST"])],
-    ),
-    Mount("/penpa-edit/", StaticFiles(directory="penpa-edit", html=True), name="penpa-edit"),
-    Route("/", root_redirect),
-]
-app = Starlette(routes=routes)
-environ["DEBUG"] = "TRUE" if args.debug else "FALSE"
+    # start the server
+    if __name__ == "__main__":
+        UVICORN_LOGGING_CONFIG = {
+            "version": 1,
+            "disable_existing_loggers": True,
+            "handlers": {"default": {"class": "logging.NullHandler", "level": log_level}},
+            "loggers": {
+                "uvicorn.error": {"handlers": ["default"], "level": log_level},
+                "uvicorn.access": {"handlers": ["default"], "level": log_level},
+            },
+        }
 
-
-# start the server
-if __name__ == "__main__":
-    uvicorn.run(
-        app="main:app",
-        host=args.host,
-        port=args.port,
-        reload=args.debug,
-        log_level=log_level.lower(),
-        log_config=UVICORN_LOGGING_CONFIG,
-    )
+        uvicorn.run(
+            app="main:app",
+            host=args.host,
+            port=args.port,
+            reload=args.debug,
+            log_level=log_level.lower(),
+            log_config=UVICORN_LOGGING_CONFIG,
+        )

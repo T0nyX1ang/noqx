@@ -4,7 +4,7 @@ from typing import Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
 from noqx.rule.loop import convert_direction_to_edge, separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
@@ -21,11 +21,7 @@ def passed_vertex() -> str:
 
 
 def count_adjacent_vertices(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Return a rule that counts the adjacent vertices around a cell.
-
-    An edge rule should be defined first.
-    """
+    """Generate a rule that counts the adjacent vertices around a cell."""
     src_r, src_c = src_cell
     rop, num = target_encode(target)
     v_1 = f"passed_vertex({src_r}, {src_c})"
@@ -36,11 +32,7 @@ def count_adjacent_vertices(target: int, src_cell: Tuple[int, int]) -> str:
 
 
 def count_adjacent_segments(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Return a rule that counts the adjacent segments around a cell.
-
-    An edge rule should be defined first.
-    """
+    """Generate a rule that counts the adjacent segments around a cell."""
     rop, num = target_encode(target)
 
     # segment count = vertex count - edge count
@@ -87,7 +79,7 @@ class SlitherlinkSolver(Solver):
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="slither"))
-        self.add_program_line(fill_path(color="slither"))
+        self.add_program_line(fill_line(color="slither"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
         self.add_program_line(single_loop(color="slither"))

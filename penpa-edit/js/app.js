@@ -1,13 +1,34 @@
 function exp() {
-  clear_info(); // clear every information created by penpa itself
+  clearInfo(); // clear every information created by penpa itself
   document.getElementById("save_undo").checked = true;
   let result = pu.maketext().split("#")[1];
   document.getElementById("save_undo").checked = false;
   return result;
 }
 
-function imp(penpa) {
+function imp(penpa, loadInfo = true) {
   let urlstring = penpa || document.getElementById("urlstring").value;
+  let puzzleType = null;
+
+  // replace unsupported host to supported host
+  urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
+
+  // pre-fetch the puzzle type for puzz.link relevant URL
+  if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
+    const parts = urlstring.split("?");
+    const urldata = parts[1].split("/");
+    puzzleType = urldata[0];
+  }
+
+  // normalize the puzzle type
+  if (puzzleType && !(puzzleType in solver_metadata)) {
+    for (const [pid, data] of Object.entries(solver_metadata)) {
+      if (data.aliases && data.aliases.includes(puzzleType)) {
+        puzzleType = pid;
+        break;
+      }
+    }
+  }
 
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("arukone", "numlin");
@@ -33,9 +54,6 @@ function imp(penpa) {
   urlstring = urlstring.replace("tslither", "slitherlink");
   urlstring = urlstring.replace("vslither", "slitherlink");
 
-  // replace unsupported host to supported host
-  urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
-
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
     Swal.fire({
@@ -46,11 +64,43 @@ function imp(penpa) {
     return;
   }
 
-  import_url(urlstring);
-  clear_info();
+  try {
+    import_url(urlstring);
+    const importErrorDialog = document.getElementById("swal2-html-container");
+    if (
+      importErrorDialog &&
+      puzzleType in solver_metadata &&
+      importErrorDialog.textContent.startsWith("It currently does not support puzzle type")
+    ) {
+      resetGridType(puzzleType);
+      resetGridMode(puzzleType);
+      resetBoardSize(puzzleType);
+      create_newboard();
+      advancecontrol_toggle();
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Import error",
+      text: "The URL may be invalid or corrupted.",
+    });
+    return;
+  }
+
+  clearInfo();
+  const currentContent = exp();
+
+  // manually set the puzzle type if pre-fetched
+  if (puzzleType in solver_metadata) {
+    const typeSelect = document.getElementById("type");
+    typeSelect.value = puzzleType;
+    typeSelect.dispatchEvent(new Event("change"));
+  }
+
+  if (loadInfo) hookLoad(currentContent);
 }
 
-function clear_info() {
+function clearInfo() {
   document.getElementById("saveinfotitle").value = "";
   document.getElementById("saveinfoauthor").value = "";
   document.getElementById("saveinfosource").value = "";
@@ -59,18 +109,18 @@ function clear_info() {
   document.title = "Noqx - Extended logic puzzle solver";
 }
 
-function hook_update_display() {
+function hookUpdateDisplay() {
   for (let i = 0; i < pu.space.length; i++) {
     pu.space[i] = parseInt(document.getElementById(`nb_space${i + 1}`).value, 10);
   }
 }
 
-function hook_load(data) {
+function hookLoad(data) {
   load(data);
-  clear_info();
+  clearInfo();
 }
 
-function invoke_param_box() {
+function invokeParamBox() {
   const parameterBox = document.getElementById("parameter_box");
   const parameterButton = document.getElementById("param");
 
@@ -83,7 +133,7 @@ function invoke_param_box() {
   }
 }
 
-function make_param(id, type, name, value) {
+function makeParam(id, type, name, value) {
   let paramDiv = document.createElement("div");
   paramDiv.className = "parameter_div";
 
@@ -119,62 +169,70 @@ function make_param(id, type, name, value) {
   return paramDiv;
 }
 
-function reset_board(puzzleType) {
-  const puzzleCategory = solver_metadata[puzzleType].category;
+function resetGridType(puzzleType) {
+  const oldTypeFlag = document.getElementById("gridtype").value;
+  let typeFlag = "square";
 
-  // default function
-  document.getElementById("gridtype").value = "square"; // grid type
+  if (puzzleType === "kakuro") typeFlag = "kakuro";
+  if (puzzleType === "sudoku") typeFlag = "sudoku";
 
-  if (puzzleType === "kakuro") document.getElementById("gridtype").value = "kakuro";
-  if (puzzleType === "sudoku") document.getElementById("gridtype").value = "sudoku";
-  changetype();
-
-  pu.mode.grid = ["1", "2", "1"]; // default grid mode
-  if (["loop", "region"].includes(puzzleCategory)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
-
-  if (["shakashaka"].includes(puzzleType)) pu.mode.grid = ["2", "2", "1"]; // loop/region mode
-
-  if (["cave", "firefly", "gokigen"].includes(puzzleType)) pu.mode.grid = ["2", "2", "2"];
-
-  if (["hashi"].includes(puzzleType)) pu.mode.grid = ["3", "2", "2"];
-
-  if (["mejilink"].includes(puzzleType)) pu.mode.grid = ["2", "1", "2"];
-
-  if (["myopia", "slitherlink"].includes(puzzleType)) pu.mode.grid = ["3", "1", "2"];
-
-  document.getElementById("nb_size1").value = 10; // columns
-  document.getElementById("nb_size2").value = 10; // rows
-  document.getElementById("nb_space1").value = 0; // over space
-  document.getElementById("nb_space2").value = 0; // under space
-  document.getElementById("nb_space3").value = 0; // left space
-  document.getElementById("nb_space4").value = 0; // right space
-
-  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)) {
-    document.getElementById("nb_size1").value = 11; // columns
-    document.getElementById("nb_size2").value = 11; // rows
-    document.getElementById("nb_space1").value = 1; // over space
-    document.getElementById("nb_space3").value = 1; // left space
+  if (typeFlag !== oldTypeFlag) {
+    document.getElementById("gridtype").value = typeFlag; // set grid type
+    changetype();
   }
+}
+
+function resetGridMode(puzzleType) {
+  const puzzleCategory = solver_metadata[puzzleType].category;
+  const oldModeFlag = pu.mode.grid;
+  let modeFlag = ["1", "2", "1"]; // default grid mode
+
+  if (["loop", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // loop/region mode
+
+  if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
+
+  if (["cave", "firefly", "gokigen"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+
+  if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
+
+  if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
+
+  if (["myopia", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
+
+  if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
+}
+
+function resetBoardSize(puzzleType) {
+  const oldSizeFlag = [
+    document.getElementById("nb_space1").value, // top space
+    document.getElementById("nb_space2").value, // bottom space
+    document.getElementById("nb_space3").value, // left space
+    document.getElementById("nb_space4").value, // right space
+  ];
+  let sizeFlag = [0, 0, 0, 0]; // a flag for margin size
+
+  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType))
+    sizeFlag = [1, 0, 1, 0];
 
   if (
     ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "magnets", "skyscrapers", "starbattle"].includes(
       puzzleType
     )
-  ) {
-    document.getElementById("nb_size1").value = 12; // columns
-    document.getElementById("nb_size2").value = 12; // rows
-    document.getElementById("nb_space1").value = 1; // over space
-    document.getElementById("nb_space2").value = 1; // under space
-    document.getElementById("nb_space3").value = 1; // left space
-    document.getElementById("nb_space4").value = 1; // right space
+  )
+    sizeFlag = [1, 1, 1, 1];
+
+  if (["coral", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
+
+  if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
+    document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
+    document.getElementById("nb_size2").value = 10 + sizeFlag[2] + sizeFlag[3]; // rows
+    document.getElementById("nb_space1").value = sizeFlag[0]; // top space
+    document.getElementById("nb_space2").value = sizeFlag[1]; // bottom space
+    document.getElementById("nb_space3").value = sizeFlag[2]; // left space
+    document.getElementById("nb_space4").value = sizeFlag[3]; // right space
   }
 
-  if (["coral", "nonogram"].includes(puzzleType)) {
-    document.getElementById("nb_size1").value = 15; // columns
-    document.getElementById("nb_size2").value = 15; // rows
-    document.getElementById("nb_space1").value = 5; // over space
-    document.getElementById("nb_space3").value = 5; // left space
-  }
+  return sizeFlag;
 }
 
 $(window).on("load", function () {
@@ -182,6 +240,11 @@ $(window).on("load", function () {
   if (ENABLE_DEPLOYMENT) {
     clingo.init(CLINGO_WASM_URL);
   }
+
+  // Update the exact Penpa+ link according to the hash
+  const penpaLink = document.getElementById("penpa-link");
+  penpaLink.href = `https://github.com/swaroopg92/penpa-edit/tree/${penpa_edit_hash}`;
+  penpaLink.textContent = penpa_edit_hash.slice(0, 7);
 
   const urlBase = "./penpa-edit/#";
   const issueMessage =
@@ -221,7 +284,7 @@ $(window).on("load", function () {
     noChoicesText: "No examples found",
   });
 
-  let puzzleName = null;
+  let puzzleType = null;
   let puzzleContent = null;
   let solutionList = null;
   let solutionPointer = -1;
@@ -247,10 +310,16 @@ $(window).on("load", function () {
   choicesType.setChoices(Object.values(puzzleTypeDict));
 
   typeSelect.addEventListener("change", () => {
+    if (choicesType.getValue(true) !== typeSelect.value) {
+      choicesType.setChoiceByValue(typeSelect.value);
+    }
+
     ruleButton.disabled = false;
-    puzzleName = typeSelect.value;
-    if (puzzleName !== "") {
-      reset_board(puzzleName); // reset the board when puzzle type changes
+    puzzleType = typeSelect.value;
+    if (puzzleType !== "") {
+      resetGridType(puzzleType);
+      resetGridMode(puzzleType);
+      resetBoardSize(puzzleType);
       create_newboard();
       advancecontrol_toggle();
 
@@ -261,10 +330,10 @@ $(window).on("load", function () {
         parameterBox.removeChild(parameterBox.lastChild);
       }
 
-      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
+      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
         parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
-          const paramDiv = make_param(k, v.type, v.name, v.default);
+        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
+          const paramDiv = makeParam(k, v.type, v.name, v.default);
           parameterBox.appendChild(paramDiv);
         }
       }
@@ -272,7 +341,7 @@ $(window).on("load", function () {
       choicesExample.clearStore();
       let exampleList = [{ value: "", label: "Choose Example", selected: true }];
       exampleList.push(
-        ...solver_metadata[puzzleName].examples.map((_, i) => ({
+        ...solver_metadata[puzzleType].examples.map((_, i) => ({
           value: i,
           label: `Example #${i + 1}`,
         }))
@@ -288,13 +357,12 @@ $(window).on("load", function () {
       solutionList = null;
       solutionPointer = -1;
 
-      let exampleData = solver_metadata[puzzleName].examples[exampleSelect.value];
-      puzzleContent = exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`;
-      imp(puzzleContent);
+      let exampleData = solver_metadata[puzzleType].examples[exampleSelect.value];
+      imp(exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`);
 
-      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
-        for (const [k, v] of Object.entries(solver_metadata[puzzleName].parameters)) {
-          const config = solver_metadata[puzzleName].examples[exampleSelect.value].config;
+      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
+        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
+          const config = solver_metadata[puzzleType].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") paramInput.checked = value;
@@ -302,15 +370,15 @@ $(window).on("load", function () {
         }
       }
     } else {
-      reset_board(puzzleName); // reset the board when puzzle type changes
+      resetBoardSize(puzzleType); // reset the board when puzzle type changes
       create_newboard();
       advancecontrol_toggle();
     }
   });
 
   ruleButton.addEventListener("click", () => {
-    if (ruleButton.disabled || !puzzleName) return;
-    window.open(`https://puzz.link/rules.html?${puzzleName !== "yajilin_regions" ? puzzleName : "yajilin-regions"}`);
+    if (ruleButton.disabled || !puzzleType) return;
+    window.open(`https://puzz.link/rules.html?${puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"}`);
   });
 
   solveButton.addEventListener("click", async () => {
@@ -323,17 +391,19 @@ $(window).on("load", function () {
       return;
     }
 
-    puzzleName = typeSelect.value;
+    puzzleType = typeSelect.value;
 
     if (solutionPointer === -1) {
       puzzleContent = exp();
       choicesType.disable();
+      choicesType.containerOuter.element.setAttribute("title", "Reset the puzzle to change puzzle type.");
       choicesExample.disable();
+      choicesExample.containerOuter.element.setAttribute("title", "Reset the puzzle to change example.");
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
-      if (Object.keys(solver_metadata[puzzleName].parameters).length > 0) {
-        for (const [k, _] of Object.entries(solver_metadata[puzzleName].parameters)) {
+      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
+        for (const [k, _] of Object.entries(solver_metadata[puzzleType].parameters)) {
           const paramInput = document.getElementById(`param_${k}`);
           if (paramInput.type === "checkbox") puzzleParameters[k] = paramInput.checked;
           else puzzleParameters[k] = paramInput.value;
@@ -344,7 +414,7 @@ $(window).on("load", function () {
 
       if (ENABLE_DEPLOYMENT) {
         try {
-          const puzzle = prepare_puzzle(puzzleName, puzzleContent, puzzleParameters);
+          const puzzle = prepare_puzzle(puzzleType, puzzleContent, puzzleParameters);
           if (!puzzle["success"]) {
             throw new Error(puzzle["result"]);
           }
@@ -366,7 +436,7 @@ $(window).on("load", function () {
             throw new Error("No solution found.");
           }
 
-          const puz_name = solver_metadata[puzzleName].name;
+          const puz_name = solver_metadata[puzzleType].name;
           console.info(`[Solver] ${puz_name} puzzle solved.`);
           console.info(`[Solver] ${puz_name} solver took ${result.Time.Total} seconds.`);
 
@@ -381,7 +451,7 @@ $(window).on("load", function () {
           }
 
           solutionPointer = 0;
-          hook_load(solutionList[solutionPointer]);
+          hookLoad(solutionList[solutionPointer]);
         } catch (e) {
           console.log(e);
 
@@ -403,7 +473,7 @@ $(window).on("load", function () {
         fetch("/api/solve/", {
           method: "POST",
           body: JSON.stringify({
-            puzzle_name: puzzleName,
+            puzzle_name: puzzleType,
             puzzle: puzzleContent,
             param: puzzleParameters,
           }),
@@ -441,7 +511,7 @@ $(window).on("load", function () {
                 return;
               }
               solutionPointer = 0;
-              hook_load(solutionList[solutionPointer]);
+              hookLoad(solutionList[solutionPointer]);
             }
           })
           .catch((e) => {
@@ -467,7 +537,7 @@ $(window).on("load", function () {
       solveButton.textContent = `Solution (${solutionPointer + 1}/${
         solutionList.length === 10 ? "10+" : solutionList.length
       })`;
-      hook_load(solutionList[solutionPointer]);
+      hookLoad(solutionList[solutionPointer]);
     }
   });
 
@@ -476,9 +546,11 @@ $(window).on("load", function () {
       if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
-      imp(puzzleContent.includes(urlBase) ? puzzleContent : `${urlBase}${puzzleContent}`);
+      hookLoad(puzzleContent);
       choicesType.enable();
+      choicesType.containerOuter.element.removeAttribute("title");
       choicesExample.enable();
+      choicesExample.containerOuter.element.removeAttribute("title");
     } else {
       create_newboard();
       advancecontrol_toggle();
@@ -490,6 +562,41 @@ $(window).on("load", function () {
     solveButton.textContent = "Solve";
     solveButton.disabled = false;
   });
+
+  const undoButton = document.getElementById("tb_undo");
+  if (undoButton) {
+    const updateChoicesType = () => {
+      const choicesContainer = choicesType.containerOuter.element;
+      const choicesExampleContainer = choicesExample.containerOuter.element;
+      if (undoButton.disabled) {
+        if (!solutionList || solutionList.length === 0) {
+          choicesType.enable();
+          choicesContainer.removeAttribute("title");
+          choicesExample.enable();
+          choicesExampleContainer.removeAttribute("title");
+        } else {
+          choicesType.disable();
+          choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
+          choicesExample.disable();
+          choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
+        }
+      } else {
+        choicesType.disable();
+        choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
+        choicesExample.disable();
+        choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
+      }
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "attributes" && mutation.attributeName === "disabled") {
+          updateChoicesType();
+        }
+      });
+    });
+    observer.observe(undoButton, { attributes: true });
+  }
 
   document.addEventListener("click", () => focus());
 });

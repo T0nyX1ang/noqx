@@ -12,11 +12,7 @@ from noqx.rule.shape import all_rect_region
 
 
 def count_family_photo_size(num: int, src_cell: Tuple[int, int], adj_type: Union[int, str] = "edge") -> str:
-    """
-    Count the size of a family photo region.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
+    """Count the size of a family photo region."""
     src_r, src_c = src_cell
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, None)
     return f":- #count {{ (R, C): black(R, C), {tag}({src_r}, {src_c}, {src_r}, C), {tag}({src_r}, {src_c}, R, {src_c}) }} != {num}."

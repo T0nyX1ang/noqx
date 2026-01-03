@@ -1,22 +1,18 @@
 """The Numberlink solver (bit version)."""
 
+from math import log2
 from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
 
 
 def no_2x2_path_bit() -> str:
-    """
-    Generate a rule that no 2x2 path (bit version) is allowed.
-
-    A reachable path rule should be defined first.
-    """
+    """Generate a rule that no 2x2 path (bit version) is allowed."""
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
     tag = tag_encode("reachable", "grid", "bit", "adj", "loop", "numlin")
     same_str = ", ".join(f"{tag}(R + {r}, C + {c}, B)" for r, c in points)
@@ -29,6 +25,44 @@ def no_2x2_path_bit() -> str:
     rule += "no_empty(R, C) :- grid(R, C), bit_range(B), not bit_no(R, C, B).\n"
     rule += ":- grid(R, C), no_empty(R, C), not no_2x2(R, C).\n"
     return rule
+
+
+def clue_bit(r: int, c: int, _id: int, nbit: int) -> str:
+    """Assign clues with bit ids instead of numerical ids."""
+    rule = f"clue({r}, {c}).\n"
+    for i in range(nbit):
+        if _id >> i & 1:
+            rule += f"clue_bit({r}, {c}, {i}).\n"
+    return rule
+
+
+def num_binary_range(num: int) -> Tuple[str, int]:
+    """Generate a rule restricting number represented by bits between 0 and num."""
+    nbit = int(log2(num)) + 1
+    rule = f"bit_range(0..{nbit - 1}).\n"
+    return rule, nbit
+
+
+def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "loop") -> str:
+    """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
+    validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
+
+    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type, color)
+    rule = f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
+    rule += f"not {tag}(R, C, B) :- grid(R, C), {color}(R, C), bit_range(B), clue(R, C), not clue_bit(R, C, B).\n"
+    rule += f"{tag}(R, C, B) :- {tag}(R1, C1, B), grid(R, C), bit_range(B), {color}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
+    rule += f"not {tag}(R, C, B) :- not {tag}(R1, C1, B), grid(R, C), grid(R1, C1), bit_range(B), {color}(R, C), {color}(R1, C1), adj_{adj_type}(R, C, R1, C1).\n"
+    return rule
+
+
+def avoid_unknown_src_bit(color: str = "black", adj_type: Union[int, str] = 4) -> str:
+    """
+    Generate a constraint to avoid cells starting from unknown source (bit version).
+
+    Use this constraint with grid_bit_color_connected, and adj_type cannot be "edge".
+    """
+    tag = tag_encode("reachable", "grid", "bit", "adj", adj_type, color)
+    return f":- grid(R, C), {color}(R, C), not {tag}(R, C, _)."
 
 
 class NumlinVBitSolver(Solver):
@@ -87,7 +121,7 @@ class NumlinVBitSolver(Solver):
         if puzzle.param["no_2x2"]:
             self.add_program_line(no_2x2_path_bit())
 
-        self.add_program_line(fill_path(color="numlin"))
+        self.add_program_line(fill_line(color="numlin"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(single_loop(color="numlin", path=True))
 
@@ -103,8 +137,8 @@ class NumlinVBitSolver(Solver):
         self.add_program_line(avoid_unknown_src_bit(adj_type="loop", color="numlin"))
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

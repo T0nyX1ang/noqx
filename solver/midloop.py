@@ -2,19 +2,15 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false
 from noqx.rule.loop import loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
-def midloop_constraint(r: int, c: int, d: Direction) -> str:
-    """
-    Generate a midloop constraint.
-
-    A loop_turning rule should be defined first.
-    """
+def midloop_constraint(r: int, c: int, d: str) -> str:
+    """Generate a midloop constraint."""
     rule = ""
 
     max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
@@ -23,8 +19,8 @@ def midloop_constraint(r: int, c: int, d: Direction) -> str:
     min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 >= {r} }}"
 
     if d == Direction.CENTER:
-        rule += f':- grid_direction({r}, {c}, "u"), grid_direction({r}, {c}, "d"), Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r} - Ru != Rd - {r}.\n'
-        rule += f':- grid_direction({r}, {c}, "l"), grid_direction({r}, {c}, "r"), Cl = {max_l}, grid(_, Cl), Cr = {min_r}, grid(_, Cr), {c} - Cl != Cr - {c}.\n'
+        rule += f':- line_io({r}, {c}, "u"), line_io({r}, {c}, "d"), Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r} - Ru != Rd - {r}.\n'
+        rule += f':- line_io({r}, {c}, "l"), line_io({r}, {c}, "r"), Cl = {max_l}, grid(_, Cl), Cr = {min_r}, grid(_, Cr), {c} - Cl != Cr - {c}.\n'
 
     if d == Direction.TOP:
         rule += f":- Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r - 1} - Ru != Rd - {r}.\n"
@@ -55,7 +51,7 @@ class MidLoopSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="midloop"))
-        self.add_program_line(fill_path(color="midloop"))
+        self.add_program_line(fill_line(color="midloop"))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="midloop", adj_type="loop"))
         self.add_program_line(single_loop(color="midloop"))
@@ -70,18 +66,18 @@ class MidLoopSolver(Solver):
                 self.add_program_line(midloop_constraint(r, c, d))
 
             if d == Direction.TOP:
-                self.add_program_line(f':- not grid_direction({r}, {c}, "u").')
-                self.add_program_line(f':- not grid_direction({r - 1}, {c}, "d").')
+                self.add_program_line(f':- not line_io({r}, {c}, "u").')
+                self.add_program_line(f':- not line_io({r - 1}, {c}, "d").')
                 self.add_program_line(midloop_constraint(r, c, d))
 
             if d == Direction.LEFT:
-                self.add_program_line(f':- not grid_direction({r}, {c}, "l").')
-                self.add_program_line(f':- not grid_direction({r}, {c - 1}, "r").')
+                self.add_program_line(f':- not line_io({r}, {c}, "l").')
+                self.add_program_line(f':- not line_io({r}, {c - 1}, "r").')
                 self.add_program_line(midloop_constraint(r, c, d))
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

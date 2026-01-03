@@ -9,11 +9,7 @@ from noqx.rule.reachable import grid_branch_color_connected
 
 
 def count_reachable_edge(target: int) -> str:
-    """
-    Generates a constraint for counting grids in a region divided by edges.
-
-    An edge rule and a grid_branch_color_connected rule should be defined first.
-    """
+    """Generates a constraint for counting grids in a region divided by edges."""
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
 
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."

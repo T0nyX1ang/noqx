@@ -53,14 +53,14 @@ class FactorsSolver(Solver):
         self.add_program_line(unique_num(_type="row", color="grid"))
         self.add_program_line(unique_num(_type="col", color="grid"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 
             for r, c in ar:
-                if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
-                    num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                if Point(r, c, Direction.CENTER, "corner_top_left") in puzzle.text:
+                    num = puzzle.text[Point(r, c, Direction.CENTER, "corner_top_left")]
                     fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                     self.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {num}).")
                     self.add_program_line(number_exclusion(int(num), grid_size=n, _id=i))

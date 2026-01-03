@@ -9,11 +9,7 @@ from noqx.rule.reachable import area_color_connected
 
 
 def adjacent_area_different_size(color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to enforce that adjacent areas have different sizes.
-
-    An adjacent area rule and an area rule should be defined first.
-    """
+    """Generate a constraint to enforce that adjacent areas have different sizes."""
     size_count = f"#count {{R, C: area(A, R, C), {color}(R, C) }} = N"
     size1_count = f"#count {{R, C: area(A1, R, C), {color}(R, C) }} = N1"
     return f":- area_adj_{adj_type}(A, A1), A < A1, {size_count}, {size1_count}, N = N1."
@@ -45,8 +41,8 @@ class ShimaguniSolver(Solver):
         self.add_program_line(area_adjacent())
         self.add_program_line(adjacent_area_different_size(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             flag = True
             if rc:

@@ -33,8 +33,8 @@ class HanareSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(hanare_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(len(ar), len(ar) + 1), _type="area", _id=i, color="white"))
             self.add_program_line(count(1, _type="area", _id=i, color="not white"))

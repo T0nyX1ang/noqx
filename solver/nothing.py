@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, direction, display, fill_path, grid, shade_c
+from noqx.rule.common import area, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
 from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border, area_same_color
@@ -10,11 +10,7 @@ from noqx.rule.reachable import grid_color_connected
 
 
 def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generates a constraint to avoid same {color} cells on the both sides of an area.
-
-    An adjacent rule and an area fact should be defined first.
-    """
+    """Generates a constraint to avoid same {color} cells on the both sides of an area."""
     return f":- area(A, R, C), area(A1, R1, C1), adj_{adj_type}(R, C, R1, C1), A < A1, {color}(R, C), {color}(R1, C1)."
 
 
@@ -35,7 +31,7 @@ class NothingSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="anything"))
-        self.add_program_line(fill_path(color="anything"))
+        self.add_program_line(fill_line(color="anything"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="anything", adj_type="loop"))
@@ -44,15 +40,15 @@ class NothingSolver(Solver):
         self.add_program_line(avoid_area_adjacent(color="not anything"))
         self.add_program_line("nothing(A) :- area(A, R, C), not anything(R, C).")
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i).replace(":-", f":- not nothing({i}),"))
 
         for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

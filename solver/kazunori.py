@@ -18,11 +18,7 @@ def avoid_2x2_number() -> str:
 
 
 def area_num_adjacent(adj_type: int = 4) -> str:
-    """
-    Generate a constraint to ensure adjacent cells with the same number in an area.
-
-    An adjacent rule should be defined first.
-    """
+    """Generate a constraint to ensure adjacent cells with the same number in an area."""
     return f":- area(A, R, C), number(R, C, N), #count {{ R1, C1: area(A, R1, C1), number(R1, C1, N), adj_{adj_type}(R, C, R1, C1) }} != 1."
 
 
@@ -46,8 +42,8 @@ class KazunoriSolver(Solver):
         self.add_program_line(avoid_2x2_number())
         self.add_program_line(area_num_adjacent(adj_type=4))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             fail_false(len(ar) % 2 == 0, f"Area {i} must have an even number of cells.")
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, len(ar) // 2 + 1), _type="area", _id=i))

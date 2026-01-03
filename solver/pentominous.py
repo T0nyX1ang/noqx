@@ -11,11 +11,7 @@ from noqx.rule.shape import OMINOES, all_shapes, general_shape
 
 
 def avoid_adj_same_omino(omino_num: int = 4, color: str = "grid") -> str:
-    """
-    Generates a constraint to avoid adjacent ominos with the same type.
-
-    An split by edge rule, an omino rule should be defined first.
-    """
+    """Generates a constraint to avoid adjacent ominos with the same type."""
     t_be = tag_encode("belong_to_shape", f"omino_{omino_num}", color)
     constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge_top(R + 1, C).\n"
     constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge_left(R, C + 1).\n"

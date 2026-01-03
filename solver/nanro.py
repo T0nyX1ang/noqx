@@ -45,16 +45,16 @@ class NanroSolver(Solver):
         self.add_program_line(nanro_fill_constraint(color="not gray"))
         self.add_program_line(nanro_avoid_adjacent())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i, color="gray"))
 
             unclued = True
             for r, c in ar:
-                if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
+                if Point(r, c, Direction.CENTER, "corner_top_left") in puzzle.text:
                     unclued = False
-                    num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                    num = puzzle.text[Point(r, c, Direction.CENTER, "corner_top_left")]
                     fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                     self.add_program_line(count(int(num), color="not gray", _type="area", _id=i))
 

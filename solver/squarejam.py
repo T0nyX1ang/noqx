@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover
 
 
 def squarejam_constraint(target: int, src_cell: Tuple[int, int]) -> str:
@@ -38,7 +38,7 @@ class SquareJamSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region(square=True))
-        self.add_program_line(avoid_region_border_crossover())
+        self.add_program_line(avoid_edge_crossover())
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

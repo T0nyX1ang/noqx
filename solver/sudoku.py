@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 class SudokuSolver(Solver):
@@ -34,8 +34,10 @@ class SudokuSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         fail_false(puzzle.row == puzzle.col, "This puzzle must be square.")
+
         n = puzzle.row
         sep = {9: (3, 3), 8: (2, 4), 6: (2, 3), 4: (2, 2)}
+        fail_false(n in sep, "Invalid sudoku board size.")
 
         self.add_program_line(grid(n, n))
         self.add_program_line(adjacent(_type="x"))
@@ -63,12 +65,12 @@ class SudokuSolver(Solver):
                 self.add_program_line(f"area({n + 2}, {i}, {8 - i}).")
 
         if puzzle.param["untouch"]:  # untouch rule
-            self.add_program_line(avoid_num_adjacent(adj_type="x"))
+            self.add_program_line(avoid_same_number_adjacent(adj_type="x"))
 
         if puzzle.param["antiknight"]:  # antiknight rule
             self.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 2, |C - C1| = 1.")
             self.add_program_line("adj_knight(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| = 1, |C - C1| = 2.")
-            self.add_program_line(avoid_num_adjacent(adj_type="knight"))
+            self.add_program_line(avoid_same_number_adjacent(adj_type="knight"))
 
         self.add_program_line(display(item="number", size=3))
 
