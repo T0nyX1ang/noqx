@@ -42,7 +42,7 @@ class TamamibariSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
         self.add_program_line(avoid_edge_crossover())
-        self.add_program_line(f":- {{ topleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(f":- {{ top_left(R, C) }} != {len(puzzle.text)}.")
 
         all_src = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)

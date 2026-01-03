@@ -142,8 +142,8 @@ class SymmareaSolver(Solver):
         self.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
         self.add_program_line(symmetry_area(fast=puzzle.param["fast_mode"]))
 
-        numberx_uplimit = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
-        self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_uplimit}.")
+        numberx_ub = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
+        self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_ub}.")
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

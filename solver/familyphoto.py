@@ -40,7 +40,7 @@ class FamilyPhotoSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(f":- {{ topleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(f":- {{ top_left(R, C) }} != {len(puzzle.text)}.")
 
         for (r, c, d, label), _ in puzzle.symbol.items():
             validate_direction(r, c, d)
