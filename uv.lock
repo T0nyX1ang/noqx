@@ -210,24 +210,17 @@ name = "black"
 version = "23.3.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version == '3.8.*'",
     "python_full_version < '3.8'",
 ]
 dependencies = [
-    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
     { name = "mypy-extensions", version = "1.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "mypy-extensions", version = "1.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "packaging", version = "24.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "packaging", version = "25.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "pathspec", version = "0.11.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "pathspec", version = "0.12.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "platformdirs", version = "4.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "platformdirs", version = "4.3.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "tomli", version = "2.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "tomli", version = "2.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "typed-ast", marker = "python_full_version < '3.8' and implementation_name == 'cpython'" },
     { name = "typing-extensions", version = "4.7.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
-    { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d6/36/66370f5017b100225ec4950a60caeef60201a10080da57ddb24124453fba/black-23.3.0.tar.gz", hash = "sha256:1c7b8d606e728a41ea1ccbd7264677e494e87cf630e399262ced92d4a8dac940", size = 582156, upload-time = "2023-03-29T01:00:54.457Z" }
 wheels = [
@@ -255,6 +248,47 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/3c/d7/85f3d79f9e543402de2244c4d117793f262149e404ea0168841613c33e07/black-23.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3a150542a204124ed00683f0db1f5cf1c2aaaa9cc3495b7a3b5976fb136090ab", size = 1654176, upload-time = "2023-03-29T01:11:21.715Z" },
     { url = "https://files.pythonhosted.org/packages/06/1e/273d610249f0335afb1ddb03664a03223f4826e3d1a95170a0142cb19fb4/black-23.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:6b39abdfb402002b8a7d030ccc85cf5afff64ee90fa4c5aebc531e3ad0175ddb", size = 1286299, upload-time = "2023-03-29T01:15:28.898Z" },
     { url = "https://files.pythonhosted.org/packages/ad/e7/4642b7f462381799393fbad894ba4b32db00870a797f0616c197b07129a9/black-23.3.0-py3-none-any.whl", hash = "sha256:ec751418022185b0c1bb7d7736e6933d40bbb14c14a0abcf9123d1b159f98dd4", size = 180965, upload-time = "2023-03-29T01:00:52.253Z" },
+]
+
+[[package]]
+name = "black"
+version = "24.4.2"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version == '3.8.*'",
+]
+dependencies = [
+    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "mypy-extensions", version = "1.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "packaging", version = "25.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "pathspec", version = "0.12.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "platformdirs", version = "4.3.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "tomli", version = "2.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a2/47/c9997eb470a7f48f7aaddd3d9a828244a2e4199569e38128715c48059ac1/black-24.4.2.tar.gz", hash = "sha256:c872b53057f000085da66a19c55d68f6f8ddcac2642392ad3a355878406fbd4d", size = 642299, upload-time = "2024-04-26T00:32:15.305Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/40/f6/3adc48c210527a7b651aaed43824a9b8bd04b3fb361a5227bad046e1c876/black-24.4.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:dd1b5a14e417189db4c7b64a6540f31730713d173f0b63e55fabd52d61d8fdce", size = 1631487, upload-time = "2024-04-26T00:40:28.969Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/25/70aa1bec12c841a03e333e312daa0cf2fee50ea6336ac4851c93c0e2b411/black-24.4.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8e537d281831ad0e71007dcdcbe50a71470b978c453fa41ce77186bbe0ed6021", size = 1456317, upload-time = "2024-04-26T00:39:10.333Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/7d/7f8df0fdbbbefc4362d3eca6b69b7a8a4249a8a88dabc00a207d31fddcd7/black-24.4.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eaea3008c281f1038edb473c1aa8ed8143a5535ff18f978a318f10302b254063", size = 1822765, upload-time = "2024-04-26T00:34:56.436Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/21/1ee97841c469c1551133cbe47448cdba9628c7d9431f74f114f02e3b233c/black-24.4.2-cp310-cp310-win_amd64.whl", hash = "sha256:7768a0dbf16a39aa5e9a3ded568bb545c8c2727396d063bbaf847df05b08cd96", size = 1409336, upload-time = "2024-04-26T00:35:30.392Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/f7/591d601c3046ceb65b97291dfe87fa25124cffac3d97aaaba89d0f0d7bdf/black-24.4.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:257d724c2c9b1660f353b36c802ccece186a30accc7742c176d29c146df6e474", size = 1615013, upload-time = "2024-04-26T00:39:49.415Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/17/5e0036b265bbf6bc44970d93d48febcbc03701b671db3c9603fd43ebc616/black-24.4.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:bdde6f877a18f24844e381d45e9947a49e97933573ac9d4345399be37621e26c", size = 1436163, upload-time = "2024-04-26T00:40:20.267Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/48/34176b522e8cff4620a5d96c2e323ff2413f574870eb25efa8025885e028/black-24.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e151054aa00bad1f4e1f04919542885f89f5f7d086b8a59e5000e6c616896ffb", size = 1803382, upload-time = "2024-04-26T00:34:38.665Z" },
+    { url = "https://files.pythonhosted.org/packages/74/ce/e8eec1a77edbfa982bee3b5460dcdd4fe0e4e3165fc15d8ec44d04da7776/black-24.4.2-cp311-cp311-win_amd64.whl", hash = "sha256:7e122b1c4fb252fd85df3ca93578732b4749d9be076593076ef4d07a0233c3e1", size = 1417802, upload-time = "2024-04-26T00:35:08.804Z" },
+    { url = "https://files.pythonhosted.org/packages/f4/75/3a29de3bda4006cc280d833b5d961cf7df3810a21f49e7a63a7e551fb351/black-24.4.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:accf49e151c8ed2c0cdc528691838afd217c50412534e876a19270fea1e28e2d", size = 1645176, upload-time = "2024-04-26T00:42:35.606Z" },
+    { url = "https://files.pythonhosted.org/packages/be/b8/9c152301774fa62a265b035a8ede4d6280827904ea1af8c3be10a28d3187/black-24.4.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:88c57dc656038f1ab9f92b3eb5335ee9b021412feaa46330d5eba4e51fe49b04", size = 1446227, upload-time = "2024-04-26T00:40:35.195Z" },
+    { url = "https://files.pythonhosted.org/packages/25/6d/eb15a1b155f755f43766cc473618c6e1de6555d6a1764965643f486dcf01/black-24.4.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be8bef99eb46d5021bf053114442914baeb3649a89dc5f3a555c88737e5e98fc", size = 1832011, upload-time = "2024-04-26T00:34:37.825Z" },
+    { url = "https://files.pythonhosted.org/packages/43/24/942b22571b0171be7c6f701cdc3e3b7221f5b522ef02cf82503a547a657b/black-24.4.2-cp312-cp312-win_amd64.whl", hash = "sha256:415e686e87dbbe6f4cd5ef0fbf764af7b89f9057b97c908742b6008cc554b9c0", size = 1428800, upload-time = "2024-04-26T00:35:55.838Z" },
+    { url = "https://files.pythonhosted.org/packages/07/08/1d37f90156e39c2cc9d27942a6585dcad571177f57d0de1d90836e87b16e/black-24.4.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:bf10f7310db693bb62692609b397e8d67257c55f949abde4c67f9cc574492cc7", size = 1617432, upload-time = "2024-04-26T00:45:24.603Z" },
+    { url = "https://files.pythonhosted.org/packages/43/2c/44c8e8be21339ed9df023255596b749ddc75a9a6858794fc51304defd0e8/black-24.4.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:98e123f1d5cfd42f886624d84464f7756f60ff6eab89ae845210631714f6db94", size = 1440463, upload-time = "2024-04-26T00:44:18.628Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/6f/eae724bfcbcef64fbda4f2b2d6c1670b7d4b29bd31c4e463e1d951207e26/black-24.4.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:48a85f2cb5e6799a9ef05347b476cce6c182d6c71ee36925a6c194d074336ef8", size = 1807196, upload-time = "2024-04-26T00:34:38.13Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/14/66c3f0a211c97cb315ee0f56d72ffa99fae333a2cebd28a49a5af77397c3/black-24.4.2-cp38-cp38-win_amd64.whl", hash = "sha256:b1530ae42e9d6d5b670a34db49a94115a64596bc77710b1d05e9801e62ca0a7c", size = 1417638, upload-time = "2024-04-26T00:35:31.291Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/1e/10035a567cb756a74d63330389c19e9b60acc958f7cb243cd01a313fae28/black-24.4.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:37aae07b029fa0174d39daf02748b379399b909652a806e5708199bd93899da1", size = 1630974, upload-time = "2024-04-26T00:43:01.788Z" },
+    { url = "https://files.pythonhosted.org/packages/21/88/56320cb37945dcdc903a3024d09f2b102c69bdd586c6b73ea138e679615a/black-24.4.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:da33a1a5e49c4122ccdfd56cd021ff1ebc4a1ec4e2d01594fef9b6f267a9e741", size = 1455391, upload-time = "2024-04-26T00:42:01.383Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/f9/9d1bda779af428e40b2e561b6509f3eb56f3190e3865663e1234e2a657c7/black-24.4.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ef703f83fc32e131e9bcc0a5094cfe85599e7109f896fe8bc96cc402f3eb4b6e", size = 1820933, upload-time = "2024-04-26T00:34:55.649Z" },
+    { url = "https://files.pythonhosted.org/packages/57/b2/05a06a65c17c5b092fd5a22de912dd0bfb5bb20646fb66821607263b6096/black-24.4.2-cp39-cp39-win_amd64.whl", hash = "sha256:b9176b9832e84308818a99a561e90aa479e73c523b3f77afd07913380ae2eab7", size = 1408503, upload-time = "2024-04-26T00:37:02.792Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/89/294c9a6b6c75a08da55e9d05321d0707e9418735e3062b12ef0f54c33474/black-24.4.2-py3-none-any.whl", hash = "sha256:d36ed1124bb81b32f8614555b34cc4259c3fbc7eec17870e8ff8ded335b58d8c", size = 205925, upload-time = "2024-04-26T00:32:12.495Z" },
 ]
 
 [[package]]
@@ -921,12 +955,23 @@ name = "conventional-pre-commit"
 version = "2.4.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
-    "python_full_version == '3.8.*'",
     "python_full_version < '3.8'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cc/85/8f00430ee31ac18bb6ccebd5185a25a52b3270aa6a11d146171ae51f9e04/conventional_pre_commit-2.4.0.tar.gz", hash = "sha256:e1402736b37a89611cea8e14ce9c00f21e1bd82f56c5c7edd4a98396ed037074", size = 15266, upload-time = "2023-08-19T01:07:49.873Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/be/4b/f42a6ccf712d59d82d3520c7e36c16ed736c199dabc2872a6ab855d154e3/conventional_pre_commit-2.4.0-py3-none-any.whl", hash = "sha256:5088b043b102fd10ad50906026a384014375d9cc023498bd5b8880a8883b6799", size = 13829, upload-time = "2023-08-19T01:07:48.773Z" },
+]
+
+[[package]]
+name = "conventional-pre-commit"
+version = "4.2.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version == '3.8.*'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/59/fe/9ec6fd8b281a809d7184f724129de18853f41ad93e998e2328dc9d470fde/conventional_pre_commit-4.2.0.tar.gz", hash = "sha256:6b5a2867338c58a1d14d300de68b56c17b7c8403bb122155f38639a423d21ff1", size = 26870, upload-time = "2025-05-05T22:33:12.302Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a3/11/915d4078610200126d83f9af37391c1d02ae2c208788164bc3678b14cca3/conventional_pre_commit-4.2.0-py3-none-any.whl", hash = "sha256:08acc2bca20bc998090653ca0de9b250e5a51b1f9b0b1bae00f424cc071616cb", size = 16807, upload-time = "2025-05-05T22:33:10.659Z" },
 ]
 
 [[package]]
@@ -2502,10 +2547,12 @@ web = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "black", version = "23.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "black", version = "23.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "black", version = "24.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "black", version = "25.11.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "black", version = "25.12.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "conventional-pre-commit", version = "2.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "conventional-pre-commit", version = "2.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "conventional-pre-commit", version = "4.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "conventional-pre-commit", version = "4.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "coverage", version = "7.2.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
     { name = "coverage", version = "7.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
@@ -2539,17 +2586,17 @@ provides-extras = ["web", "docs"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "black", marker = "python_full_version < '3.9'", specifier = "<23.7.0" },
-    { name = "black", marker = "python_full_version >= '3.9'", specifier = ">=23.7.0" },
-    { name = "conventional-pre-commit", marker = "python_full_version < '3.9'", specifier = "<2.5.0" },
-    { name = "conventional-pre-commit", marker = "python_full_version >= '3.9'", specifier = ">=2.5.0" },
+    { name = "black", marker = "python_full_version < '3.9'", specifier = "<24.8.0" },
+    { name = "black", marker = "python_full_version >= '3.9'", specifier = ">=24.8.0" },
+    { name = "conventional-pre-commit", marker = "python_full_version < '3.9'", specifier = "<4.3.0" },
+    { name = "conventional-pre-commit", marker = "python_full_version >= '3.9'", specifier = ">=4.3.0" },
     { name = "coverage", specifier = ">=7.0.0" },
     { name = "pre-commit", marker = "python_full_version < '3.9'", specifier = "<2.22.0" },
     { name = "pre-commit", marker = "python_full_version >= '3.9'", specifier = ">=2.22.0" },
     { name = "pylint", marker = "python_full_version < '3.9'", specifier = "<2.14.0" },
     { name = "pylint", marker = "python_full_version >= '3.9'", specifier = ">=2.14.0" },
     { name = "python-minifier", specifier = ">=2.11.0" },
-    { name = "ruff", specifier = ">=0.6.8" },
+    { name = "ruff", specifier = ">=0.14.10" },
 ]
 
 [[package]]
