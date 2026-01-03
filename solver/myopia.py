@@ -6,7 +6,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.loop import convert_direction_to_edge, single_loop
+from noqx.rule.loop import convert_line_to_edge, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 
@@ -54,7 +54,7 @@ class MyopiaSolver(Solver):
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="myopia", adj_type="loop"))
         self.add_program_line(single_loop(color="myopia"))
-        self.add_program_line(convert_direction_to_edge())
+        self.add_program_line(convert_line_to_edge())
 
         for (r, c, d, label), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)

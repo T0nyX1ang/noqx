@@ -6,7 +6,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
-from noqx.rule.loop import convert_direction_to_edge, separate_item_from_loop, single_loop
+from noqx.rule.loop import convert_line_to_edge, separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
 
@@ -83,7 +83,7 @@ class SlitherlinkSolver(Solver):
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
         self.add_program_line(single_loop(color="slither"))
-        self.add_program_line(convert_direction_to_edge())
+        self.add_program_line(convert_line_to_edge())
 
         if puzzle.param["vslither"] or puzzle.param["tslither"]:
             self.add_program_line(passed_vertex())

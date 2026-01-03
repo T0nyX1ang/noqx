@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import defined, direction, display, fill_line, grid
 from noqx.rule.helper import validate_direction
-from noqx.rule.loop import convert_direction_to_edge, directed_loop
+from noqx.rule.loop import convert_line_to_edge, directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 
@@ -51,7 +51,7 @@ class FireflySolver(Solver):
         self.add_program_line(adjacent(_type="loop_directed"))
         self.add_program_line(directed_loop(color="firefly"))
         self.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
-        self.add_program_line(convert_direction_to_edge(directed=True))
+        self.add_program_line(convert_line_to_edge(directed=True))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)

@@ -6,7 +6,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import convert_direction_to_edge, single_loop
+from noqx.rule.loop import convert_line_to_edge, single_loop
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
 
@@ -40,7 +40,7 @@ class MejilinkSolver(Solver):
         self.add_program_line(adjacent(_type="loop"))
         self.add_program_line(grid_color_connected(color="mejilink", adj_type="loop"))
         self.add_program_line(single_loop(color="mejilink"))
-        self.add_program_line(convert_direction_to_edge())
+        self.add_program_line(convert_line_to_edge())
         self.add_program_line(bypass_area_edges())
 
         # construct the edge grid

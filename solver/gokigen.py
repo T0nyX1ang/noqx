@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import direction, display, fill_line, grid
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.loop import convert_direction_to_edge
+from noqx.rule.loop import convert_line_to_edge
 
 
 def slant_rule() -> str:
@@ -55,7 +55,7 @@ class GokigenSolver(Solver):
         self.add_program_line(fill_line(color="grid"))
         self.add_program_line(slant_rule())
         self.add_program_line(no_loop())
-        self.add_program_line(convert_direction_to_edge(diagonal=True))
+        self.add_program_line(convert_line_to_edge(diagonal=True))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)

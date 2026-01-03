@@ -2,6 +2,7 @@
 
 from typing import Tuple, Union
 
+from noqx.puzzle import Direction
 from noqx.rule.helper import target_encode
 
 
@@ -173,8 +174,8 @@ def loop_turning(color: str = "white") -> str:
     return rule
 
 
-def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) -> str:
-    """A rule to convert the direction definitions to edge definitions.
+def convert_line_to_edge(directed: bool = False, diagonal: bool = False) -> str:
+    """A rule to convert the line definitions to edge definitions.
 
     * In some logic puzzles like `firefly` and `slitherlink`, the path is drawn on the edge although they are loop/path puzzles. This rule helps to do the compatibility conversions.
 
@@ -182,11 +183,14 @@ def convert_direction_to_edge(directed: bool = False, diagonal: bool = False) ->
         directed: Whether the route is directed.
         diagonal: Whether the route is diagonal.
     """
-    dir_dict = {"diag_down": "dr", "diag_up": "ur"} if diagonal else {"top": "r", "left": "d"}
+    if diagonal:
+        dir_convert_dict = {Direction.DIAG_DOWN: "dr", Direction.DIAG_UP: "ur"}
+    else:
+        dir_convert_dict = {Direction.TOP: "r", Direction.LEFT: "d"}
 
     rule = ""
-    for d, label in dir_dict.items():
-        new_row = "R + 1" if d == "diag_up" else "R"
+    for d, label in dir_convert_dict.items():
+        new_row = "R + 1" if d == Direction.DIAG_UP else "R"
         if directed:
             rule += f'edge_{d}(R, C) :- line_in({new_row}, C, "{label}").\n'
             rule += f'edge_{d}(R, C) :- line_out({new_row}, C, "{label}").\n'
