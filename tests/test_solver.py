@@ -15,6 +15,7 @@ from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape
 from noqx.rule.variety import yaji_count
 from solver.binairo import unique_linecolor
 from solver.castle import wall_length
+from solver.compass import compass_constraint
 from solver.heyawake import limit_border
 from solver.nagare import nagare_wind
 
@@ -118,6 +119,10 @@ class TestExtraFunction(unittest.TestCase):
     def test_nagare_wind(self):
         """Test nagare wind."""
         self.assertRaises(ValueError, nagare_wind, 0, 0, "unknown", None)
+
+    def test_compass_constraint(self):
+        """Test compass constraint."""
+        self.assertEqual(compass_constraint(0, 0, "unknown", 0), "")
 
     def test_validation(self):
         """Test validation functions in helper."""

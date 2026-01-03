@@ -42,7 +42,7 @@ class YajilinRegionsSolver(Solver):
             self.add_program_line(area(_id=i, src_cells=ar))
 
             if rc:
-                num = puzzle.text[Point(*rc, Direction.CENTER, "corner_top_left")]
+                num = puzzle.text[Point(*rc, Direction.CENTER, f"corner_{Direction.TOP_LEFT}")]
                 if isinstance(num, int):
                     self.add_program_line(count(num, color="black", _type="area", _id=i))
 

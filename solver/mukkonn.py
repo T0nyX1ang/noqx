@@ -1,9 +1,9 @@
 """The Mukkonn Enn solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import defined, direction, display, fill_line, grid
-from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -13,19 +13,19 @@ def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
     """Generate a mukkonn constraint."""
 
     rule = ""
-    if label == "corner_top":
+    if label == f"corner_{Direction.TOP}":
         max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
         rule += f':- line_io({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
-    if label == "corner_right":
+    if label == f"corner_{Direction.RIGHT}":
         min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
         rule += f':- line_io({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
-    if label == "corner_left":
+    if label == f"corner_{Direction.LEFT}":
         max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
         rule += f':- line_io({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
-    if label == "corner_bottom":
+    if label == f"corner_{Direction.BOTTOM}":
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
         rule += f':- line_io({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
@@ -59,7 +59,6 @@ class MukkonnSolver(Solver):
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, ("corner_top", "corner_right", "corner_left", "corner_bottom"))
             if label and isinstance(num, int) and num > 0:
                 self.add_program_line(mukkonn_constraint(r, c, label, num))
 

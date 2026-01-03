@@ -3,7 +3,7 @@
 from typing import Dict, Optional, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction
 from noqx.rule.neighbor import adjacent
@@ -64,10 +64,10 @@ class FractionalDivisionSolver(Solver):
                 frac_dict[(r, c)].numerator = num
                 frac_dict[(r, c)].denominator = 1
 
-            if label == "corner_top_left" and isinstance(num, int):
+            if label == f"corner_{Direction.TOP_LEFT}" and isinstance(num, int):
                 frac_dict[(r, c)].numerator = num
 
-            if label == "corner_bottom_right" and isinstance(num, int):
+            if label == f"corner_{Direction.BOTTOM_RIGHT}" and isinstance(num, int):
                 frac_dict[(r, c)].denominator = num
 
         for (r, c), frac in frac_dict.items():
