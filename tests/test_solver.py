@@ -56,7 +56,8 @@ class TestSolver(unittest.TestCase):
                         params[k] = v_str
 
                 response = run_solver(puzzle_name, puzzle_example["data"], params)
-                self.assertEqual(len(response["url"]), 1)
+                if len(response["url"]) != 1:
+                    self.fail(f"Failed puzzle: {puzzle_name}.")
 
     def test_nonogram_edge_case(self):
         """Test nonogram edge case."""
