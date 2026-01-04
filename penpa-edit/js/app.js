@@ -310,9 +310,8 @@ $(window).on("load", function () {
   choicesType.setChoices(Object.values(puzzleTypeDict));
 
   typeSelect.addEventListener("change", () => {
-    if (choicesType.getValue(true) !== typeSelect.value) {
-      choicesType.setChoiceByValue(typeSelect.value);
-    }
+    const isPuzzleTypeChanged = puzzleType !== typeSelect.value;
+    if (isPuzzleTypeChanged) choicesType.setChoiceByValue(typeSelect.value);
 
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
@@ -337,6 +336,8 @@ $(window).on("load", function () {
           parameterBox.appendChild(paramDiv);
         }
       }
+
+      if (exampleSelect.value !== "" && !isPuzzleTypeChanged) return;
 
       choicesExample.clearStore();
       let exampleList = [{ value: "", label: "Choose Example", selected: true }];
