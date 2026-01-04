@@ -98,10 +98,10 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
 
         r, c = tuple(map(int, data[:2]))  # ensure the first two elements of data is the row and column
 
-        if _type.startswith("edge_"):
-            for d in [Direction.TOP, Direction.LEFT, Direction.TOP_LEFT, Direction.DIAG_UP, Direction.DIAG_DOWN]:
-                if _type == f"edge_{d}":
-                    solution.edge[Point(r, c, d)] = True
+        if _type.startswith("edge"):
+            d = str(data[2]).replace('"', "")
+            if d in [Direction.TOP, Direction.LEFT, Direction.TOP_LEFT, Direction.DIAG_UP, Direction.DIAG_DOWN]:
+                solution.edge[Point(r, c, d)] = True
 
         elif _type.startswith("line_"):
             d = str(data[2]).replace('"', "")

@@ -3,7 +3,7 @@
 from typing import Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
 from noqx.rule.loop import convert_line_to_edge, separate_item_from_loop, single_loop
@@ -13,10 +13,10 @@ from noqx.rule.reachable import grid_color_connected
 
 def passed_vertex() -> str:
     """Generate a rule to get the cell that passed by the loop."""
-    rule = "passed_vertex(R, C) :- edge_top(R, C).\n"
-    rule += "passed_vertex(R, C) :- edge_left(R, C).\n"
-    rule += "passed_vertex(R, C) :- grid(R, C), edge_top(R, C - 1).\n"
-    rule += "passed_vertex(R, C) :- grid(R, C), edge_left(R - 1, C).\n"
+    rule = f'passed_vertex(R, C) :- edge(R, C, "{Direction.TOP}").\n'
+    rule += f'passed_vertex(R, C) :- edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'passed_vertex(R, C) :- grid(R, C), edge(R, C - 1, "{Direction.TOP}").\n'
+    rule += f'passed_vertex(R, C) :- grid(R, C), edge(R - 1, C, "{Direction.LEFT}").\n'
     return rule
 
 
@@ -46,13 +46,13 @@ class SlitherlinkSolver(Solver):
 
     name = "Slitherlink"
     category = "loop"
-    aliases = ["slither", "touchslither", "vertexslither", "sheepwolfslither"]
+    aliases = ["slither", "tslither", "touchslither", "vslither", "vertexslither", "swslither", "sheepwolfslither"]
     examples = [
         {
-            "data": "m=edit&p=7VRNb9pAEL3zK6I978Efa7B9oyn0Qp22oYoiy0KGuMWKqVODq2gR/z1vxqaLVUdRRcWpMh692fdmmZ3Z8fZnnVaZHOFRnrSkjccdWvw2v+Mzz3dFFl7Jcb1blxWAlDfTqfyWFttsELeqZLDXQajHUn8IY+EKKWy8jkik/hzu9cdQR1LfghLSxtoMCAIHcGLgHfOErptF2wKOWgx4D7jKq1WRLWbNyqcw1nMp6H/ecTRBsSl/ZaIJY39VbpY5LSzTHQ6zXedPLbOtH8rHutXayUHqcZPupCdd16RLsEmXUE+6dIqz080evmfPfZkGyeGAin9BroswprS/GugbeBvuYaNwLxwPoS6ajHDs5gRwqeeN6xLrGHcIl+5E6466bDdWWR2xsjtiRbFG7HXZIW1lshq5XZdYI/bpj8xWPm1lxD7FnrCq63aPH1CsYYPT46NgNpftnu2UrcN2jqpK7bJ9z9Zi67GdsWbC9o7tNVvFdsiaEfXlrzp3fjroPc4X+Oicj8YSsF0lbYVVt8V0ARh7WIeIsDpq3jxP7EB68mCTf+0lg1hMMA5XUVlt0gJDEdWbZVYdfXyADgPxLPjlTqv/36TLf5Oo+taF7/e54xajsL8nQuobKZ7qRbpYlbhlqJ6hMSSv0s3c9NOYv34C8/jahu3w/UFfvHaYbrEt8t06q4r8x6NIBi8=",
+            "data": "m=edit&p=7VbvT/JIEP7OX2H2q5tcfwGlyX1ABF89RFQIrzSEFCxQbVlv26JX4v/uzBau3VK8XLyY+/CmdDLzPLPTnd3uU8I/Y4e7tA6XblKFqnDpiiHumoK//TXwIt+1TmgzjlaMg0PpTadDF44fuvTqYdVtsebrefPnxozGY/VCiS+V0VPn6fQu+OPS07na6Zn96/61py2bP1pnt7X2aa0fh8PI3dwG6tnTcDxY9EfLhvZXuzc2kvGNUr0aL37bNIe/V+zdHCaVbdKwkiZNLiyb6IQSFW6NTGhya22Tayvp0eQeKEJVwLrgQYIGbjtzR4JHr5WCqgJ+b+eD+wDu3ONz3512U6Rv2cmAEnzOmRiNLgnYxiXpMBHPWTDzEJg5ESxVuPJedkwYP7LneJcLBUkQ+5E3Zz7jCCL2TpNm2kK7pAU9awHdtAX0SlrAzr7cgvu4dN/KZt8on/077MwdzH9q2djKMHPNzL23tmB71pZoVRipw6sGJaGg1oAQ37w01JHVsrAGIb6Zu7Aus/JYQ5GSDVVKNnBsllyV2RqWymZV1+UQ2SzZxAdlpUwslSWbODbHGnIot9/AsRnbyLcPC6aKZXsQtiOsJuwAVpUmurDnwirCVoXtipy2sCNhW8IawtZETh335V/t3NenA3sP/TVM2DkTNhYdVTeoagCq73x8AYRfBRyS0Df2Of/Yj61Bau6CIv91NKnYpA1H5KTHeOD4cFB6cTBz+T4GoSIh86dhzBfO3J26b848IlaqlXlGwtaihgT5jL343rqswp6SQG+5ZtwtpRDEY32kFFIlpWaMPxbm9Or4vtyL+IZIUCo+EhRxUJZc7HDOXiUkcKKVBOSEVKrkrguLGTnyFJ1np/C0IFuO9wp5I+IWZ9D49VX5/35VcJeUb1aorwqmDYv9t6bR5IaSl3jqTKE1An9haEaDzB2lU+Urp0FBywlQ1GMFd/J5QH/72onTyPgn0piRRbhEIAH9RCNzbBl+RA5zbBE/0D6c7KH8AVqigIAWRRCgQx0E8EAKATuihli1KIg4q6Im4qMOZBEflVdGm4S+F61cDkv2TCaVDw==",
         },
         {
-            "data": "m=edit&p=7VVNb9NAEL37V1R73sPO+iO2b21JuIRASVBUWVaVpIZGJArkA1WO8t87+5zAegLlgEBIoI1Hk+eZ5zezX5vPu8m60hmPKNZGE48oNnjSyP3McYzm20WVX+jL3fZhtWZH69e9nn4/WWyqoDhGlcG+zvL6Rtcv80KFSivix6pS1zf5vn6V1wNdD/mV0sRYnz0OCNntNq5ld4z3DrxuIg27g+a9y7pldzZfzxbVXb/JeJMX9Ugr95krpDhXLVdfKtWk4f9stZzOHTCdbLmWzcP80/HNZne/+rg7xlJ50PVlo7b7vFrnPqfWaftltdX9h+rxe0Kz8nDgfr9lqXd54VS/++YO8z3bQb5XNnXxPBfkZoNJbHaq9AiE5ICh0ukJCCUQy5REABE4rAdYB4xdQ04IWP2cjgQgtZUDrZ74WCqJocSPAKtPEoPW0xaD1Q9JjAhJZD0JaL2eJGckHUnSQQ98AC1o5aAejzZFjldgGskIWXEmpysDqf+ZTM5Xhp74wFk5ZOS6ICNnjIxcXWTOiQiNMV4QgbodJJtFhLpaCLh9xIK6RWTl1JGVi4Ys+tFOO6stPFPUbIwWIuePQrlQKJQbjqJ2Q3inEvbrLWwP1sKOeDvrOoR9AWtgY9g+YrqwY9hr2Ag2QUwHNj0dDT8+Mr6GeKfHb1d2CAqb4trxR/x3IWVQqC4fwxeD1Xo5WfBhPNgtp9X69J+vvUOgHhWewmob84Xw/yr8w1eha775+YX4T282XqdFGTwB",
+            "data": "m=edit&p=7Vbfb6M4EH7PX7Hy61o6bAIFpHtIs+n+uJZNt4lyDYoikpKWLpQ9AmmPKP97x0NytQ3JPZxOWulOhJHzzfjzzBg+s/6jDPOIunCZDjUog8t0DLydrvgZ+2sUF0nkvaO9snjIchhQ+tWnqzBZR/TL7cNlP+s9f+j9vnGK6ZR9NMrPxuTx4vH9t/S3z7GZswvfGV4Nr2J+3/vUP7+2B+/tYbkeF9HmOmXnj+PpaDWc3Lv8z4E/7VbTr4b1Zbr6ZdMb/9oJ9inMOtvK9aoerT56ATEJJQxuTma0uva21ZVX+bS6ARehDLBLGEGACcNBPeQwnKBfgP060oChX/vFrFsYLuN8mUTzy3rG0AuqESVimXOcIoYkzTYRqafh/2WWLmIBLMICGrV+iH/sPevyLvte7mNhCZKWSREvsyTLBSiwHa16dQWD0xWI4akKRL7/uILo7j56aUvebU9+B/vyDdKfe4GoZPw2vPG2YH1vS7gjwmHPmNg14OHuoSN7wGQCuCHUOQCmDlj6FFsDusjBJYALYCKadECQVZ5zpgOYqjIHc5WSt/RMLMxEjkBWmcRCWik3C1nlENvQQmy9HhtppZ7YDZIzneQMeyAD2AJlDtYj0To4RyrQ6eoResWuvl0uksrLuPp+udgTGWiUwwz9uWCGvmPM0J8uZjSJGDbGkIIYUqtBerMYw7oUBLllhCO1QsT1rWNcf2gYx36o0xq1mY2M6hdDQfT9Y6b+oDBTf+FYV20IvKkM39dbtBdoOdoRvM60MtF+QGugtdBeYswA7QRtH20XrY0xZ2idgzQcl4y/QiT1+Ncz23UC7uDZJ1/Wz4XMOgEZgDS/87M8DRMQaL9MF1F++A/HI1lnyXxd5qtwGc2jl3BZEK8+oWWPgj0hhwIlWfYjiZ/aGA4uBYzvn7I8anUJUBwnR6iEq4VqkeV3Wk7PYZKoteCHiwLVh54CFTmcaNL/MM+zZwVJw+JBAaTzW2GKnrRmFqGaYvg91FZL39qx65AXgnfAKbfg+P7/Y+Yn/ZgRm2T8/SfNf1oua6XJ8hNi8+bU4RbJAfSE6kjeNvyIwEheHW+oiUi2KSiAtmgKoLqsANRUFgAb4gLYEX0RrLrEiKx0lRFLNYRGLCVrTTDrvAI=",
             "config": {"swslither": True},
         },
         {
@@ -60,7 +60,7 @@ class SlitherlinkSolver(Solver):
             "config": {"tslither": True},
         },
         {
-            "data": "m=edit&p=7VRdb5swFH3nV1R+9gOYr+K3rCN7ydhHM1UVQhFJvQUVxsbHVBnx33vvhc5Bysu0qcrD5HB0jn0Mx9eO25993igeQvN8bnMHmhvY9Ey/l7YtulLJK77qu2PdAOH8w3rNv+Zlq6x0dmXWoCOpV1y/kylzGWcOPIJlXH+Sg34vdcL1LQwx7kDfBhgYBNDY0DsaR3YzdTo28GTmQO+BHormUKrdZur5KFO95Qy/84ZmI2VV/UuxaRrpQ13tC+zY5x0spj0WP+aRtn+oH/vZ62Qj16spbnwmrmviIp3iIjsTF1fx13HVwzf1dC5plI0jVPwzZN3JFGN/MfTa0Fs5ACZyYMKDqQI2GabD20QAEvd8ltcL6doLs4fmE4lmI300m7m+AOn9lsHSHKLZNXJpDjGkkRGaTySazasiNJvvRqcrgkU7tPR7wjWhINxCZbh2Cd8S2oQ+4YY8MeEd4Q2hRxiQJ8Ta/lH1XyFOKrBQpvn/XmVWymI4kVdJ3VR5Cecy6au9al403AGjxZ4YPbTJ3v9r4fWvBay+fWnH89LiwB+GtWXRHVVTFt8fWWY9Aw==",
+            "data": "m=edit&p=7VTfT+JOEH/nrzD76ibXH/xscg8V0dPDigrhK4SQggtUW9bbtuiV+L87s8Vrt1STy/dy8eGydDLzmdnZmWH3E/6IXcFoA5bZpBrVYZlaVX51DX9vq+9FPrMOqB1HKy5AofTSoQvXDxk9v11129x+Orb/2zSj0Ug/1eIzbXh/cn94HXw/80yhnzjN3kXvwjOW9rf20VW9c1jvxeEgYpurQD+6H4z6i95w2TJ+dpxRNRldarXz0eLLxh58rYx3JUwq26RlJTZNTq0xMQklOnwGmdDkytomF1bi0OQGXITqgHVBgwAD1E6mDqUftXYK6hrozk4H9RbUuSfmPpt2U6RnjZM+JXjOkdyNKgn4hpF0m7TnPJh5CMzcCCYVrrzHnSeM7/hDvIuFhCSI/cibc58LBBF7oYmdttApacHMWkA1bQG1khaws//dArtbsuey6lvl1b/AP3MN9U+tMbYyyNRmpt5YW5COtSVGFXYacNMgJSQ06mDixduZTcU0NSW4isE5E4Mzs4bB2d6aAWb1l1lXgxsYbGamGtzAIjOzhcE5E4OzVC0Mzs5t5TuCpnXZ+q2UJ1IaUvZhMjQxpTyWUpOyJmVXxnSkHErZlrIqZV3GNHC2vzX9v1DO2MBBZav2561JZUw6cEsPHC4C14e76sTBjIk3G7iChNyfhrFYuHM2Zc/uPCJWSld5j4KtZQ4F8jl/9L11WYY3lwJ6yzUXrNSFIL6sd1KhqyTVjIu7Qk1Pru+rvUgWV6D0/StQJOBx52xXCP6kIIEbrRQgx2VKJrYuDDNy1RLdB7dwWpCN46VCnon85POr/iP2z0vs+C9pn41gPls58oJz8QHbZM4iXMI5gH5AOzlvGf4Ow+S8RXyPTrDYfUYBtIRUAC3yCkD71ALgHrsA9g7BYNYix2BVRZrBo/aYBo/Kk82YhL4XrZiAkT2QSeUV",
             "config": {"vslither": True},
         },
         {
@@ -109,9 +109,8 @@ class SlitherlinkSolver(Solver):
                     self.add_program_line(count_adjacent_edges(int(clue), (r, c)))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_top", size=2))
-        self.add_program_line(display(item="edge_left", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

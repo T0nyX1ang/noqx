@@ -9,8 +9,8 @@ from noqx.rule.neighbor import adjacent
 
 def symmetry_hinge(color: str = "black") -> str:
     """Generate the symmetry rule of Hinge."""
-    rule = f'symmetry(R, C, R0, C0, "H") :- grid(R, C), {color}(R, C), {color}(R - 1, C), edge_top(R, C), symmetry_axis(R, C, R0, C0, "H").\n'
-    rule += f'symmetry(R, C, R0, C0, "V") :- grid(R, C), {color}(R, C), {color}(R, C - 1), edge_left(R, C), symmetry_axis(R, C, R0, C0, "V").\n'
+    rule = f'symmetry(R, C, R0, C0, "H") :- grid(R, C), {color}(R, C), {color}(R - 1, C), edge(R, C, {Direction.TOP}), symmetry_axis(R, C, R0, C0, "H").\n'
+    rule += f'symmetry(R, C, R0, C0, "V") :- grid(R, C), {color}(R, C), {color}(R, C - 1), edge(R, C, {Direction.LEFT}), symmetry_axis(R, C, R0, C0, "V").\n'
     rule += f"symmetry(R, C, R0, C0, D) :- grid(R, C), {color}(R, C), adj_4(R, C, R1, C1), symmetry(R1, C1, R0, C0, D).\n"
 
     rule += f":- grid(R, C), {color}(R, C), symmetry(R, C, R0, C0, D0), symmetry(R, C, R1, C1, D1), (R0, C0, D0) != (R1, C1, D1).\n"
@@ -50,7 +50,7 @@ class HingeSolver(Solver):
                 if Point(r, c, Direction.TOP) in puzzle.edge:
                     c0 = c
                     while c < puzzle.col and Point(r, c, Direction.TOP) in puzzle.edge:
-                        self.add_program_line(f"edge_top({r}, {c}).")
+                        self.add_program_line(f"edge({r}, {c}, {Direction.TOP}).")
                         self.add_program_line(f'symmetry_axis({r}, {c}, {r}, {c0}, "H").')
                         c += 1
                 c += 1
@@ -62,7 +62,7 @@ class HingeSolver(Solver):
                 if Point(r, c, Direction.LEFT) in puzzle.edge:
                     r0 = r
                     while r < puzzle.row and Point(r, c, Direction.LEFT) in puzzle.edge:
-                        self.add_program_line(f"edge_left({r}, {c}).")
+                        self.add_program_line(f"edge({r}, {c}, {Direction.LEFT}).")
                         self.add_program_line(f'symmetry_axis({r}, {c}, {r0}, {c}, "V").')
                         r += 1
                 r += 1

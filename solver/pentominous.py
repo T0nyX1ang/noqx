@@ -3,7 +3,7 @@
 from typing import Dict
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Point, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -13,8 +13,8 @@ from noqx.rule.shape import OMINOES, all_shapes, general_shape
 def avoid_adj_same_omino(omino_num: int = 4, color: str = "grid") -> str:
     """Generates a constraint to avoid adjacent ominos with the same type."""
     t_be = tag_encode("belong_to_shape", f"omino_{omino_num}", color)
-    constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge_top(R + 1, C).\n"
-    constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge_left(R, C + 1).\n"
+    constraint = f'split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+    constraint += f'split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
     constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
     constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, _), {t_be}(R1, C1, T, _), split_by_edge(R, C, R1, C1)."
     return constraint
@@ -48,8 +48,8 @@ class PentominousSolver(Solver):
 
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
                 prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
-                direc = "left" if c1 != c else "top"
-                self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+                d = Direction.LEFT if c1 != c else Direction.TOP
+                self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         shape_dict: Dict[str, int] = {}
         for i, (o_name, o_shape) in enumerate(OMINOES[5].items()):
@@ -64,9 +64,8 @@ class PentominousSolver(Solver):
             self.add_program_line(f":- not {t_be}({r}, {c}, {shape_dict[str(shape_name)]}, _).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

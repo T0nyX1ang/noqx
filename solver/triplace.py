@@ -68,25 +68,24 @@ class TriplaceSolver(Solver):
                         if (Point(r1, c1, d, label), symbol_name) in puzzle.symbol.items() and r1 >= 0 and c1 >= 0
                         else ""
                     )
-                    direc = "left" if c1 != c else "top"
-                    self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+                    d = Direction.LEFT if c1 != c else Direction.TOP
+                    self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         t_be = tag_encode("belong_to_shape", "omino", 3, "grid")
         area_id = 0
         for num, coord_list in sums:
             self.add_program_line(area(_id=area_id, src_cells=coord_list))
 
-            edge_tag = "edge_top(R + 1, C)"
+            edge_tag = f'edge(R + 1, C, "{Direction.TOP}")'
             if len(coord_list) > 1 and coord_list[0][0] == coord_list[1][0]:  # the rule is in order
-                edge_tag = "edge_left(R, C + 1)"
+                edge_tag = f'edge(R, C + 1, "{Direction.LEFT}")'
 
             self.add_program_line(f":- #count {{ R, C: area({area_id}, R, C), {t_be}(R, C, 0, _), {edge_tag} }} != {num}.")
             area_id += 1
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

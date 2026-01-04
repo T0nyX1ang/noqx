@@ -6,6 +6,7 @@ Note:
 
 from typing import List, Optional, Tuple, Union
 
+from noqx.puzzle import Direction
 from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 
@@ -119,8 +120,8 @@ def grid_src_color_connected(
         propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge_left(R, C + 1).\n"
-        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge_top(R + 1, C)."
+        constraint = f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+        constraint += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").'
         return initial + "\n" + propagation + "\n" + constraint
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -240,10 +241,10 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
         propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}(R, C, R, C + 1), edge_left(R, C + 1).\n"
-        constraint += f":- {tag}(R, C, R + 1, C), edge_top(R + 1, C).\n"
-        constraint += f":- {tag}(R, C + 1, R, C), edge_left(R, C + 1).\n"
-        constraint += f":- {tag}(R + 1, C, R, C), edge_top(R + 1, C)."
+        constraint = f':- {tag}(R, C, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+        constraint += f':- {tag}(R, C, R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+        constraint += f':- {tag}(R, C + 1, R, C), edge(R, C + 1, "{Direction.LEFT}").\n'
+        constraint += f':- {tag}(R + 1, C, R, C), edge(R + 1, C, "{Direction.TOP}").'
         return initial + "\n" + propagation + "\n" + constraint
 
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."

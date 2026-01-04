@@ -13,10 +13,10 @@ from noqx.rule.reachable import grid_color_connected
 
 def bypass_area_edges() -> str:
     """Get the edges that not pass through the area."""
-    rule = 'bypass_area_edges(A, R, C, "l") :- area_border(A, R, C, "l"), not edge_left(R, C).\n'
-    rule += 'bypass_area_edges(A, R, C, "r") :- area_border(A, R, C, "r"), not edge_left(R, C + 1).\n'
-    rule += 'bypass_area_edges(A, R, C, "u") :- area_border(A, R, C, "u"), not edge_top(R, C).\n'
-    rule += 'bypass_area_edges(A, R, C, "d") :- area_border(A, R, C, "d"), not edge_top(R + 1, C).\n'
+    rule = f'bypass_area_edges(A, R, C, "l") :- area_border(A, R, C, "l"), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'bypass_area_edges(A, R, C, "r") :- area_border(A, R, C, "r"), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f'bypass_area_edges(A, R, C, "u") :- area_border(A, R, C, "u"), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f'bypass_area_edges(A, R, C, "d") :- area_border(A, R, C, "d"), not edge(R + 1, C, "{Direction.TOP}").\n'
     return rule
 
 
@@ -54,7 +54,7 @@ class MejilinkSolver(Solver):
                 edges[Point(r, c, Direction.TOP)] = True
 
         for (r, c, d, label), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
             if label == "delete" and not draw:
                 edges[Point(r, c, d)] = False
 
@@ -64,7 +64,6 @@ class MejilinkSolver(Solver):
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=edges))
             self.add_program_line(f":- #count {{ (R, C, D): bypass_area_edges({i}, R, C, D) }} != {len(ar)}.")
 
-        self.add_program_line(display(item="edge_top", size=2))
-        self.add_program_line(display(item="edge_left", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

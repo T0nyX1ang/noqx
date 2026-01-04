@@ -3,7 +3,7 @@
 from typing import List
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import convert_line_to_edge, single_loop
@@ -16,18 +16,16 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
     m_t, m_l, m_b, m_r = mask
     cmp = f"N {'=' if m_t else '<'} N1, N {'=' if m_b else '<'} N2, N {'=' if m_l else '<'} N3, N {'=' if m_r else '<'} N4"
 
-    top = f"top({r}, {c}, {r} - Mt) :- Mt = #max {{ R: grid(R, {c}), edge_top(R, {c}), R <= {r} }}, grid(Mt, _).\n"
-    top += f"top({r}, {c}, {lmt}) :- Mt = #max {{ R: grid(R, {c}), edge_top(R, {c}), R <= {r} }}, not grid(Mt, _).\n"
+    top = f'top({r}, {c}, {r} - Mt) :- Mt = #max {{ R: grid(R, {c}), edge(R, {c}, "{Direction.TOP}"), R <= {r} }}, grid(Mt, _).\n'
+    top += f'top({r}, {c}, {lmt}) :- Mt = #max {{ R: grid(R, {c}), edge(R, {c}, "{Direction.TOP}"), R <= {r} }}, not grid(Mt, _).\n'
 
-    bottom = f"bottom({r}, {c}, Mb - {r}) :- Mb = #min {{ R: grid(R, {c}), edge_top(R + 1, {c}), R >= {r} }}, grid(Mb, _).\n"
-    bottom += f"bottom({r}, {c}, {lmt}) :- Mb = #min {{ R: grid(R, {c}), edge_top(R + 1, {c}), R >= {r} }}, not grid(Mb, _).\n"
+    bottom = f'bottom({r}, {c}, Mb - {r}) :- Mb = #min {{ R: grid(R, {c}), edge(R + 1, {c}, "{Direction.TOP}"), R >= {r} }}, grid(Mb, _).\n'
+    bottom += f'bottom({r}, {c}, {lmt}) :- Mb = #min {{ R: grid(R, {c}), edge(R + 1, {c}, "{Direction.TOP}"), R >= {r} }}, not grid(Mb, _).\n'
+    left = f'left({r}, {c}, {c} - Ml) :- Ml = #max {{ C: grid({r}, C), edge({r}, C, "{Direction.LEFT}"), C <= {c} }}, grid(_, Ml).\n'
+    left += f'left({r}, {c}, {lmt}) :- Ml = #max {{ C: grid({r}, C), edge({r}, C, "{Direction.LEFT}"), C <= {c} }}, not grid(_, Ml).\n'
 
-    left = f"left({r}, {c}, {c} - Ml) :- Ml = #max {{ C: grid({r}, C), edge_left({r}, C), C <= {c} }}, grid(_, Ml).\n"
-    left += f"left({r}, {c}, {lmt}) :- Ml = #max {{ C: grid({r}, C), edge_left({r}, C), C <= {c} }}, not grid(_, Ml).\n"
-
-    right = f"right({r}, {c}, Mr - {c}) :- Mr = #min {{ C: grid({r}, C), edge_left({r}, C + 1), C >= {c} }}, grid(_, Mr).\n"
-    right += f"right({r}, {c}, {lmt}) :- Mr = #min {{ C: grid({r}, C), edge_left({r}, C + 1), C >= {c} }}, not grid(_, Mr).\n"
-
+    right = f'right({r}, {c}, Mr - {c}) :- Mr = #min {{ C: grid({r}, C), edge({r}, C + 1, "{Direction.LEFT}"), C >= {c} }}, grid(_, Mr).\n'
+    right += f'right({r}, {c}, {lmt}) :- Mr = #min {{ C: grid({r}, C), edge({r}, C + 1, "{Direction.LEFT}"), C >= {c} }}, not grid(_, Mr).\n'
     rule = top + bottom + left + right
     rule += f"opia({r}, {c}) :- top({r}, {c}, N1), bottom({r}, {c}, N2), left({r}, {c}, N3), right({r}, {c}, N4), {cmp}.\n"
     rule += f":- not opia({r}, {c}).\n"
@@ -68,9 +66,8 @@ class MyopiaSolver(Solver):
             self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_top", size=2))
-        self.add_program_line(display(item="edge_left", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

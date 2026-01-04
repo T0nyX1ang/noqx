@@ -1,7 +1,7 @@
 """The Heteromino solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Point, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode
 from noqx.rule.neighbor import adjacent
@@ -11,8 +11,8 @@ from noqx.rule.shape import OMINOES, all_shapes, general_shape
 def avoid_adj_same_omino(color: str = "black") -> str:
     """Generates a constraint to avoid adjacent ominos with the same type."""
     t_be = tag_encode("belong_to_shape", "omino", 3, color)
-    constraint = "split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge_top(R + 1, C).\n"
-    constraint += "split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge_left(R, C + 1).\n"
+    constraint = f'split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+    constraint += f'split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
     constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
     constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, V), {t_be}(R1, C1, T, V), split_by_edge(R, C, R1, C1)."
     return constraint
@@ -48,13 +48,12 @@ class HeterominoSolver(Solver):
 
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
                 prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
-                direc = "left" if c1 != c else "top"
-                self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+                d = Direction.LEFT if c1 != c else Direction.TOP
+                self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

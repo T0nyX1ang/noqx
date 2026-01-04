@@ -69,13 +69,12 @@ class CompassSolver(Solver):
 
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
                 prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
-                direc = "left" if c1 != c else "top"
-                self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+                d = Direction.LEFT if c1 != c else Direction.TOP
+                self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

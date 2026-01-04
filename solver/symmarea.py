@@ -1,7 +1,7 @@
 """Solve Symmetry Area puzzles."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -18,15 +18,20 @@ def fillomino_constraint() -> str:
     rule += ":- grid(R, C), number(R, C, N1), number(R, C, N2), N1 < N2.\n"
 
     # same number, adjacent cell, no line
-    rule += ":- number(R, C, N), number(R, C + 1, N), edge_left(R, C + 1).\n"
-    rule += ":- number(R, C, N), number(R + 1, C, N), edge_top(R + 1, C).\n"
+    rule += f':- number(R, C, N), number(R, C + 1, N), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- number(R, C, N), number(R + 1, C, N), edge(R + 1, C, "{Direction.TOP}").\n'
 
     # different number, adjacent cell, have line
-    rule += ":- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not edge_left(R, C + 1).\n"
-    rule += ":- number(R, C, N1), number(R + 1, C, N2), N1 != N2, not edge_top(R + 1, C).\n"
+    rule += f':- number(R, C, N1), number(R, C + 1, N2), N1 != N2, not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- number(R, C, N1), number(R + 1, C, N2), N1 != N2, not edge(R + 1, C, "{Direction.TOP}").\n'
 
     # special case for 1
-    mutual = ["edge_top(R, C)", "edge_top(R + 1, C)", "edge_left(R, C)", "edge_left(R, C + 1)"]
+    mutual = [
+        f'edge(R, C, "{Direction.TOP}")',
+        f'edge(R + 1, C, "{Direction.TOP}")',
+        f'edge(R, C, "{Direction.LEFT}")',
+        f'edge(R, C + 1, "{Direction.LEFT}")',
+    ]
     rule += f"{{ {'; '.join(mutual)} }} = 4 :- number(R, C, 1).\n"
     rule += f"number(R, C, 1) :- {', '.join(mutual)}.\n"
     rule += ":- number(R, C, 1), number(R1, C1, 1), adj_4(R, C, R1, C1).\n"
@@ -51,14 +56,10 @@ def fillomino_filtered(fast: bool = False) -> str:
         rule += f"{{ numberx(R, C, N) }} = 1 :- grid(R, C), have_numberx(R, C), #count{{ R1, C1: {tag}(R, C, R1, C1) }} = N.\n"
     rule += ":- number(R, C, N), numberx(R1, C1, N), adj_4(R, C, R1, C1)."
 
-    rule += ":- numberx(R, C, N), numberx(R, C + 1, N), edge_left(R, C + 1).\n"
-    rule += ":- numberx(R, C, N), numberx(R + 1, C, N), edge_top(R + 1, C).\n"
-    rule += (
-        ":- have_numberx(R, C), have_numberx(R, C + 1), numberx(R, C, N), not numberx(R, C + 1, N), not edge_left(R, C + 1).\n"
-    )
-    rule += (
-        ":- have_numberx(R, C), have_numberx(R + 1, C), numberx(R, C, N), not numberx(R + 1, C, N), not edge_top(R + 1, C).\n"
-    )
+    rule += f':- numberx(R, C, N), numberx(R, C + 1, N), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- numberx(R, C, N), numberx(R + 1, C, N), edge(R + 1, C, "{Direction.TOP}").\n'
+    rule += f':- have_numberx(R, C), have_numberx(R, C + 1), numberx(R, C, N), not numberx(R, C + 1, N), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- have_numberx(R, C), have_numberx(R + 1, C), numberx(R, C, N), not numberx(R + 1, C, N), not edge(R + 1, C, "{Direction.TOP}").\n'
 
     return rule
 
@@ -155,16 +156,15 @@ class SymmareaSolver(Solver):
             self.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
 
             if num == 1:
-                self.add_program_line(f"edge_left({r}, {c}).")
-                self.add_program_line(f"edge_top({r}, {c}).")
-                self.add_program_line(f"edge_left({r}, {c + 1}).")
-                self.add_program_line(f"edge_top({r + 1}, {c}).")
+                self.add_program_line(f'edge({r}, {c}, "{Direction.LEFT}").')
+                self.add_program_line(f'edge({r}, {c}, "{Direction.TOP}").')
+                self.add_program_line(f'edge({r}, {c + 1}, "{Direction.LEFT}").')
+                self.add_program_line(f'edge({r + 1}, {c}, "{Direction.TOP}").')
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
         self.add_program_line(display(item="number", size=3))
         self.add_program_line(display(item="numberx", size=3))
 

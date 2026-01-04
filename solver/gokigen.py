@@ -63,7 +63,6 @@ class GokigenSolver(Solver):
             if isinstance(num, int):
                 self.add_program_line(f":- #count{{ D: line_io({r}, {c}, D) }} != {num}.")
 
-        self.add_program_line(display(item="edge_diag_down", size=2))
-        self.add_program_line(display(item="edge_diag_up", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

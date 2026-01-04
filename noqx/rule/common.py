@@ -2,6 +2,7 @@
 
 from typing import Iterable, Optional, Tuple, Union
 
+from noqx.puzzle import Direction
 from noqx.rule.helper import target_encode
 
 
@@ -124,7 +125,7 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
 def edge(rows: int, cols: int) -> str:
     """A rule for drawing edges around a cell.
 
-    * `edge_left(R, C)` represents the left edge of the cell `(R, C)`, and `edge_top(R, C)` represents the top edge of the cell `(R, C)`.
+    * `edge(R, C, "left")` represents the left edge of the cell `(R, C)`, and `edge(R, C, "top")` represents the top edge of the cell `(R, C)`.
 
     * The outside border of a grid is automatically drawn. However, if there are holes in the grid, the edges around the holes need to be drawn manually.
 
@@ -134,8 +135,8 @@ def edge(rows: int, cols: int) -> str:
             rule = ""
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
                 prefix = "not " if ((r1, c1) in hole) else ""  # the "hole" part should be implemented by some criteria
-                direc = "left" if c1 != c else "top"
-                rule += f"{prefix}edge_{direc}({r2}, {c2}).\\n"
+                d = Direction.LEFT if c1 != c else Direction.TOP
+                rule += f'{prefix}edge({r2}, {c2}, "{d}").\n'
         ```
 
     Args:
@@ -144,12 +145,12 @@ def edge(rows: int, cols: int) -> str:
     """
     fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
-    fact += "{ edge_left(R, C) } :- vertical_range(R, C).\n"
-    fact += "{ edge_top(R, C) } :- horizontal_range(R, C).\n"
-    fact += f"edge_left(0..{rows - 1}, 0).\n"
-    fact += f"edge_left(0..{rows - 1}, {cols}).\n"
-    fact += f"edge_top(0, 0..{cols - 1}).\n"
-    fact += f"edge_top({rows}, 0..{cols - 1})."
+    fact += f'{{ edge(R, C, "{Direction.LEFT}") }} :- vertical_range(R, C).\n'
+    fact += f'{{ edge(R, C, "{Direction.TOP}") }} :- horizontal_range(R, C).\n'
+    fact += f'edge(0..{rows - 1}, 0, "{Direction.LEFT}").\n'
+    fact += f'edge(0..{rows - 1}, {cols}, "{Direction.LEFT}").\n'
+    fact += f'edge(0, 0..{cols - 1}, "{Direction.TOP}").\n'
+    fact += f'edge({rows}, 0..{cols - 1}, "{Direction.TOP}").'
     return fact
 
 

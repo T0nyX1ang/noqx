@@ -187,9 +187,9 @@ def convert_line_to_edge(directed: bool = False, diagonal: bool = False) -> str:
     for d, label in dir_convert_dict.items():
         new_row = "R + 1" if d == Direction.DIAG_UP else "R"
         if directed:
-            rule += f'edge_{d}(R, C) :- line_in({new_row}, C, "{label}").\n'
-            rule += f'edge_{d}(R, C) :- line_out({new_row}, C, "{label}").\n'
+            rule += f'edge(R, C, "{d}") :- line_in({new_row}, C, "{label}").\n'
+            rule += f'edge(R, C, "{d}") :- line_out({new_row}, C, "{label}").\n'
         else:
-            rule += f'edge_{d}(R, C) :- line_io({new_row}, C, "{label}").\n'
+            rule += f'edge(R, C, "{d}") :- line_io({new_row}, C, "{label}").\n'
 
     return rule

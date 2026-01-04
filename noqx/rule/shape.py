@@ -2,6 +2,7 @@
 
 from typing import Iterable, Optional, Set, Tuple, Union
 
+from noqx.puzzle import Direction
 from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 OMINOES = {
@@ -285,31 +286,33 @@ def all_rect_region(square: bool = False) -> str:
     Args:
         square: Whether to force the rectangles to be squares.
     """
-    top_left = "top_left(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C).\n"
-    left = "left(R, C) :- grid(R, C), top_left(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
-    left += "left(R, C) :- grid(R, C), left(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
-    top = "top(R, C) :- grid(R, C), top_left(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
-    top += "top(R, C) :- grid(R, C), top(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
+    top_left = f'top_left(R, C) :- grid(R, C), edge(R, C, "{Direction.LEFT}"), edge(R, C, "{Direction.TOP}").\n'
+    left = (
+        f'left(R, C) :- grid(R, C), top_left(R - 1, C), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
+    )
+    left += f'left(R, C) :- grid(R, C), left(R - 1, C), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
+    top = f'top(R, C) :- grid(R, C), top_left(R, C - 1), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
+    top += f'top(R, C) :- grid(R, C), top(R, C - 1), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
     remain = "remain(R, C) :- grid(R, C), left(R, C - 1), top(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), top(R - 1, C).\n"
     remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
 
     constraint = ":- grid(R, C), { top_left(R, C); left(R, C); top(R, C); remain(R, C) } != 1.\n"
-    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not edge_left(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), top(R + 1, C), not edge_top(R + 1, C).\n"
-    constraint += ":- grid(R, C), remain(R, C), top_left(R, C + 1), not edge_left(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), top_left(R + 1, C), not edge_top(R + 1, C).\n"
+    constraint += f':- grid(R, C), remain(R, C), left(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    constraint += f':- grid(R, C), remain(R, C), top(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
+    constraint += f':- grid(R, C), remain(R, C), top_left(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    constraint += f':- grid(R, C), remain(R, C), top_left(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
 
     if square:
-        c_min = "#min { C0: grid(R, C0 - 1), edge_left(R, C0), C0 > C }"
-        r_min = "#min { R0: grid(R0 - 1, C), edge_top(R0, C), R0 > R }"
+        c_min = f'#min {{ C0: grid(R, C0 - 1), edge(R, C0, "{Direction.LEFT}"), C0 > C }}'
+        r_min = f'#min {{ R0: grid(R0 - 1, C), edge(R0, C, "{Direction.TOP}"), R0 > R }}'
         constraint += f":- top_left(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
 
-    rect = ":- grid(R, C), left(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
-    rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
-    rect += ":- grid(R, C), top(R, C), remain(R + 1, C), edge_top(R + 1, C).\n"
-    rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), edge_top(R + 1, C)."
+    rect = f':- grid(R, C), left(R, C), remain(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rect += f':- grid(R, C), remain(R, C), remain(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rect += f':- grid(R, C), top(R, C), remain(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+    rect += f':- grid(R, C), remain(R, C), remain(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
 
     data = top_left + left + top + remain + constraint + rect
     return data
@@ -397,10 +400,10 @@ def avoid_edge_crossover() -> str:
     * This rule is useful in tatami-like puzzles.
     """
     no_rect_adjacent_by_point = [
-        "edge_left(R, C + 1)",
-        "edge_left(R + 1, C + 1)",
-        "edge_top(R + 1, C)",
-        "edge_top(R + 1, C + 1)",
+        f'edge(R, C + 1, "{Direction.LEFT}")',
+        f'edge(R + 1, C + 1, "{Direction.LEFT}")',
+        f'edge(R + 1, C, "{Direction.TOP}")',
+        f'edge(R + 1, C + 1, "{Direction.TOP}")',
     ]
     rule = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
     return rule

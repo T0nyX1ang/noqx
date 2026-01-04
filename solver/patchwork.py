@@ -3,7 +3,7 @@
 from typing import Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -20,8 +20,8 @@ def count_patchwork_src(target: int, src_cell: Tuple[int, int], color: str = "bl
 
 def avoid_area_adjacent(color: str = "black") -> str:
     """Generate a constraint to avoid the same color in adjacent edges."""
-    constraint = f":- grid(R, C), grid(R - 1, C), edge_top(R, C), {color}(R, C), {color}(R - 1, C).\n"
-    constraint += f":- grid(R, C), grid(R, C - 1), edge_left(R, C), {color}(R, C), {color}(R, C - 1).\n"
+    constraint = f':- grid(R, C), grid(R - 1, C), edge(R, C, "{Direction.TOP}"), {color}(R, C), {color}(R - 1, C).\n'
+    constraint += f':- grid(R, C), grid(R, C - 1), edge(R, C, "{Direction.LEFT}"), {color}(R, C), {color}(R, C - 1).\n'
     return constraint
 
 
@@ -54,7 +54,7 @@ class PatchworkSolver(Solver):
                 self.add_program_line(count_patchwork_src(num, (r, c), color="black"))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
         for (r, c, _, _), color in puzzle.surface.items():
             if color == Color.GRAY:  # shaded color (DG, GR, LG, BK)
@@ -66,8 +66,7 @@ class PatchworkSolver(Solver):
                 self.add_program_line(f"white({r}, {c}).")
                 self.add_program_line(f"not gray({r}, {c}).")
 
-        self.add_program_line(display(item="black"))
-        self.add_program_line(display(item="edge_left"))
-        self.add_program_line(display(item="edge_top"))
+        self.add_program_line(display(item="black", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

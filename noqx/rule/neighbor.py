@@ -42,8 +42,8 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
         return rule
 
     if _type == "edge":
-        rule += "adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not edge_left(R, C + 1).\n"
-        rule += "adj_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), not edge_top(R + 1, C).\n"
+        rule += f'adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
+        rule += f'adj_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
         rule += "adj_edge(R, C, R1, C1) :- adj_edge(R1, C1, R, C)."
         return rule
 
@@ -109,10 +109,10 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
     """
     src_r, src_c = src_cell
     rop, num = target_encode(target)
-    v_1 = f"edge_left({src_r}, {src_c})"
-    v_2 = f"edge_left({src_r}, {src_c + 1})"
-    h_1 = f"edge_top({src_r}, {src_c})"
-    h_2 = f"edge_top({src_r + 1}, {src_c})"
+    v_1 = f'edge({src_r}, {src_c}, "{Direction.LEFT}")'
+    v_2 = f'edge({src_r}, {src_c + 1}, "{Direction.LEFT}")'
+    h_1 = f'edge({src_r}, {src_c}, "{Direction.TOP}")'
+    h_2 = f'edge({src_r + 1}, {src_c}, "{Direction.TOP}")'
     return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."
 
 
