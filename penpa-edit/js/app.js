@@ -6,7 +6,7 @@ function exp() {
   return result;
 }
 
-function imp(penpa, loadInfo = true) {
+function imp(penpa) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
 
@@ -97,7 +97,7 @@ function imp(penpa, loadInfo = true) {
     typeSelect.dispatchEvent(new Event("change"));
   }
 
-  if (loadInfo) hookLoad(currentContent);
+  hookLoad(currentContent);
 }
 
 function clearInfo() {
