@@ -16,19 +16,17 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
     m_t, m_l, m_b, m_r = mask
     cmp = f"N {'=' if m_t else '<'} N1, N {'=' if m_b else '<'} N2, N {'=' if m_l else '<'} N3, N {'=' if m_r else '<'} N4"
 
-    top = f'top({r}, {c}, {r} - Mt) :- Mt = #max {{ R: grid(R, {c}), edge(R, {c}, "{Direction.TOP}"), R <= {r} }}, grid(Mt, _).\n'
-    top += f'top({r}, {c}, {lmt}) :- Mt = #max {{ R: grid(R, {c}), edge(R, {c}, "{Direction.TOP}"), R <= {r} }}, not grid(Mt, _).\n'
+    rule = f'opia({r}, {c}, {r} - Mt, "{Direction.TOP}") :- Mt = #max {{ R: grid(R, {c}), edge(R, {c}, "{Direction.TOP}"), R <= {r} }}, grid(Mt, _).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.TOP}") :- Mt = #max {{ R: grid(R, {c}), edge(R, {c}, "{Direction.TOP}"), R <= {r} }}, not grid(Mt, _).\n'
+    rule += f'opia({r}, {c}, Mb - {r}, "{Direction.BOTTOM}") :- Mb = #min {{ R: grid(R, {c}), edge(R + 1, {c}, "{Direction.TOP}"), R >= {r} }}, grid(Mb, _).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.BOTTOM}") :- Mb = #min {{ R: grid(R, {c}), edge(R + 1, {c}, "{Direction.TOP}"), R >= {r} }}, not grid(Mb, _).\n'
+    rule += f'opia({r}, {c}, {c} - Ml, "{Direction.LEFT}") :- Ml = #max {{ C: grid({r}, C), edge({r}, C, "{Direction.LEFT}"), C <= {c} }}, grid(_, Ml).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.LEFT}") :- Ml = #max {{ C: grid({r}, C), edge({r}, C, "{Direction.LEFT}"), C <= {c} }}, not grid(_, Ml).\n'
+    rule += f'opia({r}, {c}, Mr - {c}, "{Direction.RIGHT}") :- Mr = #min {{ C: grid({r}, C), edge({r}, C + 1, "{Direction.LEFT}"), C >= {c} }}, grid(_, Mr).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.RIGHT}") :- Mr = #min {{ C: grid({r}, C), edge({r}, C + 1, "{Direction.LEFT}"), C >= {c} }}, not grid(_, Mr).\n'
 
-    bottom = f'bottom({r}, {c}, Mb - {r}) :- Mb = #min {{ R: grid(R, {c}), edge(R + 1, {c}, "{Direction.TOP}"), R >= {r} }}, grid(Mb, _).\n'
-    bottom += f'bottom({r}, {c}, {lmt}) :- Mb = #min {{ R: grid(R, {c}), edge(R + 1, {c}, "{Direction.TOP}"), R >= {r} }}, not grid(Mb, _).\n'
-    left = f'left({r}, {c}, {c} - Ml) :- Ml = #max {{ C: grid({r}, C), edge({r}, C, "{Direction.LEFT}"), C <= {c} }}, grid(_, Ml).\n'
-    left += f'left({r}, {c}, {lmt}) :- Ml = #max {{ C: grid({r}, C), edge({r}, C, "{Direction.LEFT}"), C <= {c} }}, not grid(_, Ml).\n'
-
-    right = f'right({r}, {c}, Mr - {c}) :- Mr = #min {{ C: grid({r}, C), edge({r}, C + 1, "{Direction.LEFT}"), C >= {c} }}, grid(_, Mr).\n'
-    right += f'right({r}, {c}, {lmt}) :- Mr = #min {{ C: grid({r}, C), edge({r}, C + 1, "{Direction.LEFT}"), C >= {c} }}, not grid(_, Mr).\n'
-    rule = top + bottom + left + right
-    rule += f"opia({r}, {c}) :- top({r}, {c}, N1), bottom({r}, {c}, N2), left({r}, {c}, N3), right({r}, {c}, N4), {cmp}.\n"
-    rule += f":- not opia({r}, {c}).\n"
+    rule += f'opia_all({r}, {c}) :- opia({r}, {c}, N1, "{Direction.TOP}"), opia({r}, {c}, N2, "{Direction.BOTTOM}"), opia({r}, {c}, N3, "{Direction.LEFT}"), opia({r}, {c}, N4, "{Direction.RIGHT}"), {cmp}.\n'
+    rule += f":- not opia_all({r}, {c}).\n"
     return rule
 
 
