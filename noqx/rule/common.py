@@ -125,7 +125,7 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
 def edge(rows: int, cols: int) -> str:
     """A rule for drawing edges around a cell.
 
-    * `edge(R, C, "left")` represents the left edge of the cell `(R, C)`, and `edge(R, C, "top")` represents the top edge of the cell `(R, C)`.
+    * `edge(R, C, "{Direction.LEFT}")` represents the left edge of the cell `(R, C)`, and `edge(R, C, "{Direction.TOP}")` represents the top edge of the cell `(R, C)`.
 
     * The outside border of a grid is automatically drawn. However, if there are holes in the grid, the edges around the holes need to be drawn manually.
 

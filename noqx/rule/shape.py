@@ -235,9 +235,15 @@ def count_shape(
 def all_rect(color: str = "black", square: bool = False) -> str:
     """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
 
-    * The main concept of this rule is to define four helper predicates: `top_left`, `left`, `top`, and `remain`, and categorize all the cells into these predicates. If some cells are missing, the shape is not rectangular.
+    * The main concept of this rule is to define the `rect` predicate with four directions: `top-left`, `left`, `top`, and `bottom-right`, and categorize all the cells into these directions:
+        * `top-left`: the **top-left** corner of a rectangle.
+        * `left`: the **left** edge of a rectangle (excluding the **top-left** corner).
+        * `top`: the **top** edge of a rectangle (excluding the **top-left** corner).
+        * `bottom-right`: all the *remaining* cells inside the rectangle.
 
-    * Due to technical reasons, the color cannot start with `not`, and the `noqx.common.invert_c` rule can help.
+    * If some cells are not categorized into the `rect` predicate, the shape is not rectangular.
+
+    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.common.invert_c` rule for assistance.
 
     Args:
         color: The color to be checked.
@@ -250,34 +256,31 @@ def all_rect(color: str = "black", square: bool = False) -> str:
         This rule is available with only *one* color, since the helper predicates are not relevant to colors.
 
     Warning:
-        The helper predicates are not intended to be used outside this function currently, please avoid conflicts with other predicates.
+        This rule conflicts with `all_rect_region`. Please use either one of them.
     """
-    rule = ""
     if color.startswith("not"):
-        raise ValueError("Unsupported color prefix 'not', please define the color explicitly.")
+        raise ValueError("Unsupported color prefix 'not', please define the color explicitly by `invert_c`.")
 
-    top_left = f"top_left(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left = f"left(R, C) :- grid(R, C), {color}(R, C), top_left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    top = f"top(R, C) :- grid(R, C), {color}(R, C), top_left(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    top += f"top(R, C) :- grid(R, C), {color}(R, C), top(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), top(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), top(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
-
-    constraint = f":- grid(R, C), {color}(R, C), not top_left(R, C), not left(R, C), not top(R, C), not remain(R, C).\n"
-    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
+    rule = f'rect(R, C, "{Direction.TOP_LEFT}") :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n'
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), {color}(R, C), rect(R - 1, C, "{Direction.TOP_LEFT}"), {color}(R - 1, C), not {color}(R, C - 1).\n'
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), {color}(R, C), rect(R - 1, C, "{Direction.LEFT}"), {color}(R - 1, C), not {color}(R, C - 1).\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), {color}(R, C), rect(R, C - 1, "{Direction.TOP_LEFT}"), {color}(R, C - 1), not {color}(R - 1, C).\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), {color}(R, C), rect(R, C - 1, "{Direction.TOP}"), {color}(R, C - 1), not {color}(R - 1, C).\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f':- grid(R, C), {color}(R, C), not rect(R, C, "{Direction.TOP_LEFT}"), not rect(R, C, "{Direction.LEFT}"), not rect(R, C, "{Direction.TOP}"), not rect(R, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), not {color}(R, C).\n'
 
     if square:
         c_min = f"#min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}"
         r_min = f"#min {{ R0: grid(R0 - 1, C), not {color}(R0, C), R0 > R }}"
-        constraint += f":- top_left(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
-        constraint += ":- top_left(R, C), left(R + 1, C), not top(R, C + 1).\n"
-        constraint += ":- top_left(R, C), not left(R + 1, C), top(R, C + 1).\n"
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n'
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), rect(R + 1, C, "{Direction.LEFT}"), not rect(R, C + 1, "{Direction.TOP}").\n'
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), not rect(R + 1, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.TOP}").\n'
 
-    data = rule + top_left + left + top + remain + constraint
-    return data
+    return rule.strip()
 
 
 def all_rect_region(square: bool = False) -> str:
@@ -285,37 +288,52 @@ def all_rect_region(square: bool = False) -> str:
 
     Args:
         square: Whether to force the rectangles to be squares.
-    """
-    top_left = f'top_left(R, C) :- grid(R, C), edge(R, C, "{Direction.LEFT}"), edge(R, C, "{Direction.TOP}").\n'
-    left = (
-        f'left(R, C) :- grid(R, C), top_left(R - 1, C), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
-    )
-    left += f'left(R, C) :- grid(R, C), left(R - 1, C), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
-    top = f'top(R, C) :- grid(R, C), top_left(R, C - 1), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
-    top += f'top(R, C) :- grid(R, C), top(R, C - 1), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), top(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), top(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
 
-    constraint = ":- grid(R, C), { top_left(R, C); left(R, C); top(R, C); remain(R, C) } != 1.\n"
-    constraint += f':- grid(R, C), remain(R, C), left(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
-    constraint += f':- grid(R, C), remain(R, C), top(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
-    constraint += f':- grid(R, C), remain(R, C), top_left(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
-    constraint += f':- grid(R, C), remain(R, C), top_left(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
+    Warning:
+        This rule conflicts with `all_rect`. Please use either one of them.
+    """
+    rule = (
+        f'rect(R, C, "{Direction.TOP_LEFT}") :- grid(R, C), edge(R, C, "{Direction.LEFT}"), edge(R, C, "{Direction.TOP}").\n'
+    )
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), rect(R - 1, C, "{Direction.TOP_LEFT}"), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), rect(R - 1, C, "{Direction.LEFT}"), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), rect(R, C - 1, "{Direction.TOP_LEFT}"), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), rect(R, C - 1, "{Direction.TOP}"), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+
+    rule += f':- grid(R, C), {{ rect(R, C, "{Direction.TOP_LEFT}"); rect(R, C, "{Direction.LEFT}"); rect(R, C, "{Direction.TOP}"); rect(R, C, "{Direction.BOTTOM_RIGHT}") }} != 1.\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R, C + 1, "{Direction.LEFT}"), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R + 1, C, "{Direction.TOP}"), not edge(R + 1, C, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R, C + 1, "{Direction.TOP_LEFT}"), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R + 1, C, "{Direction.TOP_LEFT}"), not edge(R + 1, C, "{Direction.TOP}").\n'
+
+    rule += f':- grid(R, C), rect(R, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.BOTTOM_RIGHT}"), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R, C + 1, "{Direction.BOTTOM_RIGHT}"), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.TOP}"), rect(R + 1, C, "{Direction.BOTTOM_RIGHT}"), edge(R + 1, C, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R + 1, C, "{Direction.BOTTOM_RIGHT}"), edge(R + 1, C, "{Direction.TOP}").\n'
 
     if square:
         c_min = f'#min {{ C0: grid(R, C0 - 1), edge(R, C0, "{Direction.LEFT}"), C0 > C }}'
         r_min = f'#min {{ R0: grid(R0 - 1, C), edge(R0, C, "{Direction.TOP}"), R0 > R }}'
-        constraint += f":- top_left(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n'
 
-    rect = f':- grid(R, C), left(R, C), remain(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
-    rect += f':- grid(R, C), remain(R, C), remain(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
-    rect += f':- grid(R, C), top(R, C), remain(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
-    rect += f':- grid(R, C), remain(R, C), remain(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+    return rule.strip()
 
-    data = top_left + left + top + remain + constraint + rect
-    return data
+
+def count_rect(target: Union[int, Tuple[str, int]]):
+    """A rule to compare the number of rectangles in a grid with a specified target.
+
+    * Since the top-left side of any rectangle is unique, the number of rectangles can be counted by the `rect` predicate.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+    """
+
+    rop, num = target_encode(target)
+    return f':- {{ rect(R, C, "{Direction.TOP_LEFT}") }} {rop} {num}.'
 
 
 def avoid_rect(

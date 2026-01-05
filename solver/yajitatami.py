@@ -35,8 +35,9 @@ def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: i
 
 def rect_constraint() -> str:
     """Generate a cell relevant constraint for rectangles with the width/height of 1."""
-    rule = ":- top_left(R, C), left(R + 1, C), top(R, C + 1).\n"
-    rule += ":- grid(R, C), top_left(R, C), #count { R1, C1: adj_edge(R, C, R1, C1) } = 0."
+
+    rule = f':- rect(R, C, "{Direction.TOP_LEFT}"), rect(R + 1, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.TOP_LEFT}"), #count {{ R1, C1: adj_edge(R, C, R1, C1) }} = 0.'
     return rule
 
 

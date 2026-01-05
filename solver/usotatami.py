@@ -1,17 +1,17 @@
 """The Uso-tatami solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
-from noqx.rule.shape import all_rect_region, avoid_edge_crossover
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover, count_rect
 
 
 def rect_constraint() -> str:
     """Generate a cell relevant constraint for rectangles with the width/height of 1."""
-    return ":- top_left(R, C), left(R + 1, C), top(R, C + 1)."
+    return f':- rect(R, C, "{Direction.TOP_LEFT}"), rect(R + 1, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.TOP}").'
 
 
 class UsotatamiSolver(Solver):
@@ -35,7 +35,7 @@ class UsotatamiSolver(Solver):
         self.add_program_line(all_rect_region())
         self.add_program_line(rect_constraint())
         self.add_program_line(avoid_edge_crossover())
-        self.add_program_line(f":- {{ top_left(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(count_rect(len(puzzle.text)))
 
         all_src = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
