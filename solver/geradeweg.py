@@ -4,7 +4,7 @@ from typing import Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import direction, display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.loop import loop_segment, loop_sign, single_loop
 from noqx.rule.neighbor import adjacent
@@ -38,7 +38,6 @@ class GeradewegSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="clue"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(direction("lurd"))
         self.add_program_line(shade_c(color="geradeweg"))

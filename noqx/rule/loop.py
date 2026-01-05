@@ -21,8 +21,10 @@ def single_loop(color: str = "white", path: bool = False) -> str:
 
     if path:
         constraint += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
+        constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C), not dead_end(R, C).\n"
+    else:
+        constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
 
-    constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C), not dead_end(R, C).\n"
     constraint += ':- grid(R, C), line_io(R, C, "l"), not line_io(R, C - 1, "r").\n'
     constraint += ':- grid(R, C), line_io(R, C, "u"), not line_io(R - 1, C, "d").\n'
     constraint += ':- grid(R, C), line_io(R, C, "r"), not line_io(R, C + 1, "l").\n'
@@ -46,8 +48,10 @@ def directed_loop(color: str = "white", path: bool = False) -> str:
         constraint += ":- path_start(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 0.\n"
         constraint += ":- path_end(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 1.\n"
         constraint += ":- path_end(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 0.\n"
+        constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C), not path_start(R, C), not path_end(R, C).\n"
+    else:
+        constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C).\n"
 
-    constraint += f":- grid(R, C), {color}(R, C), not pass_by_loop(R, C), not path_start(R, C), not path_end(R, C).\n"
     constraint += ':- grid(R, C), line_in(R, C, "l"), not line_out(R, C - 1, "r").\n'
     constraint += ':- grid(R, C), line_in(R, C, "u"), not line_out(R - 1, C, "d").\n'
     constraint += ':- grid(R, C), line_in(R, C, "r"), not line_out(R, C + 1, "l").\n'
