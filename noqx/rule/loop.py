@@ -183,13 +183,13 @@ def convert_line_to_edge(directed: bool = False, diagonal: bool = False) -> str:
         diagonal: Whether the route is diagonal.
     """
     if diagonal:
-        dir_convert_dict = {Direction.DIAG_DOWN: "dr", Direction.DIAG_UP: "ur"}
+        dir_convert_dict = {Direction.TOP_LEFT: "dr", Direction.TOP_RIGHT: "ur"}
     else:
         dir_convert_dict = {Direction.TOP: "r", Direction.LEFT: "d"}
 
     rule = ""
     for d, label in dir_convert_dict.items():
-        new_row = "R + 1" if d == Direction.DIAG_UP else "R"
+        new_row = "R + 1" if d == Direction.TOP_RIGHT else "R"
         if directed:
             rule += f'edge(R, C, "{d}") :- line_in({new_row}, C, "{label}").\n'
             rule += f'edge(R, C, "{d}") :- line_out({new_row}, C, "{label}").\n'

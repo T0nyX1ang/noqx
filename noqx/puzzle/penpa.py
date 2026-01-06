@@ -297,9 +297,9 @@ class PenpaPuzzle(Puzzle):
             elif coord_1[1] == coord_2[1]:  # col equal, vertical line
                 self.edge[Point(coord_2[0], coord_2[1] + 1, Direction.LEFT)] = True
             elif coord_1[0] - coord_2[0] == 1 and coord_2[1] - coord_1[1] == 1:  # upwards diagonal line
-                self.edge[Point(coord_2[0], coord_2[1], Direction.DIAG_UP)] = True
+                self.edge[Point(coord_2[0], coord_2[1], Direction.TOP_RIGHT)] = True
             elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
-                self.edge[Point(coord_2[0], coord_2[1], Direction.DIAG_DOWN)] = True
+                self.edge[Point(coord_2[0], coord_2[1], Direction.TOP_LEFT)] = True
 
         for index, _ in self.problem["deleteedge"].items():  # edge deletion mark, stronger than helper_x
             index_1, index_2 = map(int, index.split(","))
@@ -445,10 +445,10 @@ class PenpaPuzzle(Puzzle):
                 coord_2 = (r - 1, c)
             if d == Direction.LEFT:
                 coord_2 = (r, c - 1)
-            if d == Direction.DIAG_UP:
+            if d == Direction.TOP_RIGHT:
                 coord_1 = (r, c - 1)
                 coord_2 = (r - 1, c)
-            if d == Direction.DIAG_DOWN:
+            if d == Direction.TOP_LEFT:
                 coord_2 = (r, c)
 
             index_1 = self.coord_to_index(coord_1, category=1)

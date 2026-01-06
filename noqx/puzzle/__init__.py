@@ -27,9 +27,9 @@ class Color:
 class Direction:
     """Enumeration for directions.
 
-    * This `Direction` enumeration only involves with the direction of **adjacent** cells. For the directions inside a cell, please refer to the `label` descriptor instead. According to symmetry, only 3 directions are needed in the program: the top, left, and top-left directions.
+    * This `Direction` enumeration involves with the relative direction between the elements (i.e., edges, lines, arrows, etc.) and the center of a cell. Currently, it supports the following directions: center, top, left, bottom, right, top-left (downwards-diagonal), top-right (upwards-diagonal), bottom-left, and bottom-right.
 
-    * For edge visualizations, two additional directions are included in this enumeration, which are the upwards-diagonal and downwards-diagonal directions. These two directions should be only used for edge visualizations.
+    * For edge visualizations, the upwards-diagonal and downwards-diagonal directions are **transformed into** the top-right and top-left directions respectively.
 
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
@@ -39,12 +39,10 @@ class Direction:
         LEFT: The left direction. This indicates the something is on the **left** side of a cell.Also, this direction is used for **vertical** edge visualizations.
         BOTTOM: The bottom direction. This indicates the something is on the **bottom** side of a cell.
         RIGHT: The right direction. This indicates the something is on the **right** side of a cell.
-        TOP_LEFT: The top-left direction. This indicates the something is on the **top-left** side of a cell.
-        TOP_RIGHT: The top-right direction. This indicates the something is on the **top-right** side of a cell.
+        TOP_LEFT: The top-left/downwards-diagonal direction. This indicates the something is on the **top-left** side of a cell.
+        TOP_RIGHT: The top-right/upwards-diagonal direction. This indicates the something is on the **top-right** side of a cell.
         BOTTOM_LEFT: The bottom-left direction. This indicates the something is on the **bottom-left** side of a cell.
         BOTTOM_RIGHT: The bottom-right direction. This indicates the something is on the **bottom-right** side of a cell.
-        DIAG_UP: The downwards-diagonal direction. This is only used for edges that goes from **bottom-left** to **top-right**.
-        DIAG_DOWN: The upwards-diagonal direction. This is only used for edges that goes from **top-left** to **bottom-right**.
     """
 
     CENTER: str = "center"
@@ -56,8 +54,6 @@ class Direction:
     TOP_RIGHT: str = "top_right"
     BOTTOM_LEFT: str = "bottom_left"
     BOTTOM_RIGHT: str = "bottom_right"
-    DIAG_UP: str = "diag_up"
-    DIAG_DOWN: str = "diag_down"
 
 
 def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> Tuple[int, int, str, str]:
