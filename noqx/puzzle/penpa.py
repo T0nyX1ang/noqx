@@ -185,6 +185,8 @@ class PenpaPuzzle(Puzzle):
 
         * For **tapa-like** puzzles, the numbers are separately stored with the label `tapa_x`. Single numbers will be converted to the `tapa_0` label automatically.
 
+        * For **yaji-like** puzzles, the numbers are separately stored with the label `arrow_x`.
+
         * The **Candidates** submode in sudoku-like puzzles are neglected during unpacking.
         """
         for index, num_data in self.problem["number"].items():
@@ -196,7 +198,14 @@ class PenpaPuzzle(Puzzle):
                 for i, data in enumerate(map(_int_or_str, list(num_data[0]))):
                     self.text[Point(*coord, f"tapa_{i}")] = data
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
-                self.text[Point(*coord, "normal")] = _int_or_str(num_data[0])
+                if str(num_data[0]).endswith(
+                    ("_0", "_1", "_2", "_3")
+                ):  # for arrow-like puzzles, the label is set with arrow direction
+                    data, arrow_dir = num_data[0].split("_")
+                    arrow_dir_convert = {"0": Direction.TOP, "1": Direction.LEFT, "2": Direction.RIGHT, "3": Direction.BOTTOM}
+                    self.text[Point(*coord, f"arrow_{arrow_dir_convert[arrow_dir]}")] = _int_or_str(data)
+                else:
+                    self.text[Point(*coord, "normal")] = _int_or_str(num_data[0])
 
     def _unpack_sudoku(self):
         """Unpack sudoku elements from the board.

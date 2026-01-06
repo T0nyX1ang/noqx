@@ -1,23 +1,23 @@
 """The Castle Wall solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Point, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import direction, display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.loop import separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
-def wall_length(r: int, c: int, d: int, num: int) -> str:
+def wall_length(r: int, c: int, d: str, num: int) -> str:
     """Constrain the castle length."""
-    if d == 0:
+    if d == Direction.TOP:
         return f':- #count{{ R: line_io(R, {c}, "d"), R < {r} }} != {num}.'
-    if d == 1:
+    if d == Direction.LEFT:
         return f':- #count{{ C: line_io({r}, C, "r"), C < {c} }} != {num}.'
-    if d == 2:
+    if d == Direction.RIGHT:
         return f':- #count{{ C: line_io({r}, C, "r"), C > {c} }} != {num}.'
-    if d == 3:
+    if d == Direction.BOTTOM:
         return f':- #count{{ R: line_io(R, {c}, "d"), R > {r} }} != {num}.'
 
     raise ValueError("Invalid direction.")
@@ -55,18 +55,16 @@ class CastleSolver(Solver):
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, "normal")
             if Point(r, c) not in puzzle.surface:
                 self.add_program_line(f"white({r}, {c}).")
                 self.add_program_line(f"not castle({r}, {c}).")
 
-            if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue for compatibility # pragma: no cover
+            if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue for compatibility
                 continue
 
-            fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
-            num, d = clue.split("_")
-            fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
-            self.add_program_line(wall_length(r, c, int(d), int(num)))
+            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
+            arrow_direction = label.split("_")[1]
+            self.add_program_line(wall_length(r, c, arrow_direction, int(clue)))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"not castle({r}, {c}).")

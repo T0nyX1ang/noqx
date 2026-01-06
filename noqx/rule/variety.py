@@ -6,6 +6,8 @@ Warning:
 
 from typing import Tuple
 
+from noqx.puzzle import Direction
+
 
 def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
     """A rule to ensure only `1 x 2` shaded rectangles are formed.
@@ -20,7 +22,7 @@ def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
 
 
 def yaji_count(
-    target: int, src_cell: Tuple[int, int], arrow_direction: int, color: str = "black", unshade_src: bool = True
+    target: int, src_cell: Tuple[int, int], arrow_direction: str, color: str = "black", unshade_src: bool = True
 ) -> str:
     """A rule to compare the number of shaded cells from a certain direction starting from a source cell.
 
@@ -34,13 +36,13 @@ def yaji_count(
         unshade_src: Whether the source cell should be unshaded.
     """
     src_r, src_c = src_cell
-    op = "<" if arrow_direction in [0, 1] else ">"
+    op = "<" if arrow_direction in (Direction.TOP, Direction.LEFT) else ">"
 
     shade_clue = "" if unshade_src else f" not {color}({src_r}, {src_c}),"
-    if arrow_direction in [1, 2]:  # left, right
+    if arrow_direction in (Direction.LEFT, Direction.RIGHT):  # left, right
         return f":-{shade_clue} #count {{ C1 : {color}({src_r}, C1), C1 {op} {src_c} }} != {target}."
 
-    if arrow_direction in [0, 3]:  # top, bottom
+    if arrow_direction in (Direction.TOP, Direction.BOTTOM):  # top, bottom
         return f":-{shade_clue} #count {{ R1 : {color}(R1, {src_c}), R1 {op} {src_r} }} != {target}."
 
     raise ValueError("Invalid direction.")

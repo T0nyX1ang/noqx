@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, direction, display, fill_line, grid
-from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -41,17 +41,15 @@ class YajilinSolver(Solver):
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, "normal")
             self.add_program_line(f"gray({r}, {c}).")
 
             # empty clue or space or question mark clue (for compatibility)
             if isinstance(clue, str) and (len(clue) == 0 or clue.isspace() or clue == "?"):
                 continue
 
-            fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
-            num, d = clue.split("_")
-            fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
-            self.add_program_line(yaji_count(int(num), (r, c), int(d), color="black"))
+            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
+            arrow_direction = label.split("_")[1]
+            self.add_program_line(yaji_count(int(clue), (r, c), arrow_direction, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

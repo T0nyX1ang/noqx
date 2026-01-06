@@ -5,29 +5,30 @@ from typing import Tuple
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.helper import fail_false, validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
 from noqx.rule.shape import all_rect_region, avoid_edge_crossover
 
 
-def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: int) -> str:
+def yaji_region_count(target: int, src_cell: Tuple[int, int], arrow_direction: str) -> str:
     """Generates a constraint for counting the number of {color} cells in a row / col."""
     src_r, src_c = src_cell
     rule = ""
 
-    if arrow_direction == 1:  # left
+    if arrow_direction == Direction.LEFT:
         rule += f':- not edge({src_r}, {src_c}, "{Direction.LEFT}").\n'
         rule += f':- #count {{ C1 : edge({src_r}, C1, "{Direction.LEFT}"), C1 <= {src_c} }} != {target}.'
 
-    if arrow_direction == 2:  # right
+    if arrow_direction == Direction.RIGHT:
         rule += f':- not edge({src_r}, {src_c + 1}, "{Direction.LEFT}").\n'
         rule += f':- #count {{ C1 : edge({src_r}, C1, "{Direction.LEFT}"), C1 > {src_c} }} != {target}.'
-    if arrow_direction == 0:  # top
+
+    if arrow_direction == Direction.TOP:
         rule += f':- not edge({src_r}, {src_c}, "{Direction.TOP}").\n'
         rule += f':- #count {{ R1 : edge(R1, {src_c}, "{Direction.TOP}"), R1 <= {src_r} }} != {target}.'
 
-    if arrow_direction == 3:  # bottom
+    if arrow_direction == Direction.BOTTOM:
         rule += f':- not edge({src_r + 1}, {src_c}, "{Direction.TOP}").\n'
         rule += f':- #count {{ R1 : edge(R1, {src_c}, "{Direction.TOP}"), R1 > {src_r} }} != {target}.'
     return rule
@@ -64,13 +65,11 @@ class YajitatamiSolver(Solver):
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, "normal")
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
-            fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
-            num, d = clue.split("_")
-            fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
-            self.add_program_line(count_reachable_src(int(num), (r, c), main_type="bulb", color=None, adj_type="edge"))
-            self.add_program_line(yaji_region_count(int(num) + 1, (r, c), int(d)))
+            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
+            arrow_direction = label.split("_")[1]
+            self.add_program_line(count_reachable_src(int(clue), (r, c), main_type="bulb", color=None, adj_type="edge"))
+            self.add_program_line(yaji_region_count(int(clue) + 1, (r, c), arrow_direction))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
