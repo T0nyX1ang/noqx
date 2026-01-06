@@ -246,8 +246,27 @@ class PenpaPuzzle(Puzzle):
         for index, (style, shape, _) in self.problem["symbol"].items():
             (r, c), category = self.index_to_coord(int(index))
             if isinstance(style, list):
-                symbol_name = f"{shape}__{_style_convert(style)}"
+                cvt_style = _style_convert(style)
+                symbol_name = f"{shape}__{cvt_style}"
                 self.symbol[Point(*_category_to_direction(r, c, category), "multiple")] = symbol_name
+
+                if (
+                    self.puzzle_name in ["castle", "tetrochain", "yajilin", "yajikazu", "yajitatami"]
+                    and shape == "arrow_fouredge_B"
+                    and self.text.get(Point(*_category_to_direction(r, c, category), "normal")) is not None
+                ):  # compatible with older Penpa+ versions
+                    num = self.text.pop(Point(*_category_to_direction(r, c, category), "normal"))
+                    if cvt_style in [4, 16]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.TOP}")] = num
+
+                    if cvt_style in [1, 64]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.BOTTOM}")] = num
+
+                    if cvt_style in [8, 32]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.LEFT}")] = num
+
+                    if cvt_style in [2, 128]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.RIGHT}")] = num
             else:
                 symbol_name = f"{shape}__{style}"
                 # special case for nondango (which problem/solution symbols are on the same coordinates)
