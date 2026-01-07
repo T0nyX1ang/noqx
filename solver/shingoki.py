@@ -24,7 +24,7 @@ class ShingokiSolver(Solver):
     """The Shingoki solver."""
 
     name = "Shingoki"
-    category = "loop"
+    category = "route"
     aliases = ["trafficlights"]
     examples = [
         {

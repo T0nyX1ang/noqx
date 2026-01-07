@@ -13,7 +13,7 @@ class YajilinRegionsSolver(Solver):
     """The Regional Yajilin solver."""
 
     name = "Regional Yajilin"
-    category = "loop"
+    category = "route"
     aliases = ["yajilin-regions", "yajirin-regions", "regionalyajilin"]
     examples = [
         {

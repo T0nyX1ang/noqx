@@ -25,7 +25,7 @@ class GeradewegSolver(Solver):
     """The Geradeweg solver."""
 
     name = "Geradeweg"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VZtb9pIEP7Or6j2a1eq12sbY6k6kZdWighNrsnlEhShDSwvicGpgSRylP/emTGJvcYLre6uupNOxsvM86zH82LNzuLbSqWaCwd/MuTwD5cnQrrdMKDbWV9n02Wso3e8vVpOkhQEzr90+UjFC82PLm/3Du7aj4ftPz/4V1Ked0fvbw9Oz2+HF3+IU2f6IXW6cTg/PjnYi99/zq6OJ+0HfaiDk0UymMRaDVV2dXH0FM8/hePJSOwfTfbDkZo7i2/hWeth7/Tjx0Zv7cd14zlrRVmbZ5+jHnMZp1uwa56dRs/ZcZR1efYVKMYFYB2QBOMuiIeFeEE8Svs5KByQu7kcgHgJ4mCaDmLd7+SGTqJedsYZvmePnkaRzZIHzfLHSB8ks5spAjdqCelaTKb3a2axGiZ3q/VeMMhmq3g5HSRxkiKI2AvP2nkInZoQZBECinkIKP1TIcTTuX6q875V7/0LVOZ38L8f9TCU80IMC/Fr9AxrN3pm0oEnJQ/y4jHZAtV9U70mqKJQQ1PFzYXqo6lCDVAtTAW+wTY9gw3RcqEKx8WAHMjhGxIYzwsHXfMKXSBfsuAKk6dAS7xEf0q8h3qJ9yr2KBVlveKxj/vZbyWPKWImXxFIuKC0X9L6iVaX1jOoCs8krQe0OrT6tHZozyGtF7Tu0+rRGtCeJtb1pyr/V9xhnitZ1ArhE3ChjiRgflEIJJSOBO8VwVSiIAVHUoLkcgkWUIKeB5UCyfO4DzkFyQ95c73P4R68AKUm9MZcCjl+pSi1uJ9b8eELhvrIH8xTD+xikzUv/7+HXTd6rAMN4l03SWcqhjbRXc1udPqqQ5tmiyTuL1bpSA10Xz+pwZJF+XFRZgxsTjYMKE6Se+xENRZeKQOcjudJqmspBPVwbDOFVI2pmyQdVnx6VHFsxkInqQHlrdeAlin01ZKu0jR5NJCZWk4MoHSMGJb0vJLMpTJdVHeq8rZZkY6XBntidEMDhhP//zP133umYpWcX9Zf/55234Nkr3suz75wdr/qqz4ExmB84zlJbdhGUme2kHmztpB5/7abhZZuI6nL20hq/DaSzgKbQ3Q81JNwlNUTcJBZCC+wmfIsBARtMWUhYD5pcuFb8y/Aa9hipX04HGD+sNGBC7Q1XUABbS0SUFuM+56wEZZ8NqGw9YQtn03fkrafIX6E2nRgi9NbAt2SnJ1p3VmWnWXd+Vns/Kx2fpaw4Zd3PzpPk3TLcFOQVbhmxAF0y5RTYutwy0BTYqv4xvSCzm4OMIDWzDCAVscYgDYnGQA3hhnALPMMWq2ONOhVdarBV20MNviq8mzTY2OdqqF+1GN23fgO",

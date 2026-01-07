@@ -66,7 +66,7 @@ class TapaloopSolver(Solver):
     """The Tapa-like Loop solver."""
 
     name = "Tapa-Like Loop"
-    category = "loop"
+    category = "route"
     aliases = ["tapalikeloop", "tapa-like-loop", "tapalike", "tapa-like", "tll"]
     examples = [
         {

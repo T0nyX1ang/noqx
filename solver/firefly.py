@@ -31,7 +31,7 @@ class FireflySolver(Solver):
     """The Firefly (Hotaru Beam) solver."""
 
     name = "Hotaru Beam"
-    category = "loop"
+    category = "route"
     aliases = ["hotaru", "hotarubeam", "firefly"]
     examples = [
         {

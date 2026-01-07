@@ -69,7 +69,7 @@ class NumlinVBitSolver(Solver):
     """The Numberlink solver (bit version)."""
 
     name = "Numberlink (Bit Ver)"
-    category = "loop"
+    category = "route"
     aliases = ["numberlink", "arukone", "flowfree"]
     examples = [
         {

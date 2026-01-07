@@ -18,7 +18,7 @@ class NothingSolver(Solver):
     """The All or Nothing solver."""
 
     name = "All or Nothing"
-    category = "loop"
+    category = "route"
     aliases = ["allornothing"]
     examples = [
         {

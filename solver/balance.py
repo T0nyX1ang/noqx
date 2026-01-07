@@ -35,7 +35,7 @@ class BalanceSolver(Solver):
     """The Balance Loop solver."""
 
     name = "Balance Loop"
-    category = "loop"
+    category = "route"
     aliases = ["balanceloop"]
     examples = [
         {

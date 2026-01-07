@@ -21,7 +21,7 @@ class DotchiSolver(Solver):
     """The Dotchi-Loop solver."""
 
     name = "Dotchi-Loop"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7Vbvaxs5EP3uvyLoswo70v7Q7rdcmtwXN7lrUkJYjHEcX23qdF3/OMIa/+95I8nY7U7I3RUChcNe+XlG0rx5Gkm7+rYZLSeaEv5ap/GLT0rOP8bl/kni52a2nk+qE326WU+bJYDWVxcX+q/RfDXp1bHXoLdty6o91e3vVa2M0v4hNdDtn9W2/VC1d7q9hktpgq0PREobwPMDvPV+RmfBSAnwZcSAd4Dj2XI8nwz7wfJHVbc3WnGc3/xohuqx+XuiwjD/f9w83s/YcD9aI5nVdLaIntXmofmyiX1psNPtaaDbF+jaA12GgS4jgS5n8dN057OvkyeJaTnY7aD4R3AdVjXT/nSA7gCvqy3aS9+Sb++qrbKEaQhxjrkpa0VrJloLyZqmojWH1XSsTrJmRrSWkjUXs8g5i25f5tDpW4h8C7GvS0Qr69CJ5phvp2/JfDt9S5FvKapOiUiCElE1Sjg9wSzmR4m4IERybyOKT0asITI8d9dsZd5WXBayYh1RKgpIci1SKi4YpWKFUSZnmcvLkHM6P5ix4y78vjO+vcG21K317XvfJr7NfNv3fc6xQw2l2rBq4GQI57FFSI8LYLBibHBWp4jJ2CbASNljAkYBMU6NNhmE8xhzZnHONANG0owzzF/E+TPMWcQ5C4x1cSzuA8vVB4xfbSnEsokBDn0sWW0N9PU4BQ6x4Nc28odf2zTwhx84xIIfOM6ZkrZZ4A8/cJwf/O2ef1Zqw8vAOEfufBh4jNx5HTwGfz4OPIZueRybI8c85p5jnn3uDmNdHOs49zjWWeCorYOGLmrroOGRPoYPA48Ry8VYju/TGMshVhljleDMB8JewyTEwi/wXlvkm0QdkhI6Rw350qY4lqAVRQ2J14LnQRHd+lI6823q29yXWMH3wn++Of5tNavUgFvp+LCGIAywiFyblvkeIT4KgODlFbZhG7yaR42y4VeX7z/Zr2cb9GrVx2V/ctksH0dzXPnnD5+P/l1PR4uJwkvWrqeelH9qy+9s/793vf17F6ufvNke+odb4RU6NYSNe0+3V1otNsPRcNygtqCdd4btKDuxe2UH9vfL02FPv+AM27zjfHPNcIKoh2Y9ns7ezZtmoQa9Zw==",

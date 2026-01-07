@@ -47,7 +47,7 @@ class NagareSolver(Solver):
     """The Nagareru-Loop solver."""
 
     name = "Nagareru-Loop"
-    category = "loop"
+    category = "route"
     aliases = ["nagareru"]
     examples = [
         {

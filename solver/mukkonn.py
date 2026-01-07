@@ -36,7 +36,7 @@ class MukkonnSolver(Solver):
     """The Mukkonn Enn solver."""
 
     name = "Mukkonn Enn"
-    category = "loop"
+    category = "route"
     aliases = ["mukkonnenn"]
     examples = [
         {

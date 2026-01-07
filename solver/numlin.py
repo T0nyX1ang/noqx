@@ -24,7 +24,7 @@ class NumlinSolver(Solver):
     """The Numberlink solver."""
 
     name = "Numberlink"
-    category = "loop"
+    category = "route"
     aliases = ["numberlink", "arukone", "flowfree"]
     examples = [
         {

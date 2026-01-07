@@ -13,7 +13,7 @@ class KoburinSolver(Solver):
     """The Koburin solver."""
 
     name = "Koburin"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VZRb9pADH7nV1R+9kMud4SQl4l1ZS+MboOpqqIIBZaqUaFhgUzVIf57fb4wGE2qRpVoNU3hrC+fz8lnH7ay+lXEeYJCmJ/00UFCqNoeLyFcXk55jdP1PAnOsFesb7OcAOJlv4838XyVtMJyV9Ta6G6ge6g/ByEIQHBpCYhQfws2+kugh6hH5AJUxA3sJpfgxR5esd+gc0sKh/CwxASvCc7SfDZPJgPLfA1CPUYw7/nI0QbCIvudQKnD3M+yxTQ1xDReUzKr23RZelbFz+yuKPeKaIu6Z+UOKuTKvVwDrVyDKuSaLF4vd77MqoR2o+2WCv6dpE6C0Kj+sYf+Ho6CDdlhsAHp7XK0pwLKNcSHPeEpQ8gDonMUIhyOoYP9wwhxvEfIY8Z9EtXmJx8ynmMY54DxOerwOb7/1x5KTHB612z7bF22Y8oetWT7ia3Dts12wHsu2F6xPWer2Hq8p2Pq98IKgySpytb5NaJA+XRIXR+hI7sWqA4qyloiSLlDxHn0QstJOjT5wmxCSX1dcbX/XTZqhTAq8pt4llAbDdL75GyY5Yt4TnfDYjFN8t09za9tCx6AVyjNOPw/0k4+0kzxnUaD7e2nQKhHSJ2lLxGWxSSezDL6d1HVQqp32cA1TtvT9ZHU5vWR1PnVThoeVY46kcS3m/FeQ76uOMpXTR3dytSecXQc/z06qo/oOce7zKP5Cb5xHrXVPUXZm76cPgeeOE4+++izAe6LPL2LpwlErUc=",

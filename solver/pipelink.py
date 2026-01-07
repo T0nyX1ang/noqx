@@ -48,7 +48,7 @@ class PipeLinkSolver(Solver):
     """The Pipe Link solver."""
 
     name = "Pipe Link"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7Zbfb6M4EMff81dUfl1La4OxAWkf0iZdqUpzzW16vRZVEU1IQ0vCLpC2our/vuMfiB+hq3u5U09aESaffG2PZwZrSP5jH2YRpkR+bBfDN1yMuuq2XK5uYq55XCSRf4SH+2KTZgAY/3F6itdhkkf47PrhePQ4fB4P//7s3Nj25XT96WE0u3xYXf1FZyT+nJFp4u7OL0bHyaev5c35ZvgUjSN+kafLTRKFq7C8uTp7SXan7v1mTU/ONifuOtyR/Ic7956OZ1++DAITyO3gtfT8cojLr36ALITVTdEtLmf+a3nulxNcfoMhhCloEyAHYQtwDEg1XqlxSSdapAR4ahjwGnAZZ8skWky0cuEH5Rwjuc+xWi0RbdOnCOll6vcy3d7FUrgLC6hXvom/m5F8v0of92YuOETbfVLEyzRJMylK7Q2Xw/dTsOsUJOoUJPWkIDP7l1Pw+lN4g8fzJySx8AOZz2WNbo3f/FewU2WpstfKniprKTuHqbi0lR0pS5R1lJ34r8h2MLds5FtYIrOEQua1kNEKuc1rNBM4oPagkCl0KKBXIWN6AueAegIgd4xqYc70XIkOUSgY5tyqkHG9sSswF9qDQqdCxmsU2hklBNit2dPuqOVhQbU/zToTyQ5psKXzpoxhYTfZ+AF2rAab4lBOsGDGD7BjmxigPk0WplaUCtjXxAwsiE6FEsjbMz6BuYnfg4JyPR2Qm2yFC/XSCwGZo9d58FCFLrNE10RFYLJX7SK52gVWujU7RD8LasGWnokQWBCThW1jYZk5iqsqQVXN+ZDsqBMEB3KsjuWVsifKMmW5OpBCnuz/7Oz/w3ACW/f09uX8/7TbQYAm8S46mqbZNkwQvARQniaLfJ+tw2W0iF7CZYF8/TJqjrS03X57F0GrakhJmn5PwHGPh2qoJcb3uzSLeoekGK3u33Mlh3pc3aXZqhPTc5gk7VzUi7ol6cbekooMunbjd5hl6XNL2YbFpiU0OnzLU7TrFLMI2yGGj2Fnt21djrcBekHqDmz5h+L3G/uDv7HloyIfrXd9tHDUKU+zX7ScerAr9zQeUH/Rexqjffo7baYx2tUPeooM9rCtgNrTWUDtNheQDvsLiActBrR3uoz02m00Mqpur5FbHbQbuVWz4wS3g58=",

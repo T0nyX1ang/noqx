@@ -24,7 +24,7 @@ class MejilinkSolver(Solver):
     """The Mejilink solver."""
 
     name = "Mejilink"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VZdb9s2FH33ryj4WgIjqS9KwB6c1O7apY7TJshiwTAUR0mUylEmS0mnIP+9hxQ1W7JdzAOW7WEQdHV0LnW/SN/r5e9llMdU4rIkZZTjsmyhb8F8fTNznSZFGgdvaL8sbrMcgNLj4ZBeR+kyph8vbo8Os/7Tu/5vj7KYTPh7Vn5g53fDu7efF79+SKycD0dy/Gn8KRE3/V8OD07cwVt3XC7PivjxZMEP7s4mp9fj8xtf/DEYTexqcsycj5Prnx77Zz/3QhPDtPdc+UHVp9X7ICSCUMJxCzKl1UnwXH0KqgGtvkBFKJ9SsijTIplnaZaThquOgGxCBeAA0KnhudYrdAgEo5wBjwwGvACcJ/k8jWdHNTMOwuqUEuX7QH+tIFlkj7FypuJS7/NscZko4jIqUL7lbfJAqAXFsrzKvpZmKZ++0Kq/Rwb4BkZ0BgbWGSi0JQOV2D+bgT99ecHmfEYOsyBU6ZytoFzBL8Ez5EhLruWFlkMthZanWEorS8t3WjItHS2P9JqBludaHmppB8+EO5Jyj5GA42S4/gpLQbm0auxblPu2xoI5OOKu4e0/MZ7A3gpzWWPurTBT2K+xxaiw+ArbwmAO3mDbAm/8Wgo7hkcMjvFlw5dj7CtsNzx82Q0vgRu/WGOZNQI2LWNT/XR5nbsQiEHUMXAXP3HPYIk6yDoe7juoSVMHlXuTI3wx44ujJYhmvbJf58s9GzZrv3gCGzuu4g32XOA6To1lbZ9Lbw1j72TtS2HBTPwM9WSNL8TsmRgkfEljX2Ff2cdBcPUx8dR5e+UTSSyO2HxJAVAQBWy1mxqoo+jLzUPbiTgUKE/rQmqv+T7thWRwdRO/GWX5IkrRBfTbII+WMUEDJsssnS3L/Dqax7P4WzQvSFDPgHVNi7svF5cxOtgalWbZQ5rcb7PQqFpkcnOf5fFWlSJjhLjDlFJtMXWZ5VedmJ6iNG3noqdji6o7aIsqcrTHtfcoz7OnFrOIitsWsdZKW5bi+04xi6gdYvQ16nhbrMrx0iPfiL5DtAK1k/9Py//wtFQbxf71mblfwwxRcExZdG3XJ7Q6puShnEUz1Jzg3xn9S2pPzSAU4e+o0Vf3VKAB763w91Tsdo5ktn/BrD0VO8PFzNlQvPqp0a0oy38wF1bKLr1lOoD9wYBY027jd8yCNW2X32j8KtjN3g92S/sH250AoDaHAMiNOQBuxyhQVrvTQEXVHQjK1cZMUK7Wx0I47X0H",

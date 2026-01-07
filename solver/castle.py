@@ -27,7 +27,7 @@ class CastleSolver(Solver):
     """The Castle Wall solver."""
 
     name = "Castle Wall"
-    category = "loop"
+    category = "route"
     aliases = ["castlewall"]
     examples = [
         {

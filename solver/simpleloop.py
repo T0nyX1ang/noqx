@@ -13,7 +13,7 @@ class SimpleLoopSolver(Solver):
     """The Simple Loop solver."""
 
     name = "Simple Loop"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VZNb9pMEL7zK9Ce57Cf/rrRNPRCSd9CFUWWhRzqKFZNTQFXkRH/PbMzG3EoUSPlFZcis888OzPrnZ2VZ9j+6spNBVr6n0lAgsInThMaiVM0ZHjm9a6psiGMut1ju0ECcDMew0PZbKtBHryKwb5Ps34E/acsF1oADSUK6P/L9v3nrJ9BP0OTAIu6CTIlQCO9PtJbsnt2xUolkU8DR3qHdFlvlk21mLDmS5b3cxB+nw+02lOxan9XgpfRfNmu7muvuC93eJjtY70Olm33vf3RBV9VHKAfcbiTE+GaY7iecrienQjXn+Ld4Tb1z+rpVKRpcThgxr9irIss92F/O9LkSGfZXjgrMgvCJSQiTSJVJJSULJVjqdmsdJjblGUU5rFhmQR9GvQpz7Xk92rJfjq8T0e8jwl2I2OWhtcZF/QuYpm8SPazYZ01vJ91/F4b8T42Cn5x8It5vU348Dbl0zsZpGY/F+JzdF5M2DTbIyrCO8IxoSacY1ahN4QfCSWhI5yQzzXhLeEVoSWMyCf29/LGm3t/OHhPMR4MP2qBw9+RQZaC0pg2pCiRY4qQxxZ8kswbj5A7rhp/f9zF7+L37/kVg1zMus1Duaywgk+wkg+n7WZVNgJ75WEgngSNHL9A7DGX9nn29umzL89Wiv+fzpBjYkMph/4GxLpblItl2wj8BwZs5Or+ivWl4L9i5h5w2uhbyR+Ws6cHG4/Y1qt1Uw2btl2LYvAM",

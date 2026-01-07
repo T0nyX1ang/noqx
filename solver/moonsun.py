@@ -34,7 +34,7 @@ class MoonSunSolver(Solver):
     """The Moon-or-Sun solver."""
 
     name = "Moon-or-Sun"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7Vddb9s2FH33rzD4zAfxQxKlt6xL9uKl25KhCATDcFpvMeZEWRwPhYL8955zRc8tfIu2GxBgwGCLOr4kLw8P7yXp7Z+75cPKuoLfkCze+ESX5PGpkqfIn8v142bVTu3J7vGmfwCw9vXZmf1tudmuJl1uNZ88DU07nNjhh7Yz3lh5nJnb4ef2afixHa7scIEqYx1sMyBnrAc8PcA3Uk/0ajS6Avg8Y8ArwO3ubnHb93ej5ae2Gy6t4TjfSW9Cc9v/tTJjN/n9tr+9XtNwvXzEZLY36/tcs9296//Y5bZu/myHk5HuTKEbDnQJR7pECl3O4l/T3azvVu81ps38+RmK/wKui7Yj7V8PMB3gRfuE8lxKJ+VV+2SCgxtPlx9xM8Gr1lK1VrC6I2vSrDGq1lqzlkEbrWy0tlWhWtVZ1CqzpOqQOLdjK/keW3W/Kt9G5duQw7FVnUWjqtOo+jZctyOrK1QSrlCVcAVpKK1VHq4gEcX8GSZqCLmCiipOKOmx2alzd15dABc4+WMneuC7oE9HD30XdSdRTR9XqqvuSjUpnB7prtIXreLqKK2V6WA/OJNdwUt5iU3DDkHK76UspCylnEmbU+wf3gXrPbjCnXc4LSis4AYYwxP72voIhsShAMb4gtGXyU8cnfUlFBIcgbH4gtGXsyMuS2Csp2CcTjWEJq7Qt859K4yb8ri15+mVMfoyGYkTxm3yuDjdAjNBcAOc+za1DW4cF/XAI2fUA499UW+DH8dFPfDIGfU2cGMl9iXwOC7qbWBwEAf0ZUQIxrjc7oijBx45ox44c0YbHzPPSA2zJtQt+8QbOPOP1DbrTD3zWHgDZ00i1utv/blGe82hbdxrBf8p+0/UM/unhin7T/Cfsv9EnbN/uT3sdYZ/bpGCebPY+8e8uB2K5pgXN0HRCjr7rLmntlkr6umzPh5rl2MP74P+1Jl5Lxja5pjE+7Au1J/ZLhiaS6wiqN9IaL+SMkpZScjXPEX/8Tn7rdlloge3JuFw9CAmIFrmRBDE1QxjCn6Rc4dp81L36af879nmk87McA2anvcPt8sNLkOn737/6NfFzfJ+ZXD9fJ6Y90aeLvA2+/+N9OVvpFS/eLF8+cpU+AKdDsLmPLPDa2vud4vl4m2P2IJ2+0qknl5Z4Q+TWoFc/uYe4TM9cGR+dcWLq4u9BuHS3037hylCy8wnHwA=",

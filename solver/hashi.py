@@ -45,7 +45,7 @@ class HashiSolver(Solver):
     """The Hashi solver."""
 
     name = "Hashi"
-    category = "loop"
+    category = "route"
     aliases = ["bridges", "hashikake", "hashiwokakero"]
     examples = [
         {

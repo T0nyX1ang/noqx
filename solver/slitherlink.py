@@ -45,7 +45,7 @@ class SlitherlinkSolver(Solver):
     """The Slitherlink solver."""
 
     name = "Slitherlink"
-    category = "loop"
+    category = "route"
     aliases = ["slither", "tslither", "touchslither", "vslither", "vertexslither", "swslither", "sheepwolfslither"]
     examples = [
         {

@@ -14,7 +14,7 @@ class YajilinSolver(Solver):
     """The Yajilin solver."""
 
     name = "Yajilin"
-    category = "loop"
+    category = "route"
     aliases = ["yajirin"]
     examples = [
         {

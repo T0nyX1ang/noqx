@@ -13,7 +13,7 @@ class AnglersSolver(Solver):
     """The Anglers solver."""
 
     name = "Anglers"
-    category = "loop"
+    category = "route"
     aliases = ["anglerfish"]
     examples = [
         {

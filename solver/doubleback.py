@@ -13,7 +13,7 @@ class DoubleBackSolver(Solver):
     """The Double Back solver."""
 
     name = "Double Back"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VRRb9owEH7nVyA/3wOxEw/yxjrYC6PbylRVUYRCSFfUsHRApsqI/97Pl0t5STVplXiaLH/6cvfFdz6fvf9dZ7uCLIYZ0oACDG0tzyAMeQ5kLDaHsoj7NK4PD9UOhOh6OqX7rNwXvURUae/oRrEbk/scJ0or4hmolNy3+Oi+xG5C7gYuRQFsM7BAkQadnOkt+z27aozBAHwuHPQONN/s8rJYzhrL1zhxC1I+zkf+21O1rf4UqvmNv/Nqu9p4wyo7YDP7h82TePb1unqsRRukJ3LjJt1ZR7rmnK6nTbqedaTrd/HudMvNr+K5K9NRejqh4t+R6zJOfNo/znR4pjfxEThnDBjvGKeMmnEBKTnD+IlxwBgxzlgziY8q0JoCo1WscbAafWJsww3sodiNATfCI/BIuO8r0YfQR6IPoY9EH0IfiT6EPhJ9BL0VfQS7FbvPR8u/GuvoUDj6V7dxYTdij3yslkPTxrJ+fVnHQmNFY6GxrQa5cVwU45ZLcsUYMlou1Qdf84uditJ+76MhKeMPxRMUxFPDzHtNc3R/zTnxpXwd2Oq/8rSXqJt6d5/lBdp2hvbtz6vdNivxNVn/fP3Cc3HqqWfFM0HNKfz/glz+BfHVH1z4HXnvBUpQWOl0cteknupltswrdBhq1zrR/N1OXJpuBy7RW8sZON+M1e28eM1wh9W6qldl0V9l+aNKey8=",

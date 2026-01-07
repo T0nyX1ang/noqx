@@ -34,7 +34,7 @@ class MyopiaSolver(Solver):
     """The Myopia solver."""
 
     name = "Myopia"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VVRb9owEH7Pr6j8fA92HCDxG+tgLx3dBlOFrChKaTbQQGEJ2SYj/nvPF0O0rSVRq3V7mEw+fdgf9nfnO1J+rdIigwiHDIGDwCFDTk8Y2A93Y7barTN1AcNqt8wLJADX4zF8Stdl5mmnir29iZQZgnmjNJMMmMDHZzGY92pv3iozBzPFJQYC566QocBHOmroDa1bdllPCo584jjSOdK0KPLvyaLIy7KefKe0mQGzR72iDSxlm/xbxupf0vdFvrld2YnbdIfxlMvV1q2U1V3+pXJaER/ADGvHowccy8axpbVjyx5wbAP5846j+HDA5H9Az4nS1v7HhoYNnao94oRQEM7VnvkRboOXaK9fHK8cj/jVM5OBFdaS88JeR2HgdjyJHhW6HVuF/cHx6JZgBv5xxzYhHd0hPaHs6DHqNx7PCgXnHbcUXHRWUobqs8/GI7grjNZcCkGnd1FKSvtPuseUVBudlKcCPhsRlvuYit4nnGFPgJGErwk5YY/wijQjwhvCS8KAsE+age2qJ/fd0+ywXoAZjEIMO5QgbCnJVovaD135NqP3b83Enmaju8/ZxSQvNuka/+Wmy3SbMXypHDz2g9GjMWII/r9n/up7xl4Ef+Gqf24TakzwqWHAXAPbVkmaLHIsNMzi85exK39bePEcYKPH3j0=",

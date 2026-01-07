@@ -35,7 +35,7 @@ class MidLoopSolver(Solver):
     """The Mid-loop solver."""
 
     name = "Mid-loop"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7ZVRb9owEMff+RSVX2tpcRJCiLQHSqFrRyktIAYRQgYCpE0wCwntgvjuPRsqSHCqdp2qTZpCjuN3xr47O/8sf0Y0cDBR+EczMXzDpRNT3KppiFvZXS039BzrBJeicMYCcDC+qVbxhHpLB191Z7UyKz2el36szLDXIxdKdKl07qv3p3f+90tXC0i1bjauG9euOi19K5/dGpVToxEt26GzuvXJ2X2715o0OtOi+qtS7+lx70bJX/UmX1al9tecvcuhn1vHRSsu4fjCspGKsLgJ6uP41lrH11bcxXETQgiTPkZ+5IXuiHksQC8sroFHEFbBrezdjohzr7yFRAG/vvPB7YI7coOR5wyazS1qWHbcwogvfib+zl3ks5XDV4P/id8j5g9dDoY0hP4tZ+4CYQ0Cy2jMHqLdUNLf4Li0LaH2lhJ0MclLCdzdlsA9SQm8so+X4Llz50mSfbG/2cDO3EH+A8vmpbT3rrl3m9YabF1YImzXWiOjANOosMw+N0gXFUwpNotSTDQtg+elXM8rGZxkcFXOi7qU53X5eEOVjze0DJ6Rp2HK8zSK8noLRN63gnR+2Jmq2B9V2BZsH441Yc+FVYTNC1sTYyrCdoQtC6sLa4gxBX4AfvuIvDcdpPMuF03YHhXaIRwD63DOtDdmamtbLUxe+X+P9XM2qsFje1JngU89eKKbM7pwECgpWjJvsIyCCR05A+eJjkJkbcX8MJJg88gfOqBEB8hjbMF1QTLDSygB3emcBY40xKEznmZNxUOSqYYsGKdyeqSel6xFvOgSaHveEygMQOUOftMgYI8J4tNwlgAHop6YyZmnmhnSZIr0gaZW8/ft2OTQExK3rWH1/2vvb37t8V1SPk3Z/ozQ2tDsnSLi+AajRTSgA+g2gqOGPxY0VOWdAdDqrED+KPDpjRSPJgte0cl9MI0lagn0FcE8iMp4hjYeRNP8SAh5ssdaCFQih0DTigjoWBQBHukisAxp5LOm1ZFnlRZIvtSRRvKlDmXSRr475sWjfu4Z",

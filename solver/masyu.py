@@ -27,7 +27,7 @@ class MasyuSolver(Solver):
     """The Masyu solver."""
 
     name = "Masyu"
-    category = "loop"
+    category = "route"
     aliases = ["mashu"]
     examples = [
         {

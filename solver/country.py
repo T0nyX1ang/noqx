@@ -13,7 +13,7 @@ class CountrySolver(Solver):
     """The Country Road solver."""
 
     name = "Country Road"
-    category = "loop"
+    category = "route"
     aliases = ["countryroad"]
     examples = [
         {
