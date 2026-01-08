@@ -25,6 +25,9 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
 
     Raises:
         ValueError: If the adjacency type is invalid.
+
+    Success:
+        This rule will generate a predicate named `adj_{_type}(R, C, R1, C1)`.
     """
     rule = f"adj_{_type}(R, C, R, C) :- grid(R, C).\n" if include_self else ""
 
@@ -121,6 +124,15 @@ def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple
 
     * This border rule is useful on the rules that limit the crossing time of a line/path in the area. Although it is possible to represent the borders with ASP logic, it is better to calculate the borders with Python for performance consideration.
 
+    Args:
+        _id: The ID of the area.
+        src_cells: The cells in the area as a list of tuples of (`row`, `col`).
+        edge: The edges of the grid stored in a dictionary, the format is the same to the `edge` attribute
+              in the `Puzzle` class.
+
+    Success:
+        This rule will generate a predicate named `area_border(A, R, C, D)`.
+
     Note:
         Here is an example to define the border of an area with the help of `noqx.helper.full_bfs` function:
         ```python
@@ -130,12 +142,6 @@ def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple
             for i, (ar, rc) in enumerate(rooms.items()):
                 self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
         ```
-
-    Args:
-        _id: The ID of the area.
-        src_cells: The cells in the area as a list of tuples of (`row`, `col`).
-        edge: The edges of the grid stored in a dictionary, the format is the same to the `edge` attribute
-              in the `Puzzle` class.
     """
     edges = set()
     src_cells = set(src_cells)
@@ -172,6 +178,9 @@ def area_adjacent(adj_type: Union[int, str] = 4, color: Optional[str] = None) ->
     Args:
         adj_type: The type of adjacency.
         color: The color to be checked.
+
+    Success:
+        This rule will generate a predicate named `area_adj_{adj_type}(A, A1)` or `area_adj_{adj_type}_{color}(A, A1)`.
 
     Warning:
         To simplify the grounding size, the adjacency of the areas is directional, i.e., area `A` is adjacent to area `B` if the ID of area `A` is less than the ID of area `B`, and there share at least one common edge.

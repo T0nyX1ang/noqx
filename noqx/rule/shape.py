@@ -115,11 +115,17 @@ def general_shape(
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         simple: Whether to skip the adjacency re-checking.
 
+    Success:
+        * If `_type` is set to "grid", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(R, C, I, V)`.
+
+        * If `_type` is set to "area", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(A, R, C, I, V)`.
+
     Warning:
         Although the shape representation does not require the connectivity of the shape, it is recommended to ensure that the provided shape is connected. Some derived rules may behave weird if the shape is not connected.
 
     Warning:
         The `simple` option is more efficient, but the use-case is limited. It is only recommended to use in the `area` type, and every area only contains **one piece** of the shape.
+
     """
 
     def get_neighbor(r: int, c: int) -> Iterable[Tuple[int, int]]:
@@ -252,6 +258,9 @@ def all_rect(color: str = "black", square: bool = False) -> str:
     Raises:
         ValueError: If the color starts with 'not'.
 
+    Success:
+        This rule will generate a predicate named `rect(R, C, D)`.
+
     Warning:
         This rule is available with only *one* color, since the helper predicates are not relevant to colors.
 
@@ -288,6 +297,9 @@ def all_rect_region(square: bool = False) -> str:
 
     Args:
         square: Whether to force the rectangles to be squares.
+
+    Success:
+        This rule will generate a predicate named `rect(R, C, D)`.
 
     Warning:
         This rule conflicts with `all_rect`. Please use either one of them.
@@ -368,6 +380,9 @@ def no_rect(color: str = "black") -> str:
 
     Args:
         color: The color to be checked.
+
+    Success:
+        This rule will generate a predicate named `reachable_Lshape_adj_4_{color}(R, C)`.
     """
     tag = tag_encode("reachable", "Lshape", "adj", 4, color)
 

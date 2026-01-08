@@ -70,6 +70,7 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
         * `normal`: The normal label. This is the default label for most elements. Using this label will not have effects on visualizations.
         * `tapa_x`: The tapa label with index x (x = 0 ~ 3). This label is often used for **tapa-like** clues to indicate their positions inside a cell.
         * `corner_x`: The corner label with index its direction x. This label is often used for **sudoku-like** clues to indicate a number in the corner inside a cell.
+        * `arrow_x`: The arrow label with index its direction x. This label is often used for **yaji-like** clues to indicate an arrow in the cell.
         * `multiple`: The symbol label with style x (x = 0 ~ n). This label is often used for indicating **multiple symbols** inside a cell.
         * `delete`: The delete label. This label is often used for **erased** edges.
         * other labels may be defined in specific puzzles, such as `hashi` and `nondango`.

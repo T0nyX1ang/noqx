@@ -23,6 +23,9 @@ def grid_color_connected(
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         grid_size: The size of the grid in (`rows`, `columns`). If provided, the propagation
                    starts from the middle of the grid to increase the speed potentially.
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_adj_{adj_type}_{color}(R, C)`.
     """
     validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
@@ -51,6 +54,9 @@ def border_color_connected(rows: int, cols: int, color: str = "black", adj_type:
         cols: The number of columns in the grid.
         color: The color to be checked.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`).
+
+    Success:
+        This rule will generate a predicate named `reachable_border_adj_{adj_type}_{color}(R, C)`.
     """
     validate_type(adj_type, (4, 8, "x"))
     tag = tag_encode("reachable", "border", "adj", adj_type, color)
@@ -69,6 +75,9 @@ def area_color_connected(color: str = "black", adj_type: int = 4) -> str:
     Args:
         color: The color to be checked.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`).
+
+    Success:
+        This rule will generate a predicate named `reachable_area_adj_{adj_type}_{color}(A, R, C)`.
     """
     validate_type(adj_type, (4, 8, "x"))
     tag = tag_encode("reachable", "area", "adj", adj_type, color)
@@ -99,6 +108,9 @@ def grid_src_color_connected(
         exclude_cells: The list of cells to be excluded from reachable cells to the source cell.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_src_adj_{adj_type}_{color}(R0, C0, R, C)`.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
@@ -139,6 +151,9 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
         src_cell: The source cell in (`row`, `col`).
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `edge`).
+
+    Success:
+        This rule will generate a predicate named `reachable_bulb_src_adj_{adj_type}_{color}(R0, C0, R, C)`.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
@@ -228,6 +243,9 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
     Args:
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`).
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_branch_adj_{adj_type}_{color}(R0, C0, R, C)`.
     """
     if color is None:
         validate_type(adj_type, ("edge",))

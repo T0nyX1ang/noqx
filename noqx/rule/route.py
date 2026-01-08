@@ -16,6 +16,9 @@ def single_route(color: str = "white", path: bool = False) -> str:
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
         path: Whether the route is a path.
+
+    Warning:
+        This rule conflicts with `directed_route`.
     """
     constraint = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
 
@@ -40,6 +43,9 @@ def directed_route(color: str = "white", path: bool = False) -> str:
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
         path: Whether the route is a path.
+
+    Warning:
+        This rule conflicts with `single_route`.
     """
     constraint = f"pass_by_route(R, C) :- grid(R, C), {color}(R, C), #count {{ D: line_in(R, C, D) }} = 1, #count {{ D: line_out(R, C, D) }} = 1, line_in(R, C, D0), not line_out(R, C, D0).\n"
 
@@ -127,10 +133,11 @@ def route_segment(src_cell: Tuple[int, int]) -> str:
 
     * The route segment from the source cell is similar to the line of sight of a bulb.
 
-    * This rule requires the `route_sign` rule first.
-
     Args:
         src_cell: The source cell in (`row`, `col`).
+
+    Success:
+        This rule will generate a predicate named `segment(R0, C0, R, C, S)`.
 
     Warning:
         This rule only supports undirected routes.
@@ -160,6 +167,9 @@ def route_straight(color: str = "white") -> str:
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
 
+    Success:
+        This rule will generate a predicate named `straight(R, C)`.
+
     Warning:
         This rule only supports undirected routes.
     """
@@ -174,6 +184,9 @@ def route_turning(color: str = "white") -> str:
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+
+    Success:
+        This rule will generate a predicate named `turning(R, C)`.
 
     Warning:
         This rule only supports undirected routes.

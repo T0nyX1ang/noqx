@@ -25,6 +25,10 @@ def defined(item: str, size: int = 2) -> str:
 
     * To mark multiple items as defined, call this function multiple times.
 
+    Args:
+        item: The item to be defined.
+        size: The arity of the item.
+
     Note:
         Here is a rule to shade gray cells from a grid without black cells:
         ```
@@ -32,10 +36,6 @@ def defined(item: str, size: int = 2) -> str:
         ```
         If there is no black cells in the puzzle, the solver may raise a warning that `black/2` is undefined.
         To avoid this warning, the `defined` rule can be applied.
-
-    Args:
-        item: The item to be defined.
-        size: The arity of the item.
     """
     return f"#defined {item}/{size}."
 
@@ -53,6 +53,9 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
         rows: The number of rows in the grid.
         cols: The number of columns in the grid.
         with_holes: Whether the grid contains holes.
+
+    Success:
+        This rule will generate a predicate named `grid(R, C)`.
     """
     if with_holes:
         return f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
@@ -70,6 +73,9 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
     Args:
         _id: The unique ID of the area.
         src_cells: The cells belonging to the area.
+
+    Success:
+        This rule will generate a predicate named `area(A, R, C)`.
     """
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
@@ -83,6 +89,9 @@ def shade_c(color: str = "black") -> str:
 
     Args:
         color: The color to be shaded.
+
+    Success:
+        This rule will generate a predicate named `{color}(R, C)`.
     """
     return f"{{ {color}(R, C) }} :- grid(R, C)."
 
@@ -96,6 +105,9 @@ def shade_cc(colors: Iterable[str]) -> str:
 
     Args:
         colors: The colors to be shaded.
+
+    Success:
+        This rule will generate a predicate named `{color}(R, C)`.
 
     Warning:
         If you only specify **one color**, all the cells in the grid will be shaded with this color.
@@ -118,6 +130,9 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
     Args:
         color: The specified color.
         invert: The inverted color.
+
+    Success:
+        This rule will generate a predicate named `{invert}(R, C)`.
     """
     return f"{invert}(R, C) :- grid(R, C), not {color}(R, C)."
 
@@ -129,6 +144,13 @@ def edge(rows: int, cols: int) -> str:
 
     * The outside border of a grid is automatically drawn. However, if there are holes in the grid, the edges around the holes need to be drawn manually.
 
+    Args:
+        rows: The number of rows in the grid.
+        cols: The number of columns in the grid.
+
+    Success:
+        This rule will generate a predicate named `edge(R, C, D)`.
+
     Note:
         Assume there is a hole at `(r, c)`. To define edges around this hole, some additional codes should be written. Moreover, if there are another hole adjacent to this hole, the shared edge should not be drawn.
         ```python
@@ -138,10 +160,6 @@ def edge(rows: int, cols: int) -> str:
                 d = Direction.LEFT if c1 != c else Direction.TOP
                 rule += f'{prefix}edge({r2}, {c2}, "{d}").\n'
         ```
-
-    Args:
-        rows: The number of rows in the grid.
-        cols: The number of columns in the grid.
     """
     fact = f"vertical_range(0..{rows - 1}, 0..{cols}).\n"
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
@@ -169,6 +187,9 @@ def fill_line(
         directions: The directions that the line can be drawn on.
         color: The specified color that the line can be drawn on.
         directed: Whether the line is directed.
+
+    Success:
+        This rule will generate a predicate named `line(R, C, D)`.
     """
     dir_range_str = map(lambda x: f'"{x}"', tuple(directions))
     rule = f"direction({'; '.join(dir_range_str)}).\n"
@@ -197,6 +218,9 @@ def fill_num(_range: Iterable[int], _type: str = "grid", _id: Optional[int] = No
 
     Raises:
         ValueError: If the `_type` is other than `grid` or `area`.
+
+    Success:
+        This rule will generate a predicate named `number(R, C, N)`.
 
     Warning:
         The `color` parameter is not intuitive in the current stage, please be cautious while using it.

@@ -32,7 +32,7 @@ PENPA_ABBREVIATIONS = [
     ('"freeedge"', "z2"),
     ('"thermo"', "zT"),
     ('"arrows"', "z3"),
-    ('"{Direction.BOTTOM}"', "zD"),
+    ('"d"', "zD"),
     ('"squareframe"', "z0"),
     ('"polygon"', "z5"),
     ('"deleteedge"', "z4"),
@@ -185,7 +185,7 @@ class PenpaPuzzle(Puzzle):
 
         * For **tapa-like** puzzles, the numbers are separately stored with the label `tapa_x`. Single numbers will be converted to the `tapa_0` label automatically.
 
-        * For **yaji-like** puzzles, the numbers are separately stored with the label `arrow_x`.
+        * For **yaji-like** puzzles, the numbers are separately stored with the label `arrow_x`. The direction `x` is translated by a conversion table.
 
         * The **Candidates** submode in sudoku-like puzzles are neglected during unpacking.
         """
@@ -213,9 +213,6 @@ class PenpaPuzzle(Puzzle):
         * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode, `Sudoku` submode into the `text` attribute.
 
         * The numbers are stored with `corner_x` labels indicating their direction in the cell. The direction `x` is translated by a conversion table.
-
-        Warning:
-            Since the `corner_x` label is hard-coded, the solvers must be very careful of these labels. The label might be encoded more conveniently in future versions.
         """
         corner_convert = {
             0: Direction.TOP_LEFT,
@@ -315,8 +312,7 @@ class PenpaPuzzle(Puzzle):
 
         * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode into the `line` attribute. Supported submodes are `Normal`, `Middle`, and `Helper (x)`.
 
-        Warning:
-            For **hashi** puzzles, there are two types of lines: single lines and double lines. These two types of lines are differentiated by adding a suffix `_1` or `_2` to the label respectively. The solvers must be very careful of these labels.
+        * For **hashi** puzzles, there are two types of lines: single lines and double lines. Double lines are stored with the `double` label.
         """
         for index, data in self.problem["line"].items():
             if "," not in index:  # helper(x) lines
