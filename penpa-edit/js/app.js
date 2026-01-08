@@ -45,6 +45,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nothing", "moonsun");
   urlstring = urlstring.replace("nothree", "tentaisho");
+  urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("squarejam", "shikaku");
