@@ -154,22 +154,9 @@ def edge(rows: int, cols: int) -> str:
     return fact
 
 
-def direction(directions: Union[str, list]) -> str:
-    """A rule for all possible directions.
-
-    Args:
-        directions: The directions to be defined, can be specified either as a string or as a list of strings.
-
-    Warning:
-        In [Clingo](https://potassco.org/clingo/), constant strings should be enclosed in double quotes. Hence, please take care of the direction string while writing a direction-relevant rule.
-    """
-    format_d = map(lambda x: f'"{x}"', tuple(directions))
-    return f"direction({';'.join(format_d)})."
-
-
 def fill_line(
     directions: Iterable[str] = (Direction.TOP, Direction.LEFT, Direction.BOTTOM, Direction.RIGHT),
-    color: str = "green",
+    color: str = "white",
     directed: bool = False,
 ) -> str:
     """A rule for filling a line with a specified color in a grid.
