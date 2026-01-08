@@ -35,18 +35,18 @@ class ShingokiSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
-        self.add_program_line(route_sign(color="green"))
-        self.add_program_line(route_straight(color="green"))
-        self.add_program_line(route_turning(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
+        self.add_program_line(route_sign(color="white"))
+        self.add_program_line(route_straight(color="white"))
+        self.add_program_line(route_turning(color="white"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
-            self.add_program_line(f"green({r}, {c}).")
+            self.add_program_line(f"white({r}, {c}).")
             self.add_program_line(route_segment((r, c)))
 
             if symbol_name == "circle_L__1":

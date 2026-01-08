@@ -28,12 +28,12 @@ class MochikoroSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
-        self.add_program_line(invert_c(color="black", invert="green"))
+        self.add_program_line(invert_c(color="black", invert="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type=8))
         self.add_program_line(grid_color_connected(color="not black", adj_type=8, grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(avoid_rect(2, 2, color="black"))
-        self.add_program_line(all_rect(color="green"))
+        self.add_program_line(all_rect(color="white"))
 
         all_src = []
         tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")

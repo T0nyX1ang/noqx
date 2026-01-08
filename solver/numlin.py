@@ -15,7 +15,7 @@ def no_2x2_path() -> str:
     """Generate a rule that no 2x2 path is allowed."""
 
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    tag = tag_encode("reachable", "grid", "src", "adj", "line", "green")
+    tag = tag_encode("reachable", "grid", "src", "adj", "line", "white")
     cells = [f"{tag}(R0, C0, R + {r}, C + {c})" for r, c in points]
     return f":- grid(R, C), grid(R + 1, C + 1), clue(R0, C0), {', '.join(cells)}.\n"
 
@@ -35,7 +35,7 @@ class NumlinSolver(Solver):
             "data": "m=edit&p=7VRNi9swEL37Vyw662DJX7Ju6XbTi+t+bMqyGLM4qcuatdetE5dFIf89M2MbOSU9lMKSw+Lo8Z5mhJ5Gymx/9UVXchHgz1Pc5QK+0FU0hAINY/pW1a4u9RVf9LvHtgPC+aflkv8o6m3pZGNW7uxNrM2Cmw86Y4JxJmEIlnPzRe/NR21Sbm4hxLiAuWRIkkBvLL2jOLLrYVK4wNORA70Huqm6TV0+JMPMZ52ZFWe4zztajZQ17e+SjT5Qb9pmXeHEutjBYbaP1c8xsu2/t0/9mCvyAzeLwW5yxq5n7SId7CI7YxdP8d926+q5fDnnNM4PB6j4V/D6oDO0/c1SZemt3gOmes8iCUvxmulSmHJBSis9kJ6VPkjfyhgkPJZRCjcAHVrthaAjq32Mz3SIe8PDmnSE8Ximcb3dXdD2s7jCfIGvdJyI1YkBKSjBnk7K0wPIABPscWUk/lhAFuY6Ot1SUsHsGaRCC1NNoMaCKn1PuCSUhCu4CG48wveELmFAmFDODeEd4TWhTxhSToRX+U+X/Qp2Mn9oGn/7sDJv0YuO5k7GEmgwV2nbNUUNbSbtm3XZTRpa+sFhL4wG/T39ty7/+l0eq+9e2t//0uxAQ2LP9HqhmE8sd44=",
         },
         {
-            "url": "https://puzz.link/p?green/26/26/zz-15gdx-12nfs-16j8x4v-11zxes9kfs8zg4lbm6k5ubv2r-14n1q-10z5v7zeq3n3r1v-13u9k-11mdl6zgas2k-10sczxav-16x7jcs-15n-13x-14g-12zz",
+            "url": "https://puzz.link/p?numlin/26/26/zz-15gdx-12nfs-16j8x4v-11zxes9kfs8zg4lbm6k5ubv2r-14n1q-10z5v7zeq3n3r1v-13u9k-11mdl6zgas2k-10sczxav-16x7jcs-15n-13x-14g-12zz",
             "test": False,
         },
         {
@@ -68,13 +68,13 @@ class NumlinSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
 
         if puzzle.param["visit_all"]:
-            self.add_program_line("green(R, C) :- grid(R, C).")
+            self.add_program_line("white(R, C) :- grid(R, C).")
         else:
-            self.add_program_line(shade_c(color="green"))
+            self.add_program_line(shade_c(color="white"))
 
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(single_route(color="green", path=True))
+        self.add_program_line(single_route(color="white", path=True))
 
         for n, pair in locations.items():
             r0, c0 = pair[0]
@@ -89,15 +89,15 @@ class NumlinSolver(Solver):
             self.add_program_line(f"clue({r0}, {c0}).")
             self.add_program_line(f"dead_end({r0}, {c0}).")
             self.add_program_line(f"dead_end({r1}, {c1}).")
-            self.add_program_line(f"green({r0}, {c0}).")
-            self.add_program_line(f"green({r1}, {c1}).")
+            self.add_program_line(f"white({r0}, {c0}).")
+            self.add_program_line(f"white({r1}, {c1}).")
             self.add_program_line(
                 grid_src_color_connected(
-                    src_cell=(r0, c0), include_cells=[(r1, c1)], exclude_cells=excluded, adj_type="line", color="green"
+                    src_cell=(r0, c0), include_cells=[(r1, c1)], exclude_cells=excluded, adj_type="line", color="white"
                 )
             )
 
-        self.add_program_line(avoid_unknown_src(color="green", adj_type="line"))
+        self.add_program_line(avoid_unknown_src(color="white", adj_type="line"))
 
         if puzzle.param["no_2x2"]:
             self.add_program_line(no_2x2_path())

@@ -7,7 +7,7 @@ from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.reachable import grid_color_connected
 
 
-def hashi_bridge(color: str = "green") -> str:
+def hashi_bridge(color: str = "white") -> str:
     """Generate a rule for hashi constraints."""
     rule = "num(1..2)."
     rule += f'direction("{Direction.LEFT}"; "{Direction.RIGHT}"; "{Direction.TOP}"; "{Direction.BOTTOM}").\n'
@@ -67,15 +67,15 @@ class HashiSolver(Solver):
         self.reset()
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(hashi_bridge(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(hashi_bridge(color="white"))
         self.add_program_line(hashi_adjacent())
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
-            self.add_program_line(f"green({r}, {c}).")
+            self.add_program_line(f"white({r}, {c}).")
             self.add_program_line(f"number({r}, {c}, {num if isinstance(num, int) else -1}).")
 
         for (r, c, d, label), draw in puzzle.line.items():

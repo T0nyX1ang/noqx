@@ -9,20 +9,20 @@ from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import count_area_pass, single_route
 
 
-def moon_sun_area() -> str:
+def moon_sun_area(color: str = "white") -> str:
     """
     Genearate a constraint to determine the area of the moon or sun.
     A sun area should only contain sun cells, and a moon area should only contain moon cells.
     A sun area should be adjacent to a moon area, and vice versa.
     """
     rule = "{ sun_area(A) } :- area(A, _, _).\n"
-    rule += ":- sun_area(A), area(A, R, C), sun(R, C), not green(R, C).\n"
-    rule += ":- sun_area(A), area(A, R, C), moon(R, C), green(R, C).\n"
-    rule += ":- not sun_area(A), area(A, R, C), sun(R, C), green(R, C).\n"
-    rule += ":- not sun_area(A), area(A, R, C), moon(R, C), not green(R, C).\n"
+    rule += f":- sun_area(A), area(A, R, C), sun(R, C), not {color}(R, C).\n"
+    rule += f":- sun_area(A), area(A, R, C), moon(R, C), {color}(R, C).\n"
+    rule += f":- not sun_area(A), area(A, R, C), sun(R, C), {color}(R, C).\n"
+    rule += f":- not sun_area(A), area(A, R, C), moon(R, C), not {color}(R, C).\n"
 
-    extra = "area_pass_moon(A) :- area(A, R, C), moon(R, C), green(R, C).\n"
-    extra += "area_pass_sun(A) :- area(A, R, C), sun(R, C), green(R, C).\n"
+    extra = f"area_pass_moon(A) :- area(A, R, C), moon(R, C), {color}(R, C).\n"
+    extra += f"area_pass_sun(A) :- area(A, R, C), sun(R, C), {color}(R, C).\n"
     extra += ":- area(A, _, _), not area_pass_moon(A), not area_pass_sun(A).\n"
 
     constraint = ":- area_adj_line(A1, A2), sun_area(A1), sun_area(A2).\n"
@@ -54,11 +54,11 @@ class MoonSunSolver(Solver):
         self.add_program_line(defined(item="moon"))
         self.add_program_line(defined(item="sun"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         fail_false(len(rooms) % 2 == 0, "The number of areas should be even.")

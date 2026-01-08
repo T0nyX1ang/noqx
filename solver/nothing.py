@@ -29,15 +29,15 @@ class NothingSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
-        self.add_program_line(area_same_color(color="green"))
-        self.add_program_line(avoid_area_adjacent(color="not green"))
-        self.add_program_line("nothing(A) :- area(A, R, C), not green(R, C).")
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
+        self.add_program_line(area_same_color(color="white"))
+        self.add_program_line(avoid_area_adjacent(color="not white"))
+        self.add_program_line("nothing(A) :- area(A, R, C), not white(R, C).")
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, (ar, _) in enumerate(rooms.items()):

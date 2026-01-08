@@ -24,7 +24,7 @@ def onsen_rule(target: Union[int, str], _id: int, area_id: int, r: int, c: int) 
             f":- area(A, R, C), onsen({_id}, R, C), {anch}, #count {{ R1, C1: area(A, R1, C1), onsen({_id}, R1, C1) }} != N."
         )
 
-    rule += ":- green(R, C), not onsen(_, R, C).\n"
+    rule += ":- white(R, C), not onsen(_, R, C).\n"
     return rule
 
 
@@ -59,22 +59,22 @@ class OnsenSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(single_route(color="green"))
+        self.add_program_line(single_route(color="white"))
 
         onsen_id = 0
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
-            self.add_program_line(count(("gt", 0), _id=i, color="green", _type="area"))
+            self.add_program_line(count(("gt", 0), _id=i, color="white", _type="area"))
 
             for r, c in ar:
                 if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
                     num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
-                    self.add_program_line(f"green({r}, {c}).")
+                    self.add_program_line(f"white({r}, {c}).")
                     self.add_program_line(onsen_rule(num if isinstance(num, int) else "?", onsen_id, i, r, c))
 
                     onsen_id += 1  # fix multiple onsen clues in an area, onsen_id and area_id may be different now

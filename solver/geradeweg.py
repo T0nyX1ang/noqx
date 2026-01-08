@@ -40,12 +40,12 @@ class GeradewegSolver(Solver):
         self.reset()
         self.add_program_line(defined(item="hole"))
         self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
-        self.add_program_line(route_sign(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
+        self.add_program_line(route_sign(color="white"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -56,11 +56,11 @@ class GeradewegSolver(Solver):
             if isinstance(num, int):
                 self.add_program_line(count_geradeweg_constraint(num, (r, c)))
                 if num > 0:
-                    self.add_program_line(f"green({r}, {c}).")
+                    self.add_program_line(f"white({r}, {c}).")
                 else:
                     self.add_program_line(f"hole({r}, {c}).")  # optimize performance if there are too many holes
             else:
-                self.add_program_line(f"green({r}, {c}).")
+                self.add_program_line(f"white({r}, {c}).")
 
         for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')

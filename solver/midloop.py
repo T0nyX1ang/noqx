@@ -10,7 +10,7 @@ from noqx.rule.route import route_straight, route_turning, single_route
 
 
 def midloop_constraint(r: int, c: int, d: str) -> str:
-    """Generate a green constraint."""
+    """Generate a white constraint."""
     rule = ""
 
     max_u = f"#max {{ R0: grid(R0, {c}), route_turning(R0, {c}), R0 < {r} }}"
@@ -41,7 +41,7 @@ class MidLoopSolver(Solver):
             "data": "m=edit&p=7ZVRb9owEMff+RSVX2tpcRJCiLQHSqFrRyktIAYRQgYCpE0wCwntgvjuPRsqSHCqdp2qTZpCjuN3xr47O/8sf0Y0cDBR+EczMXzDpRNT3KppiFvZXS039BzrBJeicMYCcDC+qVbxhHpLB191Z7UyKz2el36szLDXIxdKdKl07qv3p3f+90tXC0i1bjauG9euOi19K5/dGpVToxEt26GzuvXJ2X2715o0OtOi+qtS7+lx70bJX/UmX1al9tecvcuhn1vHRSsu4fjCspGKsLgJ6uP41lrH11bcxXETQgiTPkZ+5IXuiHksQC8sroFHEFbBrezdjohzr7yFRAG/vvPB7YI7coOR5wyazS1qWHbcwogvfib+zl3ks5XDV4P/id8j5g9dDoY0hP4tZ+4CYQ0Cy2jMHqLdUNLf4Li0LaH2lhJ0MclLCdzdlsA9SQm8so+X4Llz50mSfbG/2cDO3EH+A8vmpbT3rrl3m9YabF1YImzXWiOjANOosMw+N0gXFUwpNotSTDQtg+elXM8rGZxkcFXOi7qU53X5eEOVjze0DJ6Rp2HK8zSK8noLRN63gnR+2Jmq2B9V2BZsH441Yc+FVYTNC1sTYyrCdoQtC6sLa4gxBX4AfvuIvDcdpPMuF03YHhXaIRwD63DOtDdmamtbLUxe+X+P9XM2qsFje1JngU89eKKbM7pwECgpWjJvsIyCCR05A+eJjkJkbcX8MJJg88gfOqBEB8hjbMF1QTLDSygB3emcBY40xKEznmZNxUOSqYYsGKdyeqSel6xFvOgSaHveEygMQOUOftMgYI8J4tNwlgAHop6YyZmnmhnSZIr0gaZW8/ft2OTQExK3rWH1/2vvb37t8V1SPk3Z/ozQ2tDsnSLi+AajRTSgA+g2gqOGPxY0VOWdAdDqrED+KPDpjRSPJgte0cl9MI0lagn0FcE8iMp4hjYeRNP8SAh5ssdaCFQih0DTigjoWBQBHukisAxp5LOm1ZFnlRZIvtSRRvKlDmXSRr475sWjfu4Z",
         },
         {
-            "url": "https://puzz.link/p?green/18/10/jd9flfzxfnfjfzp7f7fhfzzzbfzvflf3fzzpffzv3b7fififzznfjfgfzi9fgbbfzifufrf",
+            "url": "https://puzz.link/p?midloop/18/10/jd9flfzxfnfjfzp7f7fhfzzzbfzvflf3fzzpffzv3b7fififzznfjfgfzi9fgbbfzifufrf",
             "test": False,
         },
     ]
@@ -50,13 +50,13 @@ class MidLoopSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
 
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
-        self.add_program_line(route_turning(color="green"))
-        self.add_program_line(route_straight(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
+        self.add_program_line(route_turning(color="white"))
+        self.add_program_line(route_straight(color="white"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             fail_false(symbol_name.startswith("circle_SS"), "Invalid symbol type.")

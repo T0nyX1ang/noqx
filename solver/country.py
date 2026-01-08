@@ -29,12 +29,12 @@ class CountrySolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
         for i, (ar, rc) in enumerate(rooms.items()):
@@ -44,14 +44,14 @@ class CountrySolver(Solver):
             if rc:
                 num = puzzle.text[Point(*rc, Direction.CENTER, "normal")]
                 if isinstance(num, int):
-                    self.add_program_line(count(num, color="green", _type="area", _id=i))
+                    self.add_program_line(count(num, color="white", _type="area", _id=i))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             if d == Direction.TOP and r > 0 and draw:
-                self.add_program_line(f":- not green({r}, {c}), not green({r - 1}, {c}).")
+                self.add_program_line(f":- not white({r}, {c}), not white({r - 1}, {c}).")
 
             if d == Direction.LEFT and c > 0 and draw:
-                self.add_program_line(f":- not green({r}, {c}), not green({r}, {c - 1}).")
+                self.add_program_line(f":- not white({r}, {c}), not white({r}, {c - 1}).")
 
         for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')

@@ -11,8 +11,8 @@ from noqx.rule.route import route_straight, route_turning, single_route
 
 def dotchi_constraint() -> str:
     """Generate a constraint for the Dotchi-Loop puzzle."""
-    rule = "turning_area(A) :- area(A, R, C), white(R, C), route_turning(R, C).\n"
-    rule += "straight_area(A) :- area(A, R, C), white(R, C), route_straight(R, C).\n"
+    rule = "turning_area(A) :- area(A, R, C), white_clue(R, C), route_turning(R, C).\n"
+    rule += "straight_area(A) :- area(A, R, C), white_clue(R, C), route_straight(R, C).\n"
     rule += ":- area(A, _, _), turning_area(A), straight_area(A)."
     return rule
 
@@ -34,15 +34,15 @@ class DotchiSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="white"))
+        self.add_program_line(defined(item="white_clue"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="green"))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
-        self.add_program_line(route_straight(color="green"))
-        self.add_program_line(route_turning(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
+        self.add_program_line(route_straight(color="white"))
+        self.add_program_line(route_turning(color="white"))
         self.add_program_line(dotchi_constraint())
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
@@ -52,10 +52,10 @@ class DotchiSolver(Solver):
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
             if symbol_name == "circle_L__1":
+                self.add_program_line(f"white_clue({r}, {c}).")
                 self.add_program_line(f"white({r}, {c}).")
-                self.add_program_line(f"green({r}, {c}).")
             if symbol_name == "circle_L__2":
-                self.add_program_line(f"not green({r}, {c}).")
+                self.add_program_line(f"not white({r}, {c}).")
 
         for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')

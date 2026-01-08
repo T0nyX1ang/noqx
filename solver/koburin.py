@@ -24,13 +24,13 @@ class KoburinSolver(Solver):
         self.reset()
         self.add_program_line(defined(item="gray"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line("{ black(R, C); green(R, C) } = 1 :- grid(R, C), not gray(R, C).")
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line("{ black(R, C); white(R, C) } = 1 :- grid(R, C), not gray(R, C).")
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

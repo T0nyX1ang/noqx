@@ -176,7 +176,7 @@ class PenpaPuzzle(Puzzle):
                 self.surface[point] = Color.BLACK
 
             if color_code == 2:
-                self.surface[point] = Color.GREEN
+                self.surface[point] = Color.WHITE
 
     def _unpack_text(self):
         """Unpack number/text elements from the board.

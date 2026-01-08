@@ -12,13 +12,13 @@ class Color:
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
     Attributes:
-        GREEN: Represents the green color on shaded cells or unshaded cells.
+        WHITE: Represents the white color on shaded cells or unshaded cells.
         GRAY: Represents the gray color on shaded cells.
         BLACK: Represents the black color on shaded cells.
         DARK: A tuple representing dark colors (gray and black).
     """
 
-    GREEN: int = 0
+    WHITE: int = 0
     GRAY: int = 1
     BLACK: int = 2
     DARK: Tuple[int, int] = (GRAY, BLACK)

@@ -28,13 +28,13 @@ class YajilinRegionsSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_cc(colors=["black", "green"]))
-        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(shade_cc(colors=["black", "white"]))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
-        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
-        self.add_program_line(single_route(color="green"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
         for i, (ar, rc) in enumerate(rooms.items()):
