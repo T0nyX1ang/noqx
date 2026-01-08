@@ -4,11 +4,11 @@ from typing import List
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.loop import convert_line_to_edge, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import convert_line_to_edge, single_route
 
 
 def opia_constraint(r: int, c: int, mask: List[bool], lmt: int) -> str:
@@ -44,12 +44,11 @@ class MyopiaSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="myopia"))
-        self.add_program_line(fill_line(color="myopia"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="myopia", adj_type="loop"))
-        self.add_program_line(single_loop(color="myopia"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
         self.add_program_line(convert_line_to_edge())
 
         for (r, c, d, label), symbol_name in puzzle.symbol.items():

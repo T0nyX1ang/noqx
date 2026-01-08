@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid
+from noqx.rule.common import defined, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs
-from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import count_area_pass, single_route
 
 
 class DoubleBackSolver(Solver):
@@ -29,20 +29,18 @@ class DoubleBackSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line("doubleback(R, C) :- grid(R, C), not black(R, C).")
-        self.add_program_line(fill_line(color="doubleback"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="doubleback", adj_type="loop"))
-        self.add_program_line(single_loop(color="doubleback"))
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="grid", adj_type="line"))
+        self.add_program_line(single_route(color="grid"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
-            # enforce the black cells to have edges on all sides
+            # enforce the black cells (holes) to have edges on all sides
             puzzle.edge[Point(r, c, Direction.TOP)] = True
             puzzle.edge[Point(r, c, Direction.LEFT)] = True
             puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
@@ -54,12 +52,12 @@ class DoubleBackSolver(Solver):
                 filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar)
             )
             if len(arb) == 0:
-                continue  # drop black cells
+                continue  # drop holes
 
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(2, _id=i))
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

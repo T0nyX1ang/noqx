@@ -112,7 +112,7 @@ def general_shape(
         deltas: The relative coordinates of the shape cells.
         color: The color to be checked.
         _type: The type of the shape rule (accepted types: "grid" or "area").
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         simple: Whether to skip the adjacency re-checking.
 
     Warning:
@@ -397,7 +397,7 @@ def count_rect_size(
         target: The target number or a tuple of (`operator`, `number`) for comparison.
         src_cell: The source cell of the rectangle.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
     """
     if color is None:
         validate_type(adj_type, ("edge",))

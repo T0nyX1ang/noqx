@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import area, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border, area_same_color
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import count_area_pass, single_route
 
 
 def avoid_area_adjacent(color: str = "black", adj_type: int = 4) -> str:
@@ -29,16 +29,15 @@ class NothingSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="anything"))
-        self.add_program_line(fill_line(color="anything"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
         self.add_program_line(adjacent(_type=4))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="anything", adj_type="loop"))
-        self.add_program_line(single_loop(color="anything"))
-        self.add_program_line(area_same_color(color="anything"))
-        self.add_program_line(avoid_area_adjacent(color="not anything"))
-        self.add_program_line("nothing(A) :- area(A, R, C), not anything(R, C).")
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
+        self.add_program_line(area_same_color(color="green"))
+        self.add_program_line(avoid_area_adjacent(color="not green"))
+        self.add_program_line("nothing(A) :- area(A, R, C), not green(R, C).")
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, (ar, _) in enumerate(rooms.items()):
@@ -46,7 +45,7 @@ class NothingSolver(Solver):
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i).replace(":-", f":- not nothing({i}),"))
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

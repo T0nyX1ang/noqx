@@ -5,16 +5,16 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
-from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
+from noqx.rule.route import single_route
 
 
 def no_2x2_path_bit() -> str:
     """Generate a rule that no 2x2 path (bit version) is allowed."""
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    tag = tag_encode("reachable", "grid", "bit", "adj", "loop", "numlin")
+    tag = tag_encode("reachable", "grid", "bit", "adj", "line", "green")
     same_str = ", ".join(f"{tag}(R + {r}, C + {c}, B)" for r, c in points)
     no_str = ", ".join(f"not {tag}(R + {r}, C + {c}, B)" for r, c in points)
 
@@ -43,9 +43,9 @@ def num_binary_range(num: int) -> Tuple[str, int]:
     return rule, nbit
 
 
-def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "loop") -> str:
+def grid_bit_color_connected(color: str = "black", adj_type: Union[int, str] = "line") -> str:
     """Generate a constraint to check the reachability of {color} cells starting from a source (bit version)."""
-    validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
 
     tag = tag_encode("reachable", "grid", "bit", "adj", adj_type, color)
     rule = f"{tag}(R, C, B) :- clue_bit(R, C, B).\n"
@@ -80,7 +80,7 @@ class NumlinVBitSolver(Solver):
             "data": "m=edit&p=7VRNi9swEL37Vyw662DJX7Ju6XbTi+t+bMqyGLM4qcuatdetE5dFIf89M2MbOSU9lMKSw+Lo8Z5mhJ5Gymx/9UVXchHgz1Pc5QK+0FU0hAINY/pW1a4u9RVf9LvHtgPC+aflkv8o6m3pZGNW7uxNrM2Cmw86Y4JxJmEIlnPzRe/NR21Sbm4hxLiAuWRIkkBvLL2jOLLrYVK4wNORA70Huqm6TV0+JMPMZ52ZFWe4zztajZQ17e+SjT5Qb9pmXeHEutjBYbaP1c8xsu2/t0/9mCvyAzeLwW5yxq5n7SId7CI7YxdP8d926+q5fDnnNM4PB6j4V/D6oDO0/c1SZemt3gOmes8iCUvxmulSmHJBSis9kJ6VPkjfyhgkPJZRCjcAHVrthaAjq32Mz3SIe8PDmnSE8Ximcb3dXdD2s7jCfIGvdJyI1YkBKSjBnk7K0wPIABPscWUk/lhAFuY6Ot1SUsHsGaRCC1NNoMaCKn1PuCSUhCu4CG48wveELmFAmFDODeEd4TWhTxhSToRX+U+X/Qp2Mn9oGn/7sDJv0YuO5k7GEmgwV2nbNUUNbSbtm3XZTRpa+sFhL4wG/T39ty7/+l0eq+9e2t//0uxAQ2LP9HqhmE8sd44=",
         },
         {
-            "url": "https://puzz.link/p?numlin/26/26/zz-15gdx-12nfs-16j8x4v-11zxes9kfs8zg4lbm6k5ubv2r-14n1q-10z5v7zeq3n3r1v-13u9k-11mdl6zgas2k-10sczxav-16x7jcs-15n-13x-14g-12zz",
+            "url": "https://puzz.link/p?green/26/26/zz-15gdx-12nfs-16j8x4v-11zxes9kfs8zg4lbm6k5ubv2r-14n1q-10z5v7zeq3n3r1v-13u9k-11mdl6zgas2k-10sczxav-16x7jcs-15n-13x-14g-12zz",
             "test": False,
         },
         {
@@ -108,22 +108,21 @@ class NumlinVBitSolver(Solver):
             fail_false(len(pair) == 2, f"Element {n} is unmatched.")
 
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
 
         rule, nbit = num_binary_range(len(locations))
         self.add_program_line(rule)
 
         if puzzle.param["visit_all"]:
-            self.add_program_line("numlin(R, C) :- grid(R, C).")
+            self.add_program_line("green(R, C) :- grid(R, C).")
         else:
-            self.add_program_line(shade_c(color="numlin"))
+            self.add_program_line(shade_c(color="green"))
 
         if puzzle.param["no_2x2"]:
             self.add_program_line(no_2x2_path_bit())
 
-        self.add_program_line(fill_line(color="numlin"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(single_loop(color="numlin", path=True))
+        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(single_route(color="green", path=True))
 
         for _id, (n, pair) in enumerate(locations.items()):
             r0, c0 = pair[0]
@@ -131,12 +130,12 @@ class NumlinVBitSolver(Solver):
             self.add_program_line(clue_bit(r0, c0, _id + 1, nbit))
             self.add_program_line(clue_bit(r1, c1, _id + 1, nbit))
 
-        self.add_program_line("numlin(R, C) :- clue(R, C).")
+        self.add_program_line("green(R, C) :- clue(R, C).")
         self.add_program_line("dead_end(R, C) :- clue(R, C).")
-        self.add_program_line(grid_bit_color_connected(adj_type="loop", color="numlin"))
-        self.add_program_line(avoid_unknown_src_bit(adj_type="loop", color="numlin"))
+        self.add_program_line(grid_bit_color_connected(adj_type="line", color="green"))
+        self.add_program_line(avoid_unknown_src_bit(adj_type="line", color="green"))
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, direction, display, fill_line, grid
+from noqx.rule.common import area, display, fill_line, grid
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import route_turning, single_route
 
 
 class DetourSolver(Solver):
@@ -27,13 +27,11 @@ class DetourSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line("detour(R, C) :- grid(R, C).")
-        self.add_program_line(fill_line(color="detour"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="detour", adj_type="loop"))
-        self.add_program_line(single_loop(color="detour"))
-        self.add_program_line(loop_turning(color="detour"))
+        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="grid", adj_type="line"))
+        self.add_program_line(single_route(color="grid"))
+        self.add_program_line(route_turning(color="grid"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
         for i, (ar, rc) in enumerate(rooms.items()):
@@ -42,9 +40,9 @@ class DetourSolver(Solver):
             if rc:
                 num = puzzle.text[Point(*rc, Direction.CENTER, f"corner_{Direction.TOP_LEFT}")]
                 if isinstance(num, int):
-                    self.add_program_line(f":- #count {{ R, C: area({i}, R, C), turning(R, C) }} != {num}.")
+                    self.add_program_line(f":- #count {{ R, C: area({i}, R, C), route_turning(R, C) }} != {num}.")
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

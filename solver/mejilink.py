@@ -4,19 +4,19 @@ from typing import Dict, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import area, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import convert_line_to_edge, single_loop
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import convert_line_to_edge, single_route
 
 
 def bypass_area_edges() -> str:
     """Get the edges that not pass through the area."""
-    rule = f'bypass_area_edges(A, R, C, "l") :- area_border(A, R, C, "l"), not edge(R, C, "{Direction.LEFT}").\n'
-    rule += f'bypass_area_edges(A, R, C, "r") :- area_border(A, R, C, "r"), not edge(R, C + 1, "{Direction.LEFT}").\n'
-    rule += f'bypass_area_edges(A, R, C, "u") :- area_border(A, R, C, "u"), not edge(R, C, "{Direction.TOP}").\n'
-    rule += f'bypass_area_edges(A, R, C, "d") :- area_border(A, R, C, "d"), not edge(R + 1, C, "{Direction.TOP}").\n'
+    rule = f'bypass_area_edges(A, R, C, "{Direction.LEFT}") :- area_border(A, R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'bypass_area_edges(A, R, C, "{Direction.RIGHT}") :- area_border(A, R, C, "{Direction.RIGHT}"), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f'bypass_area_edges(A, R, C, "{Direction.TOP}") :- area_border(A, R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f'bypass_area_edges(A, R, C, "{Direction.BOTTOM}") :- area_border(A, R, C, "{Direction.BOTTOM}"), not edge(R + 1, C, "{Direction.TOP}").\n'
     return rule
 
 
@@ -34,12 +34,11 @@ class MejilinkSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="mejilink"))
-        self.add_program_line(fill_line(color="mejilink"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="mejilink", adj_type="loop"))
-        self.add_program_line(single_loop(color="mejilink"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
         self.add_program_line(convert_line_to_edge())
         self.add_program_line(bypass_area_edges())
 

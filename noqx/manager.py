@@ -105,10 +105,11 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
 
         elif _type.startswith("line_"):
             d = str(data[2]).replace('"', "")
-            if puzzle.puzzle_name == "hashi":
-                solution.line[Point(r, c, label=f"{d}_{data[3]}")] = True
-            else:
-                solution.line[Point(r, c, label=d)] = True
+            if d in [Direction.TOP, Direction.LEFT, Direction.BOTTOM, Direction.RIGHT]:
+                if puzzle.puzzle_name == "hashi" and str(data[3]) == "2":
+                    solution.line[Point(r, c, d, "double")] = True
+                else:
+                    solution.line[Point(r, c, d)] = True
 
         elif _type.startswith("number"):
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])

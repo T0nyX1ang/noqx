@@ -2,23 +2,23 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import defined, display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction
-from noqx.rule.loop import separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import separate_item_from_route, single_route
 
 
 def wall_length(r: int, c: int, d: str, num: int) -> str:
     """Constrain the castle length."""
     if d == Direction.TOP:
-        return f':- #count{{ R: line_io(R, {c}, "d"), R < {r} }} != {num}.'
+        return f':- #count{{ R: line_io(R, {c}, "{Direction.BOTTOM}"), R < {r} }} != {num}.'
     if d == Direction.LEFT:
-        return f':- #count{{ C: line_io({r}, C, "r"), C < {c} }} != {num}.'
+        return f':- #count{{ C: line_io({r}, C, "{Direction.RIGHT}"), C < {c} }} != {num}.'
     if d == Direction.RIGHT:
-        return f':- #count{{ C: line_io({r}, C, "r"), C > {c} }} != {num}.'
+        return f':- #count{{ C: line_io({r}, C, "{Direction.RIGHT}"), C > {c} }} != {num}.'
     if d == Direction.BOTTOM:
-        return f':- #count{{ R: line_io(R, {c}, "d"), R > {r} }} != {num}.'
+        return f':- #count{{ R: line_io(R, {c}, "{Direction.BOTTOM}"), R > {r} }} != {num}.'
 
     raise ValueError("Invalid direction.")
 
@@ -44,20 +44,21 @@ class CastleSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        self.add_program_line(defined(item="black"))
+        self.add_program_line(defined(item="white"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="castle"))
-        self.add_program_line(fill_line(color="castle"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="castle", adj_type="loop"))
-        self.add_program_line(single_loop(color="castle"))
-        self.add_program_line(separate_item_from_loop(inside_item="white", outside_item="black"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
+        self.add_program_line(separate_item_from_route(inside_item="white", outside_item="black"))
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
             if Point(r, c) not in puzzle.surface:
                 self.add_program_line(f"white({r}, {c}).")
-                self.add_program_line(f"not castle({r}, {c}).")
+                self.add_program_line(f"not green({r}, {c}).")
 
             if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue for compatibility
                 continue
@@ -67,13 +68,11 @@ class CastleSolver(Solver):
             self.add_program_line(wall_length(r, c, arrow_direction, int(clue)))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            self.add_program_line(f"not castle({r}, {c}).")
+            self.add_program_line(f"not green({r}, {c}).")
             if color == Color.BLACK:
                 self.add_program_line(f"black({r}, {c}).")
-            if color == Color.GRAY:
-                self.add_program_line(f"gray({r}, {c}).")
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

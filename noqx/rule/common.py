@@ -167,22 +167,30 @@ def direction(directions: Union[str, list]) -> str:
     return f"direction({';'.join(format_d)})."
 
 
-def fill_line(color: str = "black", directed: bool = False) -> str:
+def fill_line(
+    directions: Iterable[str] = (Direction.TOP, Direction.LEFT, Direction.BOTTOM, Direction.RIGHT),
+    color: str = "green",
+    directed: bool = False,
+) -> str:
     """A rule for filling a line with a specified color in a grid.
 
-    * To fill a line on a grid, two steps should be taken: shade the cells that have a line at first, and then decide which directions to take for each cell. This rule helps to complete the **second** step. So before using this rule, at least one shading rule should be defined.
+    * To fill a line on a grid, two steps should be taken: shade the cells at first, and then decide which directions to take for each **shaded** cell. Before using this rule, at least one shading rule should be defined.
 
-    * If the line is undirected, only one predicate (`line_io`) is used to represent the directions. Once the line is direction, two predicates (`line_in` and `line_out`) are used to represent the directions.
+    * If the line is undirected, only one predicate (`line_io`) is used to represent the directions. Once the line is directed, two predicates (`line_in` and `line_out`) are used to represent the directions.
 
     Args:
+        directions: The directions that the line can be drawn on.
         color: The specified color that the line can be drawn on.
         directed: Whether the line is directed.
     """
+    dir_range_str = map(lambda x: f'"{x}"', tuple(directions))
+    rule = f"direction({'; '.join(dir_range_str)}).\n"
+
     if directed:
-        rule = f"{{ line_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ line_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
         rule += f"{{ line_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
     else:
-        rule = f"{{ line_io(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
+        rule += f"{{ line_io(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 
     return rule
 

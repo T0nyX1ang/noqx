@@ -187,7 +187,7 @@ function resetGridMode(puzzleType) {
   const oldModeFlag = pu.mode.grid;
   let modeFlag = ["1", "2", "1"]; // default grid mode
 
-  if (["route", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // loop/region mode
+  if (["route", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // route/region mode
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 

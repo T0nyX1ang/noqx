@@ -20,11 +20,11 @@ def grid_color_connected(
 
     Args:
         color: The color to be checked.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         grid_size: The size of the grid in (`rows`, `columns`). If provided, the propagation
                    starts from the middle of the grid to increase the speed potentially.
     """
-    validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
     if grid_size is None:
@@ -98,12 +98,12 @@ def grid_src_color_connected(
         include_cells: The list of cells to be included as reachable cells to the source cell.
         exclude_cells: The list of cells to be excluded from reachable cells to the source cell.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
     """
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, 8, "x", "edge", "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "edge", "line", "line_directed"))
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
@@ -177,7 +177,7 @@ def count_reachable_src(
         src_cell: The source cell in (`row`, `col`).
         main_type: The main type of the reachable rule (accepted types: `grid` or `bulb`).
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
 
     Raises:
         ValueError: If the main type is other than `grid` or `bulb`.
@@ -185,7 +185,7 @@ def count_reachable_src(
     if color is None:
         validate_type(adj_type, ("edge",))
     elif main_type == "grid":
-        validate_type(adj_type, (4, 8, "x", "edge", "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "edge", "line", "line_directed"))
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
@@ -207,14 +207,14 @@ def avoid_unknown_src(color: Optional[str] = "black", main_type: str = "grid", a
     Args:
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         main_type: The main type of the reachable rule (accepted types: `grid` or `bulb`).
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
     """
     if color is None:
         validate_type(adj_type, ("edge",))
         tag = tag_encode("reachable", main_type, "src", "adj", adj_type)
         return f":- grid(R, C), not {tag}(_, _, R, C)."
 
-    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "line", "line_directed"))
     tag = tag_encode("reachable", main_type, "src", "adj", adj_type, color)
 
     return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."

@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid
+from noqx.rule.common import defined, display, fill_line, grid
 from noqx.rule.helper import fail_false
-from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import single_route
 
 
 class SimpleLoopSolver(Solver):
@@ -23,20 +23,18 @@ class SimpleLoopSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line("simpleloop(R, C) :- grid(R, C), not black(R, C).")
-        self.add_program_line(fill_line(color="simpleloop"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="simpleloop", adj_type="loop"))
-        self.add_program_line(single_loop(color="simpleloop"))
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="grid", adj_type="line"))
+        self.add_program_line(single_route(color="grid"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

@@ -2,11 +2,11 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, count, direction, display, fill_line, grid, shade_c
+from noqx.rule.common import area, count, display, fill_line, grid, shade_c
 from noqx.rule.helper import full_bfs
-from noqx.rule.loop import count_area_pass, single_loop
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import count_area_pass, single_route
 
 
 class CountrySolver(Solver):
@@ -29,13 +29,12 @@ class CountrySolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="country_road"))
-        self.add_program_line(fill_line(color="country_road"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
         self.add_program_line(adjacent(_type=4))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="country_road", adj_type="loop"))
-        self.add_program_line(single_loop(color="country_road"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
         for i, (ar, rc) in enumerate(rooms.items()):
@@ -45,16 +44,16 @@ class CountrySolver(Solver):
             if rc:
                 num = puzzle.text[Point(*rc, Direction.CENTER, "normal")]
                 if isinstance(num, int):
-                    self.add_program_line(count(num, color="country_road", _type="area", _id=i))
+                    self.add_program_line(count(num, color="green", _type="area", _id=i))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             if d == Direction.TOP and r > 0 and draw:
-                self.add_program_line(f":- not country_road({r}, {c}), not country_road({r - 1}, {c}).")
+                self.add_program_line(f":- not green({r}, {c}), not green({r - 1}, {c}).")
 
             if d == Direction.LEFT and c > 0 and draw:
-                self.add_program_line(f":- not country_road({r}, {c}), not country_road({r}, {c - 1}).")
+                self.add_program_line(f":- not green({r}, {c}), not green({r}, {c - 1}).")
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

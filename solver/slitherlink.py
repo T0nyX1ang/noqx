@@ -4,15 +4,15 @@ from typing import Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, target_encode, validate_direction, validate_type
-from noqx.rule.loop import convert_line_to_edge, separate_item_from_loop, single_loop
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import convert_line_to_edge, separate_item_from_route, single_route
 
 
 def passed_vertex() -> str:
-    """Generate a rule to get the cell that passed by the loop."""
+    """Generate a rule to get the cell that passed by the route."""
     rule = f'passed_vertex(R, C) :- edge(R, C, "{Direction.TOP}").\n'
     rule += f'passed_vertex(R, C) :- edge(R, C, "{Direction.LEFT}").\n'
     rule += f'passed_vertex(R, C) :- grid(R, C), edge(R, C - 1, "{Direction.TOP}").\n'
@@ -46,7 +46,7 @@ class SlitherlinkSolver(Solver):
 
     name = "Slitherlink"
     category = "route"
-    aliases = ["slither", "tslither", "touchslither", "vslither", "vertexslither", "swslither", "sheepwolfslither"]
+    aliases = ["green", "tslither", "touchslither", "vslither", "vertexslither", "swslither", "sheepwolfslither"]
     examples = [
         {
             "data": "m=edit&p=7VbvT/JIEP7OX2H2q5tcfwGlyX1ABF89RFQIrzSEFCxQbVlv26JX4v/uzBau3VK8XLyY+/CmdDLzPLPTnd3uU8I/Y4e7tA6XblKFqnDpiiHumoK//TXwIt+1TmgzjlaMg0PpTadDF44fuvTqYdVtsebrefPnxozGY/VCiS+V0VPn6fQu+OPS07na6Zn96/61py2bP1pnt7X2aa0fh8PI3dwG6tnTcDxY9EfLhvZXuzc2kvGNUr0aL37bNIe/V+zdHCaVbdKwkiZNLiyb6IQSFW6NTGhya22Tayvp0eQeKEJVwLrgQYIGbjtzR4JHr5WCqgJ+b+eD+wDu3ONz3512U6Rv2cmAEnzOmRiNLgnYxiXpMBHPWTDzEJg5ESxVuPJedkwYP7LneJcLBUkQ+5E3Zz7jCCL2TpNm2kK7pAU9awHdtAX0SlrAzr7cgvu4dN/KZt8on/077MwdzH9q2djKMHPNzL23tmB71pZoVRipw6sGJaGg1oAQ37w01JHVsrAGIb6Zu7Aus/JYQ5GSDVVKNnBsllyV2RqWymZV1+UQ2SzZxAdlpUwslSWbODbHGnIot9/AsRnbyLcPC6aKZXsQtiOsJuwAVpUmurDnwirCVoXtipy2sCNhW8IawtZETh335V/t3NenA3sP/TVM2DkTNhYdVTeoagCq73x8AYRfBRyS0Df2Of/Yj61Bau6CIv91NKnYpA1H5KTHeOD4cFB6cTBz+T4GoSIh86dhzBfO3J26b848IlaqlXlGwtaihgT5jL343rqswp6SQG+5ZtwtpRDEY32kFFIlpWaMPxbm9Or4vtyL+IZIUCo+EhRxUJZc7HDOXiUkcKKVBOSEVKrkrguLGTnyFJ1np/C0IFuO9wp5I+IWZ9D49VX5/35VcJeUb1aorwqmDYv9t6bR5IaSl3jqTKE1An9haEaDzB2lU+Urp0FBywlQ1GMFd/J5QH/72onTyPgn0piRRbhEIAH9RCNzbBl+RA5zbBE/0D6c7KH8AVqigIAWRRCgQx0E8EAKATuihli1KIg4q6Im4qMOZBEflVdGm4S+F61cDkv2TCaVDw==",
@@ -77,19 +77,18 @@ class SlitherlinkSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="slither"))
-        self.add_program_line(fill_line(color="slither"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="slither", adj_type="loop"))
-        self.add_program_line(single_loop(color="slither"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
         self.add_program_line(convert_line_to_edge())
 
         if puzzle.param["vslither"] or puzzle.param["tslither"]:
             self.add_program_line(passed_vertex())
 
         if puzzle.param["swslither"]:
-            self.add_program_line(separate_item_from_loop(inside_item="sheep", outside_item="wolf"))
+            self.add_program_line(separate_item_from_route(inside_item="sheep", outside_item="wolf"))
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)

@@ -43,6 +43,8 @@ class Direction:
         TOP_RIGHT: The top-right/upwards-diagonal direction. This indicates the something is on the **top-right** side of a cell.
         BOTTOM_LEFT: The bottom-left direction. This indicates the something is on the **bottom-left** side of a cell.
         BOTTOM_RIGHT: The bottom-right direction. This indicates the something is on the **bottom-right** side of a cell.
+        TOP_BOTTOM: The top-bottom direction. This indicates something is on both the top and bottom sides of a cell.
+        LEFT_RIGHT: The left-right direction. This indicates something is on both the left and right sides of a cell.
     """
 
     CENTER: str = "center"
@@ -54,6 +56,8 @@ class Direction:
     TOP_RIGHT: str = "top_right"
     BOTTOM_LEFT: str = "bottom_left"
     BOTTOM_RIGHT: str = "bottom_right"
+    TOP_BOTTOM: str = "top_bottom"
+    LEFT_RIGHT: str = "left_right"
 
 
 def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> Tuple[int, int, str, str]:
@@ -64,7 +68,6 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
     * The label descriptor is used for elements **inside** an cell. Common labels include:
 
         * `normal`: The normal label. This is the default label for most elements. Using this label will not have effects on visualizations.
-        * `l/u/r/d`: The left, top, right, and bottom labels. These labels are often used for **arrows**, **lines**, etc. to indicate their directions.
         * `tapa_x`: The tapa label with index x (x = 0 ~ 3). This label is often used for **tapa-like** clues to indicate their positions inside a cell.
         * `corner_x`: The corner label with index its direction x. This label is often used for **sudoku-like** clues to indicate a number in the corner inside a cell.
         * `multiple`: The symbol label with style x (x = 0 ~ n). This label is often used for indicating **multiple symbols** inside a cell.

@@ -2,24 +2,24 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_line, grid
+from noqx.rule.common import defined, display, fill_line, grid
 from noqx.rule.helper import validate_direction
-from noqx.rule.loop import convert_line_to_edge, directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import convert_line_to_edge, directed_route
 
 drdc = {"1": (0, 1), "2": (1, 0), "3": (0, -1), "4": (-1, 0)}
-dict_dir = {"1": "r", "2": "d", "3": "l", "4": "u"}
+dict_dir = {"1": Direction.RIGHT, "2": Direction.BOTTOM, "3": Direction.LEFT, "4": Direction.TOP}
 
 
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     """Generate a rule to restrict the number of bends in the path."""
     rule = f"reachable({r}, {c}, {r}, {c}).\n"
-    rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_loop_directed(R1, C1, R, C).\n"
-    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "l"), not line_out(R, C, "r").\n'
-    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "u"), not line_out(R, C, "d").\n'
-    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "r"), not line_out(R, C, "l").\n'
-    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "d"), not line_out(R, C, "u").\n'
+    rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_line_directed(R1, C1, R, C).\n"
+    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "{Direction.LEFT}"), not line_out(R, C, "{Direction.RIGHT}").\n'
+    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "{Direction.TOP}"), not line_out(R, C, "{Direction.BOTTOM}").\n'
+    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C, "{Direction.LEFT}").\n'
+    rule += f'bend(R, C) :- {color}(R, C), line_in(R, C, "{Direction.BOTTOM}"), not line_out(R, C, "{Direction.TOP}").\n'
     rule += f":- #count{{ R, C: grid(R, C), reachable({r}, {c}, R, C), bend(R, C) }} != {num}.\n"
 
     rule += "firefly_all(R, C) :- firefly(R, C).\n"
@@ -45,12 +45,11 @@ class FireflySolver(Solver):
         self.add_program_line(defined(item="dead_end"))
         self.add_program_line(defined(item="firefly_all"))
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-        self.add_program_line(direction("lurd"))
         self.add_program_line("{ firefly(R, C) } :- grid(R, C), not dead_end(R, C).")
         self.add_program_line(fill_line(color="firefly", directed=True))
-        self.add_program_line(adjacent(_type="loop_directed"))
-        self.add_program_line(directed_loop(color="firefly"))
-        self.add_program_line(grid_color_connected(color="firefly_all", adj_type="loop_directed"))
+        self.add_program_line(adjacent(_type="line_directed"))
+        self.add_program_line(directed_route(color="firefly"))
+        self.add_program_line(grid_color_connected(color="firefly_all", adj_type="line_directed"))
         self.add_program_line(convert_line_to_edge(directed=True))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():

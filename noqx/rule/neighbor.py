@@ -16,8 +16,8 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
         * If _type = `x`, then only diagonal neighbors are considered.
         * If _type = `8`, then both orthogonal and diagonal neighbors are considered.
         * If _type = `edge`, then only the neighbors on unblocked edges are considered.
-        * If _type = `loop`, then only the neighbors on the loop are considered.
-        * If _type = `loop_directed`, then only the neighbors on the directed loop are considered.
+        * If _type = `line`, then only the neighbors on the line are considered.
+        * If _type = `line_directed`, then only the neighbors on the directed line are considered.
 
     Args:
         _type: The type of adjacency.
@@ -47,18 +47,18 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
         rule += "adj_edge(R, C, R1, C1) :- adj_edge(R1, C1, R, C)."
         return rule
 
-    if _type == "loop":
-        rule += 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), line_io(R, C, "l").\n'
-        rule += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), line_io(R, C, "u").\n'
-        rule += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
+    if _type == "line":
+        rule += f'adj_line(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), line_io(R, C, "{Direction.RIGHT}").\n'
+        rule += f'adj_line(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), line_io(R, C, "{Direction.BOTTOM}").\n'
+        rule += "adj_line(R, C, R1, C1) :- adj_line(R1, C1, R, C)."
         return rule
 
-    if _type == "loop_directed":
-        rule += 'adj_loop_directed(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), line_in(R, C, "l").\n'
-        rule += 'adj_loop_directed(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), line_in(R, C, "u").\n'
-        rule += 'adj_loop_directed(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), line_out(R, C, "l").\n'
-        rule += 'adj_loop_directed(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), line_out(R, C, "u").\n'
-        rule += "adj_loop_directed(R0, C0, R, C) :- adj_loop_directed(R, C, R0, C0)."
+    if _type == "line_directed":
+        rule += f'adj_line_directed(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), line_in(R, C, "{Direction.RIGHT}").\n'
+        rule += f'adj_line_directed(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), line_in(R, C, "{Direction.BOTTOM}").\n'
+        rule += f'adj_line_directed(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), line_out(R, C, "{Direction.RIGHT}").\n'
+        rule += f'adj_line_directed(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), line_out(R, C, "{Direction.BOTTOM}").\n'
+        rule += "adj_line_directed(R0, C0, R, C) :- adj_line_directed(R, C, R0, C0)."
         return rule
 
     raise ValueError(f"Invalid adjacency type: {_type}.")
@@ -119,7 +119,7 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
 def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple[int, int, str, str], bool]) -> str:
     """A rule to define the border of an area.
 
-    * This border rule is useful on the rules that limit the crossing time of a loop/path in the area. Although it is possible to represent the borders with ASP logic, it is better to calculate the borders with Python for performance consideration.
+    * This border rule is useful on the rules that limit the crossing time of a line/path in the area. Although it is possible to represent the borders with ASP logic, it is better to calculate the borders with Python for performance consideration.
 
     Note:
         Here is an example to define the border of an area with the help of `noqx.helper.full_bfs` function:
@@ -141,24 +141,24 @@ def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple
     src_cells = set(src_cells)
     for r, c in src_cells:
         if edge.get(Point(r, c, Direction.TOP)) is True:
-            edges.add(f'area_border({_id}, {r}, {c}, "u").')
+            edges.add(f'area_border({_id}, {r}, {c}, "{Direction.TOP}").')
             if (r - 1, c) in src_cells:
-                edges.add(f'area_border({_id}, {r - 1}, {c}, "d").')
+                edges.add(f'area_border({_id}, {r - 1}, {c}, "{Direction.BOTTOM}").')
 
         if edge.get(Point(r + 1, c, Direction.TOP)) is True:
-            edges.add(f'area_border({_id}, {r}, {c}, "d").')
+            edges.add(f'area_border({_id}, {r}, {c}, "{Direction.BOTTOM}").')
             if (r + 1, c) in src_cells:
-                edges.add(f'area_border({_id}, {r + 1}, {c}, "u").')
+                edges.add(f'area_border({_id}, {r + 1}, {c}, "{Direction.TOP}").')
 
         if edge.get(Point(r, c, Direction.LEFT)) is True:
-            edges.add(f'area_border({_id}, {r}, {c}, "l").')
+            edges.add(f'area_border({_id}, {r}, {c}, "{Direction.LEFT}").')
             if (r, c - 1) in src_cells:
-                edges.add(f'area_border({_id}, {r}, {c - 1}, "r").')
+                edges.add(f'area_border({_id}, {r}, {c - 1}, "{Direction.RIGHT}").')
 
         if edge.get(Point(r, c + 1, Direction.LEFT)) is True:
-            edges.add(f'area_border({_id}, {r}, {c}, "r").')
+            edges.add(f'area_border({_id}, {r}, {c}, "{Direction.RIGHT}").')
             if (r, c + 1) in src_cells:
-                edges.add(f'area_border({_id}, {r}, {c + 1}, "l").')
+                edges.add(f'area_border({_id}, {r}, {c + 1}, "{Direction.LEFT}").')
 
     rule = "\n".join(edges)
     return rule

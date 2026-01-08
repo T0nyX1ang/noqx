@@ -2,43 +2,44 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction
-from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import directed_route
 
-dict_dir = {"1": "l", "3": "u", "5": "r", "7": "d"}
-rev_direction = {"l": "r", "r": "l", "u": "d", "d": "u"}
+dict_dir = {"1": Direction.LEFT, "3": Direction.TOP, "5": Direction.RIGHT, "7": Direction.BOTTOM}
+rev_dir = {
+    Direction.LEFT: Direction.RIGHT,
+    Direction.RIGHT: Direction.LEFT,
+    Direction.TOP: Direction.BOTTOM,
+    Direction.BOTTOM: Direction.TOP,
+}
 
 
 def nagare_wind(r: int, c: int, d: str, puzzle: Puzzle) -> str:
     """Generate a constraint for the wind direction."""
-    if d in ("l", "r"):
-        cols = range(0, c) if d == "l" else range(puzzle.col - 1, c, -1)
+    if d in (Direction.LEFT, Direction.RIGHT):
+        cols = range(0, c) if d == Direction.LEFT else range(puzzle.col - 1, c, -1)
 
         c1, c2 = cols[0], cols[-1]
         for c_ in cols:
             if puzzle.symbol.get(Point(r, c_, Direction.CENTER)) or puzzle.surface.get(Point(r, c_)):
                 c1 = c_ + cols.step
-        if d == "r":
+        if d == Direction.RIGHT:
             c1, c2 = c2, c1
-        return (
-            f':- nagare({r}, C), {c1} <= C, C <= {c2}, not line_out({r}, C, "{d}"), not line_in({r}, C, "{rev_direction[d]}").'
-        )
+        return f':- green({r}, C), {c1} <= C, C <= {c2}, not line_out({r}, C, "{d}"), not line_in({r}, C, "{rev_dir[d]}").'
 
-    if d in ("u", "d"):
-        rows = range(0, r) if d == "u" else range(puzzle.row - 1, r, -1)
+    if d in (Direction.TOP, Direction.BOTTOM):
+        rows = range(0, r) if d == Direction.TOP else range(puzzle.row - 1, r, -1)
 
         r1, r2 = rows[0], rows[-1]
         for r_ in rows:
             if puzzle.symbol.get(Point(r_, c, Direction.CENTER)) or puzzle.surface.get(Point(r_, c)):
                 r1 = r_ + rows.step
-        if d == "d":
+        if d == Direction.BOTTOM:
             r1, r2 = r2, r1
-        return (
-            f':- nagare(R, {c}), {r1} <= R, R <= {r2}, not line_out(R, {c}, "{d}"), not line_in(R, {c}, "{rev_direction[d]}").'
-        )
+        return f':- green(R, {c}), {r1} <= R, R <= {r2}, not line_out(R, {c}, "{d}"), not line_in(R, {c}, "{rev_dir[d]}").'
 
     raise ValueError("Invalid direction.")
 
@@ -58,12 +59,11 @@ class NagareSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="nagare"))
-        self.add_program_line(fill_line(color="nagare", directed=True))
-        self.add_program_line(adjacent(_type="loop_directed"))
-        self.add_program_line(grid_color_connected(color="nagare", adj_type="loop_directed"))
-        self.add_program_line(directed_loop(color="nagare"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green", directed=True))
+        self.add_program_line(adjacent(_type="line_directed"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line_directed"))
+        self.add_program_line(directed_route(color="green"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
@@ -71,16 +71,16 @@ class NagareSolver(Solver):
             _d = dict_dir[style]
 
             if shape == "arrow_B_B":
-                self.add_program_line(f"nagare({r}, {c}).")
-                self.add_program_line(f'line_in({r}, {c}, "{rev_direction[_d]}").')
+                self.add_program_line(f"green({r}, {c}).")
+                self.add_program_line(f'line_in({r}, {c}, "{rev_dir[_d]}").')
                 self.add_program_line(f'line_out({r}, {c}, "{_d}").')
             if shape == "arrow_B_W":
-                self.add_program_line(f"not nagare({r}, {c}).")
+                self.add_program_line(f"not green({r}, {c}).")
                 self.add_program_line(nagare_wind(r, c, _d, puzzle))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"not nagare({r}, {c}).")
+            self.add_program_line(f"not green({r}, {c}).")
 
         self.add_program_line(display(item="line_in", size=3))
         self.add_program_line(display(item="line_out", size=3))

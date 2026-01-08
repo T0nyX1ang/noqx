@@ -1,44 +1,50 @@
 """The Hashi solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
-from noqx.rule.common import defined, direction, display, grid, shade_c
+from noqx.puzzle import Direction, Puzzle
+from noqx.rule.common import defined, display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.reachable import grid_color_connected
 
 
-def hashi_bridge() -> str:
+def hashi_bridge(color: str = "green") -> str:
     """Generate a rule for hashi constraints."""
     rule = "num(1..2)."
-    rule += "{ line_io(R, C, D, N) : direction(D), num(N) } :- grid(R, C), hashi(R, C).\n"
+    rule += f'direction("{Direction.LEFT}"; "{Direction.RIGHT}"; "{Direction.TOP}"; "{Direction.BOTTOM}").\n'
+    rule += f"{{ line_io(R, C, D, N) : direction(D), num(N) }} :- grid(R, C), {color}(R, C).\n"
     rule += ":- N != -1, number(R, C, N), #sum{ N1, D: line_io(R, C, D, N1) } != N.\n"
 
-    rule += "pass_by_loop(R, C) :- grid(R, C), #count { D: line_io(R, C, D, _) } = 2.\n"
-    rule += 'pass_by_straight(R, C) :- grid(R, C), num(N), line_io(R, C, "l", N), line_io(R, C, "r", N).\n'
-    rule += 'pass_by_straight(R, C) :- grid(R, C), num(N), line_io(R, C, "u", N), line_io(R, C, "d", N).\n'
-    rule += ":- grid(R, C), hashi(R, C), not number(R, C, _), not pass_by_straight(R, C).\n"
-    rule += ":- grid(R, C), hashi(R, C), not number(R, C, _), not pass_by_loop(R, C).\n"
+    rule += "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D, _) } = 2.\n"
+    rule += f'pass_by_straight(R, C) :- grid(R, C), num(N), line_io(R, C, "{Direction.LEFT}", N), line_io(R, C, "{Direction.RIGHT}", N).\n'
+    rule += f'pass_by_straight(R, C) :- grid(R, C), num(N), line_io(R, C, "{Direction.TOP}", N), line_io(R, C, "{Direction.BOTTOM}", N).\n'
+    rule += f":- grid(R, C), {color}(R, C), not number(R, C, _), not pass_by_straight(R, C).\n"
+    rule += f":- grid(R, C), {color}(R, C), not number(R, C, _), not pass_by_route(R, C).\n"
 
     # path along the edges should be connected
-    rule += ':- grid(R, C), line_io(R, C, "l", _), not line_io(R, C - 1, "r", _).\n'
-    rule += ':- grid(R, C), line_io(R, C, "u", _), not line_io(R - 1, C, "d", _).\n'
-    rule += ':- grid(R, C), line_io(R, C, "r", _), not line_io(R, C + 1, "l", _).\n'
-    rule += ':- grid(R, C), line_io(R, C, "d", _), not line_io(R + 1, C, "u", _).\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}", _), not line_io(R, C - 1, "{Direction.RIGHT}", _).\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}", _), not line_io(R - 1, C, "{Direction.BOTTOM}", _).\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}", _), not line_io(R, C + 1, "{Direction.LEFT}", _).\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}", _), not line_io(R + 1, C, "{Direction.TOP}", _).\n'
 
     # path along the edges should have the same bridges
-    rule += ':- grid(R, C), line_io(R, C, "l", N1), line_io(R, C - 1, "r", N2), N1 != N2.\n'
-    rule += ':- grid(R, C), line_io(R, C, "u", N1), line_io(R - 1, C, "d", N2), N1 != N2.\n'
-    rule += ':- grid(R, C), line_io(R, C, "r", N1), line_io(R, C + 1, "l", N2), N1 != N2.\n'
-    rule += ':- grid(R, C), line_io(R, C, "d", N1), line_io(R + 1, C, "u", N2), N1 != N2.\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}", N1), line_io(R, C - 1, "{Direction.RIGHT}", N2), N1 != N2.\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}", N1), line_io(R - 1, C, "{Direction.BOTTOM}", N2), N1 != N2.\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}", N1), line_io(R, C + 1, "{Direction.LEFT}", N2), N1 != N2.\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}", N1), line_io(R + 1, C, "{Direction.TOP}", N2), N1 != N2.\n'
 
     # path inside the cell (not number) should have the same bridges, not sure if this is necessary
-    rule += ':- grid(R, C), num(N), not number(R, C, _), line_io(R, C, "l", N), not line_io(R, C, "r", N).\n'
-    rule += ':- grid(R, C), num(N), not number(R, C, _), line_io(R, C, "u", N), not line_io(R, C, "d", N).\n'
+    rule += f':- grid(R, C), num(N), not number(R, C, _), line_io(R, C, "{Direction.LEFT}", N), not line_io(R, C, "{Direction.RIGHT}", N).\n'
+    rule += f':- grid(R, C), num(N), not number(R, C, _), line_io(R, C, "{Direction.TOP}", N), not line_io(R, C, "{Direction.BOTTOM}", N).'
 
-    adj = 'adj_loop(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), line_io(R, C, "l", _).\n'
-    adj += 'adj_loop(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), line_io(R, C, "u", _).\n'
-    adj += "adj_loop(R0, C0, R, C) :- adj_loop(R, C, R0, C0)."
-    return rule + adj
+    return rule
+
+
+def hashi_adjacent() -> str:
+    """Generate a rule to constrain adjacent connectivity."""
+    adj = f'adj_line(R0, C0, R, C) :- R = R0, C = C0 + 1, grid(R, C), grid(R0, C0), line_io(R, C, "{Direction.LEFT}", _).\n'
+    adj += f'adj_line(R0, C0, R, C) :- R = R0 + 1, C = C0, grid(R, C), grid(R0, C0), line_io(R, C, "{Direction.TOP}", _).\n'
+    adj += "adj_line(R0, C0, R, C) :- adj_line(R, C, R0, C0)."
+    return adj
 
 
 class HashiSolver(Solver):
@@ -61,23 +67,23 @@ class HashiSolver(Solver):
         self.reset()
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lrud"))
-        self.add_program_line(shade_c(color="hashi"))
-        self.add_program_line(hashi_bridge())
-        self.add_program_line(grid_color_connected(color="hashi", adj_type="loop"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(hashi_bridge(color="green"))
+        self.add_program_line(hashi_adjacent())
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
-            self.add_program_line(f"hashi({r}, {c}).")
+            self.add_program_line(f"green({r}, {c}).")
             self.add_program_line(f"number({r}, {c}, {num if isinstance(num, int) else -1}).")
 
-        for (r, c, _, d), draw in puzzle.line.items():
-            if d.endswith("_2") and draw:
-                self.add_program_line(f':- not line_io({r}, {c}, "{d[0]}", 2).')
+        for (r, c, d, label), draw in puzzle.line.items():
+            if label == "double" and draw:
+                self.add_program_line(f':- not line_io({r}, {c}, "{d}", 2).')
 
-            if d.endswith("_1") and draw:
-                self.add_program_line(f':- not line_io({r}, {c}, "{d[0]}", 1).')
+            if label == "normal" and draw:
+                self.add_program_line(f':- not line_io({r}, {c}, "{d}", 1).')
 
         self.add_program_line(display(item="line_io", size=4))
 

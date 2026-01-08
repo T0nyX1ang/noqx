@@ -4,19 +4,19 @@ from typing import Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction
-from noqx.rule.loop import loop_segment, loop_sign, loop_straight, loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import route_segment, route_sign, route_straight, route_turning, single_route
 
 
 def count_shingoki(target: int, src_cell: Tuple[int, int]) -> str:
     """Generate a constraint to count the length of "2-way" straight lines."""
     r, c = src_cell
-    rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
-    rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
-    rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
+    rule = f':- route_segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
+    rule += f':- route_segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
+    rule += f':- route_segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
     return rule
 
 
@@ -35,29 +35,28 @@ class ShingokiSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="shingoki"))
-        self.add_program_line(fill_line(color="shingoki"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="shingoki", adj_type="loop"))
-        self.add_program_line(single_loop(color="shingoki"))
-        self.add_program_line(loop_sign(color="shingoki"))
-        self.add_program_line(loop_straight(color="shingoki"))
-        self.add_program_line(loop_turning(color="shingoki"))
+        self.add_program_line(shade_c(color="green"))
+        self.add_program_line(fill_line(color="green"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="green", adj_type="line"))
+        self.add_program_line(single_route(color="green"))
+        self.add_program_line(route_sign(color="green"))
+        self.add_program_line(route_straight(color="green"))
+        self.add_program_line(route_turning(color="green"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
-            self.add_program_line(f"shingoki({r}, {c}).")
-            self.add_program_line(loop_segment((r, c)))
+            self.add_program_line(f"green({r}, {c}).")
+            self.add_program_line(route_segment((r, c)))
 
             if symbol_name == "circle_L__1":
-                self.add_program_line(f":- turning({r}, {c}).")
+                self.add_program_line(f":- route_turning({r}, {c}).")
                 num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
                 if isinstance(num, int):
                     self.add_program_line(count_shingoki(num, (r, c)))
 
             if symbol_name == "circle_L__2":
-                self.add_program_line(f":- straight({r}, {c}).")
+                self.add_program_line(f":- route_straight({r}, {c}).")
                 num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
                 if isinstance(num, int):
                     self.add_program_line(count_shingoki(num, (r, c)))
@@ -67,7 +66,7 @@ class ShingokiSolver(Solver):
                 if isinstance(num, int):
                     self.add_program_line(count_shingoki(num, (r, c)))
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

@@ -1,8 +1,8 @@
 """The Pipe Link solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Point, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid
+from noqx.puzzle import Direction, Point, Puzzle
+from noqx.rule.common import display, fill_line, grid
 from noqx.rule.helper import fail_false, tag_encode
 
 
@@ -10,8 +10,10 @@ def adjacent_line_intersect() -> str:
     """Generate a constraint to check adjacent loop intersection."""
     adj = 'direction_type("H"; "V").\n'
     adj += 'adj_line_intersect(R, C, "H", R, C, "V") :- grid(R, C), not intersection(R, C).\n'
-    adj += 'adj_line_intersect(R, C, "H", R, C + 1, "H") :- grid(R, C), grid(R, C + 1), line_io(R, C, "r").\n'
-    adj += 'adj_line_intersect(R, C, "V", R + 1, C, "V") :- grid(R, C), grid(R + 1, C), line_io(R, C, "d").\n'
+    adj += f'adj_line_intersect(R, C, "H", R, C + 1, "H") :- grid(R, C), grid(R, C + 1), line_io(R, C, "{Direction.RIGHT}").\n'
+    adj += (
+        f'adj_line_intersect(R, C, "V", R + 1, C, "V") :- grid(R, C), grid(R + 1, C), line_io(R, C, "{Direction.BOTTOM}").\n'
+    )
     adj += "adj_line_intersect(R0, C0, T0, R, C, T) :- adj_line_intersect(R, C, T, R0, C0, T0)."
     return adj
 
@@ -28,10 +30,10 @@ def loop_intersect(color: str = "white", path: bool = False) -> str:
         rule += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
 
     rule += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    rule += ':- grid(R, C), line_io(R, C, "l"), not line_io(R, C - 1, "r").\n'
-    rule += ':- grid(R, C), line_io(R, C, "u"), not line_io(R - 1, C, "d").\n'
-    rule += ':- grid(R, C), line_io(R, C, "r"), not line_io(R, C + 1, "l").\n'
-    rule += ':- grid(R, C), line_io(R, C, "d"), not line_io(R + 1, C, "u").'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}"), not line_io(R + 1, C, "{Direction.TOP}").'
     return rule
 
 
@@ -58,17 +60,15 @@ class PipeLinkSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line("pipelink(R, C) :- grid(R, C).")
-        self.add_program_line(fill_line(color="pipelink"))
-        self.add_program_line(loop_intersect(color="pipelink"))
+        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(loop_intersect(color="grid"))
         self.add_program_line(adjacent_line_intersect())
-        self.add_program_line(loop_intersect_connected(color="pipelink"))
+        self.add_program_line(loop_intersect_connected(color="grid"))
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
-            for d in "lurd":
-                if Point(r, c, label=d) in puzzle.line:
+            for d in (Direction.TOP, Direction.LEFT, Direction.BOTTOM, Direction.RIGHT):
+                if Point(r, c, d) in puzzle.line:
                     self.add_program_line(f'line_io({r}, {c}, "{d}").')
                 else:
                     self.add_program_line(f'not line_io({r}, {c}, "{d}").')

@@ -2,18 +2,18 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_line, grid
+from noqx.rule.common import area, defined, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
-from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import area_border
+from noqx.rule.route import directed_route
 
 
 def adj_before() -> str:
     """Generate a rule to constrain adjacent connectivity."""
-    adj = 'adj_before(R, C - 1, R, C) :- grid(R, C), line_in(R, C, "l").\n'
-    adj += 'adj_before(R - 1, C, R, C) :- grid(R, C), line_in(R, C, "u").\n'
-    adj += 'adj_before(R, C + 1, R, C) :- grid(R, C), line_in(R, C, "r").\n'
-    adj += 'adj_before(R + 1, C, R, C) :- grid(R, C), line_in(R, C, "d").\n'
+    adj = f'adj_before(R, C - 1, R, C) :- grid(R, C), line_in(R, C, "{Direction.LEFT}").\n'
+    adj += f'adj_before(R - 1, C, R, C) :- grid(R, C), line_in(R, C, "{Direction.TOP}").\n'
+    adj += f'adj_before(R, C + 1, R, C) :- grid(R, C), line_in(R, C, "{Direction.RIGHT}").\n'
+    adj += f'adj_before(R + 1, C, R, C) :- grid(R, C), line_in(R, C, "{Direction.BOTTOM}").\n'
     return adj
 
 
@@ -69,10 +69,10 @@ class HaisuSolver(Solver):
         fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
+
         self.add_program_line("haisu(R, C) :- grid(R, C).")
         self.add_program_line(fill_line(color="haisu", directed=True))
-        self.add_program_line(directed_loop(color="haisu", path=True))
+        self.add_program_line(directed_route(color="haisu", path=True))
         self.add_program_line(connected_directed_path(color="haisu"))
         self.add_program_line(haisu_rules())
         self.add_program_line(adj_before())
