@@ -11,19 +11,15 @@ from noqx.rule.route import route_straight, route_turning, single_route
 
 def masyu_black_clue_rule() -> str:
     """Generate a rule for black_clue masyu."""
-    black_clue_rule = ":- grid(R, C), black_clue(R, C), not route_turning(R, C).\n"
-    black_clue_rule += (
-        ":- grid(R, C), black_clue(R, C), route_turning(R, C), adj_line(R, C, R1, C1), not route_straight(R1, C1).\n"
-    )
+    black_clue_rule = ":- grid(R, C), black_clue(R, C), not turning(R, C).\n"
+    black_clue_rule += ":- grid(R, C), black_clue(R, C), turning(R, C), adj_line(R, C, R1, C1), not straight(R1, C1).\n"
     return black_clue_rule
 
 
 def masyu_white_clue_rule() -> str:
     """Generate a rule for white_clue masyu rule."""
-    white_clue_rule = ":- grid(R, C), white_clue(R, C), not route_straight(R, C).\n"
-    white_clue_rule += (
-        ":- grid(R, C), white_clue(R, C), route_straight(R, C), { route_turning(R1, C1): adj_line(R, C, R1, C1) } = 0.\n"
-    )
+    white_clue_rule = ":- grid(R, C), white_clue(R, C), not straight(R, C).\n"
+    white_clue_rule += ":- grid(R, C), white_clue(R, C), straight(R, C), { turning(R1, C1): adj_line(R, C, R1, C1) } = 0.\n"
     return white_clue_rule
 
 

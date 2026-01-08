@@ -14,10 +14,10 @@ from noqx.rule.route import route_segment, route_sign, single_route
 def count_geradeweg_constraint(target: int, src_cell: Tuple[int, int]) -> str:
     """Generate a constraint to count the geradeweg clue."""
     r, c = src_cell
-    rule = f':- route_segment({r}, {c}, N1, N2, "T"), |{r} - N1| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "T"), |{c} - N2| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
+    rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "T"), |{c} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
     return rule
 
 
@@ -51,7 +51,7 @@ class GeradewegSolver(Solver):
             validate_direction(r, c, d)
             validate_type(label, "normal")
             self.add_program_line(route_segment((r, c)))
-            self.add_program_line(f':- route_segment({r}, {c}, N1, N2, "T"), |{r} - N1| != |{c} - N2|.')
+            self.add_program_line(f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| != |{c} - N2|.')
 
             if isinstance(num, int):
                 self.add_program_line(count_geradeweg_constraint(num, (r, c)))

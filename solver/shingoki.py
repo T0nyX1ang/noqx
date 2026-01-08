@@ -14,9 +14,9 @@ from noqx.rule.route import route_segment, route_sign, route_straight, route_tur
 def count_shingoki(target: int, src_cell: Tuple[int, int]) -> str:
     """Generate a constraint to count the length of "2-way" straight lines."""
     r, c = src_cell
-    rule = f':- route_segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
+    rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
     return rule
 
 
@@ -50,13 +50,13 @@ class ShingokiSolver(Solver):
             self.add_program_line(route_segment((r, c)))
 
             if symbol_name == "circle_L__1":
-                self.add_program_line(f":- route_turning({r}, {c}).")
+                self.add_program_line(f":- turning({r}, {c}).")
                 num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
                 if isinstance(num, int):
                     self.add_program_line(count_shingoki(num, (r, c)))
 
             if symbol_name == "circle_L__2":
-                self.add_program_line(f":- route_straight({r}, {c}).")
+                self.add_program_line(f":- straight({r}, {c}).")
                 num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
                 if isinstance(num, int):
                     self.add_program_line(count_shingoki(num, (r, c)))

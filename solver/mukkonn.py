@@ -14,19 +14,19 @@ def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
 
     rule = ""
     if label == f"corner_{Direction.TOP}":
-        max_u = f"#max {{ R0: grid(R0, {c}), route_turning(R0, {c}), R0 < {r} }}"
+        max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
         rule += f':- line_io({r}, {c}, "{Direction.TOP}"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
     if label == f"corner_{Direction.RIGHT}":
-        min_r = f"#min {{ C0: grid({r}, C0), route_turning({r}, C0), C0 > {c} }}"
+        min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
         rule += f':- line_io({r}, {c}, "{Direction.RIGHT}"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
     if label == f"corner_{Direction.LEFT}":
-        max_l = f"#max {{ C0: grid({r}, C0), route_turning({r}, C0), C0 < {c} }}"
+        max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
         rule += f':- line_io({r}, {c}, "{Direction.LEFT}"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
     if label == f"corner_{Direction.BOTTOM}":
-        min_d = f"#min {{ R0: grid(R0, {c}), route_turning(R0, {c}), R0 > {r} }}"
+        min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
         rule += f':- line_io({r}, {c}, "{Direction.BOTTOM}"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
     return rule

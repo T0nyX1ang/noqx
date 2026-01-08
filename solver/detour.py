@@ -40,7 +40,7 @@ class DetourSolver(Solver):
             if rc:
                 num = puzzle.text[Point(*rc, Direction.CENTER, f"corner_{Direction.TOP_LEFT}")]
                 if isinstance(num, int):
-                    self.add_program_line(f":- #count {{ R, C: area({i}, R, C), route_turning(R, C) }} != {num}.")
+                    self.add_program_line(f":- #count {{ R, C: area({i}, R, C), turning(R, C) }} != {num}.")
 
         for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')

@@ -13,10 +13,10 @@ def midloop_constraint(r: int, c: int, d: str) -> str:
     """Generate a white constraint."""
     rule = ""
 
-    max_u = f"#max {{ R0: grid(R0, {c}), route_turning(R0, {c}), R0 < {r} }}"
-    max_l = f"#max {{ C0: grid({r}, C0), route_turning({r}, C0), C0 < {c} }}"
-    min_r = f"#min {{ C0: grid({r}, C0), route_turning({r}, C0), C0 >= {c} }}"
-    min_d = f"#min {{ R0: grid(R0, {c}), route_turning(R0, {c}), R0 >= {r} }}"
+    max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
+    max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
+    min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 >= {c} }}"
+    min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 >= {r} }}"
 
     if d == Direction.CENTER:
         rule += f':- line_io({r}, {c}, "{Direction.TOP}"), line_io({r}, {c}, "{Direction.BOTTOM}"), Ru = {max_u}, grid(Ru, _), Rd = {min_d}, grid(Rd, _), {r} - Ru != Rd - {r}.\n'
@@ -62,7 +62,7 @@ class MidLoopSolver(Solver):
             fail_false(symbol_name.startswith("circle_SS"), "Invalid symbol type.")
 
             if d == Direction.CENTER:
-                self.add_program_line(f":- not route_straight({r}, {c}).")
+                self.add_program_line(f":- not straight({r}, {c}).")
                 self.add_program_line(midloop_constraint(r, c, d))
 
             if d == Direction.TOP:

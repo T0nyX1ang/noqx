@@ -11,8 +11,8 @@ from noqx.rule.route import route_straight, route_turning, single_route
 
 def dotchi_constraint() -> str:
     """Generate a constraint for the Dotchi-Loop puzzle."""
-    rule = "turning_area(A) :- area(A, R, C), white_clue(R, C), route_turning(R, C).\n"
-    rule += "straight_area(A) :- area(A, R, C), white_clue(R, C), route_straight(R, C).\n"
+    rule = "turning_area(A) :- area(A, R, C), white_clue(R, C), turning(R, C).\n"
+    rule += "straight_area(A) :- area(A, R, C), white_clue(R, C), straight(R, C).\n"
     rule += ":- area(A, _, _), turning_area(A), straight_area(A)."
     return rule
 

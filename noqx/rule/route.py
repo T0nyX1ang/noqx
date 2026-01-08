@@ -142,16 +142,14 @@ def route_segment(src_cell: Tuple[int, int]) -> str:
     max_l = f'#max {{ C0: grid({r}, C0 + 1), not route_sign({r}, C0, "{Direction.LEFT_RIGHT}"), C0 < {c} }}'
     min_r = f'#min {{ C0: grid({r}, C0 - 1), not route_sign({r}, C0, "{Direction.LEFT_RIGHT}"), C0 > {c} }}'
 
-    rule = (
-        f'route_segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.TOP_LEFT}"), N1 = {max_u}, N2 = {max_l}.\n'
-    )
-    rule += f'route_segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.BOTTOM_LEFT}"), N1 = {min_d}, N2 = {max_l}.\n'
+    rule = f'segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.TOP_LEFT}"), N1 = {max_u}, N2 = {max_l}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.BOTTOM_LEFT}"), N1 = {min_d}, N2 = {max_l}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.TOP_RIGHT}"), N1 = {max_u}, N2 = {min_r}.\n'
     rule += (
-        f'route_segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.TOP_RIGHT}"), N1 = {max_u}, N2 = {min_r}.\n'
+        f'segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.BOTTOM_RIGHT}"), N1 = {min_d}, N2 = {min_r}.\n'
     )
-    rule += f'route_segment({r}, {c}, N1, N2, "T") :- route_sign({r}, {c}, "{Direction.BOTTOM_RIGHT}"), N1 = {min_d}, N2 = {min_r}.\n'
-    rule += f'route_segment({r}, {c}, N1, N2, "V") :- route_sign({r}, {c}, "{Direction.TOP_BOTTOM}"), N1 = {max_u}, N2 = {min_d}.\n'
-    rule += f'route_segment({r}, {c}, N1, N2, "H") :- route_sign({r}, {c}, "{Direction.LEFT_RIGHT}"), N1 = {max_l}, N2 = {min_r}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "V") :- route_sign({r}, {c}, "{Direction.TOP_BOTTOM}"), N1 = {max_u}, N2 = {min_d}.\n'
+    rule += f'segment({r}, {c}, N1, N2, "H") :- route_sign({r}, {c}, "{Direction.LEFT_RIGHT}"), N1 = {max_l}, N2 = {min_r}.\n'
 
     return rule
 
@@ -167,7 +165,7 @@ def route_straight(color: str = "white") -> str:
     """
     rule = ""
     for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
-        rule += f'route_straight(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
+        rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
     return rule
 
 
@@ -187,7 +185,7 @@ def route_turning(color: str = "white") -> str:
         (Direction.BOTTOM, Direction.LEFT),
         (Direction.BOTTOM, Direction.RIGHT),
     ):
-        rule += f'route_turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
+        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
     return rule
 
 

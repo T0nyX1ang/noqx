@@ -13,21 +13,21 @@ from noqx.rule.route import route_segment, route_sign, single_route
 
 def balance_rule() -> str:
     """Generate a balance rule."""
-    rule = ':- black_clue(R, C), route_segment(R, C, N1, N2, "T"), |R - N1| = |C - N2|.\n'
-    rule += ':- black_clue(R, C), route_segment(R, C, N1, N2, "V"), |R - N1| = |R - N2|.\n'
-    rule += ':- black_clue(R, C), route_segment(R, C, N1, N2, "H"), |C - N1| = |C - N2|.\n'
-    rule += ':- white_clue(R, C), route_segment(R, C, N1, N2, "T"), |R - N1| != |C - N2|.\n'
-    rule += ':- white_clue(R, C), route_segment(R, C, N1, N2, "V"), |R - N1| != |R - N2|.\n'
-    rule += ':- white_clue(R, C), route_segment(R, C, N1, N2, "H"), |C - N1| != |C - N2|.\n'
+    rule = ':- black_clue(R, C), segment(R, C, N1, N2, "T"), |R - N1| = |C - N2|.\n'
+    rule += ':- black_clue(R, C), segment(R, C, N1, N2, "V"), |R - N1| = |R - N2|.\n'
+    rule += ':- black_clue(R, C), segment(R, C, N1, N2, "H"), |C - N1| = |C - N2|.\n'
+    rule += ':- white_clue(R, C), segment(R, C, N1, N2, "T"), |R - N1| != |C - N2|.\n'
+    rule += ':- white_clue(R, C), segment(R, C, N1, N2, "V"), |R - N1| != |R - N2|.\n'
+    rule += ':- white_clue(R, C), segment(R, C, N1, N2, "H"), |C - N1| != |C - N2|.\n'
     return rule
 
 
 def count_balance(target: int, src_cell: Tuple[int, int]) -> str:
     """Generate a constraint to count the length of "2-way" straight lines."""
     r, c = src_cell
-    rule = f':- route_segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
-    rule += f':- route_segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
+    rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
+    rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
     return rule
 
 
