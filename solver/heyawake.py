@@ -31,13 +31,13 @@ def limit_area_2x2_rect(limit: int, _id: int, color: str = "black") -> str:
 
 def limit_border(limit: int, ar: Iterable[Tuple[int, int]], puzzle: Puzzle, _type: str, color: str = "black") -> str:
     """Limit the border shades of an area."""
-    if _type == "top":
+    if _type == Direction.TOP:
         n, key = puzzle.col, 0
-    elif _type == "bottom":
+    elif _type == Direction.BOTTOM:
         n, key = puzzle.col, puzzle.row - 1
-    elif _type == "left":
+    elif _type == Direction.LEFT:
         n, key = puzzle.row, 0
-    elif _type == "right":
+    elif _type == Direction.RIGHT:
         n, key = puzzle.row, puzzle.col - 1
     else:
         raise ValueError(f"Invalid border type: {_type}")
@@ -144,10 +144,10 @@ class HeyawakeSolver(Solver):
                         self.add_program_line(area_border_simple(_id=i, ar=ar))
                         self.add_program_line(area_border_connected(_id=i, color="gray", adj_type="x"))
                         self.add_program_line(limit_area_2x2_rect(lmt_2x2, _id=i, color="gray"))
-                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type="top", color="gray"))
-                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type="bottom", color="gray"))
-                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type="left", color="gray"))
-                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type="right", color="gray"))
+                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type=Direction.TOP, color="gray"))
+                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type=Direction.BOTTOM, color="gray"))
+                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type=Direction.LEFT, color="gray"))
+                        self.add_program_line(limit_border(lmt_border, ar, puzzle, _type=Direction.RIGHT, color="gray"))
 
         for r in range(puzzle.row):
             borders_in_row = [c for c in range(1, puzzle.col) if Point(r, c, Direction.LEFT) in puzzle.edge]

@@ -2,18 +2,18 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, defined, direction, display, fill_line, grid
+from noqx.rule.common import area, defined, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
-from noqx.rule.loop import directed_loop
 from noqx.rule.neighbor import area_border
+from noqx.rule.route import directed_route
 
 
 def adj_before() -> str:
     """Generate a rule to constrain adjacent connectivity."""
-    adj = 'adj_before(R, C - 1, R, C) :- grid(R, C), line_in(R, C, "l").\n'
-    adj += 'adj_before(R - 1, C, R, C) :- grid(R, C), line_in(R, C, "u").\n'
-    adj += 'adj_before(R, C + 1, R, C) :- grid(R, C), line_in(R, C, "r").\n'
-    adj += 'adj_before(R + 1, C, R, C) :- grid(R, C), line_in(R, C, "d").\n'
+    adj = f'adj_before(R, C - 1, R, C) :- grid(R, C), line_in(R, C, "{Direction.LEFT}").\n'
+    adj += f'adj_before(R - 1, C, R, C) :- grid(R, C), line_in(R, C, "{Direction.TOP}").\n'
+    adj += f'adj_before(R, C + 1, R, C) :- grid(R, C), line_in(R, C, "{Direction.RIGHT}").\n'
+    adj += f'adj_before(R + 1, C, R, C) :- grid(R, C), line_in(R, C, "{Direction.BOTTOM}").\n'
     return adj
 
 
@@ -49,7 +49,7 @@ class HaisuSolver(Solver):
     """The Haisu solver."""
 
     name = "Haisu"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7ZRNb9pAEIbv/Ipoz3Pw2l7b60tFU8iF0g+oosiyIiBusQqlBVxFRvz3vDNeYkdCqqpEVQ6V8fDOFzyzu/buVzXbFhTjChLySOMKvFDuyOPP6ZqW+1WRXlC/2i83WwiiD8MhfZ2tdkUvc1V571DbtO5TfZVmSitSPm6tcqo/pYf6fVoPqJ4gpUgjNmqKfMhBK68lz+qyCWoPeuw05A3kotwuVsXtqIl8TLN6Sor/5610s1Trze9COQ72F5v1vOTAfLbHMLtl+dNldtXd5nvlanV+pLrf4I7O4AYtLssGl9UZXJ7i2bir8kdxf47U5scjVvwzWG/TjLG/tDJp5SQ9wI7TgwoitPImy6aoIIEbPLohu2oCSBcw3pO84bz/6EacVW/a8sh/Uh5zvi2POauu2vKEA20+CTts4NVCfSN2KNYXO8VQVAdi34n1xBqxI6kZYFYdGNIhBvbxizjdOrSNDiPSJnbakuY5WJsYGiOyxsnXsXYavbHrjQHI3KLRa11vgjls0Gjrke+5XhtAYzBoxMjXTS9i0Mb9LziN4zQdNubhJRcNBuMYTIeZOaMTJ9h4C4QH9YmrTzqcYNP2xIZ66+ptlx9baBtmfEMzJxb1Wpb2UmwoNpIlj/mU/dU5fP7u/hEn80HeubDGL+3lvUyN8GxejDfb9WyFJ3Rw963jjav1vNiefLwbjz11r+SWpyT8/7r8969LXn3vtR3W14aDx0ctZ+WuUnnvAQ==",
@@ -69,10 +69,10 @@ class HaisuSolver(Solver):
         fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
+
         self.add_program_line("haisu(R, C) :- grid(R, C).")
         self.add_program_line(fill_line(color="haisu", directed=True))
-        self.add_program_line(directed_loop(color="haisu", path=True))
+        self.add_program_line(directed_route(color="haisu", path=True))
         self.add_program_line(connected_directed_path(color="haisu"))
         self.add_program_line(haisu_rules())
         self.add_program_line(adj_before())

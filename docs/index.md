@@ -1,6 +1,6 @@
 # Noqx
 
-[Noqx](https://github.com/T0nyX1ang/noqx) is an extended logic puzzle solver of [Noq](https://github.com/mstang107/noq).
+[Noqx](https://github.com/T0nyX1ang/noqx){:target="\_blank"} is an extended logic puzzle solver of [Noq](https://github.com/mstang107/noq){:target="\_blank"}.
 
 - Try it through this [portal](./penpa-edit/){:target="\_blank"} for 140+ puzzle types and enhanced efficiency.
 

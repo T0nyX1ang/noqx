@@ -7,7 +7,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.2
+    rev: v0.14.10
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
@@ -21,7 +21,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.1.0
+    rev: v4.3.0
     hooks:
       - id: conventional-pre-commit
         args: []

@@ -10,7 +10,7 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 
 def border_block_constraint() -> str:
     """Generate a border block constraint."""
-    mutual = "edge_left(R, C); edge_left(R - 1, C); edge_top(R, C); edge_top(R, C - 1)"
+    mutual = f'edge(R, C, "{Direction.LEFT}"); edge(R - 1, C, "{Direction.LEFT}"); edge(R, C, "{Direction.TOP}"); edge(R, C - 1, "{Direction.TOP}")'
     rule = f":- ndot(R, C), {{ {mutual} }} = 1.\n"
     rule += f":- ndot(R, C), {{ {mutual} }} > 2.\n"  # 0 or 2 connected edges
     rule += f":- dot(R, C), {{ {mutual} }} < 3.\n"
@@ -60,9 +60,8 @@ class BorderBlockSolver(Solver):
                     self.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

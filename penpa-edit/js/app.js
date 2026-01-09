@@ -6,7 +6,7 @@ function exp() {
   return result;
 }
 
-function imp(penpa, loadInfo = true) {
+function imp(penpa) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
 
@@ -45,6 +45,7 @@ function imp(penpa, loadInfo = true) {
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nothing", "moonsun");
   urlstring = urlstring.replace("nothree", "tentaisho");
+  urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("squarejam", "shikaku");
@@ -97,7 +98,7 @@ function imp(penpa, loadInfo = true) {
     typeSelect.dispatchEvent(new Event("change"));
   }
 
-  if (loadInfo) hookLoad(currentContent);
+  hookLoad(currentContent);
 }
 
 function clearInfo() {
@@ -187,7 +188,7 @@ function resetGridMode(puzzleType) {
   const oldModeFlag = pu.mode.grid;
   let modeFlag = ["1", "2", "1"]; // default grid mode
 
-  if (["loop", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // loop/region mode
+  if (["route", "region"].includes(puzzleCategory)) modeFlag = ["2", "2", "1"]; // route/region mode
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 
@@ -259,7 +260,7 @@ $(window).on("load", function () {
 
   const categoryName = {
     shade: "- Shading -",
-    loop: "- Loop / Path -",
+    route: "- Loop / Path -",
     region: "- Area Division -",
     num: "- Number -",
     var: "- Variety -",
@@ -310,9 +311,8 @@ $(window).on("load", function () {
   choicesType.setChoices(Object.values(puzzleTypeDict));
 
   typeSelect.addEventListener("change", () => {
-    if (choicesType.getValue(true) !== typeSelect.value) {
-      choicesType.setChoiceByValue(typeSelect.value);
-    }
+    const isPuzzleTypeChanged = puzzleType !== typeSelect.value;
+    if (isPuzzleTypeChanged) choicesType.setChoiceByValue(typeSelect.value);
 
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
@@ -337,6 +337,8 @@ $(window).on("load", function () {
           parameterBox.appendChild(paramDiv);
         }
       }
+
+      if (exampleSelect.value !== "" && !isPuzzleTypeChanged) return;
 
       choicesExample.clearStore();
       let exampleList = [{ value: "", label: "Choose Example", selected: true }];

@@ -6,7 +6,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region
+from noqx.rule.shape import all_rect_region, count_rect
 
 
 class NawabariSolver(Solver):
@@ -28,7 +28,7 @@ class NawabariSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(count_rect(len(puzzle.text)))
 
         all_src = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
@@ -47,9 +47,8 @@ class NawabariSolver(Solver):
             all_src.append((r, c))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

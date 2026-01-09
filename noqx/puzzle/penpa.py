@@ -176,7 +176,7 @@ class PenpaPuzzle(Puzzle):
                 self.surface[point] = Color.BLACK
 
             if color_code == 2:
-                self.surface[point] = Color.GREEN
+                self.surface[point] = Color.WHITE
 
     def _unpack_text(self):
         """Unpack number/text elements from the board.
@@ -184,6 +184,8 @@ class PenpaPuzzle(Puzzle):
         * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode into the `text` attribute.
 
         * For **tapa-like** puzzles, the numbers are separately stored with the label `tapa_x`. Single numbers will be converted to the `tapa_0` label automatically.
+
+        * For **yaji-like** puzzles, the numbers are separately stored with the label `arrow_x`. The direction `x` is translated by a conversion table.
 
         * The **Candidates** submode in sudoku-like puzzles are neglected during unpacking.
         """
@@ -196,25 +198,21 @@ class PenpaPuzzle(Puzzle):
                 for i, data in enumerate(map(_int_or_str, list(num_data[0]))):
                     self.text[Point(*coord, f"tapa_{i}")] = data
             elif num_data[2] != "7":  # neglect candidates, convert to Union[int, str]
-                self.text[Point(*coord, "normal")] = _int_or_str(num_data[0])
+                if str(num_data[0]).endswith(
+                    ("_0", "_1", "_2", "_3")
+                ):  # for arrow-like puzzles, the label is set with arrow direction
+                    data, arrow_dir = num_data[0].split("_")
+                    arrow_dir_convert = {"0": Direction.TOP, "1": Direction.LEFT, "2": Direction.RIGHT, "3": Direction.BOTTOM}
+                    self.text[Point(*coord, f"arrow_{arrow_dir_convert[arrow_dir]}")] = _int_or_str(data)
+                else:
+                    self.text[Point(*coord, "normal")] = _int_or_str(num_data[0])
 
     def _unpack_sudoku(self):
         """Unpack sudoku elements from the board.
 
         * Store the numbers or texts in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Number` mode, `Sudoku` submode into the `text` attribute.
 
-        * The numbers are stored with `corner_x` labels indicating their direction in the cell. The direction `x` is translated as follows:
-            * 0: `top-left`
-            * 1: `top-right`
-            * 2: `bottom-left`
-            * 3: `bottom-right`
-            * 4: `top`
-            * 5: `right`
-            * 6: `left`
-            * 7: `bottom`
-
-        Warning:
-            Since the `corner_x` label is hard-coded, the solvers must be very careful of these labels. The label might be encoded more conveniently in future versions.
+        * The numbers are stored with `corner_x` labels indicating their direction in the cell. The direction `x` is translated by a conversion table.
         """
         corner_convert = {
             0: Direction.TOP_LEFT,
@@ -245,8 +243,27 @@ class PenpaPuzzle(Puzzle):
         for index, (style, shape, _) in self.problem["symbol"].items():
             (r, c), category = self.index_to_coord(int(index))
             if isinstance(style, list):
-                symbol_name = f"{shape}__{_style_convert(style)}"
+                cvt_style = _style_convert(style)
+                symbol_name = f"{shape}__{cvt_style}"
                 self.symbol[Point(*_category_to_direction(r, c, category), "multiple")] = symbol_name
+
+                if (
+                    self.puzzle_name in ["castle", "tetrochain", "yajilin", "yajikazu", "yajitatami"]
+                    and shape == "arrow_fouredge_B"
+                    and self.text.get(Point(*_category_to_direction(r, c, category), "normal")) is not None
+                ):  # compatible with older Penpa+ versions
+                    num = self.text.pop(Point(*_category_to_direction(r, c, category), "normal"))
+                    if cvt_style in [4, 16]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.TOP}")] = num
+
+                    if cvt_style in [1, 64]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.BOTTOM}")] = num
+
+                    if cvt_style in [8, 32]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.LEFT}")] = num
+
+                    if cvt_style in [2, 128]:
+                        self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.RIGHT}")] = num
             else:
                 symbol_name = f"{shape}__{style}"
                 # special case for nondango (which problem/solution symbols are on the same coordinates)
@@ -277,9 +294,9 @@ class PenpaPuzzle(Puzzle):
             elif coord_1[1] == coord_2[1]:  # col equal, vertical line
                 self.edge[Point(coord_2[0], coord_2[1] + 1, Direction.LEFT)] = True
             elif coord_1[0] - coord_2[0] == 1 and coord_2[1] - coord_1[1] == 1:  # upwards diagonal line
-                self.edge[Point(coord_2[0], coord_2[1], Direction.DIAG_UP)] = True
+                self.edge[Point(coord_2[0], coord_2[1], Direction.TOP_RIGHT)] = True
             elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
-                self.edge[Point(coord_2[0], coord_2[1], Direction.DIAG_DOWN)] = True
+                self.edge[Point(coord_2[0], coord_2[1], Direction.TOP_LEFT)] = True
 
         for index, _ in self.problem["deleteedge"].items():  # edge deletion mark, stronger than helper_x
             index_1, index_2 = map(int, index.split(","))
@@ -295,19 +312,18 @@ class PenpaPuzzle(Puzzle):
 
         * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode into the `line` attribute. Supported submodes are `Normal`, `Middle`, and `Helper (x)`.
 
-        Warning:
-            For **hashi** puzzles, there are two types of lines: single lines and double lines. These two types of lines are differentiated by adding a suffix `_1` or `_2` to the label respectively. The solvers must be very careful of these labels.
+        * For **hashi** puzzles, there are two types of lines: single lines and double lines. Double lines are stored with the `double` label.
         """
         for index, data in self.problem["line"].items():
             if "," not in index:  # helper(x) lines
                 coord, category = self.index_to_coord(int(index))
                 if category == 2:
-                    self.line[Point(coord[0], coord[1], label="d")] = False
-                    self.line[Point(coord[0] + 1, coord[1], label="u")] = False
+                    self.line[Point(coord[0], coord[1], f"{Direction.BOTTOM}")] = False
+                    self.line[Point(coord[0] + 1, coord[1], f"{Direction.TOP}")] = False
 
                 if category == 3:
-                    self.line[Point(coord[0], coord[1], label="r")] = False
-                    self.line[Point(coord[0], coord[1] + 1, label="l")] = False
+                    self.line[Point(coord[0], coord[1], f"{Direction.RIGHT}")] = False
+                    self.line[Point(coord[0], coord[1] + 1, f"{Direction.LEFT}")] = False
 
                 continue
 
@@ -315,15 +331,19 @@ class PenpaPuzzle(Puzzle):
             coord_1, _ = self.index_to_coord(index_1)
             coord_2, category = self.index_to_coord(index_2)
 
-            hashi_num = (self.puzzle_name == "hashi") * ("_2" if data == 30 else "_1")  # hashi has two types of lines
+            line_type = "double" if self.puzzle_name == "hashi" and data == 30 else "normal"  # hashi has two types of lines
             if category == 0:
-                dd = "rl" if coord_1[0] == coord_2[0] else "du"
-                self.line[Point(*coord_1, label=f"{dd[0]}{hashi_num}")] = True
-                self.line[Point(*coord_2, label=f"{dd[1]}{hashi_num}")] = True
+                dd = (Direction.RIGHT, Direction.LEFT) if coord_1[0] == coord_2[0] else (Direction.BOTTOM, Direction.TOP)
+                self.line[Point(*coord_1, dd[0], label=line_type)] = True
+                self.line[Point(*coord_2, dd[1], label=line_type)] = True
             else:
                 eqxy = coord_1 == coord_2
-                d = ("d" if eqxy else "u") if category == 2 else ("r" if eqxy else "l")
-                self.line[Point(*coord_1, label=f"{d}{hashi_num}")] = True
+                d = (
+                    (f"{Direction.BOTTOM}" if eqxy else f"{Direction.TOP}")
+                    if category == 2
+                    else (f"{Direction.RIGHT}" if eqxy else f"{Direction.LEFT}")
+                )
+                self.line[Point(*coord_1, d, label=line_type)] = True
 
     def _unpack_board(self):
         """Initialize the content of the puzzle.
@@ -425,10 +445,10 @@ class PenpaPuzzle(Puzzle):
                 coord_2 = (r - 1, c)
             if d == Direction.LEFT:
                 coord_2 = (r, c - 1)
-            if d == Direction.DIAG_UP:
+            if d == Direction.TOP_RIGHT:
                 coord_1 = (r, c - 1)
                 coord_2 = (r - 1, c)
-            if d == Direction.DIAG_DOWN:
+            if d == Direction.TOP_LEFT:
                 coord_2 = (r, c)
 
             index_1 = self.coord_to_index(coord_1, category=1)
@@ -441,21 +461,24 @@ class PenpaPuzzle(Puzzle):
 
         * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode from the `line` attribute. Only `Normal` submode is supported, and the original lines won't be overwritten.
         """
-        for r, c, _, label in self.line:
-            index_1 = self.coord_to_index((r, c), category=0)
-            if label.startswith("r"):
-                index_2 = self.coord_to_index((r, c), category=3)
-            elif label.startswith("d"):
-                index_2 = self.coord_to_index((r, c), category=2)
-            elif label.startswith("l"):
-                index_2 = self.coord_to_index((r, c - 1), category=3)
-            elif label.startswith("u"):
-                index_2 = self.coord_to_index((r - 1, c), category=2)
-            else:
-                raise ValueError("Unsupported line direction.")
+        for r, c, d, label in self.line:
+            coord_1 = (r, c)
+            coord_2 = (r, c)
+            category = 0
 
-            if self.puzzle_name == "hashi":
-                self.solution["line"][f"{index_1},{index_2}"] = 3 if label.endswith("_1") else 30
+            if d == Direction.RIGHT:
+                coord_2, category = (r, c), 3
+            if d == Direction.BOTTOM:
+                coord_2, category = (r, c), 2
+            if d == Direction.LEFT:
+                coord_2, category = (r, c - 1), 3
+            if d == Direction.TOP:
+                coord_2, category = (r - 1, c), 2
+
+            index_1 = self.coord_to_index(coord_1, 0)
+            index_2 = self.coord_to_index(coord_2, category)
+            if self.puzzle_name == "hashi" and label == "double":
+                self.solution["line"][f"{index_1},{index_2}"] = 30
             elif not self.problem["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
                 self.solution["line"][f"{index_1},{index_2}"] = 3
 

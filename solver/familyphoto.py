@@ -3,12 +3,12 @@
 from typing import Tuple, Union
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region
+from noqx.rule.shape import all_rect_region, count_rect
 
 
 def count_family_photo_size(num: int, src_cell: Tuple[int, int], adj_type: Union[int, str] = "edge") -> str:
@@ -40,7 +40,7 @@ class FamilyPhotoSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(count_rect(len(puzzle.text)))
 
         for (r, c, d, label), _ in puzzle.symbol.items():
             validate_direction(r, c, d)
@@ -48,10 +48,10 @@ class FamilyPhotoSolver(Solver):
             self.add_program_line(f"black({r}, {c}).")
 
             if (r + 1, c, d, label) in puzzle.symbol:
-                self.add_program_line(f":- edge_top({r + 1}, {c}).")
+                self.add_program_line(f':- edge({r + 1}, {c}, "{Direction.TOP}").')
 
             if (r, c + 1, d, label) in puzzle.symbol:
-                self.add_program_line(f":- edge_left({r}, {c + 1}).")
+                self.add_program_line(f':- edge({r}, {c + 1}, "{Direction.LEFT}").')
 
         all_src = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
@@ -70,9 +70,8 @@ class FamilyPhotoSolver(Solver):
             all_src.append((r, c))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

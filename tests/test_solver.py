@@ -15,6 +15,7 @@ from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape
 from noqx.rule.variety import yaji_count
 from solver.binairo import unique_linecolor
 from solver.castle import wall_length
+from solver.compass import compass_constraint
 from solver.heyawake import limit_border
 from solver.nagare import nagare_wind
 
@@ -55,7 +56,8 @@ class TestSolver(unittest.TestCase):
                         params[k] = v_str
 
                 response = run_solver(puzzle_name, puzzle_example["data"], params)
-                self.assertEqual(len(response["url"]), 1)
+                if len(response["url"]) != 1:
+                    self.fail(f"Failed puzzle: {puzzle_name}.")
 
     def test_nonogram_edge_case(self):
         """Test nonogram edge case."""
@@ -67,6 +69,12 @@ class TestSolver(unittest.TestCase):
         """Test nurimisaki edge case."""
         payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
         response = run_solver("nurimisaki", payload, {})
+        self.assertEqual(len(response["url"]), 1)
+
+    def test_hinge_edge_case(self):
+        """Test hinge edge case."""
+        payload = "m=edit&p=7VRhb6JAEP3ur7js125yLCpVkvtArfbas9a2Gk8JMatFpQW3XcD21vjfO7toBKTeJZdL+uFCmDzeLLPz2OGFLzHlLi5jA5drWMNEXlUd64aBySlguLXt1fMi3zW/YCuOFowDwPim1cIz6ocuvhou2g1mvZ5bP1e1aDQiF1p8qQ0eW48nd8GPS6/MSatT6153rz19bn1vnN0azROjG4f9yF3dBuTssT/qzbqDeV3/1eyMKmJ0o1WvRrOvK6v/rWRve3BKa1E3hYXFhWkjgjDS4SbIweLWXItrU9xjcQ8phHUHoyD2I2/KfMaR4gisaycvQlo093Cwe0c0EpJogDtbDHAIcOrxqe+O2wnTNW3Rw0jufabelhAFbOXKzWRv8nnKgokniQmN4POFC+8Z4TIkwviBPcXbpcTZYGElCpo7BZXjCqDIToGEiQKJChRIYf9WQd3ZbOBw7kDD2LSlnP4e1vbw3lwjvYJMHXAHMDFkgRo0pM4RWGKuIQ5VbKmoq9iDAliUVTxXUVOxqmJbrWlCxXodpGuwAxTUYKI1ssUwzZqe7DxQqxsqVlQ0VJVT2eQfykgE/H3Dv23HJvAvwlU9Fp2SDT8HCpk/DmM+o1N37L7RaYTM5P9MZzLcMg4mLkxXivIZe/a9ZVGFXSpDevMl425hSpLuw/yjUjJVUGrC+EOup1fq+1ktyrkyVDLdGSriMLqpZ8o5e80wAY0WGSI15plK7jL3MSOabZE+0dxuwf5zbEroDanbLmNdntd/J/vETiYPSvtsRvDZ2lEzzvgRw9kn83SB7QB7xHlS2SL+A5NJZfP8gaPIZg9NBdgCXwE2by1AHboLkAcGA9wHHiOr5m1GdpV3GrnVgdnIrdJ+YyP6Alqc0js="
+        response = run_solver("hinge", payload, {})
         self.assertEqual(len(response["url"]), 1)
 
     def test_statuepark_all_shapes(self):
@@ -118,6 +126,10 @@ class TestExtraFunction(unittest.TestCase):
     def test_nagare_wind(self):
         """Test nagare wind."""
         self.assertRaises(ValueError, nagare_wind, 0, 0, "unknown", None)
+
+    def test_compass_constraint(self):
+        """Test compass constraint."""
+        self.assertEqual(compass_constraint(0, 0, "unknown", 0), "")
 
     def test_validation(self):
         """Test validation functions in helper."""

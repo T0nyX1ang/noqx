@@ -2,21 +2,21 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import direction, display, fill_line, grid
+from noqx.rule.common import display, fill_line, grid
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.loop import convert_direction_to_edge
+from noqx.rule.route import convert_line_to_edge
 
 
 def slant_rule() -> str:
     """Generate slant rules."""
-    rule = ':- grid(R, C), line_io(R, C, "ul"), not line_io(R - 1, C - 1, "dr").\n'
-    rule += ':- grid(R, C), line_io(R, C, "ur"), not line_io(R - 1, C + 1, "dl").\n'
-    rule += ':- grid(R, C), line_io(R, C, "dl"), not line_io(R + 1, C - 1, "ur").\n'
-    rule += ':- grid(R, C), line_io(R, C, "dr"), not line_io(R + 1, C + 1, "ul").\n'
+    rule = f':- grid(R, C), line_io(R, C, "{Direction.TOP_LEFT}"), not line_io(R - 1, C - 1, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP_RIGHT}"), not line_io(R - 1, C + 1, "{Direction.BOTTOM_LEFT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM_LEFT}"), not line_io(R + 1, C - 1, "{Direction.TOP_RIGHT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM_RIGHT}"), not line_io(R + 1, C + 1, "{Direction.TOP_LEFT}").\n'
 
     rule += "grid_direc_num(R, C, D, 0) :- grid(R, C), direction(D), not line_io(R, C, D).\n"
     rule += "grid_direc_num(R, C, D, 1) :- line_io(R, C, D).\n"
-    rule += ':- grid(R, C), grid(R + 1, C + 1), { line_io(R, C, "dr"); line_io(R, C + 1, "dl") } != 1.'
+    rule += f':- grid(R, C), grid(R + 1, C + 1), {{ line_io(R, C, "{Direction.BOTTOM_RIGHT}"); line_io(R, C + 1, "{Direction.BOTTOM_LEFT}") }} != 1.'
     return rule
 
 
@@ -24,10 +24,10 @@ def no_loop() -> str:
     """Ensure there is no loop in the grid."""
     rule = "reachable(R, C) :- grid(R, C), not grid(R - 1, C - 1).\n"
     rule += "reachable(R, C) :- grid(R, C), not grid(R + 1, C + 1).\n"
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R - 1, C - 1), not line_io(R, C - 1, "ur").\n'
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R - 1, C + 1), not line_io(R, C + 1, "ul").\n'
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C - 1), not line_io(R, C - 1, "dr").\n'
-    rule += 'reachable(R, C) :- grid(R, C), reachable(R + 1, C + 1), not line_io(R, C + 1, "dl").\n'
+    rule += f'reachable(R, C) :- grid(R, C), reachable(R - 1, C - 1), not line_io(R, C - 1, "{Direction.TOP_RIGHT}").\n'
+    rule += f'reachable(R, C) :- grid(R, C), reachable(R - 1, C + 1), not line_io(R, C + 1, "{Direction.TOP_LEFT}").\n'
+    rule += f'reachable(R, C) :- grid(R, C), reachable(R + 1, C - 1), not line_io(R, C - 1, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f'reachable(R, C) :- grid(R, C), reachable(R + 1, C + 1), not line_io(R, C + 1, "{Direction.BOTTOM_LEFT}").\n'
     rule += ":- grid(R, C), not reachable(R, C).\n"
     return rule
 
@@ -51,11 +51,20 @@ class GokigenSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-        self.add_program_line(direction(["ul", "ur", "dl", "dr"]))
-        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(
+            fill_line(
+                directions=(
+                    f"{Direction.TOP_LEFT}",
+                    f"{Direction.TOP_RIGHT}",
+                    f"{Direction.BOTTOM_LEFT}",
+                    f"{Direction.BOTTOM_RIGHT}",
+                ),
+                color="grid",
+            )
+        )
         self.add_program_line(slant_rule())
         self.add_program_line(no_loop())
-        self.add_program_line(convert_direction_to_edge(diagonal=True))
+        self.add_program_line(convert_line_to_edge(diagonal=True))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)
@@ -63,7 +72,6 @@ class GokigenSolver(Solver):
             if isinstance(num, int):
                 self.add_program_line(f":- #count{{ D: line_io({r}, {c}, D) }} != {num}.")
 
-        self.add_program_line(display(item="edge_diag_down", size=2))
-        self.add_program_line(display(item="edge_diag_up", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

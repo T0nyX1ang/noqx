@@ -6,6 +6,7 @@ Note:
 
 from typing import List, Optional, Tuple, Union
 
+from noqx.puzzle import Direction
 from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 
@@ -19,11 +20,14 @@ def grid_color_connected(
 
     Args:
         color: The color to be checked.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         grid_size: The size of the grid in (`rows`, `columns`). If provided, the propagation
                    starts from the middle of the grid to increase the speed potentially.
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_adj_{adj_type}_{color}(R, C)`.
     """
-    validate_type(adj_type, (4, 8, "x", "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
     if grid_size is None:
@@ -50,6 +54,9 @@ def border_color_connected(rows: int, cols: int, color: str = "black", adj_type:
         cols: The number of columns in the grid.
         color: The color to be checked.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`).
+
+    Success:
+        This rule will generate a predicate named `reachable_border_adj_{adj_type}_{color}(R, C)`.
     """
     validate_type(adj_type, (4, 8, "x"))
     tag = tag_encode("reachable", "border", "adj", adj_type, color)
@@ -68,6 +75,9 @@ def area_color_connected(color: str = "black", adj_type: int = 4) -> str:
     Args:
         color: The color to be checked.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`).
+
+    Success:
+        This rule will generate a predicate named `reachable_area_adj_{adj_type}_{color}(A, R, C)`.
     """
     validate_type(adj_type, (4, 8, "x"))
     tag = tag_encode("reachable", "area", "adj", adj_type, color)
@@ -97,12 +107,15 @@ def grid_src_color_connected(
         include_cells: The list of cells to be included as reachable cells to the source cell.
         exclude_cells: The list of cells to be excluded from reachable cells to the source cell.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_src_adj_{adj_type}_{color}(R0, C0, R, C)`.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, 8, "x", "edge", "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "edge", "line", "line_directed"))
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
 
@@ -119,8 +132,8 @@ def grid_src_color_connected(
         propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge_left(R, C + 1).\n"
-        constraint += f":- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge_top(R + 1, C)."
+        constraint = f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+        constraint += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").'
         return initial + "\n" + propagation + "\n" + constraint
 
     propagation = f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
@@ -138,6 +151,9 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
         src_cell: The source cell in (`row`, `col`).
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `edge`).
+
+    Success:
+        This rule will generate a predicate named `reachable_bulb_src_adj_{adj_type}_{color}(R0, C0, R, C)`.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
@@ -176,7 +192,7 @@ def count_reachable_src(
         src_cell: The source cell in (`row`, `col`).
         main_type: The main type of the reachable rule (accepted types: `grid` or `bulb`).
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
 
     Raises:
         ValueError: If the main type is other than `grid` or `bulb`.
@@ -184,7 +200,7 @@ def count_reachable_src(
     if color is None:
         validate_type(adj_type, ("edge",))
     elif main_type == "grid":
-        validate_type(adj_type, (4, 8, "x", "edge", "loop", "loop_directed"))
+        validate_type(adj_type, (4, 8, "x", "edge", "line", "line_directed"))
     elif main_type == "bulb":
         validate_type(adj_type, (4,))
     else:
@@ -206,14 +222,14 @@ def avoid_unknown_src(color: Optional[str] = "black", main_type: str = "grid", a
     Args:
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         main_type: The main type of the reachable rule (accepted types: `grid` or `bulb`).
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `loop`, `loop_directed`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`, `line`, `line_directed`).
     """
     if color is None:
         validate_type(adj_type, ("edge",))
         tag = tag_encode("reachable", main_type, "src", "adj", adj_type)
         return f":- grid(R, C), not {tag}(_, _, R, C)."
 
-    validate_type(adj_type, (4, 8, "loop", "loop_directed"))
+    validate_type(adj_type, (4, 8, "line", "line_directed"))
     tag = tag_encode("reachable", main_type, "src", "adj", adj_type, color)
 
     return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
@@ -227,6 +243,9 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
     Args:
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `edge`).
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_branch_adj_{adj_type}_{color}(R0, C0, R, C)`.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
@@ -240,10 +259,10 @@ def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[
         propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_edge(R, C, R1, C1)."
 
         # edge between two reachable grids is forbidden.
-        constraint = f":- {tag}(R, C, R, C + 1), edge_left(R, C + 1).\n"
-        constraint += f":- {tag}(R, C, R + 1, C), edge_top(R + 1, C).\n"
-        constraint += f":- {tag}(R, C + 1, R, C), edge_left(R, C + 1).\n"
-        constraint += f":- {tag}(R + 1, C, R, C), edge_top(R + 1, C)."
+        constraint = f':- {tag}(R, C, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+        constraint += f':- {tag}(R, C, R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+        constraint += f':- {tag}(R, C + 1, R, C), edge(R, C + 1, "{Direction.LEFT}").\n'
+        constraint += f':- {tag}(R + 1, C, R, C), edge(R + 1, C, "{Direction.TOP}").'
         return initial + "\n" + propagation + "\n" + constraint
 
     initial = f"{tag}(R, C, R, C) :- grid(R, C), {color}(R, C)."
