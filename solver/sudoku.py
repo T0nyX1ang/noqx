@@ -1,10 +1,33 @@
 """The Sudoku solver."""
 
+from typing import Dict, Tuple, Union
+
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
+
+
+def generate_killer_cage_rule(puzzle: Puzzle) -> str:
+    """Generate killer cage rules from the given puzzle."""
+
+    # Killer cages definition (only supported in Penpa+). The format is not standardized yet.
+    cages: Dict[Tuple[Tuple[int, int], ...], Union[int, str]] = {}
+    for cage in puzzle.problem["killercages"]:
+        cage_cells = tuple(puzzle.index_to_coord(coord)[0] for coord in cage)
+        for r, c in cage_cells:
+            if puzzle.text.get(Point(r, c, label=f"corner_{Direction.TOP_LEFT}")):
+                clue = puzzle.text[Point(r, c, label=f"corner_{Direction.TOP_LEFT}")]
+                fail_false(cage_cells not in cages or cages[cage_cells] == clue, "Conflicting killer cage clues found.")
+                cages[cage_cells] = clue
+
+    rule = ""
+    for _id, (cage_cells, clue) in enumerate(cages.items()):
+        rule += "\n".join(f"cage_num({_id}, {r}, {c})." for r, c in cage_cells) + "\n"
+        rule += f":- #sum {{ N: cage_num({_id}, R, C), number(R, C, N) }} != {clue}.\n"
+
+    return rule.strip()
 
 
 class SudokuSolver(Solver):
@@ -23,6 +46,9 @@ class SudokuSolver(Solver):
         {
             "data": "m=edit&p=7VRNa9tAEL37V4Q972F3Vlp93Nw07sV1P5ISgjDBcV1iauNiO6XI+L/nzewYKVAIpRR8KLJGb1bj997sh3ZPXzffn2yFK5TWWY8rlE7uMuOf0+tmuV8t6gs7fNo/brYA1n4Yjey32Wq3GDRaNR0c2qpuh7Z9VzfGG2sItzdT236qD+372iRBY9trFBjr8WacSgnwqoO38p7RZRr0DniiGPAOcL7czleL+3Ea+Vg37Y01rPZG/s3QrDc/F0bdcD7frB+WPPAw26Ol3ePyh75RbyeJo22Hr5kOnWmGyTSj35jmXv6xaZoej1iCz7B9XzfcwZcOlh28rg+Ik/pggsdfCasuq2RCjpQ3QUqzgDR0afGiOOfirEurF8XecR673DNZ3uXE0kUvZ7pefeD6spez+qke9r00cSdxJJEk3qBH2waJbyU6ibnEsdRcoXVfQqyCSQJjVVnyJBhPS2yGMeWWQpkwTgjlMM0495ZilnDMLBUwx7goLFUu4QrnyKEJ5i/B75Tfgd8rvwc/KT+BP1P+DPy58ufgj8ofwV8qP84oVYkfT2hF5WH/Ok4BWHkIPP2+6FQfgZWfwN/3Q2l+8MQ8qG6ALu8b8cPzoH1F6EbVjdDtz09U3QjdqLoRuv2+oupG6EbVjdAtWBeLditLdykxkxhlSQve1H+07f9+97xqp8Hs8UHqX7z5z2hkOmjMtXw+Liab7Xq2Mvh+Hwfml5FbznL2/5N+Bp90Xg53bjv83OzgzJn5arbbLedmOngG",
             "config": {"untouch": True, "antiknight": True},
+        },
+        {
+            "data": "m=edit&p=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",
         },
     ]
     parameters = {
@@ -52,12 +78,14 @@ class SudokuSolver(Solver):
         self.add_program_line(unique_num(_type="row", color="grid"))
         self.add_program_line(unique_num(_type="col", color="grid"))
         self.add_program_line(unique_num(_type="area", color="grid"))
+        self.add_program_line(generate_killer_cage_rule(puzzle))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, "normal")
+            validate_type(label, ("normal", f"corner_{Direction.TOP_LEFT}"))
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
-            self.add_program_line(f"number({r}, {c}, {num}).")
+            if label == "normal":
+                self.add_program_line(f"number({r}, {c}, {num}).")
 
         if puzzle.param["diagonal"]:  # diagonal rule
             for i in range(n):
