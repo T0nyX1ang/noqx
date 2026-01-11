@@ -53,7 +53,11 @@ def _int_or_str(data: Union[int, str]) -> Union[int, str]:
     Args:
         data: The data to be converted.
     """
-    return int(data) if isinstance(data, int) or data.isdigit() else data
+    if isinstance(data, int):
+        return data
+
+    data = data.strip()  # strip whitespace
+    return int(data) if data.isdigit() else data
 
 
 def _style_convert(style: List[int]) -> int:
