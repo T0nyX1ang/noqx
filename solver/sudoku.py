@@ -25,7 +25,24 @@ def generate_killer_cage_rule(puzzle: Puzzle) -> str:
     rule = ""
     for _id, (cage_cells, clue) in enumerate(cages.items()):
         rule += "\n".join(f"cage_num({_id}, {r}, {c})." for r, c in cage_cells) + "\n"
-        rule += f":- #sum {{ N: cage_num({_id}, R, C), number(R, C, N) }} != {clue}.\n"
+        rule += f":- #sum {{ N, R, C: cage_num({_id}, R, C), number(R, C, N) }} != {clue}.\n"
+
+    return rule.strip()
+
+
+def generate_arrow_rule(puzzle: Puzzle) -> str:
+    """Generate arrow rules from the given puzzle."""
+
+    # Arrows definition (only supported in Penpa+). The format is not standardized yet.
+    arrows: Dict[Tuple[Tuple[int, int], ...], Tuple[int, int]] = {}
+    for arrow in puzzle.problem["arrows"]:
+        arrow_cells = tuple(puzzle.index_to_coord(coord)[0] for coord in arrow)
+        arrows[arrow_cells[1:]] = arrow_cells[0]
+
+    rule = ""
+    for _id, (arrow_cells, (r0, c0)) in enumerate(arrows.items()):
+        rule += "\n".join(f"arrow_num({_id}, {r}, {c})." for r, c in arrow_cells) + "\n"
+        rule += f":- number({r0}, {c0}, N0), #sum {{ N, R, C: arrow_num({_id}, R, C), number(R, C, N) }} != N0.\n"
 
     return rule.strip()
 
@@ -49,6 +66,9 @@ class SudokuSolver(Solver):
         },
         {
             "data": "m=edit&p=7VddT9vKFn3nVyC/dqTrGdszdqTzkFLoaQ9NaQvilihCgQZIm+Bek9CeIP5715ovO4FWqo6uxMNREmevvbf3l8dr7Jvlp/rLUlT4ZKVIhcQnK1P7K3N+U/85nC5mk9626C8XV3UDQYi3e3viYjy7mYjXH6/2d+r+txf9/96Wi5MT+TJdvkqPP+99fvZ+/teradbIvUF58ObgzVRd9v/cef5O7z7TB8ubo8Xk9t1cPv98dHJ4cXB8Wam/dwcn+erkbVq8Prn4z23/6I+toa9htHW3qnqrvli97A0TmYhE4SeTkVi9692t3vRWA7H6AFMi5Egk8+VsMT2vZ3WTBN1q352oIO624rG1U9pxSplCHngZ4keI59PmfDY53Xeag95wdSgS5n5uz6aYzOvbCZOxNuLzen42peJsvMD4bq6mXxORweDm7l3l6F6s+r/XAYKEDii6Dig90gEb+/92UI3u73Fx3qOH096Q7Ry1YtmKH3p3OA56d0lW8NQCpbgrmORyQ1EYKqpWYTIqslZRbcaQ0gYpOxplo+QdTWbDcERWg3ok6jGVptq4wZdSdVGeE20rhiHWpcOshbiy3tqhCm6+CKZLc+scYWF9t5VbWSg5tXb2aeH62dJ4d6x0q1AdO0r/aAe6Z4/KHg8xabHK7PGFPab2WNjjvvXZRcOy1EJWVdJTiFpVQrFlyPgXSmGylFUhVIb6KIMfVIH5Ui6kUBqFUNa5UAZTpmyMUFXq5AoskmLWjF8ifurjp4gvfXyJ+MrHV4jPRUA5R/zCxy8QX/v4GvFLHx8MpSoXH//IhQto47B+r1cZZB9HIU63LxX8NWQfXyF+tx7l5oN/zMHnzZA383VqzsH3pZFX+7waebvz0T6vRl7t82rk7fbFRWVl5NU+r0Zew7y4aMf20u24tSpMBXeZ4q6wAHEcMKJMcYIDFQCqc6CEG8ISwAUW9OCABEDhDqgOyLkDoNwWoA8HCgBfQZkjaeGTwh8WXw5cAELSHOVw9VuAFVTyCjuAcri0HEAFRaigyABCUqyEFlRwq0IAC8I5WAwl72YHUGgYFfwBYgAUGuYGQVRhbiXmVoW54WS4+RbgAosvFAKATwr/FvCeBwGHkXgY5kCJVh+GfgIsEJ0xGcBghYHQV0MDYUgEQxeCXBjZTyXA1poR+v7px3Nb54IwWGEg9GOkgdCPiwbAorUawmgtrNVPnQbC0D4MazAllKF9B9PWillZWncQRyl1dJacho5Wba1xVrg7cYizwg0qLct5iGkoGaykPRzCNGAgDNOAoQvByohsgrOHMZHBudLE4RiOzsRpGA7WtKE4K/Knh5wVKc5Dtl/Gmg2HY+JwQIE4xPZL9lvGMkpWFSH5D4dQlYexQTAiDqFIEqG0jOchirQk6SHKsNzoIYq0lOggCLIDsaGhjJjXw9g+88qYF9s1YMyL02iNw2FeGfNConMcTsb2s3hRWAZ0EXIa3Ps95DXiQ4iHrCpA7O+iJO1GQD52ABxmAlMZsIEKbgZsgE3dsYGixRcGLUDgCexOFfd0BzKAYMEiqsKSghbAlwNtB2B+VZimA9FSAPhZwQXnRDewW1hi0AL4gUMLENgNqysCPAGJMtwODgR+xa1RhlsBLphOdAPZcqtzo6Il0DA2vpKbnQOoQEYLKpChNklLqE3SEmqTqM0BbIK53Qp1b4hHGn5xqTM8HVHMlcgzkecQwW/gtEJDxJYAyqKA60yyUng8HlquwdXB1SeydwRvAzrKDF5ZSYnMQDqQ9AKVg1YMRfCJKZg9F9gBdTrC85Xhc+5vPQm7589/8ijXfTboDieWM+R9s/FBn09JM9oaJoPl/GzSbA/qZj6eJXjZS27q2enNsrkYn09OJ9/H54uk5943u5Y13bWNsaaa1fXX2fT6sQjBtKacXl7XzeRRE5WTT5c/C0XTI6HO6ubTRk3fxrPZei//W46b9ZPd29qaatHgVayDx01Tf1vTzMeLqzVF57VtLdLkemOYi/F6ieMv441s83Yc91vJ98T+hnjS5eX79838Cb+Z80KlT42Vnlo5do3XzS8IpzVuqh+hHWh/wTwd62P6n5BMx7qpf8AoLPYhqUD7CK9Au0ktUD1kFygfEAx0P+EYRt2kGVa1yTRM9YBsmKrLN8PR1g8=",
+        },
+        {
+            "data": "m=edit&p=7VZdT9tIFH3Pr6j82iutZ2yPx5b2IVDSbQtpKCCWWBEywYCpg1nHga4R/71nPqLYSWC7DyvxsHIyPjnXc+7HeO5kvrgsvy8owuVJconh8qSrv9JXH9dex3ldZPE76i/qm7ICIPo6GNBVWswz+nx2s79b9h8/9P98kPV4zD66i0/u6e3g9v232ZdPuVexwVCODkYHOb/u/7G7cyj23ovRYn5SZw+HM7ZzezI+vhqdXkf8773h2G/GX93g8/jqt4f+ye+9xMYw6T01Udz0qfkYJw5zyOH4MmdCzWH81BzEzYiaI5gcYhNyZouizqdlUVbOkmv2zUQOuLeCp9qu0K4hmQs8tBjwDHCaV9MiO983zChOGo8c5XtHz1bQmZUPmXKmYlO/p+XsIlfERVqjfPOb/N4hDwZTd/somzxT0zcZDH8xA4gsM1DQZKDQlgxUYv9tBtHk+RmL8w05nMeJSudkBeUKHsVPGIfxkxOIZfJmBZ1AKgILuiSEqwhvRUiuCNkitIa/IpirRcIWw7SKaDNaJlgyiIfpqM70ONAj1+MxgqbGi5ME+yBkFMgJachJoLwKyoCkMDCSBG2LQ2D7SCSwGHam9EjaR0KXAjXT88kXRtoPKYhwZ8zHFGxAZWfMo0izHJvT1QhzGOfWReCTkEY2CEhEE8T8QUfu6jHQ477OaA+VZxIBRZETc+QfRcRVQYBxJ84Dg3lA3EMxFUZj4AEzOGDEhW+w8ImHocFhSDxCqRWO0D5cz+hL6LtW34U+s/oM+tzqc+j7Vt+HfmD1kRgXVl9AX1p9tCYeGX3c4QuvgdZR8Vuee8BWh0OnnRdfPi+ArT6HfjsebuqDO+pg/Xrw69k4haqDzUvAr7B+Bfy26yOsXwG/wvoV8NvOS1i/WEUurF8Bv6Hyi0U71Uu3q0dfj0Ivaaj21L/adb/yrr/+9vxjOAmqpw6R9hW8LWbSS5zhYnaRVe+GZTVLC7S6o/tsmgPhiHHmZXE+X1RX6TQ7z36k09qJzSnXtnS4O63WoYqyvC/yu20KS1OHzK/vyirbalJkdnn9kpQybZG6KKvLtZge06Lo5vLXIq26k80Z0aHqCgdA63daVeVjh5ml9U2HaB0WHaXsbq2YddoNMf2ernmbrcrx3HN+OPqbYJuphfz//8Ab/j+gFsp9a/3prYWj3/GyeqXhrIzr9Ja2A/aVztOybuNfaDIt6zq/0VFUsJtNBeyWvgJ2vbWA2uwuIDcaDLgXeoxSXW8zKqr1TqNcbTQb5ardb5JJ7yc=",
         },
     ]
     parameters = {
@@ -79,6 +99,7 @@ class SudokuSolver(Solver):
         self.add_program_line(unique_num(_type="col", color="grid"))
         self.add_program_line(unique_num(_type="area", color="grid"))
         self.add_program_line(generate_killer_cage_rule(puzzle))
+        self.add_program_line(generate_arrow_rule(puzzle))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
