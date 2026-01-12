@@ -47,6 +47,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("nothree", "tentaisho");
   urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
+  urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("squarejam", "shikaku");
   urlstring = urlstring.replace("statuepark", "yinyang");
