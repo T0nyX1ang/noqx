@@ -131,6 +131,15 @@ class SudokuSolver(Solver):
             if label == "normal":
                 self.add_program_line(f"number({r}, {c}, {num}).")
 
+        for (r, c, d, label), symbol_name in puzzle.symbol.items():
+            validate_direction(r, c, d)
+            validate_type(label, ("normal",))
+            if symbol_name == "circle_L__3":
+                self.add_program_line(f":- number({r}, {c}, N), N \\ 2 != 1.")
+
+            if symbol_name == "square_L__3":
+                self.add_program_line(f":- number({r}, {c}, N), N \\ 2 != 0.")
+
         if puzzle.param["diagonal"]:  # diagonal rule
             for i in range(n):
                 self.add_program_line(f"area({n + 1}, {i}, {i}).")
