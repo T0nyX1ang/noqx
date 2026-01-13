@@ -14,7 +14,7 @@
 
 ### New features from `Noq`
 
-- Acquire enhanced efficiency and more solvers (140+ currently).
+- Acquire enhanced efficiency and more solvers (150+ currently).
 
 - Change the backend from `Django` to `Starlette` with `Uvicorn` (See issues [#31](https://github.com/T0nyX1ang/noqx/issues/31) and [#50](https://github.com/T0nyX1ang/noqx/issues/50)).
 
