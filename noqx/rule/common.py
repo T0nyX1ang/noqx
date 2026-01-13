@@ -137,7 +137,7 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
     return f"{invert}(R, C) :- grid(R, C), not {color}(R, C)."
 
 
-def edge(rows: int, cols: int) -> str:
+def edge(rows: int, cols: int, with_border: bool = True) -> str:
     """A rule for drawing edges around a cell.
 
     * `edge(R, C, "{Direction.LEFT}")` represents the left edge of the cell `(R, C)`, and `edge(R, C, "{Direction.TOP}")` represents the top edge of the cell `(R, C)`.
@@ -147,6 +147,7 @@ def edge(rows: int, cols: int) -> str:
     Args:
         rows: The number of rows in the grid.
         cols: The number of columns in the grid.
+        with_border: Whether to ensure the outside border of the grid is drawn.
 
     Success:
         This rule will generate a predicate named `edge(R, C, D)`.
@@ -165,11 +166,12 @@ def edge(rows: int, cols: int) -> str:
     fact += f"horizontal_range(0..{rows}, 0..{cols - 1}).\n"
     fact += f'{{ edge(R, C, "{Direction.LEFT}") }} :- vertical_range(R, C).\n'
     fact += f'{{ edge(R, C, "{Direction.TOP}") }} :- horizontal_range(R, C).\n'
-    fact += f'edge(0..{rows - 1}, 0, "{Direction.LEFT}").\n'
-    fact += f'edge(0..{rows - 1}, {cols}, "{Direction.LEFT}").\n'
-    fact += f'edge(0, 0..{cols - 1}, "{Direction.TOP}").\n'
-    fact += f'edge({rows}, 0..{cols - 1}, "{Direction.TOP}").'
-    return fact
+    if with_border:
+        fact += f'edge(0..{rows - 1}, 0, "{Direction.LEFT}").\n'
+        fact += f'edge(0..{rows - 1}, {cols}, "{Direction.LEFT}").\n'
+        fact += f'edge(0, 0..{cols - 1}, "{Direction.TOP}").\n'
+        fact += f'edge({rows}, 0..{cols - 1}, "{Direction.TOP}").\n'
+    return fact.strip()
 
 
 def fill_line(
