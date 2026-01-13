@@ -6,7 +6,7 @@ function exp() {
   return result;
 }
 
-function imp(penpa) {
+function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
 
@@ -88,6 +88,11 @@ function imp(penpa) {
       text: "The URL may be invalid or corrupted.",
     });
     return;
+  }
+
+  if (!example) {
+    const exampleSelect = document.getElementById("example");
+    exampleSelect.value = "";
   }
 
   clearInfo();
@@ -362,7 +367,7 @@ $(window).on("load", function () {
       solutionPointer = -1;
 
       let exampleData = solver_metadata[puzzleType].examples[exampleSelect.value];
-      imp(exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`);
+      imp(exampleData.url ? exampleData.url : `${urlBase}${exampleData.data}`, true);
 
       if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
         for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
