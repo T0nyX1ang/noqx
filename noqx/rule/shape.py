@@ -1,11 +1,11 @@
 """Rules and constraints to detect certain shapes."""
 
-from typing import Iterable, Optional, Set, Tuple, Union
+from typing import Dict, Iterable, Optional, Set, Tuple, Union
 
 from noqx.puzzle import Direction
 from noqx.rule.helper import tag_encode, target_encode, validate_type
 
-OMINOES = {
+OMINOES: Dict[int, Dict[str, Tuple[Tuple[int, int], ...]]] = {
     1: {
         ".": ((0, 0),),
     },
