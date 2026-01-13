@@ -25,10 +25,10 @@ class BosanowaSolver(Solver):
         {
             "data": "m=edit&p=7VRNb9swDL3nVxQ66yBKsiP7lnXNLln2kQ5FYRhFkrlosATZnHgYFOS/lyIZOCt22GVbDoNh8ol8Ep8o2btv3bxtdNBgtAvaaMDHeas9BG19Rq+R53a1XzfllR51+6dti0Drd+Oxfpyvd82gElY9OMSijCMd35SVAqWVxRdUreOH8hDflnGq4wxTSnuMTZhkEd708I7yCV1zEAziqWCE9wiXq3a5bh4mHHlfVvFWq1TnFc1OUG223xslOtJ4ud0sVimwmO9xM7un1VfJ7LrP2y+dcKE+6jh6ITdVEbmul5sgy03oF3LTLv6w3KI+HrHtH1HwQ1kl7Z96GHo4Kw/K5qr0eChDdoFdQc4ZdpadY8cUx5SMKRmwy9jxmjkzh56djHhe4HmB5wXOFTwquF7B9cAwFcxpzOuB4WIATAeQPEgeTnlWA8BbBCs8KzwrPOkESCtAegHSDHDCc8JzwpOGgHQEvOj1aTfY5Sl2OcXwaAweNl9+lbIYcX0kR10Yyc8iqPAFB2v/vE6OVSt1Rgkoq1KhD4ChUmfrguOFTxEUCeUB7T3ZMVlL9hZvio6O7GuyhmxGdkKcG7J3ZK/JerI5cYbprv3mbeRu/QU5lc3p19Y/2WWN60GlZl37OF82+IVPu82iaa+m23YzXyv8pR4H6oeit3JI9///sv/oL5uOwFza7b40Ofi91YNn",
             "config": {"max_number": 25},
-            "test": False,  # very slow
+            "test": False,
         },
     ]
-    parameters = {"max_number": {"name": "Max number", "type": "number", "default": 10}}
+    parameters = {"max_number": {"name": "Max number", "type": "number", "default": 20}}
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
