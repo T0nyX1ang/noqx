@@ -47,6 +47,7 @@ function imp(penpa) {
   urlstring = urlstring.replace("nothree", "tentaisho");
   urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
+  urlstring = urlstring.replace("lither", "slitherlink");
   urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("squarejam", "shikaku");
@@ -199,7 +200,7 @@ function resetGridMode(puzzleType) {
 
   if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
 
-  if (["myopia", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
+  if (["lither", "myopia", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
 
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
 }
