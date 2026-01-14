@@ -15,8 +15,7 @@ def grid_color_connected(
 ) -> str:
     """A rule to ensure all the color cells are connected in the grid.
 
-    * This is the most efficient connectivity checker in this module, since it only considers a global
-    constraint. If the problem can be modelled to use this rule, don't hesitate to use it.
+    * This is the most efficient connectivity checker in this module, since it only considers a global constraint. If the problem can be modelled to use this rule, don't hesitate to use it.
 
     Args:
         color: The color to be checked.
@@ -46,8 +45,7 @@ def grid_color_connected(
 def border_color_connected(rows: int, cols: int, color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """A rule to ensure all the color cells are connected to the borders of the whole grid.
 
-    * Similar to `grid_color_connected`, this is also a global constraint. The difference is that the propagation starts from the borders of the grid. Moreover, the color cells do not need
-    to be connected *inside* the grid.
+    * Similar to `grid_color_connected`, this is also a global constraint. The difference is that the propagation starts from the borders of the grid. Moreover, the color cells do not need to be connected *inside* the grid.
 
     Args:
         rows: The number of rows in the grid.
