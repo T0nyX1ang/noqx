@@ -65,19 +65,19 @@ def border_color_connected(rows: int, cols: int, color: str = "black", adj_type:
     return initial + "\n" + propagation + "\n" + constraint
 
 
-def area_color_connected(color: str = "black", adj_type: int = 4) -> str:
+def area_color_connected(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """A rule to ensure all the color cells are connected in every area.
 
     * The complexity of this rule is based on the number of areas instead of the whole grid.
 
     Args:
         color: The color to be checked.
-        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`).
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
 
     Success:
         This rule will generate a predicate named `reachable_area_adj_{adj_type}_{color}(A, R, C)`.
     """
-    validate_type(adj_type, (4, 8, "x"))
+    validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
     tag = tag_encode("reachable", "area", "adj", adj_type, color)
     initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1): area(A, R1, C1), {color}(R1, C1) }}."
     propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), area(A, R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
