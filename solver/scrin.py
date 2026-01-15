@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
-from noqx.rule.helper import validate_direction, validate_type
+from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, grid_color_connected
 from noqx.rule.shape import all_rect, count_rect_size, no_rect
@@ -38,6 +38,7 @@ class ScrinSolver(Solver):
             "data": "m=edit&p=7VZbb+pGEH7nV0T7mpXq9Q1jqQ+EQ9KcEoccQDRYCBliwImNU19IasR/z8wajq/QVq1O+xBZHma+2Z2di/wt4e+xFdiUNSljVNKoQBk8qiZTWVEpUwCHVzg8Qydybf2CtuNo7QegUHpv0KXlhjb9+rjudfz225f2b1stmkzYjRDfCuPn6+fLb96vt44UsGtD69/17xxx1f6lc/Wgdi/VfhyOInv74LGr59FkuOyPVy3xj64xkZPJvaB8nSx/2rZHPzfMQwrTxi5p6UmbJje6SSRCCYNXJFOaPOi75E5PDJoMwEUom1LixW7kLHzXD8gRS3qgwSYR1G6mjrkftU4KMgF0I9VVUB9BXTjBwrVnvTRQXzeTISV49hXfjSrx/K2Nh2FeaC98b+4gMLci6F64dl4JlcARxk/+S3xYyqZ7mrTTCgbHCrTzFUCQYwWophWgVlMBFvaPK7CfVvZ7TfKt6X4Pc/kG6c90EysZZaqWqQN9B9LQd0RWYKtEVRwfRGsKYMrfTY1h4Avo+wFoSYXlTMQFas5uFf2yDLaS2UqzFJCpeKKW2TyDXIQmRsgyEhkmLOZsDWz4UI42zyjbL4q4P3+iKGENBaSSlaiquSjQKsYb9sjlNZcil0PoJ00kLr9wKXCpcNnja7pcjrnscClzqfI1TZzIX5wZn5ZGiQzZ4Q+kDT8qguk4f0CmpixzZjr3KJ8r/u0V04ZJBnGwtBY2kEEXvv8Lww88ywXLiL25HRxtIGYS+u4sTFfP7HdrERE9vRvyngK24TEKkOv7r66zqYtwdBVAZ7XxA7vWhSBy1olQ6KoJNfeDp1JOb5brFmvh12YBSpm1AEUB0GbOtoLAfysgnhWtC0DukihEsjelZkZWMUXrxSqd5mXt2DfIO+EvsIuIY/28Rf+ftyjOSPhbd+l/f02Y0GtZpck9Ja/xzJpBn3mrOK6cwJslHNqBOP7brN0Ad2P9jqpD/pNQajWnH95R/oX6wRm6zJxluIY0AT3DmzlvHX6CInPeMl7hQ0y2SomA1rAioGViBKjKjQBW6BGwEwyJUcskiVmVeRKPqlAlHpVnS5OEi8DZkGnjAw=="
         },
         {"url": "https://puzz.link/p?scrin/15/15/v3o3x3l3k3y3k3q3k3p3q3j3q3q3j3q3v3m3q3v", "test": False},
+        {"url": "https://puzz.link/p?scrin/18/10/p.m3k.n2m3l5l4l.v2o64o.v.l4l1l3m.n2k1m4p", "test": False},
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
@@ -54,14 +55,22 @@ class ScrinSolver(Solver):
         self.add_program_line(border_color_unspawn(puzzle.row, puzzle.col, color="white", adj_type=4))
         self.add_program_line(no_rect(color="white_unspawn"))
 
+        all_src = []
+        tag = tag_encode("reachable", "bulb", "src", "adj", 4, "gray")
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
             self.add_program_line(f"gray({r}, {c}).")
+            self.add_program_line(bulb_src_color_connected((r, c), color="gray", adj_type=4))
+
+            for r1, c1 in all_src:
+                self.add_program_line(f":- {tag}({r}, {c}, {r}, {c1}), {tag}({r1}, {c1}, {r}, {c1}).")
+                self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if isinstance(num, int):
-                self.add_program_line(bulb_src_color_connected((r, c), color="gray", adj_type=4))
                 self.add_program_line(count_rect_size(num, (r, c), color="gray", adj_type=4))
+
+            all_src.append((r, c))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
