@@ -293,14 +293,15 @@ class PenpaPuzzle(Puzzle):
             index_1, index_2 = map(int, index.split(","))
             coord_1, _ = self.index_to_coord(index_1)
             coord_2, _ = self.index_to_coord(index_2)
-            if coord_1[0] == coord_2[0]:  # row equal, horizontal line
+
+            if coord_1[0] == coord_2[0] and coord_2[1] - coord_1[1] == 1:  # row equal, horizontal line
                 self.edge[Point(coord_2[0] + 1, coord_2[1], Direction.TOP)] = True
-            elif coord_1[1] == coord_2[1]:  # col equal, vertical line
+            if coord_1[1] == coord_2[1] and coord_2[0] - coord_1[0] == 1:  # col equal, vertical line
                 self.edge[Point(coord_2[0], coord_2[1] + 1, Direction.LEFT)] = True
-            elif coord_1[0] - coord_2[0] == 1 and coord_2[1] - coord_1[1] == 1:  # upwards diagonal line
-                self.edge[Point(coord_2[0], coord_2[1], Direction.TOP_RIGHT)] = True
-            elif coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
+            if coord_2[0] - coord_1[0] == 1 and coord_2[1] - coord_1[1] == 1:  # upwards diagonal line
                 self.edge[Point(coord_2[0], coord_2[1], Direction.TOP_LEFT)] = True
+            if coord_2[0] - coord_1[0] == 1 and coord_1[1] - coord_2[1] == 1:  # downwards diagonal line
+                self.edge[Point(coord_2[0], coord_1[1], Direction.TOP_RIGHT)] = True
 
         for index, _ in self.problem["deleteedge"].items():  # edge deletion mark, stronger than helper_x
             index_1, index_2 = map(int, index.split(","))
