@@ -69,7 +69,6 @@ class HaisuSolver(Solver):
         fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-
         self.add_program_line("haisu(R, C) :- grid(R, C).")
         self.add_program_line(fill_line(color="haisu", directed=True))
         self.add_program_line(directed_route(color="haisu", path=True))
