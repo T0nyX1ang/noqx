@@ -1,14 +1,14 @@
 """The Ant Mill solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Direction, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.variety import nori_adjacent
 
 
-def ensure_antmill_loop(color: str = "gray") -> str:
+def ensure_antmill_loop(color: str = "black") -> str:
     """A rule to ensure the shaded 1x2 rectangles form a single loop."""
     rule = f"adj_count(R, C, N) :- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_x(R, C, R1, C1) }} = N.\n"
     rule += f":- grid(R, C), grid(R1, C1), {color}(R, C), {color}(R1, C1), adj_count(R, C, N), adj_count(R1, C1, N1), adj_4(R, C, R1, C1), N + N1 != 2."
@@ -57,6 +57,23 @@ class AntMillSolver(Solver):
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
-        self.add_program_line(display(item="gray"))
+        self.add_program_line(display(item="gray", size=2))
 
         return self.program
+
+    def refine(self, solution: Puzzle) -> Puzzle:
+        """Refine the solution by adding edges around shaded cells."""
+        for (r, c, _, _), color in solution.surface.items():
+            if color in Color.DARK and solution.surface.get(Point(r - 1, c)) not in Color.DARK:
+                solution.edge[Point(r, c, Direction.TOP)] = True
+
+            if color in Color.DARK and solution.surface.get(Point(r + 1, c)) not in Color.DARK:
+                solution.edge[Point(r + 1, c, Direction.TOP)] = True
+
+            if color in Color.DARK and solution.surface.get(Point(r, c - 1)) not in Color.DARK:
+                solution.edge[Point(r, c, Direction.LEFT)] = True
+
+            if color in Color.DARK and solution.surface.get(Point(r, c + 1)) not in Color.DARK:
+                solution.edge[Point(r, c + 1, Direction.LEFT)] = True
+
+        return solution
