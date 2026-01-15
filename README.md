@@ -20,7 +20,7 @@
 
 - Change the frontend to `Penpa+`. (See issue [#36](https://github.com/T0nyX1ang/noqx/issues/36)).
 
-- Obtain uniform data structures in every puzzle. (See issues [#84](https://github.com/T0nyX1ang/noqx/issues/84) and [#109](https://github.com/T0nyX1ang/noqx/issues/109)).
+- Obtain uniform data structures in every puzzle. (See issues [#84](https://github.com/T0nyX1ang/noqx/issues/84), [#109](https://github.com/T0nyX1ang/noqx/issues/109) and [#123](https://github.com/T0nyX1ang/noqx/issues/123)).
 
 - Deploy the entire solver to GitHub Pages with the help of `PyScript`. No backend server is needed in this mode.
 
