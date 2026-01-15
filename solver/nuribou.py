@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -13,20 +13,20 @@ from noqx.rule.shape import all_rect
 
 def noribou_strip_different(color: str = "black") -> str:
     """Generate a rule to ensure that no two adjacent cells have the same shaded strips."""
-    rule = "nth(R, C, 1) :- upleft(R, C).\n"
-    rule += "nth(R, C, N) :- up(R, C), nth(R, C - 1, N - 1).\n"
-    rule += "nth(R, C, N) :- left(R, C), nth(R - 1, C, N - 1).\n"
+    rule = f'nth(R, C, 1) :- rect(R, C, "{Direction.TOP_LEFT}").\n'
+    rule += f'nth(R, C, N) :- rect(R, C, "{Direction.TOP}"), nth(R, C - 1, N - 1).\n'
+    rule += f'nth(R, C, N) :- rect(R, C, "{Direction.LEFT}"), nth(R - 1, C, N - 1).\n'
     rule += f":- {color}(R, C), nth(R, C, N1), nth(R, C, N2), N1 < N2.\n"
 
-    rule += "len_strip(R, C, 1) :- upleft(R, C), not up(R, C + 1), not left(R + 1, C).\n"
-    rule += f"len_strip(R, C, N) :- upleft(R, C), up(R, C + 1), {color}(R, C + N - 1), not {color}(R, C + N), nth(R, C + N - 1, N).\n"
-    rule += f"len_strip(R, C, N) :- upleft(R, C), left(R + 1, C), {color}(R + N - 1, C), not {color}(R + N, C), nth(R + N - 1, C, N).\n"
+    rule += f'len_strip(R, C, 1) :- rect(R, C, "{Direction.TOP_LEFT}"), not rect(R, C + 1, "{Direction.TOP}"), not rect(R + 1, C, "{Direction.LEFT}").\n'
+    rule += f'len_strip(R, C, N) :- rect(R, C, "{Direction.TOP_LEFT}"), rect(R, C + 1, "{Direction.TOP}"), {color}(R, C + N - 1), not {color}(R, C + N), nth(R, C + N - 1, N).\n'
+    rule += f'len_strip(R, C, N) :- rect(R, C, "{Direction.TOP_LEFT}"), rect(R + 1, C, "{Direction.LEFT}"), {color}(R + N - 1, C), not {color}(R + N, C), nth(R + N - 1, C, N).\n'
     rule += f":- {color}(R, C), len_strip(R, C, L), len_strip(R, C, L1), L < L1.\n"
-    rule += "len_strip(R, C, L) :- up(R, C), nth(R, C, N), len_strip(R, C - N + 1, L).\n"
-    rule += "len_strip(R, C, L) :- left(R, C), nth(R, C, N), len_strip(R - N + 1, C, L).\n"
+    rule += f'len_strip(R, C, L) :- rect(R, C, "{Direction.TOP}"), nth(R, C, N), len_strip(R, C - N + 1, L).\n'
+    rule += f'len_strip(R, C, L) :- rect(R, C, "{Direction.LEFT}"), nth(R, C, N), len_strip(R - N + 1, C, L).\n'
     rule += f":- {color}(R, C), {color}(R1, C1), adj_x(R, C, R1, C1), len_strip(R, C, L), len_strip(R1, C1, L1), L = L1."
-    rule += ":- grid(R, C), remain(R, C).\n"
-    return rule
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}").\n'
+    return rule.strip()
 
 
 class NoribouSolver(Solver):

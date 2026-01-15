@@ -4,18 +4,18 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import direction, display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
-from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
+from noqx.rule.route import single_route
 
 
 def no_2x2_path() -> str:
     """Generate a rule that no 2x2 path is allowed."""
 
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    tag = tag_encode("reachable", "grid", "src", "adj", "loop", "numlin")
+    tag = tag_encode("reachable", "grid", "src", "adj", "line", "white")
     cells = [f"{tag}(R0, C0, R + {r}, C + {c})" for r, c in points]
     return f":- grid(R, C), grid(R + 1, C + 1), clue(R0, C0), {', '.join(cells)}.\n"
 
@@ -24,7 +24,7 @@ class NumlinSolver(Solver):
     """The Numberlink solver."""
 
     name = "Numberlink"
-    category = "loop"
+    category = "route"
     aliases = ["numberlink", "arukone", "flowfree"]
     examples = [
         {
@@ -66,16 +66,15 @@ class NumlinSolver(Solver):
             fail_false(len(pair) == 2, f"Element {n} is unmatched.")
 
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
 
         if puzzle.param["visit_all"]:
-            self.add_program_line("numlin(R, C) :- grid(R, C).")
+            self.add_program_line("white(R, C) :- grid(R, C).")
         else:
-            self.add_program_line(shade_c(color="numlin"))
+            self.add_program_line(shade_c(color="white"))
 
-        self.add_program_line(fill_line(color="numlin"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(single_loop(color="numlin", path=True))
+        self.add_program_line(fill_line(color="white"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(single_route(color="white", path=True))
 
         for n, pair in locations.items():
             r0, c0 = pair[0]
@@ -90,20 +89,20 @@ class NumlinSolver(Solver):
             self.add_program_line(f"clue({r0}, {c0}).")
             self.add_program_line(f"dead_end({r0}, {c0}).")
             self.add_program_line(f"dead_end({r1}, {c1}).")
-            self.add_program_line(f"numlin({r0}, {c0}).")
-            self.add_program_line(f"numlin({r1}, {c1}).")
+            self.add_program_line(f"white({r0}, {c0}).")
+            self.add_program_line(f"white({r1}, {c1}).")
             self.add_program_line(
                 grid_src_color_connected(
-                    src_cell=(r0, c0), include_cells=[(r1, c1)], exclude_cells=excluded, adj_type="loop", color="numlin"
+                    src_cell=(r0, c0), include_cells=[(r1, c1)], exclude_cells=excluded, adj_type="line", color="white"
                 )
             )
 
-        self.add_program_line(avoid_unknown_src(color="numlin", adj_type="loop"))
+        self.add_program_line(avoid_unknown_src(color="white", adj_type="line"))
 
         if puzzle.param["no_2x2"]:
             self.add_program_line(no_2x2_path())
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

@@ -40,7 +40,7 @@ class HanareSolver(Solver):
             self.add_program_line(count(1, _type="area", _id=i, color="not white"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            fail_false(color == Color.GREEN, f"Invalid color at ({r}, {c}).")
+            fail_false(color == Color.WHITE, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"white({r}, {c}).")
 
         for (r, c, d, label), num in puzzle.text.items():

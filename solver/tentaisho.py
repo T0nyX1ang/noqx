@@ -13,8 +13,8 @@ def galaxy_constraint(glxr: int, glxc: int) -> str:
     r, c = (glxr - 1) // 2, (glxc - 1) // 2
     tag = tag_encode("reachable", "grid", "src", "adj", "edge")
     rule = f":- grid(R, C), {tag}({r}, {c}, R, C), not {tag}({r}, {c}, {glxr} - R - 1, {glxc} - C - 1)."
-    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), edge_top(R, C), not edge_top({glxr} - R, {glxc} - C - 1).\n"
-    rule += f":- grid(R, C), {tag}({r}, {c}, R, C), edge_left(R, C), not edge_left({glxr} - R - 1, {glxc} - C).\n"
+    rule += f':- grid(R, C), {tag}({r}, {c}, R, C), edge(R, C, "{Direction.TOP}"), not edge({glxr} - R, {glxc} - C - 1, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), {tag}({r}, {c}, R, C), edge(R, C, "{Direction.LEFT}"), not edge({glxr} - R - 1, {glxc} - C, "{Direction.LEFT}").\n'
     return rule
 
 
@@ -52,20 +52,20 @@ class TentaishoSolver(Solver):
             if d == Direction.TOP_LEFT:
                 reachables.append((r - 1, c - 1))
                 self.add_program_line(galaxy_constraint(r * 2, c * 2))
-                self.add_program_line(f"not edge_top({r}, {c - 1}).")
-                self.add_program_line(f"not edge_top({r}, {c}).")
-                self.add_program_line(f"not edge_left({r - 1}, {c}).")
-                self.add_program_line(f"not edge_left({r}, {c}).")
+                self.add_program_line(f'not edge({r}, {c - 1}, "{Direction.TOP}").')
+                self.add_program_line(f'not edge({r}, {c}, "{Direction.TOP}").')
+                self.add_program_line(f'not edge({r - 1}, {c}, "{Direction.LEFT}").')
+                self.add_program_line(f'not edge({r}, {c}, "{Direction.LEFT}").')
 
             if d == Direction.TOP:
                 reachables.append((r - 1, c))
                 self.add_program_line(galaxy_constraint(r * 2, c * 2 + 1))
-                self.add_program_line(f"not edge_top({r}, {c}).")
+                self.add_program_line(f'not edge({r}, {c}, "{Direction.TOP}").')
 
             if d == Direction.LEFT:
                 reachables.append((r, c - 1))
                 self.add_program_line(galaxy_constraint(r * 2 + 1, c * 2))
-                self.add_program_line(f"not edge_left({r}, {c}).")
+                self.add_program_line(f'not edge({r}, {c}, "{Direction.LEFT}").')
 
         fail_false(len(reachables) > 0, "Please provide at least one clue.")
         for r, c in reachables:
@@ -78,17 +78,16 @@ class TentaishoSolver(Solver):
 
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
                 prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
-                direc = "left" if c1 != c else "top"
-                self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+                d = Direction.LEFT if c1 != c else Direction.TOP
+                self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
         tag = tag_encode("reachable", "grid", "src", "adj", "edge")
         spawn_points = ", ".join(f"not {tag}({r}, {c}, R, C)" for r, c in reachables)
         self.add_program_line(f":- grid(R, C), not hole(R, C), {spawn_points}.")
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

@@ -98,17 +98,16 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
 
         r, c = tuple(map(int, data[:2]))  # ensure the first two elements of data is the row and column
 
-        if _type.startswith("edge_"):
-            for d in [Direction.TOP, Direction.LEFT, Direction.TOP_LEFT, Direction.DIAG_UP, Direction.DIAG_DOWN]:
-                if _type == f"edge_{d}":
-                    solution.edge[Point(r, c, d)] = True
+        if _type == "edge":
+            d = str(data[2]).replace('"', "")
+            solution.edge[Point(r, c, d)] = True
 
         elif _type.startswith("line_"):
             d = str(data[2]).replace('"', "")
-            if puzzle.puzzle_name == "hashi":
-                solution.line[Point(r, c, label=f"{d}_{data[3]}")] = True
+            if puzzle.puzzle_name == "hashi" and str(data[3]) == "2":
+                solution.line[Point(r, c, d, "double")] = True
             else:
-                solution.line[Point(r, c, label=d)] = True
+                solution.line[Point(r, c, d)] = True
 
         elif _type.startswith("number"):
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
@@ -117,7 +116,12 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
             solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
 
         elif _type == "triangle":
-            shaka_dict = {'"ul"': "1", '"ur"': "4", '"dl"': "2", '"dr"': "3"}
+            shaka_dict = {
+                f'"{Direction.TOP_LEFT}"': "1",
+                f'"{Direction.TOP_RIGHT}"': "4",
+                f'"{Direction.BOTTOM_LEFT}"': "2",
+                f'"{Direction.BOTTOM_RIGHT}"': "3",
+            }
             solution.symbol[Point(r, c, Direction.CENTER)] = f"tri__{shaka_dict[data[2]]}"
 
         elif _type == "gray":

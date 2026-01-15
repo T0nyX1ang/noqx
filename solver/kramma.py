@@ -1,7 +1,7 @@
 """The KaitoRamma solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction
 from noqx.rule.neighbor import adjacent
@@ -10,10 +10,10 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 
 def straight_line() -> str:
     """Generate a straight line rule."""
-    rule = ":- grid(R, C), grid(R + 1, C), edge_left(R, C), not edge_left(R + 1, C).\n"
-    rule += ":- grid(R, C), grid(R + 1, C), not edge_left(R, C), edge_left(R + 1, C).\n"
-    rule += ":- grid(R, C), grid(R, C + 1), edge_top(R, C), not edge_top(R, C + 1).\n"
-    rule += ":- grid(R, C), grid(R, C + 1), not edge_top(R, C), edge_top(R, C + 1).\n"
+    rule = f':- grid(R, C), grid(R + 1, C), edge(R, C, "{Direction.LEFT}"), not edge(R + 1, C, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), grid(R + 1, C), not edge(R, C, "{Direction.LEFT}"), edge(R + 1, C, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), grid(R, C + 1), edge(R, C, "{Direction.TOP}"), not edge(R, C + 1, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), grid(R, C + 1), not edge(R, C, "{Direction.TOP}"), edge(R, C + 1, "{Direction.TOP}").\n'
     return rule
 
 
@@ -53,9 +53,8 @@ class KaitoRammaSolver(Solver):
                 self.add_program_line(f":- {tag}({r}, {c}, R, C), white(R, C).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

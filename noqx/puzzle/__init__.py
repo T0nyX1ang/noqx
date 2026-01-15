@@ -12,13 +12,13 @@ class Color:
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
     Attributes:
-        GREEN: Represents the green color on shaded cells or unshaded cells.
+        WHITE: Represents the white color on shaded cells or unshaded cells.
         GRAY: Represents the gray color on shaded cells.
         BLACK: Represents the black color on shaded cells.
         DARK: A tuple representing dark colors (gray and black).
     """
 
-    GREEN: int = 0
+    WHITE: int = 0
     GRAY: int = 1
     BLACK: int = 2
     DARK: Tuple[int, int] = (GRAY, BLACK)
@@ -27,9 +27,9 @@ class Color:
 class Direction:
     """Enumeration for directions.
 
-    * This `Direction` enumeration only involves with the direction of **adjacent** cells. For the directions inside a cell, please refer to the `label` descriptor instead. According to symmetry, only 3 directions are needed in the program: the top, left, and top-left directions.
+    * This `Direction` enumeration involves with the relative direction between the elements (i.e., edges, lines, arrows, etc.) and the center of a cell. Currently, it supports the following directions: center, top, left, bottom, right, top-left (downwards-diagonal), top-right (upwards-diagonal), bottom-left, and bottom-right.
 
-    * For edge visualizations, two additional directions are included in this enumeration, which are the upwards-diagonal and downwards-diagonal directions. These two directions should be only used for edge visualizations.
+    * For edge visualizations, the upwards-diagonal and downwards-diagonal directions are **transformed into** the top-right and top-left directions respectively.
 
     * For compatiblity issue with the web version, the enumeration class is altered to a simple class.
 
@@ -39,12 +39,12 @@ class Direction:
         LEFT: The left direction. This indicates the something is on the **left** side of a cell.Also, this direction is used for **vertical** edge visualizations.
         BOTTOM: The bottom direction. This indicates the something is on the **bottom** side of a cell.
         RIGHT: The right direction. This indicates the something is on the **right** side of a cell.
-        TOP_LEFT: The top-left direction. This indicates the something is on the **top-left** side of a cell.
-        TOP_RIGHT: The top-right direction. This indicates the something is on the **top-right** side of a cell.
+        TOP_LEFT: The top-left/downwards-diagonal direction. This indicates the something is on the **top-left** side of a cell.
+        TOP_RIGHT: The top-right/upwards-diagonal direction. This indicates the something is on the **top-right** side of a cell.
         BOTTOM_LEFT: The bottom-left direction. This indicates the something is on the **bottom-left** side of a cell.
         BOTTOM_RIGHT: The bottom-right direction. This indicates the something is on the **bottom-right** side of a cell.
-        DIAG_UP: The downwards-diagonal direction. This is only used for edges that goes from **bottom-left** to **top-right**.
-        DIAG_DOWN: The upwards-diagonal direction. This is only used for edges that goes from **top-left** to **bottom-right**.
+        TOP_BOTTOM: The top-bottom direction. This indicates something is on both the top and bottom sides of a cell.
+        LEFT_RIGHT: The left-right direction. This indicates something is on both the left and right sides of a cell.
     """
 
     CENTER: str = "center"
@@ -56,8 +56,8 @@ class Direction:
     TOP_RIGHT: str = "top_right"
     BOTTOM_LEFT: str = "bottom_left"
     BOTTOM_RIGHT: str = "bottom_right"
-    DIAG_UP: str = "diag_up"
-    DIAG_DOWN: str = "diag_down"
+    TOP_BOTTOM: str = "top_bottom"
+    LEFT_RIGHT: str = "left_right"
 
 
 def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> Tuple[int, int, str, str]:
@@ -68,9 +68,9 @@ def Point(r: int, c: int, d: str = Direction.CENTER, label: str = "normal") -> T
     * The label descriptor is used for elements **inside** an cell. Common labels include:
 
         * `normal`: The normal label. This is the default label for most elements. Using this label will not have effects on visualizations.
-        * `l/u/r/d`: The left, up, right, and down labels. These labels are often used for **arrows**, **lines**, etc. to indicate their directions.
         * `tapa_x`: The tapa label with index x (x = 0 ~ 3). This label is often used for **tapa-like** clues to indicate their positions inside a cell.
         * `corner_x`: The corner label with index its direction x. This label is often used for **sudoku-like** clues to indicate a number in the corner inside a cell.
+        * `arrow_x`: The arrow label with index its direction x. This label is often used for **yaji-like** clues to indicate an arrow in the cell.
         * `multiple`: The symbol label with style x (x = 0 ~ n). This label is often used for indicating **multiple symbols** inside a cell.
         * `delete`: The delete label. This label is often used for **erased** edges.
         * other labels may be defined in specific puzzles, such as `hashi` and `nondango`.

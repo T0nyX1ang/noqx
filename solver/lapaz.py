@@ -1,7 +1,7 @@
 """The La Paz solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, edge, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
@@ -10,18 +10,18 @@ from noqx.rule.shape import OMINOES, all_shapes, general_shape
 
 def edge_surrounding_color(color: str = "black") -> str:
     """Generates a rule to ensure that the black cells are surrounded by edges."""
-    rule = f":- grid(R, C), {color}(R, C), not edge_left(R, C).\n"
-    rule += f":- grid(R, C), {color}(R, C), not edge_top(R, C).\n"
-    rule += f":- grid(R, C), {color}(R, C), not edge_left(R, C + 1).\n"
-    rule += f":- grid(R, C), {color}(R, C), not edge_top(R + 1, C).\n"
+    rule = f':- grid(R, C), {color}(R, C), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), {color}(R, C), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), {color}(R, C), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), {color}(R, C), not edge(R + 1, C, "{Direction.TOP}").\n'
     return rule.strip()
 
 
 def lapaz_constraint(color: str = "black") -> str:
     """Generate a constraint for La Paz."""
     rule = ":- number(R, C, N), number(R1, C1, N1), adj_edge(R, C, R1, C1), N != N1.\n"
-    rule += f":- grid(R, C), number(R, C, N), edge_left(R, C), edge_left(R, C + 1), N != #count {{ R0 : {color}(R0, C) }}.\n"
-    rule += f":- grid(R, C), number(R, C, N), edge_top(R, C), edge_top(R + 1, C), N != #count {{ C0 : {color}(R, C0) }}.\n"
+    rule += f':- grid(R, C), number(R, C, N), edge(R, C, "{Direction.LEFT}"), edge(R, C + 1, "{Direction.LEFT}"), N != #count {{ R0 : {color}(R0, C) }}.\n'
+    rule += f':- grid(R, C), number(R, C, N), edge(R, C, "{Direction.TOP}"), edge(R + 1, C, "{Direction.TOP}"), N != #count {{ C0 : {color}(R, C0) }}.\n'
     return rule
 
 
@@ -63,10 +63,9 @@ class LaPazSolver(Solver):
             self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="black", size=2))
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

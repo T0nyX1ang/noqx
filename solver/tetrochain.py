@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import OMINOES, all_shapes, general_shape
@@ -45,13 +45,10 @@ class TetrochainSolver(Solver):
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
-
-            fail_false(isinstance(clue, str) and "_" in clue, "Please set all NUMBER to arrow sub and draw arrows.")
-            num, d = clue.split("_")
-            fail_false(num.isdigit() and d.isdigit(), f"Invalid arrow or number clue at ({r}, {c}).")
-            self.add_program_line(yaji_count(int(num), (r, c), int(d), color="black"))
+            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
+            arrow_direction = label.split("_")[1]
+            self.add_program_line(yaji_count(int(clue), (r, c), arrow_direction, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")

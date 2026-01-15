@@ -1,6 +1,6 @@
 [project]
 name = "noqx"
-version = "0.7.2"
+version = "0.8.0"
 description = "Extended logic puzzle solver of Noq."
 authors = [
   {name = "Tony Xiang"},
@@ -50,16 +50,16 @@ docs = [
 
 [dependency-groups]
 dev = [
-  "black<23.7.0; python_version<'3.9'",
-  "black>=23.7.0; python_version>='3.9'",
-  "conventional-pre-commit<2.5.0; python_version<'3.9'",
-  "conventional-pre-commit>=2.5.0; python_version>='3.9'",
+  "black<24.8.0; python_version<'3.9'",
+  "black>=24.8.0; python_version>='3.9'",
+  "conventional-pre-commit<4.3.0; python_version<'3.9'",
+  "conventional-pre-commit>=4.3.0; python_version>='3.9'",
   "coverage>=7.0.0",
   "pre-commit<2.22.0; python_version<'3.9'",
   "pre-commit>=2.22.0; python_version>='3.9'",
   "pylint<2.14.0; python_version<'3.9'",
   "pylint>=2.14.0; python_version>='3.9'",
-  "ruff>=0.6.8",
+  "ruff>=0.14.10",
   "python-minifier>=2.11.0",
 ]
 

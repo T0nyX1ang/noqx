@@ -28,11 +28,11 @@ class CircleSquareSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
-        self.add_program_line(invert_c(color="gray", invert="green"))
+        self.add_program_line(invert_c(color="gray", invert="white"))
         self.add_program_line(adjacent())
         self.add_program_line(grid_color_connected(color="gray", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(avoid_rect(2, 2, color="gray"))
-        self.add_program_line(all_rect(color="green", square=True))
+        self.add_program_line(all_rect(color="white", square=True))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)

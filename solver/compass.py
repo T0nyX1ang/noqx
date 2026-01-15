@@ -3,9 +3,9 @@
 from typing import Union
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Point, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
-from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
+from noqx.rule.helper import fail_false, tag_encode, validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 
@@ -13,8 +13,15 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 def compass_constraint(r: int, c: int, label: str, num: Union[int, str]) -> str:
     """Generate a compass constraint."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    constraint = {"corner_top": f"R < {r}", "corner_left": f"C < {c}", "corner_bottom": f"R > {r}", "corner_right": f"C > {c}"}
-    rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[label]} }} != {num}."
+    constraint = {
+        f"corner_{Direction.TOP}": f"R < {r}",
+        f"corner_{Direction.LEFT}": f"C < {c}",
+        f"corner_{Direction.BOTTOM}": f"R > {r}",
+        f"corner_{Direction.RIGHT}": f"C > {c}",
+    }
+    rule = ""
+    if label in constraint:
+        rule = f":- #count{{ (R, C): {tag}({r}, {c}, R, C), {constraint[label]} }} != {num}."
 
     return rule
 
@@ -53,7 +60,6 @@ class CompassSolver(Solver):
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(label, ("corner_top", "corner_left", "corner_bottom", "corner_right"))
             if label and isinstance(num, int):
                 self.add_program_line(compass_constraint(r, c, label, num))
 
@@ -63,13 +69,12 @@ class CompassSolver(Solver):
 
             for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
                 prefix = "not " if (Point(r1, c1), color) in puzzle.surface.items() else ""
-                direc = "left" if c1 != c else "top"
-                self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+                d = Direction.LEFT if c1 != c else Direction.TOP
+                self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program
