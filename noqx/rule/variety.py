@@ -4,12 +4,12 @@ Warning:
     This module is for rules that do not fit into other categories. If you find that a rule can be categorized into an existing module, please consider moving it there. Moreover, the rules in this category may be constantly changing, please take with great care.
 """
 
-from typing import Tuple
+from typing import Tuple, Union
 
 from noqx.puzzle import Direction
 
 
-def nori_adjacent(color: str = "gray", adj_type: int = 4) -> str:
+def nori_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
     """A rule to ensure only `1 x 2` shaded rectangles are formed.
 
     * This is usually used as a constraint for nori-like puzzles, such as `norinori` and `norinuri`.
