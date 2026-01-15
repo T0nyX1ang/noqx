@@ -116,7 +116,12 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
             solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
 
         elif _type == "triangle":
-            shaka_dict = {'"ul"': "1", '"ur"': "4", '"dl"': "2", '"dr"': "3"}
+            shaka_dict = {
+                f'"{Direction.TOP_LEFT}"': "1",
+                f'"{Direction.TOP_RIGHT}"': "4",
+                f'"{Direction.BOTTOM_LEFT}"': "2",
+                f'"{Direction.BOTTOM_RIGHT}"': "3",
+            }
             solution.symbol[Point(r, c, Direction.CENTER)] = f"tri__{shaka_dict[data[2]]}"
 
         elif _type == "gray":
