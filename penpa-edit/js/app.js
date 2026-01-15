@@ -205,7 +205,7 @@ function resetGridMode(puzzleType) {
 
   if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
 
-  if (["lither", "myopia", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
+  if (["lither", "myopia", "scrin", "slitherlink"].includes(puzzleType)) modeFlag = ["3", "1", "2"];
 
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
 }
