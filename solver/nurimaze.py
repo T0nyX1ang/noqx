@@ -43,7 +43,7 @@ class NurimazeSolver(Solver):
         self.add_program_line(grid_color_connected(color="white", adj_type="line_directed"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(rooms.items()):
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, label), clue in puzzle.text.items():
