@@ -61,9 +61,9 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
         The `with_holes` parameter is designed for the case where there are explicit cells that the puzzle won't interact with in the grid.
     """
     rule = "grid_all(R, C) :- grid(R, C).\n"
-    rule += "grid_all(R, C) :- hole(R, C).\n"
 
     if with_holes:
+        rule += "grid_all(R, C) :- hole(R, C).\n"
         rule += f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
     else:
         rule += f"grid(0..{rows - 1}, 0..{cols - 1})."
