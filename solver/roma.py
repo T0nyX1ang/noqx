@@ -10,11 +10,11 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 def roma_adjacent() -> str:
     """Generate a rule to define the adjacency for roma."""
 
-    # the definition is designed to be compatible with the reachable propagation
-    rule = "adj_line_directed(R, C, R, C + 1) :- grid(R, C), arrow_N_W__5(R, C).\n"
-    rule += "adj_line_directed(R, C, R, C - 1) :- grid(R, C), arrow_N_W__1(R, C).\n"
-    rule += "adj_line_directed(R, C, R + 1, C) :- grid(R, C), arrow_N_W__7(R, C).\n"
-    rule += "adj_line_directed(R, C, R - 1, C) :- grid(R, C), arrow_N_W__3(R, C)."
+    # the definition is designed to be compatible with the reachable propagation (grid_all = grid + hole)
+    rule = "adj_line_directed(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), arrow_N_W__5(R, C).\n"
+    rule += "adj_line_directed(R, C, R, C - 1) :- grid_all(R, C), grid_all(R, C - 1), arrow_N_W__1(R, C).\n"
+    rule += "adj_line_directed(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), arrow_N_W__7(R, C).\n"
+    rule += "adj_line_directed(R, C, R - 1, C) :- grid_all(R, C), grid_all(R - 1, C), arrow_N_W__3(R, C)."
     return rule
 
 

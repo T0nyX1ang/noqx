@@ -9,7 +9,7 @@ from noqx.rule.helper import tag_encode, target_encode
 def adjacent(_type: Union[int, str] = 4) -> str:
     """A rule to define the adjacent neighbors in a grid.
 
-    * The adjacency is based on a grid, which means two points should both locate on the grid.
+    * The adjacency is based on a "wider" grid with all holes, and both points should be located on the "wider" grid, named by the predicate `grid_all(R, C)`.
 
     * The following adjacency types are allowed:
         * If _type = `4`, then only orthogonal neighbors are considered.
@@ -32,35 +32,43 @@ def adjacent(_type: Union[int, str] = 4) -> str:
     rule = ""
 
     if _type == 4:
-        rule += "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
+        rule += "adj_4(R, C, R1, C1) :- grid_all(R, C), grid_all(R1, C1), |R - R1| + |C - C1| == 1."
         return rule
 
     if _type == "x":
-        rule += "adj_x(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        rule += "adj_x(R, C, R1, C1) :- grid_all(R, C), grid_all(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return rule
 
     if _type == 8:
-        rule += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1.\n"
-        rule += "adj_8(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| == 1, |C - C1| == 1."
+        rule += "adj_8(R, C, R1, C1) :- grid_all(R, C), grid_all(R1, C1), |R - R1| + |C - C1| == 1.\n"
+        rule += "adj_8(R, C, R1, C1) :- grid_all(R, C), grid_all(R1, C1), |R - R1| == 1, |C - C1| == 1."
         return rule
 
     if _type == "edge":
-        rule += f'adj_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
-        rule += f'adj_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
+        rule += f'adj_edge(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), not edge(R, C + 1, "{Direction.LEFT}").\n'
+        rule += f'adj_edge(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), not edge(R + 1, C, "{Direction.TOP}").\n'
         rule += "adj_edge(R, C, R1, C1) :- adj_edge(R1, C1, R, C)."
         return rule
 
     if _type == "line":
-        rule += f'adj_line(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), line_io(R, C, "{Direction.RIGHT}").\n'
-        rule += f'adj_line(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), line_io(R, C, "{Direction.BOTTOM}").\n'
+        rule += f'adj_line(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), line_io(R, C, "{Direction.RIGHT}").\n'
+        rule += f'adj_line(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), line_io(R, C, "{Direction.BOTTOM}").\n'
         rule += "adj_line(R, C, R1, C1) :- adj_line(R1, C1, R, C)."
         return rule
 
     if _type == "line_directed":
-        rule += f'adj_line_directed(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), line_in(R, C, "{Direction.RIGHT}").\n'
-        rule += f'adj_line_directed(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), line_in(R, C, "{Direction.BOTTOM}").\n'
-        rule += f'adj_line_directed(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), line_out(R, C, "{Direction.RIGHT}").\n'
-        rule += f'adj_line_directed(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), line_out(R, C, "{Direction.BOTTOM}").\n'
+        rule += (
+            f'adj_line_directed(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), line_in(R, C, "{Direction.RIGHT}").\n'
+        )
+        rule += (
+            f'adj_line_directed(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), line_in(R, C, "{Direction.BOTTOM}").\n'
+        )
+        rule += (
+            f'adj_line_directed(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), line_out(R, C, "{Direction.RIGHT}").\n'
+        )
+        rule += (
+            f'adj_line_directed(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), line_out(R, C, "{Direction.BOTTOM}").\n'
+        )
         rule += "adj_line_directed(R0, C0, R, C) :- adj_line_directed(R, C, R0, C0)."
         return rule
 

@@ -45,7 +45,7 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
 
     * The starting coordinate is `(0, 0)`. The grid is extended from left to right, and from top to bottom.
 
-    * The holes should be defined separately using their coordinates. Moreover, the mechanism for the holes is to delete the corresponding cells from the grid.
+    * The holes should be defined explicitly using their coordinates with the predicate `hole(R, C)`. Moreover, the mechanism for the holes is to delete the corresponding cells from the grid.
 
     * This function cannot be used to define multiple grids.
 
@@ -55,12 +55,17 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
         with_holes: Whether the grid contains holes.
 
     Success:
-        This rule will generate a predicate named `grid(R, C)`.
+        This rule will generate a predicate named `grid(R, C)`. To deal with adjacency, a helper predicate named `grid_all(R, C)` will also be generated to show the original grid.
     """
-    if with_holes:
-        return f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
+    rule = "grid_all(R, C) :- grid(R, C).\n"
+    rule += "grid_all(R, C) :- hole(R, C).\n"
 
-    return f"grid(0..{rows - 1}, 0..{cols - 1})."
+    if with_holes:
+        rule += f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
+    else:
+        rule += f"grid(0..{rows - 1}, 0..{cols - 1})."
+
+    return rule
 
 
 def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
