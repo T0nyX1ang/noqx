@@ -48,7 +48,7 @@ class LookAirSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
-        self.add_program_line(adjacent(_type=4, include_self=True))
+        self.add_program_line(adjacent(_type=4))
         self.add_program_line(all_rect(color="gray", square=True))
         self.add_program_line(square_size(color="gray"))
         self.add_program_line(avoid_same_size_square_see(color="gray"))
@@ -57,7 +57,7 @@ class LookAirSolver(Solver):
             validate_direction(r, c, d)
             validate_type(label, "normal")
             if isinstance(num, int):
-                self.add_program_line(count_adjacent(num, (r, c), color="gray", adj_type=4))
+                self.add_program_line(count_adjacent(num, (r, c), color="gray", adj_type=4, include_self=True))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")

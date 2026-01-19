@@ -6,7 +6,7 @@ from noqx.puzzle import Direction, Point
 from noqx.rule.helper import tag_encode, target_encode
 
 
-def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
+def adjacent(_type: Union[int, str] = 4) -> str:
     """A rule to define the adjacent neighbors in a grid.
 
     * The adjacency is based on a grid, which means two points should both locate on the grid.
@@ -29,7 +29,7 @@ def adjacent(_type: Union[int, str] = 4, include_self: bool = False) -> str:
     Success:
         This rule will generate a predicate named `adj_{_type}(R, C, R1, C1)`.
     """
-    rule = f"adj_{_type}(R, C, R, C) :- grid(R, C).\n" if include_self else ""
+    rule = ""
 
     if _type == 4:
         rule += "adj_4(R, C, R1, C1) :- grid(R, C), grid(R1, C1), |R - R1| + |C - C1| == 1."
@@ -88,7 +88,11 @@ def avoid_same_number_adjacent(adj_type: Union[int, str] = 4) -> str:
 
 
 def count_adjacent(
-    target: Union[int, Tuple[str, int]], src_cell: Tuple[int, int], color: str = "black", adj_type: Union[int, str] = 4
+    target: Union[int, Tuple[str, int]],
+    src_cell: Tuple[int, int],
+    color: str = "black",
+    adj_type: Union[int, str] = 4,
+    include_self: bool = False,
 ) -> str:
     """A rule to compare the number of adjacent cells having the same color as the source cell to a specified target.
 
@@ -97,9 +101,13 @@ def count_adjacent(
         src_cell: The source cell as a tuple of (`row`, `col`).
         color: The color to be checked.
         adj_type: The type of adjacency.
+        include_self: Whether to include the source cell itself in the count.
     """
     src_r, src_c = src_cell
     rop, num = target_encode(target)
+    if include_self:
+        return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}); R, C:{color}(R, C), R = {src_r}, C = {src_c} }} {rop} {num}."
+
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {rop} {num}."
 
 
