@@ -106,7 +106,7 @@ def count_adjacent(
     src_r, src_c = src_cell
     rop, num = target_encode(target)
     if include_self:
-        return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}); R, C:{color}(R, C), R = {src_r}, C = {src_c} }} {rop} {num}."
+        return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}); R, C: {color}(R, C), R = {src_r}, C = {src_c} }} {rop} {num}."
 
     return f":- #count {{ R, C: {color}(R, C), adj_{adj_type}(R, C, {src_r}, {src_c}) }} {rop} {num}."
 
