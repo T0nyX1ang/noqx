@@ -1,9 +1,9 @@
 """The Nondango solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
-from noqx.rule.common import area, count, defined, display, grid
-from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
+from noqx.puzzle import Point, Puzzle
+from noqx.rule.common import area, count, defined, display, grid, invert_c, shade_c
+from noqx.rule.helper import full_bfs
 from noqx.rule.shape import avoid_rect
 
 
@@ -27,10 +27,10 @@ class NondangoSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="drawable"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line("{ circle_M__1(R, C) } :- drawable(R, C).")
-        self.add_program_line("circle_M__2(R, C) :- drawable(R, C), not circle_M__1(R, C).")
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(shade_c(color="circle_M__1"))
+        self.add_program_line(invert_c(color="circle_M__1", invert="circle_M__2"))
         self.add_program_line(avoid_rect(1, 3, color="circle_M__1"))
         self.add_program_line(avoid_rect(1, 3, color="circle_M__2"))
         self.add_program_line(avoid_rect(3, 1, color="circle_M__1"))
@@ -43,19 +43,18 @@ class NondangoSolver(Solver):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(count(1, color="circle_M__2", _type="area", _id=i))
 
-        for (r, c, d, _), symbol_name in puzzle.symbol.items():
-            validate_direction(r, c, d)
-            validate_type(symbol_name, ("circle_M__1", "circle_M__2", "circle_M__4"))
-            if symbol_name == "circle_M__4":
-                self.add_program_line(f"drawable({r}, {c}).")
+        for r in range(puzzle.row):
+            for c in range(puzzle.col):
+                symbol_name = puzzle.symbol.get(Point(r, c, label="nondango_mark"))
 
-            if symbol_name == "circle_M__1":
-                fail_false((r, c, d, "nondango_mark") in puzzle.symbol, f"Invalid symbol at ({r}, {c}).")
-                self.add_program_line(f":- circle_M__2({r}, {c}).")
+                if symbol_name == "circle_M__1":
+                    self.add_program_line(f":- circle_M__2({r}, {c}).")
 
-            if symbol_name == "circle_M__2":
-                fail_false((r, c, d, "nondango_mark") in puzzle.symbol, f"Invalid symbol at ({r}, {c}).")
-                self.add_program_line(f":- circle_M__1({r}, {c}).")
+                elif symbol_name == "circle_M__2":
+                    self.add_program_line(f":- circle_M__1({r}, {c}).")
+
+                elif symbol_name != "circle_M__4":
+                    self.add_program_line(f"hole({r}, {c}).")
 
         self.add_program_line(display(item="circle_M__1"))
         self.add_program_line(display(item="circle_M__2"))

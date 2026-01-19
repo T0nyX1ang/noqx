@@ -2,18 +2,18 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, display, grid
+from noqx.rule.common import defined, display, grid, shade_c
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 
 
-def lightup(color: str = "black") -> str:
+def lightup() -> str:
     """A rule specially designed for akari."""
-    tag = tag_encode("reachable", "sun_moon__3", "branch", "adj", 4, color)
+    tag = tag_encode("reachable", "sun_moon__3", "branch", "adj", 4, None)
     initial = f"{tag}(R0, C0, R, C) :- grid(R, C), sun_moon__3(R, C), R0 = R, C0 = C."
-    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), adj_4(R, C, R1, C1), (R - R0) * (C - C0) = 0."
+    propagation = f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), grid(R, C), adj_4(R, C, R1, C1), (R - R0) * (C - C0) = 0."
     constraint1 = f":- sun_moon__3(R0, C0), sun_moon__3(R, C), |R0 - R| + |C0 - C| != 0, {tag}(R0, C0, R, C)."
-    constraint2 = f":- grid(R, C), not black(R, C), not sun_moon__3(R, C), {{ {tag}(R0, C0, R, C) }} = 0."
+    constraint2 = f":- grid(R, C), not sun_moon__3(R, C), {{ {tag}(R0, C0, R, C) }} = 0."
 
     return initial + "\n" + propagation + "\n" + constraint1 + "\n" + constraint2
 
@@ -26,7 +26,7 @@ class AkariSolver(Solver):
     aliases = ["bijutsukan", "lightup"]
     examples = [
         {
-            "data": "m=edit&p=7VTfa9swEH73XxH0rAfLsh1Hb1nX7CVLt6WjBGGM47nENK4zJx5DIf97706idmk2usE6BkPR3XefztKX04/91y5vSy58/MmEg4cWioR6kMTUfdeuq8O2VCM+7Q6bpgXA+dVsxm/z7b70tMtKvaOZKDPl5p3STDDOAuiCpdx8VEfzXpklN0sYYjwEbm6TAoCXPbyhcUQXlhQ+4IXFY4ArgEXVFtsym8MoMB+UNtec4Tpv6GuErG6+lczpwLho6nWFxDo/wJ/Zb6qdG9l3X5q7zuWK9MTN1MpdnZEre7kIrVxEP5G77+6zumnuf0tufpe31Tmlk/R0gop/Aq2Z0ij7cw+THi7VkcmAqZCzSJCLbTSW5BJLTiwpfMsKEVofOF46PnR8jDFMv3DT64CP7W7TMlo8hricZiOohyNw4cE4Chh8jUIGIQkaxihsGKPAwWwkdBij4CfLk/THGeAvCHUEuyI7IxuQvYYCciPJviXrk43IzinnkuwN2QuyIdmYcsa4BS/eJJ+pgDMJ5QAXRuSiCThb5qFSytISj0R/tv6QfC3t4/C0Rf8el3qaLbv2Ni9KuFCLrl6X7WjRtHW+hXi5yXclg0fs5LHvjDoUGN7E/+/a679rWH3/hRfn+e34O/dYQ2Gl4OaKs12X5VnRwLGCsmk4H2H8azxcufP50Xk+mvxgnud6Xr1q8IK43U69Bw==",
+            "data": "m=edit&p=7VbbbuIwEH3nKyq/1tLGuXCJtA8phW67lNICYiFCKNAAaRPM5kK7Qf33ju20JJBU7Up7k1Yh45kzZnzGMScE3yPLtzGR2EepYhjhUkmV33K1zG8puXpO6Nr6ETaicEl9cDC+ajbx3HIDG18Ml606NR5OjW+bajgakTMpOpcGd8274xvv67mj+KTZrnYuO5eOvDC+1E+uy43jcicK+qG9ufbIyV1/1Jt3Boua/KPRHqnx6ErSLkbzTxuj/7lkJhzGpW1c02MDx2e6iQjCSIaboDGOr/VtfKnHXRx3IYWwClhLTJLBbezcAc8zry5AIoHfFn4F3CG4M8efufakBVlAOroZ9zBi65zwbzMXeXRjo4QHi2fUmzoMmFohbFWwdNZJJohu6X2UzIWCyIvc0JlRl/oMZNgTjg3RwjCnBWXXAnNFC8x7o4UgWk08Slc/1YJ1b/lOHvtaPvsneDI3wH+im6yV/s6t7tyuvkWKjHQVI43woSyiisKHqgBrAiSSQAlRxSgnuJLgaoKXWQzl20l5U8YVcSr4MiZ5DdlyJjqCPUoAtnAqzwikvs2IpEJOKB0zYumYEUxV40TTMSOcWZ5Tf60ALRB9C3bIbZNbmdsebCCOFW5PuZW41bht8TkNbgfc1rlVuS3zORX2CN79kCSkyxipGh+0Ggxif9MUEW9PYedjd9B+EW9TEdqUvbR/DxuXTNSN/Lk1s+HX1Y68qe0ftanvWS7E3aW1thGoHAqoOwnEvIn9aM1CpAuhTWcy2IrXykAupWvXWeVVeEllQGexor6dm2KgfbsoKsVSOaWm1L/d4/RguW62F/4SykBCfDNQCGqUji3fpw8ZxLPCZQZIqXCmkr3a28zQylIU2pepvduOpxJ6RPyGow8vy/+vpL/3lcSekvROzTvUtz8jwSZstkJwfIXROppYE+gJwR8fbMI5Ussfw0E08+dr+bhWK6hTwOcAhxOci8OxKO5rWMC/GFeUj+EfqPPbTwPXF+q/Ifa75D6cI/mAvqH6qWweXiDwqew+fqDmjOyhoAOao+mA7ss6QIfKDuCBuANWoO+s6r7EM1b7Ks+WOhB6tlRa619UZ1x6Bg==",
         },
         {
             "url": "https://puzz.link/p?akari/17/17/g666.g6.g6.x6.x6.x6.obl6.gbi6cv.gblcmbl7cv6bi66blam6.x.gbv.gcv66.g666.g.g",
@@ -40,11 +40,11 @@ class AkariSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line("{ sun_moon__3(R, C) } :- grid(R, C), not black(R, C).")
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(shade_c(color="sun_moon__3"))
         self.add_program_line(adjacent())
-        self.add_program_line(lightup(color="not black"))
+        self.add_program_line(lightup())
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -58,7 +58,11 @@ class AkariSolver(Solver):
             self.add_program_line(f"sun_moon__3({r}, {c}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
+            if color in Color.DARK:
+                self.add_program_line(f"hole({r}, {c}).")
+
+            if color == Color.WHITE:
+                self.add_program_line(f"not sun_moon__3({r}, {c}).")
 
         self.add_program_line(display(item="sun_moon__3"))
 

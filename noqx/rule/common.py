@@ -56,6 +56,9 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
 
     Success:
         This rule will generate a predicate named `grid(R, C)`. To deal with adjacency, a helper predicate named `grid_all(R, C)` will also be generated to show the original grid.
+
+    Note:
+        The `with_holes` parameter is designed for the case where there are explicit cells that the puzzle won't interact with in the grid.
     """
     rule = "grid_all(R, C) :- grid(R, C).\n"
     rule += "grid_all(R, C) :- hole(R, C).\n"
