@@ -26,6 +26,9 @@ def adjacent(_type: Union[int, str] = 4) -> str:
     Raises:
         ValueError: If the adjacency type is invalid.
 
+    Warning:
+        The `line_directed` is not symmetric. If cell A is adjacent to cell B, cell B may not be adjacent to cell A. Be careful in the reachable propagation. If you want to have a symmetric adjacency with directed lines, you may need to add extra rules to make it symmetric.
+
     Success:
         This rule will generate a predicate named `adj_{_type}(R, C, R1, C1)`.
     """
@@ -64,12 +67,11 @@ def adjacent(_type: Union[int, str] = 4) -> str:
             f'adj_line_directed(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), line_in(R, C, "{Direction.BOTTOM}").\n'
         )
         rule += (
-            f'adj_line_directed(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), line_out(R, C, "{Direction.RIGHT}").\n'
+            f'adj_line_directed(R, C + 1, R, C) :- grid_all(R, C), grid_all(R, C + 1), line_out(R, C, "{Direction.RIGHT}").\n'
         )
         rule += (
-            f'adj_line_directed(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), line_out(R, C, "{Direction.BOTTOM}").\n'
+            f'adj_line_directed(R + 1, C, R, C) :- grid_all(R, C), grid_all(R + 1, C), line_out(R, C, "{Direction.BOTTOM}").\n'
         )
-        rule += "adj_line_directed(R0, C0, R, C) :- adj_line_directed(R, C, R0, C0)."
         return rule
 
     raise ValueError(f"Invalid adjacency type: {_type}.")

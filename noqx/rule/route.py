@@ -179,7 +179,7 @@ def route_straight(color: str = "white") -> str:
     return rule.strip()
 
 
-def route_turning(color: str = "white") -> str:
+def route_turning(color: str = "white", directed: bool = False) -> str:
     """A rule to define all the cells that the route make turns at.
 
     Args:
@@ -193,8 +193,14 @@ def route_turning(color: str = "white") -> str:
     """
     rule = ""
     for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
-        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
-        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
+        if directed:
+            rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_in(R, C, "{d1}"), not line_out(R, C, "{d2}").\n'
+            rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_in(R, C, "{d2}"), not line_out(R, C, "{d1}").\n'
+            rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_out(R, C, "{d1}"), not line_in(R, C, "{d2}").\n'
+            rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_out(R, C, "{d2}"), not line_in(R, C, "{d1}").\n'
+        else:
+            rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
+            rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
     return rule.strip()
 
 

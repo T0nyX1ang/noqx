@@ -4,25 +4,9 @@ from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, defined, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
-from noqx.rule.neighbor import area_border
+from noqx.rule.neighbor import adjacent, area_border
+from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import directed_route
-
-
-def adj_before() -> str:
-    """Generate a rule to constrain adjacent connectivity."""
-    adj = f'adj_before(R, C - 1, R, C) :- grid(R, C), line_in(R, C, "{Direction.LEFT}").\n'
-    adj += f'adj_before(R - 1, C, R, C) :- grid(R, C), line_in(R, C, "{Direction.TOP}").\n'
-    adj += f'adj_before(R, C + 1, R, C) :- grid(R, C), line_in(R, C, "{Direction.RIGHT}").\n'
-    adj += f'adj_before(R + 1, C, R, C) :- grid(R, C), line_in(R, C, "{Direction.BOTTOM}").\n'
-    return adj
-
-
-def connected_directed_path(color: str = "white") -> str:
-    """Generate a directed path rule to constrain connectivity."""
-    initial = "reachable_path(R, C) :- path_start(R, C).\n"
-    propagation = f"reachable_path(R, C) :- {color}(R, C), reachable_path(R1, C1), adj_before(R1, C1, R, C).\n"
-    constraint = f":- grid(R, C), {color}(R, C), not reachable_path(R, C)."
-    return initial + propagation + constraint
 
 
 def haisu_rules() -> str:
@@ -38,8 +22,8 @@ def haisu_count() -> str:
     """Partial sum method for haisu."""
     rule = "haisu_count(R, C, A, 0) :- path_start(R, C), clue_area(A).\n"
     rule += "area_in(A, R, C) :- area_border(A, R, C, D), line_in(R, C, D).\n"
-    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N), not area_in(A, R, C).\n"
-    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_before(R1, C1, R, C), haisu_count(R1, C1, A, N - 1), area_in(A, R, C).\n"
+    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_line_directed(R, C, R1, C1), haisu_count(R1, C1, A, N), not area_in(A, R, C).\n"
+    rule += "haisu_count(R, C, A, N) :- clue_area(A), area_possible_num(A, N), grid(R, C), adj_line_directed(R, C, R1, C1), haisu_count(R1, C1, A, N - 1), area_in(A, R, C).\n"
     rule += ":- clue_area(A), grid(R, C), haisu_count(R, C, A, N1), haisu_count(R, C, A, N2), N1 < N2.\n"
     rule += ":- number(R, C, N), area(A, R, C), not haisu_count(R, C, A, N).\n"
     return rule
@@ -48,7 +32,7 @@ def haisu_count() -> str:
 class HaisuSolver(Solver):
     """The Haisu solver."""
 
-    name = "Haisu"
+    name = "grid"
     category = "route"
     examples = [
         {
@@ -69,12 +53,10 @@ class HaisuSolver(Solver):
         fail_false("S" in puzzle.text.values() and "G" in puzzle.text.values(), "S and G squares must be provided.")
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line("haisu(R, C) :- grid(R, C).")
-        self.add_program_line(fill_line(color="haisu", directed=True))
-        self.add_program_line(directed_route(color="haisu", path=True))
-        self.add_program_line(connected_directed_path(color="haisu"))
+        self.add_program_line(adjacent(_type="line_directed"))
+        self.add_program_line(fill_line(color="grid", directed=True))
+        self.add_program_line(directed_route(color="grid", path=True))
         self.add_program_line(haisu_rules())
-        self.add_program_line(adj_before())
         self.add_program_line(haisu_count())
 
         s_index = []
@@ -92,6 +74,7 @@ class HaisuSolver(Solver):
             validate_type(label, "normal")
             if clue == "S":
                 self.add_program_line(f"path_start({r}, {c}).")
+                self.add_program_line(grid_color_connected(color="grid", adj_type="line_directed", src_cell=(r, c)))
 
             if clue == "G":
                 self.add_program_line(f"path_end({r}, {c}).")
