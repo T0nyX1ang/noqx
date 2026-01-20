@@ -176,7 +176,7 @@ def route_straight(color: str = "white") -> str:
     rule = ""
     for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
         rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
-    return rule
+    return rule.strip()
 
 
 def route_turning(color: str = "white") -> str:
@@ -192,20 +192,16 @@ def route_turning(color: str = "white") -> str:
         This rule only supports undirected routes.
     """
     rule = ""
-    for d1, d2 in (
-        (Direction.TOP, Direction.LEFT),
-        (Direction.TOP, Direction.RIGHT),
-        (Direction.BOTTOM, Direction.LEFT),
-        (Direction.BOTTOM, Direction.RIGHT),
-    ):
-        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
-    return rule
+    for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
+        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
+        rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
+    return rule.strip()
 
 
 def convert_line_to_edge(directed: bool = False, diagonal: bool = False) -> str:
     """A rule to convert the line definitions to edge definitions.
 
-    * In some logic puzzles like `firefly` and `slitherlink`, the path is drawn on the edge although they are loop/path puzzles. This rule helps to do the compatibility conversions.
+    * In some logic puzzles like `haisu` and `slitherlink`, the path is drawn on the edge although they are loop/path puzzles. This rule helps to do the compatibility conversions.
 
     Args:
         directed: Whether the route is directed.
