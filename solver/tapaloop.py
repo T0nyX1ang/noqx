@@ -5,7 +5,7 @@ from typing import Dict, List, Set, Tuple, Union
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import defined, display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, validate_direction
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import single_route
@@ -115,7 +115,8 @@ class TapaloopSolver(Solver):
         for (r, c), clue in clue_dict.items():
             self.add_program_line(parse_clue(r, c, clue))
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

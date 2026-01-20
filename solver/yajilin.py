@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, validate_direction
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import single_route
@@ -65,7 +65,8 @@ class YajilinSolver(Solver):
             if color == Color.GRAY:
                 self.add_program_line(f"hole({r}, {c}).")
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="black"))

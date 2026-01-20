@@ -5,7 +5,7 @@ from typing import Tuple
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import display, fill_line, grid, shade_c
-from noqx.rule.helper import validate_direction
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import route_segment, route_sign, route_straight, route_turning, single_route
@@ -66,7 +66,8 @@ class ShingokiSolver(Solver):
                 if isinstance(num, int):
                     self.add_program_line(count_shingoki(num, (r, c)))
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

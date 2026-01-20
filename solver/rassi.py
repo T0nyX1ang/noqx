@@ -58,7 +58,8 @@ class RassiSilaiSolver(Solver):
             validate_type(symbol_name, "ox_G__1")
             self.add_program_line(f"dead_end({r}, {c}).")
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="ox_G__1", size=2))

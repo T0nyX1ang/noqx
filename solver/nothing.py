@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
 from noqx.rule.common import area, display, fill_line, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border, area_same_color
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import count_area_pass, single_route
@@ -45,7 +45,8 @@ class NothingSolver(Solver):
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i).replace(":-", f":- not nothing({i}),"))
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

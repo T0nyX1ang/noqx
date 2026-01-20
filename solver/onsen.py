@@ -5,7 +5,7 @@ from typing import Union
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, full_bfs
+from noqx.rule.helper import fail_false, full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.route import single_route
 
@@ -82,7 +82,8 @@ class OnsenSolver(Solver):
         fail_false(onsen_id > 0, "No onsen clues found.")
         self.add_program_line(onsen_global_rule())
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

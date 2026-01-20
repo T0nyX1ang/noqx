@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, fill_line, grid
-from noqx.rule.helper import fail_false, full_bfs
+from noqx.rule.helper import fail_false, full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import count_area_pass, single_route
@@ -57,7 +57,8 @@ class DoubleBackSolver(Solver):
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(2, _id=i))
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

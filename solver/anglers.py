@@ -65,7 +65,8 @@ class AnglersSolver(Solver):
                 if (r1, c1) != (r, c):
                     self.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

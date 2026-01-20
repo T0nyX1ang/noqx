@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, full_bfs
+from noqx.rule.helper import fail_false, full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import single_route
@@ -49,7 +49,8 @@ class YajilinRegionsSolver(Solver):
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"black({r}, {c}).")
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="black"))

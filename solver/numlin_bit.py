@@ -135,7 +135,8 @@ class NumlinVBitSolver(Solver):
         self.add_program_line(grid_bit_color_connected(adj_type="line", color="white"))
         self.add_program_line(avoid_unknown_src_bit(adj_type="line", color="white"))
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))
