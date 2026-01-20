@@ -70,17 +70,21 @@ function imp(penpa, example = false) {
   try {
     import_url(urlstring);
     const importErrorDialog = document.getElementById("swal2-html-container");
-    if (
-      importErrorDialog &&
-      puzzleType in solver_metadata &&
-      importErrorDialog.textContent.startsWith("It currently does not support puzzle type")
-    ) {
+    if (puzzleType in solver_metadata) {
       resetGridType(puzzleType);
       resetGridMode(puzzleType);
       resetBoardSize(puzzleType);
+    } else {
+      const currentType = document.getElementById("type").value;
+      resetGridType(currentType);
+      resetGridMode(currentType);
+      resetBoardSize(currentType);
+    }
+
+    if (importErrorDialog && importErrorDialog.textContent.startsWith("It currently does not support puzzle type")) {
       create_newboard();
       advancecontrol_toggle();
-    }
+    } else redraw_grid();
   } catch (error) {
     Swal.fire({
       icon: "error",
