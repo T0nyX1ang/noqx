@@ -45,15 +45,13 @@ class NondangoSolver(Solver):
 
         for r in range(puzzle.row):
             for c in range(puzzle.col):
-                symbol_name = puzzle.symbol.get(Point(r, c, label="nondango_mark"))
-
-                if symbol_name == "circle_M__1":
+                if puzzle.symbol.get(Point(r, c, label="normal")) == "circle_M__1":
                     self.add_program_line(f":- circle_M__2({r}, {c}).")
 
-                elif symbol_name == "circle_M__2":
+                elif puzzle.symbol.get(Point(r, c, label="normal")) == "circle_M__2":
                     self.add_program_line(f":- circle_M__1({r}, {c}).")
 
-                elif symbol_name != "circle_M__4":
+                elif puzzle.symbol.get(Point(r, c, label="nondango_mark")) != "circle_M__4":
                     self.add_program_line(f"hole({r}, {c}).")
 
         self.add_program_line(display(item="circle_M__1"))
