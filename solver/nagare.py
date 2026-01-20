@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, validate_direction
+from noqx.rule.helper import fail_false
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import directed_route
@@ -52,7 +52,7 @@ class NagareSolver(Solver):
     aliases = ["nagareru"]
     examples = [
         {
-            "data": "m=edit&p=7VdtT9tIEP7Or6j8tZbO++JX6T4ECr32QhoKiCMWikwwEOpgznGAM+K/d2d20jjx0Lv7cBLSoST78szs7LPj3cfZ+Z+LrMpd6cFXRa7nCvMJ4wh/kS/w59HnaFoXefLO7S3q67IyDdf9srfnXmbFPHc/n173d8rew4feH/dRPRqJj97ik3dys3fz/uvs909TVYm9QTTcH+5P5VXvt53tg2D3fTBczI/r/P5gJrZvjkdHl8OTq1j+tTsY6Wb0xfM/jy5/ue8d/7qVEoezracmTpqe23xMUkc6Lv6Ec+Y2B8lTs580p25zaEyOqw3WNy3huNI0d1fNE7RDa8eCwjPtAbVN89Q0s6oqH8bb423rOUzS5sh1YKJtHA5NZ1be544dh/1JOTufAnCe1SZX8+vpHVnmi4vy24J8zRzObFHU00lZlBWAgD27Tc+uob9cA5ChNajVGqBp1wAtZg1AGNYwmVaTIh/3baB/uYT84ip/5NjHPPtn82i+Gv7jJIWlHK+a0ap5mDw5fugk2nUCgVVoe5FvK9uLPVtFWAnPugrPOgkvtrVQtpaSajtaSLIrG0YosivyVxRHkb8mPx3YmhiKkMaFNC4ke0i8QponIntEeER4bOeRnrVL4i2FnU9Kuy4pyY/4S2njSOIpNY3X2ta+5SVD6hMvSbmUxEtG5EfJVcRDeXaconwqQX2x7Ns4Stg4Slq+ivgqyreSFE8Rrpc1jfdpHPFVAc0TWL6K8qRissdkj8keW7v2rF1T3rSw82h6/pp4a2HzpomfpnxqyqdWFI94ap/6AcUNaFxA40LCQ/KnfaApz5q2qY5t3yd+vrD8feLjUx59zJc5BYPkyZQCy1NzIiBeKtwfmnOCR9iBx5j6K9hKER4OxhuSyHlDENWB8UylYScKniEWhzgMDnuUYYNni/OHs8b5wzNp+y95wplsL2vpD3ueiw9ns73eJR5B/G568Cwy/ngmmfh4RjkctIbJs4SzwaxLgha18/AD34i/xGFPcv4BrJfBQRs4ni/kDc88kwfUAA4HTWBxWC+Hw/bkcMhzN2+oKcxzR43hcNAWZl+pCHh286ngzDI4ag3DE7WFiY9aw/BBTWHyrAP+PKK2cHHgncLsW9Qejie8c5j94Hv8/kFN6sQxurSH6iSxPDIvb7dRWH7A0sPSx7KPPrtYnmC5g6XGMkCfEF7///APQlcg/yM6qW//7/79x3/ze/P7//mdbaXO4aK6zCa5uQj0p7f5u0FZzbLC9A6vs7vcMfcxZ14W47n1GueP2aR2EnslbFvWsNvF7Dw3N4cWVJTlXWEmYCIsTWvg9Oq2rHLWBCBcXl4IBSYm1HlZXWxwesiKYn0teF1eg+wVaw2qK3N/avVRWdeQWVZfrwGt6+JapPx2I5l1tk4x+5ZtzDZbpeN5y3l08GcEXpgL8dvl+fVenuExea/tDfna6OAOL6ufyM3KuAkzomPQn+hOy8rhL0hMy7qJd/QEyHYlxaCMqhh0U1gM1NUWA3bkxWAvKAxE3RQZYLWpMzBVR2pgqrbapGdb3wE=",
+            "data": "m=edit&p=7VjrT9tIEP/OX1H5a1c678OvSPchUOi1l/IoII5EKDLBgFsHc45DWyP+987MTpqHN1xBp7vTtUqyj9/Mzs6Md8azmfw5TatMKB+/Oha+kPCJkph+cSDp5/PnKK+LrPNCdKf1dVnBQIi9nR1xmRaTTLw9ve5tld1Pr7p/3MV1vy9f+9M3/smHnQ8v349/f5PrSu7sxvvv9t/l6qr729bmQbj9MtyfTo7r7O5gLDc/HPePLvdPrhL1ZXu3b5r+nh+87V/+ctc9/nVjwDqcbdw3SafpiuZ1Z+ApT9BPemeiOejcN+86zaloDoHkCQNYD0bSEwqG2/PhCdFxtGVB6cN4l8cwPIVhWlXlp+HmcNNy7ncGzZHwcKNNWo5Db1zeZZ5dR/NROT7PEThPa/DV5Dq/ZcpkelF+nDIv7OGNp0Wdj8qirBBE7EE0XbKBxcwMQY3YED03BIfWEBw5DEGt0ZBRXo2KbNizgp5oR5HfZBd5RZss25C4bXiAB/QerBh2BmjQ8XwYz4eHnXsviLyOEV4oqYvsLA5sZ2eJb7uYOulbVulbJukntpfa9kpxb1dLxXRtxUjNdM38muVo5jfMZ0Lbs4Yy4nURr4uYHrFeEe8TMz1mPGY8sfso39IV662k3U8pa5dSzMf6K2XlKNZTGV5vjO0Dq5eKeM56KfalYr1UzHzsXM16aN+u0+xPLXkuZ3MrR0srRyurr2Z9NftbK5anGTezntcHvI711SHvE1p9NftJJ0xPmJ4wPbF041u6Yb8Zafcx/PwN622k9Zth/Qz707A/jWZ5rKcJeB6y3JDXhbwuYjxifj4Hhv1s+JiaxM4D1i+QVv+A9QnYjwH5C6Jgt3MPraT2FCIC5Q2k+JZ5TiiGPXyMg2AO24REweHgRie6uFGIbsEUU4OoJYViyImjHAeOZ9ShDcWWix9jzcWPz2SRf6YnxuSiWTN+PPMu+Ribi/bO8Bjlt91Dsejgp5h0yKcYdeGYaxx+VhgbDrsU5qJFP3zDV+TPcDyTLv4Q7XXgmBtceq7xG8W8ww+UA1w45gQnjva6cDyeLhz93PYb5RTHc6cc48IxtzjOlY5Rz7Y/NcasA6dc49CTcotDPuUahz6UUxx+NqE7Him3uOTgO8Vxbin3uPTEd47jPAS++/xQTmrJgby0Q9lJUXsEL2/RaGpfUetTG1DbI55tak+o3aLWUBsST4Sv/+8sEBwJUip6LKHwoCqByrXI6y+zeKeAB0e3KDGtAdctU55qG24OZwuqYhQJ3kri7zR3ENiq+q8/wU++n3w/Ht/ZxsA7nFaX6SiD60cP4vTFblmN0wJmh9fpLaJb5fi2nOR15sEN0JuUxXBiVwyzz+mo9jr2ErpIWcJupuPzDG4pC1BRlrd4vXFImJGWwPzqpqwyJwnB7OJqnSgkOUSdl9XFik6f0qJYtoUu6EuQvc8tQXUFl7WFOWXxJWSc1tdLwMIFdUlSdrPizDpdVjH9mK7sNp6742HD++zRD14mEq7gP6/r//XrOj4s/9nv5H+nRBg0PYEvdtHsCe92OkyHYJUH/w6Jxyinj62B0uJpFJC2fg2UI0+jgLS/l/Icrf9XPvhxNOhhXS8CCPJ1D8+sDRT9DIHPIv7jGYReTWX1SJ0wJ67CjmoB0EcKhgWqC19TGyxQV/FWIYDKtmsBQB3lAKCrFQFA7aIAwFZdANia0gClrlYHqNVqgYBbtWoE3GqxTBicbXwF",
         },
     ]
 
@@ -66,21 +66,27 @@ class NagareSolver(Solver):
         self.add_program_line(directed_route(color="white"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
-            validate_direction(r, c, d)
             shape, style = symbol_name.split("__")
-            _d = dict_dir[style]
 
-            if shape == "arrow_B_B":
+            if d == Direction.CENTER and shape == "arrow_B_B":
                 self.add_program_line(f"white({r}, {c}).")
-                self.add_program_line(f'line_in({r}, {c}, "{rev_dir[_d]}").')
-                self.add_program_line(f'line_out({r}, {c}, "{_d}").')
-            if shape == "arrow_B_W":
+                self.add_program_line(f'line_in({r}, {c}, "{rev_dir[dict_dir[style]]}").')
+                self.add_program_line(f'line_out({r}, {c}, "{dict_dir[style]}").')
+            if d == Direction.CENTER and shape == "arrow_B_W":
                 self.add_program_line(f"not white({r}, {c}).")
-                self.add_program_line(nagare_wind(r, c, _d, puzzle))
+                self.add_program_line(nagare_wind(r, c, dict_dir[style], puzzle))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"not white({r}, {c}).")
+
+        for (r, c, d, label), draw in puzzle.line.items():
+            if label == "normal" and not draw:
+                self.add_program_line(f':- line_in({r}, {c}, "{d}").')
+                self.add_program_line(f':- line_out({r}, {c}, "{d}").')
+
+            if label in ["in", "out"] and draw:
+                self.add_program_line(f':-{" not" * draw} line_{label}({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_in", size=3))
         self.add_program_line(display(item="line_out", size=3))

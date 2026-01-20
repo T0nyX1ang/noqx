@@ -52,7 +52,7 @@ class HaisuSolver(Solver):
     category = "route"
     examples = [
         {
-            "data": "m=edit&p=7ZRNb9pAEIbv/Ipoz3Pw2l7b60tFU8iF0g+oosiyIiBusQqlBVxFRvz3vDNeYkdCqqpEVQ6V8fDOFzyzu/buVzXbFhTjChLySOMKvFDuyOPP6ZqW+1WRXlC/2i83WwiiD8MhfZ2tdkUvc1V571DbtO5TfZVmSitSPm6tcqo/pYf6fVoPqJ4gpUgjNmqKfMhBK68lz+qyCWoPeuw05A3kotwuVsXtqIl8TLN6Sor/5610s1Trze9COQ72F5v1vOTAfLbHMLtl+dNldtXd5nvlanV+pLrf4I7O4AYtLssGl9UZXJ7i2bir8kdxf47U5scjVvwzWG/TjLG/tDJp5SQ9wI7TgwoitPImy6aoIIEbPLohu2oCSBcw3pO84bz/6EacVW/a8sh/Uh5zvi2POauu2vKEA20+CTts4NVCfSN2KNYXO8VQVAdi34n1xBqxI6kZYFYdGNIhBvbxizjdOrSNDiPSJnbakuY5WJsYGiOyxsnXsXYavbHrjQHI3KLRa11vgjls0Gjrke+5XhtAYzBoxMjXTS9i0Mb9LziN4zQdNubhJRcNBuMYTIeZOaMTJ9h4C4QH9YmrTzqcYNP2xIZ66+ptlx9baBtmfEMzJxb1Wpb2UmwoNpIlj/mU/dU5fP7u/hEn80HeubDGL+3lvUyN8GxejDfb9WyFJ3Rw963jjav1vNiefLwbjz11r+SWpyT8/7r8969LXn3vtR3W14aDx0ctZ+WuUnnvAQ==",
+            "data": "m=edit&p=7VZrT9tIFP2eX1HN1460Hj8f0moV0sC2G0IoIDaJUGSCIW5tzPoBrRH/veeOTf2IYQWtdvfDysnkzLnzOGdmPDfpX7mX+NzCo9lc4QKPpujyayr0eXyOgyz03Td8mGebOAHg/GDKL70w9fmH+WYyiod374Z/3trZYiH2lPy9cvpp99Pbj9Ef7wMtEbtTe7Y/2w/Uq+Hvo51Dc/zWnOXpSebfHkZi59PJ4vhydnrlqF/H04VeLA4U48Pi8pfb4cmvg2Ul4WxwXzhuMeTFnrtkKuPyK9gZLw7d+2LfLca8OEKIcQFuAiQYVwHHNTyVcUKjkhQK8LTCgHPAdZCsQ381KZmZuyyOOaN5dmRvgiyKb31WdpP1dRydB0ScexlWKt0EN1UkzS/iz3nVFgOyKA+zYB2HcUIkcQ+8GEoL1TA9PrTaB8HSB6EeH2Tvh32EwbV/ESRykrYHp9/DA/bnI1ys3CUZOqmhXcMj9x7l1L1nmomedN7kFjLNRlX7XtWpyo4wcEUYSituUFz9XjUpyn6rm5tqq7lF8bq5RVG2Vze3iajjtt7QBr1Cqp7LcleWqiyPYYoXmizfyVKRpSHLiWwzhlehGVzoMKxiRLxoQndKrJtcGFaFHS7IB2HDAoZFwngJhSUqjL5W1deCQNItMfo6VV8bPhytxI7CVaXq62jAMAYMjqui7AsO2KjmhU6j0mk0tJEeWnKJocGoNBgNzaTTfNQJbbQFUg/a21V7u6ET2oTzqA3tnaq909SPLXRKzfgFJp1Y1FO5tCNZ6rI05ZJbdMpedA6bu8tUkw6lyRnOPm7GMMi+yrcJpxMLsbS6gZceB6aSecfG+RZw7tjl+fhbQ0sV3hsPduln184GSzaBuzfTOIm8ELfB+OKqUZvm0bmf1PVRHN3EaZD5DPcyS+NwlebJpbf2V/4Xb50xt0wNzUiLu5bjtagwjm/o1ukZ4THUIoOr6zjxe0NE+tD/xFAU6hnqPE4uOpruvDBse5EZs0WV12yLyhLcoY26lyTxXYuJvGzTIhp5ozWSf91ZzMxrS/Q+e53Zono5HgbsC5NfeRvq/yfR/3oSpb1SXn2FvS5B/eiNuiwmHHcnLw44u8lX3gqmGP6x8WcC86d74LZ9UWD+isDLVf00g//q5OiBxNsbQE7aCvzjB01eYHHyTDapg126J6eAfSatNKJ9/BMZpBHt8lvpgsRuZwywPUkDbDdvgNpOHSC3sge4JxIIjdrNIaSqm0Zoqq1MQlM1k8mSbbwgzdnZ4Bs=",
         },
         {
             "url": "https://puzz.link/p?haisu/9/9/199103msp7vvv4pre00bs6poj0068sr1ugp2g2g2g2u2g2k2k2g2u2g2g2g2p",
@@ -98,6 +98,14 @@ class HaisuSolver(Solver):
 
             if isinstance(clue, int):
                 self.add_program_line(f"number({r}, {c}, {clue - 1 if (r, c) in s_index else clue}).")  # special case
+
+        for (r, c, d, label), draw in puzzle.line.items():
+            if label == "normal" and not draw:
+                self.add_program_line(f':- line_in({r}, {c}, "{d}").')
+                self.add_program_line(f':- line_out({r}, {c}, "{d}").')
+
+            if label in ["in", "out"] and draw:
+                self.add_program_line(f':-{" not" * draw} line_{label}({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_in", size=3))
         self.add_program_line(display(item="line_out", size=3))
