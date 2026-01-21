@@ -15,8 +15,33 @@ def limit_turning(color: str) -> str:
     """A rule to limit the number of turning points in the route."""
     tag = tag_encode("reachable", "turning", "branch", "adj", "line", color)
     rule = f"{tag}(R, C, R, C) :- grid(R, C), turning(R, C), not intersect(R, C).\n"
-    rule += f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), grid(R1, C1), not intersect(R, C), not intersect(R1, C1), adj_line(R, C, R1, C1), (R - R0) * (C - C0) = 0.\n"
-    rule += f":- turning(R, C), not intersect(R, C), turning(R1, C1), {tag}(R, C, R1, C1), (R, C) != (R1, C1)."
+    rule += f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), grid(R1, C1), not intersect(R1, C1), adj_line(R, C, R1, C1), (R - R0) * (C - C0) = 0.\n"
+    rule += f":- turning(R, C), not intersect(R, C), turning(R1, C1), not intersect(R1, C1), {tag}(R, C, R1, C1), (R, C) < (R1, C1)."
+    return rule
+
+
+def bulb_src_color_connected(src_cell: Tuple[int, int], color: str = "black") -> str:
+    """A rule to collect all the color cells that are orthogonally connected to a source cell in a grid.
+
+    This rule is specially designed for magnetic ichimaga.
+    """
+    r, c = src_cell
+    tag = tag_encode("reachable", "bulb", "src", "adj", "line", color)
+    rule = f"{tag}({r}, {c}, {r}, {c}).\n"
+    rule += f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, {r}, {c}), {color}(R, C), adj_line(R, C, {r}, {c}), (R - {r}) * (C - {c}) == 0."  # initial propagation manually
+    rule += f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), {color}(R, C), grid(R1, C1), not intersect(R1, C1), adj_line(R, C, R1, C1), (R - {r}) * (C - {c}) == 0."
+    return rule
+
+
+def avoid_magnetic(color: str) -> str:
+    """A rule to avoid two connected clues have the same number."""
+    tag = tag_encode("reachable", "turning", "branch", "adj", "line", color)
+    tag_st = tag_encode("reachable", "bulb", "src", "adj", "line", color)
+    rule = f"connected(R0, C0, R1, C1) :- turning(R, C), not intersect(R, C), intersect(R0, C0), intersect(R1, C1), {tag}(R, C, R0, C0), {tag}(R, C, R1, C1), (R0, C0) < (R1, C1).\n"
+    rule += (
+        f"connected(R0, C0, R1, C1) :- intersect(R0, C0), intersect(R1, C1), {tag_st}(R0, C0, R1, C1), (R0, C0) < (R1, C1).\n"
+    )
+    rule += ":- connected(R0, C0, R1, C1), number(R0, C0, N), number(R1, C1, N)."
     return rule
 
 
@@ -36,12 +61,20 @@ class IchimagaSolver(Solver):
 
     name = "Ichimaga"
     category = "route"
+    aliases = ["ichimaga", "ichimagam"]
     examples = [
         {
             "data": "m=edit&p=7Vbvb7JIEP7uX9Hs125ysCgiyX2w1vZtz1L7vhqvEmNWi0oLbg/B9jD+751dNLIL9noxae7DhTCZeebH7uzAA6u/Ehp52ILLsLCGdbiMKhE30Rri1nZXz48Dzz7DzSResAgUjO8dPKPBysO3j4tOizXfLpt/rq14ONSvteRGGzxfPZ//DP+48Y1Iv3Ks7l33zifz5o/WxYPZPje7yaofe+uHUL947g97s+5g3iB/t51hNR3ea7Xb4ey3dbP/e8XdbWFU2aQNO23i9Np2EUF4d49w+mBv0js7dXD6C1wI6yOMwiSI/SkLWIT2WNoBTUeYgNo+qAPh51orA3UNdCfTTVAfQZ360TTwxp2sUNd20x5GfO0Lkc1VFLK1xxeDNGFPWTjxOTChMZzeauG/ImyAY5U8sZdkF6qPtjhtZh20v9gBFBEdVDM164BrJR3wxk7uwHuae+8lm2+MtluYy0/Y/th2eSf9g2od1F/2BqRjb5BesyBXxyaGfCinm5piE7BJzq7ytc5gFHukzjOMnF1XIyy9gBjyKlYhp8EjZMSUcoimVoUXRI7Q1aqE8G5yEaSmRhiFqgaPyeUYhapVnpOLqMpnSmr8zPK20okyAyLNAAali3E9CnklJBGyB9PEqSHkpZCakDUhOyKmLeRAyJaQVSFNEVPnz8O/emJO3w4yNJhCw8KgwJC5Ak8hFs+R8Y97dYkpmPFw1b7XHlVc1Ib378xhUUgDeDWdJJx40d4GYkQrFoxXSTSjU2/svdNpjOyMm/MeCVuKGhIUMPYa+MuyCnuXBPrzJYu8UhcHOWccKcVdJaUmLHpS9vRGg0DuRXy0JChjNgmKI6CtnE2jiL1JSEjjhQTkSFqq5C2Vw4ypvEX6QpXVwsNxbCvoHYkbGIvwYf7/FftvfsX4jLRvZqZTidKFswYuq2P+VcXpPUavyZiO4bgR/DDhr7kzJjzBXWuc4j5aHMj6mIMUHN8+GPGis+gT1j04VbiEewH9hH5z3jL8CNPmvCpeoFW+2SKzAlpCroCq/ApQkWIBLLAsYEeIlldVuZbvSqVbvlSBcflSedJ1kT9d+CGdUzSqfAA=",
         },
         {"url": "https://puzz.link/p?ichimaga/14/10/cdlcicdehcg2ddkbhddgdhbjbhcbcj8bg6bbjdhbgcgbbi6cgcbc", "test": False},
+        {
+            "data": "m=edit&p=7VZfb9s4DH/Ppyj0dIcJOMuSXdvAPaRdutsuzdKtRa8JgsJN3cSdHe8cu+256HcfyTSwpLjD/QEOfRgcM+SPFEVSFqX1n3VcJlxI/MmAO1zA40mXXqEUvc7zc5pWWRLt8X5dLYsSGM4/jvhNnK0T/uFiOTws+vdv+3/cBdVkIt459Xvn/Pbo9s2n/Pf3qSzF0SgYH4+PU3fR/+3w4MQfvPHH9fqsSu5OcnFwezY5vRmfL0L3r8FooprJR8f7MLn55a5/9mtv+hzCrPfYhFHT5827aMpcxp/fGW9OosfmOGpGvPkMKsbFjLO8zqp0XmRFybZYMwROMO4CO2jZc9Ijd7gBhQP8aMP7wF4AO0/LeZZcDjeOxtG0OeUM5z6g0ciyvLhLcDIYRvK8yK9SBK7iCqq3XqZfGZegWNfXxZf62VTMnnjT32Qw+JsZgJNtBshuMkCuIwNM7D9nkFwvkoeO4MPZ0xOsyycI/zKaYiZnLRu07OfoEegoemRSCBjrcp/DeHAnhQuy0GQPZNnK7r5pL5Wpl2ivjZe+aa9wPs1eoT/Vyh7Or9n7junPR71m71vz+aE5PrD8BdK0DzB+XY/xaPrQsg+teoSmvRIYb+tPCdO/onrq9hhv60+5GK8uB+Z417Kn+mv+qN6arCw91VuTPXM9FNVf11vx0npo8fhmfRStR7s+ah/tdRnz0ewDa35aH82/tT4qMNdXheb3oULze1OhWS/PMevrOWZ9PNoPmt5aP4/WT5fNenquuZ88F/Np8/ck6jV7a794Ut9fsEkFbdULokdEXaKnsJN5I4m+JeoQ9YgOyWZA9JzoIVFF1CebfewF/6hb/A/hTKVPB1/X4/3Q/BvNrDdlAzgw9kZFmccZnCWjOr9Kyq0MJzlbF9nlui5v4nlymTzE84pFm8uErjGwFfkwoKwovmbpqsvDVmWA6WJVlEmnCkE85F5whaoOV1dFeW3FdB9nmZkL3bMMaHMUG1BVwjmryXFZFvcGksfV0gC0W4XhKVlZxaxiM8T4S2zNlrfleOqxB0YvNCW4B/64dr3WaxeukfPa2ulrC4c+76L8Tq9plTbc0XEA/U7T0bRd+Av9RdPa+E4zwWB3+wmgHS0FULurALTbWADc6S2AvdBe0KvdYTAqu8ngVDt9BqfSW82UpfNlmseLON/7Cf5WCWy9vS32M5v1vgE=",
+            "config": {"ichimagam": True},
+        },
     ]
+    parameters = {
+        "ichimagam": {"name": "Magnetic", "type": "checkbox", "default": False},
+    }
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
@@ -56,6 +89,9 @@ class IchimagaSolver(Solver):
         self.add_program_line(convert_line_to_edge())
         self.add_program_line(limit_turning(color="white"))
 
+        if puzzle.param["ichimagam"]:
+            self.add_program_line(avoid_magnetic(color="white"))
+
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)
             validate_type(label, "normal")
@@ -64,6 +100,9 @@ class IchimagaSolver(Solver):
 
             if isinstance(num, int):
                 self.add_program_line(count_edges_around_vertex(num, (r, c)))
+                if puzzle.param["ichimagam"]:
+                    self.add_program_line(f"number({r}, {c}, {num}).")
+                    self.add_program_line(bulb_src_color_connected(color="white", src_cell=(r, c)))
             else:
                 self.add_program_line(count_edges_around_vertex(("gt", 0), (r, c)))
 

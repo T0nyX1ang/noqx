@@ -86,11 +86,19 @@ function imp(penpa, example = false) {
       advancecontrol_toggle();
     } else redraw_grid();
   } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Import error",
-      text: "The URL may be invalid or corrupted.",
-    });
+    if (puzzleType in solver_metadata) {
+      Swal.fire({
+        icon: "error",
+        title: "Import error",
+        text: "The URL may be invalid or corrupted.",
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Import error",
+        text: "Unsupported puzzle type.",
+      });
+    }
     return;
   }
 
