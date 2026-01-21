@@ -402,6 +402,25 @@ $(window).on("load", function () {
       puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
     }`;
     if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
+
+    const variantMap = {
+      lits: { param_invlitso: "invlitso" },
+      slitherlink: {
+        param_tslither: "tslither",
+        param_vslither: "vslither",
+        param_swslither: "swslither",
+      },
+      ichimaga: { param_ichimagam: "ichimagam" },
+    };
+
+    if (variantMap[puzzleType]) {
+      for (const [paramId, variant] of Object.entries(variantMap[puzzleType])) {
+        const element = document.getElementById(paramId);
+        if (element && element.checked) {
+          urlPuzzleType = `https://pzprjs.vercel.app/rules.html?${variant}`;
+        }
+      }
+    }
     window.open(urlPuzzleType);
   });
 
