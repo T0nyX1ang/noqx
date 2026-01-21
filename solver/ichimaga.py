@@ -4,28 +4,19 @@ from typing import Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import display, fill_line, grid, shade_c
-from noqx.rule.helper import target_encode, validate_direction, validate_type
+from noqx.rule.common import defined, display, fill_line, grid, shade_c
+from noqx.rule.helper import tag_encode, target_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import convert_line_to_edge, route_turning, single_route
 
 
-def restrict_num_bend(r: int, c: int, target: Union[int, Tuple[str, int]], color: str) -> str:
-    """Generate a rule to restrict the number of bends in the path."""
-    rop, num = target_encode(target)
-    directions = [
-        (Direction.BOTTOM, r + 1, c),
-        (Direction.RIGHT, r, c + 1),
-        (Direction.TOP, r - 1, c),
-        (Direction.LEFT, r, c - 1),
-    ]
-
-    rule = ""
-    for d, nr, nc in directions:
-        rule += f'reachable({nr}, {nc}, {nr}, {nc}) :- line_io({r}, {c}, "{d}").\n'
-        rule += f"reachable({nr}, {nc}, R, C) :- {color}(R, C), not intersect(R, C), not intersect(R1, C1), grid(R1, C1), reachable({nr}, {nc}, R1, C1), adj_line(R, C, R1, C1).\n"
-        rule += f":- #count{{ R, C: grid(R, C), reachable({nr}, {nc}, R, C), turning(R, C) }} {rop} {num}.\n"
+def limit_turning(color: str) -> str:
+    """A rule to limit the number of turning points in the route."""
+    tag = tag_encode("reachable", "turning", "branch", "adj", "line", color)
+    rule = f"{tag}(R, C, R, C) :- grid(R, C), turning(R, C), not intersect(R, C).\n"
+    rule += f"{tag}(R0, C0, R, C) :- {tag}(R0, C0, R1, C1), {color}(R, C), grid(R1, C1), not intersect(R, C), not intersect(R1, C1), adj_line(R, C, R1, C1), (R - R0) * (C - C0) = 0.\n"
+    rule += f":- turning(R, C), not intersect(R, C), turning(R1, C1), {tag}(R, C, R1, C1), (R, C) != (R1, C1)."
     return rule
 
 
@@ -54,6 +45,7 @@ class IchimagaSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        self.add_program_line(defined(item="intersect"))
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
         self.add_program_line(shade_c(color="white"))
         self.add_program_line(fill_line(color="white"))
@@ -62,13 +54,13 @@ class IchimagaSolver(Solver):
         self.add_program_line(route_turning(color="white"))
         self.add_program_line(grid_color_connected(color="white", adj_type="line"))
         self.add_program_line(convert_line_to_edge())
+        self.add_program_line(limit_turning(color="white"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d, Direction.TOP_LEFT)
             validate_type(label, "normal")
             self.add_program_line(f"pass_by_route({r}, {c}).")
             self.add_program_line(f"intersect({r}, {c}).")
-            self.add_program_line(restrict_num_bend(r, c, ("le", 1), color="white"))
 
             if isinstance(num, int):
                 self.add_program_line(count_edges_around_vertex(num, (r, c)))
