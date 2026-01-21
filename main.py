@@ -75,15 +75,18 @@ if args.enable_deployment:
     for dirname in target_dirs:
         os.makedirs(f"dist/page/penpa-edit/py/{dirname}", exist_ok=True)
 
-    file_dict = {"files": {}}
+    pyscript_config = {
+        "files": {},
+        "plugins": ["!codemirror", "!deprecation-manager", "!donkey", "!error", "!py-editor", "!py-game", "!py-terminal"],
+    }
     for dirname in ["noqx", "noqx/puzzle", "noqx/rule", "solver"]:
         for filename in os.listdir(dirname):
             if filename.endswith(".py") and filename != "clingo.py":
-                file_dict["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
+                pyscript_config["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/py/{dirname}/{filename}")
 
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(file_dict, f, indent=2)
+        json.dump(pyscript_config, f, indent=2)
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))

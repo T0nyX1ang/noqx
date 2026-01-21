@@ -21,7 +21,6 @@ def adjacent(_type: Union[int, str] = 4) -> str:
 
     Args:
         _type: The type of adjacency.
-        include_self: Whether to include the cell itself as its neighbor.
 
     Raises:
         ValueError: If the adjacency type is invalid.
