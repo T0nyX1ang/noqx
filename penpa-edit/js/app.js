@@ -332,7 +332,6 @@ $(window).on("load", function () {
   typeSelect.addEventListener("change", () => {
     const isPuzzleTypeChanged = puzzleType !== typeSelect.value;
     if (isPuzzleTypeChanged) choicesType.setChoiceByValue(typeSelect.value);
-
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
     if (puzzleType !== "") {
@@ -399,7 +398,11 @@ $(window).on("load", function () {
 
   ruleButton.addEventListener("click", () => {
     if (ruleButton.disabled || !puzzleType) return;
-    window.open(`https://puzz.link/rules.html?${puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"}`);
+    let urlPuzzleType = `https://pzprjs.vercel.app/rules.html?${
+      puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
+    }`;
+    if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
+    window.open(urlPuzzleType);
   });
 
   solveButton.addEventListener("click", async () => {
