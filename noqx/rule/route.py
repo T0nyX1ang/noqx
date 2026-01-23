@@ -20,19 +20,19 @@ def single_route(color: str = "white", path: bool = False) -> str:
     Warning:
         This rule conflicts with `directed_route`.
     """
-    constraint = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
+    rule = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
 
     if path:
-        constraint += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
-        constraint += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not dead_end(R, C).\n"
+        rule += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
+        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not dead_end(R, C).\n"
     else:
-        constraint += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
+        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
 
-    constraint += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
-    constraint += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
-    constraint += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
-    constraint += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}"), not line_io(R + 1, C, "{Direction.TOP}").'
-    return constraint
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}"), not line_io(R + 1, C, "{Direction.TOP}").'
+    return rule
 
 
 def directed_route(color: str = "white", path: bool = False) -> str:
@@ -47,26 +47,26 @@ def directed_route(color: str = "white", path: bool = False) -> str:
     Warning:
         This rule conflicts with `single_route`.
     """
-    constraint = f"pass_by_route(R, C) :- grid(R, C), {color}(R, C), #count {{ D: line_in(R, C, D) }} = 1, #count {{ D: line_out(R, C, D) }} = 1, line_in(R, C, D0), not line_out(R, C, D0).\n"
+    rule = f"pass_by_route(R, C) :- grid(R, C), {color}(R, C), #count {{ D: line_in(R, C, D) }} = 1, #count {{ D: line_out(R, C, D) }} = 1, line_in(R, C, D0), not line_out(R, C, D0).\n"
 
     if path:
-        constraint += ":- path_start(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 1.\n"
-        constraint += ":- path_start(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 0.\n"
-        constraint += ":- path_end(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 1.\n"
-        constraint += ":- path_end(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 0.\n"
-        constraint += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not path_start(R, C), not path_end(R, C).\n"
+        rule += ":- path_start(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 1.\n"
+        rule += ":- path_start(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 0.\n"
+        rule += ":- path_end(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 1.\n"
+        rule += ":- path_end(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 0.\n"
+        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not path_start(R, C), not path_end(R, C).\n"
     else:
-        constraint += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
+        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
 
-    constraint += f':- grid(R, C), line_in(R, C, "{Direction.LEFT}"), not line_out(R, C - 1, "{Direction.RIGHT}").\n'
-    constraint += f':- grid(R, C), line_in(R, C, "{Direction.TOP}"), not line_out(R - 1, C, "{Direction.BOTTOM}").\n'
-    constraint += f':- grid(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C + 1, "{Direction.LEFT}").\n'
-    constraint += f':- grid(R, C), line_in(R, C, "{Direction.BOTTOM}"), not line_out(R + 1, C, "{Direction.TOP}").\n'
-    constraint += f':- grid(R, C), line_out(R, C, "{Direction.LEFT}"), not line_in(R, C - 1, "{Direction.RIGHT}").\n'
-    constraint += f':- grid(R, C), line_out(R, C, "{Direction.TOP}"), not line_in(R - 1, C, "{Direction.BOTTOM}").\n'
-    constraint += f':- grid(R, C), line_out(R, C, "{Direction.RIGHT}"), not line_in(R, C + 1, "{Direction.LEFT}").\n'
-    constraint += f':- grid(R, C), line_out(R, C, "{Direction.BOTTOM}"), not line_in(R + 1, C, "{Direction.TOP}").\n'
-    return constraint
+    rule += f':- grid(R, C), line_in(R, C, "{Direction.LEFT}"), not line_out(R, C - 1, "{Direction.RIGHT}").\n'
+    rule += f':- grid(R, C), line_in(R, C, "{Direction.TOP}"), not line_out(R - 1, C, "{Direction.BOTTOM}").\n'
+    rule += f':- grid(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), line_in(R, C, "{Direction.BOTTOM}"), not line_out(R + 1, C, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), line_out(R, C, "{Direction.LEFT}"), not line_in(R, C - 1, "{Direction.RIGHT}").\n'
+    rule += f':- grid(R, C), line_out(R, C, "{Direction.TOP}"), not line_in(R - 1, C, "{Direction.BOTTOM}").\n'
+    rule += f':- grid(R, C), line_out(R, C, "{Direction.RIGHT}"), not line_in(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), line_out(R, C, "{Direction.BOTTOM}"), not line_in(R + 1, C, "{Direction.TOP}").\n'
+    return rule
 
 
 def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
@@ -98,11 +98,10 @@ def separate_item_from_route(inside_item: str, outside_item: str) -> str:
     rule = "outside_route(-1, C) :- grid(_, C).\n"
     rule += f'outside_route(R, C) :- grid(R, C), outside_route(R - 1, C), not line_io(R, C, "{Direction.RIGHT}").\n'
     rule += f'outside_route(R, C) :- grid(R, C), not outside_route(R - 1, C), line_io(R, C, "{Direction.RIGHT}").\n'
+    rule += f":- {inside_item}(R, C), outside_route(R, C).\n"
+    rule += f":- {outside_item}(R, C), not outside_route(R, C).\n"
 
-    constraint = f":- {inside_item}(R, C), outside_route(R, C).\n"
-    constraint += f":- {outside_item}(R, C), not outside_route(R, C).\n"
-
-    return rule + constraint
+    return rule
 
 
 def route_sign(color: str = "white") -> str:
