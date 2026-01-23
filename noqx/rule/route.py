@@ -6,21 +6,28 @@ from noqx.puzzle import Direction
 from noqx.rule.helper import target_encode
 
 
-def single_route(color: str = "white", path: bool = False) -> str:
+def single_route(color: str = "white", path: bool = False, crossing: bool = False) -> str:
     """A rule to ensure the route is a valid undirected loop or path.
 
     * A *loop* is that every cell has two lines connected to it, and there are no dead ends.
 
     * A *path* is that there are two endpoints having only one line connected to them, and other cells have two lines connected to them. The endpoints are marked as `dead_end`.
 
+    * A *crossing* is that a cell can have four lines connected to it, forming a crossing. The route on the crossing cell should go straight in both directions. The crossing cells are marked as `crossing`.
+
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
         path: Whether the route is a path.
+        crossing: Whether the route contains crossing cells.
 
     Warning:
         This rule conflicts with `directed_route`.
     """
     rule = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
+
+    if crossing:
+        rule += "crossing(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 4.\n"
+        rule += "pass_by_route(R, C) :- crossing(R, C).\n"
 
     if path:
         rule += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"

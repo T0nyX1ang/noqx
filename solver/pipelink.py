@@ -4,45 +4,20 @@ from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import display, fill_line, grid
 from noqx.rule.helper import fail_false, tag_encode
+from noqx.rule.neighbor import adjacent
+from noqx.rule.route import single_route
 
 
-def adjacent_line_intersect() -> str:
-    """Generate a constraint to check adjacent loop intersection."""
-    adj = 'direction_type("H"; "V").\n'
-    adj += 'adj_line_intersect(R, C, "H", R, C, "V") :- grid(R, C), not intersection(R, C).\n'
-    adj += f'adj_line_intersect(R, C, "H", R, C + 1, "H") :- grid(R, C), grid(R, C + 1), line_io(R, C, "{Direction.RIGHT}").\n'
-    adj += (
-        f'adj_line_intersect(R, C, "V", R + 1, C, "V") :- grid(R, C), grid(R + 1, C), line_io(R, C, "{Direction.BOTTOM}").\n'
-    )
-    adj += "adj_line_intersect(R0, C0, T0, R, C, T) :- adj_line_intersect(R, C, T, R0, C0, T0)."
-    return adj
-
-
-def loop_intersect(color: str = "white", path: bool = False) -> str:
-    """A rule to ensure the route is a valid loop with intersection."""
-    rule = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
-    rule += "intersection(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 4.\n"
-    rule += "pass_by_route(R, C) :- intersection(R, C).\n"
-
-    visit_constraints = ["not pass_by_route(R, C)"]
-    if path:  # pragma: no cover
-        visit_constraints.append("not dead_end(R, C)")
-        rule += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
-
-    rule += f":- grid(R, C), {color}(R, C), {', '.join(visit_constraints)}.\n"
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}"), not line_io(R + 1, C, "{Direction.TOP}").'
-    return rule
-
-
-def loop_intersect_connected(color: str = "black") -> str:
+def crossing_line_connected(color: str = "white", adj_type: str = "line") -> str:
     """Generate a constraint to check the reachability of {color} cells connected to loops."""
-    tag = tag_encode("reachable", "grid", "adj", "line", "intersection", color)
+    tag = tag_encode("reachable", "grid", "adj", adj_type, color)
     rule = f'{tag}(R, C, "H") :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
-    rule += f"{tag}(R, C, T) :- {tag}(R1, C1, T1), grid(R, C), {color}(R, C), adj_line_intersect(R, C, T, R1, C1, T1).\n"
-    rule += f":- grid(R, C), {color}(R, C), direction_type(T), not {tag}(R, C, T).\n"
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
+    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
+    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "V").\n'
     return rule
 
 
@@ -61,9 +36,9 @@ class PipeLinkSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(fill_line(color="grid"))
-        self.add_program_line(loop_intersect(color="grid"))
-        self.add_program_line(adjacent_line_intersect())
-        self.add_program_line(loop_intersect_connected(color="grid"))
+        self.add_program_line(single_route(color="grid", crossing=True))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(crossing_line_connected(color="grid"))
 
         for (r, c, d, _), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
