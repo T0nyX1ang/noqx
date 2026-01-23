@@ -286,6 +286,19 @@ $(window).on("load", function () {
     unk: "- Unknown -",
   };
 
+  const variantMap = {
+    lits: { param_invlitso: "invlitso" },
+    slitherlink: {
+      param_tslither: "tslither",
+      param_vslither: "vslither",
+      param_swslither: "swslither",
+    },
+    ichimaga: {
+      param_ichimagam: "ichimagam",
+      param_ichimagax: "ichimagax",
+    },
+  };
+
   const choicesType = new Choices(typeSelect, {
     itemSelectText: "",
     searchFields: ["label", "value", "customProperties.aliases"],
@@ -402,16 +415,6 @@ $(window).on("load", function () {
       puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
     }`;
     if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
-
-    const variantMap = {
-      lits: { param_invlitso: "invlitso" },
-      slitherlink: {
-        param_tslither: "tslither",
-        param_vslither: "vslither",
-        param_swslither: "swslither",
-      },
-      ichimaga: { param_ichimagam: "ichimagam" },
-    };
 
     if (variantMap[puzzleType]) {
       for (const [paramId, variant] of Object.entries(variantMap[puzzleType])) {

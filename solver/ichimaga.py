@@ -56,24 +56,55 @@ def count_edges_around_vertex(target: Union[int, Tuple[str, int]], src_cell: Tup
     return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."
 
 
+def ichimagax_crossing(color: str = "white") -> str:
+    """A rule to ensure the route is a valid in ichimagax."""
+    rule = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
+    rule += "crossing(R, C) :- grid(R, C), not intersect(R, C), #count { D: line_io(R, C, D) } = 4.\n"
+    rule += "pass_by_route(R, C) :- crossing(R, C).\n"
+    rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}"), not line_io(R + 1, C, "{Direction.TOP}").'
+    return rule
+
+
+def crossing_line_connected(color: str = "white", adj_type: str = "line") -> str:
+    """Generate a constraint to check the reachability of {color} cells connected to loops."""
+    tag = tag_encode("reachable", "grid", "adj", adj_type, color)
+    rule = f'{tag}(R, C, "H") :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
+    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
+    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "V").\n'
+    return rule
+
+
 class IchimagaSolver(Solver):
     """The Ichimaga solver."""
 
     name = "Ichimaga"
     category = "route"
-    aliases = ["ichimaga", "ichimagam"]
+    aliases = ["ichimaga", "ichimagam", "ichimagax"]
     examples = [
         {
             "data": "m=edit&p=7Vbvb7JIEP7uX9Hs125ysCgiyX2w1vZtz1L7vhqvEmNWi0oLbg/B9jD+751dNLIL9noxae7DhTCZeebH7uzAA6u/Ehp52ILLsLCGdbiMKhE30Rri1nZXz48Dzz7DzSResAgUjO8dPKPBysO3j4tOizXfLpt/rq14ONSvteRGGzxfPZ//DP+48Y1Iv3Ks7l33zifz5o/WxYPZPje7yaofe+uHUL947g97s+5g3iB/t51hNR3ea7Xb4ey3dbP/e8XdbWFU2aQNO23i9Np2EUF4d49w+mBv0js7dXD6C1wI6yOMwiSI/SkLWIT2WNoBTUeYgNo+qAPh51orA3UNdCfTTVAfQZ360TTwxp2sUNd20x5GfO0Lkc1VFLK1xxeDNGFPWTjxOTChMZzeauG/ImyAY5U8sZdkF6qPtjhtZh20v9gBFBEdVDM164BrJR3wxk7uwHuae+8lm2+MtluYy0/Y/th2eSf9g2od1F/2BqRjb5BesyBXxyaGfCinm5piE7BJzq7ytc5gFHukzjOMnF1XIyy9gBjyKlYhp8EjZMSUcoimVoUXRI7Q1aqE8G5yEaSmRhiFqgaPyeUYhapVnpOLqMpnSmr8zPK20okyAyLNAAali3E9CnklJBGyB9PEqSHkpZCakDUhOyKmLeRAyJaQVSFNEVPnz8O/emJO3w4yNJhCw8KgwJC5Ak8hFs+R8Y97dYkpmPFw1b7XHlVc1Ib378xhUUgDeDWdJJx40d4GYkQrFoxXSTSjU2/svdNpjOyMm/MeCVuKGhIUMPYa+MuyCnuXBPrzJYu8UhcHOWccKcVdJaUmLHpS9vRGg0DuRXy0JChjNgmKI6CtnE2jiL1JSEjjhQTkSFqq5C2Vw4ypvEX6QpXVwsNxbCvoHYkbGIvwYf7/FftvfsX4jLRvZqZTidKFswYuq2P+VcXpPUavyZiO4bgR/DDhr7kzJjzBXWuc4j5aHMj6mIMUHN8+GPGis+gT1j04VbiEewH9hH5z3jL8CNPmvCpeoFW+2SKzAlpCroCq/ApQkWIBLLAsYEeIlldVuZbvSqVbvlSBcflSedJ1kT9d+CGdUzSqfAA=",
         },
-        {"url": "https://puzz.link/p?ichimaga/14/10/cdlcicdehcg2ddkbhddgdhbjbhcbcj8bg6bbjdhbgcgbbi6cgcbc", "test": False},
         {
             "data": "m=edit&p=7VZfb9s4DH/Ppyj0dIcJOMuSXdvAPaRdutsuzdKtRa8JgsJN3cSdHe8cu+256HcfyTSwpLjD/QEOfRgcM+SPFEVSFqX1n3VcJlxI/MmAO1zA40mXXqEUvc7zc5pWWRLt8X5dLYsSGM4/jvhNnK0T/uFiOTws+vdv+3/cBdVkIt459Xvn/Pbo9s2n/Pf3qSzF0SgYH4+PU3fR/+3w4MQfvPHH9fqsSu5OcnFwezY5vRmfL0L3r8FooprJR8f7MLn55a5/9mtv+hzCrPfYhFHT5827aMpcxp/fGW9OosfmOGpGvPkMKsbFjLO8zqp0XmRFybZYMwROMO4CO2jZc9Ijd7gBhQP8aMP7wF4AO0/LeZZcDjeOxtG0OeUM5z6g0ciyvLhLcDIYRvK8yK9SBK7iCqq3XqZfGZegWNfXxZf62VTMnnjT32Qw+JsZgJNtBshuMkCuIwNM7D9nkFwvkoeO4MPZ0xOsyycI/zKaYiZnLRu07OfoEegoemRSCBjrcp/DeHAnhQuy0GQPZNnK7r5pL5Wpl2ivjZe+aa9wPs1eoT/Vyh7Or9n7junPR71m71vz+aE5PrD8BdK0DzB+XY/xaPrQsg+teoSmvRIYb+tPCdO/onrq9hhv60+5GK8uB+Z417Kn+mv+qN6arCw91VuTPXM9FNVf11vx0npo8fhmfRStR7s+ah/tdRnz0ewDa35aH82/tT4qMNdXheb3oULze1OhWS/PMevrOWZ9PNoPmt5aP4/WT5fNenquuZ88F/Np8/ck6jV7a794Ut9fsEkFbdULokdEXaKnsJN5I4m+JeoQ9YgOyWZA9JzoIVFF1CebfewF/6hb/A/hTKVPB1/X4/3Q/BvNrDdlAzgw9kZFmccZnCWjOr9Kyq0MJzlbF9nlui5v4nlymTzE84pFm8uErjGwFfkwoKwovmbpqsvDVmWA6WJVlEmnCkE85F5whaoOV1dFeW3FdB9nmZkL3bMMaHMUG1BVwjmryXFZFvcGksfV0gC0W4XhKVlZxaxiM8T4S2zNlrfleOqxB0YvNCW4B/64dr3WaxeukfPa2ulrC4c+76L8Tq9plTbc0XEA/U7T0bRd+Av9RdPa+E4zwWB3+wmgHS0FULurALTbWADc6S2AvdBe0KvdYTAqu8ngVDt9BqfSW82UpfNlmseLON/7Cf5WCWy9vS32M5v1vgE=",
             "config": {"ichimagam": True},
         },
+        {
+            "data": "m=edit&p=7VXfb+I4EH7nr0B+ulUtXZyEkES6B0qh2y6ltAWxBSEU0gBpE9zND8oG8b93bOBiB1rtPuyJh5PJaOabH56xk4/4R+pEHrZgaSZWMIGlmQp/TJ39lN3q+kng2WVcS5M5jUDB+LbZxFMniD18/Thv1Wnt7aL2fWkmgwG5VNIrpf/cfD67D79d+VpEmm2zc9O58dVZ7Wv9/M5onBmdNO4l3vIuJOfPvUF32unPLPVnoz3Qs8GtUrkeTP9e1nr/lIa7HkaldWbZWQ1nl/YQqQjvnhHO7ux1dmNnbZw9gAthMsIoTIPEd2lAI7THshZoBGEV1Eau9rmfafUtSBTQ21vdAPURVNeP3MAbt7aFOvYw62LE9j7n2UxFIV16bDNI47ZLw4nPgImTwPHFc/8VYQ0ccfpEX9JdKBltcFbbTtD4xQmgyH4Cpm4nYNqfmsB7mnmrI81bo80G7uUe2h/bQzZJL1fNXH2w1yDb9hoRswK5BBsY8qEcMU3ZtlSwVcGugq39a6uKIsWrCosXbML8QjzRZL8q76dqhXqaIedrLF6w9UK8TqR+VV0v+C2w9dyuFOIr7DwE22D5QrzB8oV61UJ8tVDfYvMK/Vpsnjxf4+eX52sK20+05fk1RTwvuETCr/KRyyaXKpdduGmcaVxecKlwWeGyxWMaXPa5rHOpc2nwmCp7V37rbfoP2hmqJudFcVVOCxmVhqgBH2i5TaPQCeDbbafhxIv2NjAnimkwjtNo6rje2Fs5boLsLXmLHglb8BoSFFD6GviLYxX2Lgn0ZwsaeUddDGSk8kEp5jpSakKjp0JPb04QyLPwPzUJ2lKfBCUR8JpgO1FE3yQkdJK5BAgsLlXyFoXDTBy5RefFKewW5sexKaEV4g98dCq7zP//5k7zb47dkXJq9HRq7fDXm0afcE3uLMJHGAfQT0hH8B7DP+AXwVvED8iENXvIJ4AeoRRAi6wC0CGxAHjALYB9QC+sapFhWFdFkmFbHfAM20qkmiHy3bkfOjMnXJX/ciMax/5iVt6DX9Co9A4=",
+            "config": {"ichimagax": True},
+        },
+        {"url": "https://puzz.link/p?ichimaga/14/10/cdlcicdehcg2ddkbhddgdhbjbhcbcj8bg6bbjdhbgcgbbi6cgcbc", "test": False},
     ]
     parameters = {
         "ichimagam": {"name": "Magnetic", "type": "checkbox", "default": False},
+        "ichimagax": {"name": "Crossing", "type": "checkbox", "default": False},
     }
 
     def solve(self, puzzle: Puzzle) -> str:
@@ -83,11 +114,16 @@ class IchimagaSolver(Solver):
         self.add_program_line(shade_c(color="white"))
         self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(single_route(color="white"))
         self.add_program_line(route_turning(color="white"))
-        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
         self.add_program_line(convert_line_to_edge())
         self.add_program_line(limit_turning(color="white"))
+
+        if puzzle.param["ichimagax"]:
+            self.add_program_line(ichimagax_crossing(color="white"))
+            self.add_program_line(crossing_line_connected(color="white", adj_type="line"))
+        else:
+            self.add_program_line(single_route(color="white"))
+            self.add_program_line(grid_color_connected(color="white", adj_type="line"))
 
         if puzzle.param["ichimagam"]:
             self.add_program_line(avoid_magnetic(color="white"))
