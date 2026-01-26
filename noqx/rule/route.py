@@ -1,6 +1,6 @@
 """Generate loop- and path-relevant rules for the solver."""
 
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 from noqx.puzzle import Direction
 from noqx.rule.helper import tag_encode, target_encode
@@ -27,17 +27,17 @@ def single_route(color: str = "white", path: bool = False, crossing: bool = Fals
         This rule conflicts with `directed_route`.
     """
     rule = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
+    available: List[str] = ["pass_by_route"]
 
     if crossing:
-        rule += "crossing(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 4.\n"
-        rule += "pass_by_route(R, C) :- crossing(R, C).\n"
+        rule += ":- crossing(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 4.\n"
+        available.append("crossing")
 
     if path:
         rule += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
-        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not dead_end(R, C).\n"
-    else:
-        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
+        available.append("dead_end")
 
+    rule += f":- grid(R, C), {color}(R, C), {', '.join(f'not {predicate}(R, C)' for predicate in available)}.\n"
     rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
     rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
     rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
@@ -236,6 +236,22 @@ def route_turning(color: str = "white", directed: bool = False) -> str:
             rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
             rule += f'turning(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
     return rule.strip()
+
+
+def route_crossing(color: str = "white") -> str:
+    """A rule to define all the cells that the route crosses at.
+
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
+
+    Success:
+        This rule will generate a predicate named `crossing(R, C)`.
+
+    Warning:
+        This rule only supports undirected routes.
+    """
+    rule = f'crossing(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{Direction.TOP}"), line_io(R, C, "{Direction.BOTTOM}"), line_io(R, C, "{Direction.LEFT}"), line_io(R, C, "{Direction.RIGHT}").'
+    return rule
 
 
 def convert_line_to_edge(directed: bool = False, diagonal: bool = False) -> str:

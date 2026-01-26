@@ -5,7 +5,7 @@ from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import display, fill_line, grid
 from noqx.rule.helper import fail_false
 from noqx.rule.neighbor import adjacent
-from noqx.rule.route import crossing_route_connected, single_route
+from noqx.rule.route import crossing_route_connected, route_crossing, single_route
 
 
 class PipeLinkSolver(Solver):
@@ -23,8 +23,9 @@ class PipeLinkSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(fill_line(color="grid"))
-        self.add_program_line(single_route(color="grid", crossing=True))
         self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(route_crossing(color="grid"))
+        self.add_program_line(single_route(color="grid", crossing=True))
         self.add_program_line(crossing_route_connected(color="grid"))
 
         for (r, c, d, _), draw in puzzle.line.items():

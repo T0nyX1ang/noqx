@@ -8,7 +8,7 @@ from noqx.rule.common import defined, display, fill_line, grid, shade_c
 from noqx.rule.helper import tag_encode, target_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.route import convert_line_to_edge, crossing_route_connected, route_turning, single_route
+from noqx.rule.route import convert_line_to_edge, crossing_route_connected, route_crossing, route_turning, single_route
 
 
 def limit_turning(color: str) -> str:
@@ -56,19 +56,6 @@ def count_edges_around_vertex(target: Union[int, Tuple[str, int]], src_cell: Tup
     return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."
 
 
-def ichimagax_crossing(color: str = "white") -> str:
-    """A rule to ensure the route is a valid in ichimagax."""
-    rule = "pass_by_route(R, C) :- grid(R, C), #count { D: line_io(R, C, D) } = 2.\n"
-    rule += "crossing(R, C) :- grid(R, C), not intersect(R, C), #count { D: line_io(R, C, D) } = 4.\n"
-    rule += "pass_by_route(R, C) :- crossing(R, C).\n"
-    rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
-    rule += f':- grid(R, C), line_io(R, C, "{Direction.BOTTOM}"), not line_io(R + 1, C, "{Direction.TOP}").'
-    return rule
-
-
 class IchimagaSolver(Solver):
     """The Ichimaga solver."""
 
@@ -101,15 +88,15 @@ class IchimagaSolver(Solver):
         self.add_program_line(shade_c(color="white"))
         self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(single_route(color="white", crossing=bool(puzzle.param["ichimagax"])))
         self.add_program_line(route_turning(color="white"))
         self.add_program_line(convert_line_to_edge())
         self.add_program_line(limit_turning(color="white"))
 
         if puzzle.param["ichimagax"]:
-            self.add_program_line(ichimagax_crossing(color="white"))
+            self.add_program_line(route_crossing(color="not intersect"))
             self.add_program_line(crossing_route_connected(color="white"))
         else:
-            self.add_program_line(single_route(color="white"))
             self.add_program_line(grid_color_connected(color="white", adj_type="line"))
 
         if puzzle.param["ichimagam"]:
