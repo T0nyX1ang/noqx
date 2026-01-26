@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import display, fill_line, grid
-from noqx.rule.helper import fail_false, tag_encode
+from noqx.rule.helper import fail_false
 from noqx.rule.neighbor import adjacent
 from noqx.rule.route import crossing_route_connected, single_route
 

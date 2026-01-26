@@ -16,10 +16,12 @@ def single_route(color: str = "white", path: bool = False, crossing: bool = Fals
     * A *crossing* is that a cell can have four lines connected to it, forming a crossing. The route on the crossing cell should go straight in both directions. The crossing cells are marked as `crossing`.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
         path: Whether the route is a path.
         crossing: Whether the route contains crossing cells.
+
+    Success:
+        This rule will generate a predicate named `pass_by_route(R, C)`.
 
     Warning:
         This rule conflicts with `directed_route`.
@@ -49,8 +51,11 @@ def directed_route(color: str = "white", path: bool = False) -> str:
     * The definitions are the same as `single_route`.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
         path: Whether the route is a path.
+
+    Success:
+        This rule will generate a predicate named `pass_by_route(R, C)`.
 
     Warning:
         This rule conflicts with `single_route`.
@@ -102,7 +107,6 @@ def crossing_route_connected(color: str = "white") -> str:
 def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
     """A rule that compares the times that a undirected route passes through an area to a specified target.
 
-    * This rule should be used with the `noqx.neighbor.area_border`.
     * This rule should be used with the `noqx.rule.neighbor.area_border`.
 
     Args:
@@ -139,7 +143,7 @@ def route_sign(color: str = "white") -> str:
     """A rule to define valid route signs.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
 
     Warning:
         This rule only supports undirected routes.
@@ -195,7 +199,6 @@ def route_straight(color: str = "white") -> str:
     """A rule to define all the cells that the route goes straight at.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
 
     Success:
@@ -214,7 +217,7 @@ def route_turning(color: str = "white", directed: bool = False) -> str:
     """A rule to define all the cells that the route make turns at.
 
     Args:
-        color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
 
     Success:
         This rule will generate a predicate named `turning(R, C)`.

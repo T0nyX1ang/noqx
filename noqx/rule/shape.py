@@ -249,7 +249,7 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
     * If some cells are not categorized into the `rect` predicate, the shape is not rectangular.
 
-    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.common.invert_c` rule for assistance.
+    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.rule.common.invert_c` rule for assistance.
 
     Args:
         color: The color to be checked.
@@ -406,7 +406,7 @@ def count_rect_size(
 ) -> str:
     """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
 
-    * A `noqx.reachable.bulb_src_color_connected` rule should be applied first.
+    * A `noqx.rule.reachable.bulb_src_color_connected` rule should be applied first.
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
