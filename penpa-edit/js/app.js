@@ -34,6 +34,7 @@ function imp(penpa, example = false) {
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("arukone", "numlin");
   urlstring = urlstring.replace("chocona", "aqre");
+  urlstring = urlstring.replace("cityspace", "cave");
   urlstring = urlstring.replace("cocktail", "aqre");
   urlstring = urlstring.replace("context", "nuribou");
   urlstring = urlstring.replace("coral", "nonogram");
@@ -212,7 +213,7 @@ function resetGridMode(puzzleType) {
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 
-  if (["cave", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+  if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
   if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
