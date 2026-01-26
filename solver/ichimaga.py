@@ -8,7 +8,7 @@ from noqx.rule.common import defined, display, fill_line, grid, shade_c
 from noqx.rule.helper import tag_encode, target_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.route import convert_line_to_edge, route_turning, single_route
+from noqx.rule.route import convert_line_to_edge, crossing_route_connected, route_turning, single_route
 
 
 def limit_turning(color: str) -> str:
@@ -69,19 +69,6 @@ def ichimagax_crossing(color: str = "white") -> str:
     return rule
 
 
-def crossing_line_connected(color: str = "white", adj_type: str = "line") -> str:
-    """Generate a constraint to check the reachability of {color} cells connected to loops."""
-    tag = tag_encode("reachable", "grid", "adj", adj_type, color)
-    rule = f'{tag}(R, C, "H") :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
-    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
-    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
-    rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
-    rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
-    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
-    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "V").\n'
-    return rule
-
-
 class IchimagaSolver(Solver):
     """The Ichimaga solver."""
 
@@ -120,7 +107,7 @@ class IchimagaSolver(Solver):
 
         if puzzle.param["ichimagax"]:
             self.add_program_line(ichimagax_crossing(color="white"))
-            self.add_program_line(crossing_line_connected(color="white", adj_type="line"))
+            self.add_program_line(crossing_route_connected(color="white"))
         else:
             self.add_program_line(single_route(color="white"))
             self.add_program_line(grid_color_connected(color="white", adj_type="line"))

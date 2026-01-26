@@ -5,20 +5,7 @@ from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import display, fill_line, grid
 from noqx.rule.helper import fail_false, tag_encode
 from noqx.rule.neighbor import adjacent
-from noqx.rule.route import single_route
-
-
-def crossing_line_connected(color: str = "white", adj_type: str = "line") -> str:
-    """Generate a constraint to check the reachability of {color} cells connected to loops."""
-    tag = tag_encode("reachable", "grid", "adj", adj_type, color)
-    rule = f'{tag}(R, C, "H") :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
-    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
-    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
-    rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
-    rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
-    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
-    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "V").\n'
-    return rule
+from noqx.rule.route import crossing_route_connected, single_route
 
 
 class PipeLinkSolver(Solver):
@@ -38,7 +25,7 @@ class PipeLinkSolver(Solver):
         self.add_program_line(fill_line(color="grid"))
         self.add_program_line(single_route(color="grid", crossing=True))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(crossing_line_connected(color="grid"))
+        self.add_program_line(crossing_route_connected(color="grid"))
 
         for (r, c, d, _), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")

@@ -3,7 +3,7 @@
 from typing import Tuple, Union
 
 from noqx.puzzle import Direction
-from noqx.rule.helper import target_encode
+from noqx.rule.helper import tag_encode, target_encode
 
 
 def single_route(color: str = "white", path: bool = False, crossing: bool = False) -> str:
@@ -17,6 +17,7 @@ def single_route(color: str = "white", path: bool = False, crossing: bool = Fals
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
         path: Whether the route is a path.
         crossing: Whether the route contains crossing cells.
 
@@ -76,10 +77,33 @@ def directed_route(color: str = "white", path: bool = False) -> str:
     return rule
 
 
+def crossing_route_connected(color: str = "white") -> str:
+    """A rule to ensure a crossing route is connected in a grid.
+
+    * This rule is similar to the `noqx.rule.reachable.grid_color_connected` rule. Since crossing routes can go straight in both directions, two reachability tags are generated for horizontal and vertical directions. Moreover, it is impossible to combine these reachability tags into one, this rule is specifically moved into the `route` module.
+
+    Args:
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
+
+    Success:
+        This rule will generate a predicate named `reachable_grid_adj_line_crossing_{color}(R, C)`.
+    """
+    tag = tag_encode("reachable", "grid", "adj", "line", "crossing", color)
+    rule = f'{tag}(R, C, "H") :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
+    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
+    rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "V").\n'
+    return rule
+
+
 def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
     """A rule that compares the times that a undirected route passes through an area to a specified target.
 
     * This rule should be used with the `noqx.neighbor.area_border`.
+    * This rule should be used with the `noqx.rule.neighbor.area_border`.
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
@@ -172,6 +196,7 @@ def route_straight(color: str = "white") -> str:
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.common.fill_line` rule.
+        color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
 
     Success:
         This rule will generate a predicate named `straight(R, C)`.
