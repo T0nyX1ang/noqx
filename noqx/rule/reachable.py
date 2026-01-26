@@ -36,12 +36,10 @@ def grid_color_connected(
         r, c = src_cell
         initial = f"{tag}({r}, {c})."
     elif grid_size is None:
-        initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+        initial = f"{tag}(R, C) :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
     else:
         R, C = grid_size
-        initial = (
-            f"{tag}(R, C) :- (_, R, C) = #min{{ (|R1 - {R // 2}| + |C1 - {C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
-        )
+        initial = f"{tag}(R, C) :- (_, R, C) = #min {{ (|R1 - {R // 2}| + |C1 - {C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
 
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
@@ -85,7 +83,7 @@ def area_color_connected(color: str = "black", adj_type: Union[int, str] = 4) ->
     """
     validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
     tag = tag_encode("reachable", "area", "adj", adj_type, color)
-    initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1): area(A, R1, C1), {color}(R1, C1) }}."
+    initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min {{ (R1, C1): area(A, R1, C1), {color}(R1, C1) }}."
     propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), area(A, R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
     return initial + "\n" + propagation + "\n" + constraint

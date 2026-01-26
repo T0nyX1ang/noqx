@@ -11,7 +11,7 @@ from noqx.rule.route import single_route
 def crossing_line_connected(color: str = "white", adj_type: str = "line") -> str:
     """Generate a constraint to check the reachability of {color} cells connected to loops."""
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
-    rule = f'{tag}(R, C, "H") :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
+    rule = f'{tag}(R, C, "H") :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
     rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
     rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
     rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'

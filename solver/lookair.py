@@ -10,7 +10,7 @@ from noqx.rule.shape import all_rect
 
 def square_size(color: str = "black") -> str:
     """Generate a rule to determine the size of the square."""
-    rule = f'square_size(R, C, N) :- rect(R, C, "{Direction.TOP_LEFT}"), MC = #min{{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}, N = MC - C.\n'
+    rule = f'square_size(R, C, N) :- rect(R, C, "{Direction.TOP_LEFT}"), MC = #min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}, N = MC - C.\n'
     rule += f"square_size(R, C, N) :- grid(R, C), {color}(R, C), square_size(R, C - 1, N).\n"
     rule += f"square_size(R, C, N) :- grid(R, C), {color}(R, C), square_size(R - 1, C, N).\n"
     return rule
