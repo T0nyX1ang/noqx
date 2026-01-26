@@ -12,6 +12,7 @@ function imp(penpa, example = false) {
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
+  urlstring = urlstring.replace("p.html", "p");
 
   // pre-fetch the puzzle type for puzz.link relevant URL
   if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
