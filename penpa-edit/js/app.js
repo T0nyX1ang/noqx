@@ -44,6 +44,7 @@ function imp(penpa, example = false) {
   urlstring = urlstring.replace("fourcells", "nawabari");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("hinge", "aqre");
+  urlstring = urlstring.replace("nibunnogo", "gokigen");
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nothing", "moonsun");
   urlstring = urlstring.replace("nothree", "tentaisho");
