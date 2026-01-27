@@ -182,6 +182,9 @@ class PenpaPuzzle(Puzzle):
             if color_code == 2:
                 self.surface[point] = Color.WHITE
 
+            if color_code == 5:
+                self.surface[point] = Color.BLUE
+
     def _unpack_text(self):
         """Unpack number/text elements from the board.
 
@@ -427,6 +430,9 @@ class PenpaPuzzle(Puzzle):
 
             if color == Color.GRAY:
                 color_code = 8
+
+            if color == Color.BLUE:
+                color_code = 5
 
             if color_code and not self.problem["surface"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.solution["surface"][f"{index}"] = color_code

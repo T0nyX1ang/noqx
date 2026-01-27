@@ -128,6 +128,8 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
             solution.surface[Point(r, c)] = Color.GRAY
         elif _type == "black":
             solution.surface[Point(r, c)] = Color.BLACK
+        elif _type == "blue":
+            solution.surface[Point(r, c)] = Color.BLUE
 
         elif len(data) == 2:
             solution.symbol[Point(r, c, Direction.CENTER)] = str(_type)

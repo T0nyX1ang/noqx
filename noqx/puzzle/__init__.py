@@ -15,12 +15,14 @@ class Color:
         WHITE: Represents the white color on shaded cells or unshaded cells.
         GRAY: Represents the gray color on shaded cells.
         BLACK: Represents the black color on shaded cells.
+        BLUE: Represents the blue color on shaded cells or unshaded cells, mostly for water-relevant puzzles.
         DARK: A tuple representing dark colors (gray and black).
     """
 
     WHITE: int = 0
     GRAY: int = 1
     BLACK: int = 2
+    BLUE: int = 3
     DARK: Tuple[int, int] = (GRAY, BLACK)
 
 
