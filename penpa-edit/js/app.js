@@ -99,7 +99,7 @@ function imp(penpa, example = false) {
       Swal.fire({
         icon: "error",
         title: "Import error",
-        text: "Unsupported puzzle type.",
+        text: `Unsupported puzzle type: ${puzzleType}.`,
       });
     }
     return;
