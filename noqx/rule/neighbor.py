@@ -1,6 +1,6 @@
 """Generate neighbor- and area-relevant rules for the solver."""
 
-from typing import Dict, Iterable, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 from noqx.puzzle import Direction, Point
 from noqx.rule.helper import tag_encode, target_encode
@@ -134,6 +134,39 @@ def count_adjacent_edges(target: Union[int, Tuple[str, int]], src_cell: Tuple[in
     h_1 = f'edge({src_r}, {src_c}, "{Direction.TOP}")'
     h_2 = f'edge({src_r + 1}, {src_c}, "{Direction.TOP}")'
     return f":- {{ {v_1}; {v_2}; {h_1}; {h_2} }} {rop} {num}."
+
+
+def count_covering(
+    target: Union[int, Tuple[str, int]], src_cell: Tuple[int, int], direction: str, color: str = "black"
+) -> str:
+    """A rule to compare the number of cells with the specified color covering the source cell in the given direction to a specified target.
+
+    * If the source cell is on the edge, two cells are required to cover it; if the source cell is on the corner, four cells are required to cover it. Otherwise, only the source cell itself is required to cover it.
+
+    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.rule.common.invert_c` rule for assistance.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        src_cell: The source cell as a tuple of (`row`, `col`).
+        direction: The direction to check the covering (acceptable values are Direction.LEFT, Direction.TOP and Direction.TOP_LEFT).
+        color: The color to be checked.
+    """
+    src_r, src_c = src_cell
+    rop, num = target_encode(target)
+
+    covers: List[Tuple[int, int]] = [(src_r, src_c)]
+    if direction == Direction.LEFT:
+        covers.append((src_r, src_c - 1))
+
+    if direction == Direction.TOP:
+        covers.append((src_r - 1, src_c))
+
+    if direction == Direction.TOP_LEFT:
+        covers.append((src_r - 1, src_c))
+        covers.append((src_r, src_c - 1))
+        covers.append((src_r - 1, src_c - 1))
+
+    return f":- {{ {'; '.join(f'{color}({r}, {c})' for r, c in covers)} }} {rop} {num}."
 
 
 def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple[int, int, str, str], bool]) -> str:
