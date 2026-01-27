@@ -31,6 +31,8 @@ function imp(penpa, example = false) {
     }
   }
 
+  if (puzzleType === "lither") urlstring = urlstring.replace("lither", "slitherlink"); // special case with lithersink
+
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("arukone", "numlin");
   urlstring = urlstring.replace("chocona", "aqre");
@@ -50,7 +52,6 @@ function imp(penpa, example = false) {
   urlstring = urlstring.replace("nothree", "tentaisho");
   urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
-  urlstring = urlstring.replace("lither", "slitherlink");
   urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("smullyan", "nuribou");
@@ -300,6 +301,9 @@ $(window).on("load", function () {
     ichimaga: {
       param_ichimagam: "ichimagam",
       param_ichimagax: "ichimagax",
+    },
+    pipelink: {
+      param_pipelinkr: "pipelinkr",
     },
   };
 
