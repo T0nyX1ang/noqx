@@ -6,16 +6,7 @@ from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.route import crossing_route_connected, route_crossing, single_route
-
-
-def straight_at_ice(color: str = "white") -> str:
-    """A rule to make a route go straight at ice cells."""
-    rule = ""
-    for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
-        rule += f':- ice(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
-        rule += f':- ice(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
-
-    return rule
+from noqx.rule.variety import straight_at_ice
 
 
 class PipeLinkSolver(Solver):
