@@ -89,7 +89,7 @@ def area_border_connected(_id: int, color: str = "black", adj_type: Union[int, s
 
 
 class HeyawakeSolver(Solver):
-    """The Heyablock solver."""
+    """The Heyawake solver."""
 
     name = "Heyawake"
     category = "shade"

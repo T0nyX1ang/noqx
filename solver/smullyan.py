@@ -31,7 +31,7 @@ class SmullyanicDynastySolver(Solver):
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type=8))
         self.add_program_line(avoid_same_color_adjacent(color="gray", adj_type=4))
-        self.add_program_line(grid_color_connected(color="not gray", adj_type=4))
+        self.add_program_line(grid_color_connected(color="not gray", adj_type=4, grid_size=(puzzle.row, puzzle.col)))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
