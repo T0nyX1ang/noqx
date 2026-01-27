@@ -20,15 +20,15 @@ class AquariumSolver(Solver):
     aliases = ["aquarium"]
     examples = [
         {
-            "data": "m=edit&p=7VZNb+M2EL37Vyx05kH8FKlLkW6TXlJv26QIFoIROF5tN2gCb524KBTkv++b4dBijALbougWBQrb5NPzm9HMcEjp4df9ejcqrelro2oVkHI+8E9rw79WPpe3j3dj/0qd7B8/bHcASr05O1Pv13cP42LQbN2uFk9T6qcTNX3bD41uVGPw081KTT/0T9N3/bRU0wX+apQGd55FBvB0hlf8P6HXmdQt8FIw4FvAze1uczden2fm+36YLlVD9/marQk299vfxkbioOvN9v7mloib9SOSefhw+1H+edi/2/6yF61ePavpJId7WsKNc7h2DpdgDpfQH4RLWfzD4abV8zPK/iMCvu4Hiv2nGcYZXvRPGJf9U2MtmTrEktemsY6IryrCHyvCMdERYSsiEuErIh0RriUiVYQ+Vhgiuorgu1SBBVZUcXSsQJcVIrGicqrbY4k2x150Tqe28qyJFRNYU0WnI2sOGaG8mov8lsczHg2Pl1gDNVkev+Gx5dHzeM6aUyyNiZ0yEaU02DoxAqOKhDv3EndYIcKhnXFMyiQUmXBqlW0zjxkYC8g8tnrBXYAea8DYw4/wwQAjWeYRD5WUbQ1sM48ZWOJMdsYdYk7or2LbFQ18HnhoOsklUC4lL4ofrch68KnkhRwLDogzlhyBk8Qc9YwD8oqSV6IcJRforc62mIGzBjNwydEhlxwPZmVNjgczsNTTwI/J92Lbgk1QlnqasANP7VxsaTcQtvBJG4E1iOGgB/bi38O/F584ia2Xmnv4CeInwE+U2CL4KLYRtlFsI2xjZVv77ySGDvcttnSvTuLp6JEw+3Ft5jErpwvvwWc/mMGXGHCvJHGm+AI7nXvA4clSsE3opZT7xEb0mKwX4yiaiB4r+WJNDxpaU1l3iz7B9YylBzADy1pA70oP0FoXPfWw9J6lPpdetdgLNhQMTRAN+tZK31r08wtcbDXy0pJXC1vBtK9xLf0A/3QeM4bGid5B40rP4F41ptOZ+wo5FqypVyWvFhpdepj6udIbqUmLGhZsUB864Nk/9ZvwnnqywkH8YA/aIHrstUOdCdMhyRi5B8nFU90q7KWGHrn7kjv0dORyPFST6pyh45oxamJEb+Cn7E28u8z7C5h94kC94mP1NY+Ox8DHbUcPxD/5yGxkQagHYn5+/v1j/rOxDVh+ehl7+cFL2X+NWy2G5mK/e7/ejHh3OX338/hqud3dr+9wtdzf34y7co1Xx+dF83vDv8HSm+j/b5P/0tskLUH7l94pv8Ce+Ew4w3ShcEBPb1TzcX+9vt5s0WOoHfHYTcf8F48em3q1+AQ=",
+            "data": "m=edit&p=7VdtT+NGEP7Orzj5661U765f1pGqKnBwvSsEOECURCgywUC4BFMngasR//2eWe/itZMcraqerlKVeP342dnZefPYnv2xSIuMcU5/qZjPgFgQRvrgXOjDN7/j8XySdd6w7mJ+kxcAjO3v7LCrdDLL2Mezm92tvPv4rvv7g5r3+/y9v/jgn97u3L79NP3tw1gWfKenDvYO9sbiuvvr1uZhtP02OljMTubZw+GUb96e9I+vDk6vE/Hndq8flP19P/zYv/rpoXvy88aAa9v8842nMumUXVa+7ww87jFP4ODeOSsPO0/lXqfssfIIUx7j4HYrIQG4XcNTPU9oqyK5D9wzGPAMcDQuRpNsuFsxB51Becw82mdTryboTfOHzDN20PUon16MibhI5wjV7GZ8b2Zmi8v888LIQqE3XUzm41E+yQsiiXtmZbdy4ci6ENYuyNoFgpULhFa4QJ79yy4kq114Rno+wYlhZ0D+nNRQ1fCo84Sx13nypKSVAZZWOfRkQMQvDhG2JaI2ERMhHUIRETpE0iICn4jEIXhbQhARO4TexTEs0hKOHbGWQDVaItESjlLut0W4aGvhlTvuqlDLKIeJtIxjHVda5sUjhJfrIJ/pcUePQo/HyAErpR7f6dHXY6jHXS2zjdQIFTOhEEqBW0wpYESRcBw0cYwMEY78GquEiQRBJpz4TPoVjzMwEqh5NByL4wjyyIHGIfQYPhLAcFbzsIdCqtcKrK14nIGNnYmscQybE9SXXRtbGeh84SETG18i8sX6RfajFLU8+MT6BR8tjmCnsj4CJ8ZmxWscwS9l/ErIR+ML5CWv1uIMXMngDGx9DOBLZQ/OTIrKHpyBTTwF9IhqL73WYhExSTVNOABP5WzX0t1AWEIn3QhaBja8yAOHRn8I/aHRieeBDE3MQ+iJjJ4IepSxTYFXZq3CWmXWKqxVzlpXf2xsiLGvXUt7xcaemB5MtZ7Ar3icWcAtH4Kv9OAM3tqAvRJjZ6IaOOBVDQR4vlksE9RSUtWJVKgxky+NlZFRqDHrL3L6IkM5NXmXqBNc19jUAM7AJheQD2wNUK6tPNWwqT1JdW5qVeJekJHFkImMDOpWmrqVqOcGtms5/OLGLx9rDab7GtemHqCf+rHGkAmMfACZwNYM9nIxdWddV/DRYk61avzyIcNtDVM9O/LCxMRHDC0WiA81eK2f6s3wIdWkgyOjB/egjIw87rWXOBOmJqkxfI+MLyHFzcGhiWEI30PrO+Sp5Wp7KCZOn6F2rTFiIoy8gB57b+INqr6/gLVONNRT3Va39BjoMdLtNqYH4l98ZHomIVQDYfX8/Odt/lXbBkg/vRI2f3g1/K9x5xsD72hRXKWjDO8z25fX2ZteXkzTCa56i+lFVthrvGJ6s3wynFXSw+xLOpp7neot151pcHdaR4Oa5Pn9ZHy3SoOdapDj67u8yFZOEZnB5jWqaGqFqou8uGzZ9JhOJk1f9BdAg6peGxvUvMA7oXOdFkX+2GCm6fymQTjvjw1N2V0rmPO0aWL6OW3tNq3D8bzhffH0MZD0pfL/98AP/j1AqfL/1lfBd+hqr5gzQMTxiC33mXe/GKZD+OTh05MRj364mk9aPIKu9QQtHjlaKR+skUfOV+4breHjNfw6e16xcykOwfl3z5ZuAnnxjY5cT7bpFX0Z7DdaszO7il/ThZ3ZNr/UcsnY5a4LdkXjBdvuvaCW2y/IpQ4Mbk0TJq3tPkxWtVsxbbXUjWkrtyEPzje+Ag==",
         },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="gray"))
-        self.add_program_line(area_gravity(color="gray"))
+        self.add_program_line(shade_c(color="blue"))
+        self.add_program_line(area_gravity(color="blue"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, ar in enumerate(rooms):
@@ -39,14 +39,14 @@ class AquariumSolver(Solver):
             validate_type(label, "normal")
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
-                self.add_program_line(count(num, color="gray", _type="col", _id=c))
+                self.add_program_line(count(num, color="blue", _type="col", _id=c))
 
             if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
-                self.add_program_line(count(num, color="gray", _type="row", _id=r))
+                self.add_program_line(count(num, color="blue", _type="row", _id=r))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK or color != Color.BLUE)} blue({r}, {c}).")
 
-        self.add_program_line(display(item="gray"))
+        self.add_program_line(display(item="blue"))
 
         return self.program
