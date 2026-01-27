@@ -32,7 +32,7 @@ def haisu_count() -> str:
 class HaisuSolver(Solver):
     """The Haisu solver."""
 
-    name = "grid"
+    name = "Haisu"
     category = "route"
     examples = [
         {
