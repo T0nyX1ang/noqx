@@ -1,4 +1,4 @@
-"""The Tetrochain solver."""
+"""The Tetro Chain-Y solver."""
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
@@ -18,11 +18,12 @@ def avoid_adjacent_same_omino(num: int = 4, color: str = "black") -> str:
     return rule
 
 
-class TetrochainSolver(Solver):
-    """The Tetrochain solver."""
+class TetroChainYSolver(Solver):
+    """The Tetro Chain-Y solver."""
 
-    name = "Tetrochain"
+    name = "Tetro Chain-Y"
     category = "shade"
+    aliases = ["tetrochainy"]
     examples = [
         {
             "data": "m=edit&p=7VVRb9MwEH7Pr6juCaRDimOna/NWxspLyYAWTVMURWnItLCUjKRB4Kr/fXeXSA20D+yBTUjI9ZevX87nz+fabb61aZ2jcvmjJ0hPakZNpHuTsXS3b6tiW+bBCGft9raqiSBezud4k5ZN7kR9VOzs7DSwM7Rvgwg8QOkKYrQfgp19F9gQ7ZJeARrSFsQUoEf04kCv5D2z805ULvGwS6iIXhPNijor82TRKe+DyK4QeJ7XMpopbKrvOXQp5HtWbdYFC+t0S4tpbov7/k3Tfq7u2j5WxXu0s87u8oRdfbDLtLPL7IRdXsVftjuN93sq+0cynAQRe/90oJMDXQY7wjDYgRnzUC9hr7xDlNFXki3hCvfS2O2ihpJ/NPDMHEvTo1xTSW8SPZAklz8cqFyZ0gxHKlcmMIk70PSJOP17PlqskiVfC84FPcEVVQStFnwj6Ar6gguJuRC8EjwXNIJjiTnjmv5h1YHtegiaimC6LXgCb5HuzvOvzf/3tNiJYNnWN2mW088/bDfrvB6FVb1JS6D7Zu/AD5Aeab6+/l9Bz3QF8Ra4j7qInv+ERlRdOif2EuG+TdIkq0qgfzFk3fiP07U60p98tXTs4Wf6pbhLbTt6waxJv77ib/R8CbHzAA==",
