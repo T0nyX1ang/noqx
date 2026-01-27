@@ -52,6 +52,7 @@ function imp(penpa, example = false) {
   urlstring = urlstring.replace("lither", "slitherlink");
   urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
+  urlstring = urlstring.replace("smullyan", "nuribou");
   urlstring = urlstring.replace("squarejam", "shikaku");
   urlstring = urlstring.replace("statuepark", "yinyang");
   urlstring = urlstring.replace("swslither", "slitherlink");
