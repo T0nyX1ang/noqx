@@ -88,7 +88,7 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
 
-def shade_c(color: str = "black") -> str:
+def shade_c(color: str = "black", _from: str = "grid") -> str:
     """A rule to shade cells with a specified color from a grid.
 
     * Every cell in the grid can be either shaded or unshaded with the `color`.
@@ -97,14 +97,15 @@ def shade_c(color: str = "black") -> str:
 
     Args:
         color: The color to be shaded.
+        _from: The domain for the cells to be shaded.
 
     Success:
         This rule will generate a predicate named `{color}(R, C)`.
     """
-    return f"{{ {color}(R, C) }} :- grid(R, C)."
+    return f"{{ {color}(R, C) }} :- {_from}(R, C)."
 
 
-def shade_cc(colors: Iterable[str]) -> str:
+def shade_cc(colors: Iterable[str], _from: str = "grid") -> str:
     """A rule to shade cells with several specified colors from a grid.
 
     * Every cell in the grid can be shaded with **exactly one** of the specified colors.
@@ -113,6 +114,7 @@ def shade_cc(colors: Iterable[str]) -> str:
 
     Args:
         colors: The colors to be shaded.
+        _from: The domain for the cells to be shaded.
 
     Success:
         This rule will generate a predicate named `{color}(R, C)`.
@@ -120,10 +122,10 @@ def shade_cc(colors: Iterable[str]) -> str:
     Warning:
         If you only specify **one color**, all the cells in the grid will be shaded with this color.
     """
-    return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
+    return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- {_from}(R, C)."
 
 
-def invert_c(color: str = "black", invert: str = "white") -> str:
+def invert_c(color: str = "black", invert: str = "white", _from: str = "grid") -> str:
     """A rule to define an inverted color from a specified color inside a grid.
 
     * An inverted color means that if a cell is not shaded with the specified color,
@@ -138,11 +140,12 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
     Args:
         color: The specified color.
         invert: The inverted color.
+        _from: The domain for the cells to be shaded.
 
     Success:
         This rule will generate a predicate named `{invert}(R, C)`.
     """
-    return f"{invert}(R, C) :- grid(R, C), not {color}(R, C)."
+    return f"{invert}(R, C) :- {_from}(R, C), not {color}(R, C)."
 
 
 def edge(rows: int, cols: int, with_border: bool = True) -> str:
