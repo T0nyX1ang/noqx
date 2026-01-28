@@ -55,12 +55,10 @@ class KakuroSolver(Solver):
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
 
-        area_id = 0
-        for sum_clue, coord_list in sums:
+        for area_id, (sum_clue, coord_list) in enumerate(sums):
             self.add_program_line(area(_id=area_id, src_cells=coord_list))
             self.add_program_line(fill_num(_range=range(1, 10), _type="area", _id=area_id))
             self.add_program_line(f":- #sum {{ N, R, C: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
-            area_id += 1
 
         self.add_program_line(unique_num(_type="area", color="grid"))
         self.add_program_line(display(item="number", size=3))

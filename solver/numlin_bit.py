@@ -124,7 +124,7 @@ class NumlinVBitSolver(Solver):
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(single_route(color="white", path=True))
 
-        for _id, (n, pair) in enumerate(locations.items()):
+        for _id, (_, pair) in enumerate(locations.items()):
             r0, c0 = pair[0]
             r1, c1 = pair[1]
             self.add_program_line(clue_bit(r0, c0, _id + 1, nbit))

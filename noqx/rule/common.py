@@ -204,7 +204,7 @@ def fill_line(
     Success:
         This rule will generate a predicate named `line_{in|out|io}(R, C, D)`.
     """
-    dir_range_str = map(lambda x: f'"{x}"', tuple(directions))
+    dir_range_str = (f'"{x}"' for x in tuple(directions))
     rule = f"direction({'; '.join(dir_range_str)}).\n"
 
     if directed:

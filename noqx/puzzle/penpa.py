@@ -461,9 +461,7 @@ class PenpaPuzzle(Puzzle):
             shape, style = symbol_name.split("__")
             coord = (r, c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of symbols are all in the center
-            if self.puzzle_name == "nondango":
-                self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
-            elif not self.problem["symbol"].get(f"{index}"):  # avoid overwriting the original stuff
+            if self.puzzle_name == "nondango" or not self.problem["symbol"].get(f"{index}"):
                 self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
 
     def _pack_edge(self):

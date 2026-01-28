@@ -101,7 +101,6 @@ def crossing_route_connected(color: str = "white", directed: bool = False) -> st
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
         directed: Whether the route is directed.
-        src_cell: The initial cell to start the propagation. If not provided, the propagation starts from the cell with the smallest (row, column) index.
 
     Success:
         This rule will generate a predicate named `reachable_grid_adj_{line|line_directed}_crossing_{color}(R, C)`.

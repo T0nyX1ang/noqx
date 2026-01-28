@@ -72,8 +72,7 @@ class TriplaceSolver(Solver):
                     self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         t_be = tag_encode("belong_to_shape", "omino", 3, "grid")
-        area_id = 0
-        for num, coord_list in sums:
+        for area_id, (num, coord_list) in enumerate(sums):
             self.add_program_line(area(_id=area_id, src_cells=coord_list))
 
             edge_tag = f'edge(R + 1, C, "{Direction.TOP}")'

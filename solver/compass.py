@@ -49,7 +49,7 @@ class CompassSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
-        all_src = set((r, c) for (r, c, _, _) in puzzle.text)
+        all_src = {(r, c) for (r, c, _, _) in puzzle.text}
         fail_false(len(all_src) > 0, "No clues found.")
         for r, c in all_src:
             self.add_program_line(f"not hole({r}, {c}).")

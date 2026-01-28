@@ -60,7 +60,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
         f.write("window.puzzle_list = Object.keys(solver_metadata);")
 
-    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
@@ -96,7 +96,7 @@ if args.enable_deployment:
     shutil.copytree("./penpa-edit/", "./dist/page/penpa-edit/", dirs_exist_ok=True)
     shutil.copytree("./site/", "./dist/page/", dirs_exist_ok=True)
 
-    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
@@ -129,7 +129,7 @@ else:
             return JSONResponse({"detail": str(err)}, status_code=400)
         except TimeoutError as err:
             return JSONResponse({"detail": str(err)}, status_code=504)
-        except Exception:  # pylint: disable=broad-except  # pragma: no cover
+        except Exception:  # pragma: no cover
             logging.error(traceback.format_exc())
             return JSONResponse({"detail": "Unknown error."}, status_code=500)
 
