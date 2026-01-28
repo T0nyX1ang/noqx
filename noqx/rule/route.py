@@ -113,6 +113,11 @@ def crossing_route_connected(color: str = "white", directed: bool = False) -> st
     rule = f'{tag}(R, C, "H") :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
     rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_{adj_type}(R, C, R, C1).\n'
     rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_{adj_type}(R, C, R1, C).\n'
+
+    if directed:
+        rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_{adj_type}(R, C1, R, C).\n'
+        rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_{adj_type}(R1, C, R, C).\n'
+
     rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
     rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
     rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
