@@ -3,10 +3,6 @@
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": true,
   "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit",
-      "source.organizeImports": "explicit"
-    }
+    "editor.defaultFormatter": "charliermarsh.ruff"
   }
 }
