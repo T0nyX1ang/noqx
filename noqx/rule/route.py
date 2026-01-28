@@ -37,7 +37,8 @@ def single_route(color: str = "white", path: bool = False, crossing: bool = Fals
         rule += ":- dead_end(R, C), grid(R, C), #count { D: line_io(R, C, D) } != 1.\n"
         available.append("dead_end")
 
-    rule += f":- grid(R, C), {color}(R, C), {', '.join(f'not {predicate}(R, C)' for predicate in available)}.\n"
+    exclude = ", ".join(f"not {predicate}(R, C)" for predicate in available)
+    rule += f":- grid(R, C), {color}(R, C), {exclude}.\n"
     rule += f':- grid(R, C), line_io(R, C, "{Direction.LEFT}"), not line_io(R, C - 1, "{Direction.RIGHT}").\n'
     rule += f':- grid(R, C), line_io(R, C, "{Direction.TOP}"), not line_io(R - 1, C, "{Direction.BOTTOM}").\n'
     rule += f':- grid(R, C), line_io(R, C, "{Direction.RIGHT}"), not line_io(R, C + 1, "{Direction.LEFT}").\n'
@@ -81,7 +82,8 @@ def directed_route(color: str = "white", path: bool = False, crossing: bool = Fa
         rule += f':- crossing(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C, "{Direction.LEFT}").\n'
         available.append("crossing")
 
-    rule += f":- grid(R, C), {color}(R, C), {', '.join(f'not {predicate}(R, C)' for predicate in available)}.\n"
+    exclude = ", ".join(f"not {predicate}(R, C)" for predicate in available)
+    rule += f":- grid(R, C), {color}(R, C), {exclude}.\n"
     rule += f':- grid(R, C), line_in(R, C, "{Direction.LEFT}"), not line_out(R, C - 1, "{Direction.RIGHT}").\n'
     rule += f':- grid(R, C), line_in(R, C, "{Direction.TOP}"), not line_out(R - 1, C, "{Direction.BOTTOM}").\n'
     rule += f':- grid(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C + 1, "{Direction.LEFT}").\n'
