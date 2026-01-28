@@ -202,14 +202,14 @@ def fill_line(
         directed: Whether the line is directed.
 
     Success:
-        This rule will generate a predicate named `line(R, C, D)`.
+        This rule will generate a predicate named `line_{in|out|io}(R, C, D)`.
     """
     dir_range_str = map(lambda x: f'"{x}"', tuple(directions))
     rule = f"direction({'; '.join(dir_range_str)}).\n"
 
     if directed:
-        rule += f"{{ line_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
-        rule += f"{{ line_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
+        rule += f"{{ line_in(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ line_out(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
     else:
         rule += f"{{ line_io(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 
