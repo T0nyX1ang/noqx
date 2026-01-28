@@ -50,15 +50,11 @@ docs = [
 
 [dependency-groups]
 dev = [
-  "black<24.8.0; python_version<'3.9'",
-  "black>=24.8.0; python_version>='3.9'",
   "conventional-pre-commit<4.3.0; python_version<'3.9'",
   "conventional-pre-commit>=4.3.0; python_version>='3.9'",
   "coverage>=7.0.0",
   "pre-commit<2.22.0; python_version<'3.9'",
   "pre-commit>=2.22.0; python_version>='3.9'",
-  "pylint<2.14.0; python_version<'3.9'",
-  "pylint>=2.14.0; python_version>='3.9'",
   "ruff>=0.14.10",
   "python-minifier>=2.11.0",
 ]
@@ -70,19 +66,13 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["noqx", "noqx.puzzle", "noqx.rule"]
 
-[tool.black]
-line-length = 127
-target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
-
 [tool.ruff]
 line-length = 127
 target-version = "py37"
 
 [tool.ruff.lint]
-select = ["I"]
-
-[tool.pylint]
-disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation", "line-too-long"]
+select = ["E", "F", "W", "UP", "B", "SIM", "I", "ASYNC", "C4"]
+ignore = ["E501"]
 
 [tool.pyright]
 pythonVersion = "3.7"
