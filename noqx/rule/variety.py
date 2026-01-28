@@ -48,17 +48,21 @@ def yaji_count(
     raise ValueError("Invalid direction.")
 
 
-def straight_at_ice(color: str = "white") -> str:
+def straight_at_ice(color: str = "white", directed: bool = False) -> str:
     """A rule to ensure a route goes straight at ice cells.
 
     * This is usually used as a constraint for puzzles involving some cells needed to be passed straightly, such as `pipelink returns` and `barns`.
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
+        directed: Whether the route is directed.
     """
     rule = ""
     for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
-        rule += f':- ice(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
-        rule += f':- ice(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
-
-    return rule
+        if directed:
+            rule += f':- ice(R, C), not crossing(R, C), {color}(R, C), line_in(R, C, "{d1}"), not line_out(R, C, "{d2}").\n'
+            rule += f':- ice(R, C), not crossing(R, C), {color}(R, C), line_in(R, C, "{d2}"), not line_out(R, C, "{d1}").\n'
+        else:
+            rule += f':- ice(R, C), not crossing(R, C), {color}(R, C), line_io(R, C, "{d1}"), not line_io(R, C, "{d2}").\n'
+            rule += f':- ice(R, C), not crossing(R, C), {color}(R, C), line_io(R, C, "{d2}"), not line_io(R, C, "{d1}").\n'
+    return rule.strip()

@@ -45,7 +45,7 @@ def single_route(color: str = "white", path: bool = False, crossing: bool = Fals
     return rule
 
 
-def directed_route(color: str = "white", path: bool = False) -> str:
+def directed_route(color: str = "white", path: bool = False, crossing: bool = False) -> str:
     """A rule to ensure the route is a valid directed loop or path.
 
     * The definitions are the same as `single_route`.
@@ -53,6 +53,7 @@ def directed_route(color: str = "white", path: bool = False) -> str:
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
         path: Whether the route is a path.
+        crossing: Whether the route contains crossing cells.
 
     Success:
         This rule will generate a predicate named `pass_by_route(R, C)`.
@@ -61,16 +62,26 @@ def directed_route(color: str = "white", path: bool = False) -> str:
         This rule conflicts with `single_route`.
     """
     rule = f"pass_by_route(R, C) :- grid(R, C), {color}(R, C), #count {{ D: line_in(R, C, D) }} = 1, #count {{ D: line_out(R, C, D) }} = 1, line_in(R, C, D0), not line_out(R, C, D0).\n"
+    available: List[str] = ["pass_by_route"]
 
     if path:
         rule += ":- path_start(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 1.\n"
         rule += ":- path_start(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 0.\n"
         rule += ":- path_end(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 1.\n"
         rule += ":- path_end(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 0.\n"
-        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not path_start(R, C), not path_end(R, C).\n"
-    else:
-        rule += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C).\n"
+        available.append("path_start")
+        available.append("path_end")
 
+    if crossing:
+        rule += ":- crossing(R, C), grid(R, C), #count { D: line_in(R, C, D) } != 2.\n"
+        rule += ":- crossing(R, C), grid(R, C), #count { D: line_out(R, C, D) } != 2.\n"
+        rule += f':- crossing(R, C), line_in(R, C, "{Direction.TOP}"), not line_out(R, C, "{Direction.BOTTOM}").\n'
+        rule += f':- crossing(R, C), line_in(R, C, "{Direction.BOTTOM}"), not line_out(R, C, "{Direction.TOP}").\n'
+        rule += f':- crossing(R, C), line_in(R, C, "{Direction.LEFT}"), not line_out(R, C, "{Direction.RIGHT}").\n'
+        rule += f':- crossing(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C, "{Direction.LEFT}").\n'
+        available.append("crossing")
+
+    rule += f":- grid(R, C), {color}(R, C), {', '.join(f'not {predicate}(R, C)' for predicate in available)}.\n"
     rule += f':- grid(R, C), line_in(R, C, "{Direction.LEFT}"), not line_out(R, C - 1, "{Direction.RIGHT}").\n'
     rule += f':- grid(R, C), line_in(R, C, "{Direction.TOP}"), not line_out(R - 1, C, "{Direction.BOTTOM}").\n'
     rule += f':- grid(R, C), line_in(R, C, "{Direction.RIGHT}"), not line_out(R, C + 1, "{Direction.LEFT}").\n'
@@ -82,29 +93,34 @@ def directed_route(color: str = "white", path: bool = False) -> str:
     return rule
 
 
-def crossing_route_connected(color: str = "white") -> str:
+def crossing_route_connected(color: str = "white", directed: bool = False) -> str:
     """A rule to ensure a crossing route is connected in a grid.
 
     * This rule is similar to the `noqx.rule.reachable.grid_color_connected` rule. Since crossing routes can go straight in both directions, two reachability tags are generated for horizontal and vertical directions. Moreover, it is impossible to combine these reachability tags into one, this rule is specifically moved into the `route` module.
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
+        directed: Whether the route is directed.
+        src_cell: The initial cell to start the propagation. If not provided, the propagation starts from the cell with the smallest (row, column) index.
 
     Success:
-        This rule will generate a predicate named `reachable_grid_adj_line_crossing_{color}(R, C)`.
+        This rule will generate a predicate named `reachable_grid_adj_{line|line_directed}_crossing_{color}(R, C)`.
     """
-    tag = tag_encode("reachable", "grid", "adj", "line", "crossing", color)
+    adj_type = "line" if not directed else "line_directed"
+    tag = tag_encode("reachable", "grid", "adj", adj_type, "crossing", color)
+
     rule = f'{tag}(R, C, "H") :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}.\n'
-    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_line(R, C, R, C1).\n'
-    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_line(R, C, R1, C).\n'
+    rule += f'{tag}(R, C, "H") :- {tag}(R, C1, "H"), adj_{adj_type}(R, C, R, C1).\n'
+    rule += f'{tag}(R, C, "V") :- {tag}(R1, C, "V"), adj_{adj_type}(R, C, R1, C).\n'
     rule += f'{tag}(R, C, "V") :- {tag}(R, C, "H"), grid(R, C), not crossing(R, C).\n'
     rule += f'{tag}(R, C, "H") :- {tag}(R, C, "V"), grid(R, C), not crossing(R, C).\n'
     rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "H").\n'
     rule += f':- grid(R, C), {color}(R, C), not {tag}(R, C, "V").\n'
-    return rule
+
+    return rule.strip()
 
 
-def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
+def count_area_pass(target: Union[int, Tuple[str, int]], _id: int, directed: bool = False) -> str:
     """A rule that compares the times that a undirected route passes through an area to a specified target.
 
     * This rule should be used with the `noqx.rule.neighbor.area_border`.
@@ -112,11 +128,13 @@ def count_area_pass(target: Union[int, Tuple[str, int]], _id: int) -> str:
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
         _id: The ID of the area.
-
-    Warning:
-        This rule only supports undirected routes.
+        directed: Whether the route is directed.
     """
     rop, num = target_encode(target)
+
+    if directed:
+        return f":- #count {{ R, C, D: area_border({_id}, R, C, D), line_in(R, C, D) }} {rop} {num}."
+
     return f":- #count {{ R, C, D: area_border({_id}, R, C, D), line_io(R, C, D) }} {rop} {2 * num}."
 
 
