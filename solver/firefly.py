@@ -20,12 +20,10 @@ def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     return rule
 
 
-def directed_to_undirected_line() -> str:
-    """A rule to convert directed line adjacency to undirected line adjacency."""
+def firefly_gather() -> str:
+    """A rule to gather firefly cells with path_start."""
     rule = "firefly_all(R, C) :- firefly(R, C).\n"
     rule += "firefly_all(R, C) :- path_start(R, C).\n"
-    rule += "adj_line(R, C, R1, C1) :- adj_line_directed(R, C, R1, C1).\n"
-    rule += "adj_line(R1, C1, R, C) :- adj_line_directed(R, C, R1, C1).\n"
     return rule
 
 
@@ -52,8 +50,8 @@ class FireflySolver(Solver):
         self.add_program_line(adjacent(_type="line_directed"))
         self.add_program_line(directed_route(color="firefly"))
         self.add_program_line(route_turning(color="firefly", directed=True))
-        self.add_program_line(directed_to_undirected_line())
-        self.add_program_line(grid_color_connected(color="firefly_all", adj_type="line"))
+        self.add_program_line(firefly_gather())
+        self.add_program_line(grid_color_connected(color="firefly_all", adj_type="line_directed"))
         self.add_program_line(convert_line_to_edge(directed=True))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():

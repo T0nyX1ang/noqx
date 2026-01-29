@@ -56,6 +56,7 @@ class HaisuSolver(Solver):
         self.add_program_line(adjacent(_type="line_directed"))
         self.add_program_line(fill_line(color="grid", directed=True))
         self.add_program_line(directed_route(color="grid", path=True))
+        self.add_program_line(grid_color_connected(color="grid", adj_type="line_directed"))
         self.add_program_line(haisu_rules())
         self.add_program_line(haisu_count())
 
@@ -74,7 +75,6 @@ class HaisuSolver(Solver):
             validate_type(label, "normal")
             if clue == "S":
                 self.add_program_line(f"path_start({r}, {c}).")
-                self.add_program_line(grid_color_connected(color="grid", adj_type="line_directed", src_cell=(r, c)))
 
             if clue == "G":
                 self.add_program_line(f"path_end({r}, {c}).")
