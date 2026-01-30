@@ -60,11 +60,8 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-packages = ["noqx", "noqx.puzzle", "noqx.rule"]
+requires = ["uv_build<0.10.0,>=0.8.3"]
+build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 127
@@ -90,3 +87,7 @@ omit = [
 
 [tool.uv]
 package = false
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "noqx"
