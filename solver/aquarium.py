@@ -1,71 +1,20 @@
 """The Aquarium solver."""
 
-from typing import Dict, List, Tuple
-
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction, validate_type
 
 
-def water_physics(
-    ar: Tuple[Tuple[int, int], ...],
-    edge: Dict[Tuple[int, int, str, str], bool],
-    color: str = "blue",
-) -> str:
-    """Generates a constraint to fill the {color} areas according to gravity."""
-    pt_to_idx = {pt: i for i, pt in enumerate(ar)}
-    rows: Dict[int, List[int]] = {}
-    for r, c in ar:
-        rows.setdefault(r, []).append(c)
-
-    parent = list(range(len(ar)))
-
-    def find(i: int) -> int:
-        if parent[i] != i:
-            parent[i] = find(parent[i])
-        return parent[i]
-
-    def union(i: int, j: int):
-        root_i = find(i)
-        root_j = find(j)
-        if root_i != root_j:
-            parent[root_i] = root_j
-
-    lines: List[str] = []
-
-    # water falls down naturally
-    for r, c in ar:
-        if (r + 1, c) in pt_to_idx and not edge.get(Point(r + 1, c, Direction.TOP)):
-            lines.append(f":- {color}({r}, {c}), not {color}({r + 1}, {c}).")
-
-    # connected cells at the same level (row) must be equal, but the connectivity must go from bottom.
-    sorted_rows = sorted(rows.keys(), reverse=True)
-    for r in sorted_rows:
-        cur_cols = rows[r]
-        for c in cur_cols:
-            idx = pt_to_idx[(r, c)]
-
-            if (r, c - 1) in pt_to_idx and not edge.get(Point(r, c, Direction.LEFT)):
-                union(idx, pt_to_idx[(r, c - 1)])
-
-            if (r + 1, c) in pt_to_idx and not edge.get(Point(r + 1, c, Direction.TOP)):
-                union(idx, pt_to_idx[(r + 1, c)])
-
-        groups: Dict[int, List[int]] = {}  # group cells in the current row by the connected component leader
-        for c in cur_cols:
-            idx = pt_to_idx[(r, c)]
-            root = find(idx)
-            groups.setdefault(root, []).append(idx)
-
-        # enforce water level equality within each group
-        for group in groups.values():
-            for i in range(len(group) - 1):
-                u, v = group[i], group[i + 1]
-                lines.append(f":- {color}({ar[u][0]}, {ar[u][1]}), not {color}({ar[v][0]}, {ar[v][1]}).")
-                lines.append(f":- {color}({ar[v][0]}, {ar[v][1]}), not {color}({ar[u][0]}, {ar[u][1]}).")
-
-    return "\n".join(lines)
+def water_physics(color: str) -> str:
+    """Return the water physics logic for the given color."""
+    rule = "u_conn(R, C, C + 1) :- h_conn(R, C).\n"
+    rule += "u_conn(R, C1, C2) :- v_conn(R, C1), v_conn(R, C2), u_conn(R + 1, C1, C2).\n"
+    rule += "u_conn(R, C1, C3) :- u_conn(R, C1, C2), u_conn(R, C2, C3).\n"
+    rule += "u_conn(R, C2, C1) :- u_conn(R, C1, C2).\n"
+    rule += f":- {color}(R, C1), not {color}(R, C2), u_conn(R, C1, C2).\n"  # water level equality
+    rule += f":- {color}(R, C), not {color}(R + 1, C), v_conn(R, C).\n"  # gravity check
+    return rule
 
 
 class AquariumSolver(Solver):
@@ -84,11 +33,18 @@ class AquariumSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="blue"))
+        self.add_program_line(water_physics(color="blue"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
-            self.add_program_line(water_physics(ar, puzzle.edge, color="blue"))
+
+            for r, c in ar:  # add connectivity facts
+                if (r, c + 1) in ar and not puzzle.edge.get(Point(r, c + 1, Direction.LEFT)):
+                    self.add_program_line(f"h_conn({r}, {c}).")  # horizontal connection (left to right)
+
+                if (r + 1, c) in ar and not puzzle.edge.get(Point(r + 1, c, Direction.TOP)):
+                    self.add_program_line(f"v_conn({r}, {c}).")  # vertical connection (top to bottom)
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
