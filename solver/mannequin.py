@@ -1,7 +1,7 @@
 """The Mannequin Gate solver."""
 
 from collections import deque
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
@@ -11,7 +11,7 @@ from noqx.rule.neighbor import adjacent, area_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
-def distance_in_room(ar: Tuple[Tuple[int, int], ...]) -> str:
+def distance_in_room(ar: Tuple[Tuple[int, int], ...], edge: Dict[Tuple[int, int, str, str], bool]) -> str:
     """Calculate the shortest distance between every grid in the room using BFS."""
     n = len(ar)
     pt_to_idx = {pt: i for i, pt in enumerate(ar)}
@@ -19,15 +19,22 @@ def distance_in_room(ar: Tuple[Tuple[int, int], ...]) -> str:
 
     # pre-build adjacency list
     for i, (r, c) in enumerate(ar):
-        for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-            nbr = (r + dr, c + dc)
-            if nbr in pt_to_idx:
-                neighbors[i].append(pt_to_idx[nbr])
+        if (r, c - 1) in pt_to_idx and not edge.get(Point(r, c, Direction.LEFT)):
+            neighbors[i].append(pt_to_idx[(r, c - 1)])
+
+        if (r, c + 1) in pt_to_idx and not edge.get(Point(r, c + 1, Direction.LEFT)):
+            neighbors[i].append(pt_to_idx[(r, c + 1)])
+
+        if (r - 1, c) in pt_to_idx and not edge.get(Point(r, c, Direction.TOP)):
+            neighbors[i].append(pt_to_idx[(r - 1, c)])
+
+        if (r + 1, c) in pt_to_idx and not edge.get(Point(r + 1, c, Direction.TOP)):
+            neighbors[i].append(pt_to_idx[(r + 1, c)])
 
     lines: List[str] = []
     for start_node in range(n):
         distances = {start_node: 0}
-        queue = deque([start_node])
+        queue = deque([start_node], n)
 
         lines.append(f"dist({ar[start_node][0]}, {ar[start_node][1]}, {ar[start_node][0]}, {ar[start_node][1]}, 0).")
 
@@ -41,7 +48,7 @@ def distance_in_room(ar: Tuple[Tuple[int, int], ...]) -> str:
                     lines.append(f"dist({ar[start_node][0]}, {ar[start_node][1]}, {ar[v][0]}, {ar[v][1]}, {d}).")
                     queue.append(v)
 
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines)
 
 
 def mannequin_constraint(color: str = "black") -> str:
@@ -64,7 +71,7 @@ class MannequinSolver(Solver):
     aliases = ["mannequingate", "manekingeto"]
     examples = [
         {
-            "data": "m=edit&p=7VRBb9pMEL3zK6I9z2F3bRrbl4qm8F0oaQtVFFkWMsRpUKHmM7iqFvHf82a8liuVKGkjcaoWj57fzozfzA67+7/Oq4L6WEFEmgyWtZE8oeZfu2ar/bpILmhQ7x/KCoDoejSi+3y9K3qp98p6BxcnbkDuvyRVRpGyeIzKyH1KDu5D4obkpthSFIEbN04WcNjBG9lndNWQRgNPPAa8BVyuquW6mI8b5mOSuhkp/s47iWaoNuWPQnkd/L4sN4sVE4t8j2J2D6ut39nVd+W32vua7Ehu0MidnpAbdHIZNnIZnZDLVbxe7npbnhIaZ8cjGv4ZUudJyqq/dDDq4DQ5wE6Sg7KaQwOoaE5F2aAt2hPhJRNvO6IvIbolkMhIuluxI7FW7AxfIxeIfS9Wi+2LHYvPECLiEC3Cdy0S6oCMsQ02FtjzhvnQ+8TAUCEYA/or1j5Wc6zxsezT5oyAY4+RhxvA2GLUrfe38Lfe3yIP96TlA+8fwD/gPKjhRiq5EhuKfSMVXnK3X3gechJIbJEzag7n9Z19VlvKZfvVfxnKeqma1tV9viwwgsO7r8XFpKw2+Rpvk3qzKKr2Hf/9Y0/9VPKkOD8K/10HZ78OuPn6jy6FM8zdM3JSjEF7K5C7JrWt5/l8WWLG0DvZbS+KJ7b/PnhKNn6C17/xZ+8b/rLqe12tFmWtst4j",
+            "data": "m=edit&p=7VZhT/JIEP7OrzD71U2u3RYtTS4XRPDVQ0SBcNIQUrBAtWV5S4u+Jf53Z7bbQEtR3zMx9+FSOnn6zOzszCx9YPUzsgOHluHSDKpQFS7GDHHrCn7Sq+uGnmMe0WoUznkAgNKbRoNObW/l0Kv7ebPGq8/n1X/WRjgYqBdKdKn0HxuPx3f+35euFqiNltG+bl+7bFb9UTu7Pakfn7SjVS901re+evbYG3Sn7f6swn7VWwM9Htwo5avB9I91tfdnyZI1DEubuGLGVRpfmBZRCSUMbpUMaXxrbuJrM67TuAMuQg3gmkkQA1jfwr7wI6olpKoAbkkM8B7gxA0mnjNqJkzbtOIuJbjPmViNkPh87RBZBz5PuD92kRjbIYxqNXeX0rOKHvhTJGMhIfEjL3Qn3OMBksi90riatNApaEHbtoAwaQFRQQvY2ddb8Ja8qPhKcfGvcDB3UP7ItLCT3hYaW9gxN2Bb5oYwBVdqsDQ5PcK0dDiS0E+R+GtLlMUSOO6EgESqSHcvbENYJmwXdqOxJuy5sIqwZWGbIqYORVR0GBvsyyCholFVZQlWGWDJq8jrMqYCGKoQGF6TXazItQquVeVajElzGoArEkMeHABiBi8ck/EM4pmMZ5AHZ5LymozXIF6TeTTg9TTPKcQbEkN+EQ999kW3NWF1YU/EFE7xRD55ZuK0IDGDfY3kAL8+/Q9rs3A08ip/Dg1LFulEwdSeOPDVrT/MnKMWD3zbg6dW5I+dIH0GHSEr7o1WSfTIebEnITETKdv1ZLiFyJGhPM6XnrsoypC6MqQ7W/DAKXQh6UDNB1KhqyDVmAcPuZqebc/L9iIkPkMl2pChwgBe/J1nOwj4c4bx7XCeIXZ0LpPJWeSGGdrZEu0nO7ebvx3Ha4m8EHFb8PZR/X/R/8+KPh6S8lvS/w3K8UE5FnxdUu2n8Q0ly2hkj6AzAv8vqPCmPwcH3P9+cYeCOBfzyqF04ieicnC3Q+5vn7p4jXnwjqZunXm6QFmBfUdcd7xF/AEd3fHm+T3RxGL3dRPYAukENq+eQO0LKJB7GgrcARnFrHklxaryYopb7ekpbrUrqRZZRIE75hEZlt4A",
         },
         {
             "url": "https://puzz.link/p?mannequin/10/10/abkt6ij7o7j4nvnu69g4fapb2nsefe4ja3huhag21g2k1h1j1",
@@ -84,7 +91,7 @@ class MannequinSolver(Solver):
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
         for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
-            self.add_program_line(distance_in_room(ar))
+            self.add_program_line(distance_in_room(ar, puzzle.edge))
             self.add_program_line(count(target=2, color="gray", _type="area", _id=i))
             if rc:
                 num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
