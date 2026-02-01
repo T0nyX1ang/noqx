@@ -77,6 +77,12 @@ class TestSolver(unittest.TestCase):
         response = run_solver("hinge", payload, {})
         self.assertEqual(len(response["url"]), 1)
 
+    def test_toichika_edge_case(self):
+        """Test toichika edge case."""
+        payload = "m=edit&p=7VRbT+JAFH7nV5h59STbC5S2yT4UBFdXEQXCQkNIwQLVlnF7QbeE/+6ZGQxtqW5i9sGHzcDJN9+Znstcvuh34oQuaKCAqoMEMg5F00CWq6Dzn7QffS/2XfMErCRe0RABwE27DQvHj1y4HK2umtR6PrN+bfR4PJbPpeRCGj60H07vgp8XnhrK7Y7eve5ee8rS+tFs3GqtU62bRIPY3dwGcuNhMO4vusOlofxpdcbVdHwj1S7Hi28ba/C9Yu9rmFS2qWGmFqTnpk1kAkTBv0wmkN6a2/TaTEeQ9tBFoDoBEiR+7M2pT0PCORnXXYkPFYStAxxyP0NNQcoS4s4eIxwhdMKQPk8704aguqad9oGw5A3+OYMkoBuXZWPFsfmcBjOPETMnxv2LVt4TARUdUXJPH5P9Unmyg9QqtKB/3AIGeWuBQdECQyUtsM6yLQz/fQvGZLfD47nDJqamzfoZHKB+gD1zi7bDrcztyNwSVcUwNcjvMfrafIXCbR8DQKpye8atxG2N2yu+poWx6groCjEVILoChkB1FXRMwTgVDIHq7HoLrgqGQPUa6DXB1cAQqK6BrglOA4MhTDTk6ZrcVrnVeBl11uWn9+FzHf+1HFtR+MMWo3bAk4pNekm4cOYuHnbrfumedGgYOD7OeivnySX45EhE/WkkVk3dF2ceE1O8+qwnx62TYObilc1QPqVPvrcui/DmypHeck1Dt9TFSBdrfScUc5WEmtHwvlDTs+P7+V64GuaouRfO/TwVh/gcMnN+aXNM4MSrHJF5OrlI7rqwmbGTL9F5dArZgsN27CrkhfC/raKA43H+18cvrY/sqKSvpg5frRx+y2n4geQcnEW6RHiQ/UB7Mt4y/h2ZyXiL/JGmsGKPZQXZEmVBtiguSB3rC5JHEoPcOyrDohaFhlVV1BqW6khuWKqs4tiTyis="
+        response = run_solver("toichika", payload, {})
+        self.assertEqual(len(response["url"]), 1)
+
     def test_statuepark_all_shapes(self):
         """Test statuepark all shapes."""
         for shapeset in ["tetro", "pento", "double_tetro", "others"]:
