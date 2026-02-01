@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import defined, display, fill_line, grid
+from noqx.rule.common import defined, display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -15,15 +15,8 @@ dict_dir = {"1": Direction.RIGHT, "2": Direction.BOTTOM, "3": Direction.LEFT, "4
 def restrict_num_bend(r: int, c: int, num: int, color: str) -> str:
     """Generate a rule to restrict the number of bends in the path."""
     rule = f"reachable({r}, {c}, {r}, {c}).\n"
-    rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), reachable({r}, {c}, R1, C1), adj_line_directed(R, C, R1, C1).\n"
-    rule += f":- #count{{ R, C: grid(R, C), reachable({r}, {c}, R, C), turning(R, C) }} != {num}.\n"
-    return rule
-
-
-def firefly_gather() -> str:
-    """A rule to gather firefly cells with path_start."""
-    rule = "firefly_all(R, C) :- firefly(R, C).\n"
-    rule += "firefly_all(R, C) :- path_start(R, C).\n"
+    rule += f"reachable({r}, {c}, R, C) :- {color}(R, C), grid(R1, C1), not terminal(R1, C1), reachable({r}, {c}, R1, C1), adj_line_directed(R, C, R1, C1).\n"
+    rule += f":- #count{{ R, C: grid(R, C), reachable({r}, {c}, R, C), turning(R, C), not terminal(R, C) }} != {num}.\n"
     return rule
 
 
@@ -42,16 +35,14 @@ class FireflySolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="path_start"))
-        self.add_program_line(defined(item="firefly_all"))
+        self.add_program_line(defined(item="terminal"))
         self.add_program_line(grid(puzzle.row + 1, puzzle.col + 1))
-        self.add_program_line("{ firefly(R, C) } :- grid(R, C), not path_start(R, C).")
-        self.add_program_line(fill_line(color="firefly", directed=True))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white", directed=True))
         self.add_program_line(adjacent(_type="line_directed"))
-        self.add_program_line(directed_route(color="firefly"))
-        self.add_program_line(route_turning(color="firefly", directed=True))
-        self.add_program_line(firefly_gather())
-        self.add_program_line(grid_color_connected(color="firefly_all", adj_type="line_directed"))
+        self.add_program_line(directed_route(color="white"))
+        self.add_program_line(route_turning(color="white", directed=True))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line_directed"))
         self.add_program_line(convert_line_to_edge(directed=True))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
@@ -64,11 +55,12 @@ class FireflySolver(Solver):
             clue = puzzle.text.get(Point(r, c, Direction.TOP_LEFT, "normal"))  # the text is also placed in the top-left corner
 
             if isinstance(clue, int):
-                self.add_program_line(restrict_num_bend(r + dr, c + dc, clue, color="firefly"))
+                self.add_program_line(restrict_num_bend(r + dr, c + dc, clue, color="white"))
 
-            self.add_program_line(f"path_start({r}, {c}).")
-            self.add_program_line(f'line_out({r}, {c}, "{dict_dir[style]}").')
-            self.add_program_line(f'{{ line_in({r}, {c}, D) }} :- direction(D), D != "{dict_dir[style]}".')
+            self.add_program_line(f"terminal({r}, {c}).")
+            self.add_program_line(f"pass_by_route({r}, {c}).")
+            self.add_program_line(f':- not line_out({r}, {c}, "{dict_dir[style]}").')
+            self.add_program_line(f':- line_out({r}, {c}, D), D != "{dict_dir[style]}".')
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
