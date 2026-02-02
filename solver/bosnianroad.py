@@ -7,15 +7,8 @@ from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import single_route
-from noqx.rule.shape import avoid_rect
+from noqx.rule.shape import avoid_checkerboard, avoid_rect
 from noqx.rule.variety import nori_adjacent
-
-
-def exclude_checkboard_shape(color: str = "black") -> str:
-    """Exclude checkboard-shape shading."""
-    rule = f":- {color}(R, C), not {color}(R, C + 1), not {color}(R + 1, C), {color}(R + 1, C + 1).\n"
-    rule += f":- not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1)."
-    return rule
 
 
 class BosnianRoadSolver(Solver):
@@ -42,7 +35,7 @@ class BosnianRoadSolver(Solver):
         self.add_program_line(single_route(color="black"))
         self.add_program_line(grid_color_connected(color="black", adj_type="line"))
         self.add_program_line(nori_adjacent(("le", 2), color="black", adj_type=4))
-        self.add_program_line(exclude_checkboard_shape(color="black"))
+        self.add_program_line(avoid_checkerboard(color="black"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

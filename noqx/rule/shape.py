@@ -440,3 +440,15 @@ def avoid_edge_crossover() -> str:
     ]
     rule = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
     return rule
+
+
+def avoid_checkerboard(color: str) -> str:
+    """A rule to avoid the checkerboard shape.
+
+    Args:
+        color: The color to be checked.
+    """
+
+    rule = f":- {color}(R, C), not {color}(R, C + 1), not {color}(R + 1, C), {color}(R + 1, C + 1).\n"
+    rule += f":- not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1)."
+    return rule

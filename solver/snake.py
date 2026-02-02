@@ -7,15 +7,8 @@ from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import single_route
-from noqx.rule.shape import avoid_rect
+from noqx.rule.shape import avoid_checkerboard, avoid_rect
 from noqx.rule.variety import nori_adjacent
-
-
-def exclude_checkboard_shape(color: str = "black") -> str:
-    """Exclude checkboard-shape shading."""
-    rule = f":- {color}(R, C), not {color}(R, C + 1), not {color}(R + 1, C), {color}(R + 1, C + 1).\n"
-    rule += f":- not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1)."
-    return rule
 
 
 class SnakeSolver(Solver):
@@ -42,12 +35,12 @@ class SnakeSolver(Solver):
         self.add_program_line(count(2, color="dead_end"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(exclude_checkboard_shape(color="gray"))
         self.add_program_line(avoid_rect(2, 2, color="gray"))
         self.add_program_line(fill_line(color="gray"))
         self.add_program_line(single_route(color="gray", path=True))
         self.add_program_line(grid_color_connected(color="gray", adj_type="line"))
         self.add_program_line(nori_adjacent(("le", 2), color="gray", adj_type=4))
+        self.add_program_line(avoid_checkerboard(color="gray"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
