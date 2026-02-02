@@ -17,6 +17,7 @@ class BosanowaSolver(Solver):
 
     name = "Bosanowa"
     category = "num"
+    aliases = ["bossanowa"]
     examples = [
         {
             "data": "m=edit&p=7VXBbptAEL37K6I5zwHYhQVubhr34jpt7SqKVsjCLlGs2iLFpqrW8r9ndgYFLCVqL0l7qBAzj8eb5e3ueL3/0ZZNhSkaVCkGGNKldIQq0KiTkO+guxabw7bKL3DcHu7rhgDi9WSCd+V2X41spypGR5flbozuQ24hBISI7hAKdJ/zo/uYuxm6Ob0C1MRNRRQRvOrhDb/36FLIMCA86zDBW4LrTbPeVsupMJ9y6xYI/jvvuNpD2NU/K+h8+Od1vVttPLEqDzSZ/f3moXuzb7/V39tOGxYndOOX7arerodi16Nn7PpZvLLdrDidaNm/kOFlbr33rz1MezjPjxAlkGvaFCMplZRxUoGkSJKSJBIlEi0SrSXFnGIhYyFj+UIsX0ikPJFyIxIjdUYkaShJ6jJ5yqQuk7owEE9h4E3RVGY0FUVKC4oWVBoMNIks6AFBagtJT8RcQh35RHDJgEjI2tkYCdk6G8MwMSgx5NGC6YmU1uNsjJQmc1aScsmAyNjpYC5hwFZ9Mz0xtHgDDa1CmB8p3nKccIw4Lmi/0SmO7zkGHGOOU9ZccbzheMlRc0xYY3zH/GFPyXa8gR0bJXxA9Vf8us/FyMK8be7KdUW/u1m7W1XNxaxuduUW6KA7jeAX8G0VyfX/s+8vnX1+C4J/rVt/Y8e6ORqD7hrhoV2Wy3W9Bfr7xBf4N3dPP7di9Ag=",
