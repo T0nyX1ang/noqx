@@ -261,7 +261,7 @@ def avoid_same_omino_adjacent(
         rule = f":- not {color}(R, C + 1), not {color}(R + 1, C), {t_be}(R, C, T, {itag}), {t_be}(R + 1, C + 1, T, {itag}).\n"
         rule += f":- not {color}(R, C), not {color}(R + 1, C + 1), {t_be}(R + 1, C, T, {itag}), {t_be}(R, C + 1, T, {itag})."
 
-    if adj_type in ["8", "x"]:  # all adjacent ominos are not allowed
+    if adj_type in (8, "x"):  # all adjacent ominos are not allowed
         rule += f":- adj_{adj_type}(R, C, R1, C1), {t_be}(R, C, T, {itag}), {t_be}(R1, C1, T1, {itag}), T != T1."
 
     if adj_type == "edge":
