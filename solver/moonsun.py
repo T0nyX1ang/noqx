@@ -7,20 +7,7 @@ from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_
 from noqx.rule.neighbor import adjacent, area_adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import count_area_pass, single_route
-
-
-def moon_sun_area(color: str = "white") -> str:
-    """Genearate a constraint to determine the area of the moon or sun."""
-    rule = f"moon_area(A) :- area(A, R, C), moon(R, C), {color}(R, C).\n"
-    rule += f":- moon_area(A), area(A, R, C), moon(R, C), not {color}(R, C).\n"
-    rule += f":- moon_area(A), area(A, R, C), sun(R, C), {color}(R, C).\n"
-
-    rule += f"sun_area(A) :- area(A, R, C), sun(R, C), {color}(R, C).\n"
-    rule += f":- sun_area(A), area(A, R, C), sun(R, C), not {color}(R, C).\n"
-    rule += f":- sun_area(A), area(A, R, C), moon(R, C), {color}(R, C).\n"
-
-    rule += ":- area(A, _, _), not moon_area(A), not sun_area(A)."
-    return rule
+from noqx.rule.variety import classify_area
 
 
 def moon_sun_rule(color: str = "white") -> str:
@@ -79,7 +66,7 @@ class MoonSunSolver(Solver):
                 self.add_program_line(f"sun({r}, {c}).")
 
         self.add_program_line(area_adjacent(adj_type="line"))
-        self.add_program_line(moon_sun_area(color="white"))
+        self.add_program_line(classify_area([("moon", "white"), ("sun", "white")]))
         self.add_program_line(moon_sun_rule(color="white"))
 
         for (r, c, d, label), draw in puzzle.line.items():
