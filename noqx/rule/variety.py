@@ -7,19 +7,21 @@ Warning:
 from typing import Iterable, List, Tuple, Union
 
 from noqx.puzzle import Direction
-from noqx.rule.helper import tag_encode
+from noqx.rule.helper import tag_encode, target_encode
 
 
-def nori_adjacent(color: str = "black", adj_type: Union[int, str] = 4) -> str:
-    """A rule to ensure only `1 x 2` shaded rectangles are formed.
+def nori_adjacent(target: Union[int, Tuple[str, int]] = 1, color: str = "black", adj_type: Union[int, str] = 4) -> str:
+    """A rule to ensure there are certain amount of adjacent shaded cells around a shaded cell.
 
     * This is usually used as a constraint for nori-like puzzles, such as `norinori` and `norinuri`.
 
     Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
         color: The color of the shaded cells.
         adj_type: The type of adjacency.
     """
-    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} != 1."
+    rop, num = target_encode(target)
+    return f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} {rop} {num}."
 
 
 def yaji_count(
@@ -79,7 +81,7 @@ def classify_area(classifiers: Iterable[Tuple[str, str]]) -> str:
     * If the color does not match with the target classifier, the color should not be drawn on every target classifier in this area.
 
     Args:
-        classifiers: A list of tuples of (predicate, color), where `predicate` is the name of the predicate to classify the area, and `color` is the color of the area.
+        classifiers: A list of tuples of (`predicate`, `color`), where `predicate` is the name of the predicate to classify the area, and `color` is the color of the area.
     """
     rule = ""
     all_tags: List[str] = []
