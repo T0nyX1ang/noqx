@@ -10,24 +10,28 @@ from noqx.rule.route import count_area_pass, single_route
 
 
 def moon_sun_area(color: str = "white") -> str:
-    """
-    Genearate a constraint to determine the area of the moon or sun.
-    A sun area should only contain sun cells, and a moon area should only contain moon cells.
-    A sun area should be adjacent to a moon area, and vice versa.
-    """
-    rule = "{ sun_area(A) } :- area(A, _, _).\n"
+    """Genearate a constraint to determine the area of the moon or sun."""
+    rule = f"moon_area(A) :- area(A, R, C), moon(R, C), {color}(R, C).\n"
+    rule += f":- moon_area(A), area(A, R, C), moon(R, C), not {color}(R, C).\n"
+    rule += f":- moon_area(A), area(A, R, C), sun(R, C), {color}(R, C).\n"
+
+    rule += f"sun_area(A) :- area(A, R, C), sun(R, C), {color}(R, C).\n"
     rule += f":- sun_area(A), area(A, R, C), sun(R, C), not {color}(R, C).\n"
     rule += f":- sun_area(A), area(A, R, C), moon(R, C), {color}(R, C).\n"
-    rule += f":- not sun_area(A), area(A, R, C), sun(R, C), {color}(R, C).\n"
-    rule += f":- not sun_area(A), area(A, R, C), moon(R, C), not {color}(R, C).\n"
 
+    rule += ":- area(A, _, _), not moon_area(A), not sun_area(A)."
+    return rule
+
+
+def moon_sun_rule(color: str = "white") -> str:
+    """Genearate a constraint to make moon and sun areas appear in a sequence."""
     extra = f"area_pass_moon(A) :- area(A, R, C), moon(R, C), {color}(R, C).\n"
     extra += f"area_pass_sun(A) :- area(A, R, C), sun(R, C), {color}(R, C).\n"
     extra += ":- area(A, _, _), not area_pass_moon(A), not area_pass_sun(A).\n"
 
     constraint = ":- area_adj_line(A1, A2), sun_area(A1), sun_area(A2).\n"
-    constraint += ":- area_adj_line(A1, A2), not sun_area(A1), not sun_area(A2).\n"
-    return rule + extra + constraint
+    constraint += ":- area_adj_line(A1, A2), moon_area(A1), moon_area(A2).\n"
+    return extra + constraint
 
 
 class MoonSunSolver(Solver):
@@ -75,7 +79,8 @@ class MoonSunSolver(Solver):
                 self.add_program_line(f"sun({r}, {c}).")
 
         self.add_program_line(area_adjacent(adj_type="line"))
-        self.add_program_line(moon_sun_area())
+        self.add_program_line(moon_sun_area(color="white"))
+        self.add_program_line(moon_sun_rule(color="white"))
 
         for (r, c, d, label), draw in puzzle.line.items():
             validate_type(label, "normal")
