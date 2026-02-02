@@ -61,11 +61,8 @@ class ParquetSolver(Solver):
         room_map: Dict[Tuple[Tuple[int, int], ...], List[int]] = {}  # cluster the rooms into bigger_rooms
         for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
-
-            for br in bigger_rooms:
-                if set(ar).issubset(set(br)):
-                    room_map.setdefault(br, []).append(i)
-                    break
+            br = next(_br for _br in bigger_rooms if set(ar).issubset(set(_br)))
+            room_map.setdefault(br, []).append(i)
 
         self.add_program_line(area_shade_unique(room_map, color="gray"))
 
