@@ -5,15 +5,9 @@ from typing import List
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
-
-
-def avoid_adjacent_omino(num: int = 5, color: str = "black") -> str:
-    """Generates a constraint to avoid adjacent ominos."""
-    tag = tag_encode("belong_to_shape", "omino", num, color)
-    return f":- adj_x(R, C, R1, C1), {tag}(R, C, T, _), {tag}(R1, C1, T1, _), T != T1."
+from noqx.rule.shape import OMINOES, all_shapes, avoid_same_omino_adjacent, count_shape, general_shape
 
 
 def opia_constraint(r: int, c: int, mask: List[bool], lmt: int, color: str = "black") -> str:
@@ -52,7 +46,7 @@ class PentopiaSolver(Solver):
         self.add_program_line(shade_c(color="black"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="x"))
-        self.add_program_line(avoid_adjacent_omino(num=5, color="black"))
+        self.add_program_line(avoid_same_omino_adjacent(5, color="black", adj_type="x"))
 
         self.add_program_line(all_shapes("omino_5", color="black"))
         for i, o_shape in enumerate(OMINOES[5].values()):

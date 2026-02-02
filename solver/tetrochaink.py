@@ -3,18 +3,9 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import tag_encode
 from noqx.rule.neighbor import adjacent, count_covering
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.shape import OMINOES, all_shapes, general_shape
-
-
-def avoid_adjacent_same_omino(num: int = 4, color: str = "gray") -> str:
-    """Generates a constraint to avoid adjacent ominos with the same type."""
-    tag = tag_encode("belong_to_shape", "omino", num, color)
-    rule = f":- not {color}(R, C + 1), not {color}(R + 1, C), {tag}(R, C, T, _), {tag}(R + 1, C + 1, T, _).\n"
-    rule += f":- not {color}(R, C), not {color}(R + 1, C + 1), {tag}(R + 1, C, T, _), {tag}(R, C + 1, T, _)."
-    return rule
+from noqx.rule.shape import OMINOES, all_shapes, avoid_same_omino_adjacent, general_shape
 
 
 class TetroChainKSolver(Solver):
@@ -37,7 +28,7 @@ class TetroChainKSolver(Solver):
         self.add_program_line(grid_color_connected(color="gray", adj_type=8, grid_size=(puzzle.row, puzzle.col)))
 
         self.add_program_line(all_shapes("omino_4", color="gray"))
-        self.add_program_line(avoid_adjacent_same_omino(4, color="gray"))
+        self.add_program_line(avoid_same_omino_adjacent(4, color="gray", adj_type=4))
         for i, o_shape in enumerate(OMINOES[4].values()):
             self.add_program_line(general_shape("omino_4", i, o_shape, color="gray", _type="grid", adj_type=4))
 
