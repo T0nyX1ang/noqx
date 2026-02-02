@@ -1,6 +1,6 @@
 [project]
 name = "noqx"
-version = "0.8.0"
+version = "0.8.1"
 description = "Extended logic puzzle solver of Noq."
 authors = [
   {name = "Tony Xiang"},
