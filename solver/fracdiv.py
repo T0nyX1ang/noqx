@@ -47,7 +47,7 @@ class FractionalDivisionSolver(Solver):
                 dice_cnt = bin(int(tag)).count("1")
                 self.add_program_line(f"number({r}, {c}, {dice_cnt}).")
 
-        all_src = set((r, c) for (r, c, _, _) in puzzle.text)
+        all_src = {(r, c) for (r, c, _, _) in puzzle.text}
         frac_dict: Dict[Tuple[int, int], SimpleFraction] = {}
 
         for (r, c, d, label), num in puzzle.text.items():

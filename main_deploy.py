@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from pyscript import window  # pylint: disable=import-error  # type: ignore  # noqa: I001
+from pyscript import window  # type: ignore  # noqa: I001
 
 from noqx.manager import generate_program, load_solver, prepare_puzzle, store_solution
 from noqx.puzzle import Puzzle
@@ -14,7 +14,7 @@ def _prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]
             "success": True,
             "result": prepare_puzzle(puzzle_name, puzzle_content, param),
         }
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         return {
             "success": False,
             "result": str(e),
@@ -27,7 +27,7 @@ def _generate_program(puzzle: Puzzle):
             "success": True,
             "result": generate_program(puzzle),
         }
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         return {
             "success": False,
             "result": str(e),
@@ -40,7 +40,7 @@ def _store_solution(puzzle: Puzzle, model_str: str):
             "success": True,
             "result": store_solution(puzzle, model_str).encode(),
         }
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as e:
         return {
             "success": False,
             "result": str(e),

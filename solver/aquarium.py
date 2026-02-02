@@ -1,15 +1,20 @@
 """The Aquarium solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction, validate_type
 
 
-def area_gravity(color: str = "black") -> str:
-    """Generates a constraint to fill the {color} areas according to gravity."""
-    target = f":- area(A, R, C), area(A, R1, C1), R1 >= R, {color}(R, C), not {color}(R1, C1)."
-    return target.replace("not not ", "")
+def water_physics(color: str) -> str:
+    """Return the water physics logic for the given color."""
+    rule = "u_conn(R, C, C + 1) :- h_conn(R, C).\n"
+    rule += "u_conn(R, C1, C2) :- v_conn(R, C1), v_conn(R, C2), u_conn(R + 1, C1, C2).\n"
+    rule += "u_conn(R, C1, C3) :- u_conn(R, C1, C2), u_conn(R, C2, C3).\n"
+    rule += "u_conn(R, C2, C1) :- u_conn(R, C1, C2).\n"
+    rule += f":- {color}(R, C1), not {color}(R, C2), u_conn(R, C1, C2).\n"  # water level equality
+    rule += f":- {color}(R, C), not {color}(R + 1, C), v_conn(R, C).\n"  # gravity check
+    return rule
 
 
 class AquariumSolver(Solver):
@@ -20,33 +25,40 @@ class AquariumSolver(Solver):
     aliases = ["aquarium"]
     examples = [
         {
-            "data": "m=edit&p=7VZNb+M2EL37Vyx05kH8FKlLkW6TXlJv26QIFoIROF5tN2gCb524KBTkv++b4dBijALbougWBQrb5NPzm9HMcEjp4df9ejcqrelro2oVkHI+8E9rw79WPpe3j3dj/0qd7B8/bHcASr05O1Pv13cP42LQbN2uFk9T6qcTNX3bD41uVGPw081KTT/0T9N3/bRU0wX+apQGd55FBvB0hlf8P6HXmdQt8FIw4FvAze1uczden2fm+36YLlVD9/marQk299vfxkbioOvN9v7mloib9SOSefhw+1H+edi/2/6yF61ePavpJId7WsKNc7h2DpdgDpfQH4RLWfzD4abV8zPK/iMCvu4Hiv2nGcYZXvRPGJf9U2MtmTrEktemsY6IryrCHyvCMdERYSsiEuErIh0RriUiVYQ+Vhgiuorgu1SBBVZUcXSsQJcVIrGicqrbY4k2x150Tqe28qyJFRNYU0WnI2sOGaG8mov8lsczHg2Pl1gDNVkev+Gx5dHzeM6aUyyNiZ0yEaU02DoxAqOKhDv3EndYIcKhnXFMyiQUmXBqlW0zjxkYC8g8tnrBXYAea8DYw4/wwQAjWeYRD5WUbQ1sM48ZWOJMdsYdYk7or2LbFQ18HnhoOsklUC4lL4ofrch68KnkhRwLDogzlhyBk8Qc9YwD8oqSV6IcJRforc62mIGzBjNwydEhlxwPZmVNjgczsNTTwI/J92Lbgk1QlnqasANP7VxsaTcQtvBJG4E1iOGgB/bi38O/F584ia2Xmnv4CeInwE+U2CL4KLYRtlFsI2xjZVv77ySGDvcttnSvTuLp6JEw+3Ft5jErpwvvwWc/mMGXGHCvJHGm+AI7nXvA4clSsE3opZT7xEb0mKwX4yiaiB4r+WJNDxpaU1l3iz7B9YylBzADy1pA70oP0FoXPfWw9J6lPpdetdgLNhQMTRAN+tZK31r08wtcbDXy0pJXC1vBtK9xLf0A/3QeM4bGid5B40rP4F41ptOZ+wo5FqypVyWvFhpdepj6udIbqUmLGhZsUB864Nk/9ZvwnnqywkH8YA/aIHrstUOdCdMhyRi5B8nFU90q7KWGHrn7kjv0dORyPFST6pyh45oxamJEb+Cn7E28u8z7C5h94kC94mP1NY+Ox8DHbUcPxD/5yGxkQagHYn5+/v1j/rOxDVh+ehl7+cFL2X+NWy2G5mK/e7/ejHh3OX338/hqud3dr+9wtdzf34y7co1Xx+dF83vDv8HSm+j/b5P/0tskLUH7l94pv8Ce+Ew4w3ShcEBPb1TzcX+9vt5s0WOoHfHYTcf8F48em3q1+AQ=",
+            "data": "m=edit&p=7VZdT9tIFH3nV1R+7UjrGXvsONI+BBq67UIIDYglFopMMBDqYNZJoDXiv/fcmTHxVyjd1VZ9WCWxT869c+d+2XcWf6+iLGbcpq/TYbjj4/KO+omOp362+RzNlkncfcN6q+V1mgEwdrC7yy6jZBGzj6fXeztp7+Fd76/7znI85u/t1Qf75Gb35u2n+Z8fZk7Gdwed4f5wfyauen/sbB96/bfecLU4Xsb3h3O+fXM8ProcnlwF4mt/MHbz8YEtP44vf7vvHf++FXLlm3229ZgH3bzH8vfd0OIWswR+3Dpj+WH3Md/v5n2WjyCyGAe3p5UEYH8NT5Sc0I4muQ08MBjwFHA6y6ZJPNnTzLAb5kfMon221WqC1jy9jy3jB/2fpvPzGRHn0RKpWlzP7oxksbpIP6+MLgxa81WynE3TJM2IJO6J5T0dwqgIQa5DcNYhENQhEGoJgSL7j0MI2kN4Qnk+IYhJN6R4jtews4aj7iOug+6j5XBa6WCprqHlCCK8EuEQIUtEhwi3RAS1Ja5bIzhXTGkNF8rKsw7c4cqpU3XdVVehrkfwmeWOur5TV1tdpbruKZ0+QhHCZ8JFPAIt6dprLCUTHnwk7AV4nhAR4Y5YY+J9W2Mfa32z1ufQkUbfreIAIRAO8JwGxn4QMIdrm7gzR/gaC2+NuQD2DObQR8oVxguA632Vvqv9wZ05EglUvI+1el/cgfW+uDPHMfoO9KkEaq0LrH12HOxVYA47VPuCp7IrHjYL7MBP1/jpkj9FLNBxjY5LNktYGvsuYpdFvMDUAIRtirGEbeODTXkofJPAZl8bPpSxXdQO8ZawCIra4X1Zxr72AXWj96jhqe4l7Bs7vgO+0EcvdUx9fap7CfumBzz0Rhl7Og+4Axd9Rb2k4xUSfnrGN4mekaZnJPaSxr6EzyZvwoUdafwk7BqbqPUzRn2f1xI29cUd2KxFHSuYnmiFEa+pKe7AhR345hZ9hVrQ8636ATk3PSkC9E/RqzZ6jNNaPIgn6nHcUVdXXT31mPr04nnlq8kyQUj4KfV76t+/Hr7rW4iU0egtf7xfiznbCq3RKruMpjEmQv/iKn4zSLN5lODfYDU/j7PiP4a0tUiTyUJrT+Iv0XRpdfU5oSypcLfKRoVK0vQumd22WShEFXJ2dZtmcauIyBg+bzBFohZT52l2UfPpIUqSaizqDFWh9OCtUMsMU7X0P8qy9KHCzKPldYUoTeCKpfi2lsxlVHUx+hzVdpuv0/G0ZX2x1C/EE0hl/f9E9UufqKhU9g+dq37C++o77oTIOAZCfsCsu9UkmiAmlbJWHskN0WTPR6iaGGXQYnOq+ofiF4yPGG93aoTR8koejRPmgyavNlC8OoFisKgTaJvCKz3j7kYJunuDxNso8Y0E57ZapIUHTYmpZEvWTHpaJCpBP5pQdIts12/wm/RNthq8ydUm+3KDPw2+0Hca+j/9mVSv+jR7Ye6uhXW6ZfqCfWEAl6Rt/IZZW5LW+cZgJWebsxVsy3gFW5+woJpDFmRjzoLbMGrJan3aklf1gUtbNWYubVUeu+HZ1jc=",
         },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="gray"))
-        self.add_program_line(area_gravity(color="gray"))
+        self.add_program_line(shade_c(color="blue"))
+        self.add_program_line(water_physics(color="blue"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
+
+            for r, c in ar:  # add connectivity facts
+                if (r, c + 1) in ar and not puzzle.edge.get(Point(r, c + 1, Direction.LEFT)):
+                    self.add_program_line(f"h_conn({r}, {c}).")  # horizontal connection (left to right)
+
+                if (r + 1, c) in ar and not puzzle.edge.get(Point(r + 1, c, Direction.TOP)):
+                    self.add_program_line(f"v_conn({r}, {c}).")  # vertical connection (top to bottom)
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
-                self.add_program_line(count(num, color="gray", _type="col", _id=c))
+                self.add_program_line(count(num, color="blue", _type="col", _id=c))
 
             if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
-                self.add_program_line(count(num, color="gray", _type="row", _id=r))
+                self.add_program_line(count(num, color="blue", _type="row", _id=r))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK and color != Color.BLUE)} blue({r}, {c}).")
 
-        self.add_program_line(display(item="gray"))
+        self.add_program_line(display(item="blue"))
 
         return self.program

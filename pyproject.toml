@@ -1,6 +1,6 @@
 [project]
 name = "noqx"
-version = "0.8.0"
+version = "0.8.1"
 description = "Extended logic puzzle solver of Noq."
 authors = [
   {name = "Tony Xiang"},
@@ -50,39 +50,26 @@ docs = [
 
 [dependency-groups]
 dev = [
-  "black<24.8.0; python_version<'3.9'",
-  "black>=24.8.0; python_version>='3.9'",
   "conventional-pre-commit<4.3.0; python_version<'3.9'",
   "conventional-pre-commit>=4.3.0; python_version>='3.9'",
-  "coverage>=7.0.0",
+  "coverage[toml]>=7.0.0",
   "pre-commit<2.22.0; python_version<'3.9'",
   "pre-commit>=2.22.0; python_version>='3.9'",
-  "pylint<2.14.0; python_version<'3.9'",
-  "pylint>=2.14.0; python_version>='3.9'",
   "ruff>=0.14.10",
   "python-minifier>=2.11.0",
 ]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-packages = ["noqx", "noqx.puzzle", "noqx.rule"]
-
-[tool.black]
-line-length = 127
-target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
+requires = ["uv_build<0.10.0,>=0.8.3"]
+build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 127
 target-version = "py37"
 
 [tool.ruff.lint]
-select = ["I"]
-
-[tool.pylint]
-disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation", "line-too-long"]
+select = ["E", "F", "W", "UP", "B", "SIM", "I", "ASYNC", "C4"]
+ignore = ["E501"]
 
 [tool.pyright]
 pythonVersion = "3.7"
@@ -100,3 +87,7 @@ omit = [
 
 [tool.uv]
 package = false
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "noqx"

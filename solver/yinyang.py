@@ -6,14 +6,7 @@ from noqx.rule.common import display, grid, invert_c, shade_c
 from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.shape import avoid_rect
-
-
-def exclude_checkboard_shape() -> str:
-    """Exclude checkboard shape."""
-    rule = ":- circle_M__1(R, C), circle_M__2(R, C + 1), circle_M__2(R + 1, C), circle_M__1(R + 1, C + 1).\n"
-    rule += ":- circle_M__2(R, C), circle_M__1(R, C + 1), circle_M__1(R + 1, C), circle_M__2(R + 1, C + 1)."
-    return rule
+from noqx.rule.shape import avoid_checkerboard, avoid_rect
 
 
 def exclude_border_color_changes(rows: int, cols: int) -> str:
@@ -62,11 +55,7 @@ class YinyangSolver(Solver):
         self.add_program_line(avoid_rect(2, 2, color="circle_M__2"))
         self.add_program_line(grid_color_connected(color="circle_M__1", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(grid_color_connected(color="circle_M__2", grid_size=(puzzle.row, puzzle.col)))
-
-        # exclude checkerboard shape
-        self.add_program_line(exclude_checkboard_shape())
-
-        # exclude border color changes more than twice
+        self.add_program_line(avoid_checkerboard(color="circle_M__1"))
         self.add_program_line(exclude_border_color_changes(puzzle.row, puzzle.col))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():

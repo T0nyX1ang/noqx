@@ -7,17 +7,7 @@ from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.shape import OMINOES, all_shapes, general_shape
-
-
-def avoid_adj_same_omino(omino_num: int = 4, color: str = "grid") -> str:
-    """Generates a constraint to avoid adjacent ominos with the same type."""
-    t_be = tag_encode("belong_to_shape", f"omino_{omino_num}", color)
-    constraint = f'split_by_edge(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
-    constraint += f'split_by_edge(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
-    constraint += "split_by_edge(R, C, R1, C1) :- split_by_edge(R1, C1, R, C).\n"
-    constraint += f":- grid(R, C), grid(R1, C1), {t_be}(R, C, T, _), {t_be}(R1, C1, T, _), split_by_edge(R, C, R1, C1)."
-    return constraint
+from noqx.rule.shape import OMINOES, all_shapes, avoid_same_omino_adjacent, general_shape
 
 
 class TetrominousSolver(Solver):
@@ -40,7 +30,7 @@ class TetrominousSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_shapes("omino_4", color="grid"))
-        self.add_program_line(avoid_adj_same_omino(omino_num=4, color="grid"))
+        self.add_program_line(avoid_same_omino_adjacent(4, color="grid", adj_type="edge"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

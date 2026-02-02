@@ -34,7 +34,7 @@ class DosuFuwaSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
-        self.add_program_line(shade_cc(colors=["circle_M__1", "circle_M__2", "empty"]))
+        self.add_program_line(shade_cc(colors=["circle_M__1", "circle_M__2", "white"]))
         self.add_program_line(dosufuwa_gravity(float_color="circle_M__1", drown_color="circle_M__2"))
 
         exclude: Set[Tuple[int, int]] = set()
@@ -53,11 +53,11 @@ class DosuFuwaSolver(Solver):
             validate_direction(r, c, d)
             if symbol_name == "circle_M__1":
                 self.add_program_line(f"circle_M__1({r}, {c}).")
-                self.add_program_line(f"not empty({r}, {c}).")
+                self.add_program_line(f"not white({r}, {c}).")
 
             if symbol_name == "circle_M__2":
                 self.add_program_line(f"circle_M__2({r}, {c}).")
-                self.add_program_line(f"not empty({r}, {c}).")
+                self.add_program_line(f"not white({r}, {c}).")
 
         self.add_program_line(display(item="circle_M__1"))
         self.add_program_line(display(item="circle_M__2"))

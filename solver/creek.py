@@ -4,13 +4,8 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.neighbor import adjacent
+from noqx.rule.neighbor import adjacent, count_covering
 from noqx.rule.reachable import grid_color_connected
-
-
-def creek_covering(target: int, r: int, c: int, color: str = "black") -> str:
-    """Generate a constraint to check the {color} covering of cells."""
-    return f":- {{ {color}({r - 1}, {c - 1}); {color}({r - 1}, {c}); {color}({r}, {c - 1}); {color}({r}, {c}) }} != {target}."
 
 
 class CreekSolver(Solver):
@@ -36,7 +31,7 @@ class CreekSolver(Solver):
             validate_direction(r, c, d, Direction.TOP_LEFT)
             validate_type(label, "normal")
             if isinstance(num, int):
-                self.add_program_line(creek_covering(num, r, c, color="gray"))
+                self.add_program_line(count_covering(num, (r, c), Direction.TOP_LEFT, color="gray"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")

@@ -1,10 +1,24 @@
 """The Kakuru solver."""
 
+from typing import Tuple
+
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, display, grid
+from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
+
+
+def count_adjacent_sum(target: int, src_cell: Tuple[int, int], adj_type: int = 8) -> str:
+    """Generate a constraint to count the sum of numbers in adjacent cells."""
+    r, c = src_cell
+    return f":- #sum {{ N, R1, C1: number(R1, C1, N), adj_{adj_type}(R1, C1, {r}, {c}) }} != {target}."
+
+
+def avoid_repeating_digit(src_cell: Tuple[int, int], adj_type: int = 8) -> str:
+    """Generate a constraint to avoid repeating digits in adjacent cells."""
+    r, c = src_cell
+    return f":- number(_, _, N), {{ grid(R, C): number(R, C, N), adj_{adj_type}(R, C, {r}, {c}) }} > 1."
 
 
 class KakuruSolver(Solver):
@@ -23,22 +37,22 @@ class KakuruSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line("{ number(R, C, (1..9)) } = 1 :- grid(R, C), not black(R, C).")
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(fill_num(_range=range(1, 10)))
         self.add_program_line(adjacent(_type=8))
         self.add_program_line(avoid_same_number_adjacent(adj_type=8))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
-            self.add_program_line(f":- number(_, _, N), {{ grid(R, C): number(R, C, N), adj_8(R, C, {r}, {c}) }} > 1.")
+            self.add_program_line(avoid_repeating_digit(src_cell=(r, c), adj_type=8))
             if isinstance(num, int):
-                self.add_program_line(f":- #sum {{ N, R, C: number(R, C, N), adj_8(R, C, {r}, {c}) }} != {num}.")
+                self.add_program_line(count_adjacent_sum(target=num, src_cell=(r, c), adj_type=8))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
         self.add_program_line(display(item="number", size=3))
 

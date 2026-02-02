@@ -2,29 +2,13 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import count, display, grid, shade_c
+from noqx.rule.common import count, display, fill_line, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.shape import avoid_rect
-
-
-def exclude_checkboard_shape(color: str = "black") -> str:
-    """Exclude checkboard-shape shading."""
-    rule = f":- {color}(R, C), not {color}(R, C + 1), not {color}(R + 1, C), {color}(R + 1, C + 1).\n"
-    rule += f":- not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1)."
-    return rule
-
-
-def simple_shade_path(color: str = "black", adj_type: int = 4) -> str:
-    """Generate a rule to ensure the shaded path is a simple path."""
-    adj_count = f"#count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }}"
-
-    constraint = f"pass_by_route(R, C) :- grid(R, C), {color}(R, C), {adj_count} = 2.\n"
-    constraint += f"dead_end(R, C) :- grid(R, C), {color}(R, C), {adj_count} = 1.\n"
-    constraint += ":- { dead_end(R, C) } != 2.\n"
-    constraint += f":- grid(R, C), {color}(R, C), not pass_by_route(R, C), not dead_end(R, C).\n"
-    return constraint
+from noqx.rule.route import single_route
+from noqx.rule.shape import avoid_checkerboard, avoid_rect
+from noqx.rule.variety import nori_adjacent
 
 
 class SnakeSolver(Solver):
@@ -47,11 +31,16 @@ class SnakeSolver(Solver):
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
+        self.add_program_line(shade_c(color="dead_end", _from="gray"))
+        self.add_program_line(count(2, color="dead_end"))
         self.add_program_line(adjacent(_type=4))
-        self.add_program_line(grid_color_connected(color="gray"))
-        self.add_program_line(exclude_checkboard_shape(color="gray"))
+        self.add_program_line(adjacent(_type="line"))
         self.add_program_line(avoid_rect(2, 2, color="gray"))
-        self.add_program_line(simple_shade_path(color="gray"))
+        self.add_program_line(fill_line(color="gray"))
+        self.add_program_line(single_route(color="gray", path=True))
+        self.add_program_line(grid_color_connected(color="gray", adj_type="line"))
+        self.add_program_line(nori_adjacent(("le", 2), color="gray", adj_type=4))
+        self.add_program_line(avoid_checkerboard(color="gray"))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -67,10 +56,10 @@ class SnakeSolver(Solver):
             validate_direction(r, c, d)
             if symbol_name == "circle_L__1":
                 self.add_program_line(f"gray({r}, {c}).")
-                self.add_program_line(f":- dead_end({r}, {c}).")
+                self.add_program_line(f"not dead_end({r}, {c}).")
             if symbol_name == "circle_L__2":
                 self.add_program_line(f"gray({r}, {c}).")
-                self.add_program_line(f":- not dead_end({r}, {c}).")
+                self.add_program_line(f"dead_end({r}, {c}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")

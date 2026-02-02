@@ -60,7 +60,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
         f.write("window.puzzle_list = Object.keys(solver_metadata);")
 
-    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
@@ -75,15 +75,18 @@ if args.enable_deployment:
     for dirname in target_dirs:
         os.makedirs(f"dist/page/penpa-edit/py/{dirname}", exist_ok=True)
 
-    file_dict = {"files": {}}
+    pyscript_config = {
+        "files": {},
+        "plugins": ["!codemirror", "!deprecation-manager", "!donkey", "!error", "!py-editor", "!py-game", "!py-terminal"],
+    }
     for dirname in ["noqx", "noqx/puzzle", "noqx/rule", "solver"]:
         for filename in os.listdir(dirname):
             if filename.endswith(".py") and filename != "clingo.py":
-                file_dict["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
+                pyscript_config["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/py/{dirname}/{filename}")
 
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump(file_dict, f, indent=2)
+        json.dump(pyscript_config, f, indent=2)
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
@@ -93,7 +96,7 @@ if args.enable_deployment:
     shutil.copytree("./penpa-edit/", "./dist/page/penpa-edit/", dirs_exist_ok=True)
     shutil.copytree("./site/", "./dist/page/", dirs_exist_ok=True)
 
-    with open("./penpa-edit/js/prepare_deployment.js", "r", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
     with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
@@ -126,7 +129,7 @@ else:
             return JSONResponse({"detail": str(err)}, status_code=400)
         except TimeoutError as err:
             return JSONResponse({"detail": str(err)}, status_code=504)
-        except Exception:  # pylint: disable=broad-except  # pragma: no cover
+        except Exception:  # pragma: no cover
             logging.error(traceback.format_exc())
             return JSONResponse({"detail": "Unknown error."}, status_code=500)
 

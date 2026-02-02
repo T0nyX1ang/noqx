@@ -182,6 +182,9 @@ class PenpaPuzzle(Puzzle):
             if color_code == 2:
                 self.surface[point] = Color.WHITE
 
+            if color_code == 5:
+                self.surface[point] = Color.BLUE
+
     def _unpack_text(self):
         """Unpack number/text elements from the board.
 
@@ -243,6 +246,9 @@ class PenpaPuzzle(Puzzle):
 
         Warning:
             Since the `symbol` and `style` is hard-coded, the solvers must be very careful of these labels. For example, a medium-sized circle is not a large circle. The shape and style must be correctly identified. The label might be encoded more conveniently in future versions.
+
+        Warning:
+            Since the handling for directed lines are defined in the `inequality` shape (with style = 5 ~ 8) in [Penpa+](https://swaroopg92.github.io/penpa-edit/), these symbols are converted to directed lines in the `line` attribute during unpacking. Please be careful of using these `inequality` shapes for other purposes for compatibility.
         """
         for index, (style, shape, _) in self.problem["symbol"].items():
             (r, c), category = self.index_to_coord(int(index))
@@ -273,6 +279,23 @@ class PenpaPuzzle(Puzzle):
                 # special case for nondango (which problem/solution symbols are on the same coordinates)
                 label = "nondango_mark" if self.puzzle_name == "nondango" and symbol_name == "circle_M__4" else "normal"
                 self.symbol[Point(*_category_to_direction(r, c, category), label)] = symbol_name
+
+                if shape == "inequality":  # convert inequality to arrow for directed line
+                    if style == 6:
+                        self.line[Point(r, c, Direction.BOTTOM, "in")] = True
+                        self.line[Point(r + 1, c, Direction.TOP, "out")] = True
+
+                    if style == 8:
+                        self.line[Point(r, c, Direction.BOTTOM, "out")] = True
+                        self.line[Point(r + 1, c, Direction.TOP, "in")] = True
+
+                    if style == 5:
+                        self.line[Point(r, c, Direction.RIGHT, "in")] = True
+                        self.line[Point(r, c + 1, Direction.LEFT, "out")] = True
+
+                    if style == 7:
+                        self.line[Point(r, c, Direction.RIGHT, "out")] = True
+                        self.line[Point(r, c + 1, Direction.LEFT, "in")] = True
 
     def _unpack_edge(self):
         """Unpack edge elements from the board.
@@ -318,6 +341,8 @@ class PenpaPuzzle(Puzzle):
         * Store the lines in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Line` mode into the `line` attribute. Supported submodes are `Normal`, `Middle`, and `Helper (x)`.
 
         * For **hashi** puzzles, there are two types of lines: single lines and double lines. Double lines are stored with the `double` label.
+
+        * For directed lines (such as in `nagare` puzzles), the lines are stored with the `in` and `out` labels in the `_unpack_symbol` process.
         """
         for index, data in self.problem["line"].items():
             if "," not in index:  # helper(x) lines
@@ -406,6 +431,9 @@ class PenpaPuzzle(Puzzle):
             if color == Color.GRAY:
                 color_code = 8
 
+            if color == Color.BLUE:
+                color_code = 5
+
             if color_code and not self.problem["surface"].get(f"{index}"):  # avoid overwriting the original stuff
                 self.solution["surface"][f"{index}"] = color_code
 
@@ -433,9 +461,7 @@ class PenpaPuzzle(Puzzle):
             shape, style = symbol_name.split("__")
             coord = (r, c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of symbols are all in the center
-            if self.puzzle_name == "nondango":
-                self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
-            elif not self.problem["symbol"].get(f"{index}"):  # avoid overwriting the original stuff
+            if self.puzzle_name == "nondango" or not self.problem["symbol"].get(f"{index}"):
                 self.solution["symbol"][f"{index}"] = [int(style), shape, 1]
 
     def _pack_edge(self):

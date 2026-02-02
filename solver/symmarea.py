@@ -71,10 +71,10 @@ def symmetry_area(fast: bool = False) -> str:
     tag_numberx = tag_encode("reachable", "grid", "branch", "adj", "edge")
 
     # number
-    rule = f"min_r(R, C, MR) :- clue(R, C), MR = #min{{ R1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
-    rule += f"max_r(R, C, MR) :- clue(R, C), MR = #max{{ R1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
-    rule += f"min_c(R, C, MC) :- clue(R, C), MC = #min{{ C1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
-    rule += f"max_c(R, C, MC) :- clue(R, C), MC = #max{{ C1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
+    rule = f"min_r(R, C, MR) :- clue(R, C), MR = #min {{ R1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
+    rule += f"max_r(R, C, MR) :- clue(R, C), MR = #max {{ R1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
+    rule += f"min_c(R, C, MC) :- clue(R, C), MC = #min {{ C1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
+    rule += f"max_c(R, C, MC) :- clue(R, C), MC = #max {{ C1: grid(R1, C1), {tag_number}(R, C, R1, C1) }}.\n"
     rule += "symm_coord_sum(R, C, SR, SC) :- clue(R, C), min_r(R, C, MINR), max_r(R, C, MAXR), min_c(R, C, MINC), max_c(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
 
     rule += f":- clue(R0, C0), clue(R1, C1), {tag_number}(R0, C0, R1, C1), symm_coord_sum(R0, C0, SR, SC), not symm_coord_sum(R1, C1, SR, SC).\n"
@@ -89,10 +89,10 @@ def symmetry_area(fast: bool = False) -> str:
         rule += "{ min_cx(R, C, MC) : grid(_, MC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
         rule += "{ max_cx(R, C, MC) : grid(_, MC) } = 1 :- grid(R, C), have_numberx(R, C).\n"
 
-        rule += f"min_rx(R, C, MR) :- have_numberx(R, C), MR = #min{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
-        rule += f"max_rx(R, C, MR) :- have_numberx(R, C), MR = #max{{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
-        rule += f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
-        rule += f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max{{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
+        rule += f"min_rx(R, C, MR) :- have_numberx(R, C), MR = #min {{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
+        rule += f"max_rx(R, C, MR) :- have_numberx(R, C), MR = #max {{ R1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(MR, _).\n"
+        rule += f"min_cx(R, C, MC) :- have_numberx(R, C), MC = #min {{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
+        rule += f"max_cx(R, C, MC) :- have_numberx(R, C), MC = #max {{ C1: grid(R1, C1), {tag_numberx}(R, C, R1, C1) }}, grid(_, MC).\n"
 
         rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), min_rx(R0, C0, MR), not min_rx(R, C, MR).\n"
         rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_rx(R0, C0, MR), not max_rx(R, C, MR).\n"
@@ -100,8 +100,8 @@ def symmetry_area(fast: bool = False) -> str:
         rule += ":- have_numberx(R, C), adj_edge(R0, C0, R, C), max_cx(R0, C0, MC), not max_cx(R, C, MC).\n"
 
         # # the following two lines accelerates example 5 but slows example 1 and 4
-        # rule += f":- have_numberx(R, C), min_cx(R, C, MINC), max_cx(R, C, MAXC), SC = MINC + MAXC, N1 = #count{{ R1 : grid(R1, C), {tag_numberx}(R, C, R1, C) }}, N2 = #count{{ R1 : grid(R1, SC - C), {tag_numberx}(R, C, R1, SC - C) }}, N1 != N2.\n"
-        # rule += f":- have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), SR = MINR + MAXR, N1 = #count{{ C1 : grid(R, C1), {tag_numberx}(R, C, R, C1) }}, N2 = #count{{ C1 : grid(SR - R, C1), {tag_numberx}(R, C, SR - R, C1) }}, N1 != N2.\n"
+        # rule += f":- have_numberx(R, C), min_cx(R, C, MINC), max_cx(R, C, MAXC), SC = MINC + MAXC, N1 = #count {{ R1 : grid(R1, C), {tag_numberx}(R, C, R1, C) }}, N2 = #count {{ R1 : grid(R1, SC - C), {tag_numberx}(R, C, R1, SC - C) }}, N1 != N2.\n"
+        # rule += f":- have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), SR = MINR + MAXR, N1 = #count {{ C1 : grid(R, C1), {tag_numberx}(R, C, R, C1) }}, N2 = #count {{ C1 : grid(SR - R, C1), {tag_numberx}(R, C, SR - R, C1) }}, N1 != N2.\n"
 
         rule += "symm_coord_sumx(R, C, SR, SC) :- grid(R, C), have_numberx(R, C), min_rx(R, C, MINR), max_rx(R, C, MAXR), min_cx(R, C, MINC), max_cx(R, C, MAXC), SR = MINR + MAXR, SC = MINC + MAXC.\n"
         rule += f":- have_numberx(R, C), symm_coord_sumx(R, C, SR, SC), not {tag_numberx}(R, C, SR - R, SC - C).\n"
@@ -143,7 +143,7 @@ class SymmareaSolver(Solver):
         self.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
         self.add_program_line(symmetry_area(fast=puzzle.param["fast_mode"]))
 
-        numberx_ub = puzzle.row * puzzle.col - sum(set(num for _, num in puzzle.text.items() if isinstance(num, int)))
+        numberx_ub = puzzle.row * puzzle.col - sum({num for _, num in puzzle.text.items() if isinstance(num, int)})
         self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_ub}.")
 
         for (r, c, d, label), num in puzzle.text.items():

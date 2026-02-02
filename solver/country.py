@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
 from noqx.rule.common import area, count, display, fill_line, grid, shade_c
-from noqx.rule.helper import full_bfs
+from noqx.rule.helper import full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import count_area_pass, single_route
@@ -53,7 +53,8 @@ class CountrySolver(Solver):
             if d == Direction.LEFT and c > 0 and draw:
                 self.add_program_line(f":- not white({r}, {c}), not white({r}, {c - 1}).")
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))

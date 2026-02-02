@@ -11,7 +11,9 @@ from noqx.rule.helper import tag_encode, target_encode, validate_type
 
 
 def grid_color_connected(
-    color: str = "black", adj_type: Union[int, str] = 4, grid_size: Optional[Tuple[int, int]] = None
+    color: str = "black",
+    adj_type: Union[int, str] = 4,
+    grid_size: Optional[Tuple[int, int]] = None,
 ) -> str:
     """A rule to ensure all the color cells are connected in the grid.
 
@@ -20,8 +22,7 @@ def grid_color_connected(
     Args:
         color: The color to be checked.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
-        grid_size: The size of the grid in (`rows`, `columns`). If provided, the propagation
-                   starts from the middle of the grid to increase the speed potentially.
+        grid_size: The size of the grid in (`rows`, `columns`). If provided, the propagation starts from the middle of the grid to increase the speed potentially.
 
     Success:
         This rule will generate a predicate named `reachable_grid_adj_{adj_type}_{color}(R, C)`.
@@ -30,14 +31,16 @@ def grid_color_connected(
     tag = tag_encode("reachable", "grid", "adj", adj_type, color)
 
     if grid_size is None:
-        initial = f"{tag}(R, C) :- (R, C) = #min{{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
+        initial = f"{tag}(R, C) :- (R, C) = #min {{ (R1, C1): grid(R1, C1), {color}(R1, C1) }}."
     else:
         R, C = grid_size
-        initial = (
-            f"{tag}(R, C) :- (_, R, C) = #min{{ (|R1 - {R // 2}| + |C1 - {C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
-        )
+        initial = f"{tag}(R, C) :- (_, R, C) = #min {{ (|R1 - {R // 2}| + |C1 - {C // 2}|, R1, C1): grid(R1, C1), {color}(R1, C1) }}."
 
     propagation = f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
+
+    if adj_type == "line_directed":  # reverse propagation for directed lines, enhance compatibility, slightly slower
+        propagation += "\n" + f"{tag}(R, C) :- {tag}(R1, C1), {color}(R, C), adj_{adj_type}(R1, C1, R, C)."
+
     constraint = f":- grid(R, C), {color}(R, C), not {tag}(R, C)."
     return initial + "\n" + propagation + "\n" + constraint
 
@@ -79,7 +82,7 @@ def area_color_connected(color: str = "black", adj_type: Union[int, str] = 4) ->
     """
     validate_type(adj_type, (4, 8, "x", "line", "line_directed"))
     tag = tag_encode("reachable", "area", "adj", adj_type, color)
-    initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min{{ (R1, C1): area(A, R1, C1), {color}(R1, C1) }}."
+    initial = f"{tag}(A, R, C) :- area(A, _, _), (R, C) = #min {{ (R1, C1): area(A, R1, C1), {color}(R1, C1) }}."
     propagation = f"{tag}(A, R, C) :- {tag}(A, R1, C1), area(A, R, C), {color}(R, C), adj_{adj_type}(R, C, R1, C1)."
     constraint = f":- area(A, R, C), {color}(R, C), not {tag}(A, R, C)."
     return initial + "\n" + propagation + "\n" + constraint

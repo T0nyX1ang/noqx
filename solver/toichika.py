@@ -9,10 +9,10 @@ from noqx.rule.neighbor import adjacent, area_adjacent
 
 def toichika_pair(color: str) -> str:
     """Generate a rule to create Toichika pairs and constraints."""
-    rule = "pair(R, C1, R, C2) :- arrow_N_W__5(R, C1), arrow_N_W__1(R, C2), C2 > C1.\n"
-    rule += f":- pair(R, C1, R, C2), grid(R, C), C1 < C, C < C2, {color}(R, C).\n"
-    rule += "pair(R1, C, R2, C) :- arrow_N_W__7(R1, C), arrow_N_W__3(R2, C), R2 > R1.\n"
-    rule += f":- pair(R1, C, R2, C), grid(R, C), R1 < R, R < R2, {color}(R, C).\n"
+    rule = "{ pair(R, C1, R, C2) } :- arrow_N_W__5(R, C1), arrow_N_W__1(R, C2), C2 > C1.\n"
+    rule += f":- pair(R, C1, R, C2), grid(R, C), C1 < C, C < C2, not {color}(R, C).\n"
+    rule += "{ pair(R1, C, R2, C) } :- arrow_N_W__7(R1, C), arrow_N_W__3(R2, C), R2 > R1.\n"
+    rule += f":- pair(R1, C, R2, C), grid(R, C), R1 < R, R < R2, not {color}(R, C).\n"
 
     # every arrow symbol should belong to a pair
     rule += ":- arrow_N_W__1(R, C), not pair(_, _, R, C).\n"
@@ -35,7 +35,7 @@ class ToichikaSolver(Solver):
     category = "var"
     examples = [
         {
-            "data": "m=edit&p=7VdrTyJJFP3ur5jU16lk69EvSPYDOjg7syPqqHGFENJiqziN7Tags23873Nu9W2hAZ1HnH0kG6DqcOr2vedWFXWLyZ+zOE+kVvS2kUSPl6cj9zFR4D6KX4ejaZo0X8nWbHqZ5QBS7m5vy/M4nSTy/cnlh62sdfem9cdtNO129Vs1e6eOr7avXn8c//5uZHO93Yn2dvZ2Ruai9dvW5n7Qfh3szSZH0+R2f6w3r466h+d7xxcN81e70/WK7q7y33fPf7ltHf260WMN/Y37otEsWrJ42+wJLaQw+GjRl8V+877YaRZtWRxgSMioL8V4lk5HwyzNcuE4DbsP5YMGsD2Hx26c0FZJagXcYQx4AhjneXY36Aw2S2qv2SsOpaDgm+5xgmKc3SYUjcTR92E2Ph0RcRpPMX+Ty9GNkBYDk9lZ9mnGprr/IItWmcLJN6YAJ1UKBMsUCK1JgTJbTOH45VNo9B8esDwfkcSg2aN8juYwmsOD5j3ajmu1a0+a98JquAnl0hyLwIL2V2itAvB2lbfE6yUeIbZdIOPaQ+iQhXXtG9cq1/qu/eBs2pBkjC+NgUODbWbwWzAh41AaD3oJe2qObQNYlVh7sI/YHr8lz7C9kcZnnz78P2LY+/4cB/xsgGeDBmP4D9l/iLiRV+LILmD4jzBpDmtgjutDf/VsBP8Rx4qgIWIN7vfOOYbkk7FPcdmnR5pZj4V/j/1ozAmtocuX5qGyhx+/8gObkG1CPBtW2pBjhT2aB87d0txyXuTTsn6Ka9neIl+P9XvQ73EsD7ECjhVQLNYZUr6sP4LPRjWfeLbCAXyGlU+a/0obrWP1LPxHrDOis7LkrWpIq0s/6KU1pX700trSHj0w22OPPWKtYV/qdFiXcdGDL/WgBy5zRC8t7z300lb7h9a0wTob0KNYj4IexfaK/FexoO0RW2DWTLja88jRKtajoEezHg09vC4WazTHsDdVjsC8/9EDl3sDPTDHwrpbXnfnU3OO2FeW9xV62LNOsq8w6VHVnqd8GTcoX/avKMfKP80/68H+sbx/0ANTXBwAx+4Y2HKt59rAHQ8hHWLfeMwJEhitOewo6cVTzZ3GP3ZKfVVqD78iqur1l//f4/obPXEwy8/jYYK61D67SF51snwcp/jWmY1Pk3z+/eAyvkkEbgtikqWDSfnUIPkcD6eiWV5YFkdq3LXzVaPSLLtJR9frPFRDNXJ0cZ3lydohIhNof8IVDa1xdZrlZ0ua7uI0refiLnM1ajjKh2mdmuao5Avf3RasMeN4elkjFqp+zVNyvTSZ07guMf4UL0Ubz6fjYUN8Fu6DOm5oef+/2v2rr3a0VOqHL3g/6XT7ipweZhy3l2JXipvZIB5gtgX+RcjneFT2f4THjeu7dL4U/1Tcp3RqXB2+bwB3xp/Ley/BH6z6D/t/+352x2SWP1Oz5oPL9JrKBfaZ4rUwuo5/ok4tjC7zK0WJxK7WJbBrShPY5eoEarVAgVypUeCeKFPkdblSkarlYkWhVuoVhVosWb3+xhc=",
+            "data": "m=edit&p=7VdrTxs5FP3Or6j8tZbWj3lG2g+BQrddCFBALImiaAgDhE4YdpJAO4j/3nM9d8gTulR0H9IqiX1yfOfec23H1xn9OUmKVGpFbxtJ9Hh5OnIfEwXuo/h1OBhnaeONbE7Gl3kBIOXu1pY8T7JRKj+eXG5v5M27d80/bqNxu63fq8kHdXy1dfX20/D3DwNb6K1WtLeztzMwF83fNtb3g823wd5kdDROb/eHev3qqH14vnd8EZuvm622V7Z3lf+xff7LbfPo17UOa+iu3Zdxo2zK8n2jI7SQwuCjRVeW+437cqdRnsjyAENCRl0phpNsPOjnWV4Ix2nYbVcPGsDNKTx244Q2KlIr4BZjwBPApCjyu16rt15Re41OeSgFBV93jxMUw/w2pWgkjr738+HpgIjTZIz5G10OboS0GBhNzvLPEzbV3QdZNl+WApzUKRCsUiC0IgXKbDaF49dPIe4+PGB5PiGJXqND+RxNYTSFB417tC3XateeNO6F1XATyoU5FoEF7S/RWgXg7TJvidcLPEJsuUDGtYfQIUvr2neuVa71XbvtbDYhyRhfGgOHBtvM4LdgQsahNB70EvbUFNsYWFVYe7CP2B6/Jc+wvZHGZ58+/D9i2Pv+FAf8bIBng5gx/IfsP0TcyKtwZGcw/EeYNIc1MMf1ob9+NoL/iGNF0BCxBvd75xxD8snYp7js0yPNrMfCv8d+NOaE1tDlS/NQ28OPX/uBTcg2IZ4Na23IscYezQPnbmluOS/yaVk/xbVsb5Gvx/o96Pc4lodYAccKKBbrDClf1h/BZ1zPJ56tcQCfYe2T5r/WRutYPwv/EeuM6KyseKtiaXXlB720ptKPXlpb2aMHZnvssUesNewrnQ7rKi568JUe9MBVjuil5b2HXtp6/9Caxqwzhh7FehT0KLZX5L+OBW2P2AKzZsL1nkeOVrEeBT2a9Wjo4XWxWKMphr2pcwTm/Y8euNob6IE5Ftbd8ro7n5pzxL6yvK/Qw551kn2NSY+q9zzlyzimfNm/ohxr/zT/rAf7x/L+QQ9McXEAHLtjYMO1nmsDdzyEdIj9xWNOkMBoxWFHSc+eau40/rFT6rtSO/gVUVWff/n/Pa671hEHk+I86aeoS5tnF+mbVl4MkwzfDi6Tm1TgdiBGedYbVVa99EvSH4tGdUGZHZnjrifD0xTVdYbK8vwmG1yv8lAPzZGDi+u8SFcOEZlC6xOuaGiFq9O8OFvQdJdk2Xwu7vI2R/UHRT+bp8YFKvfMd7fl5phhMr6cI2aq/Jyn9HphMsfJvMTkc7IQbTidjoc18UW4D+q2oeX8/yr3r77K0VKpH77Q/aTT7DtyOphx3FbKXSluJr2kh9kW+Ncgn+NRyf8RHjesF+l8Lf6puE/p1LgqvGwAd8Sfy3uvwR8s+w+7f/t+dsdkXjxTs6aDi/SKygX2meI1M7qKf6JOzYwu8ktFicQu1yWwK0oT2MXqBGq5QIFcqlHgnihT5HWxUpGqxWJFoZbqFYWaLVmd7to3",
         },
     ]
 
@@ -45,7 +45,7 @@ class ToichikaSolver(Solver):
         self.add_program_line(adjacent())
         self.add_program_line(area_adjacent())
         self.add_program_line(shade_cc(colors=["gray", "arrow_N_W__1", "arrow_N_W__3", "arrow_N_W__5", "arrow_N_W__7"]))
-        self.add_program_line(toichika_pair(color="not gray"))
+        self.add_program_line(toichika_pair(color="gray"))
 
         rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
         for i, ar in enumerate(rooms):

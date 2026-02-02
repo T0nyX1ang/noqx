@@ -2,8 +2,8 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, display, fill_line, grid
-from noqx.rule.helper import fail_false, validate_direction
+from noqx.rule.common import defined, display, fill_line, grid, shade_c
+from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import single_route
@@ -35,19 +35,19 @@ class YajilinSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="gray"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line("{ black(R, C); white(R, C) } = 1 :- grid(R, C), not gray(R, C).")
-        self.add_program_line(fill_line(color="white"))
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(shade_c(color="black"))
+        self.add_program_line(fill_line(color="not black"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(avoid_same_color_adjacent(color="black", adj_type=4))
-        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
-        self.add_program_line(single_route(color="white"))
+        self.add_program_line(grid_color_connected(color="not black", adj_type="line"))
+        self.add_program_line(single_route(color="not black"))
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            self.add_program_line(f"gray({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
             # empty clue or space or question mark clue (for compatibility)
             if isinstance(clue, str) and (len(clue) == 0 or clue.isspace() or clue == "?"):
@@ -63,9 +63,10 @@ class YajilinSolver(Solver):
                 self.add_program_line(f"black({r}, {c}).")
 
             if color == Color.GRAY:
-                self.add_program_line(f"gray({r}, {c}).")
+                self.add_program_line(f"hole({r}, {c}).")
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="black"))

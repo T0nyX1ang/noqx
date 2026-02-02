@@ -45,7 +45,7 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
 
     * The starting coordinate is `(0, 0)`. The grid is extended from left to right, and from top to bottom.
 
-    * The holes should be defined separately using their coordinates. Moreover, the mechanism for the holes is to delete the corresponding cells from the grid.
+    * The holes should be defined explicitly using their coordinates with the predicate `hole(R, C)`. Moreover, the mechanism for the holes is to delete the corresponding cells from the grid.
 
     * This function cannot be used to define multiple grids.
 
@@ -55,12 +55,20 @@ def grid(rows: int, cols: int, with_holes: bool = False) -> str:
         with_holes: Whether the grid contains holes.
 
     Success:
-        This rule will generate a predicate named `grid(R, C)`.
-    """
-    if with_holes:
-        return f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
+        This rule will generate a predicate named `grid(R, C)`. To deal with adjacency, a helper predicate named `grid_all(R, C)` will also be generated to show the original grid.
 
-    return f"grid(0..{rows - 1}, 0..{cols - 1})."
+    Note:
+        The `with_holes` parameter is designed for the case where there are explicit cells that the puzzle won't interact with in the grid.
+    """
+    rule = "grid_all(R, C) :- grid(R, C).\n"
+
+    if with_holes:
+        rule += "grid_all(R, C) :- hole(R, C).\n"
+        rule += f"grid(R, C) :- R = 0..{rows - 1}, C = 0..{cols - 1}, not hole(R, C)."
+    else:
+        rule += f"grid(0..{rows - 1}, 0..{cols - 1})."
+
+    return rule
 
 
 def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
@@ -80,7 +88,7 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
     return "\n".join(f"area({_id}, {r}, {c})." for r, c in src_cells)
 
 
-def shade_c(color: str = "black") -> str:
+def shade_c(color: str = "black", _from: str = "grid") -> str:
     """A rule to shade cells with a specified color from a grid.
 
     * Every cell in the grid can be either shaded or unshaded with the `color`.
@@ -89,14 +97,15 @@ def shade_c(color: str = "black") -> str:
 
     Args:
         color: The color to be shaded.
+        _from: The domain for the cells to be shaded.
 
     Success:
         This rule will generate a predicate named `{color}(R, C)`.
     """
-    return f"{{ {color}(R, C) }} :- grid(R, C)."
+    return f"{{ {color}(R, C) }} :- {_from}(R, C)."
 
 
-def shade_cc(colors: Iterable[str]) -> str:
+def shade_cc(colors: Iterable[str], _from: str = "grid") -> str:
     """A rule to shade cells with several specified colors from a grid.
 
     * Every cell in the grid can be shaded with **exactly one** of the specified colors.
@@ -105,6 +114,7 @@ def shade_cc(colors: Iterable[str]) -> str:
 
     Args:
         colors: The colors to be shaded.
+        _from: The domain for the cells to be shaded.
 
     Success:
         This rule will generate a predicate named `{color}(R, C)`.
@@ -112,10 +122,10 @@ def shade_cc(colors: Iterable[str]) -> str:
     Warning:
         If you only specify **one color**, all the cells in the grid will be shaded with this color.
     """
-    return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- grid(R, C)."
+    return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- {_from}(R, C)."
 
 
-def invert_c(color: str = "black", invert: str = "white") -> str:
+def invert_c(color: str = "black", invert: str = "white", _from: str = "grid") -> str:
     """A rule to define an inverted color from a specified color inside a grid.
 
     * An inverted color means that if a cell is not shaded with the specified color,
@@ -130,11 +140,12 @@ def invert_c(color: str = "black", invert: str = "white") -> str:
     Args:
         color: The specified color.
         invert: The inverted color.
+        _from: The domain for the cells to be shaded.
 
     Success:
         This rule will generate a predicate named `{invert}(R, C)`.
     """
-    return f"{invert}(R, C) :- grid(R, C), not {color}(R, C)."
+    return f"{invert}(R, C) :- {_from}(R, C), not {color}(R, C)."
 
 
 def edge(rows: int, cols: int, with_border: bool = True) -> str:
@@ -191,14 +202,14 @@ def fill_line(
         directed: Whether the line is directed.
 
     Success:
-        This rule will generate a predicate named `line(R, C, D)`.
+        This rule will generate a predicate named `line_{in|out|io}(R, C, D)`.
     """
-    dir_range_str = map(lambda x: f'"{x}"', tuple(directions))
+    dir_range_str = (f'"{x}"' for x in tuple(directions))
     rule = f"direction({'; '.join(dir_range_str)}).\n"
 
     if directed:
-        rule += f"{{ line_in(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C).\n"
-        rule += f"{{ line_out(R, C, D): direction(D) }} <= 1 :- grid(R, C), {color}(R, C)."
+        rule += f"{{ line_in(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C).\n"
+        rule += f"{{ line_out(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
     else:
         rule += f"{{ line_io(R, C, D): direction(D) }} :- grid(R, C), {color}(R, C)."
 

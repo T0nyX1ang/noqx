@@ -12,6 +12,7 @@ function imp(penpa, example = false) {
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
+  urlstring = urlstring.replace("p.html", "p");
 
   // pre-fetch the puzzle type for puzz.link relevant URL
   if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
@@ -30,26 +31,31 @@ function imp(penpa, example = false) {
     }
   }
 
+  if (puzzleType === "lither") urlstring = urlstring.replace("lither", "slitherlink"); // special case with lithersink
+
   // replace unsupported solver to supported solvers
   urlstring = urlstring.replace("arukone", "numlin");
   urlstring = urlstring.replace("chocona", "aqre");
+  urlstring = urlstring.replace("cityspace", "cave");
   urlstring = urlstring.replace("cocktail", "aqre");
   urlstring = urlstring.replace("context", "nuribou");
   urlstring = urlstring.replace("coral", "nonogram");
   urlstring = urlstring.replace("circlesquare", "yinyang");
   urlstring = urlstring.replace("creek", "gokigen");
+  urlstring = urlstring.replace("dotchi2", "dotchi");
   urlstring = urlstring.replace("fivecells", "nawabari");
   urlstring = urlstring.replace("fourcells", "nawabari");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("hinge", "aqre");
+  urlstring = urlstring.replace("nibunnogo", "gokigen");
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nothing", "moonsun");
   urlstring = urlstring.replace("nothree", "tentaisho");
   urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
-  urlstring = urlstring.replace("lither", "slitherlink");
   urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
+  urlstring = urlstring.replace("smullyan", "nuribou");
   urlstring = urlstring.replace("squarejam", "shikaku");
   urlstring = urlstring.replace("statuepark", "yinyang");
   urlstring = urlstring.replace("swslither", "slitherlink");
@@ -70,23 +76,35 @@ function imp(penpa, example = false) {
   try {
     import_url(urlstring);
     const importErrorDialog = document.getElementById("swal2-html-container");
-    if (
-      importErrorDialog &&
-      puzzleType in solver_metadata &&
-      importErrorDialog.textContent.startsWith("It currently does not support puzzle type")
-    ) {
+    if (puzzleType in solver_metadata) {
       resetGridType(puzzleType);
       resetGridMode(puzzleType);
       resetBoardSize(puzzleType);
+    } else {
+      const currentType = document.getElementById("type").value;
+      resetGridType(currentType);
+      resetGridMode(currentType);
+      resetBoardSize(currentType);
+    }
+
+    if (importErrorDialog && importErrorDialog.textContent.startsWith("It currently does not support puzzle type")) {
       create_newboard();
       advancecontrol_toggle();
-    }
+    } else redraw_grid();
   } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Import error",
-      text: "The URL may be invalid or corrupted.",
-    });
+    if (puzzleType in solver_metadata) {
+      Swal.fire({
+        icon: "error",
+        title: "Import error",
+        text: "The URL may be invalid or corrupted.",
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Import error",
+        text: `Unsupported puzzle type: ${puzzleType}.`,
+      });
+    }
     return;
   }
 
@@ -199,7 +217,7 @@ function resetGridMode(puzzleType) {
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 
-  if (["cave", "firefly", "gokigen"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+  if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
   if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
@@ -274,6 +292,22 @@ $(window).on("load", function () {
     unk: "- Unknown -",
   };
 
+  const variantMap = {
+    lits: { param_invlitso: "invlitso" },
+    slitherlink: {
+      param_tslither: "tslither",
+      param_vslither: "vslither",
+      param_swslither: "swslither",
+    },
+    ichimaga: {
+      param_ichimagam: "ichimagam",
+      param_ichimagax: "ichimagax",
+    },
+    pipelink: {
+      param_pipelinkr: "pipelinkr",
+    },
+  };
+
   const choicesType = new Choices(typeSelect, {
     itemSelectText: "",
     searchFields: ["label", "value", "customProperties.aliases"],
@@ -320,7 +354,6 @@ $(window).on("load", function () {
   typeSelect.addEventListener("change", () => {
     const isPuzzleTypeChanged = puzzleType !== typeSelect.value;
     if (isPuzzleTypeChanged) choicesType.setChoiceByValue(typeSelect.value);
-
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
     if (puzzleType !== "") {
@@ -387,7 +420,20 @@ $(window).on("load", function () {
 
   ruleButton.addEventListener("click", () => {
     if (ruleButton.disabled || !puzzleType) return;
-    window.open(`https://puzz.link/rules.html?${puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"}`);
+    let urlPuzzleType = `https://pzprjs.vercel.app/rules.html?${
+      puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
+    }`;
+    if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
+
+    if (variantMap[puzzleType]) {
+      for (const [paramId, variant] of Object.entries(variantMap[puzzleType])) {
+        const element = document.getElementById(paramId);
+        if (element && element.checked) {
+          urlPuzzleType = `https://pzprjs.vercel.app/rules.html?${variant}`;
+        }
+      }
+    }
+    window.open(urlPuzzleType);
   });
 
   solveButton.addEventListener("click", async () => {

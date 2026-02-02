@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import area, count, defined, display, grid
+from noqx.rule.common import area, count, defined, display, grid, shade_cc
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 
@@ -10,11 +10,11 @@ from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
 def roma_adjacent() -> str:
     """Generate a rule to define the adjacency for roma."""
 
-    # the definition should be compatible with the reachable propagation
-    rule = "adj_line_directed(R, C, R, C + 1) :- grid(R, C), grid(R, C + 1), arrow_N_W__5(R, C).\n"
-    rule += "adj_line_directed(R, C, R, C - 1) :- grid(R, C), grid(R, C - 1), arrow_N_W__1(R, C).\n"
-    rule += "adj_line_directed(R, C, R + 1, C) :- grid(R, C), grid(R + 1, C), arrow_N_W__7(R, C).\n"
-    rule += "adj_line_directed(R, C, R - 1, C) :- grid(R, C), grid(R - 1, C), arrow_N_W__3(R, C)."
+    # the definition is designed to be compatible with the reachable propagation (grid_all = grid + hole)
+    rule = "adj_line_directed(R, C, R, C + 1) :- grid_all(R, C), grid_all(R, C + 1), arrow_N_W__5(R, C).\n"
+    rule += "adj_line_directed(R, C, R, C - 1) :- grid_all(R, C), grid_all(R, C - 1), arrow_N_W__1(R, C).\n"
+    rule += "adj_line_directed(R, C, R + 1, C) :- grid_all(R, C), grid_all(R + 1, C), arrow_N_W__7(R, C).\n"
+    rule += "adj_line_directed(R, C, R - 1, C) :- grid_all(R, C), grid_all(R - 1, C), arrow_N_W__3(R, C)."
     return rule
 
 
@@ -31,11 +31,9 @@ class RomaSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(
-            "{ arrow_N_W__1(R, C); arrow_N_W__3(R, C); arrow_N_W__5(R, C); arrow_N_W__7(R, C) } = 1 :- grid(R, C), not black(R, C)."
-        )
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(shade_cc(colors=["arrow_N_W__1", "arrow_N_W__3", "arrow_N_W__5", "arrow_N_W__7"]))
         self.add_program_line(roma_adjacent())
         self.add_program_line(avoid_unknown_src(adj_type="line_directed", color="grid"))
 
@@ -51,7 +49,7 @@ class RomaSolver(Solver):
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
             if symbol_name == "circle_L__2":
-                self.add_program_line(f"black({r}, {c}).")
+                self.add_program_line(f"hole({r}, {c}).")
                 self.add_program_line(grid_src_color_connected((r, c), adj_type="line_directed", color="grid"))
 
             if symbol_name.startswith("arrow_N") and symbol_name.split("__")[1] in ["1", "3", "5", "7"]:

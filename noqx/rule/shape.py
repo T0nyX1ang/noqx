@@ -238,6 +238,38 @@ def count_shape(
     return rule
 
 
+def avoid_same_omino_adjacent(
+    omino_num: int, color: str = "black", adj_type: Union[int, str] = 4, allow_isometry: bool = True
+) -> str:
+    """A rule to avoid adjacent ominos with the same shape.
+
+    Args:
+        omino_num: The number of cells in the omino.
+        color: The color to be checked.
+        adj_type: The type of adjacency (accepted values: `4`, `8`, `x`, `edge`).
+        allow_isometry: Whether to consider reflection/rotation as the same type.
+
+    Warning:
+        This rule only deals with `grid-based` ominos currently and cannot deal with `area-based` ominos.
+    """
+    validate_type(adj_type, (4, 8, "x", "edge"))
+    t_be = tag_encode("belong_to_shape", "omino", omino_num, color)
+    itag = "_" if allow_isometry else "V"
+
+    rule = ""
+    if adj_type == 4:  # only checkerboard adjacent ominos are allowed
+        rule = f":- not {color}(R, C + 1), not {color}(R + 1, C), {t_be}(R, C, T, {itag}), {t_be}(R + 1, C + 1, T, {itag}).\n"
+        rule += f":- not {color}(R, C), not {color}(R + 1, C + 1), {t_be}(R + 1, C, T, {itag}), {t_be}(R, C + 1, T, {itag})."
+
+    if adj_type in (8, "x"):  # all adjacent ominos are not allowed
+        rule += f":- adj_{adj_type}(R, C, R1, C1), {t_be}(R, C, T, {itag}), {t_be}(R1, C1, T1, {itag}), T != T1."
+
+    if adj_type == "edge":
+        rule += f':- grid(R, C), grid(R, C + 1), {t_be}(R, C, T, {itag}), {t_be}(R, C + 1, T, {itag}), edge(R, C + 1, "{Direction.LEFT}").\n'
+        rule += f':- grid(R, C), grid(R + 1, C), {t_be}(R, C, T, {itag}), {t_be}(R + 1, C, T, {itag}), edge(R + 1, C, "{Direction.TOP}").'
+    return rule
+
+
 def all_rect(color: str = "black", square: bool = False) -> str:
     """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
 
@@ -249,7 +281,7 @@ def all_rect(color: str = "black", square: bool = False) -> str:
 
     * If some cells are not categorized into the `rect` predicate, the shape is not rectangular.
 
-    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.common.invert_c` rule for assistance.
+    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.rule.common.invert_c` rule for assistance.
 
     Args:
         color: The color to be checked.
@@ -406,7 +438,7 @@ def count_rect_size(
 ) -> str:
     """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
 
-    * A `noqx.reachable.bulb_src_color_connected` rule should be applied first.
+    * A `noqx.rule.reachable.bulb_src_color_connected` rule should be applied first.
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
@@ -439,4 +471,16 @@ def avoid_edge_crossover() -> str:
         f'edge(R + 1, C + 1, "{Direction.TOP}")',
     ]
     rule = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
+    return rule
+
+
+def avoid_checkerboard(color: str) -> str:
+    """A rule to avoid the checkerboard shape.
+
+    Args:
+        color: The color to be checked.
+    """
+
+    rule = f":- {color}(R, C), not {color}(R, C + 1), not {color}(R + 1, C), {color}(R + 1, C + 1).\n"
+    rule += f":- not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1)."
     return rule

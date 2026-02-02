@@ -102,7 +102,8 @@ class NumlinSolver(Solver):
         if puzzle.param["no_2x2"]:
             self.add_program_line(no_2x2_path())
 
-        for (r, c, d, _), draw in puzzle.line.items():
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
             self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
         self.add_program_line(display(item="line_io", size=3))
