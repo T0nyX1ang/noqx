@@ -237,7 +237,9 @@ function resetBoardSize(puzzleType) {
   ];
   let sizeFlag = [0, 0, 0, 0]; // a flag for margin size
 
-  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType))
+  if (
+    ["aquarium", "batten", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)
+  )
     sizeFlag = [1, 0, 1, 0];
 
   if (
