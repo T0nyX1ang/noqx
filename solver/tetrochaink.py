@@ -3,6 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
+from noqx.rule.helper import fail_false
 from noqx.rule.neighbor import adjacent, count_covering
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import OMINOES, all_shapes, avoid_same_omino_adjacent, general_shape
@@ -15,7 +16,7 @@ class TetroChainKSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VVtb+JGEP7Or6j2661U7/olxlI/kBy53pUQcoAoWBYyxATn7DhnbHI14r/fzNoIv6xRpfbUVqrMDsMzw7zt+tnd19SNPcoU/KgmhW94NGaKxU1DLKV4Jn4SeNZPtJcm2ygGhdL7Id24wc6jn+bbwU3Ue3vf+31vJosF+6CkH5XZ8+3zu8/hbx99NWa3Q3N0N7rz+VPv15vrB6P/zhilu2ni7R9Cdv08XUw2o9lTl//RHy60bHGv6J8Wm5/3vekvHbsowekcsq6V9Wj2wbIJI5RwWIw4NHuwDtmdlc1pNgYTocyhJEyDxF9HQRSTE5YN8j9yUPtndSbsqN3kIFNAHxY6qHNQ1368DrzleJx7jiw7m1CCya/F31ElYbT3MBsWh7/XUbjyEVi5CYxvt/VfCVXBsEsfoy9p4cqcI816eQvjUwvm5RYgyKkFVPMWUJO0gPWWWhj8/R10neMRducz9LC0bGxnelbNszq2DiCHQjIh59aBcG5AHA7JKjMmXNUA15u4xgBnEvxKjuuIS+LoXTl+hfEl9Vyp8vhmGy6PryqK1F9l2K8E17g0jq7g3GS4vF9dxJfhujSv3jJ/XUV/Cd5Wp4bzac7TYDifZl6D4/ybcQyOcWS4vH7DaIljyOYDh/FWHEku5AROLM1UId8LqQipCzkQPn0hZ0LeCKkJaQifKzzzf/KtgDNBLBOPALF48xX5QbXZas751Uf/72FOxybjNN64aw94a7x1Xz0C1wXZRcFyl+NL75u7ToiV31hlC7GSOC2glzRcecC2Ja8gil4D/0UW4GSqgP7TSxR7UhOC3uNTWyg0SUKtovixVtObGwTVVsRdXoHyw12BkhiovPTbjePorYKEbrKtACXar0TyXmqzTNxqie4Xt5YtPI/j2CHfiFi2Sjnu3/9X+7/5asedUv7CBY8XZHZfMHuuCOSf4VwbtgKYD+t4TZfuErZBzE2Kw0Au+rMW/zquFTiv4XqLv5HjmtGStx6nyNvw15zWfflR0xdvexRfYN6zsQ5LCBjQCxxcssrwFrotWet4g1ux2Ca9AiphWEDrJAtQk2cBbFAtYC1si1HrhItV1TkXUzVoF1OVmdd2Ot8B",
+            "data": "m=edit&p=7VZtb+JGEP7Or6j2661U7/olxlI/EI5c75oQcoAoWBYyxATn7Dg1Nrka8d9vZm2EX9aoqnpqK52Mh+GZYd52/ax3f6Ru7FGm4Ec1KXzDpTFT3Nw0xK0U18RPAs/6ifbSZBvFoFB6P6QbN9h59NN8e9uPem/ve7/vzWSxYB+U9KMye755fvc5/O2jr8bsZmiO7kZ3Pn/q/dq/fjAG74xRupsm3v4hZNfP08VkM5o9dfmfg+FCyxb3iv5psfl535v+0rGLEpzOIetaWY9mHyybMEIJh5sRh2YP1iG7s7I5zcZgIpQ5lIRpkPjrKIhicsKy2/yPHNTBWZ0JO2r9HGQK6MNCB3UO6tqP14G3HI9zz5FlZxNKMPm1+DuqJIz2HmbD4vD3OgpXPgIrN4Hx7bb+K6EqGHbpY/QlLVyZc6RZL29hfGrBvNwCBDm1gGreAmqSFrDeUgu3/3wHXed4hNX5DD0sLRvbmZ5V86yOrQPIoZBMyLl1IIYOYTjkqoyYMJUBzho454bUn6sa4HoT11riaFdyXEdcEkfvyvErjC+p50qVxzfbcHl8VVGk/irDfiW4xqVxdAXnJsPl/eoivgzH9Wrm1Vvmr6voL8Hb6tRwPs15Ggzn08xrcJx/M47BMY4Ml9dvGC1xDNl8YO/eiB3MhZzABqeZKuR7IRUhdSFvhc9AyJmQfSE1IQ3hc4WPyF98iGBPEMvELUAs3nyivlNttpofEdVL//9hTscm4zTeuGsPaG68dV89AqcL2UXBcpfjS++ru06IlR9wZQuxkjgtoJc0XHlAziWvIIpeA/9FFuBkqoD+00sUe1ITgt7jU1soNElCraL4sVbTmxsE1VbE0V+B8s1dgZIYmL/0243j6K2ChG6yrQClU6ISyXupzTJxqyW6X9xatvA8jmOHfCXitlXKcf1+vAn8l98EcKWUv/8+IA7I7L5g9lwRyL/DuTYsBTAf1vGaLt0lLIOYmxSHgVz0Zy3+dVwrcF7D9RZ/I8c1oyVvPU6Rt+GvOa3r8r2mL572KL7AvGdjHZYQMKAXOLhkleEtdFuy1vEGt2KxTXoFVMKwgNZJFqAmzwLYoFrAWtgWo9YJF6uqcy6matAupiozr+10vgE=",
         },
     ]
 
@@ -33,7 +34,17 @@ class TetroChainKSolver(Solver):
             self.add_program_line(general_shape("omino_4", i, o_shape, color="gray", _type="grid", adj_type=4))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
+            fail_false(
+                not (d == Direction.CENTER and symbol_name == "circle_SS__5"),
+                f"Gray circle cannot be placed in the center of ({r}, {c}).",
+            )
             target = 2 if d == Direction.TOP_LEFT else 1
+
+            if d == Direction.CENTER and symbol_name == "circle_SS__1":
+                self.add_program_line(f"not gray({r}, {c}).")
+
+            if d == Direction.CENTER and symbol_name == "circle_SS__2":
+                self.add_program_line(f"gray({r}, {c}).")
 
             if d in (Direction.TOP, Direction.LEFT, Direction.TOP_LEFT) and symbol_name == "circle_SS__1":
                 self.add_program_line(count_covering(("lt", target), (r, c), d, color="gray"))
