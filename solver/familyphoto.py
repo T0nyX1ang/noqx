@@ -1,6 +1,6 @@
 """The Family Photo solver."""
 
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
@@ -53,7 +53,7 @@ class FamilyPhotoSolver(Solver):
             if (r, c + 1, d, label) in puzzle.symbol:
                 self.add_program_line(f':- edge({r}, {c + 1}, "{Direction.LEFT}").')
 
-        all_src = []
+        all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

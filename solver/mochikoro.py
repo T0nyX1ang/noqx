@@ -1,5 +1,7 @@
 """The Mochikoro solver."""
 
+from typing import List, Tuple
+
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
@@ -35,7 +37,7 @@ class MochikoroSolver(Solver):
         self.add_program_line(avoid_rect(2, 2, color="black"))
         self.add_program_line(all_rect(color="white"))
 
-        all_src = []
+        all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", 4, "not black")
         fail_false(len(puzzle.text) > 0, "No clues found.")
         for (r, c, d, label), num in puzzle.text.items():

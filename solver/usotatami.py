@@ -1,5 +1,7 @@
 """The Uso-tatami solver."""
 
+from typing import List, Tuple
+
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
@@ -37,7 +39,7 @@ class UsotatamiSolver(Solver):
         self.add_program_line(avoid_edge_crossover())
         self.add_program_line(count_rect(len(puzzle.text)))
 
-        all_src = []
+        all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

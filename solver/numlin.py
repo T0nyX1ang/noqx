@@ -52,7 +52,7 @@ class NumlinSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
 
-        all_src = []
+        all_src: List[Tuple[int, int]] = []
         locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
