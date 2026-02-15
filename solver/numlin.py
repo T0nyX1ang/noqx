@@ -51,6 +51,16 @@ class NumlinSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+
+        if puzzle.param["visit_all"]:
+            self.add_program_line("white(R, C) :- grid(R, C).")
+        else:
+            self.add_program_line(shade_c(color="white"))
+
+        self.add_program_line(fill_line(color="white"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(single_route(color="white", path=True))
 
         all_src: List[Tuple[int, int]] = []
         locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
@@ -64,19 +74,6 @@ class NumlinSolver(Solver):
         fail_false(len(locations) > 0, "No clues found.")
         for n, pair in locations.items():
             fail_false(len(pair) == 2, f"Element {n} is unmatched.")
-
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-
-        if puzzle.param["visit_all"]:
-            self.add_program_line("white(R, C) :- grid(R, C).")
-        else:
-            self.add_program_line(shade_c(color="white"))
-
-        self.add_program_line(fill_line(color="white"))
-        self.add_program_line(adjacent(_type="line"))
-        self.add_program_line(single_route(color="white", path=True))
-
-        for n, pair in locations.items():
             r0, c0 = pair[0]
             r1, c1 = pair[1]
 
