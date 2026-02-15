@@ -53,6 +53,7 @@ function imp(penpa, example = false) {
   urlstring = urlstring.replace("nothree", "tentaisho");
   urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
+  urlstring = urlstring.replace("oasis", "nurimisaki");
   urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("smullyan", "nuribou");

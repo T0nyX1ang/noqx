@@ -89,9 +89,9 @@ def area(_id: int, src_cells: Iterable[Tuple[int, int]]) -> str:
 
 
 def shade_c(color: str = "black", _from: str = "grid") -> str:
-    """A rule to shade cells with a specified color from a grid.
+    """A rule to shade cells with a specified color from a domain.
 
-    * Every cell in the grid can be either shaded or unshaded with the `color`.
+    * Every cell in the domain can be either shaded or unshaded with the `color`.
 
     * In general, the color does not need to be a **real color**, it can be any label representing a certain state, such as symbols used in specific puzzles.
 
@@ -106,9 +106,9 @@ def shade_c(color: str = "black", _from: str = "grid") -> str:
 
 
 def shade_cc(colors: Iterable[str], _from: str = "grid") -> str:
-    """A rule to shade cells with several specified colors from a grid.
+    """A rule to shade cells with several specified colors from a domain.
 
-    * Every cell in the grid can be shaded with **exactly one** of the specified colors.
+    * Every cell in the domain can be shaded with **exactly one** of the specified colors.
 
     * Similar to `shade_c`, the specified colors do not need to be a **real color**.
 
@@ -120,13 +120,13 @@ def shade_cc(colors: Iterable[str], _from: str = "grid") -> str:
         This rule will generate a predicate named `{color}(R, C)`.
 
     Warning:
-        If you only specify **one color**, all the cells in the grid will be shaded with this color.
+        If you only specify **one color**, all the cells in the domain will be shaded with this color.
     """
     return f"{{ {'; '.join(str(c) + '(R, C)' for c in colors)} }} = 1 :- {_from}(R, C)."
 
 
 def invert_c(color: str = "black", invert: str = "white", _from: str = "grid") -> str:
-    """A rule to define an inverted color from a specified color inside a grid.
+    """A rule to define an inverted color from a specified color inside a domain.
 
     * An inverted color means that if a cell is not shaded with the specified color,
     it will be shaded with the inverted color.
