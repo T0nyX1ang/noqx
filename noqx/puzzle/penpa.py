@@ -447,7 +447,9 @@ class PenpaPuzzle(Puzzle):
         for (r, c, _, _), data in self.text.items():
             coord = (r, c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of texts are all in the center
-            if not self.problem["number"].get(f"{index}"):  # avoid overwriting the original stuff
+            if not self.problem["number"].get(f"{index}") or (
+                self.puzzle_name == "keywest" and str(self.problem["number"].get(f"{index}")[0]) != str(data)
+            ):  # avoid overwriting the original stuff
                 self.solution["number"][f"{index}"] = [str(data), 2, "1"]
 
     def _pack_symbol(self):

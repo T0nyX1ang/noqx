@@ -220,7 +220,7 @@ function resetGridMode(puzzleType) {
 
   if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
-  if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
+  if (["hashi", "keywest"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
   if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
 
