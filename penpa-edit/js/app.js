@@ -483,7 +483,7 @@ $(window).on("load", function () {
             throw new Error(program["result"]);
           }
 
-          const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
+          const options = "--trans-ext=dynamic --eq=1 --models=10";
           const result = await clingo.run(program["result"], options);
 
           if (result.Result === "ERROR") {
