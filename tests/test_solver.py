@@ -5,7 +5,7 @@ import pkgutil
 import unittest
 
 from noqx.clingo import Config, run_solver
-from noqx.manager import list_solver_metadata, load_solver
+from noqx.manager import Solver, list_solver_metadata, load_solver
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
@@ -25,6 +25,7 @@ for module_info in pkgutil.iter_modules(["solver"]):
     load_solver("solver", module_info.name)
 
 metadata = list_solver_metadata()
+empty_payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
 
 
 class TestSolver(unittest.TestCase):
@@ -71,8 +72,7 @@ class TestSolver(unittest.TestCase):
 
     def test_nurimisaki_edge_case(self):
         """Test nurimisaki edge case."""
-        payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
-        response = run_solver("nurimisaki", payload, {})
+        response = run_solver("nurimisaki", empty_payload, {})
         self.assertEqual(len(response["url"]), 1)
 
     def test_hinge_edge_case(self):
@@ -90,13 +90,11 @@ class TestSolver(unittest.TestCase):
     def test_statuepark_all_shapes(self):
         """Test statuepark all shapes."""
         for shapeset in ["tetro", "pento", "double_tetro", "others"]:
-            payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
-
             if shapeset == "others":
-                self.assertRaises(ValueError, run_solver, "statuepark", payload, {"shapeset": shapeset})
+                self.assertRaises(ValueError, run_solver, "statuepark", empty_payload, {"shapeset": shapeset})
                 continue
 
-            response = run_solver("statuepark", payload, {"shapeset": shapeset})
+            response = run_solver("statuepark", empty_payload, {"shapeset": shapeset})
             self.assertEqual(len(response["url"]), 0)
 
 
@@ -168,3 +166,8 @@ class TestExtraFunction(unittest.TestCase):
         """Test repeated imports."""
         self.assertRaises(ValueError, load_solver, "solver", "aqre")
         self.assertRaises(ValueError, load_solver, "solver", "yinyang")
+
+    def test_non_implemented_solver(self):
+        """Test non-implemented solver."""
+        raw_solver = Solver()
+        self.assertRaises(NotImplementedError, raw_solver.solve, None)
