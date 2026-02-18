@@ -39,6 +39,7 @@ class TestSolver(unittest.TestCase):
 
     def test_solver_api(self):
         """Test all available solvers. The tests should only return a unique solution."""
+        failed_solvers = []
         for puzzle_name, puzzle_metadata in metadata.items():
             default_params = puzzle_metadata.get("parameters", {})
 
@@ -57,7 +58,10 @@ class TestSolver(unittest.TestCase):
 
                 response = run_solver(puzzle_name, puzzle_example["data"], params)
                 if len(response["url"]) != 1:
-                    self.fail(f"Failed puzzle: {puzzle_name}.")
+                    failed_solvers.append(puzzle_name)
+
+        if failed_solvers:
+            self.fail(f"Failed puzzle(s): {', '.join(failed_solvers)}.")
 
     def test_nonogram_edge_case(self):
         """Test nonogram edge case."""
