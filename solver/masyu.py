@@ -29,17 +29,27 @@ class MasyuSolver(Solver):
             "data": "m=edit&p=7VVNb9pAEL37V0R7nsOO1xjbN5qGXlzSllQRsizkUFdYNTXFuEoX8d8zO7ZKqkykfgmpUmV2eLxZ8JvHzLr90hW7ElC7l4mA3ukKMOLlRyEvPVw31b4ukwuYdPt1syMAcD2dwseibksvG3bl3sHGiZ2AfZVkylfAC1UO9m1ysK8TuwA7p5QCJC4lhAp8glcneMt5hy57EjXh2YAJLgiuqt2qLpdpz7xJMnsDyt3nBX/bQbVpvpaq/xp/XjWbu8oRd8WeimnX1XbItN2H5lM37MX8CHbSy00FueYk18FerkOCXFfFH8utq8/lvaQ0zo9HcvwdaV0mmZP9/gSjE5wnB4ozjshxkRxUMKafQbrPY20qiCR2hCLri2wssaER2UBixyORDUVWvFukRVasOBIrjsWKY7Fi1GJxqMXqUIsyUIs6EEUzEEU3EEU70Bf9QCMWiUau0jjd/hM6kIsP5OLlrkOp7ahPp9ytPscbamawhuNLjprjiGPKe6443nK85BhwDHnP2I3Dbw/Mr8qhoSEL4oh6FMl+B9A3wDYaZ2f4CI8I0z/qsI6B9hH+yXoy05/cP170g/8al3uZSumsu5g1u01R04k3XxfbUtFT5eipe8UrIwch+P+gOf+DxrmvzzY9f2eYMzL2+9SBvQa17ZbFctVQd5F7fXoYxGfT/Ww+lx7GVU7T5MsJOhueJM7uHZ0dalO03zqVew8=",
         },
         {
+            "data": "m=edit&p=7VRdT+JAFH3nV5h5dZJty4fYZB8qgquLiAphoWnIgANUW8adtqgl/Hfv3GJoSzUbN5v4sJnMyem57f1opyf4HTHJaQ1WuU41qsMyajXceqWCW9uunht63DygVhQuhARC6VWrRWfMCzi9GC7aDWE9nVq/VvVwNNLPtOhcG9y37g9v/J/nblnqrU69e9m9dI259aNxcl1rHta6UdAP+era10/u+6PerDuYHxsvzc6oEo+utOrFaPZtZfW/l+xtD05pHR+bsUXjM9MmBqG4deLQ+Npcx5dmPKTxLYQI1R1K/MgL3anwhCRvWtwGphNqAG3u6ADjijUSUdeAd7Yc6BDo1JVTj4/bidI17bhHiap9gk8rSnyx4qoYPIbXU+FPXCVMWAivL1i4j4SWIRBEd+Ih2t6qOxsaW8kE7T+cAJK8TaBoMoFiBROowf56As9d8ueC5o+dzQa+yw20PzZtNUl/R+s7emuuATuIOuLQXBOjAml0KJNujVTKheoRqEZerRZmOCpQoWQLCxuIPeiLxmXEU0QNsYrYxnuaiAPEBmIFsYb3HKnJPj37P2rHNgz8j5NV/Tx3SjZpw0c/6AjpMw/Ow+2CPXICfyEJhDcOIjljUz7mz2waEjMxgnQkoy0jf8LhGKckT4hHdaoKMryFMqI7XwrJC0NK5Hfz91KpUEGqiZB3uZ6emOdlZ0GLzEjJmcpIoYR/JHXNpBRPGcVn4SIjpBwhk4kvcy8zZNkW2QPLVfN3r2NTIs8Et12mcBD+W+ZXtUz1jbSvZh5frR083kJ+4DW7YF4ucBxQPzCdVLRIf8dfUtG8vmcmqtl9PwG1wFJAzbsKSPvGAuKet4D2jr2orHmHUV3lTUaV2vMZVSptNTbxWfASEaf0Cg==",
+            "config": {"visit_all": True},
+        },
+        {
             "url": "https://puzz.link/p?masyu/21/15/000a0l2943300030l00200i10j0063c60091000670303010606j3600133013ia16l0110000600306b2063000300020960ai301030",
             "test": False,
         },
     ]
+    parameters = {"visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False}}
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="black_clue"))
         self.add_program_line(defined(item="white_clue"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="white"))
+
+        if puzzle.param["visit_all"]:
+            self.add_program_line("white(R, C) :- grid(R, C).")
+        else:
+            self.add_program_line(shade_c(color="white"))
+
         self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(grid_color_connected(color="white", adj_type="line"))
