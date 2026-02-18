@@ -428,6 +428,7 @@ $(window).on("load", function () {
       puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
     }`;
     if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
+    if (puzzleType === "shingoki") urlPuzzleType = "https://www.puzzle-shingoki.com";
     if (puzzleType === "yajikabe") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7yajk.htm";
 
     if (variantMap[puzzleType]) {

@@ -25,7 +25,7 @@ class ShingokiSolver(Solver):
 
     name = "Shingoki"
     category = "route"
-    aliases = ["trafficlights"]
+    aliases = ["trafficlights", "semaphores"]
     examples = [
         {
             "data": "m=edit&p=7VZtj6JIEP7ur9j01+3kaEAGSe6D4+re7jmOs6PxRmIMOqjMgHgIzhxm/vtWFXq8NG5uc5fNXXJByuKporpe4Gn2vydO5HKh4E8zOfzDoQuTTtU06FROx8iLfdd6x9tJvAkjUDi/7fX4yvH3Lv/8sOl3wvbLh/ZvBzOeTsVHJfmkTJ56T++/BL9+8rRI9Abm8GZ446nr9i+d6zuj+94YJvtx7B7uAnH9NJ6OVsPJuqX+0R1M9XR6qzQ/T1c/Hdrjnxv2KYdZ45i2rLTN04+WzVTG6RRsxtM765jeWOmAp/dgYlwA1gdNMK6C2s3VCdlR62SgUEAfnHRQH0BdetHSd+f9DBladjriDNe5prtRZUF4cFl2G10vw2DhIbBwYmjVfuPtTpZ98hg+JydfCMiCxI+9ZeiHEYKIvfG0nZXQrylBy0tANSsBtZoSsLK/XYLvbd3Xuuxb9dm/wWS+QP5zy8ZSxrlq5uq9dQQ5sI5MN/BOGJ7IxseaKgJ6DhjiBOhn4AoBI/e4Ot9y9jCVStCWhkAz9xBKdRmh6IhoBUQ935UjZtVHqy4lNCmOQT5/rgWVC6r/AerXmmBTod/FGWVdAe8ySq2RUOqPFMHAuE0JxdZJKPVPikBNlHxbuJqUA/VXipA1WXLOOi1FFqI25WwKNTCOQoZpHvKSNBQZ1uvz1lu1sWmOFRjG2KNhqiRH8HzzVCP5gaRCskmyTz5dkhOSHZI6SYN8rvAN+a53qPg8fW86zNBgRi2TMw2IH2arkaZDu7S/mKoN/rhblI/mfw+bNWzWB7Z7NwijwPGB8wZJsHCj/Pp+4+xcBnsP24f+fJ9EK2fpzt1XZxkzK9v+ipYStqVYJcgPwx3Sa02Es6kEeuttGLm1JgTdx/WlUGiqCbUIo8dKTi+O75droU+DEpQ9/yUojmCzKFw7URS+lJDAiTcloLA3liK520ozY6ecovPsVFYL8na8Ndgro9PWuPr/h8K/+UMBp6T8MKr7Z5jXhmYDZ/L0lrNdMnfmUBSDx4yj4USil43Aq5LxhxdIr0wYfYO/cmMVrmExQL9BZAVrHX6BswrWKi4RFCYrcxSgNTQFaJWpAJLJCkCJrwC7QFkYtcpamFWVuHApibtwqSJ9IRf4znZJPM9mja8="
