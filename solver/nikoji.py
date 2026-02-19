@@ -14,14 +14,27 @@ def region_profile(src_cell: Tuple[int, int]) -> str:
     """Generate reusable anchor, and transformed offset predicates for a shape with source cell."""
     r, c = src_cell
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    rules = f"region_size({r}, {c}, N) :- N = #count {{R, C : {tag}({r}, {c}, R, C)}}.\n"
+    rules = f"region_size({r}, {c}, N) :- N = #count {{ R, C : {tag}({r}, {c}, R, C) }}.\n"
 
-    transform = [("R", "C"), ("C", "-R"), ("-R", "-C"), ("-C", "R"), ("R", "-C"), ("C", "R"), ("-R", "C"), ("-C", "-R")]
-    for k, (tr_r, tr_c) in enumerate(transform):
-        rules += f"t_cell({r}, {c}, {tr_r}, {tr_c}, {k}) :- {tag}({r}, {c}, R, C).\n"
-        rules += f"t_anchor_r({r}, {c}, Rmin, {k}) :- Rmin = #min {{ R : t_cell({r}, {c}, R, _, {k}) }}.\n"
-        rules += f"t_anchor_c({r}, {c}, Cmin, {k}) :- Cmin = #min {{ C : t_cell({r}, {c}, _, C, {k}) }}.\n"
-        rules += f"t_offset({r}, {c}, R - AR, C - AC, {k}) :- t_cell({r}, {c}, R, C, {k}), t_anchor_r({r}, {c}, AR, {k}), t_anchor_c({r}, {c}, AC, {k}).\n"
+    # construct a bounding box to enclose the shape and get the anchor efficiently
+    rules += f"bbox_Mr({r}, {c}, Mr) :- Mr = #min {{ R : {tag}({r}, {c}, R, _) }}.\n"
+    rules += f"bbox_MR({r}, {c}, MR) :- MR = #max {{ R : {tag}({r}, {c}, R, _) }}.\n"
+    rules += f"bbox_Mc({r}, {c}, Mc) :- Mc = #min {{ C : {tag}({r}, {c}, _, C) }}.\n"
+    rules += f"bbox_MC({r}, {c}, MC) :- MC = #max {{ C : {tag}({r}, {c}, _, C) }}.\n"
+
+    # make transformed offset predicates
+    transforms = [
+        ("R - Mr", "C - Mc", "Mr", "Mc"),
+        ("-R + MR", "C - Mc", "MR", "Mc"),
+        ("R - Mr", "-C + MC", "Mr", "MC"),
+        ("-R + MR", "-C + MC", "MR", "MC"),
+        ("C - Mc", "R - Mr", "Mc", "Mr"),
+        ("-C + MC", "R - Mr", "MC", "Mr"),
+        ("C - Mc", "-R + MR", "Mc", "MR"),
+        ("-C + MC", "-R + MR", "MC", "MR"),
+    ]
+    for k, (dr, dc, vr, vc) in enumerate(transforms):
+        rules += f"t_offset({r}, {c}, {dr}, {dc}, {k}) :- {tag}({r}, {c}, R, C), bbox_{vr}({r}, {c}, {vr}), bbox_{vc}({r}, {c}, {vc}).\n"
 
     return rules.strip()
 
@@ -63,7 +76,7 @@ class NikojiSolver(Solver):
         {
             "data": "m=edit&p=7ZVNb+JMDMfvfIpqrh1p8wIUIj0HoNA3SKEFsQUhFGiAtAnTnSS0TxDfvbYB5QVa7R626mEVxXJ+nnhsT/SP/yu0pM1LcOklrnAVLj2v0a0pZbqV3dV1Atc2TnglDBZCgsP5baPBZ5br2/z6YdGsicrreeXnqhQMBuqFEl4p/afG0+mdd3Pl6FJtmKV2q91ytHnlslbtFOunxXbo9wJ71fHU6lNv0J21+/Oy9n/dHOSjwa1SuB7Mfqwqvf9yw10No9w6KhtRh0cXxpBpjNOtshGPOsY6ahmRyaN7CDGujjjzQjdwpsIVku1Z1ARPZVwDtx67fYqjV9tCVQHf3PngPoA7deTUtcfNLWkbw6jLGe5dpbfRZZ5Y2bgZvEbPU+FNHAQTK4Dx+QvnhXEdAn74KJ7D3VJ1tOFRZdtB/Tc7gCT7DtDddoDekQ6wsb/bQXm02cDh3EEPY2OI7fRitxS798YarGmsmVbEVytQyvYEma4iqCZACUEtAcoIzmOQVxDUE0BH0IhBgZJeJACtuEyAPIKrGBQ1BNcJQHXcxOCMAE5xB0pnCFoJQCvMGJQJ3MZAVWib9p7AVFSazQPZBlmNbBdGxyOd7DlZhWyBbJPW1Mn2ydbI5skWac0ZDv+PjucLyhlqRdKb+Cp87fMoB9/O49w+MYX0LBe+dzP0JrbcP4PaMF+4Yz+UM2tqj+03axowYyt4yUiKLSlHCrlCvLjO8liGfSgFnflSSPtoCKENNX+QCkNHUk2EfMzU9Gq5broX+hWk0FYuUiiQoAWJZ0tK8ZoinhUsUiChG6lM9jIzzMBKl2g9W5ndvHgcmxx7Y3QPda7hYf77NXzjXwMelPLdFOi7lUPfuJCfCE4czOIjsgP0E+VJRI/xD0QmEc3yA0XBYg9FBegRXQGalRZAh+oC8EBggH2gMZg1KzNYVVZpcKsDscGtknozHOXeAQ==",
             "test": False,
-        },  # will TLE if not parallel
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
