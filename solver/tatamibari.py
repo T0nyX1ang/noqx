@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, reverse_op, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -23,6 +23,21 @@ def tatamibari_cell_constraint(op: str, src_cell: Tuple[int, int]) -> str:
     return f":- {count_r}, {count_c}, CR {rop} CC."
 
 
+def encode_symbol_to_text(puzzle: Puzzle) -> None:
+    """Encode the symbol clues to text clues for tatamibari."""
+    for (r, c, d, label), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
+        validate_type(label, "normal")
+        if symbol_name == "line__1":
+            puzzle.text[Point(r, c, d, label)] = "-"
+
+        if symbol_name == "line__2":
+            puzzle.text[Point(r, c, d, label)] = "|"
+
+        if symbol_name == "line__5":
+            puzzle.text[Point(r, c, d, label)] = "+"
+
+
 class TamamibariSolver(Solver):
     """The Tatamibari solver."""
 
@@ -30,12 +45,13 @@ class TamamibariSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VRRb9MwEH7Pr5j8yiHZcdo6fkFltLyUDGjRNEVRlXaBVbTKSBqEXPLfdz6H1YQihCYGD8jNpy/fne0v557rT01eFRDjkAo4CBxScXpUZH+8G4vNflvoMxg3+5uyQgJwMZ3C+3xbF0HaZWXBwcTajMG81CkLGdAjWAbmjT6YV9okYOYYYiBQmyETDEKkkyO9pLhl504UHHnScaRXSNebar0tljOnvNapWQCz+zyn2ZayXfm5YG4ava/L3WpjhVW+x4+pbza3XaRursuPTZcrshbM2NmdnLArj3YtdXYt+1N2i+sPRd2sTnmNs7bFmr9Ft0udWuPvjlQd6VwfEBN9YKGyU7+iEXcwTHIrPPWE0ArPPCGywhNPGPbWGPQzhrSGl6FoF29R1Z+iyJiXITht46UI0Z8knNnvFMrxthbOrr+y7BdBROTvfh0slqCSXRFOCUPCBVYUjCR8QcgJB4QzypkQXhKeE0aEQ8oZ2TP5rVN7uB08M6xCrPDwRlggSwR2t4hHTEvksYCQY0D+0ncaKrom/DH4t5QsSNkEm+YsKatdvsXGSZrdqqi+veM11QbsC6MnlTgl+n9z/Y2by9afP3InPLQxUyztfe+AuQB22yzz5brE/xnWz4W7djodxlb8SWAU/RB49K/HDs+COw==",
+            "data": "m=edit&p=7VZtb7JIFP3ur2jmaydZBnxBks3GWu22a61tNa4SY9Ci0oLj8mK7mP733jv4CIPYzbObNP2wQW7uPWe4nLmEg8FfkeXbtA6HplOFMjg0XRGnXsafsj/6TujaxhltROGK+5BQetdu04XlBja9Ga06Td54vWz8udXD8ZhdKdG1MnxuP58/eH9cO5rP2l29d9u7ddRl4/fmxX21dV7tRcEgtLf3Hrt4Hoz7i95wWVf/bnXH5Xh8p1Ruxotfto3BryVzr2FS2sV1I27Q+MowiUqoOBmZ0Pje2MW3Rjyi8SNQhDLAOpAxQlVIW2k6FDxmzQRkCuTdfQ7pyDDjjsh6kPUpwf4X4ipMice3NkmWi3rOvZmDwMwKYUTBytnsmSB64i/Rfi00JF7khs6cu9xHELF3GjcS6a0C6VoqHdNEOmanpRPPClfTq6T+yQ3YT0s7iGZF6uvF6t/hiTyA/qlh4lYGaaqn6aOxg9g1dkRT8crf4NLksRFdyQN6DmBaVUKgExP9RtBPxdUqjEtMV8Nm7FCVoaocKuxyWFmRuCqqOnC6xDEFL0xLJrNiQ5kS2UMnpknyWBn17RfDBtpiG6qIfZgUjTURL0VURKyI2BFrWiIORWyKWBaxKtbUcNY/9TSyk/x3cmCqMJ26DuOtwc4xYeAYrF4jhgZ5nVFVAUL7R92mqgvryR6V74VMSiZpwQty1uW+Z7nwknQjb2b7af24sjY2AZMiAXenQeQvrLk9td+seUiMxCezjIStRS8JcjnfuM66qMMPSgKd5Zr7diGFIL7cJ1ohVdBqxv2nnKZXy3XlvYjvhwTNHX/uylDog79kasv3+auEoGtJQMZMpU72OjfM0JIlWi9W7m5eOo73Enkj4jQ1eKjl/78o3++Lgk9H+WIn+6/GasKwD95H4ztKNtHUmsLWCPxtoQm9t8NiGqz0BFErHxFfvnvxHnH/E1NLyTxcYG2AfuJuGbYIP2FkGTaPH7kWij02LkALvAvQvH0BdOxgAB6ZGGAnfAy75q0MVeXdDG91ZGh4q6ynmZPSBw==",
         },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        encode_symbol_to_text(puzzle)
         fail_false(len(puzzle.text) > 0, "No clues found.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(edge(puzzle.row, puzzle.col))
