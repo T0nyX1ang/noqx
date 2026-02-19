@@ -375,6 +375,18 @@ class PenpaPuzzle(Puzzle):
                 )
                 self.line[Point(*coord_1, d, label=line_type)] = True
 
+        for index, _ in self.problem["wall"].items():
+            _, index_2 = map(int, index.split(","))
+            coord_2, category = self.index_to_coord(index_2)
+
+            if category == 2:
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.TOP}")] = True
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.BOTTOM}")] = True
+
+            if category == 3:
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.LEFT}")] = True
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.RIGHT}")] = True
+
     def _unpack_board(self):
         """Initialize the content of the puzzle.
 
