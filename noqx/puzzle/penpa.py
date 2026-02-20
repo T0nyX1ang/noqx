@@ -428,20 +428,28 @@ class PenpaPuzzle(Puzzle):
     def _pack_surface(self):
         """Pack surface elements into the board.
 
-        * Store the `Color` enumeration in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode with decicated `color_code`. The `GRAY` color will be converted to `color_code = 8` only, but the original surfaces won't be overwritten.
+        * Store the `Color` enumeration in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode with decicated `color_code`. The `GRAY` color will be converted to `color_code = 8` only, but the surfaces defined in the problem won't be overwritten.
+
+        * For dark colors (including `BLACK` and `GRAY`), the `color_code` is determined by the first dark color code (could be `1`, `3`, `4`, and `8`) in the solution if exists, otherwise it will be set to `4` for `BLACK` and `8` for `GRAY` by default.
 
         * Multicolor surfaces are **not supported** currently. These surfaces won't be packed.
         """
+        base_dark_color = None
+        for _, color_code in self.solution["surface"].items():
+            if color_code in [1, 3, 4, 8]:
+                base_dark_color = color_code
+                break
+
         for (r, c, _, _), color in self.surface.items():
             coord = (r, c)
             index = self.coord_to_index(coord)
 
             color_code = None
             if color == Color.BLACK:
-                color_code = 4
+                color_code = base_dark_color if base_dark_color else 4
 
             if color == Color.GRAY:
-                color_code = 8
+                color_code = base_dark_color if base_dark_color else 8
 
             if color == Color.BLUE:
                 color_code = 5
