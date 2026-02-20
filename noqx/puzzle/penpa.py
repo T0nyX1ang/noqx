@@ -509,22 +509,27 @@ class PenpaPuzzle(Puzzle):
         for r, c, d, label in self.line:
             coord_1 = (r, c)
             coord_2 = (r, c)
+            coord_w = (r, c)
             category = 0
 
             if d == Direction.RIGHT:
-                coord_2, category = (r, c), 3
+                coord_2, coord_w, category = (r, c), (r, c - 1), 3
             if d == Direction.BOTTOM:
-                coord_2, category = (r, c), 2
+                coord_2, coord_w, category = (r, c), (r - 1, c), 2
             if d == Direction.LEFT:
-                coord_2, category = (r, c - 1), 3
+                coord_2, coord_w, category = (r, c - 1), (r, c - 1), 3
             if d == Direction.TOP:
-                coord_2, category = (r - 1, c), 2
+                coord_2, coord_w, category = (r - 1, c), (r - 1, c), 2
 
             index_1 = self.coord_to_index(coord_1, 0)
             index_2 = self.coord_to_index(coord_2, category)
+            index_w_2 = self.coord_to_index(coord_w, category)
+            index_w_1 = self.coord_to_index(coord_1, category)
             if self.puzzle_name == "hashi" and label == "double":
                 self.solution["line"][f"{index_1},{index_2}"] = 30
-            elif not self.problem["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
+            elif not self.problem["line"].get(f"{index_1},{index_2}") and not self.problem["wall"].get(
+                f"{index_w_2},{index_w_1}"
+            ):  # avoid overwriting the original stuff
                 self.solution["line"][f"{index_1},{index_2}"] = 3
 
     def _pack_board(self):
