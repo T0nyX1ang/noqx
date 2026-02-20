@@ -159,7 +159,7 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     if color is None:
         validate_type(adj_type, ("edge",))
     else:
-        validate_type(adj_type, (4, "edge"))
+        validate_type(adj_type, (4, "edge", "line", "line_directed"))
 
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
@@ -167,7 +167,7 @@ def bulb_src_color_connected(src_cell: Tuple[int, int], color: Optional[str] = "
     initial = f"{tag}({r}, {c}, {r}, {c})."
 
     bulb_constraint = ""
-    if adj_type == 4:
+    if adj_type in (4, "line", "line_directed"):
         bulb_constraint = f"{color}(R, C), adj_{adj_type}(R, C, R1, C1), (R - {r}) * (C - {c}) == 0"
 
     if adj_type == "edge":
@@ -203,7 +203,7 @@ def count_reachable_src(
     elif main_type == "grid":
         validate_type(adj_type, (4, 8, "x", "edge", "line", "line_directed"))
     elif main_type == "bulb":
-        validate_type(adj_type, (4,))
+        validate_type(adj_type, (4, "line", "line_directed"))
     else:
         raise ValueError("Invalid main type, must be one of 'grid', 'bulb'.")
 
