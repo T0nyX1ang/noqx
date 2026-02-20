@@ -94,19 +94,19 @@ function imp(penpa, example = false) {
       advancecontrol_toggle();
     } else redraw_grid();
   } catch (error) {
+    let errorMessage = null;
     if (puzzleType in solver_metadata) {
-      Swal.fire({
-        icon: "error",
-        title: "Import error",
-        text: "The URL may be invalid or corrupted.",
-      });
+      errorMessage = "The URL may be invalid or corrupted.";
+    } else if (urlstring.includes("m=edit")) {
+      errorMessage = "Please select type before importing Penpa+ links.";
     } else {
-      Swal.fire({
-        icon: "error",
-        title: "Import error",
-        text: `Unsupported puzzle type: ${puzzleType}.`,
-      });
+      errorMessage = `Unsupported puzzle type: ${puzzleType}.`;
     }
+    Swal.fire({
+      icon: "error",
+      title: "Import error",
+      text: errorMessage,
+    });
     return;
   }
 
