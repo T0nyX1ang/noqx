@@ -47,12 +47,14 @@ function imp(penpa, example = false) {
   urlstring = urlstring.replace("fourcells", "nawabari");
   urlstring = urlstring.replace("heyablock", "heyawake");
   urlstring = urlstring.replace("hinge", "aqre");
+  urlstring = urlstring.replace("island", "kurotto");
   urlstring = urlstring.replace("nibunnogo", "gokigen");
   urlstring = urlstring.replace("norinuri", "nuribou");
   urlstring = urlstring.replace("nothing", "moonsun");
   urlstring = urlstring.replace("nothree", "tentaisho");
   urlstring = urlstring.replace("numlin_bit", "numlin");
   urlstring = urlstring.replace("nuriuzu", "tentaisho");
+  urlstring = urlstring.replace("oasis", "nurimisaki");
   urlstring = urlstring.replace("mannequin", "aqre");
   urlstring = urlstring.replace("simplegako", "view");
   urlstring = urlstring.replace("smullyan", "nuribou");
@@ -92,19 +94,19 @@ function imp(penpa, example = false) {
       advancecontrol_toggle();
     } else redraw_grid();
   } catch (error) {
+    let errorMessage = null;
     if (puzzleType in solver_metadata) {
-      Swal.fire({
-        icon: "error",
-        title: "Import error",
-        text: "The URL may be invalid or corrupted.",
-      });
+      errorMessage = "The URL may be invalid or corrupted.";
+    } else if (urlstring.includes("m=edit")) {
+      errorMessage = "Please select type before importing Penpa+ links.";
     } else {
-      Swal.fire({
-        icon: "error",
-        title: "Import error",
-        text: `Unsupported puzzle type: ${puzzleType}.`,
-      });
+      errorMessage = `Unsupported puzzle type: ${puzzleType}.`;
     }
+    Swal.fire({
+      icon: "error",
+      title: "Import error",
+      text: errorMessage,
+    });
     return;
   }
 
@@ -219,7 +221,7 @@ function resetGridMode(puzzleType) {
 
   if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
-  if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
+  if (["hashi", "keywest"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
   if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
 
@@ -237,7 +239,9 @@ function resetBoardSize(puzzleType) {
   ];
   let sizeFlag = [0, 0, 0, 0]; // a flag for margin size
 
-  if (["aquarium", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType))
+  if (
+    ["aquarium", "batten", "battleship", "doppelblock", "snake", "tents", "tilepaint", "triplace"].includes(puzzleType)
+  )
     sizeFlag = [1, 0, 1, 0];
 
   if (
@@ -424,6 +428,8 @@ $(window).on("load", function () {
       puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
     }`;
     if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
+    if (puzzleType === "shingoki") urlPuzzleType = "https://www.puzzle-shingoki.com";
+    if (puzzleType === "yajikabe") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7yajk.htm";
 
     if (variantMap[puzzleType]) {
       for (const [paramId, variant] of Object.entries(variantMap[puzzleType])) {
@@ -479,7 +485,7 @@ $(window).on("load", function () {
             throw new Error(program["result"]);
           }
 
-          const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
+          const options = "--trans-ext=dynamic --eq=1 --models=10";
           const result = await clingo.run(program["result"], options);
 
           if (result.Result === "ERROR") {

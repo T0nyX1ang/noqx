@@ -1,6 +1,6 @@
 """The Compass solver."""
 
-from typing import Union
+from typing import Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
@@ -49,7 +49,7 @@ class CompassSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
-        all_src = {(r, c) for (r, c, _, _) in puzzle.text}
+        all_src: Set[Tuple[int, int]] = {(r, c) for (r, c, _, _) in puzzle.text}
         fail_false(len(all_src) > 0, "No clues found.")
         for r, c in all_src:
             self.add_program_line(f"not hole({r}, {c}).")

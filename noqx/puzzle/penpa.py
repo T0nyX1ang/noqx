@@ -375,6 +375,18 @@ class PenpaPuzzle(Puzzle):
                 )
                 self.line[Point(*coord_1, d, label=line_type)] = True
 
+        for index, _ in self.problem["wall"].items():
+            _, index_2 = map(int, index.split(","))
+            coord_2, category = self.index_to_coord(index_2)
+
+            if category == 2:
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.TOP}")] = True
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.BOTTOM}")] = True
+
+            if category == 3:
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.LEFT}")] = True
+                self.line[Point(coord_2[0], coord_2[1], f"{Direction.RIGHT}")] = True
+
     def _unpack_board(self):
         """Initialize the content of the puzzle.
 
@@ -416,20 +428,28 @@ class PenpaPuzzle(Puzzle):
     def _pack_surface(self):
         """Pack surface elements into the board.
 
-        * Store the `Color` enumeration in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode with decicated `color_code`. The `GRAY` color will be converted to `color_code = 8` only, but the original surfaces won't be overwritten.
+        * Store the `Color` enumeration in [Penpa+](https://swaroopg92.github.io/penpa-edit/) `Surface` mode with decicated `color_code`. The `GRAY` color will be converted to `color_code = 8` only, but the surfaces defined in the problem won't be overwritten.
+
+        * For dark colors (including `BLACK` and `GRAY`), the `color_code` is determined by the first dark color code (could be `1`, `3`, `4`, and `8`) in the solution if exists, otherwise it will be set to `4` for `BLACK` and `8` for `GRAY` by default.
 
         * Multicolor surfaces are **not supported** currently. These surfaces won't be packed.
         """
+        base_dark_color = None
+        for _, color_code in self.solution["surface"].items():
+            if color_code in [1, 3, 4, 8]:
+                base_dark_color = color_code
+                break
+
         for (r, c, _, _), color in self.surface.items():
             coord = (r, c)
             index = self.coord_to_index(coord)
 
             color_code = None
             if color == Color.BLACK:
-                color_code = 4
+                color_code = base_dark_color if base_dark_color else 4
 
             if color == Color.GRAY:
-                color_code = 8
+                color_code = base_dark_color if base_dark_color else 8
 
             if color == Color.BLUE:
                 color_code = 5
@@ -447,7 +467,9 @@ class PenpaPuzzle(Puzzle):
         for (r, c, _, _), data in self.text.items():
             coord = (r, c)
             index = self.coord_to_index(coord, category=0)  # currently the packing of texts are all in the center
-            if not self.problem["number"].get(f"{index}"):  # avoid overwriting the original stuff
+            if not self.problem["number"].get(f"{index}") or (
+                self.puzzle_name == "keywest" and str(self.problem["number"].get(f"{index}")[0]) != str(data)
+            ):  # avoid overwriting the original stuff
                 self.solution["number"][f"{index}"] = [str(data), 2, "1"]
 
     def _pack_symbol(self):
@@ -495,22 +517,27 @@ class PenpaPuzzle(Puzzle):
         for r, c, d, label in self.line:
             coord_1 = (r, c)
             coord_2 = (r, c)
+            coord_w = (r, c)
             category = 0
 
             if d == Direction.RIGHT:
-                coord_2, category = (r, c), 3
+                coord_2, coord_w, category = (r, c), (r, c - 1), 3
             if d == Direction.BOTTOM:
-                coord_2, category = (r, c), 2
+                coord_2, coord_w, category = (r, c), (r - 1, c), 2
             if d == Direction.LEFT:
-                coord_2, category = (r, c - 1), 3
+                coord_2, coord_w, category = (r, c - 1), (r, c - 1), 3
             if d == Direction.TOP:
-                coord_2, category = (r - 1, c), 2
+                coord_2, coord_w, category = (r - 1, c), (r - 1, c), 2
 
             index_1 = self.coord_to_index(coord_1, 0)
             index_2 = self.coord_to_index(coord_2, category)
+            index_w_2 = self.coord_to_index(coord_w, category)
+            index_w_1 = self.coord_to_index(coord_1, category)
             if self.puzzle_name == "hashi" and label == "double":
                 self.solution["line"][f"{index_1},{index_2}"] = 30
-            elif not self.problem["line"].get(f"{index_1},{index_2}"):  # avoid overwriting the original stuff
+            elif not self.problem["line"].get(f"{index_1},{index_2}") and not self.problem["wall"].get(
+                f"{index_w_2},{index_w_1}"
+            ):  # avoid overwriting the original stuff
                 self.solution["line"][f"{index_1},{index_2}"] = 3
 
     def _pack_board(self):

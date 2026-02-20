@@ -92,6 +92,9 @@ class SudokuSolver(Solver):
         {
             "data": "m=edit&p=7VZdT+M4FH3vrxj5dSxtbCduEmkfCkPnY6FTBhBLK4RCCTRMSth8ABvEf597HXfqJC4jrXYlHlZt3dvj23M/bJ+4qK6y7xUN4CV86lAGL+E76uO7+Hb06zgp0zh8R0dVucxyMCj9Oh7T6ygtYvrlbLm/m40eP4z+fPDL2Yx9dKrPzunt+Pb9t9UfnxORs/HEnx5MDxJ+M/q0u3Mo997LaVWclPHD4Yrt3J7Mjq+npzcB/3tvMnPr2VfH+zK7/u1hdPL7YK5zOB8810FYj2j9MZwTRijh8GHknNaH4XN9ENZntD6CKUIZYPuNkwBzrzE5mKdqHsHdxtMBc9LM47/OwCz+qqI8vthvkGk4r48pwTA76i9oklX2EBOdBv5eZKvLBIHLqIROFcvkXs80Pda+QEhWVVomiyzNcgQRe6H1qKlg8noFaL5WAVbYrgCRf7UCILRV8AKL8w1quAjnWM7JxjwKn2GchM+E++jugX+zbEQ4CAQGIBCQG8DlCPgG4HU43ACB4Qbw3C4wRMDdAFL9RWwAnyEAu2kNBCoPXC8NMKZYjf8w1mVhXHbKYUJVbIRmrir5Z/7QGab6cwb9EZiGgJVI8kW63n9EYAsAbe1KIjBWD3Ux7z6Kufd4Xcyth3rY3z5qjSaxlj6K7e6j1mhDK8NQV9zx1Zm1fX0rg68r7qA6szavb80s0BV3ULsv7oReNOZYU2OOdZWZo6k73szuzawtYsy6/ozrTDrefIu3tXmMW3cGs29PJrZ4W9vKhGXPwKEYq6PB1XgMakJrocYPanTU6KlxX/nswSFivqQMV4QDbxBQjq0CG74pxxrQ5h7leDbRhgcf96DLaHuMcgnloy1dyoeQF9rDIeUBNBHtAB6PDnQO+X3gdzS/A/xM8zPgR7VTsYDf1fwu8KM+qVjAj2dFxQJ+3Mlow6OXo/6oWAJiQcsUD+avcS7A1jwceMy6UIWULcHW/Bz4zXx40x/4hj7ouALiogKpfLAPui4JcaWOKyGu2R+p40qIK3VcCXHNuvDkKxviovIqG+Li2eewaKdq6XbV6KpRqiUdqtFfP0i2P2B+uhjPGlNX/9lG+kVmL4M5NBLvS+bLe1vI+WBOJtXqMs7fTbJ8FaXwQD9aRvcxgbsUKbL0oqjy62gRX8RP0aIkYXOdM2da2J3iImGZVxpJs+w+Te5sBOupFpjc3GV5bJ1CML662UaFUxaqyyy/wpSMiccoTdulKFVpQY3+tKAyh9uP8TvK8+yxhayictkCjJtSiym+6/SyjNopRt+jTrTVph0vA/JE1GeOR48G/1983/TFF1fK+fX19z+XpLcslo3aZPkrgrOZ7MJr2Wmjr0iPMWvDt6iMMdvFe5KCyfZVBVCLsADa1RaA+vICYE9hANsiMsja1RnMqis1GKqnNhjKFJw5WaRRUSQLcj74AQ==",
         },
+        {
+            "data": "m=edit&p=7VZtT+M4F/3eXzHy17E0sZO4SaT5UF5mJARdWGB5oEIopCkNpA2TpoCC+O9z743ZOqkzq11pJVZ6lNa9PXbOuS/2TVbrafGw5iFcbsAdLuByA4e+gYcfR19nWZWn0Sc+WlfzogSD89/GfBbnq5QfXN7v7D2MnvdH//viX7nu+Xj2+X7v5Px+evGHOHGyL6UzzoPl0fHeTv75e311NB89pfupOl4VyTxP42lcX10cvOTLb8HdfCZ2D+a7wSxeOqsfwVn4tHPy9etgov24HrzWYVSPeP09mjDBOJPwFeya1yfRa30U1Ze8PoUpxgVgh80iCeb+xrygebR2G1A4YI+1DeYlmE1q0ippoONoUp9xhkI7dDuabFE8pUw7gv+TYnGbIXAbV5Cv1Tx71DMNnV4LhGyxzqssKfKiRBCxN16PKIb3xZZI3E0kaDaRoGWJBAPESJKsTPL05vBfCAQkbIG8QZV+h1BuoglGdb4xg415Gr3COI5emQzwTiikaErJXPmeKA14XWDoIeAbgI+A2gCBg0BoAEMEAgMg2eEGCAkwVginSyIkeWIIC+ki4pkIOWcQC6k6EQpJ3rgG4nYjEC7d1VoTdvIgPPLwT3XIqKC8XkJeRYjLYaK9l5l0MAgbjqHYcAzIgoseHoHBWXBKlQ3v4ZeYEhuOhbLgXg+/6vFT9ejSZrLgtGNseE+eQ9GD2/ihaN+odJLGMzglvHZp3KPRodGn8ZDW7GORA8Wp0BI2QBhyKgrY8MspgWhLn0sXnEcbGr30wTG0fcEpCWgrj8shFA7t4ZDLEHYW2iE8DnBjIH8A/Lh5EHeAX2h+AfxYFNICfk/ze8Dva34f+JXmV8CPBxRteNTIsOGHX9CCXU886L/GpQu25pHAY8aFZ4tsBbbml8Bv+iOb/MAv5EHruqDraj8V5kHHpUBXaV0FumZ+lNZVoKu0rgJdMy6ldRXoKq2rQHeIulC0CyrdLo0ejYpKOsS2+Lcap3nY/9nu+Ut3JpA9fCkwL/9jIdeDCTulg/RpXJSLOIcH1ek8fkwZvCywVZHfrNblLE7Sm/QlTioWNS8t5kwLW64Xtyk8ywwoL4rHPFvaGN6nWmB2tyzK1DqFYDq966PCKQvVbVFOOz49x3nejuXHOi7bNzdP/hZUlfBYN/7HZVk8t5BFXM1bgPEK0GJKl51kVnHbxfgh7qgtNul4G7AXRt8JHDIs4//f7P4Lb3ZYMeejtamP5g5t9qL8RefZTHZhS/8B9BctyJi14T3dxpjt4lutBZ3d7i6AWhoMoN0eA9B2mwFwq9MA1tNskLXbb9CrbstBqa2ug1Jm44GDk8erVZaw68FP",
+        },
     ]
     parameters = {
         "diagonal": {"name": "Diagonal", "type": "checkbox", "default": False},
@@ -131,14 +134,17 @@ class SudokuSolver(Solver):
             if label == "normal":
                 self.add_program_line(f"number({r}, {c}, {num}).")
 
-        for (r, c, d, label), symbol_name in puzzle.symbol.items():
-            validate_direction(r, c, d)
-            validate_type(label, ("normal",))
-            if symbol_name == "circle_L__3":
+        for (r, c, d, _), symbol_name in puzzle.symbol.items():
+            if d == Direction.CENTER and symbol_name == "circle_L__3":
                 self.add_program_line(f":- number({r}, {c}, N), N \\ 2 != 1.")
 
-            if symbol_name == "square_L__3":
+            if d == Direction.CENTER and symbol_name == "square_L__3":
                 self.add_program_line(f":- number({r}, {c}, N), N \\ 2 != 0.")
+
+            if d == Direction.TOP_LEFT and symbol_name == "sudokuetc__1":
+                self.add_program_line(f":- number({r}, {c}, N1), number({r - 1}, {c - 1}, N2), (N1 - N2) \\ 2 != 0.")
+                self.add_program_line(f":- number({r - 1}, {c}, N1), number({r}, {c - 1}, N2), (N1 - N2) \\ 2 != 0.")
+                self.add_program_line(f":- number({r}, {c}, N1), number({r}, {c - 1}, N2), (N1 - N2) \\ 2 = 0.")
 
         if puzzle.param["diagonal"]:  # diagonal rule
             for i in range(n):

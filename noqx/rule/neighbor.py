@@ -166,7 +166,8 @@ def count_covering(
         covers.append((src_r, src_c - 1))
         covers.append((src_r - 1, src_c - 1))
 
-    return f":- {{ {'; '.join(f'{color}({r}, {c})' for r, c in covers)} }} {rop} {num}."
+    final = "; ".join(f"{color}({r}, {c})" for r, c in covers)
+    return f":- {{ {final} }} {rop} {num}."
 
 
 def area_border(_id: int, src_cells: Iterable[Tuple[int, int]], edge: Dict[Tuple[int, int, str, str], bool]) -> str:

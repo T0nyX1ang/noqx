@@ -70,7 +70,6 @@ class ClingoSolver:
         Args:
             program: The ASP program to be solved.
         """
-        self.clingo_instance.configuration.sat_prepro = 2
         self.clingo_instance.configuration.asp.trans_ext = "dynamic"  # type: ignore
         self.clingo_instance.configuration.asp.eq = 1  # type: ignore
         self.clingo_instance.configuration.solve.parallel_mode = Config.parallel_threads  # type: ignore

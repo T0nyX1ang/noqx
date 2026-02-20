@@ -2,7 +2,7 @@
 
 [Noqx](https://github.com/T0nyX1ang/noqx){:target="\_blank"} is an extended logic puzzle solver of [Noq](https://github.com/mstang107/noq){:target="\_blank"}.
 
-- Try it through this [portal](./penpa-edit/){:target="\_blank"} for 160+ puzzle types and enhanced efficiency.
+- Try it through this [portal](./penpa-edit/){:target="\_blank"} for 180+ puzzle types and enhanced efficiency.
 
 ## How to Use
 
@@ -71,7 +71,7 @@
     uv pre-commit install
 ```
 
-### Program Parameters
+### Program parameters
 
 ```text
   usage: uv run main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-B] [-D]
@@ -116,4 +116,30 @@
 
 ```bash
     uv run coverage html
+```
+
+### Build a static site
+
+- Generate required solver files with documents:
+
+```bash
+    uv run main.py -D -B
+```
+
+- Minify the solver files and remove all type hints:
+
+```bash
+    uv run pyminify ./dist/page --in-place --remove-class-attribute-annotations --remove-literal-statements
+```
+
+- Remove all unused imports after minifying:
+
+```bash
+    uv run ruff check --select F401 --fix --preview --unsafe-fixes ./dist/page/
+```
+
+- Test the static site with the built-in server in Python:
+
+```bash
+    uv run python -m http.server --directory ./dist/page
 ```

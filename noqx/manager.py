@@ -112,9 +112,6 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
         elif _type.startswith("number"):
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
 
-        elif _type.startswith("content"):
-            solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
-
         elif _type == "triangle":
             shaka_dict = {
                 f'"{Direction.TOP_LEFT}"': "1",

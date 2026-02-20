@@ -1,5 +1,7 @@
 """The Scrin solver."""
 
+from typing import List, Tuple
+
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import display, grid, invert_c, shade_c
@@ -55,7 +57,7 @@ class ScrinSolver(Solver):
         self.add_program_line(border_color_unspawn(puzzle.row, puzzle.col, color="white", adj_type=4))
         self.add_program_line(no_rect(color="white_unspawn"))
 
-        all_src = []
+        all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", 4, "gray")
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

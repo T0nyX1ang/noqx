@@ -51,20 +51,6 @@ class NumlinSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-
-        all_src = []
-        locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
-        for (r, c, d, label), clue in puzzle.text.items():
-            validate_direction(r, c, d)
-            validate_type(label, "normal")
-            locations.setdefault(clue, [])
-            locations[clue].append((r, c))
-            all_src.append((r, c))
-
-        fail_false(len(locations) > 0, "No clues found.")
-        for n, pair in locations.items():
-            fail_false(len(pair) == 2, f"Element {n} is unmatched.")
-
         self.add_program_line(grid(puzzle.row, puzzle.col))
 
         if puzzle.param["visit_all"]:
@@ -76,7 +62,18 @@ class NumlinSolver(Solver):
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(single_route(color="white", path=True))
 
+        all_src: List[Tuple[int, int]] = []
+        locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
+        for (r, c, d, label), clue in puzzle.text.items():
+            validate_direction(r, c, d)
+            validate_type(label, "normal")
+            locations.setdefault(clue, [])
+            locations[clue].append((r, c))
+            all_src.append((r, c))
+
+        fail_false(len(locations) > 0, "No clues found.")
         for n, pair in locations.items():
+            fail_false(len(pair) == 2, f"Element {n} is unmatched.")
             r0, c0 = pair[0]
             r1, c1 = pair[1]
 
