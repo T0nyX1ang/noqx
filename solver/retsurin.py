@@ -12,7 +12,7 @@ from noqx.rule.route import single_route
 
 
 def count_row_col_xor(target: int, src_cell: Tuple[int, int], color: str = "black") -> str:
-    """A rule to ensure the only the number of the shaded color equals to the target, but not both."""
+    """A rule to ensure that only the number of the shaded color equals to the target, but not both."""
     src_r, src_c = src_cell
     rule = f":- N1 = #count {{ C : {color}({src_r}, C) }}, N2 = #count {{ R : {color}(R, {src_c}) }}, N1 = N2.\n"
     rule += f":- N1 = #count {{ C : {color}({src_r}, C) }}, N2 = #count {{ R : {color}(R, {src_c}) }}, (N1 - {target}) * (N2 - {target}) != 0."
