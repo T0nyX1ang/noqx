@@ -6,6 +6,32 @@ function exp() {
   return result;
 }
 
+function hookExp() {
+  const baseUrl = pu.maketext_baseurl();
+  let result = exp();
+  let param = result.split("&");
+  let paramArray = {};
+  for (let i = 0; i < param.length; i++) {
+    let paramItem = param[i].split("=");
+    paramArray[paramItem[0]] = paramItem[1];
+  }
+
+  let rawData = decrypt_data(paramArray.p).split("\n");
+  rawData[0] = rawData[0]
+    .split(",")
+    .map((v, i) => (i === 21 ? "" : v))
+    .join(","); // clear puzzle background image
+  if (rawData[7]) rawData[7] = "{}"; // clear shared solution data
+  for (let j = 14; j <= 16; j++) if (rawData[j]) rawData[j] = "{}"; // clear pu_q_col and pu_a_col data
+  if (rawData[17]) rawData[17] = "[]"; // clear genre
+
+  paramArray.p = encrypt_data(rawData.join("\n"));
+  const final = `${baseUrl}#${Object.keys(paramArray)
+    .map((key) => `${key}=${paramArray[key]}`)
+    .join("&")}`;
+  update_textarea(final);
+}
+
 function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
