@@ -23,8 +23,8 @@ function hookExp() {
     .split(",")
     .map((v, i) => (i === 21 ? "" : v))
     .join(","); // clear puzzle background image
-  if (rawData[7]) rawData[7] = "{}"; // clear shared solution data
-  for (let j = 14; j <= 16; j++) if (rawData[j]) rawData[j] = "{}"; // clear pu_q_col and pu_a_col data
+  if (rawData[7]) rawData[7] = "{}"; // clear solution metadata
+  if (rawData[16]) rawData[16] = "{}"; // clear shared solution data
   if (rawData[17]) rawData[17] = "[]"; // clear genre
 
   paramArray.p = encrypt_data(rawData.join("\n"));
