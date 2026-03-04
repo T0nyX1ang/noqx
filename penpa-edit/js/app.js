@@ -1,5 +1,7 @@
-function exp() {
+function exp(saveRecord = false) {
   clearInfo(); // clear every information created by penpa itself
+  if (!saveRecord) return pu.maketext().split("#")[1]; // return the puzzle data without saving undo record
+
   document.getElementById("save_undo").checked = true;
   let result = pu.maketext().split("#")[1];
   document.getElementById("save_undo").checked = false;
@@ -142,7 +144,7 @@ function imp(penpa, example = false) {
   }
 
   clearInfo();
-  const currentContent = exp();
+  const currentContent = exp(true);
 
   // manually set the puzzle type if pre-fetched
   if (puzzleType in solver_metadata) {
