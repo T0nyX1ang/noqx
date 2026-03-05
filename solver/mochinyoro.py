@@ -18,7 +18,7 @@ class MochinyoroSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VVRj5pAEH73V1zmeR5YFhB5aez17Iv12mpzuRBikHKRFItFaa5r/O83M9AA3jWpaWKTptH98s3szO7HjIy7b1VcpqgUf7WPFhJDx/VkKWXLsprPItvnaXCF42q/LkoiiLeTCT7E+S4dhE1UNDiYUWDGaN4GIShAsGkpiNB8CA7mXWBmaOa0BajIN62DbKI3Lb2TfWbXtVNZxGcNJ3pPNMnKJE+X09rzPgjNAoHveS3ZTGFTfE+h0cF2UmxWGTtW8Z4eZrfOts3OrvpcfKmaWBUd0YxrufOfcllOI1e3cpnWcpm9IJfT/lxuvi1eEjqKjkcq+EeSugxCVv2ppX5L58GBcBYcQHuc+opU1F0BxyYHt70xh2RS3xvT1SfhnnPiGFq9fF/18v3+cSO+rGP6vVxljXrbSrl922bxnXjdP07p/m3KYfUd22XxHdtj7d2HUUOW3/ecnOnznU7H5mdoM6jMSop9LzgRtAUX1As0WvCNoCXoCk4l5kbwTvBa0BH0JGbI3fzNfgMXx0bQVAOnbv4FtIWaS/X84/673mgQwrwqH+IkpVd0Vm1WaXk1K8pNnANNw+MAHkFWqHm4/h+QFx+QXHzrrDH599/ikOpK75K5RdhWy3iZFDnQvyuKX//Cf278uf7n51+8ajRi6FeQrLOvP4qygGjwBA==",
+            "data": "m=edit&p=7VVRa9swEH73ryj3fA+WZDuOX0bWNXvJ0m3JKMWY4HguDXNw5sRjKPi/73R268ltoYGRwRi2Pr473UmfT+i8/16nVY5CmFeF6CIx9PyAhxCSh9s9y82hyKMLnNSH+7Iigng9neJdWuxzJ+6iEueox5GeoH4fxSAAQdIQkKD+FB31h0jPUS9oClCQb9YGSaJXPb3hecMuW6dwic87TvSWaLapsiJfzVrPxyjWSwSzz1vONhS25Y8cOh3GzsrtemMc6/RAH7O/3+y6mX39tfxWw8MWDepJK3fxIFf2clUvVz3KVc/LlX9EbrErnxM6TpqGCv6ZpK6i2Kj+0tOwp4vo2BhFR1CBSX1DKtpTAU+SQ/TmiEz5aPpqEB54A8fItfJDYeWH9nJjaZuhlSvcsTUthG/bMrDjlb2cUPZuwlO27Xu2HbiDjxEj8cQzWDM0e3q/2aGVQWUWXOxbximjZFzSWaBWjO8YXUafccYxV4w3jJeMHmPAMSNzmq88bzDFkQiKauC1h38GbbGS3EOGj//vehMnhkVd3aVZTld0Xm/XeXUxL6ttWgB1w8aBn8AjVhTu/W+QZ2+QpvjuSW3y79/imOpKd0lfI+zqVbrKygLo74rsVy/4T40/1f90/bNXjVpM4vwC",
         },
         {
             "url": "https://puzz.link/p?mochinyoro/17/17/hdzmenajfzh71zw4zu6i5zu3zw-108zh2jcn9zmbh",

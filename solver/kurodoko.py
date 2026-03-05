@@ -20,7 +20,7 @@ class KurodokoSolver(Solver):
     aliases = ["kuromasu"]
     examples = [
         {
-            "data": "m=edit&p=7VXBjtowEL3zFWjOc4jjxBDf6HbphbJtoVqtogiFNKtFGxQaSFUZ8e87M0lJUPfQHkqlqgp+em9mHL+MZbP/WqdVjkrxT4/RQ2IYhEaGUr4Mr32Wm0OR2yFO6sNTWRFBvJtO8TEt9vkgbquSwdFF1k3QvbMxKEDwaShI0H20R/feujm6BaUAA4rNmiKf6G1H7yXP7KYJKo/4vOGG6APRbFNlRb6aUZYiH2zslgi8zhuZzRS25bccWh+ss3K73nBgnR7oY/ZPm12b2ddfyue6rVXJCd2ksbv4YZfttHZ1Z5dpY5fZH7Nb7MrXjEbJ6UQN/0RWVzZm1587Ou7owh4J5/YI2qepykPTbAoEY37VkHy2gZAL/E6GJMOzNMFF1vBsfZZj71JycXCWkbmQyuPJPa145W4ppbjedNrn+p4OeLW+5uVGnQ55fk8bru9/qjLR5YojdjDuaX5DT0ecj1pNDVXS1gfBqaAvuKSuo9OCbwU9wVBwJjW3gveCN4KBoJGaEe/bL+4saA3WR9D0/UGzzVfwFmu6HV55wn83mgxiWNTVY5rldBjn9XadV8N5WW3TAujeOw3gO8igM0DX6P+r8OpXITff+60L8e+f4pj6qgN0dwi7epWusrIA+h9Fieuf4ld3T0cdnuuqpF6XkAxeAA==",
+            "data": "m=edit&p=7VXBjpswEL3zFdGc54BtcIBbut30kmbbJtVqhVBEKKuNSkRKQlU54t87HiiU7B7aQ1OpqsCj92bG+HksD8cvdVrlKIR9VYAuEkLP1zyEkDzc7lnvTkUeTXBWn57KigDi3XyOj2lxzJ24y0qcswkjM0PzJopBAIKkISBB8z46m7eRWaJZUQjQI9+iTZIEbwd4z3GLblqncAkvW6wJPhDMdlVW5JsFRcnzLorNGsGu84pnWwj78msOnQ7Ls3K/3VnHNj3RZo5Pu0MXOdafys91lyuSBs2slbv6IVcOctUgV/Vy1Z+UWxzKl4SGSdNQwT+Q1E0UW9UfBxgMcBWdG6voDErSVOGibg8FvMB+agK9w7cJcqA+Ub+n2htFtZ2tehq4Y2qTvZ6GekSFG4y5kKOlhLD5euAyGHPPveB2uenAfT3m2r3YqtDheMWpVRD8xPWYhzYedpwKKrisD2znbCXbNVUdjWL7mq3L1me74Jxbtvdsb9h6bDXnTO25/eLJglIQSQRF+/faY76CtlhJ7haXj//vehMnhlVdPaZZTpdxWe+3eTVZltU+LYD6XuPAN+BBd4Da6P9WePVWaIvv/lZD/Pu3OKa6Kg/NHcKh3qSbrCyA/qPIfvXMf3X1dNUT5zs=",
         },
         {"url": "https://puzz.link/p?kurodoko/9/9/h3j4g3j4l.j4g3j.ldl.j5g6j.l7j5g6j5h", "test": False},
     ]

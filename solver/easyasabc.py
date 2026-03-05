@@ -13,7 +13,7 @@ class EasyAsABCSolver(Solver):
     category = "num"
     examples = [
         {
-            "data": "m=edit&p=7VTBbtpAEL37K6I9z8FjO2DvjaYhF+q0hSiKLAsZ6iqoRk4NrqpF/HtmZq16MZGqHprmUC379Hg7s7ydXWb3vS2aEhD5E8bgAzGILkcyEQOZfjcWm31V6guYtPvHuiECcDudwtei2pVexpk0cu9gEm0mYG50plCBCmiiysF80gfzQZsUzJyWFESkzWxQQPS6p/eyzuzKiugTTztO9IHoetOsq3I5s8pHnZkFKP6dd5LNVG3rH6XqfPD3db1dbVhYFXs6zO5x89St7Nov9be2i8X8CGYysMt2Orthb5eptcvsBbuc9pftJvnxSGX/TIaXOmPvdz2NezrXB8JUH1QYceqEvNi7UeGIhTtHGA+FmIV5L0Q+CwtHwKEge7iC7OEI42FELIJjLAlYuOkF9Ic5iEOvGJxl2fM4G6N152aNzpRY6nSiSKGcMuCZZYzlmCdKMvSTSPXcnRMp368suimU+3oQnAoGggu6TjCh4HtBX/BScCYx14L3gleCkeBIYsb8IP7oybyCnSyKbQ9xxvhtKbmXqbTdrsrmIq2bbVEp6ndHT/1UMrOQ2+f/FviPWiBfgf/WXvVv7GRUXXr30tCCrhU8tctiua4rBVTELsDcnuqvfgz6f+beMw==",
+            "data": "m=edit&p=7ZTBTttAEIbvfgq05zl4do299i0FwiUN0AQhZFmRk7oiqiNTJ0ZoI797ZyemhjUS6qHAoXJ29OfbHfv3znq2v5q8LgDR/pQGH0hBcBzyQJQ8/O6ar3dlkRzBqNndVTUJgIvxGH7k5bbwUuRczLy9iRMzAnOepAIFCEkDRQbmKtmbr4mZgpnRlICA2OSwSJI86+UNz1t1coDok552muQtydW6XpXFYnIgl0lq5iDsc75wtpViUz0UovNh/6+qzXJtwTLf0cts79b33cy2+V79bMTTI1owI8eu7O2q3q76Y1e9blf+e7tx1ra07d/I8CJJrffrXupezpJ9a33thQps6oi8HGojVGjB9TMQuUBbMOtB4FswfwbQBZELtAMid4WOHGOxtOC8B+i7OYiuV5SDLOXeGINBVjggOhiQ0NkGHFhGrQckdv3EvnvnGF9kUaWQ63XLccxRcpxTOcEojqccfY7HHCe85ozjDccTjgHHkNdE9kD81ZF5BztpoAGdK/pcJPNSMW02y6I+mlb1Ji8F9bvWE4+CR6ps+/zfAj+oBdoS+J/tVL9hJ6XdpXPPDU12reC+WeSLVVUKoE3sFpiLl/zdX4O+z8z7DQ==",
             "config": {"letters": "AUGST"},
         },
     ]

@@ -36,7 +36,7 @@ class NoribouSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VVNb9pAEL37V0Rz3oP3C4gvFU1DL5S0hSqKLAsZ11GsmpoatqoW8d8zMzZ1nHLoh0QvkdmnNzPr3bczy3j7zaV1LqSmnx6JUEh8rFY8pDE8wvZZFLsyjy7E2O0eqhqJEDeTibhPy20exO2sJNj7y8iPhX8bxSBBgMIhIRH+Q7T37yI/E36OIRAGfdNmkkJ63dFbjhO7apwyRD5rOdI7pFlRZ2W+nDae91HsFwJon9f8NlFYV99zaHWQnVXrVUGOVbrDw2wfik0b2brP1RfXzpXJQfhxI3d+Qq7u5BJt5BI7IZdO8e9yy011Suhlcjhgwj+i1GUUk+pPHR11dB7tEWfRHvQAX6Uqc03ASFrpFYo6Oka9uDVo4vVozUHfHNJiw5+mDOllvDhHW6q+rTXaeKmOtgmf7S55+57H2t6Wkvd8suaI1uhsxXs+XUGpvmiln9msojuyMsOeSmVpxWMc0yg5mXeME0bFuMBcC68Z3zCGjJZxynOuGW8ZrxgN44DnDKlav1lP0JgqgxXC/KimuGfQFusB94hTj32J/E0kCWKYu/o+zXL8i8/cepXXF7OqXqclYDc9BPADePCdNS8N9uwNlpIf/lGb/f9dIsa84hfd3wjYuGW6zKoS8OssyG/tL/6zq8dWAl9dXawqB0nwCA==",
+            "data": "m=edit&p=7VVNb9pAEL37V0RznoP3C4gvFUlDL4S0hSqKLAsZ11FQjUwMrqpF/u+dHbsYpxySKCKXyOzTvJndnccMjDePZVykKJT7qAH6KOgxSvISWvPym2e23GZpcIbDcvuQF2Qg3oxGeB9nm9QLm12Rt7PngR2i/RKEIABB0hIQof0W7Ox1YCdopxQC1OQb15skmVetectxZ13WTuGTPWlsMu/ITJZFkqXzce35GoR2huDyXPBpZ8Iq/51Co8PxJF8tls6xiLf0ZTYPy3UT2ZQ/818l/EtRoR3WcqdH5KpWrtrLVcflyjeRm63zY0LPo6qign8nqfMgdKp/tOagNafBrnKKdqB6dNR1mXsCWribPkHrGHTiRhNVe9rr0r67rL+nwneHZcuF7HKliOuWa/9JdsHpOx5jOikF5zy4c+B3uOSchzdI2RUt1RPOKsQB73dUSiMP4lRGwcW8YxwxSsYZ1RqtYvzM6DMaxjHvuWK8Zbxk1Iw93tN33XpmP0FRqTR1iOoj6+aeQFuoejwjjj3mI/KaSOSFMC2L+zhJ6S8+KVeLtDib5MUqzoCmaeXBH+DFv1n9MWBPPmBd8f0Xjdn3nxIh1ZXe6PYGYV3O43mSZ0BvZ3R+Y/7zn1w9jZLI+ws=",
         },
         {"url": "https://puzz.link/p?nuribou/20/15/h5o6zs6k3i3h6zg4p4zi.pbzl7h3zz4k4l9v7zn4h.l4k4o4q7i2", "test": False},
     ]

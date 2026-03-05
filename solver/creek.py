@@ -15,7 +15,7 @@ class CreekSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VXPj9o8EL3zVyCfWmkOSez8vFR0u+2FZr+vUK1WUYQCawpqULaBVFsj/vcdT6KNiffQHkpVqTIePZ6fx4+xjfffmqKW4Hr6wyNwwMUmYkGdhz51p2vz7aGUyRgmzWFT1QgAblJYF+VejjI9EVs+Oqo4URNQH5KMuQyYRz0H9X9yVB8TlYKa4RCDCLlpK/IQXvfwlsY1umpJ10GctjhAeIdwta1XpVxMcRSZ/5JMzYHpdd7SbA3ZrvouWedDf19Vu+VWE8vigL9lv9k+dCP75r762nRaNz+BmrR2Zy/Y5b1dDVu7Gv0uu/L+i3x8yWmcn05Y8U/odZFk2vbnHkY9nCVHjGlyZNwJ9dw36AwwAybkTqwZ3KdnxnU1w03GH2o8PtR4lMdkhNP57BnKbOYRnqURVh7ybM7yLT8+acw8fjRkAvJjZg5odTNPaDkMbY21VmjVMKLVzbUiSxOTnzPGqnxMdTY0wiHGWF04VDFT4w0rL6z9Ep49i6p6phlWXnBLwy2Nte+i3eVnDR5Gl47kHcX3FD2KczyxoDjFdxQdij7FKWmuKd5SvKIoKAakCfWZ/8lbwXwsuAcswN8QtVfkAt4yv/u7PGvh38flo4zNmnpdrCT+PaXNbinrcVrVu6Jk+BScRuyRUc+4flj+vQ6Xfx109Z1feiP+/OXMsLBBCOoG2EOzKBarqmSAZdM8Xp0hf3H3eIPZelvLdflj/GpTHYq6GS9lsXvN8tET",
+            "data": "m=edit&p=7VVdb5swFH3nV1R+9oO/wMDLlHXdXjK6LZmqCqGIULpGI6IjYaoc5b/v+oJGa/ehfVimSZPjo5vj4+vDxca7H33Z1ZQL+5MxZZRDU4nCLnWInY1tudk3dXpGZ/3+ru0goPQyo7dls6uDnONUXgQHk6RmRs2HNCecUCKwF9R8Tg/mY2oyahYwRGgM3HwQCQgvpvAKx210PpCcQZwNcQThNYTVpquaejWHUWA+pblZUmLXeYuzbUi27c+ajD7s/6rdrjeWWJd7eJbd3eZ+HNn1N+33ftTy4kjNbLC7eMaunOzK33blH7Rb33yrH55zmhTHI1T8C3hdpbm1/XUK4ylcpIejtXQgkmk79w04o5ABEkqWWEY8Yji3jHzMhK5GSFcjEpdRbPQ5MdzNo4SnUV4e7c4KPT+hdvOEsctEzM0cCTeP9hxqX+Otpb0axrG7VuxpEuYxXuUT6WgUk87qiilXI9zKK+99KeHPCj2NW3klPY30NN57V+ppDWEzctyS14jvEQXiEnYsNRLxHSJDDBHnqLlAvEI8R1SIEWq03fMvPBUkhIILSiJ4hng4Iifwlofj5/JJ0/8eVwQ5WfTdbVnV8HnK+u267s6yttuWDYGr4BiQB4I9l/Zi+X87nP52sNVnr7oj/v7hzKGwkabmkpL7flWuqrYhFMpmeTg6Ln9y93CCi+AX",
         },
         {"url": "https://puzz.link/p?creek/10/10/qbdccdbdbibiceeeddcblbbcdcdddboabbb", "test": False},
     ]

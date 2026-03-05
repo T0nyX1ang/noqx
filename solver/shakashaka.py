@@ -72,7 +72,7 @@ class ShakashakaSolver(Solver):
     category = "var"
     examples = [
         {
-            "data": "m=edit&p=7VRNi9swEL37V4Q5z8HyVxzd0u2ml222bVKWIExQsl5sNsGpHZeikP++o5GJU9jSQotpoSh68zSjj6fJWM2XVtc5Ct/+whTJUotEyj1IE+5+15blcZfLEU7bY1HVRBDvZzN80rsm91Q3K/NOZiLNFM07qSAA5C4gQ/NRnsx7aVZoFhQCjMh3R0wABkRve/rAcctunFP4xOcdJ7oieqxLN/gglVki2CPe8EJLYV99zcGt4PG22m9K69joI92jKcpDF2nax+q57eaK7Ixm+mOlYa/UUqfUsleU2gv8jtKm0M/6NZGT7HymPH8imWuprOLPPU17upAniH2QEcI4ZjMJ2Ag/6uzE2Th1NrFxWjnvVqoAx+7v4x2UuAztTgpGcHHwnlcTeO+r9XzGddyedRnTmUKeCFeMM8aAcUmXQRMyvmX0GWPGO55zy/jAeMMYMSY8Z2zT8YsJc5cfQI4K3ef2fYv/PV/mKVi09ZPe5lSs83a/yevRvKr3ekfjRaEPOdCzcPbgG3BXoX1l/r8UQ70UNuf+31b+P5GjKKf0gZh7hEO71uttRcVEGfuTfpEM7h88y/TOuOpwJZJ5Lw==",
+            "data": "m=edit&p=7VTfb9owEH7PX4Hu+R7i/IDgN9aVvrR0G1QIWREyNBWooNCETJNR/vedzxlhUqdWaoVWqTL+7rs7+3w+nCufKl1kKHz7CxMkSSMSCc8g6fL0mzFZ7zeZ7OCg2q/yggji7XCID3pTZp5qVqXewfSlGaC5kgoCQJ4CUjTf5cHcSDNDMyYXYES2a2ICMCB62dIp+y27cEbhEx81nOiM6L5YO+WbVGaCYI/4whsthW3+MwO3g/Vlvl2srWGh93SPcrXeNZ6yus8fK/gTvUYz+HemYZtpeMw0fD7T4I2Zliv9qJ9Lsp/WNdX5B6U5l8pmfNfSpKVjeYDYBxkh9GIW/YCF8KNG9p2MEye71l/bG7idKsCe+/s4ghJH1UZS0IGjgWOeLODYJ/v5jFO/Peuo05lCHmpbMItDxoBxQpdBEzJ+ZfQZY8ZrXnPJOGW8YIwYu7ymZ8vxyoK5y58hHRW6z+3vEX88W+opGFfFg15m9FhH1XaRFZ1RXmz1hvTxSu8yoLZQe/ALeKrQdpnPTnGuTmFr7v9vz/+FdBTVlD4Qc4uwq+Z6vszpMVHF3tMuume3n73K1GdS7zc=",
         },
         {
             "url": "https://puzz.link/p?shakashaka/30/30/kcodzzzgchbjbgbgbgbzzzobmcclbhblbobr.zkbncczzpbobgbgbscvczzu.lbgbgbobzgddkcsbzzndibiddbjbkcw.ztbzpbhbgbgbgb.zwbzgczzhegdobycgdlbhdx",

@@ -17,7 +17,7 @@ class TetrominousSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VNNj9owEL3nV6x8nkM+TADf6BaqSjS0hWq1iiIUstkuKijbQKrKiP/Om3FoDqXqx6rbS2X5+XlmnLwZe3afm7wuKcaIBuRTgBHGscxAa5l+Oxbr/aY0VzRq9g9VDUI0m0zoPt/sSi9tozLvYIfGjsi+MqkKFckMVEb2nTnYN8YmZOdwKdKwTcECRSHouKM34md27YyBD560HPQWtFjXxaZcTp3lrUntghT/54WcZqq21ZdSuWOyL6rtas2GVb5HMruH9WPr2TV31aemjQ2yI9mRkzu+IDfq5DJ1cpldkMtZ/GW5w+x4RNnfQ/DSpKz9Q0cHHZ2bgwpDZTSpyC3aLT1eEJBwgOavziDTXZvSfTa87gxxjw3zztCXI5zZ2SARi7MBXw7MAXgrOBEMBRdQRjYSfCnoC/YEpxIzFrwRvBbUgrHE9Dm3X8zepfh0OSgSijIcILsYPcL5R8wjwr7lsHOhop9KT8NQ2s6N3p/zzMOtNPV9XpR4JeO7j+VVUtXbfINd0mxXZX3eo0mPnvqqZKZQjcf9v2//Td/yFfjP/H6f2k4pqvvt6ZOdkXpslvmyqPDUUMLW7brhh27XIJfdkY5/04GO/M7x7FVDM2feCQ==",
+            "data": "m=edit&p=7VNNj9owEL3nV6x8nkNimwC+0S1UlSi0hWpVRREK2WwXFZRtIFVllP/e53HYVFpW/Vh1e6ksj5/f2Mmb8cz+S51VBcUYakAhRRgyjnlGWvMM27HcHLaFuaBRfbgtKwCi+WRCN9l2XwRJeyoNjnZo7IjsK5MIKYhnJFKy78zRvjF2RnYBlyANbgoUCZKA4w5esd+hS09GIfCsxYAfAfNNlW+L1dQzb01ilyTcf17wbQfFrvxaCH+N93m5W28csc4OCGZ/u7lrPfv6uvxci9MvGrIjL3d8Rq7q5Kp7ueq8XPn35Q7TpkHa30PwyiRO+4cODjq4MEchpTCahPKL9kvPLY2TjAPafXUOmf7ZhO474nVHxD1HLDqiz1emPxB8Ynki8OXIHBuXB2cnbCXbJZSRVWxfsg3Z9thO+cyY7RXbS7aabcxn+i62X4zeh/h0OUgSkjIcILoYPeLiVw4rwr7F4F2i1E+lJ1Jy2/nR+3OcBniVurrJ8gJVMr7+VFzMymqXbbGb1bt1UZ32aNImEN8EzwSqUdz/+/bf9K17gvCZ6/ep7ZQgu/elT3ZO4q5eZau8RKkhha3bd8Ojbt8g591Kx7/pQEc+cDx71tDMafAd",
         },
     ]
 

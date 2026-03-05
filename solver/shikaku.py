@@ -18,7 +18,7 @@ class ShikakuSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VRNb9pAEL3zK9Ce5+D9wKx9Iyn0QknbUEWRZSFD3AYF5BRwVS3iv+ftGDBuiaoqaqpK1bKPNzP7MfvWs+uvZbbKSQb+py3hH81Iy13ZkHuwb+P5ZpHHbeqVm/tiBUJ0NRjQ52yxzlvJflTa2roodj1yb+NEKEHcpUjJfYi37l3sRuSuERIk4RuCSUEKtF/TG457dlk5ZQA+qngX9BZ0Nl/NFvlkWC30Pk7cmITf54JneyqWxbdcVNPYnhXL6dw7ptkGh1nfzx/3kXV5VzyU+7Ey3ZHrVen2z6Sr63Q9rdL17E+lm999ydfl9FyuUbrbQfOPyHYSJz7xTzW1Nb2Ot8BRvBW6g6kRdatrEcbCtEczVDDDo9ntNkwbwtS1GTXMSPuk2jj0wWF+cMhANtaTgd/OnNh+g+YMv0fDI33GJ2tov+3JGqaZswyDExsiSJbilnHAqBjHUIqcZnzDGDB2GIc8ps94w3jJaBhDHtP1Wv/Wbbw8HREaKBRZXF0HB/VEGU3KQHtNQitLWmEEuLLwR1BH//IMia4eg2br/Hu+tJWIPsqnPSpWy2yBEhqVy2m+Oth4sHYt8V1wx7eM9+//G/Y33jCvf/DKtfPSUk4g7bHayF2ReCwn2WRW4DuDfhw+FOAz4UNNng+jpJ8JmOinwKuLg2dC4Pt7yHCTaesJ",
+            "data": "m=edit&p=7VTfb9owEH7PX4H8fA/xDxI7b6yFvVC6rVRVFUUo0LRFA6VNyDQZ5X/f+QKkaammqlqnSZPx8X13tvPlnLvysUqLDLjvflID/uNQXNMUOqDp78Z0uVllUQ8G1eY+LxAAnI9GcJuuysyLd6sSb2tNZAdgP0cxEwxocpaA/Rpt7VlkJ2AvMMSAo2+MiDMQCIctvKK4QyeNk/uIJw0OEV4jXCyLxSqbjZuDvkSxnQJzz/lEux1k6/xHxpptxBf5er50jnm6wZcp75cPu0hZ3eTfq91antRgB43c4RG5spUrD3LlH5Sb3dxlZTU/ptUkdY05/4ZqZ1HshF+2ULfwItrWTtSWyT5uNRA218KURqoPNBBIgwMNww7VAVLZUtOhRjpRPdY61DMH93nnPO67x6knPHixwzz3cN09Q8ruGaqrmQf+E45J4JSKa7IjsoLsFDMFVpI9JeuT7ZMd05oh2SuyJ2QV2YDWhC7Xb7qN98thgcIMGY1X1/cbIJQEoTD3EpgUGqQwhIVGv8HsyN++QyybZtAd/X/Pl3gxG2L59CZ5sU5XWEKTaj3Pij3HhlV77Cejid8y9r//Pexv9DCXf/+Da+e9pRxjag/VBvYc2EM1S2eLHL8zzB+F9wX4Snhfk8fDWNKvBJR5Efjw5GCbSLxf",
         },
         {
             "url": "https://puzz.link/p?shikaku/24/14/h5x6i.j8g6lag4j.l9i8j6i4l3z9g6i4i4h56h6i4i6j8h4n3h6zn4j4r6j4g6j8i8hci6j8q6h2r8k5l8k8j.l9j4l.lataock36kck",

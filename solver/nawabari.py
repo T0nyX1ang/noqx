@@ -18,7 +18,7 @@ class NawabariSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VXfb5swEH7nr4j8tEl+wBgI+GXKumQvGd3WTFWFUAQpW9GS0fFjPxzlf+/dwWrYIk1VpFaTJvCX7+5s8/nsc+qvbVrlXNj4yoDDLzyuCKg5gU/N7p9V0WxzNeGztrkpKyCcny8W/GO6rXMr7nsl1l6HSs+4fq1i5jBOTbCE63dqr98oHXF9ASHGBfiWwATjDtC5oZcUR3bWOYUNPOo50Cugm6LabPP1svO8VbFecYbfeUmjkbJd+S1n3TCyN+UuK9CRpQ0spr4pbvtI3V6Xn9u+r0gOXM86ufMjcqWRi7STi+yIXFzFyXLz60953WbHtIbJ4QA5fw9q1ypG4R8MDQy9UHvASO2ZtGGoAxtN28KkC6Y0pjeOhvidF6C6d7g+OPCYdKYnRuYURw/MYGQGU5xMmslC/LaJCxtnowzee8YzCIFTGHnCwcUM4u5vM7qof9DfQ/kD28fxZvXCRwXD+DAdkEBBabwiXBA6hCvIMteS8BWhTegRLqnPnPCS8IzQJfSpzxT36UE7eboc5kuHqTCAKhVQ7Hgy5F8lxrK7J8aP9+/5Eitmc6isSVRWu3QL1RW1uyyvftlwlx0s9oNRo0Pi/r/enuJ6w/zbj1wap1ZqDKm9ryquzzm7bdfpelPCOYP8YdiHP9kHBqTzR+DR1w03AGvyqiqasvo5efYl/Z5maVU8Z4l1Bw==",
+            "data": "m=edit&p=7VXda9swEH/3X1HuWQ/6sB1bLyPtkr5k6bamlGJMcFK3DUtwZ8djKPh/3+mc2FMbGKWjY1AUXX53p4+f7nRy9b3OypwJbn8qYviPzRcRdRmF1Pm+zVbbda5P2LDePhQlAsYuxmN2l62r3Ev2o1JvZ2Jthsyc6wQkMOoCUma+6J35pM2UmUt0ARNomyASwCTCUQ+vyW/RWWsUHPF0jxHeIFyuyuU6n09ay2edmBkDu88pzbYQNsWPHNpppC+LzWJlDYtsi4epHlaPe09V3xbfajhs0TAzbOmOjtBVPV3V0VXH6cq/QTe/vc+renGMa5w2Dcb8K7Kd68QSv+ph1MNLvWssqR0ojlMlJprSAspHVfVq4Hpju88H6Ax+iAbRqYFw1EHgqpGjRgO7mOoXi33HL7g4ZKCzuCsIMXDoCcldv/9kRT92xwehq4fcOb0IxRP/7+HAAAoK4w3JMUlJcoZRZkaR/EiSkwxITmjMiOQ1yTOSPsmQxgxsnl6UydfTgVBJ0HGEVSqw2O3NUH+kmKj2nXBb8P/ZUi+BEVbWybQoN9kaq2tabxZ5edDxLWs8+AnU6ZL478/bv3jebPz5G5fGays1wdB2VcXMBYPHep7NlwXeM4yfdYf4kX2hQ8lnjjc/N74AqfcL",
         },
         {"url": "https://puzz.link/p?nawabari/10/10/b4c1d2b1c2c2j4b0b1a3b3j3b1a2b0b4j2c3c2b1d1c3b", "test": False},
     ]

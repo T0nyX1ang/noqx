@@ -21,7 +21,7 @@ class StatueParkSolver(Solver):
             "test": False,
         },
         {
-            "data": "m=edit&p=7VZNa9tAEL37V5Q5T0Gz+rCsm+vGvThJW7uEIIRRVKURlaPUjtpmjf97ZkcqgngOpZAUShH7eH4az74ZxrvefWvzbYlESB76MXrIDIMwwoBiDGksy+ufVXVfl8krnLb3N82WCeL5fI7Xeb0rR2kflY32dpLYKdp3SQoECIYXQYb2Q7K3pwkUzeaqArRLfg9I/GLRRRqmJwO9kPeOzTqRPOZnPWd6ybSotkVdrhed8j5J7QrBbfZGvu0obJrvJfRm3OfOAAtX9Y+bXtu1n5uvbR9F2QHtVNza5S+j8WDUH4w62hl1TDHq/D+b0Ul2OHC/P7LVdZI6158GGg90mewZzwRJ8DLZQ+hzGuJtOmunYg3CSFPHY02NSVXVvHGoqm4381SdGFXVY1Vnk1iLJc/TZbffUQ7y1NREatVEatlEat1ELvexE6NWTkbPbQI9Wm0UGb0nvt4TX69SHxrSpobHbC7DZgRXPItofcG3gp5gKLiQmBPBC8GZYCAYSczYTfNvzjsE3GCuKmK/8fHwP5O31DdyhD59wn9BzUYpLNvtdV6UfBjNms1ds6vuS+Aj/zCCnyAr9d0N8v8WeOlbwPXe++O74O/8VFPuazBGe45w167zddHUwP8g0OmRf6S/uHv+PcNDdfv6Ib/9AtnoEQ==",
+            "data": "m=edit&p=7VZNa9tAEL3rV5Q5z0Gzqy/r5rpxL07T1i4hCGEcVSGmMkptqy1r/N87O5YrSOZQCkmhFLGP56fx6M0w2tXua7fa1kiEFKLNMERmGMUJRpRhTKmssL8W631T569w3O3v2y0TxKvpFO9Wza4Oij6qDA5ulLsxurd5AQQIhhdBie5DfnCXOVTt5nYN6OZ8H5D4xuwUaZheDPRa7ns2OYkUMn/Xc6Y3TKv1tmrq5eykvM8Lt0DwD3st//YUNu23Gnoz/vfJAAu3zff7Xtt1n9svHZyTH9GNxa2bn41mg1E7GLW/jFrdqHlOo6PyeOR+f2Sry7zwrj8NNBvoPD8cvSOPJHiTHyC2nIbwbO1SrEGcaGqaampGqqrmzWJV9U8zj9WRUVU9VnU2yrRYCkNdNloOCtXURGrVRGrZRGrdRKnqxKiVk9Fzm0iPVhtFRu+J1Xti9Sr1oSFtanjMpjJsRnDBs4jOCr4RDAVjwZnEXAheC04EI8FEYlI/zb857xBxg7mqhP1mT4f/mbwV1sgW+viK/wW1DAqYd9u7VVXzZjRpNw/tbr2vgbf8YwA/QFZh/Qny/xR46VPA9z7847Pg77yqBfc1StFdITx0y9WyahvgLwj0emKf6C/unt/nMvgJ",
             "config": {"shapeset": "double_tetro"},
         },
     ]
