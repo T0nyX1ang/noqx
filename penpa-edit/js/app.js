@@ -144,7 +144,7 @@ function imp(penpa, example = false) {
   }
 
   clearInfo();
-  const currentContent = exp(true);
+  const currentContent = exp();
 
   // manually set the puzzle type if pre-fetched
   if (puzzleType in solver_metadata) {
@@ -483,7 +483,7 @@ $(window).on("load", function () {
     puzzleType = typeSelect.value;
 
     if (solutionPointer === -1) {
-      puzzleContent = exp();
+      puzzleContent = exp(true);
       choicesType.disable();
       choicesType.containerOuter.element.setAttribute("title", "Reset the puzzle to change puzzle type.");
       choicesExample.disable();
