@@ -26,6 +26,7 @@ function hookExp() {
   if (rawData[7]) rawData[7] = "{}"; // clear solution metadata
   if (rawData[16]) rawData[16] = "{}"; // clear shared solution data
   if (rawData[17]) rawData[17] = "[]"; // clear genre
+  if (rawData[18]) rawData[18] = ""; // clear solving comment
 
   paramArray.p = encrypt_data(rawData.join("\n"));
   const final = `${baseUrl}#${Object.keys(paramArray)
