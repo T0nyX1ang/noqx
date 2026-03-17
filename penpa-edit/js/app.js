@@ -128,10 +128,10 @@ function imp(penpa, example = false) {
     } else redraw_grid();
   } catch (error) {
     let errorMessage = null;
-    if (puzzleType in solver_metadata) {
-      errorMessage = "The URL may be invalid or corrupted.";
-    } else if (urlstring.includes("m=edit")) {
+    if (!document.getElementById("type").value) {
       errorMessage = "Please select type before importing Penpa+ links.";
+    } else if (puzzleType in solver_metadata || urlstring.includes("m=edit")) {
+      errorMessage = "The URL may be invalid or corrupted.";
     } else {
       errorMessage = `Unsupported puzzle type: ${puzzleType}.`;
     }
