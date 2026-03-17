@@ -63,7 +63,7 @@ class CBananaSolver(Solver):
     aliases = ["chocobanana"]
     examples = [
         {
-            "data": "m=edit&p=7VVNb5tAEL3zK6w5z4FlwXxcKjeNe3FJW7uKIoQsTIlsFZcUm6pay/89MwMpoPrQHppcovWO3psP89jZXQ4/mqwuUDn80wHaqGi4oStT+55Muxur3bEsognOmuO2qgkg3szneJ+Vh8JKuqzUOpkwMjM076MEFCA4NBWkaD5FJ/MhMjGaJYUAA/It2iSH4HUPbyXO6Kp1Kptw3GGCdwTzXZ2XxXrRej5GiVkh8HPeSjVD2Fc/C+h0MM+r/WbHjk12pJc5bHcPXeTQfK2+NV2uSs9oZq3c5QW5upfLsJXL6IJcfov/LDdMz2da9s8keB0lrP1LD4MeLqMT2Tg6gQ6p1KVeS2fAtYly6zuqiPo91aNkb0ynXDugAVH9m/r+iAZcC29oDTqHsllJ0HPljgqU443jeixViVZvwKfjfN8ZyVP+WJ8KWCDt/yce8vP6uGNz/YAr5tMBZ739/zuK64dx1vMUp9VX0oM7sXOxjtgVtQiNFvtOrC3WE7uQnGuxt2KvxLpip5Ljc5P/chuAJtkBgia1TrsnnkFbonkhLg1u4KtfpVYCy6a+z/KCznnc7DdFPYmrep+VQBfr2YJfIFN2pPt6177QXcstsP/pxn35k5/Q6tL5MzcID806W+dVCfS5RvF7f/ifXT1dD5Bvq7yabLLvNCC1HgE=",
+            "data": "m=edit&p=7VVNb9swDL37VxQ862B9+esyZF2zS5ZuS4aiMIzA8Vw0mAN3TjwMCvzfR9FuHLU9rIe2l0LWAx9Jxc+ixOx+t3lTMi7sIyPmM45DxYqmDDVNfxjLzb4qkzM2afe3dYMGY5fTKbvJq13ppUNW5h1MnJgJM5+TFDgwEDg5ZMx8Sw7mS2LmzCwwBCxC36xPEmhejOYVxa113ju5j/Z8sNG8RrPYNEVVrma952uSmiUD+56PtNqasK3/lDDosLyot+uNdazzPX7M7nZzN0R27c/6Vwv3r+iYmfRyF0/IlaNceZQrn5YrXl5unHUdbvt3FLxKUqv9x2hGo7lIDp3VdQAZ41KFtabKgPKR8pFypOFIpZOsXRr4Lo2QyiMNQ4dGdi18gKOD+1ZJNHKunAVcaDcuXamctOoTHrj5oXDk8dDVxyMrUIw81k5c+MLl3PLghCvn9wXXD+LBSRx3n1MNrgmnhIJwiSViRhJ+IvQJNeGMci4IrwjPCRVhQDmhLfJ/HgOQKDtiIFGt6M/EK2hLpaIG83jod78dmZfCom1u8qLEez5vt+uyOZvXzTavABtr58FfoEknUr332jfqtbYE/rM67tvf/BR3F++fuWRw167yVVFXgH/XjPz6kf/V1WN7yLx/",
         },
         {
             "url": "https://puzz.link/p?cbanana/15/15/w29l8q4k4j65l5g6h6m7g7m35i3zh8o7zh9i36m1g5m6h3g6l63j5k6q6l76w",

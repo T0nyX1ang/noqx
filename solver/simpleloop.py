@@ -16,7 +16,7 @@ class SimpleLoopSolver(Solver):
     category = "route"
     examples = [
         {
-            "data": "m=edit&p=7VZNb9pMEL7zK9Ce57Cf/rrRNPRCSd9CFUWWhRzqKFZNTQFXkRH/PbMzG3EoUSPlFZcis888OzPrnZ2VZ9j+6spNBVr6n0lAgsInThMaiVM0ZHjm9a6psiGMut1ju0ECcDMew0PZbKtBHryKwb5Ps34E/acsF1oADSUK6P/L9v3nrJ9BP0OTAIu6CTIlQCO9PtJbsnt2xUolkU8DR3qHdFlvlk21mLDmS5b3cxB+nw+02lOxan9XgpfRfNmu7muvuC93eJjtY70Olm33vf3RBV9VHKAfcbiTE+GaY7iecrienQjXn+Ld4Tb1z+rpVKRpcThgxr9irIss92F/O9LkSGfZXjgrMgvCJSQiTSJVJJSULJVjqdmsdJjblGUU5rFhmQR9GvQpz7Xk92rJfjq8T0e8jwl2I2OWhtcZF/QuYpm8SPazYZ01vJ91/F4b8T42Cn5x8It5vU348Dbl0zsZpGY/F+JzdF5M2DTbIyrCO8IxoSacY1ahN4QfCSWhI5yQzzXhLeEVoSWMyCf29/LGm3t/OHhPMR4MP2qBw9+RQZaC0pg2pCiRY4qQxxZ8kswbj5A7rhp/f9zF7+L37/kVg1zMus1Duaywgk+wkg+n7WZVNgJ75WEgngSNHL9A7DGX9nn29umzL89Wiv+fzpBjYkMph/4GxLpblItl2wj8BwZs5Or+ivWl4L9i5h5w2uhbyR+Ws6cHG4/Y1qt1Uw2btl2LYvAM",
+            "data": "m=edit&p=7VZLbxoxEL7zKyKf5+Dnvm40Db3QpC1EUbRCaEM3CurSTYGtIiP+e8czphxK1EiJuAQZz/d5ZmyPbe0Mq19dtaxBy/AzGUhQ2NI8o545RV3GNp6vm7o4g363fmiXSACuBgO4r5pV3Suj16S38Xnh++A/FaXQAqgrMQH/tdj4z4UfgR+hSYBF3RCZEqCRXuzpDdkDO2elksgvI0d6i3Q2X86aejpkzZei9GMQYZ8PNDtQsWh/14Kn0XjWLu7mQXFXrfEwq4f5Y7Ssuu/tj07sttiC73O4wwPhmn245m+45nC4+i3CbeY/66dDkeaT7RZv/BvGOi3KEPb1nmZ7Oio2wllRWBAuI0g0Qa4IlJSMyjFqHTGObc6YxHFqGLOoz6M+57GWKiL76bieTngfE+1GpoyG5xkX9S5hzHbIfjbOs4b3s47XtYmJGP3S6JfyfJvx4W3Op3cyolYRdcSw7ja83galInlLckBSkxzjrYI3JD+SlCQdySH5XJC8IXlO0pJMyCcN7/LCl3t9OPhOKR4MP2qBPbyRQZaD0oYoInJLPLUQLsm88Ail46zx/+ZOfie/9+c36ZVi1C3vq1mNGXyImfzssl0uqkZgrdz2xJOgXuIXiDXmVD6PXj7D7cujpeK3qQwlXmxM5eCvQDx202o6axuB/8CAjZzdn7HuEv4zZq4Bh42hlPxjOfr1YOGZ9P4A",
         },
         {"url": "https://puzz.link/p?simpleloop/15/15/124000400000a0004g0002008h12000482008400004i1", "test": False},
     ]

@@ -1,9 +1,42 @@
-function exp() {
+function parseParam(data) {
+  let param = data.split("&");
+  let paramArray = {};
+  for (let i = 0; i < param.length; i++) {
+    let paramItem = param[i].split("=");
+    paramArray[paramItem[0]] = paramItem[1];
+  }
+  return paramArray;
+}
+
+function exp(saveRecord = false) {
   clearInfo(); // clear every information created by penpa itself
+  if (!saveRecord) return pu.maketext().split("#")[1]; // return the puzzle data without saving undo record
+
   document.getElementById("save_undo").checked = true;
   let result = pu.maketext().split("#")[1];
   document.getElementById("save_undo").checked = false;
   return result;
+}
+
+function hookExp() {
+  const baseUrl = pu.maketext_baseurl();
+  let result = exp();
+  let paramArray = parseParam(result);
+  let rawData = decrypt_data(paramArray.p).split("\n");
+  rawData[0] = rawData[0]
+    .split(",")
+    .map((v, i) => (i === 21 ? "" : v))
+    .join(","); // clear puzzle background image
+  if (rawData[7]) rawData[7] = "{}"; // clear solution metadata
+  if (rawData[16]) rawData[16] = "{}"; // clear shared solution data
+  if (rawData[17]) rawData[17] = "[]"; // clear genre
+  if (rawData[18]) rawData[18] = ""; // clear solving comment
+
+  paramArray.p = encrypt_data(rawData.join("\n"));
+  const final = `${baseUrl}#${Object.keys(paramArray)
+    .map((key) => `${key}=${paramArray[key]}`)
+    .join("&")}`;
+  update_textarea(final);
 }
 
 function imp(penpa, example = false) {
@@ -67,12 +100,18 @@ function imp(penpa, example = false) {
 
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
-    Swal.fire({
-      icon: "error",
-      title: "Import error",
-      text: "SOLVER/CONTEST mode is not supported in noqx. Please export in EDIT mode.",
-    });
-    return;
+    let paramArray = parseParam(urlstring.split("#")[1]);
+    let rawData = decrypt_data(paramArray.p).split("\n");
+    rawData[2] = rawData[11];
+    rawData[4] = rawData[14];
+    rawData[15] = rawData[14];
+    paramArray.p = encrypt_data(rawData.join("\n"));
+    paramArray.m = "edit";
+
+    // reconstruct the URL for solver mode
+    urlstring = `${urlstring.split("#")[0]}#${Object.keys(paramArray)
+      .map((key) => `${key}=${paramArray[key]}`)
+      .join("&")}`;
   }
 
   try {
@@ -94,11 +133,12 @@ function imp(penpa, example = false) {
       advancecontrol_toggle();
     } else redraw_grid();
   } catch (error) {
+    clearInfo();
     let errorMessage = null;
-    if (puzzleType in solver_metadata) {
-      errorMessage = "The URL may be invalid or corrupted.";
-    } else if (urlstring.includes("m=edit")) {
+    if (!document.getElementById("type").value) {
       errorMessage = "Please select type before importing Penpa+ links.";
+    } else if (puzzleType in solver_metadata || urlstring.includes("m=edit")) {
+      errorMessage = "The URL may be invalid or corrupted.";
     } else {
       errorMessage = `Unsupported puzzle type: ${puzzleType}.`;
     }
@@ -455,7 +495,7 @@ $(window).on("load", function () {
     puzzleType = typeSelect.value;
 
     if (solutionPointer === -1) {
-      puzzleContent = exp();
+      puzzleContent = exp(true);
       choicesType.disable();
       choicesType.containerOuter.element.setAttribute("title", "Reset the puzzle to change puzzle type.");
       choicesExample.disable();

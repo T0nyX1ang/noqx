@@ -15,7 +15,7 @@ class FillmatSolver(Solver):
     category = "var"
     examples = [
         {
-            "data": "m=edit&p=7VRRb5swEH7nV1T3fA/YJoT4Zcq6ZC8Z3dZMVYVQRFK6ooHoIEyTo/z3ng+WFClptEXqNGkiPr677y7+fNiuvzdJlaJw7U8FSG96PBHwkIHPw+2eebbOU32B42b9UFYEEK+mU7xP8jp1oi4rdjZmpM0YzXsdgQTkISBG80lvzAdtQjTXRAEKis0ICUBJcLKHN8xbdNkGhUs47DDBW4KrrFrl6WLWRj7qyMwR7DxvudpCKMofKbRl7K/KYpnZwDJZ02Lqh+yxY+rmrvzWdLki3qIZt3InB+SqvVwLW7kWHZBrV3G23PTua1o3y0NaR/F2Sz3/TGoXOrLCv+xhsIfXekM21BtQri19Q0LaDwNKUMB++c4dkSt3ru+Rq3aukLKXLWTQ571+uRgM+75vZ3uW7w+e8SRRsNBbtlO2ku2c1oFGsX3H1mU7YDvjnAnbG7aXbD22PucMbSd+q1fnywHP9msU0DkQEqX0QauTEiPVnsT+M/j3YrETwYT27kVYVkWS0/4Nm2KZVr98ui22DvwEHrwpvP8XyN+4QGz/3Vc+Guee1IhauztVaK4QHptFsliVtM+of5amw3eYAKqhuuGROqKHRAdHaeG9TCuklD+tPjU3/fkLyk/QJ9Z9TPmrf3u6BeE+y/MiWUPsPAE=",
+            "data": "m=edit&p=7VRNT+MwEL3nV6A5zyG20zT1ZVWg5VLKshQhFEVVWgJUtAokzQq5yn/f8aQ0G6ml4kOglVaup2/meeTnicf5UxFnCQrX/lSA9E/DEwFPGfg83fUYzZbzRB9gt1jepxkBxLN+H2/jeZ444XpV5KxMR5sumhMdggTkKSBCc65X5lSbIZoLogAFxQaEBKAk2KvhFfMWHVVB4RIerjHBa4LTWTadJ+NBFfmpQzNCsPsccraFsEh/J1ClsT9NF5OZDUziJR0mv589rpm8uEkfCnjZokTTreT2tshVtVy1kau2y5WfITe5uUvyYrJNaycqS6r5L1I71qEVflnDoIYXelVaUStQrk39QUKqDwNKUEDUbodcuXF9j1y1cYWUjdVCBk3ea6aLVrvp+6K53m/9xZNEwUKv2fbZSrYjOgcaxfaYrcu2xXbAa3psr9gesfXY+rymbSvxplp9XA54tl6dgPpASJTSB632SgxV1YnN0fr3YpETQo/u7sEwzRbxnO7vsFhMkuzFp9eidOAZePKl8P4/IN/xgNj6u1/cGh/t1JBKu+kqNGcIj8U4Hk9TumdUP0tT820ngHIor70jj+g20cFOWniv0wppyXuz9+2tXlW+h95z7l3Kv/zb0ysYOX8A",
         },
         {
             "url": "https://puzz.link/p?fillmat/21/12/1b3e2d4d2h1i2d21p12b4z3b3e4j2m3e4b2e2d3c3c2b4h2b1g2d4n3h3b2o3b4d3c1e1a2f",

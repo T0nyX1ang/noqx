@@ -38,7 +38,7 @@ class LookAirSolver(Solver):
     aliases = ["rukkuea"]
     examples = [
         {
-            "data": "m=edit&p=7VTBbtswDL37KwqeebAl20l1GbKu2SVztyVDUQiG4XguatSGOiceBgX591KUOxfdDluBtZdB0MPLE6k8UmF234ayrzGlJecYYkRLpCnvKI55h+PaNPu2Vie4GPY3pieCeLFc4nXZ7upAj1F5cLCnyi7QvlcaBCDvCHK0n9TBflA2Q7umI8A5aStiEaAgej7RSz537MyLUUg8GznRK6JV01dtXay88lFpu0Fw3/OWsx2Fznyvwafx58p028YJ23JPxexumrvxZDd8NbfDGBvlR7QLb3f9YNfZGe3Kya6j3q5jv7Hr0v6x3dP8eKS2fybDhdLO+5eJzie6VgfCTB1ACJcqyYt/GxAzJ7yZBPk0QiZPhJhTXLWjkEgn0HM/CCkL4SOB73gUMeOIn3eQu4g9XjEuGQXjhkpAKxnfMYaMCeOKY84ZLxnPGGPGlGNmrgl/2CYQZGxObYlBCd+zF/CmheAB9Ct5Ps8DDeuhvy6rmn4v2dBt6/4kM31XtkADegzgB/DWksLj/zP7SjPrniD8q8l9/QnR1F0h0V4g3A1FWVSmBfrbx2fp8S/6i1dLYwetMbdl00Me3AM="
+            "data": "m=edit&p=7VRNT4NAEL3zK8yc5wC7QOteTK2tl1o/WtM0hDQUaWykQWkxZhv+u7MDFa0e1ES9mM28PN7Osm9nGdYPRZQn6NOQbbTRoSF8n8NxXQ67HuPlJk3UAXaKzW2WE0E87/dxEaXrxArqrNDa6kOlO6hPVQACkMOBEPWl2uozpYeoRzQF2CZtQMwBFER7DZ3wvGHdSnRs4sOaE50SjZd5nCazQaVcqECPEcw+x7zaUFhljwlUy/g5zlbzpRHm0YYOs75d3tcz6+Imuytgt0WJulPZHe3sisaubOzKF7vyY7vi5+0ehmVJZb8iwzMVGO/XDW03dKS2pfG1BSHMUkleqrsB0TLCUSPI/Qzp7Qlua1etWvAkVFe+E3wW7FeCt5fRkm/eQe4c9jhl7DMKxjEdAbVkPGG0GT3GAef0GCeMXUaX0eeclinCJ8sEgoy1qSwuKFHV7Be8BUJwA1bD+z4PrQBGRb6I4oS+l2Gxmif5wTDLV1EK1KClBU/AEUhKd/979o961lyB/aXO/fsOCai6QqI+R7gvZtEszlKg3z5+S3ff6b9+Wmq70HoG"
         },
         {"url": "https://puzz.link/p?lookair/9/9/g2a2b4d2i2y1i3d4b1a1g", "test": False},
         {"url": "https://pzplus.tck.mn/p?lookair/20/10/1b2f12b1c3d2l2zzg2a1b4a3zzg2l4d2c1b32f3b2", "test": False},

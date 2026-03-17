@@ -26,7 +26,7 @@ class NoThreeSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VXRbpswFH3nK6b7fB+wDaz1W9Z1e+nSbWSKIoQih7oNGhUZhKlylH/v9YUp2gbS1mnry2T56OT4GA7XcNN+6UxjMaGhzjBEQUMmCU8RRTzDYSzKfWX1C5x1+23dEEG8nuOtqVobZIMpDw7uXLsZurc6AwnIU0CO7oM+uHfardCltAQYkXZFTABKopcnuuR1zy56UYTE5wMnuiJalE1R2XWa9tJ7nbkFgr/RK97uKdzXXy30+/h3Ud9vSi9szJ4ept2Wu2Gl7W7qz93gFfkR3azPm37L6/MMedUpr6d9Xs9G8vptf57X3tzZttuMhT3Pj0eq+keKu9aZT/7pRM9ONNUHwjmjYFzpAyQRXUbQnb6LByKKJ/RkXI8n/PGEPxn3Sznul7Gc0NWoruSErsavo9SYn2r0hislGRdUSHSK8TVjyBgzXrHnknHJeMEYMSbseemP4hcPi2oBWvpooKOfT+4vZcuk5CbQj/jpPA8ySLvm1hSW3tp0a3YWqDscA3gAnpkiW/S/YTxPw/AnED65bTzPh5FRbZVCd42w69ZmXdQV0F8Osi5/T6fX/Ef9nz8tfW3Q7srGVHemMg+lbSEPHgE=",
+            "data": "m=edit&p=7VVNT4NAEL3zK8yc5wC7gLq3qtWL39SYhpCG4moba6ilGLMN/93ZoUqikGjjx8Vs9uXx9gGPWRiKxzJdaAxpyB100aMhwpCn5/s83fUYTJczrbawVy4n+YII4tkp3qazQjvx2pQ4K7OrTA/NkYpBAPL0IEFzoVbmRJkhmoiWAH3Sjol5gIJov6HXvG7Zfi16LvHTNSc6JJpNF9lMj6Kols5VbAYI9kZ7fLql8JA/aajP4+MsfxhPrTBOl/QwxWQ6X68U5U1+X8LrPSo0vTpv9JpXNHllk1e+5ZXtecW35NU3d7oox21hd5OqoqpfUtyRim3yq4buNDRSq8qmsugxDtUKQp8u4+G7eOD5QYcetutBhz/o8IftfiHa/SIQHbps1aXo0GX7daRs81ONDrlSgnFAhUQjGQ8YXcaA8Zg9fcZrxn1GnzFkz7bdik9uFtUClLDRQPkfd+6HssVCcBOoR7A5T5wYonJxm2aa3tpoks41UHeoHHgGnrEkm//fMP6mYdgdcDduG3/zYcRUWynRnCHMy1E6yvIZ0C8HWRdf08VH/deflr62xHkB",
         },
         {"url": "https://puzz.link/p?nothree/10/10/genceemeienei6eiemeeemeiemenemeiemeeemei6eieneiemecene", "test": False},
     ]
