@@ -100,12 +100,18 @@ function imp(penpa, example = false) {
 
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
-    Swal.fire({
-      icon: "error",
-      title: "Import error",
-      text: "SOLVER/CONTEST mode is not supported in noqx. Please export in EDIT mode.",
-    });
-    return;
+    let paramArray = parseParam(urlstring.split("#")[1]);
+    let rawData = decrypt_data(paramArray.p).split("\n");
+    rawData[2] = rawData[11];
+    rawData[4] = rawData[14];
+    rawData[15] = rawData[14];
+    paramArray.p = encrypt_data(rawData.join("\n"));
+    paramArray.m = "edit";
+
+    // reconstruct the URL for solver mode
+    urlstring = `${urlstring.split("#")[0]}#${Object.keys(paramArray)
+      .map((key) => `${key}=${paramArray[key]}`)
+      .join("&")}`;
   }
 
   try {
@@ -127,6 +133,7 @@ function imp(penpa, example = false) {
       advancecontrol_toggle();
     } else redraw_grid();
   } catch (error) {
+    clearInfo();
     let errorMessage = null;
     if (!document.getElementById("type").value) {
       errorMessage = "Please select type before importing Penpa+ links.";
