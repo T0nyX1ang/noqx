@@ -1,3 +1,13 @@
+function parseParam(data) {
+  let param = data.split("&");
+  let paramArray = {};
+  for (let i = 0; i < param.length; i++) {
+    let paramItem = param[i].split("=");
+    paramArray[paramItem[0]] = paramItem[1];
+  }
+  return paramArray;
+}
+
 function exp(saveRecord = false) {
   clearInfo(); // clear every information created by penpa itself
   if (!saveRecord) return pu.maketext().split("#")[1]; // return the puzzle data without saving undo record
@@ -11,13 +21,7 @@ function exp(saveRecord = false) {
 function hookExp() {
   const baseUrl = pu.maketext_baseurl();
   let result = exp();
-  let param = result.split("&");
-  let paramArray = {};
-  for (let i = 0; i < param.length; i++) {
-    let paramItem = param[i].split("=");
-    paramArray[paramItem[0]] = paramItem[1];
-  }
-
+  let paramArray = parseParam(result);
   let rawData = decrypt_data(paramArray.p).split("\n");
   rawData[0] = rawData[0]
     .split(",")
