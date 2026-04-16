@@ -93,6 +93,7 @@ function imp(penpa, example = false) {
   urlstring = urlstring.replace("smullyan", "nuribou");
   urlstring = urlstring.replace("squarejam", "shikaku");
   urlstring = urlstring.replace("statuepark", "yinyang");
+  urlstring = urlstring.replace("suguru", "cojun");
   urlstring = urlstring.replace("swslither", "slitherlink");
   urlstring = urlstring.replace("tetrochain", "yajikazu");
   urlstring = urlstring.replace("tslither", "slitherlink");
