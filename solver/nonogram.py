@@ -4,19 +4,17 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import display, shade_c
+from noqx.rule.common import display, grid, shade_c
 
 
 def nono_row(col: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "black"):
     """Generates the nonogram row constraints."""
     prefix = "row_count(R, C, N, V) :- grid(R, C), row_count_value_range(R, N, V)"
     constraints = []
-    constraints.append("row_count(R, -1, -1, 0) :- grid(R, _), R >= 0.")
+    constraints.append("row_count(R, -1, -1, 0) :- grid(R, _).")
     constraints.append(f"{prefix}, not {color}(R, C), row_count(R, C - 1, N, _), V = 0.")
-    constraints.append(
-        f"{prefix}, {color}(R, C), grid(R, C - 1), not {color}(R, C - 1), row_count(R, C - 1, N - 1, _), V = 1."
-    )
-    constraints.append(f"{prefix}, {color}(R, C), grid(R, C - 1), {color}(R, C - 1), row_count(R, C - 1, N, V - 1).")
+    constraints.append(f"{prefix}, {color}(R, C), not {color}(R, C - 1), row_count(R, C - 1, N - 1, _), V = 1.")
+    constraints.append(f"{prefix}, {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N, V - 1).")
 
     for i, clue in clues.items():
         constraints.append(f"row_count_value_range({i}, -1, 0).")
@@ -26,9 +24,9 @@ def nono_row(col: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "b
             constraints.append(f":- not row_count({i}, {col - 1}, {len(clue) - 1}, _).")
             for j, num in enumerate(clue):
                 if num != "?":
-                    slope = f"row_count({i}, C, {j}, V), row_count({i}, C + 1, {j}, 0)"
+                    slope = f"row_count({i}, C, {j}, V), not {color}({i}, C + 1)"
                     constraints.append(f"row_count_value_range({i}, {j}, 0..{num}).")
-                    constraints.append(f":- grid({i}, C), {color}({i}, C), {slope} , V != {num}.")
+                    constraints.append(f":- grid({i}, C), {color}({i}, C), {slope}, V != {num}.")
                 else:
                     constraints.append(f"row_count_value_range({i}, {j}, 0..{col + 2 - 2 * len(clue)}).")
 
@@ -39,22 +37,20 @@ def nono_col(row: int, clues: Dict[int, Tuple[Union[int, str]]], color: str = "b
     """Generates the nonogram column constraints."""
     prefix = "col_count(R, C, N, V) :- grid(R, C), col_count_value_range(C, N, V)"
     constraints = []
-    constraints.append("col_count(-1, C, -1, 0) :- grid(_, C), C >= 0.")
+    constraints.append("col_count(-1, C, -1, 0) :- grid(_, C).")
     constraints.append(f"{prefix}, not {color}(R, C), col_count(R - 1, C, N, _), V = 0.")
-    constraints.append(
-        f"{prefix}, {color}(R, C), grid(R - 1, C), not {color}(R - 1, C), col_count(R - 1, C, N - 1, _), V = 1."
-    )
-    constraints.append(f"{prefix}, {color}(R, C), grid(R - 1, C), {color}(R - 1, C), col_count(R - 1, C, N, V - 1).")
+    constraints.append(f"{prefix}, {color}(R, C), not {color}(R - 1, C), col_count(R - 1, C, N - 1, _), V = 1.")
+    constraints.append(f"{prefix}, {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N, V - 1).")
 
     for i, clue in clues.items():
         constraints.append(f"col_count_value_range({i}, -1, 0).")
         if len(clue) == 1 and clue[0] == 0:
             constraints.append(f":- grid(R, {i}), not col_count(R, {i}, -1, 0).")
         else:
-            constraints.append(f":- not col_count({row}, {i}, {len(clue) - 1}, 0).")
+            constraints.append(f":- not col_count({row - 1}, {i}, {len(clue) - 1}, _).")
             for j, num in enumerate(clue):
                 if num != "?":
-                    slope = f"col_count(R, {i}, {j}, V), col_count(R + 1, {i}, {j}, 0)"
+                    slope = f"col_count(R, {i}, {j}, V), not {color}(R + 1, {i})"
                     constraints.append(f"col_count_value_range({i}, {j}, 0..{num}).")
                     constraints.append(f":- grid(R, {i}), {color}(R, {i}), {slope}, V != {num}.")
                 else:
@@ -80,6 +76,9 @@ class NonogramSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        self.add_program_line(grid(puzzle.row, puzzle.col))
+        self.add_program_line(shade_c())
+
         top_clues = {}
         for c in range(puzzle.col):
             r1 = -1
@@ -98,12 +97,6 @@ class NonogramSolver(Solver):
                 c1 -= 1
             left_clues[r] = tuple(reversed(clue))
 
-        self.add_program_line(f"grid(-1..{puzzle.row}, -1..{puzzle.col}).")
-        self.add_program_line(shade_c())
-        self.add_program_line(f"not black(-1, -1..{puzzle.col}).")
-        self.add_program_line(f"not black(-1..{puzzle.row}, -1).")
-        self.add_program_line(f"not black({puzzle.row}, -1..{puzzle.col}).")
-        self.add_program_line(f"not black(-1..{puzzle.row}, {puzzle.col}).")
         self.add_program_line(nono_row(puzzle.col, left_clues))
         self.add_program_line(nono_col(puzzle.row, top_clues))
 
