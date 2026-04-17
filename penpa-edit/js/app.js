@@ -292,7 +292,7 @@ function resetBoardSize(puzzleType) {
   )
     sizeFlag = [1, 1, 1, 1];
 
-  if (["coral", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
+  if (["coral", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
 
   if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
     document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
