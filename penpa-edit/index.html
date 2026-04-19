@@ -49,6 +49,7 @@
 
   <script type="text/javascript">
     let script_sources = [
+      "./js/libs/localforage.min.js",
       "./js/libs/md5.min.js",
       "./js/libs/sweetalert2@11.js",
       "./js/libs/purify.min.js",
@@ -62,6 +63,7 @@
       "./js/libs/gif.js",
       "./js/libs/easytimer.min.js",
       "./js/settings.js",
+      "./js/progress.js",
       "./js/interface.js",
       "./js/conflicts.js",
       "./js/puzzlink.js",
@@ -121,7 +123,7 @@
           <button id="edit_bg_image">Edit Background</button>
           <button id="input_sudoku">I/O Sudoku</button>
           <button id="input_url">Load</button>
-          <button id="page_settings" style="font-size: 11.5px;">⚙️</button>
+          <button id="page_settings">Settings</button>
         </div>
         <div id="solver_button">
           <select id="type">
@@ -215,6 +217,8 @@
               <label for="sub_lineE2" class="labelL" id="sub_lineE2_lb">Diagonal</label>
               <input type="radio" name="mode_lineE" value="3" id="sub_lineE3">
               <label for="sub_lineE3" class="labelL" id="sub_lineE3_lb">Free</label>
+              <input type="radio" name="mode_lineE" value="6" id="sub_lineE6">
+              <label for="sub_lineE6" class="labelL" id="sub_lineE6_lb">Middle</label>
               <input type="radio" name="mode_lineE" value="4" id="sub_lineE4">
               <label for="sub_lineE4" class="labelL" id="sub_lineE4_lb">Helper (x)</label>
               <input type="radio" name="mode_lineE" value="5" id="sub_lineE5">
@@ -933,7 +937,7 @@
             <td colspan="2"><label id='bg_image_url_lb'>Image URL:</label></td>
           </tr>
           <tr>
-            <td colspan="2"><input type="text" id="bg_image_url" /> </td>
+            <td colspan="2"><input type="text" id="bg_image_url" /></td>
           </tr>
           <tr>
             <td><label id="bg_image_x_lb">X position:</label></td>
@@ -1058,6 +1062,10 @@
           <button class="addbottom" id="rt_addbottom">+ &#9660;</button>
           <button class="subbottom" id="rt_subbottom">&ndash; &#9650;</button>
         </div>
+        <p>
+          <span id="resize_whitespace_button0" class="label_mode">Adjust only whitespace:</span>
+          <span id="resize_whitespace_button" class="label toggle_btn">OFF</span>
+        </p>
       </div>
       <br>
       <div class="nb_button">
@@ -1505,6 +1513,7 @@
                 <select name="language" id="language_opt">
                   <option value="EN" selected="selected">English</option>
                   <option value="JP">日本語</option>
+                  <option value="ZH">中文</option>
                 </select>
               </td>
             </tr>
@@ -1551,8 +1560,8 @@
               </td>
               <td>
                 <select name="outline_text" id="outline_text_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1682,7 +1691,7 @@
               <td>
                 <select name="mousemiddle" id="mousemiddle_settings_opt">
                   <option value="1" selected="selected" class="lb_generic_no">No</option>
-                  <option value="2" class="lb_generic_yess">Yes</option>
+                  <option value="2" class="lb_generic_yes">Yes</option>
                 </select>
               </td>
             </tr>
@@ -1715,8 +1724,8 @@
               </td>
               <td>
                 <select name="check_pencil_marks" id="check_pencil_marks_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1731,8 +1740,8 @@
               </td>
               <td>
                 <select name="ignore_line_style" id="ignore_line_style_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1764,8 +1773,8 @@
               </td>
               <td>
                 <select name="auto_save_history" id="auto_save_history_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1838,7 +1847,8 @@
           <p class="modal-footnote">* These can be disabled from Settings.</p>
           <h5 class="modal-subheader">In Surface Mode</h5>
           <p>Use number keys <kbd>0</kbd> - <kbd>9</kbd> to quickly switch between styles. For styles 11 and 12, press
-            <kbd>1</kbd> and the second digit in quick succession.</p>
+            <kbd>1</kbd> and the second digit in quick succession.
+          </p>
         </div>
       </div>
     </div>
