@@ -700,5 +700,15 @@ $(window).on("load", function () {
     observer.observe(undoButton, { attributes: true });
   }
 
+  // detect the content change in page_settings button to avoid language check glitch
+  const pageSettingsButton = document.getElementById("page_settings");
+  if (pageSettingsButton) {
+    const observer = new MutationObserver(() => {
+      if (UserSettings.app_language === "EN" && pageSettingsButton.textContent !== "Settings")
+        pageSettingsButton.textContent = "Settings";
+    });
+    observer.observe(pageSettingsButton, { childList: true, characterData: true, subtree: true });
+  }
+
   document.addEventListener("click", () => focus());
 });
