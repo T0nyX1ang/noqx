@@ -60,15 +60,3 @@ class NumRopeSolver(Solver):
         self.add_program_line(display(item="number", size=3))
 
         return self.program
-
-
-__metadata__ = {
-    "name": "Number Rope",
-    "category": "num",
-    "aliases": ["numberrope"],
-    "examples": [
-        {
-            "data": "m=edit&p=7ZRLj9MwEMfv/RQrn+fgZ2LnVhbKpZRHi1Yoiqq0ZLURLVnaBkGqfHfGnqSN0GpZBCoX5GTmZ3vs/DN+7L/U+a6AGIuywEFgUVyHN+L+6cuiPGyK5ArG9eGu2iEAvJ5M4Dbf7ItR2kVlo2PjkmYMzcskZYIBk/gKlkHzNjk2r5JmCs0cuxhobJtSkEF8QSgRb0K/p2tqFBx5RuyHfUAsPxcofVMevlPomyRtFsD8l56F8R7ZtvpasE6Jr6+r7ar0Dav8gL+zvyvvu559/bH6VHexImuhGZPg2eOC1UmweliwvIRgl7Utpv4dSl4mqVf//oz2jPPkyKRmiQamYnIuOE01Qy7i5FRwMTkryFHNReha/5c0I8rQmCNa7DB5yiQftLifY0yIEeLc4r+XMntu8J/EaQYhNoSIQYwXMhiEkkRybH3OvZ0EK4NdYA6gUcE+D5YHa4Kd4o8oAxqnM+BJEckhSSJtQTuKO5H0J6gn2ZEDzWkEBy1oxIkiAZEMZIZkiCILEc1shmSIYgeO92SJLAdHMzsJTlHbiWIBVvYUEzkNzlDckCxR3FHrN7tP4E2w18HqYKOQuthvriduv37LmG7V5B+v2hPlpVKH260v5u/XslHK5vXuNl8XeEineOKvZtVum2+wNqu3q2LX1/GebEfsGwtvqnCw/n91/sOr0y8D/60dfIEd+ws5KeYXr6TBKQJ2Xy/z5brCDcezi8vFM5aNfgA=",
-        },
-    ],
-}
