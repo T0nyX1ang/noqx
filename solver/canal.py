@@ -20,7 +20,7 @@ class CanalSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VRNj5swEL3zK6I5+4CNSYgvVbrd9JLSj6RarRBaEcpqUUnZkrCtHPHfMzOw66TKoVKlVQ6V46f3Zib4eQze/myzphBTHEEkfCFxBJHPM9L084exKndVYUZi1u4e6gaJEB/nc3GfVdvCS4aq1NvbqbEzYd+bBCQIUDglpMJ+Nnv7wdhY2CWmQGiMLfoihfTa0RvOE7vqg9JHHg8c6S3SvGzyqrhb9JFPJrErAbTOW/43UdjUTwUMPkjn9WZdUmCd7XAz24fycchs22/193aolWkn7Ky3uzxjN3B2ifZ2iZ2xS7v4d7vVY33O6DTtOmz4F7R6ZxJy/dXRyNGl2UOowWgBYQhGYSjGkIrwOSEeOB8QBArl2MkxyuBFasoeycmJnFBWvcjIP3lUhGsn8Ab3/hyglV1+erqUVPIPTXntNDs9yrNVtxGpaflnjZuVZo94yzhnVIwrbI+wAeM7Rp8xZFxwzTXjDeMVo2Ycc82EGvyXR9B3/RXsJCri7/h4UDcuKJJ6CSzb5j7LC3yx43azLppRXDebrAK8QzoPfgNPPmb9/1p59WuFmu9f2pt9aXbwW4M8+5FVo6ey+AWpdwA=",
+            "data": "m=edit&p=7VTLTsMwELznK9CefYgfaV1fUHmUSymPFiEURSgtQVSkCqQNQo7y76w3oSGoBw4I9YBcj2Z23Xi8m3j9WsR5wgY4pGY+4zik9mlq5X5+M2bLTZqYAzYsNk9ZjoSxi9GIPcbpOvHCZlXklXZg7JDZMxMCBwYCJ4eI2StT2nNjJ8xOMQVMYWxcLxJIT1t6S3nHjusg95FPGo70DulimS/S5H5cRy5NaGcM3D5H9G9HYZW9JdD4cHqRreZLF5jHGzzM+mn50mTWxUP2XMDnFhWzw9rudIdd2dqVW7tyt13xK3bTl2yX0UFUVVjwa7R6b0Ln+qaluqVTU0KgwCgGQQBGVM5eCULjcwJsODUIpEDZa2UPpdxKJbqy35F9lxVbqf3Oo7Ryhg+hDehOftDdigv+Tbu8arXseuFktT0IV/4XjYflpqxcGxyOCAXhDMvDrCQ8IfQJA8IxrTklvCU8JlSEPVrTdwX+YQvqqv+BnVBo+o6/jmC/IpEXwrTIH+NFgi/2pFjNk/xgkuWrOAW8QyoP3oEmtVn9Xyt/fq244vv79mbvmx381iLvAw==",
         },
         {
             "url": "https://puzz.link/p?canal/17/17/r11q33h33m31h13m31h16q42q16u81z14u21q21u43z16u31q31q62h41m54h31m12h15q21r",

@@ -15,7 +15,7 @@ class BattleshipSolver(Solver):
     category = "var"
     examples = [
         {
-            "data": "m=edit&p=7VTPb9s8DL37ryh05kH0r9i+DGnX7NK525KhCAwjcDp/SLAEzpJ4GBTkfy9Ju7XmGhh6WPcNGBwRL4+U9EhJPHyri30JiPzzItBACPwglIHoytDtN1sfN2VyAeP6uKr2BABuJxP4r9gcSidDma1z52TixIzBvEsyhQqUSwNVDuZjcjLvE5OCmZJLARJ30wS5BK87eCd+RlcNiZpw2mKCc4LL4kh6Dqv1bnHZsB+SzMxA8V6XsgJDta2+l6rVwv/vq+1yzUS3QOs51F+qr3Ubi/kZzLiRPB+Q7HWSGTaSGQ1I5kxeQXKcn89U/k8kepFkrP9zB6MOTpMT2TQ5Kc/jqW9IS3NGyvMf038kAiboDJ+IsE+MmNAWETHhW0Tcm+Lr3i4+MuFZhNufIrtYSsN+xEgirEVjibCEoZYQaw66EmNpxSYdaxkM+jth+CwmkpinBKi8KEWeU5EDjg7g+emrkGsZDnlQc828QZfLLnfQJaX3B10RH/Vo0BVz9Ul430X6J5KFK3ZGtweMJ/atWC02EHsjMddi78ReifXFhhIz4vv3ohtqF/I3ycn8SNrezx+1v7+Ny51MpfV2We4v0mq/LTbUI6arYlcqaspnR/1QMuhWUY//16f/cJ/mo9D/t7fwCzkZVZhei7kFtasXxeK+ojtG9Xsh/+pZ0SPPnQc=",
+            "data": "m=edit&p=7VRNj9owEL3nV6x89sFj5/tSsdully3bFqoViiIUtqlABYUCqSoj/ntnJlCCiVTtYbdbqQoePd6M7efxeDbf62JdSgD6mVgqiUj6QcgDQPNQh2803y7K9Er26u2sWiOQ8r7fl1+Lxab0MuDZKvd2NkltT9p3aSZASKFxgMil/Zju7PvUDqQdoktIQO6uCdIIb0/wgf2EbhoSFOLBASMcI5wWW9Szmc1Xk+uG/ZBmdiQF7XXNKxAUy+pHKQ5a6P9jtZzOxdkCB8+m/lJ9q8Vxm720vUbyuEOyOUk2vyWbbsn6ZSQn+X6P6f+EoidpRvo/n2B8gsN0tydtO2EMTX2DWpo7EsY/Hv9IBEToFhG6RESEahExEX6LSJwpvnJ28YEI0yK0OyVylIZuRBQ5iybaEQYqcuaA1o5WMO4yELg7QXgRE+uzA2B6gZM8xiQHFB3Iy9sXIeUy7PKAopyZTpcml+50cer9TldMVx11uhLKPly6UH+fT6HZjrB6pDVs37JVbAO2dxxzy/aB7Q1bn23IMRHV35MqtJ3IZ5KT+TG3vfMv/Pe43MvEoF5Oy/XVoFoviwX2iOGsWJUCm/LeEz8FD6wq7PH/+/Rf7tN0Feq1vYU/yMkww/ha7L0Uq3pSTB4rrDHM3xP5Fz8VPvLc+wU=",
         },
     ]
 

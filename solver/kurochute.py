@@ -25,7 +25,7 @@ class KurochuteSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VZNj9o8EL7zK1Y+zyG280Fyqeh26YWybaFaraIIhTQr0AaFBvKqMuK/78wkwknEoa8q0UOryKN55osn43HM4UedVjlIDVKCHoMDEh9PK3A9H6QKeDnts9weizy6g0l93JQVKgCP0ym8pMUhH8VtVDI6mTAyEzAfo1hIAULhkiIB8yU6mU+RmYNZoEuAi7ZZE6RQfbDqE/tJu2+M0kF93uqoPqOabausyFezxvI5is0SBP3Oe84mVezK/3LR8iCclbv1lgzr9Igvc9hs963nUH8vX+s2ViZnMJOG7uIKXW3pktrQJe0KXXqL36db7MtrRMPkfMaGf0Wqqygm1t+sOrbqIjqhnEcnoX1KfYcsml0ROkSDukBX9iGF01C0cIwQp6WFHkEb7FEp9wJ9KmWDA7dXKqDKnoVUynrHqlc5pFxbOfR6UDrkttHSIb8tJp1+cSmJWRdTfCdfkb9TX/W54qHoxw+aJl1ijwfoggd8XMrvYG5cJ993+n6/vwvSH/x+MMgfE+7EhwN+4aBe2I9XkvjbnVOS+osfgwvu9gsHS/J4PbOcslQslzh9YDTLDywdlh7LGcc8sHxiec/SZelzTEDz+4sTzrOtcAy1iNxm3G/ALda00dcfGpm/3JOMYrGoq5c0y/EDNq9367y6m5fVLi0E3hXnkfgpePG8uf+uj5tfH9R8539dIn/+xMfYV0+DeQSxr1fpKisLgf89gOx4Hof2m7PHz4J4rasy29THXCSjNw==",
+            "data": "m=edit&p=7VZLj9owEL7zK1Y+zyHjR16Xim6XXijbFqrVKkIoS7Na1KDQQKrKiP/esUMJE3FopYpeVpFH882Mxx/jsc32e5PXBaACRFAxBID0GSVBmxBQRn4Ex2+22pVFegPDZvdS1aQA3I9G8JyX22KQHaPmg71NUjsE+z7NBAoQkgaKOdhP6d5+SO0E7JRcAjTZxm2QJPWuUx+832m3rRED0idHndRHUperelkWi3Fr+ZhmdgbCrfPWz3aqWFc/CnHk4fCyWj+tnOEp39GP2b6sNkfPtvlafWvE7yUOYIct3ekFuqqjq0501WW68p/QLTfVJaLJ/HCggn8mqos0c6y/dGrcqdN0f3CM9kKFbuobYtHuilAJGeQJauTQhWMHY4LqBE3Mgo1LpU8wRBYcaZYqcplNB2PmjSXLnGiWOTEMYqBZNAaGJcOAJ0fEHjZ8vkSeX3KudCh4fK9oqB378Az3+OiIY8P3AMOA+8Owh3vrR735ccLjkx6/pJcv4fESJds5ia6+0Rk+rxc1Fvr2evRy5KX0ckbdB1Z5+c7LwEvj5djH3Hn54OWtl9rL0MdErn//sMN9b0tqQyVS3bb7FbhlKvS35qXPvHrmg0xMm/o5XxZ0gU2a9VNR30yqep2Xgt6Kw0D8FH74ftOvz8fVnw9X/OCvHpH/f+IzqqtRYO9BbJpFvlhWpaD/HuDsdB779quzp2thPvgF",
         },
     ]
 

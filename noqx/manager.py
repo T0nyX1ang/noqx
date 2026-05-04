@@ -149,7 +149,7 @@ class Solver:
         aliases (List[str] = []): A list of alternative names for the solver.
         examples (List[Dict[str, Any]] = []): A list of examples of the solver, each example can be created in two conflicting ways, `data` and `url`:
 
-            * `data`: directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`. The URL are suggested to be generated with the following conditions:
+            * `data`: directly draw the board in noqx and get the data URL by using `Share → 🔗 → Copy`. The URL are suggested to be generated with the following conditions:
                 * contains **all** the required `modes` in this puzzle.
                 * contains the required `sub-types` in this puzzle.
                 * contains necessary initial conditions to pass the coverage tests.

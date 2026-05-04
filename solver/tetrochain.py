@@ -18,7 +18,7 @@ class TetroChainYSolver(Solver):
     aliases = ["tetrochainy"]
     examples = [
         {
-            "data": "m=edit&p=7VVRb9MwEH7Pr6juCaRDimOna/NWxspLyYAWTVMURWnItLCUjKRB4Kr/fXeXSA20D+yBTUjI9ZevX87nz+fabb61aZ2jcvmjJ0hPakZNpHuTsXS3b6tiW+bBCGft9raqiSBezud4k5ZN7kR9VOzs7DSwM7Rvgwg8QOkKYrQfgp19F9gQ7ZJeARrSFsQUoEf04kCv5D2z805ULvGwS6iIXhPNijor82TRKe+DyK4QeJ7XMpopbKrvOXQp5HtWbdYFC+t0S4tpbov7/k3Tfq7u2j5WxXu0s87u8oRdfbDLtLPL7IRdXsVftjuN93sq+0cynAQRe/90oJMDXQY7wjDYgRnzUC9hr7xDlNFXki3hCvfS2O2ihpJ/NPDMHEvTo1xTSW8SPZAklz8cqFyZ0gxHKlcmMIk70PSJOP17PlqskiVfC84FPcEVVQStFnwj6Ar6gguJuRC8EjwXNIJjiTnjmv5h1YHtegiaimC6LXgCb5HuzvOvzf/3tNiJYNnWN2mW088/bDfrvB6FVb1JS6D7Zu/AD5Aeab6+/l9Bz3QF8Ra4j7qInv+ERlRdOif2EuG+TdIkq0qgfzFk3fiP07U60p98tXTs4Wf6pbhLbTt6waxJv77ib/R8CbHzAA==",
+            "data": "m=edit&p=7VVNb9pAEL37V0RznsN+mYBvNA29UPIBURRZlmVcR0E1cmpwFC3yf8/sLIqdwqE5NFGlar3Pj7ezw9tZdtn8arK6QCnco4dIb2pGDrmr4YC72LfFalsW0QmOm+1DVRNBvJhM8D4rN0UQ76OSYGdHkR2j/RbFoAC5S0jQXkU7+z2yM7RzGgI0pE2JSUBF9Lyjtzzu2JkXpSA+8wkl0Tui+arOyyKdeuUyiu0CwX3PF57tKKyrpwJ8Cv6cV+vlygnLbEuL2TysHvcjm+ZH9bPZx8qkRTv2dudH7OrOrn61q4/bVX/f7ihpWyr7NRlOo9h5v+nosKPzaNc6XzswAzdVpc6r2yHKGErOlqpOGggf1ZfCg4mn5lAaHeQacXqT6p7EucL+RCmED1N9zXhN9DR9JE7/no8WK3nJd4wTRsW4oIqg1YxfGQVjyDjlmHPGW8YzRsM44JhTV9M/rDo4uwpBUxGM34IP8BZrf57ftvDf05IghnlT32d5QT//WbNeFvXJrKrXWQl037QBPAP3WLvr6/8V9ElXkNsC8a6L6PNPaEzVpXNiLxAemzRL86oE+hdDp5vwfbqWB/qHr5aOfRK8AA==",
         },
         {"url": "https://puzz.link/p?tetrochain/9/9/c33d37k32d35k31d32k22d41t34", "test": False},
     ]

@@ -13,7 +13,7 @@ class DoppelblockSolver(Solver):
     category = "num"
     examples = [
         {
-            "data": "m=edit&p=7ZXfb5swEMff+Suqe74HGzsE/JZ1zV4yui2ZqspCEWFUjUZES8I0Ocr/3vOBCup+aHtY+jI5/urLx2dyZ8fO/rHNmxITaipGgZKaigX3WPuP6Ntqe6hKc4Gz9nBfN2QQr+dzvMurfRlYyXNFFhxdYtwM3TtjQQJCSF1Chu6jObr3xqXoljQEqIktuqCQ7NVgb3jcu8sOSkE+7T3ZW7LFtimqcr3oyAdj3QrBf88bnu0t7OpvJfR5+Oei3m22HmzyAxWzv98+9CP79kv9te1jZXZCN/t1umpI19suXe9+kq6v4h+nm2SnEy37J0p4bazP/fNg48EuzZE0NUdQwk+NKZdub0BJfhft1TPRnoRiRCYvie5mRSMSeqIGMOHXjEA0fQFizkUmA0kUEz0QKSJG0xGiGYTGQYq//LkGqlVyxbesc9aQdUULgk6xvmUVrBPWBcdcsd6wXrJq1ohjpn5J/3DRQVNBulv6MyRldcineGjReZ+zwMKybe7yoqSfa9ruNmVzkdbNLq+A7odTAN+Bu1UUrv9fGa90ZfgtEH91cbz+kbJuiUqgu0Z4aNf5uqgroH8d/B3X6gd+9qroWEL+2JSQBU8=",
+            "data": "m=edit&p=7VXBbtpAEL37K6I5z2HXuxjbN5qGXAhpCxGKLAsZxwgUIycGV9Ui/3tnxxRbtImSQ8klWvbp+e0M+2bMLtvnKikzDGgoHwVKGsoXPH1tP+IwputdnoUXOKh2q6Ikgng7HOIyybeZE0nOFbGzN0FoBmiuwwgkILg0JcRovod7cxOaMZoJLQFq0kZNkEv0qqUzXrfsshGlID4+cKL3RNN1mebZfNQo38LITBHsPl8421LYFD8zOPiwz2mxWaytsEh2VMx2tX46rGyrh+Kxgj9b1GgGL9tVrV11tKv+bdf9/3aDuK6p7T/I8DyMrPe7lvotnYT72vragxI21ScvzbsBJfm73I6ireKKjtI7VXST5XUU1yqqFXr6RPD6J4LPXmTQKoFiRbeKFB5L/Y5EGSR1gxRvfqyBapVc8T3jkNFlnFJD0CjGr4yCscc44pgrxhnjJaNm9Dimb1v6xqaDpoJ00/ozmIq0y6e4Hd55n2MngklVLpM0o5/ruNossvJiXJSbJAe6H2oHfgHPSFG4/rwyPujKsK9AvOvi+PgjFZkJKoHmFuGpmifztMiB/nXwNV2rv/SzV0XHMnZ+Aw==",
         },
     ]
 

@@ -26,7 +26,7 @@ class SquareJamSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VTRbpswFH3nKyo/3weMgWC/TFmX7CWj25qpqhCKSMrWqInoIEyTo/x7772QJvU6TVOmTpMmwtHh+BofjnPdfG2LugQNUoJKwAeJl0p8CKMY9IB+fn9Nl5tVac5g2G5uqxoJwMV4DJ+LVVN6WV+Ve1urjR2CfWsyEQjgW4oc7Aezte+MTcFe4pCAELUJMikgQDo60CseJ3beidJHnvYc6TXSxbJerMrZpFPem8xOQdA6r3k2UbGuvpWim8bPi2o9X5IwLzb4Mc3t8r4fadqb6q7ta2W+Azvs7I72dmmV3q462CXa2SX2jF36ipPtljdfyqadP+dV57sdZv4R3c5MRsY/HWhyoJdmi5iarYhimqrQSLcxIhqQ8OpISEjAjXsUtFMR+05FzBVHL00Cp0JHzjs0+zgWXB/a9SF9VijivRJIZ5JUoWNFKl76ieJmIJW7uFRP18L0JGd4zThmDBinGDFYxfiG0WeMGCdcM2K8YjxnDBljrhnQJv3WNp5uR4QhpqATbFHs/CDCINUvLWZBwkfE8RX9e0ruZWKETXWWVvW6WGFjpe16Xtb7ZzzGdp74LvjOFE4J/59sf+Nko/z9F26MU/s0w2gfewrsBYj7dlbMFhX+zzA/Go6l+tlA+KdmYHv/MPDiSeGJIfDPeFfgtubeAw==",
+            "data": "m=edit&p=7VRNb5tAEL3zK6I5z4FlAbNcKie1c3GdtnEURQhZ2CGJFVukYKpqLf57Zwdj0k2iqkqUqlKFeXrMB/v8ltnqW52VOSoUAmWELgo0xEU/CFENzM/dX7PVdp3HRzist3dFSQTxbDzGm2xd5U6yr0qdnVaxHqI+jRPwAPkWkKL+Eu/0p1hPUZ9TCtCn2ISYAPSIjnp6yXnDTtqgcIlP95zoFdHlqlyu8/mkjXyOEz1DMOscc7ehsCm+59C28fOy2CxWJrDItvRnqrvVwz5T1dfFfQ3dEg3qYSt31MkVvVzZy5UHufJ5ud5byM2vb/OqXjynVaVNQ55/JbXzODHCL3oa9fQ83jVG1A6C0LRKEtJuDAQDE/jwKBBBu3mHgLIqQteqCJX10sizKlRgvUOFdsDWoWwdwo26LeoinrCahPQtKUIGTyK2B0Laiwv561rknmAPrxjHjB7jjCxGLRk/MrqMAeOEa0aMl4wnjD5jyDUDs0l/tI2vlwO+Ty6oiEaUJt8LyEj5W4mJF/ER8fgK/r1I6iQwoqE6mhblJlvTYE3rzSIvu2c6xhoHfgDfiaQW///J9jdONuO/+86D8do5Tcjaw0yhPkN4qOfZfFnQd0b+mXQo5EsJ/606aLyfJN7dKToxUucn",
         },
         {"url": "https://puzz.link/p?squarejam/11/11/zj1h2h3zl2h3h3zl2h1h3zj", "test": False},
     ]

@@ -23,7 +23,7 @@ class BoxSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VVBj5s8EL3zK1Y+zwFjA4Zbut30kma/r0m1WiEUEcpqoxKxJaGqHOW/73gMwS09tIfu9lARj14eb5w3Hts5fOmKtgLOzUco8AERyDCiwXlAw++f9e5YV+kVzLrjY9MiALidz+GhqA+Vl5lMfHLvpJNUz0C/SzPGGbAAB2c56P/Tk36f6iXoFb5iIJBbWFGA8GaEd/TeoGtLch/xsscI7xGWu7asq83CMv+lmV4DM7/zhrINZPvma8V6H+Z72ey3O0NsiyMWc3jcPfVvDt2n5nPXa3l+Bj2zdleDXTnaNc57uwZauwb9xK6p4g/bTfLzGZf9AxrepJnx/nGEaoSr9IRxmZ6YEJQaohnbHCakYQLhMKFhhO8w0UQTTxhFjDtz8qNG+hOGExM5DM3MzWL2TGgZBlFPRAERcpTExOCGGySxzXHcKGLwpwdJYmfBpEHCfaJw3kHD/YkbzonCmS+igNKcGrgYmIvGLhgu5CiylcaOKKS070S2VuWIoulMttrEESnbZ5exfXYZ22eXoT679dtVc4tV1Ge3NEV9dutIqM+u6YT6fHGIu5HTnrynOKcYUFzjlgUtKL6l6FMMKS5Ic0PxjuI1RUkxIk1sNv0vHgsmsZwAdx3WIO0ZeQFvmVT20nSe+O9ici9jq659KMoKb55lt99W7dWyafdFzfCqP3vsG6ORCfPP8e/2f6Xb37TA/63/gNc/exmurkxA3wJ76jbFpmxqBrh2xKsJ/+Lu8YDm3jM=",
+            "data": "m=edit&p=7VVBb5swFL7nV1Q++8CzDRhuWdfskqXbkqqqEIpIRtVoiehImCZH+e97fiY1gx66w9odJvDT4/Nn830P2+y/N0VdcgB7S80DjhlXYUQNQFAL2muxOWzL9IKPm8NDVWPC+fVkwu+L7b4cZUBjIR8dTZKaMTcf0owB40xgA5Zz8zk9mo+pmXEzxy7GJWJTRxKYXvn0lvptdulACDCftTmmd5iuN/V6Wy6nDvmUZmbBmX3POxptU7arfpSs1WGf19VutbHAqjigmf3D5rHt2Tdfq28NO7/ixM3YyZ2f5SovV3q58kmufF6u+Ptyk/x0wrJ/QcHLNLPab3yqfTpPjyer68ikpKEhinEfh0llESE7SGgRGXSQaMCJB4gmpDtz0ueoYIAAIVEHoZkBPBLGrd2oBSJBgPKUmBDhKXHc96kJkZ6SuFmEp0BAkPIcCAZqAAgKOyRBwzoeQJ6RJ44rmOySnNO4QwrFgOS86g4pGs7k3CYdkpa9moFWvRKBDnsVAR31/euBWa371nTS95EEfdEJ/KYQVyPQmryjOKEoKC5wyXIjKb6nGFAMKU6Jc0XxluIlRUUxIk5sF/0LtwVTaEfgqkMPyu2RV9CWKc2hd8X/FpKPMjZv6vtiXeLJM2t2q7K+mFX1rtgyPOpPI/aTUcuk/XP8P/3f6PS3nyD4o3/A2++9DKurEm6uOXtslsVyXW0Zx9oRrgf4q6vHDZqPfgE=",
         },
     ]
 

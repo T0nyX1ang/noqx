@@ -18,5 +18,5 @@ const style_tag_cache = {
   constraints_settings_css: "link#constraints_settings_css",
 };
 
-const penpa_edit_hash = "aaa65640a869e75b840dbe81a5ef323fc8be3d08";
+const penpa_edit_hash = "7785887bbc7f985a387199989e2c7d76efec4dab";
 const penpa_edit_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;

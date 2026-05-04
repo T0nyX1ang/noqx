@@ -18,7 +18,7 @@ class MochikoroSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VVRi5tAEH73VxzzPA+uu5rcvpT0eulL6rVNSjhEgrEekTNsamIpG/Lfb3aUmhYPehykUIrZj2++Hcdvx3Wz/9ZkdYFCuJ8co4/EUIURDyECHn53LcpDVegrnDSHjamJIN5Np/iQVfvCS7qs1Dvaa20naN/rBAQgBDQEpGg/6aP9oG2Mdk5TgIq0WZsUEL3t6ZLnHbtpReETjztO9J5oXtZ5VaxmrfJRJ3aB4J7zlu92FLbmewGdDxfnZrsunbDODrSY/abcdTP75qt5bLpckZ7QTlq78wG7srfraGvXsQG7bhWvt1vtzJDR6/R0ooZ/JqsrnTjXX3o67ulcHwljfYTQp1vp3bbvBEL5axi5woo8dkLEwpteGI1JUD9D4QuKZR8HruBZrH6vKCJXoX+kGLkK47NYncXkWrD3e8YpY8C4oKWhlYzvGH3GkHHGObeMS8YbRsUYcc7INecP2wcyAK0QJK0vaHt5AW+JpE9w4Ar/XTX1Epg39UOWF7Tj42a7Luqr2NTbrAI6XE4e/AAevMvU//Pm4ueNa77/olPn73/FCfWVviV7h7BrVtkqNxXQnxWyLp/Rn8t/aZ3X1794N+nood2Rb8pHUxtIvSc=",
+            "data": "m=edit&p=7VVNb5tAEL3zK6I5z4H9AJO9VM6He3GdtnYVRQhZmBLFKhYuNlW1Fv+9swMxceRIjVq5UhXBPr15u8y+Hdhl871OqxyFcLeK0EdiqIOQmxCSm99ds+W2yM0ZDuvtQ1kRQbwZjfA+LTa5F3ejEm9nz40don1vYhCAIKkJSNB+Mjv7wdgJ2il1AWrSxu0gSfS6p7fc79hlKwqf+KTjRO+IZssqK/L5uFU+mtjOENw8F/y0o7Aqf+TQ+XBxVq4WSycs0i0tZvOwXHc9m/pr+a2GxykatMPW7vSIXdXbVXu76rhd+VfsFuvymNHzpGmo4J/J6tzEzvWXnkY9nZpd4xztIPDpUXq37TuBQB2GoUusYS+ELLzrhUFEgt6HwhcUqz6W6jDWzzOKMDqYUgxchuhJrJ/E5Fqw9zvGEaNknNHS0CrGK0afMWAc85hrxlvGS0bNGPKYgSvOb5YPlASjERStT7a1PIG3WEneks+v4P9VEy+GaV3dp1lOX/ykXi3y6mxSVqu0ADpcGg9+Ajf+yvTbeXPy88YV33/VqfPvd3FMdaW9ZG8Q1vU8nWdlAfSzQtbVC/pL41+b58/zn7yadPQk3i8=",
         },
         {
             "url": "https://puzz.link/p?mochikoro/22/13/4l2k4m3w4p5h1n2x2v4i2h4k2h5p2k4m5j4q2t2u3n4g4l3o4o2n2j2zk2g1n1o",

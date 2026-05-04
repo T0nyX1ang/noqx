@@ -23,7 +23,7 @@ class UsotatamiSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VVdb9owFH3Pr6j8fB9i59svE+tgL4xuK1NVRREKNFujgdIRMlVG/Pce36QN0mDVhsReJstHx+fa5vjG19Q/mnxdUIzmxeSSRPN8xV25CXe3a9Nysyz0BQ2azX21BiG6Go3oa76sCyftZmXO1iTaDMi816lQgrhLkZH5pLfmgzYTMtcICZLQxmBSkAId9vSG45ZdtqJ0wScdB70FXZTrxbKYjVvlo07NlIT9nbe82lKxqn4Wol3G40W1mpdWmOcbHKa+Lx+6SN3cVd+bbq7MdmQGrd3hAbteb9fS1q5lB+zaU5xst7j7VtTN/JDXJNvtkPPPcDvTqTX+padxT6/1FjjRW6FCu/QNjLQfRqjICtGeEFsh3BMSKwS94LlW8PcEaQVvT1BWwMd/Ebzn7LIAM5It3TKOGBXjFI7JeIzvGF3GgHHMc4aMN4yXjD5jyHMie+Y/ysrpdpACX+gkxumCmGSEDHmvWkxVyDXXt+C848xJxRC362JSrVf5Ejds0qzmxfp5jHreOeJRcE89LPH/l/i/KHGbf/fMV/rUCkuR2pdqIHNF4qGZ5bNFhXuG/LXhCP86MW7QkXCsSCZ4aI6EgwSbI0dHwiE2j45vHqICIjxafxn+/eavWDvl3Hhqfgmc/dvj9RJNXW3yTb4qReY8AQ=="
+            "data": "m=edit&p=7VVdb9owFH3Pr6ju832I7Xz6ZWId9IXRbaWqqihCgWYrKihdQqbJKP991zdAkAarWib2Mlk+Oj7Xdo5vfJPqe52VOUbUVIQuCmrKk9ylG3N3N208Xy1yfYG9evVYlEQQrwcD/JotqtxJNrNSZ21ibXpornQCEpC7gBTNZ702H7UZobmhEKAgbUhMAEqi/Y7ecdyyy1YULvHRhhO9Jzqbl7NFPhm2yiedmDGCfc57Xm0pLIsfObTLeDwrltO5FabZig5TPc6fN5Gqfiieatg+okHTa+32D9hVnV21s6sO25V/w27+8C2v6ukhr3HaNJTzL+R2ohNr/LajUUdv9LqxptYgA7v0HRlpXwzI0ArhnhBZIdgTYiv4naBcK3h7grCC2hMktBdgJ6htdlkgM4It3TMOGCXjmByjUYwfGF1Gn3HIc/qMd4yXjB5jwHNCe+ZXZeV0O5QCD3Qc0en8CEVIGVIvWkxkwDXXNf+849RJoE+362JUlMtsQTdsVC+nebkdUz03DvwE7omiJd7/Ev8XJW7z7575Sp9aYQmldlcNaK4RnutJNpkVdM8of204pL9OJI+GI4ki9o6G/Zg2F0fDAW0eHt88oAoI1ZvDf978BWunnJs+Nb8Fzv7u6euVOr8A"
         },
         {"url": "https://puzz.link/p?usotatami/8/8/7b23b6b4b2f2d4a21a2b4b3a3e8e5b3b2b32b3", "test": False},
     ]
