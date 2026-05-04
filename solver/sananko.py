@@ -20,7 +20,7 @@ class SanAnkoSolver(Solver):
     category = "num"
     examples = [
         {
-            "data": "m=edit&p=7VbRT9s+EH7vX4H87IfYTpOQN8ZgLyxslAmhqKpKF0S1VmFp89NPqfjfuTuf1cSmGy9jQpra2O73Xa/3+bvE3fxs500lVYRvk0mY4RWrjC6dJXRF/LpebldVfiRP2u1D3cBCysvzc3k/X20qOSo5bDradcd5dyK7T3kplJBCw6XEVHZf8133Oe8mspsAJWQM2IUN0rA82y9viMfVqQVVBOvCrmMprjDdLXxcLJvFqppdQAQgX/Kyu5YCyQ+UAZdiXf9XCa4FPy/q9d0Sgbv5FhRtHpaPzGza7/WPlmMhoVi3q+1yUa/qBkHEnmR3YmUUTgaWyTLMXgYurQxcvSBDv42M45dlPIFNVyBklpeo6dt+me2Xk3wnjBY57LgxdkrslNKUWi61XGq51HJZZCdFk1Ixz2OeM56P7axtKqVtLjVmfsx8wnyCPJRWcGklthcSKByLdC1iAShpEIEVlyLpARQR9wAofwCggkFSqn0QQiqGCOoY/DIp8hD6Vj8zqushoFPlOxhvabwGV2RnaPxIY0TjmMYLijmj8YbGUxpjGhOKSdHXVzsPwrXbarDPdS2VGpOaHoAG9YA/VHpp7DNq+Bq/P2w6KsWkbe7niwru2qJd31XNUVE36/lKwCP0aST+F3SVBnbU/HuqvpOnKloWvfIOs/fW37nJS2gYo2V3KcVjO5vPQAftOeHGw2GvCU88HFqN8NTDxxZP/fwJ437+lHE/f8a4nx92H/Es8nBsBCKUT0ADIAHHkM+wZjiYfIZVw+PeZ1g3PPZ9hpXDceYzrB0OBp9h9XBA+Azrh4PCZ3gH4Fj0LeQtgKPEZ3gPQtcP2a4P+a4PGa9Zf+CMZvmBM9p5H6Ry5gc/ztqDLjIsPWg7c9B9c9B949wPXDHO/cAV49wPXDHO/cAV49wPusw494MuM879oMti537QZTHtQQHVy8GxvY+grxYyzn4TAOJ+FQBd4Xtspm/ywIN/B9PRMw==",
+            "data": "m=edit&p=7VffT9swEH7vX4H87Ic4TpOQN8ZgLyxslAmhqKpCF0S1VmFpM6FU/O/cnc9rYtOxSfshpCmN7Xzf9erP39Vu11/bsqmkCvClUwk9XJFK6Q7TmO6Ar8vFZlllB/Ko3dzVDQykPD89lbflcl3JUcFh09G2O8y6I9m9ywqhhBQh3EpMZfcx23bvs24iuwlQQkaAnZmgEIYnu+EV8Tg6NqAKYJybcSTFBaa7hsf5opkvq9kZRADyISu6SymQfEMZcChW9bdK8FzweV6vbhYI3JQbULS+W9wzs24/119ajoWEYtUuN4t5vawbBBF7lN2RkZE/I0PvZODQyMDRMzLCnoz6YXbyByQcPi/hESy6ABGzrEA9n3bDdDecZFuhQ5HBamttuth0CXWJ4RLDJYZLDJcGplPUKRVxP+Y+5f7Q9KFJpUKTS42ZHzMfMx8jD1PLeWoFlhYSKBwnacvDADClQQTOuBBxD6CIqAfA9AcAKhgkpbkPQkjFEEEdg08mRQ5C7+pnRnU9BHSqbAvtNbWX4IrsNLVvqQ2oHVN7RjEn1F5Re0xtRG1MMQn6+pPO20UG42yt0iQj0tED0Joe0J+00Lh4IOZ7cQtaBtVHUrSgh/xGpYU229nwGr8+bDoqxKRtbst5BV/yvF3dVM1BXjercgnPk7vyvhKw6z6OxIOgu9Bgh/6/Eb+CjRjtCn7pS/lv9oUCikWHsjuX4r6dlTPQQWVBuHZwWGfCYwcHfwhPHHxs8MTNHzPu5k8Yd/OnjLv5YfURTwMHxyIgQrkEFAAScHK5DGuGs8xlWDWcEC7DuuGkcBlWDiegy7B2OEtchtXDmeIyrB/OFpfhFYCT1LWQlwBOH5fhNfBd32d7uM/3cJ/xIev3nAlZvudMaL33UlnzvQ9n7V4VaZbulZ3e677e67627nuuaOu+54q27nuuaOu+54q27ntVpq37XpVp675XZZF136uyiNYgh9nLwXm/i6C35jJKXwgAcT8KgKpwPbZl5HmP+LWPUx7A3SJ6AfecYhz+8bj4X9mA4RfLdPQE",
         },
     ]
 
@@ -39,11 +39,8 @@ class SanAnkoSolver(Solver):
             self.add_program_line(general_shape("omino_3", i, o_shape, color="black", adj_type=4))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"hole({r}, {c}).")
-
-            if color == Color.WHITE:
-                self.add_program_line(f"not black({r}, {c}).")
+            fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -54,6 +51,13 @@ class SanAnkoSolver(Solver):
                 self.add_program_line(f":- #sum {{ N, R, C: number(R, C, N), |{r} - R| + |{c} - C| = 1 }} != {num}.")
             else:
                 self.add_program_line(f"number({r}, {c}, {num}).")
+
+        for (r, c, d, _), symbol_name in puzzle.symbol.items():
+            validate_direction(r, c, d)
+            if symbol_name == "ox_E__1":
+                self.add_program_line(f"black({r}, {c}).")
+            if symbol_name in ("ox_E__4", "ox_E__7"):
+                self.add_program_line(f"not black({r}, {c}).")
 
         self.add_program_line(display(item="number", size=3))
 
