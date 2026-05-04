@@ -423,7 +423,7 @@ class PenpaPuzzle(Puzzle):
         self.solution = json.loads(reduce(lambda s, abbr: s.replace(abbr[1], abbr[0]), PENPA_ABBREVIATIONS, self.parts[4]))
         self._pack_board()
         self.parts[4] = reduce(lambda s, abbr: s.replace(abbr[0], abbr[1]), PENPA_ABBREVIATIONS, json.dumps(self.solution))
-        return PENPA_PREFIX + b64encode(compress("\n".join(self.parts).encode(), level=-1)[2:-4]).decode()
+        return PENPA_PREFIX + b64encode(compress("\n".join(self.parts).encode())[2:-4]).decode()
 
     def _pack_surface(self):
         """Pack surface elements into the board.
