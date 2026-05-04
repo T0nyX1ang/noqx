@@ -8,19 +8,26 @@ function parseParam(data) {
   return paramArray;
 }
 
-function exp(saveRecord = false) {
+function exp(saveUndo = false) {
   clearInfo(); // clear every information created by penpa itself
-  if (!saveRecord) return pu.maketext().split("#")[1]; // return the puzzle data without saving undo record
+  const undoStatus = document.getElementById("save_undo").checked;
+
+  if (!saveUndo) {
+    document.getElementById("save_undo").checked = false;
+    const result = pu.maketext().split("#")[1]; // return the puzzle data without saving undo record
+    if (undoStatus) document.getElementById("save_undo").checked = true; // restore undo status
+    return result;
+  }
 
   document.getElementById("save_undo").checked = true;
   let result = pu.maketext().split("#")[1];
-  document.getElementById("save_undo").checked = false;
+  if (!undoStatus) document.getElementById("save_undo").checked = false; // restore undo status
   return result;
 }
 
 function hookExp() {
   const baseUrl = pu.maketext_baseurl();
-  let result = exp();
+  let result = exp(document.getElementById("save_undo").checked);
   let paramArray = parseParam(result);
   let rawData = decrypt_data(paramArray.p).split("\n");
   rawData[0] = rawData[0]
