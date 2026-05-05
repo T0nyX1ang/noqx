@@ -389,7 +389,7 @@ $(window).on("load", function () {
 
   // solver_metadata is defined in solver_metadata.js
   for (const [ptype, pvalue] of Object.entries(solver_metadata)) {
-    typeOption = {
+    const typeOption = {
       value: ptype,
       label: pvalue.name,
       customProperties: { aliases: pvalue.aliases },
