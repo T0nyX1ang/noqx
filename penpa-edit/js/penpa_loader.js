@@ -1,23 +1,3 @@
-const Identity = {
-  appOwner: "Noqx",
-  okButtonText: "ok 🙂",
-  errorTitle: "Noqx says",
-  infoTitle: "Noqx says",
-  solveTitle: undefined,
-  solveDefaultMessage: "Congratulations 🙂", // Default - Congratulations 🙂
-  solveOKButtonText: "Hurray!",
-  incorrectMessage: "Keep trying 🙂",
-  addUsageButtons: {},
-};
-
-const style_tag_cache = {
-  color_theme: "link#color_theme",
-  base_structure: "link#base_structure",
-  tab_setting_css: "link#tab_setting_css",
-  custom_color_css: "link#custom_color_css",
-  constraints_settings_css: "link#constraints_settings_css",
-};
-
 const penpa_edit_hash = "7785887bbc7f985a387199989e2c7d76efec4dab";
 const penpa_edit_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;
 
@@ -36,6 +16,13 @@ const style_sources_ids = [
   "custom_color_css",
   "constraints_settings_css",
 ];
+const style_tag_cache = {
+  color_theme: "link#color_theme",
+  base_structure: "link#base_structure",
+  tab_setting_css: "link#tab_setting_css",
+  custom_color_css: "link#custom_color_css",
+  constraints_settings_css: "link#constraints_settings_css",
+};
 for (let i = 0; i < style_sources.length; i++) {
   const style = document.createElement("link");
   style.rel = "stylesheet";
@@ -48,7 +35,7 @@ for (let i = 0; i < style_sources.length; i++) {
   style_tag_cache[style_sources_ids[i]] = style;
 }
 
-const noqx_style_sources = ["./css/style.css", "./css/choices.alter.css"];
+const noqx_style_sources = ["./css/style.css"];
 for (let i = 0; i < noqx_style_sources.length; i++) {
   const style = document.createElement("link");
   style.rel = "stylesheet";
@@ -113,3 +100,16 @@ for (let i = 0; i < noqx_script_sources.length; i++) {
   script.async = false;
   document.head.appendChild(script);
 }
+
+// message config
+const Identity = {
+  appOwner: "Noqx",
+  okButtonText: "ok 🙂",
+  errorTitle: "Noqx says",
+  infoTitle: "Noqx says",
+  solveTitle: undefined,
+  solveDefaultMessage: "Congratulations 🙂", // Default - Congratulations 🙂
+  solveOKButtonText: "Hurray!",
+  incorrectMessage: "Keep trying 🙂",
+  addUsageButtons: {},
+};
