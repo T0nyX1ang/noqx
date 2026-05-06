@@ -1,14 +1,10 @@
+const OFFLINE_MODE = false;
+
 const penpa_edit_hash = "7785887bbc7f985a387199989e2c7d76efec4dab";
-const penpa_edit_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;
+const remote_penpa_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;
+const local_penpa_prefix = `./penpa-edit/core/`;
 
 // stylesheet loading
-const style_sources = [
-  "./css/light_theme.css",
-  "./css/base-structure.css",
-  "./css/vanillaSelectBox.css",
-  "./css/spectrum.css",
-  "./css/select2.css",
-];
 const style_sources_ids = [
   "color_theme",
   "base_structure",
@@ -23,30 +19,39 @@ const style_tag_cache = {
   custom_color_css: "link#custom_color_css",
   constraints_settings_css: "link#constraints_settings_css",
 };
-for (let i = 0; i < style_sources.length; i++) {
+const penpa_style_sources = [
+  "./css/base-structure.css",
+  "./css/vanillaSelectBox.css",
+  "./css/spectrum.css",
+  "./css/select2.css",
+];
+for (let i = 0; i < penpa_style_sources.length; i++) {
   const style = document.createElement("link");
   style.rel = "stylesheet";
   style.type = "text/css";
-  style.id = style_sources_ids[i];
-  if (i === 0) style.href = style_sources[i];
-  else style.href = penpa_edit_prefix + style_sources[i];
+  style.id = style_sources_ids[i + 1];
+  style.href = (OFFLINE_MODE ? local_penpa_prefix : remote_penpa_prefix) + penpa_style_sources[i];
   style.async = false;
   document.head.appendChild(style);
-  style_tag_cache[style_sources_ids[i]] = style;
+  style_tag_cache[style_sources_ids[i + 1]] = style;
 }
 
-const noqx_style_sources = ["./css/style.css"];
+const noqx_style_sources = ["./css/light_theme.css", "./css/style.css"];
 for (let i = 0; i < noqx_style_sources.length; i++) {
   const style = document.createElement("link");
   style.rel = "stylesheet";
   style.type = "text/css";
   style.href = noqx_style_sources[i];
   style.async = false;
+  if (i === 0) {
+    style.id = style_sources_ids[i];
+    style_tag_cache[style_sources_ids[i]] = style;
+  }
   document.head.appendChild(style);
 }
 
 // script loading
-const script_sources = [
+const penpa_script_sources = [
   "./js/libs/jquery-3.7.0.min.js",
   "./js/libs/localforage.min.js",
   "./js/libs/md5.min.js",
@@ -84,10 +89,10 @@ const script_sources = [
   "./js/timer.js",
   "./js/conversion.js",
 ];
-for (let i = 0; i < script_sources.length; i++) {
+for (let i = 0; i < penpa_script_sources.length; i++) {
   const script = document.createElement("script");
   script.type = "text/javascript";
-  script.src = penpa_edit_prefix + script_sources[i];
+  script.src = (OFFLINE_MODE ? local_penpa_prefix : remote_penpa_prefix) + penpa_script_sources[i];
   script.async = false;
   document.head.appendChild(script);
 }
