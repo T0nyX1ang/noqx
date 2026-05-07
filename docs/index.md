@@ -86,8 +86,8 @@
     -pt PARALLEL_THREADS, --parallel-threads PARALLEL_THREADS
                           parallel threads.
     -B, --build-document  build the documentation site.
-    -D, --enable-deployment
-                          enable deployment for client-side purposes.
+    -D, --deployment-mode enable deployment mode for static sites.
+    -O, --offline-mode    enable offline mode.
 ```
 
 ### Write a new solver

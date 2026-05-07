@@ -1,6 +1,4 @@
-const ENABLE_DEPLOYMENT = false;
-
-if (ENABLE_DEPLOYMENT) {
+if (DEPLOYMENT_MODE) {
   const clingo_script = document.createElement("script");
   clingo_script.type = "module";
   clingo_script.src = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.web.js";

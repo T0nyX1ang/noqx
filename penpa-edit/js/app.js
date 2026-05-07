@@ -325,7 +325,7 @@ if (pageSettingsButton) {
 
 $(window).on("load", function () {
   const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
-  if (ENABLE_DEPLOYMENT) {
+  if (DEPLOYMENT_MODE) {
     clingo.init(CLINGO_WASM_URL);
   }
 
@@ -547,7 +547,7 @@ $(window).on("load", function () {
         puzzleParameters = {}; // reset parameters
       }
 
-      if (ENABLE_DEPLOYMENT) {
+      if (DEPLOYMENT_MODE) {
         try {
           const puzzle = prepare_puzzle(puzzleType, puzzleContent, puzzleParameters);
           if (!puzzle["success"]) {
@@ -678,7 +678,7 @@ $(window).on("load", function () {
 
   resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
-      if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+      if (DEPLOYMENT_MODE && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
       hookLoad(puzzleContent);

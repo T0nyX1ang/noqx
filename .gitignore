@@ -164,6 +164,7 @@ cython_debug/
 .pdm-python
 
 # Auto-generated supporting file
+config.js
 solver_metadata.js
 pyscript.json
 penpa-edit/core/*

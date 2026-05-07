@@ -21,7 +21,7 @@ parser.add_argument("-d", "--debug", action="store_true", help="whether to enabl
 parser.add_argument("-tl", "--time-limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel-threads", default=Config.parallel_threads, type=int, help="parallel threads.")
 parser.add_argument("-B", "--build-document", action="store_true", help="build the documentation site.")
-parser.add_argument("-D", "--enable-deployment", action="store_true", help="enable deployment for client-side purposes.")
+parser.add_argument("-D", "--deployment-mode", action="store_true", help="enable deployment mode for static sites.")
 parser.add_argument("-O", "--offline-mode", action="store_true", help="enable offline mode.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
@@ -31,7 +31,13 @@ Config.parallel_threads = args.parallel_threads
 log_level = "DEBUG" if args.debug else "INFO"
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
-if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
+if not os.path.exists("./penpa-edit/js/config.js"):
+    logging.info("Creating default configuration.")
+    with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write("const DEPLOYMENT_MODE = false;\n")
+        f.write("const OFFLINE_MODE = true;")
+
+if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
     if args.build_document:
         # build the documentation site
         try:
@@ -88,7 +94,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
                     existing_hash = f.read().strip()
 
             if existing_hash == penpa_edit_hash:
-                logging.debug("Penpa-edit core resources are up to date. Skipping copy.")
+                logging.debug("Penpa-edit resources are up to date. Skipping copy.")
             else:
                 logging.debug("Copying penpa-edit resources...")
                 penpa_css_index = penpa_loader_content.find("penpa_style_sources = ")
@@ -131,16 +137,16 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
                 with open("./penpa-edit/core/.hash", "w", encoding="utf-8", newline="\n") as f:
                     f.write(penpa_edit_hash)
 
-        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+        with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
             fin = f.read()
 
-        with open("./penpa-edit/js/penpa_loader.js", "w", encoding="utf-8", newline="\n") as f:
+        with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
             f.write(fin.replace("OFFLINE_MODE = false", "OFFLINE_MODE = true"))
     else:
-        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+        with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
             fin = f.read()
 
-        with open("./penpa-edit/js/penpa_loader.js", "w", encoding="utf-8", newline="\n") as f:
+        with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
             f.write(fin.replace("OFFLINE_MODE = true", "OFFLINE_MODE = false"))
 
     # load the solvers
@@ -154,13 +160,13 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
         f.write("window.puzzle_list = Object.keys(solver_metadata);")
 
-    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
+    with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("DEPLOYMENT_MODE = true", "DEPLOYMENT_MODE = false"))
 
-if args.enable_deployment:
+if args.deployment_mode:
     # generate files if needed
     shutil.rmtree("./dist/page", ignore_errors=True)
     os.makedirs("./dist/page/penpa-edit", exist_ok=True)
@@ -182,19 +188,13 @@ if args.enable_deployment:
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(pyscript_config, f, indent=2)
 
-    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
+    with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("DEPLOYMENT_MODE = false", "DEPLOYMENT_MODE = true"))
 
     shutil.copy("./pyscript.json", "./dist/page/penpa-edit/pyscript.json")
     shutil.copy("./main_deploy.py", "./dist/page/penpa-edit/py/main_deploy.py")
     shutil.copytree("./penpa-edit/", "./dist/page/penpa-edit/", dirs_exist_ok=True)
     shutil.copytree("./site/", "./dist/page/", dirs_exist_ok=True)
-
-    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
-        fin = f.read()
-
-    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 else:
     # starlette app setup
     try:
