@@ -109,6 +109,9 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
                     s.strip().strip('"').strip("'") for s in penpa_style_sources_str.split(",") if s.strip()
                 ]
                 os.makedirs("./penpa-edit/core/css", exist_ok=True)
+                shutil.copytree(
+                    f"./build/penpa-edit-{penpa_edit_hash}/docs/css/images", "./penpa-edit/core/css/images", dirs_exist_ok=True
+                )
 
                 for css_file in penpa_style_sources:
                     source_path = f"./build/penpa-edit-{penpa_edit_hash}/docs/{css_file}"
