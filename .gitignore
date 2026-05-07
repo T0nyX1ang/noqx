@@ -163,6 +163,8 @@ cython_debug/
 #.idea/
 .pdm-python
 
-# Auto-generated solver metadata file
+# Auto-generated supporting file
+config.js
 solver_metadata.js
 pyscript.json
+penpa-edit/requires/*
