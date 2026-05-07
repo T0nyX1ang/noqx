@@ -1,6 +1,6 @@
 const penpa_edit_hash = "7785887bbc7f985a387199989e2c7d76efec4dab";
 const remote_penpa_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;
-const local_penpa_prefix = `./core/`;
+const local_penpa_prefix = `./requires/core/${penpa_edit_hash}/`;
 
 // stylesheet loading
 const style_sources_ids = [
@@ -105,21 +105,20 @@ for (let i = 0; i < noqx_script_sources.length; i++) {
 }
 
 if (DEPLOYMENT_MODE) {
-  const clingo_script = document.createElement("script");
-  clingo_script.type = "module";
-  clingo_script.src = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.web.js";
-  clingo_script.async = false;
-  document.head.appendChild(clingo_script);
+  const pyscript_version = "2026.3.1";
+  const remote_pyscript_prefix = `https://pyscript.net/releases/${pyscript_version}/`;
+  const local_pyscript_prefix = `./pyscript/`;
 
   const py_script = document.createElement("script");
   py_script.type = "module";
-  py_script.src = "https://pyscript.net/releases/2026.3.1/core.js";
+  py_script.src = (OFFLINE_MODE ? local_pyscript_prefix : remote_pyscript_prefix) + "./core.js";
   py_script.async = false;
   document.head.appendChild(py_script);
 
   const py_link = document.createElement("link");
   py_link.rel = "stylesheet";
-  py_link.href = "https://pyscript.net/releases/2026.3.1/core.css";
+  py_link.href = (OFFLINE_MODE ? local_pyscript_prefix : remote_pyscript_prefix) + "./core.css";
+  py_link.async = false;
   document.head.appendChild(py_link);
 
   const user_script = document.createElement("script");
@@ -128,6 +127,12 @@ if (DEPLOYMENT_MODE) {
   user_script.async = false;
   user_script.setAttribute("config", "./pyscript.json");
   document.head.appendChild(user_script);
+
+  const clingo_script = document.createElement("script");
+  clingo_script.type = "module";
+  clingo_script.src = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.web.js";
+  clingo_script.async = false;
+  document.head.appendChild(clingo_script);
 }
 
 // message config

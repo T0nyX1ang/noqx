@@ -167,4 +167,4 @@ cython_debug/
 config.js
 solver_metadata.js
 pyscript.json
-penpa-edit/core/*
+penpa-edit/requires/*
