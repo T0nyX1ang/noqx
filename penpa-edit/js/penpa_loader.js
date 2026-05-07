@@ -107,7 +107,7 @@ for (let i = 0; i < noqx_script_sources.length; i++) {
 if (DEPLOYMENT_MODE) {
   const pyscript_version = "2026.3.1";
   const remote_pyscript_prefix = `https://pyscript.net/releases/${pyscript_version}/`;
-  const local_pyscript_prefix = `./pyscript/`;
+  const local_pyscript_prefix = `./requires/pyscript/${pyscript_version}/`;
 
   const py_script = document.createElement("script");
   py_script.type = "module";

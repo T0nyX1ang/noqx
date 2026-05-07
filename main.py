@@ -57,6 +57,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
             f.write('<html><head><meta http-equiv="refresh" content="0; url=./penpa-edit/"></head><body></body></html>')
 
     if args.offline_mode:
+        os.makedirs("./build", exist_ok=True)
         os.makedirs("./penpa-edit/requires", exist_ok=True)
 
         # fetch penpa-edit repository resources for offline usage
@@ -74,8 +75,6 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
             penpa_hash_end = loader_content.find(";", penpa_hash_start)
             penpa_edit_hash = loader_content[penpa_hash_start:penpa_hash_end].strip().strip('"').strip("'")
             penpa_edit_url = f"https://github.com/swaroopg92/penpa-edit/archive/{penpa_edit_hash}.zip"
-            os.makedirs("./build", exist_ok=True)
-
             if os.path.exists(f"./build/penpa-edit-{penpa_edit_hash}/"):
                 logging.debug("Penpa-edit resources already exist. Skipping download.")
             else:
@@ -136,6 +135,50 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
                     target_path = f"./penpa-edit/requires/core/{penpa_edit_hash}/{js_file}"
                     shutil.copy(source_path, target_path)
 
+            if args.deployment_mode:
+                pyscript_version_index = loader_content.find("pyscript_version = ")
+                if pyscript_version_index == -1:
+                    logging.error("Failed to find the PyScript version in penpa_loader.js.")
+                    sys.exit(1)
+
+                pyscript_version_start = pyscript_version_index + len("pyscript_version = ")
+                pyscript_version_end = loader_content.find(";", pyscript_version_start)
+                pyscript_version = loader_content[pyscript_version_start:pyscript_version_end].strip().strip('"').strip("'")
+                pyscript_url_prefix = (
+                    f"https://github.com/pyscript/pyscript/releases/download/{pyscript_version}/offline_{pyscript_version}.zip"
+                )
+                if os.path.exists(f"./build/pyscript-{pyscript_version}/"):
+                    logging.debug("PyScript resources already exist. Skipping download.")
+                else:
+                    logging.debug(f"Fetching PyScript resources at {pyscript_version} ...")
+                    os.makedirs(f"./build/pyscript-{pyscript_version}", exist_ok=True)
+                    try:
+                        with urlopen(pyscript_url_prefix) as response, open("./build/pyscript.zip", "wb") as out_file:
+                            shutil.copyfileobj(response, out_file)
+                        shutil.unpack_archive("./build/pyscript.zip", f"./build/pyscript-{pyscript_version}/")
+                        os.remove("./build/pyscript.zip")
+                    except Exception as e:
+                        logging.error(f"Failed to fetch PyScript resources: {e}")
+                        sys.exit(1)
+
+                if os.path.exists(f"./penpa-edit/requires/pyscript/{pyscript_version}/"):
+                    logging.debug("PyScript resources are up to date. Skipping copy.")
+                else:
+                    logging.debug("Copying PyScript resources...")
+                    os.makedirs(f"./penpa-edit/requires/pyscript/{pyscript_version}/", exist_ok=True)
+                    shutil.copytree(
+                        f"./build/pyscript-{pyscript_version}/offline/pyscript/micropython",
+                        f"./penpa-edit/requires/pyscript/{pyscript_version}/micropython",
+                        dirs_exist_ok=True,
+                    )
+
+                    for filename in os.listdir(f"./build/pyscript-{pyscript_version}/offline/pyscript"):
+                        source_path = f"./build/pyscript-{pyscript_version}/offline/pyscript/{filename}"
+                        target_path = f"./penpa-edit/requires/pyscript/{pyscript_version}/{filename}"
+                        prefixes = ("core", "deprecations-manager", "donkey", "error", "py-editor", "py-game", "py-terminal")
+                        if filename.startswith(prefixes) and filename.endswith((".js", ".css")):
+                            shutil.copy(source_path, target_path)
+
         with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
             fin = f.read()
 
@@ -183,6 +226,9 @@ if args.deployment_mode:
             if filename.endswith(".py") and filename != "clingo.py":
                 pyscript_config["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/py/{dirname}/{filename}")
+
+    if args.offline_mode:
+        pyscript_config["interpreter"] = f"./requires/pyscript/{pyscript_version}/micropython/micropython.mjs"
 
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(pyscript_config, f, indent=2)
