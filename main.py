@@ -22,6 +22,7 @@ parser.add_argument("-tl", "--time-limit", default=Config.time_limit, type=int, 
 parser.add_argument("-pt", "--parallel-threads", default=Config.parallel_threads, type=int, help="parallel threads.")
 parser.add_argument("-B", "--build-document", action="store_true", help="build the documentation site.")
 parser.add_argument("-D", "--enable-deployment", action="store_true", help="enable deployment for client-side purposes.")
+parser.add_argument("-O", "--offline-mode", action="store_true", help="enable offline mode.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -48,6 +49,99 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
         os.makedirs("./site", exist_ok=True)
         with open("./site/index.html", "w", encoding="utf-8", newline="\n") as f:
             f.write('<html><head><meta http-equiv="refresh" content="0; url=./penpa-edit/"></head><body></body></html>')
+
+    if args.offline_mode:
+        # fetch penpa-edit core resources for offline usage
+        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+            penpa_loader_content = f.read()
+            penpa_hash_index = penpa_loader_content.find("penpa_edit_hash = ")
+
+            if penpa_hash_index == -1:
+                logging.error("Failed to find the penpa-edit hash in penpa_loader.js.")
+                sys.exit(1)
+
+            from urllib.request import urlopen
+
+            penpa_hash_start = penpa_hash_index + len("penpa_edit_hash = ")
+            penpa_hash_end = penpa_loader_content.find(";", penpa_hash_start)
+            penpa_edit_hash = penpa_loader_content[penpa_hash_start:penpa_hash_end].strip().strip('"').strip("'")
+            penpa_edit_url = f"https://github.com/swaroopg92/penpa-edit/archive/{penpa_edit_hash}.zip"
+            os.makedirs("./build/", exist_ok=True)
+
+            if os.path.exists(f"./build/penpa-edit-{penpa_edit_hash}/"):
+                logging.debug("Penpa-edit resources already exist. Skipping download.")
+            else:
+                logging.debug(f"Fetching penpa-edit repository at {penpa_edit_hash[:7]} ...")
+                try:
+                    with urlopen(penpa_edit_url) as response, open("./build/penpa-edit.zip", "wb") as out_file:
+                        shutil.copyfileobj(response, out_file)
+                    shutil.unpack_archive("./build/penpa-edit.zip", "./build/")
+                    os.remove("./build/penpa-edit.zip")
+                except Exception as e:
+                    logging.error(f"Failed to fetch penpa-edit resources: {e}")
+                    sys.exit(1)
+
+            os.makedirs("./penpa-edit/core", exist_ok=True)
+            existing_hash = None
+            if os.path.exists("./penpa-edit/core/.hash"):
+                with open("./penpa-edit/core/.hash", encoding="utf-8", newline="\n") as f:
+                    existing_hash = f.read().strip()
+
+            if existing_hash == penpa_edit_hash:
+                logging.debug("Penpa-edit core resources are up to date. Skipping copy.")
+            else:
+                logging.debug("Copying penpa-edit resources...")
+                penpa_css_index = penpa_loader_content.find("penpa_style_sources = ")
+                if penpa_css_index == -1:
+                    logging.error("Failed to find the penpa-edit style sources in penpa_loader.js.")
+                    sys.exit(1)
+
+                penpa_css_start = penpa_css_index + len("penpa_style_sources = ")
+                penpa_css_end = penpa_loader_content.find(";", penpa_css_start)
+                penpa_style_sources_str = penpa_loader_content[penpa_css_start:penpa_css_end].strip("[").strip("]").strip()
+                penpa_style_sources = [
+                    s.strip().strip('"').strip("'") for s in penpa_style_sources_str.split(",") if s.strip()
+                ]
+                os.makedirs("./penpa-edit/core/css", exist_ok=True)
+
+                for css_file in penpa_style_sources:
+                    source_path = f"./build/penpa-edit-{penpa_edit_hash}/docs/{css_file}"
+                    target_path = f"./penpa-edit/core/{css_file}"
+                    shutil.copy(source_path, target_path)
+
+                penpa_js_index = penpa_loader_content.find("penpa_script_sources = ")
+                if penpa_js_index == -1:
+                    logging.error("Failed to find the penpa-edit script sources in penpa_loader.js.")
+                    sys.exit(1)
+
+                penpa_js_start = penpa_js_index + len("penpa_script_sources = ")
+                penpa_js_end = penpa_loader_content.find(";", penpa_js_start)
+                penpa_script_sources_str = penpa_loader_content[penpa_js_start:penpa_js_end].strip("[").strip("]").strip()
+                penpa_script_sources = [
+                    s.strip().strip('"').strip("'") for s in penpa_script_sources_str.split(",") if s.strip()
+                ]
+                os.makedirs("./penpa-edit/core/js", exist_ok=True)
+                os.makedirs("./penpa-edit/core/js/libs", exist_ok=True)
+
+                for js_file in penpa_script_sources:
+                    source_path = f"./build/penpa-edit-{penpa_edit_hash}/docs/{js_file}"
+                    target_path = f"./penpa-edit/core/{js_file}"
+                    shutil.copy(source_path, target_path)
+
+                with open("./penpa-edit/core/.hash", "w", encoding="utf-8", newline="\n") as f:
+                    f.write(penpa_edit_hash)
+
+        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+            fin = f.read()
+
+        with open("./penpa-edit/js/penpa_loader.js", "w", encoding="utf-8", newline="\n") as f:
+            f.write(fin.replace("OFFLINE_MODE = false", "OFFLINE_MODE = true"))
+    else:
+        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+            fin = f.read()
+
+        with open("./penpa-edit/js/penpa_loader.js", "w", encoding="utf-8", newline="\n") as f:
+            f.write(fin.replace("OFFLINE_MODE = true", "OFFLINE_MODE = false"))
 
     # load the solvers
     logging.debug("Loading solvers...")
