@@ -144,7 +144,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
                 pyscript_version_start = pyscript_version_index + len("pyscript_version = ")
                 pyscript_version_end = loader_content.find(";", pyscript_version_start)
                 pyscript_version = loader_content[pyscript_version_start:pyscript_version_end].strip().strip('"').strip("'")
-                pyscript_url_prefix = (
+                pyscript_url = (
                     f"https://github.com/pyscript/pyscript/releases/download/{pyscript_version}/offline_{pyscript_version}.zip"
                 )
                 if os.path.exists(f"./build/pyscript-{pyscript_version}/"):
@@ -153,7 +153,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
                     logging.debug(f"Fetching PyScript resources at {pyscript_version} ...")
                     os.makedirs(f"./build/pyscript-{pyscript_version}", exist_ok=True)
                     try:
-                        with urlopen(pyscript_url_prefix) as response, open("./build/pyscript.zip", "wb") as out_file:
+                        with urlopen(pyscript_url) as response, open("./build/pyscript.zip", "wb") as out_file:
                             shutil.copyfileobj(response, out_file)
                         shutil.unpack_archive("./build/pyscript.zip", f"./build/pyscript-{pyscript_version}/")
                         os.remove("./build/pyscript.zip")
@@ -178,6 +178,47 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
                         prefixes = ("core", "deprecations-manager", "donkey", "error", "py-editor", "py-game", "py-terminal")
                         if filename.startswith(prefixes) and filename.endswith((".js", ".css")):
                             shutil.copy(source_path, target_path)
+
+                clingo_wasm_version_index = loader_content.find("clingo_wasm_version = ")
+                if clingo_wasm_version_index == -1:
+                    logging.error("Failed to find the Clingo WASM version in penpa_loader.js.")
+                    sys.exit(1)
+
+                clingo_wasm_version_start = clingo_wasm_version_index + len("clingo_wasm_version = ")
+                clingo_wasm_version_end = loader_content.find(";", clingo_wasm_version_start)
+                clingo_wasm_version = (
+                    loader_content[clingo_wasm_version_start:clingo_wasm_version_end].strip().strip('"').strip("'")
+                )
+                clingo_wasm_url = [
+                    f"https://cdn.jsdelivr.net/npm/clingo-wasm@{clingo_wasm_version}/dist/clingo.web.js",
+                    f"https://cdn.jsdelivr.net/npm/clingo-wasm@{clingo_wasm_version}/dist/clingo.wasm",
+                ]
+                if os.path.exists(f"./build/clingo-wasm-{clingo_wasm_version}/"):
+                    logging.debug("Clingo-WASM resources already exist. Skipping download.")
+                else:
+                    logging.debug(f"Fetching Clingo WASM resources at {clingo_wasm_version} ...")
+                    os.makedirs(f"./build/clingo-wasm-{clingo_wasm_version}/", exist_ok=True)
+                    for url in clingo_wasm_url:
+                        filename = url.split("/")[-1]
+                        try:
+                            with urlopen(url) as response, open(
+                                f"./build/clingo-wasm-{clingo_wasm_version}/{filename}", "wb"
+                            ) as out_file:
+                                shutil.copyfileobj(response, out_file)
+                        except Exception as e:
+                            logging.error(f"Failed to fetch Clingo WASM resource {filename}: {e}")
+                            sys.exit(1)
+
+                if os.path.exists(f"./penpa-edit/requires/clingo-wasm/{clingo_wasm_version}/"):
+                    logging.debug("Clingo-WASM resources are up to date. Skipping copy.")
+                else:
+                    logging.debug("Copying Clingo WASM resources...")
+                    os.makedirs(f"./penpa-edit/requires/clingo-wasm/{clingo_wasm_version}/", exist_ok=True)
+                    shutil.copytree(
+                        f"./build/clingo-wasm-{clingo_wasm_version}/",
+                        f"./penpa-edit/requires/clingo-wasm/{clingo_wasm_version}/",
+                        dirs_exist_ok=True,
+                    )
 
         with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
             fin = f.read()

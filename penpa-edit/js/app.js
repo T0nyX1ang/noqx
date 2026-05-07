@@ -324,10 +324,9 @@ if (pageSettingsButton) {
 }
 
 $(window).on("load", function () {
-  const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
-  if (DEPLOYMENT_MODE) {
-    clingo.init(CLINGO_WASM_URL);
-  }
+  const CLINGO_WASM_URL =
+    (OFFLINE_MODE ? window.location.href + local_clingo_prefix : remote_clingo_prefix) + `./clingo.wasm`;
+  if (DEPLOYMENT_MODE) clingo.init(CLINGO_WASM_URL);
 
   // Update the exact Penpa+ link according to the hash
   const penpaLink = document.getElementById("penpa-link");

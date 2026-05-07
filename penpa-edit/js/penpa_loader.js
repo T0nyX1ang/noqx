@@ -2,6 +2,14 @@ const penpa_edit_hash = "7785887bbc7f985a387199989e2c7d76efec4dab";
 const remote_penpa_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;
 const local_penpa_prefix = `./requires/core/${penpa_edit_hash}/`;
 
+const pyscript_version = "2026.3.1";
+const remote_pyscript_prefix = `https://pyscript.net/releases/${pyscript_version}/`;
+const local_pyscript_prefix = `./requires/pyscript/${pyscript_version}/`;
+
+const clingo_wasm_version = "0.3.2";
+const remote_clingo_prefix = `https://cdn.jsdelivr.net/npm/clingo-wasm@${clingo_wasm_version}/dist/`;
+const local_clingo_prefix = `./requires/clingo-wasm/${clingo_wasm_version}/`;
+
 // stylesheet loading
 const style_sources_ids = [
   "color_theme",
@@ -105,10 +113,6 @@ for (let i = 0; i < noqx_script_sources.length; i++) {
 }
 
 if (DEPLOYMENT_MODE) {
-  const pyscript_version = "2026.3.1";
-  const remote_pyscript_prefix = `https://pyscript.net/releases/${pyscript_version}/`;
-  const local_pyscript_prefix = `./requires/pyscript/${pyscript_version}/`;
-
   const py_script = document.createElement("script");
   py_script.type = "module";
   py_script.src = (OFFLINE_MODE ? local_pyscript_prefix : remote_pyscript_prefix) + "./core.js";
@@ -130,7 +134,7 @@ if (DEPLOYMENT_MODE) {
 
   const clingo_script = document.createElement("script");
   clingo_script.type = "module";
-  clingo_script.src = "https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.web.js";
+  clingo_script.src = (OFFLINE_MODE ? local_clingo_prefix : remote_clingo_prefix) + `./clingo.web.js`;
   clingo_script.async = false;
   document.head.appendChild(clingo_script);
 }
