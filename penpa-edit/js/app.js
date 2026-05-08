@@ -313,11 +313,20 @@ function resetBoardSize(puzzleType) {
   return sizeFlag;
 }
 
+// detect the content change in page_settings button to avoid language check glitch
+const pageSettingsButton = document.getElementById("page_settings");
+if (pageSettingsButton) {
+  const observer = new MutationObserver(() => {
+    if (UserSettings.app_language === "EN" && pageSettingsButton.textContent !== "Settings")
+      pageSettingsButton.textContent = "Settings";
+  });
+  observer.observe(pageSettingsButton, { childList: true, characterData: true, subtree: true });
+}
+
 $(window).on("load", function () {
-  const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
-  if (ENABLE_DEPLOYMENT) {
-    clingo.init(CLINGO_WASM_URL);
-  }
+  const CLINGO_WASM_URL =
+    (OFFLINE_MODE ? window.location.href + local_clingo_prefix : remote_clingo_prefix) + `./clingo.wasm`;
+  if (DEPLOYMENT_MODE) clingo.init(CLINGO_WASM_URL);
 
   // Update the exact Penpa+ link according to the hash
   const penpaLink = document.getElementById("penpa-link");
@@ -360,23 +369,40 @@ $(window).on("load", function () {
     },
   };
 
-  const choicesType = new Choices(typeSelect, {
-    itemSelectText: "",
-    searchFields: ["label", "value", "customProperties.aliases"],
-    searchResultLimit: 5,
-    searchPlaceholderValue: "Type to search",
-    shouldSort: false,
-  });
+  const customMatcher = (params, data) => {
+    if ($.trim(params.term) === "") return data;
+    if (typeof data.text === "undefined") return null;
+
+    const term = params.term.toLowerCase().replace(/\s+/g, "");
+    const stripper = (str) => str.toLowerCase().replace(/\s+/g, "");
+
+    let isMatch = false;
+    if (stripper(data.text).indexOf(term) > -1) isMatch = true;
+    if (data.id && stripper(data.id).indexOf(term) > -1) isMatch = true;
+    if (data.aliases && data.aliases.some((a) => stripper(a).indexOf(term) > -1)) isMatch = true;
+
+    if (isMatch) return data;
+
+    if (data.children && data.children.length > 0) {
+      const match = $.extend(true, {}, data);
+      for (let c = data.children.length - 1; c >= 0; c--) {
+        const child = data.children[c];
+        let childMatched = false;
+        if (stripper(child.text).indexOf(term) > -1) childMatched = true;
+        if (child.id && stripper(child.id).indexOf(term) > -1) childMatched = true;
+        if (child.aliases && child.aliases.some((a) => stripper(a).indexOf(term) > -1)) childMatched = true;
+
+        if (!childMatched) match.children.splice(c, 1);
+      }
+      if (match.children.length > 0) return match;
+    }
+    return null;
+  };
+
   let puzzleTypeDict = {};
   for (const [k, v] of Object.entries(categoryName)) {
-    puzzleTypeDict[k] = { label: v, choices: [] };
+    puzzleTypeDict[k] = { text: v, children: [] };
   }
-
-  const choicesExample = new Choices(exampleSelect, {
-    itemSelectText: "",
-    searchEnabled: false,
-    noChoicesText: "No examples found",
-  });
 
   let puzzleType = null;
   let puzzleContent = null;
@@ -384,28 +410,21 @@ $(window).on("load", function () {
   let solutionPointer = -1;
   let puzzleParameters = {};
 
-  let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
-  puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
-
   // solver_metadata is defined in solver_metadata.js
   for (const [ptype, pvalue] of Object.entries(solver_metadata)) {
-    typeOption = {
-      value: ptype,
-      label: pvalue.name,
-      customProperties: { aliases: pvalue.aliases },
-    };
-    puzzleTypeDict[pvalue.category].choices.push(typeOption);
+    const typeOption = { id: ptype, text: pvalue.name, aliases: pvalue.aliases };
+    puzzleTypeDict[pvalue.category].children.push(typeOption);
   }
 
   for (const [k, _] of Object.entries(categoryName)) {
-    if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
+    if (puzzleTypeDict[k].children.length === 0) delete puzzleTypeDict[k]; // remove empty category
   }
 
-  choicesType.setChoices(Object.values(puzzleTypeDict));
-
-  typeSelect.addEventListener("change", () => {
+  $(typeSelect).select2({ data: Object.values(puzzleTypeDict), placeholder: "Type to search", matcher: customMatcher });
+  $(exampleSelect).select2({ minimumResultsForSearch: Infinity });
+  $(typeSelect).on("change", () => {
     const isPuzzleTypeChanged = puzzleType !== typeSelect.value;
-    if (isPuzzleTypeChanged) choicesType.setChoiceByValue(typeSelect.value);
+    if (isPuzzleTypeChanged) $(typeSelect).val(typeSelect.value).trigger("change.select2");
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
     if (puzzleType !== "") {
@@ -432,19 +451,19 @@ $(window).on("load", function () {
 
       if (exampleSelect.value !== "" && !isPuzzleTypeChanged) return;
 
-      choicesExample.clearStore();
-      let exampleList = [{ value: "", label: "Choose Example", selected: true }];
+      $(exampleSelect).empty();
+      let exampleList = [{ id: "", text: "Choose Example", selected: true }];
       exampleList.push(
         ...solver_metadata[puzzleType].examples.map((_, i) => ({
-          value: i,
-          label: `Example #${i + 1}`,
+          id: String(i),
+          text: `Example #${i + 1}`,
         }))
       );
-      choicesExample.setChoices(exampleList);
+      $(exampleSelect).select2({ data: exampleList, minimumResultsForSearch: Infinity });
     }
   });
 
-  exampleSelect.addEventListener("change", () => {
+  $(exampleSelect).on("change", () => {
     solveButton.disabled = false;
     solveButton.textContent = "Solve";
     if (exampleSelect.value !== "") {
@@ -504,10 +523,16 @@ $(window).on("load", function () {
 
     if (solutionPointer === -1) {
       puzzleContent = exp(true);
-      choicesType.disable();
-      choicesType.containerOuter.element.setAttribute("title", "Reset the puzzle to change puzzle type.");
-      choicesExample.disable();
-      choicesExample.containerOuter.element.setAttribute("title", "Reset the puzzle to change example.");
+      $(typeSelect).prop("disabled", true);
+      $(typeSelect)
+        .next(".select2-container")
+        .find(".select2-selection__rendered")
+        .attr("title", "Reset the puzzle to change puzzle type.");
+      $(exampleSelect).prop("disabled", true);
+      $(exampleSelect)
+        .next(".select2-container")
+        .find(".select2-selection__rendered")
+        .attr("title", "Reset the puzzle to change example.");
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
@@ -521,7 +546,7 @@ $(window).on("load", function () {
         puzzleParameters = {}; // reset parameters
       }
 
-      if (ENABLE_DEPLOYMENT) {
+      if (DEPLOYMENT_MODE) {
         try {
           const puzzle = prepare_puzzle(puzzleType, puzzleContent, puzzleParameters);
           if (!puzzle["success"]) {
@@ -652,18 +677,18 @@ $(window).on("load", function () {
 
   resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
-      if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+      if (DEPLOYMENT_MODE && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
       hookLoad(puzzleContent);
-      choicesType.enable();
-      choicesType.containerOuter.element.removeAttribute("title");
-      choicesExample.enable();
-      choicesExample.containerOuter.element.removeAttribute("title");
+      $(typeSelect).prop("disabled", false);
+      $(typeSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
+      $(exampleSelect).prop("disabled", false);
+      $(exampleSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
     } else {
       create_newboard();
       advancecontrol_toggle();
-      choicesExample.setChoiceByValue("");
+      $(exampleSelect).val("").trigger("change.select2");
     }
     puzzleContent = null;
     solutionList = [];
@@ -675,25 +700,22 @@ $(window).on("load", function () {
   const undoButton = document.getElementById("tb_undo");
   if (undoButton) {
     const updateChoicesType = () => {
-      const choicesContainer = choicesType.containerOuter.element;
-      const choicesExampleContainer = choicesExample.containerOuter.element;
-      if (undoButton.disabled) {
-        if (!solutionList || solutionList.length === 0) {
-          choicesType.enable();
-          choicesContainer.removeAttribute("title");
-          choicesExample.enable();
-          choicesExampleContainer.removeAttribute("title");
-        } else {
-          choicesType.disable();
-          choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
-          choicesExample.disable();
-          choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
-        }
+      if (undoButton.disabled && (!solutionList || solutionList.length === 0)) {
+        $(typeSelect).prop("disabled", false);
+        $(typeSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
+        $(exampleSelect).prop("disabled", false);
+        $(exampleSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
       } else {
-        choicesType.disable();
-        choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
-        choicesExample.disable();
-        choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
+        $(typeSelect).prop("disabled", true);
+        $(typeSelect)
+          .next(".select2-container")
+          .find(".select2-selection__rendered")
+          .attr("title", "Reset the puzzle to change puzzle type.");
+        $(exampleSelect).prop("disabled", true);
+        $(exampleSelect)
+          .next(".select2-container")
+          .find(".select2-selection__rendered")
+          .attr("title", "Reset the puzzle to change example.");
       }
     };
 
@@ -705,16 +727,6 @@ $(window).on("load", function () {
       });
     });
     observer.observe(undoButton, { attributes: true });
-  }
-
-  // detect the content change in page_settings button to avoid language check glitch
-  const pageSettingsButton = document.getElementById("page_settings");
-  if (pageSettingsButton) {
-    const observer = new MutationObserver(() => {
-      if (UserSettings.app_language === "EN" && pageSettingsButton.textContent !== "Settings")
-        pageSettingsButton.textContent = "Settings";
-    });
-    observer.observe(pageSettingsButton, { childList: true, characterData: true, subtree: true });
   }
 
   document.addEventListener("click", () => focus());

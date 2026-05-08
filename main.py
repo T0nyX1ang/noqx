@@ -21,7 +21,8 @@ parser.add_argument("-d", "--debug", action="store_true", help="whether to enabl
 parser.add_argument("-tl", "--time-limit", default=Config.time_limit, type=int, help="time limit in seconds.")
 parser.add_argument("-pt", "--parallel-threads", default=Config.parallel_threads, type=int, help="parallel threads.")
 parser.add_argument("-B", "--build-document", action="store_true", help="build the documentation site.")
-parser.add_argument("-D", "--enable-deployment", action="store_true", help="enable deployment for client-side purposes.")
+parser.add_argument("-D", "--deployment-mode", action="store_true", help="enable deployment mode for static sites.")
+parser.add_argument("-O", "--offline-mode", action="store_true", help="enable offline mode.")
 args = parser.parse_args()
 Config.time_limit = args.time_limit
 Config.parallel_threads = args.parallel_threads
@@ -30,7 +31,13 @@ Config.parallel_threads = args.parallel_threads
 log_level = "DEBUG" if args.debug else "INFO"
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
 
-if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
+if not os.path.exists("./penpa-edit/js/config.js"):
+    logging.info("Creating default configuration.")
+    with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write("const DEPLOYMENT_MODE = false;\n")
+        f.write("const OFFLINE_MODE = true;")
+
+if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
     if args.build_document:
         # build the documentation site
         try:
@@ -49,6 +56,182 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
         with open("./site/index.html", "w", encoding="utf-8", newline="\n") as f:
             f.write('<html><head><meta http-equiv="refresh" content="0; url=./penpa-edit/"></head><body></body></html>')
 
+    if args.offline_mode:
+        os.makedirs("./build", exist_ok=True)
+        os.makedirs("./penpa-edit/requires", exist_ok=True)
+
+        # fetch penpa-edit repository resources for offline usage
+        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+            loader_content = f.read()
+            penpa_hash_index = loader_content.find("penpa_edit_hash = ")
+
+            if penpa_hash_index == -1:
+                logging.error("Failed to find the penpa-edit hash in penpa_loader.js.")
+                sys.exit(1)
+
+            from urllib.request import urlopen
+
+            penpa_hash_start = penpa_hash_index + len("penpa_edit_hash = ")
+            penpa_hash_end = loader_content.find(";", penpa_hash_start)
+            penpa_edit_hash = loader_content[penpa_hash_start:penpa_hash_end].strip().strip('"').strip("'")
+            penpa_edit_url = f"https://github.com/swaroopg92/penpa-edit/archive/{penpa_edit_hash}.zip"
+            if os.path.exists(f"./build/penpa-edit-{penpa_edit_hash}/"):
+                logging.debug("Penpa-edit resources already exist. Skipping download.")
+            else:
+                logging.debug(f"Fetching penpa-edit repository at {penpa_edit_hash[:7]} ...")
+                try:
+                    with urlopen(penpa_edit_url) as response, open("./build/penpa-edit.zip", "wb") as out_file:
+                        shutil.copyfileobj(response, out_file)
+                    shutil.unpack_archive("./build/penpa-edit.zip", "./build/")
+                    os.remove("./build/penpa-edit.zip")
+                except Exception as e:
+                    logging.error(f"Failed to fetch penpa-edit resources: {e}")
+                    sys.exit(1)
+
+            if os.path.exists(f"./penpa-edit/requires/core/{penpa_edit_hash}"):
+                logging.debug("Penpa-edit resources are up to date. Skipping copy.")
+            else:
+                logging.debug("Copying penpa-edit resources...")
+                os.makedirs(f"./penpa-edit/requires/core/{penpa_edit_hash}", exist_ok=True)
+                penpa_css_index = loader_content.find("penpa_style_sources = ")
+                if penpa_css_index == -1:
+                    logging.error("Failed to find the penpa-edit style sources in penpa_loader.js.")
+                    sys.exit(1)
+
+                penpa_css_start = penpa_css_index + len("penpa_style_sources = ")
+                penpa_css_end = loader_content.find(";", penpa_css_start)
+                penpa_style_sources_str = loader_content[penpa_css_start:penpa_css_end].strip("[").strip("]").strip()
+                penpa_style_sources = [
+                    s.strip().strip('"').strip("'") for s in penpa_style_sources_str.split(",") if s.strip()
+                ]
+                os.makedirs(f"./penpa-edit/requires/core/{penpa_edit_hash}/css", exist_ok=True)
+                shutil.copytree(
+                    f"./build/penpa-edit-{penpa_edit_hash}/docs/css/images",
+                    f"./penpa-edit/requires/core/{penpa_edit_hash}/css/images",
+                    dirs_exist_ok=True,
+                )
+
+                for css_file in penpa_style_sources:
+                    source_path = f"./build/penpa-edit-{penpa_edit_hash}/docs/{css_file}"
+                    target_path = f"./penpa-edit/requires/core/{penpa_edit_hash}/{css_file}"
+                    shutil.copy(source_path, target_path)
+
+                penpa_js_index = loader_content.find("penpa_script_sources = ")
+                if penpa_js_index == -1:
+                    logging.error("Failed to find the penpa-edit script sources in penpa_loader.js.")
+                    sys.exit(1)
+
+                penpa_js_start = penpa_js_index + len("penpa_script_sources = ")
+                penpa_js_end = loader_content.find(";", penpa_js_start)
+                penpa_script_sources_str = loader_content[penpa_js_start:penpa_js_end].strip("[").strip("]").strip()
+                penpa_script_sources = [
+                    s.strip().strip('"').strip("'") for s in penpa_script_sources_str.split(",") if s.strip()
+                ]
+                os.makedirs(f"./penpa-edit/requires/core/{penpa_edit_hash}/js", exist_ok=True)
+                os.makedirs(f"./penpa-edit/requires/core/{penpa_edit_hash}/js/libs", exist_ok=True)
+
+                for js_file in penpa_script_sources:
+                    source_path = f"./build/penpa-edit-{penpa_edit_hash}/docs/{js_file}"
+                    target_path = f"./penpa-edit/requires/core/{penpa_edit_hash}/{js_file}"
+                    shutil.copy(source_path, target_path)
+
+            if args.deployment_mode:
+                pyscript_version_index = loader_content.find("pyscript_version = ")
+                if pyscript_version_index == -1:
+                    logging.error("Failed to find the PyScript version in penpa_loader.js.")
+                    sys.exit(1)
+
+                pyscript_version_start = pyscript_version_index + len("pyscript_version = ")
+                pyscript_version_end = loader_content.find(";", pyscript_version_start)
+                pyscript_version = loader_content[pyscript_version_start:pyscript_version_end].strip().strip('"').strip("'")
+                pyscript_url = (
+                    f"https://github.com/pyscript/pyscript/releases/download/{pyscript_version}/offline_{pyscript_version}.zip"
+                )
+                if os.path.exists(f"./build/pyscript-{pyscript_version}/"):
+                    logging.debug("PyScript resources already exist. Skipping download.")
+                else:
+                    logging.debug(f"Fetching PyScript resources at {pyscript_version} ...")
+                    os.makedirs(f"./build/pyscript-{pyscript_version}", exist_ok=True)
+                    try:
+                        with urlopen(pyscript_url) as response, open("./build/pyscript.zip", "wb") as out_file:
+                            shutil.copyfileobj(response, out_file)
+                        shutil.unpack_archive("./build/pyscript.zip", f"./build/pyscript-{pyscript_version}/")
+                        os.remove("./build/pyscript.zip")
+                    except Exception as e:
+                        logging.error(f"Failed to fetch PyScript resources: {e}")
+                        sys.exit(1)
+
+                if os.path.exists(f"./penpa-edit/requires/pyscript/{pyscript_version}/"):
+                    logging.debug("PyScript resources are up to date. Skipping copy.")
+                else:
+                    logging.debug("Copying PyScript resources...")
+                    os.makedirs(f"./penpa-edit/requires/pyscript/{pyscript_version}/", exist_ok=True)
+                    shutil.copytree(
+                        f"./build/pyscript-{pyscript_version}/offline/pyscript/micropython",
+                        f"./penpa-edit/requires/pyscript/{pyscript_version}/micropython",
+                        dirs_exist_ok=True,
+                    )
+
+                    for filename in os.listdir(f"./build/pyscript-{pyscript_version}/offline/pyscript"):
+                        source_path = f"./build/pyscript-{pyscript_version}/offline/pyscript/{filename}"
+                        target_path = f"./penpa-edit/requires/pyscript/{pyscript_version}/{filename}"
+                        prefixes = ("core", "deprecations-manager", "donkey", "error", "py-editor", "py-game", "py-terminal")
+                        if filename.startswith(prefixes) and filename.endswith((".js", ".css")):
+                            shutil.copy(source_path, target_path)
+
+                clingo_wasm_version_index = loader_content.find("clingo_wasm_version = ")
+                if clingo_wasm_version_index == -1:
+                    logging.error("Failed to find the Clingo WASM version in penpa_loader.js.")
+                    sys.exit(1)
+
+                clingo_wasm_version_start = clingo_wasm_version_index + len("clingo_wasm_version = ")
+                clingo_wasm_version_end = loader_content.find(";", clingo_wasm_version_start)
+                clingo_wasm_version = (
+                    loader_content[clingo_wasm_version_start:clingo_wasm_version_end].strip().strip('"').strip("'")
+                )
+                clingo_wasm_url = [
+                    f"https://cdn.jsdelivr.net/npm/clingo-wasm@{clingo_wasm_version}/dist/clingo.web.js",
+                    f"https://cdn.jsdelivr.net/npm/clingo-wasm@{clingo_wasm_version}/dist/clingo.wasm",
+                ]
+                if os.path.exists(f"./build/clingo-wasm-{clingo_wasm_version}/"):
+                    logging.debug("Clingo-WASM resources already exist. Skipping download.")
+                else:
+                    logging.debug(f"Fetching Clingo WASM resources at {clingo_wasm_version} ...")
+                    os.makedirs(f"./build/clingo-wasm-{clingo_wasm_version}/", exist_ok=True)
+                    for url in clingo_wasm_url:
+                        filename = url.split("/")[-1]
+                        try:
+                            with urlopen(url) as response, open(
+                                f"./build/clingo-wasm-{clingo_wasm_version}/{filename}", "wb"
+                            ) as out_file:
+                                shutil.copyfileobj(response, out_file)
+                        except Exception as e:
+                            logging.error(f"Failed to fetch Clingo WASM resource {filename}: {e}")
+                            sys.exit(1)
+
+                if os.path.exists(f"./penpa-edit/requires/clingo-wasm/{clingo_wasm_version}/"):
+                    logging.debug("Clingo-WASM resources are up to date. Skipping copy.")
+                else:
+                    logging.debug("Copying Clingo WASM resources...")
+                    os.makedirs(f"./penpa-edit/requires/clingo-wasm/{clingo_wasm_version}/", exist_ok=True)
+                    shutil.copytree(
+                        f"./build/clingo-wasm-{clingo_wasm_version}/",
+                        f"./penpa-edit/requires/clingo-wasm/{clingo_wasm_version}/",
+                        dirs_exist_ok=True,
+                    )
+
+        with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
+            fin = f.read()
+
+        with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+            f.write(fin.replace("OFFLINE_MODE = false", "OFFLINE_MODE = true"))
+    else:
+        with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
+            fin = f.read()
+
+        with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+            f.write(fin.replace("OFFLINE_MODE = true", "OFFLINE_MODE = false"))
+
     # load the solvers
     logging.debug("Loading solvers...")
     for module_info in pkgutil.iter_modules(["solver"]):
@@ -60,13 +243,13 @@ if __name__ == "main" or (__name__ == "__main__" and args.enable_deployment):
         f.write(f"const solver_metadata = {json.dumps(list_solver_metadata(), indent=2)};")
         f.write("window.puzzle_list = Object.keys(solver_metadata);")
 
-    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
+    with open("./penpa-edit/js/config.js", encoding="utf-8", newline="\n") as f:
         fin = f.read()
 
-    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
+    with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("DEPLOYMENT_MODE = true", "DEPLOYMENT_MODE = false"))
 
-if args.enable_deployment:
+if args.deployment_mode:
     # generate files if needed
     shutil.rmtree("./dist/page", ignore_errors=True)
     os.makedirs("./dist/page/penpa-edit", exist_ok=True)
@@ -85,22 +268,19 @@ if args.enable_deployment:
                 pyscript_config["files"][f"./py/{dirname}/{filename}"] = f"{dirname}/{filename}"
                 shutil.copy(f"./{dirname}/{filename}", f"./dist/page/penpa-edit/py/{dirname}/{filename}")
 
+    if args.offline_mode:
+        pyscript_config["interpreter"] = f"./requires/pyscript/{pyscript_version}/micropython/micropython.mjs"
+
     with open("pyscript.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(pyscript_config, f, indent=2)
 
-    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_DEPLOYMENT = false", "ENABLE_DEPLOYMENT = true"))
+    with open("./penpa-edit/js/config.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(fin.replace("DEPLOYMENT_MODE = false", "DEPLOYMENT_MODE = true"))
 
     shutil.copy("./pyscript.json", "./dist/page/penpa-edit/pyscript.json")
     shutil.copy("./main_deploy.py", "./dist/page/penpa-edit/py/main_deploy.py")
     shutil.copytree("./penpa-edit/", "./dist/page/penpa-edit/", dirs_exist_ok=True)
     shutil.copytree("./site/", "./dist/page/", dirs_exist_ok=True)
-
-    with open("./penpa-edit/js/prepare_deployment.js", encoding="utf-8", newline="\n") as f:
-        fin = f.read()
-
-    with open("./penpa-edit/js/prepare_deployment.js", "w", encoding="utf-8", newline="\n") as f:
-        f.write(fin.replace("ENABLE_DEPLOYMENT = true", "ENABLE_DEPLOYMENT = false"))
 else:
     # starlette app setup
     try:
