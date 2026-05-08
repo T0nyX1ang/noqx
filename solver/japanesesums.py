@@ -8,80 +8,80 @@ from noqx.rule.common import display, fill_num, grid, shade_c, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 
 
-def japsum_row(col: int, clues: Dict[int, Tuple[Union[int, str]]], max_num: int, color: str = "black"):
-    """Generates the Japanese Sums row constraints."""
-    prefix = "row_count(R, C, N, V) :- grid(R, C), row_count_value_range(R, N, V)"
-    constraints = []
-    constraints.append("row_count(R, -1, -1, 0) :- grid(R, _).")
-    constraints.append(f"{prefix}, {color}(R, C), row_count(R, C - 1, N, _), V = 0.")
-    constraints.append(f"{prefix}, not {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N - 1, _), number(R, C, V).")
-    constraints.append(f"{prefix}, not {color}(R, C), not grid(R, C - 1), row_count(R, C - 1, N - 1, _), number(R, C, V).")
-    constraints.append(
-        f"{prefix}, not {color}(R, C), not {color}(R, C - 1), grid(R, C - 1), row_count(R, C - 1, N, V0), number(R, C, N0), V = V0 + N0."
-    )
+def _line_base(_type: str, color: str) -> List[str]:
+    """Generates base rule for counting sums in rows or columns."""
+    base = []
+    if _type == "row":
+        prefix = "row_count(R, C, N, V) :- grid(R, C), row_count_value_range(R, N, V)"
+        base.append("row_count(R, -1, -1, 0) :- grid(R, _).")
+        base.append(f"{prefix}, {color}(R, C), row_count(R, C - 1, N, _), V = 0.")
+        base.append(f"{prefix}, not {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N - 1, _), number(R, C, V).")
+        base.append(f"{prefix}, not {color}(R, C), not grid(R, C - 1), row_count(R, C - 1, N - 1, _), number(R, C, V).")
+        base.append(
+            f"{prefix}, not {color}(R, C), not {color}(R, C - 1), grid(R, C - 1), row_count(R, C - 1, N, V0), number(R, C, N0), V = V0 + N0."
+        )
 
-    for i, clue in clues.items():
-        constraints.append(f"row_count_value_range({i}, -1, 0).")
-        if len(clue) == 1 and clue[0] == 0:
-            constraints.append(f":- grid({i}, C), not row_count({i}, C, -1, 0).")
-        else:
-            constraints.append(f":- not row_count({i}, {col - 1}, {len(clue) - 1}, _).")
-            for j, num in enumerate(clue):
-                if num != "?":
-                    constraints.append(f"row_count_value_range({i}, {j}, 0..{num}).")
-                    constraints.append(
-                        f":- grid({i}, C), not {color}({i}, C), row_count({i}, C, {j}, V), {color}({i}, C + 1), V != {num}."
-                    )
-                    constraints.append(
-                        f":- grid({i}, C), not {color}({i}, C), row_count({i}, C, {j}, V), not grid({i}, C + 1), V != {num}."
-                    )
-                else:
-                    sum_max = (
-                        sum(range(max_num, max_num - (col - 2 * len(clue) + 1), -1))
-                        if max_num >= col - 2 * len(clue) + 1
-                        else sum(range(1, max_num + 1))
-                    )
-                    constraints.append(f"row_count_value_range({i}, {j}, 0..{sum_max}).")
+    if _type == "col":
+        prefix = "col_count(R, C, N, V) :- grid(R, C), col_count_value_range(C, N, V)"
+        base.append("col_count(-1, C, -1, 0) :- grid(_, C).")
+        base.append(f"{prefix}, {color}(R, C), col_count(R - 1, C, N, _), V = 0.")
+        base.append(f"{prefix}, not {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N - 1, _), number(R, C, V).")
+        base.append(f"{prefix}, not {color}(R, C), not grid(R - 1, C), col_count(R - 1, C, N - 1, _), number(R, C, V).")
+        base.append(
+            f"{prefix}, not {color}(R, C), not {color}(R - 1, C), grid(R - 1, C), col_count(R - 1, C, N, V0), number(R, C, N0), V = V0 + N0."
+        )
 
-    return "\n".join(constraints)
+    return base
 
 
-def japsum_col(row: int, clues: Dict[int, Tuple[Union[int, str]]], max_num: int, color: str = "black"):
-    """Generates the Japanese Sums column constraints."""
-    prefix = "col_count(R, C, N, V) :- grid(R, C), col_count_value_range(C, N, V)"
-    constraints = []
-    constraints.append("col_count(-1, C, -1, 0) :- grid(_, C).")
-    constraints.append(f"{prefix}, {color}(R, C), col_count(R - 1, C, N, _), V = 0.")
-    constraints.append(f"{prefix}, not {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N - 1, _), number(R, C, V).")
-    constraints.append(f"{prefix}, not {color}(R, C), not grid(R - 1, C), col_count(R - 1, C, N - 1, _), number(R, C, V).")
-    constraints.append(
-        f"{prefix}, not {color}(R, C), not {color}(R - 1, C), grid(R - 1, C), col_count(R - 1, C, N, V0), number(R, C, N0), V = V0 + N0."
-    )
+def _line_clue(_id: int, _type: str, clue: Tuple[Union[int, str], ...], size: int, max_num: int, color: str) -> List[str]:
+    """Generates rules for a specific clue in a row or column."""
+    rule = [f"{_type}_count_value_range({_id}, -1, 0)."]
+    if len(clue) == 1 and clue[0] == 0:
+        if _type == "row":
+            rule.append(f":- grid({_id}, C), not row_count({_id}, C, -1, 0).")
+        if _type == "col":
+            rule.append(f":- grid(R, {_id}), not col_count(R, {_id}, -1, 0).")
+        return rule
 
-    for i, clue in clues.items():
-        constraints.append(f"col_count_value_range({i}, -1, 0).")
-        if len(clue) == 1 and clue[0] == 0:
-            constraints.append(f":- grid(R, {i}), not col_count(R, {i}, -1, 0).")
-        else:
-            constraints.append(f":- not col_count({row - 1}, {i}, {len(clue) - 1}, _).")
-            for j, num in enumerate(clue):
-                if num != "?":
-                    constraints.append(f"col_count_value_range({i}, {j}, 0..{num}).")
-                    constraints.append(
-                        f":- grid(R, {i}), not {color}(R, {i}), col_count(R, {i}, {j}, V), {color}(R + 1, {i}), V != {num}."
-                    )
-                    constraints.append(
-                        f":- grid(R, {i}), not {color}(R, {i}), col_count(R, {i}, {j}, V), not grid(R + 1, {i}), V != {num}."
-                    )
-                else:
-                    sum_max = (
-                        sum(range(max_num, max_num - (row - 2 * len(clue) + 1), -1))
-                        if max_num >= row - 2 * len(clue) + 1
-                        else sum(range(1, max_num + 1))
-                    )
-                    constraints.append(f"col_count_value_range({i}, {j}, 0..{sum_max}).")
+    if _type == "row":
+        rule.append(f":- not row_count({_id}, {size - 1}, {len(clue) - 1}, _).")
+    if _type == "col":
+        rule.append(f":- not col_count({size - 1}, {_id}, {len(clue) - 1}, _).")
 
-    return "\n".join(constraints)
+    for clue_index, token in enumerate(clue):
+        if token == "?":
+            sum_max = (
+                sum(range(max_num, max_num - (size - 2 * len(clue) + 1), -1))
+                if max_num >= size - 2 * len(clue) + 1
+                else sum(range(1, max_num + 1))
+            )
+            rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{sum_max}).")
+            continue
+
+        rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{token}).")
+        if _type == "row":
+            slope = f"grid({_id}, C), not {color}({_id}, C), {_type}_count({_id}, C, {clue_index}, V)"
+            rule.append(f":- {slope}, {color}({_id}, C + 1), V != {token}.")
+            rule.append(f":- {slope}, not grid({_id}, C + 1), V != {token}.")
+
+        if _type == "col":
+            slope = f"grid(R, {_id}), not {color}(R, {_id}), {_type}_count(R, {_id}, {clue_index}, V)"
+            rule.append(f":- {slope}, {color}(R + 1, {_id}), V != {token}.")
+            rule.append(f":- {slope}, not grid(R + 1, {_id}), V != {token}.")
+
+    return rule
+
+
+def japsum_rule(_type: str, size: int, clues: Dict[int, Tuple[Union[int, str], ...]], max_num: int, color: str = "black"):
+    """Generates Japanese sums rule for either rows or columns."""
+    validate_type(_type, ("row", "col"))
+    rule = _line_base(_type, color)
+
+    for _id, clue in clues.items():
+        rule.extend(_line_clue(_id, _type, clue, size, max_num, color))
+
+    return "\n".join(rule)
 
 
 class JapaneseSumsSolver(Solver):
@@ -130,8 +130,8 @@ class JapaneseSumsSolver(Solver):
             if len(clue) > 0:
                 left_clues[r] = tuple(reversed(clue))
 
-        self.add_program_line(japsum_row(puzzle.col, left_clues, max_num))
-        self.add_program_line(japsum_col(puzzle.row, top_clues, max_num))
+        self.add_program_line(japsum_rule(_type="row", size=puzzle.col, clues=left_clues, max_num=max_num))
+        self.add_program_line(japsum_rule(_type="col", size=puzzle.row, clues=top_clues, max_num=max_num))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

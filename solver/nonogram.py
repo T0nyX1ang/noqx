@@ -59,6 +59,7 @@ def _line_base(_type: str, color: str) -> List[str]:
 def _line_clue(
     _id: int, _type: str, clue: Tuple[Union[int, str], ...], size: int, color: str, variant: Union[int, None] = None
 ) -> List[str]:
+    """Generates rules for a specific clue in a row or column, with optional asterisk variant handling."""
     guard = f"{_type}_variant({_id}, {variant})" if variant is not None else ""
 
     rule = [f"{_type}_count_value_range({_id}, -1, 0){' :- ' + guard if guard else ''}."]
@@ -85,12 +86,12 @@ def _line_clue(
 
         rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{token}){(' :- ' + guard if guard else '')}.")
         if _type == "row":
-            slope = f"{_type}_count({_id}, C, {clue_index}, V), not {color}({_id}, C + 1)"
-            rule.append(f":-{guard + ',' if guard else ''} grid({_id}, C), {color}({_id}, C), {slope}, V != {token}.")
+            slope = f"grid({_id}, C), {color}({_id}, C), {_type}_count({_id}, C, {clue_index}, V)"
+            rule.append(f":-{guard + ',' if guard else ''} {slope}, not {color}({_id}, C + 1),  V != {token}.")
 
         if _type == "col":
-            slope = f"{_type}_count(R, {_id}, {clue_index}, V), not {color}(R + 1, {_id})"
-            rule.append(f":-{guard + ',' if guard else ''} grid(R, {_id}), {color}(R, {_id}), {slope}, V != {token}.")
+            slope = f"grid(R, {_id}), {color}(R, {_id}), {_type}_count(R, {_id}, {clue_index}, V)"
+            rule.append(f":-{guard + ',' if guard else ''} {slope}, not {color}(R + 1, {_id}), V != {token}.")
 
     return rule
 
