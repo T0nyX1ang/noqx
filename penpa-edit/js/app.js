@@ -440,6 +440,7 @@ $(window).on("load", function () {
     if (isPuzzleTypeChanged) $(typeSelect).val(typeSelect.value).trigger("change.select2");
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
+    puzzleParameters = {};
     if (puzzleType !== "") {
       resetGridType(puzzleType);
       resetGridMode(puzzleType);
