@@ -211,6 +211,17 @@ function invokeParamBox() {
   }
 }
 
+function resetParamBox() {
+  const puzzleType = document.getElementById("type").value;
+  if (puzzleType && Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
+    for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
+      const paramInput = document.getElementById(`param_${k}`);
+      if (paramInput.type === "checkbox") paramInput.checked = v.default;
+      else paramInput.value = v.default;
+    }
+  }
+}
+
 function makeParam(id, type, name, value) {
   let paramDiv = document.createElement("div");
   paramDiv.className = "parameter_div";
@@ -488,6 +499,7 @@ $(window).on("load", function () {
       resetBoardSize(puzzleType); // reset the board when puzzle type changes
       create_newboard();
       advancecontrol_toggle();
+      resetParamBox();
     }
   });
 
@@ -690,6 +702,7 @@ $(window).on("load", function () {
     } else {
       create_newboard();
       advancecontrol_toggle();
+      resetParamBox();
       $(exampleSelect).val("").trigger("change.select2");
     }
     puzzleContent = null;
