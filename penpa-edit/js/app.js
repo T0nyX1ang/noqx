@@ -223,15 +223,109 @@ function resetParamBox() {
 }
 
 function makeParam(id, type, name, value) {
-  let paramDiv = document.createElement("div");
+  const paramDiv = document.createElement("div");
   paramDiv.className = "parameter_div";
 
-  let paramLabel = document.createElement("label");
-  paramLabel.for = `param_${name}`;
+  const paramLabel = document.createElement("label");
+  paramLabel.htmlFor = `param_${id}`;
   paramLabel.innerHTML = `&nbsp;&nbsp;&nbsp;&nbsp;${name}&nbsp;`;
 
   let paramInput = null;
-  if (type !== "select") {
+  if (type === "shapeset") {
+    paramInput = document.createElement("div");
+    paramInput.id = `param_${id}`;
+    paramInput.style.display = "inline-flex";
+    paramInput.style.alignItems = "flex-start";
+
+    const actionSelect = document.createElement("select");
+    actionSelect.id = `shapeset_action_${id}`;
+    actionSelect.style.textAlign = "center";
+    actionSelect.innerHTML = `
+      <option value="" disabled selected>Choose an action</option>
+      <option value="add">Add Shape</option>
+      <option value="tetro">Tetromino Preset</option>
+      <option value="double_tetro">Double Tetromino Preset</option>
+      <option value="pento">Pentomino Preset</option>
+      <option value="clear">Clear All</option>
+    `;
+
+    actionSelect.addEventListener("change", (e) => {
+      if (e.target.value === "add") {
+        addShapeRow();
+      } else if (["clear", "tetro", "double_tetro", "pento"].includes(e.target.value)) {
+        listDiv.innerHTML = "";
+        // prettier-ignore
+        if (e.target.value !== "clear") {
+          const tetroShapes = ["111|010", "11|11", "1111", "111|001", "110|011"];
+          const pentoShapes = ["110|011|010", "11111", "1111|0001", "1100|0111", "111|110", "111|010|010", "11|01|11", "111|001|001", "100|110|011", "010|111|010", "1111|0100", "100|111|010"];
+          const shapes = e.target.value === "pento" ? pentoShapes : tetroShapes;
+          const quantity = e.target.value === "double_tetro" ? 2 : 1;
+          shapes.forEach((shape) => addShapeRow(shape, quantity));
+        }
+        updateSummary();
+      }
+      e.target.value = "";
+    });
+    paramInput.appendChild(actionSelect);
+
+    const detailsBlock = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.style.minWidth = "180px";
+
+    const summaryText = document.createElement("span");
+    summaryText.textContent = "Shapes (0)";
+    summary.appendChild(summaryText);
+    detailsBlock.appendChild(summary);
+    paramInput.appendChild(detailsBlock);
+
+    const containerDiv = document.createElement("div");
+    containerDiv.style.padding = "4px";
+    containerDiv.style.marginTop = "4px";
+
+    const listDiv = document.createElement("div");
+    const addShapeRow = (shapeStr = "", qty = 1) => {
+      const row = document.createElement("div");
+      row.style.marginBottom = "2px";
+      row.innerHTML = `
+        <input type="text" class="shape_name" value="${shapeStr}" style="width: 100px;"> x
+        <input type="number" class="shape_qty" value="${qty}" min="1" style="width: 30px;">
+        <button type="button" onclick="this.parentElement.remove()">&nbsp;-&nbsp;</button>
+      `;
+      listDiv.appendChild(row);
+      updateSummary();
+    };
+
+    containerDiv.appendChild(listDiv);
+    detailsBlock.appendChild(containerDiv);
+
+    const updateSummary = () => {
+      const count = listDiv.querySelectorAll("div").length;
+      summaryText.textContent = `Shapes (${count})`;
+      if (count === 0) detailsBlock.removeAttribute("open");
+    };
+
+    Object.defineProperty(paramInput, "value", {
+      get: function () {
+        const shapes = [];
+        listDiv.querySelectorAll("div").forEach((row) => {
+          const name = row.querySelector(".shape_name").value;
+          const qty = parseInt(row.querySelector(".shape_qty").value, 10);
+          if (name) shapes.push({ shape: name, count: qty || 1 });
+        });
+        return shapes;
+      },
+      set: function (val) {
+        listDiv.innerHTML = ""; // clear list
+        if (Array.isArray(val)) val.forEach((v) => addShapeRow(v.shape, v.count));
+        updateSummary();
+      },
+    });
+
+    if (value && Array.isArray(value)) paramInput.value = value;
+    listDiv.addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON") setTimeout(updateSummary, 0);
+    });
+  } else {
     paramInput = document.createElement("input");
     paramInput.type = type;
     paramInput.className = "param_input";
@@ -242,15 +336,6 @@ function makeParam(id, type, name, value) {
     }
     if (type === "checkbox") paramInput.checked = value;
     else paramInput.value = value;
-  } else {
-    paramInput = document.createElement("select");
-    paramInput.id = `param_${id}`;
-    for (const [k, v] of Object.entries(value)) {
-      let option = document.createElement("option");
-      option.value = k;
-      option.text = v;
-      paramInput.appendChild(option);
-    }
   }
 
   paramDiv.appendChild(paramLabel);
