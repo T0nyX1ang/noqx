@@ -168,9 +168,11 @@ function imp(penpa, example = false) {
 
   // manually set the puzzle type if pre-fetched
   if (puzzleType in solver_metadata) {
+    const previousParameterBoxStatus = document.getElementById("parameter_box").style.display;
     const typeSelect = document.getElementById("type");
     typeSelect.value = puzzleType;
     typeSelect.dispatchEvent(new Event("change"));
+    if (previousParameterBoxStatus === "inline-block") invokeParamBox();
   }
 
   hookLoad(currentContent);
