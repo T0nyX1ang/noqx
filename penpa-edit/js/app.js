@@ -244,7 +244,7 @@ function makeParam(id, type, name, value) {
       <option value="" disabled selected>Choose an action</option>
       <option value="add">Add Shape</option>
       <option value="tetro">Tetromino Preset</option>
-      <option value="double_tetro">Double Tetromino Preset</option>
+      <option value="double_tetro">2x Tetromino Preset</option>
       <option value="pento">Pentomino Preset</option>
       <option value="clear">Clear All</option>
     `;
@@ -256,8 +256,8 @@ function makeParam(id, type, name, value) {
         listDiv.innerHTML = "";
         // prettier-ignore
         if (e.target.value !== "clear") {
-          const tetroShapes = ["111|010", "11|11", "1111", "111|001", "110|011"];
-          const pentoShapes = ["110|011|010", "11111", "1111|0001", "1100|0111", "111|110", "111|010|010", "11|01|11", "111|001|001", "100|110|011", "010|111|010", "1111|0100", "100|111|010"];
+          const tetroShapes = ["10|11|10", "11|11", "1|1|1|1", "10|10|11", "10|11|01"];
+          const pentoShapes = ["100|111|010", "1|1|1|1|1", "10|10|10|11", "1100|0111", "11|11|10", "111|010|010", "101|111", "100|100|111", "110|011|001", "010|111|010", "10|11|10|10", "110|010|011"];
           const shapes = e.target.value === "pento" ? pentoShapes : tetroShapes;
           const quantity = e.target.value === "double_tetro" ? 2 : 1;
           shapes.forEach((shape) => addShapeRow(shape, quantity));
