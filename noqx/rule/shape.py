@@ -55,7 +55,7 @@ def normalize_shape(shape: Iterable[Tuple[int, int]]) -> Tuple[Tuple[int, int], 
     return tuple((r - min_r, c - min_c) for r, c in shape)
 
 
-def get_variants(
+def get_variant_shape(
     shape: Iterable[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
 ) -> Set[Tuple[Tuple[int, int], ...]]:
     """Generate the equivalent variants for a shape.
@@ -89,7 +89,8 @@ def get_variants(
 def parse_shape(shape_str: str) -> Tuple[Tuple[int, int], ...]:
     """Parse a shape string into a tuple of coordinates.
 
-    * The shape string is a string where `1` represents a shaded cell and `0` represents an unshaded cell, and the "|" character is used to separate rows.
+    * The shape string is a string where `1` represents a shaded cell and `0` represents an unshaded cell, and the `|` character is used to separate rows.
+
     * The coordinates are represented and normalized as (row, column) tuples, where the top-left cell is (0, 0).
 
     Args:
@@ -115,14 +116,27 @@ def parse_shapeset(shapeset: List[Dict[str, Union[int, str]]]) -> Dict[Tuple[Tup
 
     * The shape set is a list of dictionaries, where each dictionary has a "shape" key whose value is a shape string, and a "count" key whose value is the number of shapes of that type.
 
+    * The rotations and reflections of the shape are **automatically** considered as the same.
+
     Args:
         shapeset: The shape set argument to be parsed.
     """
     result: Dict[Tuple[Tuple[int, int], ...], int] = {}
+    result_equivalent: Dict[Tuple[Tuple[int, int], ...], Set[Tuple[Tuple[int, int], ...]]] = {}
     for shape_dict in shapeset:
         shape = parse_shape(str(shape_dict["shape"]))
         count = int(shape_dict["count"])
-        result[shape] = count  # TODO: add tolerance for equivalent shapes
+        fail_false(count > 0, "Shape count must be positive.")
+
+        for eq_shape, eq_variant in result_equivalent.items():
+            if shape in eq_variant:
+                result[eq_shape] += (
+                    count  # add the count to the existing shape if the new shape is equivalent to an existing shape
+                )
+                break
+        else:
+            result[shape] = count  # add the new shape if it is not equivalent to any existing shape
+            result_equivalent[shape] = get_variant_shape(shape, allow_rotations=True, allow_reflections=True)
 
     return result
 
@@ -138,9 +152,9 @@ def general_shape(
 ) -> str:
     """A rule to define general shapes in a grid or an area.
 
-    * Two predicates will be generated, `shape` and `belong_to_shape`. The `shape` predicate
-    defines the shape pattern, while the `belong_to_shape` predicate defines whether a cell
-    belongs to a certain shape instance.
+    * Two predicates will be generated, `shape` and `belong_to_shape`. The `shape` predicate defines the shape pattern, while the `belong_to_shape` predicate defines whether a cell belongs to a certain shape instance.
+
+    * The rotations and reflections of the shape are **automatically** considered as the same.
 
     Args:
         name: The name of the shape.
@@ -176,7 +190,7 @@ def general_shape(
     tag_be = tag_encode("belong_to_shape", name, color)
     data = ""
 
-    variants = get_variants(deltas, allow_rotations=True, allow_reflections=True)
+    variants = get_variant_shape(deltas, allow_rotations=True, allow_reflections=True)
     for i, variant in enumerate(variants):
         valid, belongs_to = set(), set()
         for dr, dc in variant:
