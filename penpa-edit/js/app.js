@@ -173,6 +173,21 @@ function imp(penpa, example = false) {
     typeSelect.value = puzzleType;
     typeSelect.dispatchEvent(new Event("change"));
     if (previousParameterBoxStatus === "inline-block") invokeParamBox();
+
+    // parse shapeset for statuepark from URL if available
+    if (puzzleType === "statuepark") {
+      const actionSelect = document.getElementById("shapeset_action_shapeset");
+      const convertDict = { "//p": "pento", "//d": "double_tetro", "//t": "tetro" };
+      if (actionSelect) {
+        for (const [key, value] of Object.entries(convertDict)) {
+          if (urlstring.endsWith(key)) {
+            actionSelect.value = value;
+            actionSelect.dispatchEvent(new Event("change"));
+            break;
+          }
+        }
+      }
+    }
   }
 
   hookLoad(currentContent);
