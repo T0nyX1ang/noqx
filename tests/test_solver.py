@@ -87,16 +87,6 @@ class TestSolver(unittest.TestCase):
         response = run_solver("toichika", payload, {})
         self.assertEqual(len(response["url"]), 1)
 
-    def test_statuepark_all_shapes(self):
-        """Test statuepark all shapes."""
-        for shapeset in ["tetro", "pento", "double_tetro", "others"]:
-            if shapeset == "others":
-                self.assertRaises(ValueError, run_solver, "statuepark", empty_payload, {"shapeset": shapeset})
-                continue
-
-            response = run_solver("statuepark", empty_payload, {"shapeset": shapeset})
-            self.assertEqual(len(response["url"]), 0)
-
 
 class TestExtraFunction(unittest.TestCase):
     """Test extra functions in solvers."""

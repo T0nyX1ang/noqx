@@ -234,45 +234,6 @@ function makeParam(id, type, name, value) {
   if (type === "shapeset") {
     const puzzleType = document.getElementById("type").value;
     const config = solver_metadata[puzzleType].parameters[id];
-    const presetData = {
-      tetro: {
-        name: "Tetrominoes",
-        config: [
-          { shape: "10|11|10", count: 1 },
-          { shape: "11|11", count: 1 },
-          { shape: "1|1|1|1", count: 1 },
-          { shape: "10|10|11", count: 1 },
-          { shape: "10|11|01", count: 1 },
-        ],
-      },
-      double_tetro: {
-        name: "2x Tetrominoes",
-        config: [
-          { shape: "10|11|10", count: 2 },
-          { shape: "11|11", count: 2 },
-          { shape: "1|1|1|1", count: 2 },
-          { shape: "10|10|11", count: 2 },
-          { shape: "10|11|01", count: 2 },
-        ],
-      },
-      pento: {
-        name: "Pentominoes",
-        config: [
-          { shape: "100|111|010", count: 1 },
-          { shape: "1|1|1|1|1", count: 1 },
-          { shape: "10|10|10|11", count: 1 },
-          { shape: "1100|0111", count: 1 },
-          { shape: "11|11|10", count: 1 },
-          { shape: "111|010|010", count: 1 },
-          { shape: "101|111", count: 1 },
-          { shape: "100|100|111", count: 1 },
-          { shape: "110|011|001", count: 1 },
-          { shape: "010|111|010", count: 1 },
-          { shape: "10|11|10|10", count: 1 },
-          { shape: "110|010|011", count: 1 },
-        ],
-      },
-    };
 
     paramInput = document.createElement("div");
     paramInput.id = `param_${id}`;
@@ -449,6 +410,46 @@ function resetBoardSize(puzzleType) {
   return sizeFlag;
 }
 
+const presetData = {
+  tetro: {
+    name: "Tetrominoes",
+    config: [
+      { shape: "10|11|10", count: 1 },
+      { shape: "11|11", count: 1 },
+      { shape: "1|1|1|1", count: 1 },
+      { shape: "10|10|11", count: 1 },
+      { shape: "10|11|01", count: 1 },
+    ],
+  },
+  double_tetro: {
+    name: "2x Tetrominoes",
+    config: [
+      { shape: "10|11|10", count: 2 },
+      { shape: "11|11", count: 2 },
+      { shape: "1|1|1|1", count: 2 },
+      { shape: "10|10|11", count: 2 },
+      { shape: "10|11|01", count: 2 },
+    ],
+  },
+  pento: {
+    name: "Pentominoes",
+    config: [
+      { shape: "100|111|010", count: 1 },
+      { shape: "1|1|1|1|1", count: 1 },
+      { shape: "10|10|10|11", count: 1 },
+      { shape: "1100|0111", count: 1 },
+      { shape: "11|11|10", count: 1 },
+      { shape: "111|010|010", count: 1 },
+      { shape: "101|111", count: 1 },
+      { shape: "100|100|111", count: 1 },
+      { shape: "110|011|001", count: 1 },
+      { shape: "010|111|010", count: 1 },
+      { shape: "10|11|10|10", count: 1 },
+      { shape: "110|010|011", count: 1 },
+    ],
+  },
+};
+
 // detect the content change in page_settings button to avoid language check glitch
 const pageSettingsButton = document.getElementById("page_settings");
 if (pageSettingsButton) {
@@ -615,7 +616,11 @@ $(window).on("load", function () {
           const config = solver_metadata[puzzleType].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
           const paramInput = document.getElementById(`param_${k}`);
-          if (paramInput.type === "checkbox") paramInput.checked = value;
+          if (k === "shapeset") {
+            if (value && Array.isArray(value)) paramInput.value = value;
+            else if (presetData[value]) paramInput.value = presetData[value].config;
+            else paramInput.value = [];
+          } else if (paramInput.type === "checkbox") paramInput.checked = value;
           else paramInput.value = value;
         }
       }
