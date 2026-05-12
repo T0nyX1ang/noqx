@@ -111,7 +111,7 @@ def parse_shape(shape_str: str) -> Tuple[Tuple[int, int], ...]:
     return normalize_shape(coord)
 
 
-def parse_shapeset(shapeset: List[Dict[str, Union[int, str]]]) -> Dict[Tuple[Tuple[int, int], ...], int]:
+def parse_shapeset(shapeset: Union[str, List[Dict[str, Union[int, str]]]]) -> Dict[Tuple[Tuple[int, int], ...], int]:
     """Parse a shapeset argument into a dictionary of shape coordinates with their counts.
 
     * The shape set is a list of dictionaries, where each dictionary has a "shape" key whose value is a shape string, and a "count" key whose value is the number of shapes of that type.
@@ -121,24 +121,36 @@ def parse_shapeset(shapeset: List[Dict[str, Union[int, str]]]) -> Dict[Tuple[Tup
     Args:
         shapeset: The shape set argument to be parsed.
     """
-    result: Dict[Tuple[Tuple[int, int], ...], int] = {}
-    result_equivalent: Dict[Tuple[Tuple[int, int], ...], Set[Tuple[Tuple[int, int], ...]]] = {}
-    for shape_dict in shapeset:
-        shape = parse_shape(str(shape_dict["shape"]))
-        count = int(shape_dict["count"])
-        fail_false(count > 0, "Shape count must be positive.")
+    if isinstance(shapeset, str):
+        result_data = {
+            "tetro": dict.fromkeys(OMINOES[4].values(), 1),
+            "double_tetro": dict.fromkeys(OMINOES[4].values(), 2),
+            "pento": dict.fromkeys(OMINOES[5].values(), 1),
+            "ship3": {OMINOES[3]["I"]: 1, OMINOES[2]["I"]: 2, OMINOES[1]["."]: 3},
+            "ship4": {OMINOES[4]["I"]: 1, OMINOES[3]["I"]: 2, OMINOES[2]["I"]: 3, OMINOES[1]["."]: 4},
+            "ship5": {OMINOES[5]["I"]: 1, OMINOES[4]["I"]: 2, OMINOES[3]["I"]: 3, OMINOES[2]["I"]: 4, OMINOES[1]["."]: 5},
+        }
+        fail_false(shapeset in result_data, f"Invalid shapeset preset: {shapeset}.")
+        return result_data[shapeset]
+    else:
+        result: Dict[Tuple[Tuple[int, int], ...], int] = {}
+        result_equivalent: Dict[Tuple[Tuple[int, int], ...], Set[Tuple[Tuple[int, int], ...]]] = {}
+        for shape_dict in shapeset:
+            shape = parse_shape(str(shape_dict["shape"]))
+            count = int(shape_dict["count"])
+            fail_false(count > 0, "Shape count must be positive.")
 
-        for eq_shape, eq_variant in result_equivalent.items():
-            if shape in eq_variant:
-                result[eq_shape] += (
-                    count  # add the count to the existing shape if the new shape is equivalent to an existing shape
-                )
-                break
-        else:
-            result[shape] = count  # add the new shape if it is not equivalent to any existing shape
-            result_equivalent[shape] = get_variant_shape(shape, allow_rotations=True, allow_reflections=True)
+            for eq_shape, eq_variant in result_equivalent.items():
+                if shape in eq_variant:
+                    result[eq_shape] += (
+                        count  # add the count to the existing shape if the new shape is equivalent to an existing shape
+                    )
+                    break
+            else:
+                result[shape] = count  # add the new shape if it is not equivalent to any existing shape
+                result_equivalent[shape] = get_variant_shape(shape, allow_rotations=True, allow_reflections=True)
 
-    return result
+        return result
 
 
 def general_shape(

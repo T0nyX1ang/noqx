@@ -690,7 +690,7 @@ $(window).on("load", function () {
       advancecontrol_toggle();
 
       parameterBox.style.display = "none"; // hide parameter box if no parameters
-      parameterButton.textContent = "Show parameters";
+      parameterButton.textContent = "Show Parameters";
       parameterButton.disabled = true;
       while (parameterBox.firstChild) {
         parameterBox.removeChild(parameterBox.lastChild);
