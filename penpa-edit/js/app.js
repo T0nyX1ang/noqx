@@ -332,10 +332,54 @@ function makeParam(id, type, name, value) {
       shapeRow.innerHTML = `
         <input type="text" class="shape_name" value="${shapeStr}" style="width: 100px;"> x
         <input type="number" class="shape_qty" value="${qty}" min="1" style="width: 30px;">
-        <button type="button" onclick="this.parentElement.remove()">&nbsp;&ndash;&nbsp;</button>
+        <button type="button" class="shape_remove" onclick="this.parentElement.remove()">&nbsp;&ndash;&nbsp;</button>
       `;
       listDiv.appendChild(shapeRow);
       updateSummary();
+
+      const renderShapePreview = (shapeStr) => {
+        const rows = shapeStr.split("|").map((row) => row.split("").map(Number));
+        const size = 20; // pixel size per cell
+
+        const canvas = document.createElement("canvas");
+        canvas.width = rows[0]?.length * size || size;
+        canvas.height = rows.length * size;
+
+        const ctx = canvas.getContext("2d");
+        rows.forEach((row, r) => {
+          row.forEach((cell, c) => {
+            if (cell == "1") {
+              ctx.fillStyle = "black";
+              ctx.fillRect(c * size, r * size, size, size);
+            }
+            ctx.strokeStyle = "white";
+            ctx.strokeRect(c * size, r * size, size, size);
+          });
+        });
+
+        return canvas;
+      };
+
+      const removeBtn = shapeRow.querySelector("button");
+      removeBtn.addEventListener("mouseover", (e) => {
+        const shapeStr = shapeRow.querySelector(".shape_name").value;
+        if (!shapeStr) return;
+
+        const canvas = renderShapePreview(shapeStr);
+        canvas.style.position = "absolute";
+        canvas.style.pointerEvents = "none";
+        canvas.style.backgroundColor = "white";
+
+        document.body.appendChild(canvas);
+        const rect = removeBtn.getBoundingClientRect();
+        canvas.style.left = rect.right + 5 + "px";
+        canvas.style.top = rect.top + "px";
+        canvas.dataset.preview = "true";
+      });
+
+      removeBtn.addEventListener("mouseout", () => {
+        document.querySelector("canvas[data-preview='true']")?.remove();
+      });
     };
     containerDiv.appendChild(listDiv);
     detailsBlock.appendChild(containerDiv);
