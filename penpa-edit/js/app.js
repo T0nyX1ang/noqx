@@ -49,7 +49,7 @@ function hookExp() {
 function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
-  let puzzleVariant = null;
+  const puzzleVariants = [];
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
@@ -60,10 +60,13 @@ function imp(penpa, example = false) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
     puzzleType = urldata[0];
-    if (urldata[1] && isNaN(urldata[1])) {
-      puzzleVariant = urldata[1];
-      urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
+    for (let i = 1; i < urldata.length; i++) {
+      if (urldata[i] && isNaN(urldata[i])) {
+        puzzleVariants.push(urldata[i]);
+      }
     }
+
+    for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
   }
 
   const puzzleTypeConverter = {
@@ -184,7 +187,7 @@ function imp(penpa, example = false) {
     if (previousParameterBoxStatus === "inline-block") invokeParamBox();
 
     // parse variant for specific puzzle types if available
-    if (puzzleVariant === "f") {
+    if (puzzleVariants.includes("f")) {
       // for the visit_all parameter
       const visitAllParam = document.getElementById("param_visit_all");
       if (visitAllParam) visitAllParam.checked = true;
