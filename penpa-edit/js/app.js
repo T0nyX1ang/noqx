@@ -49,6 +49,7 @@ function hookExp() {
 function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
+  let puzzleVariant = null;
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
@@ -59,6 +60,46 @@ function imp(penpa, example = false) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
     puzzleType = urldata[0];
+    if (urldata[1] && isNaN(urldata[1])) puzzleVariant = urldata[1];
+  }
+
+  const puzzleTypeConverter = {
+    arukone: "numlin",
+    chocona: "aqre",
+    cityspace: "cave",
+    cocktail: "aqre",
+    context: "nuribou",
+    coral: "nonogram",
+    circlesquare: "yinyang",
+    creek: "gokigen",
+    dotchi2: "dotchi",
+    fivecells: "nawabari",
+    fourcells: "nawabari",
+    heyablock: "heyawake",
+    hinge: "aqre",
+    island: "kurotto",
+    lither: "slitherlink",
+    nibunnogo: "gokigen",
+    norinuri: "nuribou",
+    nothing: "moonsun",
+    nothree: "tentaisho",
+    numlin_bit: "numlin",
+    nuriuzu: "tentaisho",
+    oasis: "nurimisaki",
+    mannequin: "aqre",
+    simplegako: "view",
+    smullyan: "nuribou",
+    squarejam: "shikaku",
+    statuepark: "yinyang",
+    suguru: "cojun",
+    swslither: "slitherlink",
+    tetrochain: "yajikazu",
+    tslither: "slitherlink",
+    vslither: "slitherlink",
+  };
+
+  if (puzzleType && puzzleType in puzzleTypeConverter) {
+    urlstring = urlstring.replace(puzzleType, puzzleTypeConverter[puzzleType]);
   }
 
   // normalize the puzzle type
@@ -70,41 +111,6 @@ function imp(penpa, example = false) {
       }
     }
   }
-
-  if (puzzleType === "lither") urlstring = urlstring.replace("lither", "slitherlink"); // special case with lithersink
-
-  // replace unsupported solver to supported solvers
-  urlstring = urlstring.replace("arukone", "numlin");
-  urlstring = urlstring.replace("chocona", "aqre");
-  urlstring = urlstring.replace("cityspace", "cave");
-  urlstring = urlstring.replace("cocktail", "aqre");
-  urlstring = urlstring.replace("context", "nuribou");
-  urlstring = urlstring.replace("coral", "nonogram");
-  urlstring = urlstring.replace("circlesquare", "yinyang");
-  urlstring = urlstring.replace("creek", "gokigen");
-  urlstring = urlstring.replace("dotchi2", "dotchi");
-  urlstring = urlstring.replace("fivecells", "nawabari");
-  urlstring = urlstring.replace("fourcells", "nawabari");
-  urlstring = urlstring.replace("heyablock", "heyawake");
-  urlstring = urlstring.replace("hinge", "aqre");
-  urlstring = urlstring.replace("island", "kurotto");
-  urlstring = urlstring.replace("nibunnogo", "gokigen");
-  urlstring = urlstring.replace("norinuri", "nuribou");
-  urlstring = urlstring.replace("nothing", "moonsun");
-  urlstring = urlstring.replace("nothree", "tentaisho");
-  urlstring = urlstring.replace("numlin_bit", "numlin");
-  urlstring = urlstring.replace("nuriuzu", "tentaisho");
-  urlstring = urlstring.replace("oasis", "nurimisaki");
-  urlstring = urlstring.replace("mannequin", "aqre");
-  urlstring = urlstring.replace("simplegako", "view");
-  urlstring = urlstring.replace("smullyan", "nuribou");
-  urlstring = urlstring.replace("squarejam", "shikaku");
-  urlstring = urlstring.replace("statuepark", "yinyang");
-  urlstring = urlstring.replace("suguru", "cojun");
-  urlstring = urlstring.replace("swslither", "slitherlink");
-  urlstring = urlstring.replace("tetrochain", "yajikazu");
-  urlstring = urlstring.replace("tslither", "slitherlink");
-  urlstring = urlstring.replace("vslither", "slitherlink");
 
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
