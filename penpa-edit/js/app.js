@@ -60,7 +60,10 @@ function imp(penpa, example = false) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
     puzzleType = urldata[0];
-    if (urldata[1] && isNaN(urldata[1])) puzzleVariant = urldata[1];
+    if (urldata[1] && isNaN(urldata[1])) {
+      puzzleVariant = urldata[1];
+      urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
+    }
   }
 
   const puzzleTypeConverter = {
@@ -179,6 +182,13 @@ function imp(penpa, example = false) {
     typeSelect.value = puzzleType;
     typeSelect.dispatchEvent(new Event("change"));
     if (previousParameterBoxStatus === "inline-block") invokeParamBox();
+
+    // parse variant for specific puzzle types if available
+    if (puzzleVariant === "f") {
+      // for the visit_all parameter
+      const visitAllParam = document.getElementById("param_visit_all");
+      if (visitAllParam) visitAllParam.checked = true;
+    }
 
     // parse shapeset for statuepark from URL if available
     if (puzzleType === "statuepark") {
