@@ -44,11 +44,9 @@
 
 ## How to contribute
 
-- Make sure the Microsoft Visual C++ Redistributable (v14, 2015-2022) is installed on Windows.
-
-- The `requirements.txt` file is for dependency checking only, and it is very discouraged to use `PIP` in this project.
-
 ### Preparations
+
+- Make sure the Microsoft Visual C++ Redistributable (v14, 2015-2022) is installed on Windows.
 
 - Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
 
