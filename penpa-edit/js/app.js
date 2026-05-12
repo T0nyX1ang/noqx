@@ -372,13 +372,18 @@ function makeParam(id, type, name, value) {
 
         document.body.appendChild(canvas);
         const rect = removeBtn.getBoundingClientRect();
-        canvas.style.left = rect.right + 5 + "px";
+        canvas.style.left = rect.right + 20 + "px";
         canvas.style.top = rect.top + "px";
         canvas.dataset.preview = "true";
       });
 
       removeBtn.addEventListener("mouseout", () => {
         document.querySelector("canvas[data-preview='true']")?.remove();
+      });
+
+      removeBtn.addEventListener("click", () => {
+        document.querySelector("canvas[data-preview='true']")?.remove();
+        removeBtn.parentElement.remove();
       });
     };
     containerDiv.appendChild(listDiv);
