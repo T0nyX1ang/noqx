@@ -155,11 +155,16 @@ class Solver:
                 * contains necessary initial conditions to pass the coverage tests.
                 * set `edit mode` to `solution mode` instead of `problem mode`.
             * `url`: draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL` to get the board URL.
-            * `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys.
+            * `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys, the values of `config` will override the default values in `parameters`.
             * `test` (Optional): whether the example is used as test case, the default value is `True`, and cannot be used together with `url` way.
             * **Lots of** examples can be found at [pzplus](https://pzplus.tck.mn/db).
 
-        parameters: A dictionary of parameters of the solver, which will be passed to the solver when it is created.
+        parameters: A dictionary of parameters of the solver, which will be passed to the solver when it is created. The keys of `parameters` are the parameter unique ID, and the values are dictionaries containing the following ingredients:
+
+            * `name`: The name of the parameter, which will be displayed in the UI.
+            * `type`: The type of the parameter, which can be `checkbox`, `int`, and `shapeset`. The type will determine the input method in the UI.
+            * `default`: The default value of the parameter, which will be used when the parameter is not provided in the example config.
+            * `presets` (Optional): A list of shape presets for the parameter, which can be `tetro`, `double_tetro`, and `pento`. These presets are displayed in the UI as a dropdown menu. Only applicable when the type is set to `shapeset`.
 
     Warning:
         When you directly draw the board in noqx, make sure to set the puzzle type first. Currently, the puzzle type selection is **locked** if the user starts drawing the board.
