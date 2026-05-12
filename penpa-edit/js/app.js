@@ -261,7 +261,7 @@ function makeParam(id, type, name, value) {
     actionSelect.style.width = "150px";
 
     let optionsHTML = `<option value="" disabled selected>Choose an action</option>
-                       <option value="add">Add Shape</option>`;
+                       <option value="add">Add Single Shape</option>`;
     if (config.presets) {
       for (const presetKey of config.presets)
         optionsHTML += `<option value="${presetKey}">${presetData[presetKey].name} Preset</option>`;
@@ -272,7 +272,7 @@ function makeParam(id, type, name, value) {
     actionSelect.addEventListener("change", (e) => {
       if (e.target.value === "add") {
         addShapeRow();
-      } else if (["clear", "tetro", "double_tetro", "pento"].includes(e.target.value)) {
+      } else if (["clear", "tetro", "double_tetro", "pento", "ship3", "ship4", "ship5"].includes(e.target.value)) {
         listDiv.innerHTML = "";
         if (e.target.value !== "clear") {
           const presetKey = e.target.value;
@@ -461,6 +461,33 @@ const presetData = {
       { shape: "010|111|010", count: 1 },
       { shape: "10|11|10|10", count: 1 },
       { shape: "110|010|011", count: 1 },
+    ],
+  },
+  ship3: {
+    name: "Ships (size 3)",
+    config: [
+      { shape: "1", count: 3 },
+      { shape: "1|1", count: 2 },
+      { shape: "1|1|1", count: 1 },
+    ],
+  },
+  ship4: {
+    name: "Ships (size 4)",
+    config: [
+      { shape: "1", count: 4 },
+      { shape: "1|1", count: 3 },
+      { shape: "1|1|1", count: 2 },
+      { shape: "1|1|1|1", count: 1 },
+    ],
+  },
+  ship5: {
+    name: "Ships (size 5)",
+    config: [
+      { shape: "1", count: 5 },
+      { shape: "1|1", count: 4 },
+      { shape: "1|1|1", count: 3 },
+      { shape: "1|1|1|1", count: 2 },
+      { shape: "1|1|1|1|1", count: 1 },
     ],
   },
 };
