@@ -330,30 +330,30 @@ function makeParam(id, type, name, value) {
       const shapeRow = document.createElement("div");
       shapeRow.style.marginBottom = "2px";
       shapeRow.innerHTML = `
-        <input type="text" class="shape_name" value="${shapeStr}" style="width: 100px;"> x
+        <input type="text" class="shape_name" value="${shapeStr}" style="width: 80px;"> x
         <input type="number" class="shape_qty" value="${qty}" min="1" style="width: 30px;">
-        <button type="button" class="shape_remove" onclick="this.parentElement.remove()">&nbsp;&ndash;&nbsp;</button>
+        <button type="button" class="shape_remove">&nbsp;&ndash;&nbsp;</button>
       `;
       listDiv.appendChild(shapeRow);
       updateSummary();
 
       const renderShapePreview = (shapeStr) => {
         const rows = shapeStr.split("|").map((row) => row.split("").map(Number));
-        const size = 20; // pixel size per cell
-
+        const cols = Math.max(...rows.map((row) => row.length));
+        const px_size = 20; // pixel size per cell
         const canvas = document.createElement("canvas");
-        canvas.width = rows[0]?.length * size || size;
-        canvas.height = rows.length * size;
+        canvas.width = cols * px_size || px_size;
+        canvas.height = rows.length * px_size;
 
         const ctx = canvas.getContext("2d");
         rows.forEach((row, r) => {
           row.forEach((cell, c) => {
             if (cell == "1") {
               ctx.fillStyle = "black";
-              ctx.fillRect(c * size, r * size, size, size);
+              ctx.fillRect(c * px_size, r * px_size, px_size, px_size);
             }
             ctx.strokeStyle = "white";
-            ctx.strokeRect(c * size, r * size, size, size);
+            ctx.strokeRect(c * px_size, r * px_size, px_size, px_size);
           });
         });
 
