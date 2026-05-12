@@ -179,11 +179,37 @@ function imp(penpa, example = false) {
       const actionSelect = document.getElementById("shapeset_action_shapeset");
       const convertDict = { "//p": "pento", "//d": "double_tetro", "//t": "tetro" };
       if (actionSelect) {
+        let flag = true;
         for (const [key, value] of Object.entries(convertDict)) {
           if (urlstring.endsWith(key)) {
             actionSelect.value = value;
             actionSelect.dispatchEvent(new Event("change"));
+            flag = false;
             break;
+          }
+        }
+        if (flag) {
+          const puzzlinkSegment = urlstring.split("/");
+          const shapes = [];
+          if (puzzlinkSegment[7] && puzzlinkSegment.length >= 8 + parseInt(puzzlinkSegment[7])) {
+            for (let i = 0; i < parseInt(puzzlinkSegment[7]); i++) {
+              const shapeStr = puzzlinkSegment[8 + i];
+              const shapeColNumber = parseInt(shapeStr[0]);
+              const shapeRowNumber = parseInt(shapeStr[1]);
+
+              let shapeFullStr = "";
+              for (let ch of shapeStr.slice(2)) shapeFullStr += parseInt(ch, 36).toString(2).padStart(5, "0");
+              shapeFullStr = shapeFullStr.padEnd(shapeRowNumber * shapeColNumber, "0");
+
+              let reshapedStr = "";
+              for (let r = 0; r < shapeRowNumber; r++) {
+                reshapedStr += shapeFullStr.slice(r * shapeColNumber, (r + 1) * shapeColNumber) + "|";
+              }
+              reshapedStr = reshapedStr.slice(0, -1);
+              shapes.push({ shape: reshapedStr, count: 1 });
+            }
+            const paramInput = document.getElementById("param_shapeset");
+            if (paramInput) paramInput.value = shapes;
           }
         }
       }
