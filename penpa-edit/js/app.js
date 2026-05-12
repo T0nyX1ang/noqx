@@ -245,10 +245,10 @@ function invokeParamBox() {
 
   if (parameterBox.style.display === "none") {
     parameterBox.style.display = "inline-block";
-    parameterButton.textContent = "Hide parameters";
+    parameterButton.textContent = "Hide Parameters";
   } else {
     parameterBox.style.display = "none";
-    parameterButton.textContent = "Show parameters";
+    parameterButton.textContent = "Show Parameters";
   }
 }
 
@@ -349,11 +349,9 @@ function makeParam(id, type, name, value) {
         rows.forEach((row, r) => {
           row.forEach((cell, c) => {
             if (cell == "1") {
-              ctx.fillStyle = "black";
+              ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--fgMain").trim() || "black";
               ctx.fillRect(c * px_size, r * px_size, px_size, px_size);
             }
-            ctx.strokeStyle = "white";
-            ctx.strokeRect(c * px_size, r * px_size, px_size, px_size);
           });
         });
 
@@ -366,13 +364,15 @@ function makeParam(id, type, name, value) {
         if (!shapeStr) return;
 
         const canvas = renderShapePreview(shapeStr);
-        canvas.style.position = "absolute";
+        canvas.style.position = "fixed";
         canvas.style.pointerEvents = "none";
-        canvas.style.backgroundColor = "white";
+        canvas.style.backgroundColor = "opaque";
+        canvas.style.padding = "5px";
+        canvas.style.zIndex = "1000";
 
         document.body.appendChild(canvas);
         const rect = removeBtn.getBoundingClientRect();
-        canvas.style.left = rect.right + 20 + "px";
+        canvas.style.left = rect.right + 10 + "px";
         canvas.style.top = rect.top + "px";
         canvas.dataset.preview = "true";
       });
