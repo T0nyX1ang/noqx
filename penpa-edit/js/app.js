@@ -61,9 +61,8 @@ function imp(penpa, example = false) {
     const urldata = parts[1].split("/");
     puzzleType = urldata[0];
     for (let i = 1; i < urldata.length; i++) {
-      if (urldata[i] && isNaN(urldata[i])) {
-        puzzleVariants.push(urldata[i]);
-      }
+      if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
+      else break;
     }
 
     for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
