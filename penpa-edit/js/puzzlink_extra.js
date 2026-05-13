@@ -37,7 +37,7 @@ function decode_puzzlink_extra(url) {
     case "cocktail":
     case "hinge":
     case "mannequin":
-      /* act as "aqre" type */
+      /* base on "aqre" type */
 
       pu = new Puzzle_square(cols, rows, size);
       setupProblem(pu, "surface");
@@ -57,7 +57,7 @@ function decode_puzzlink_extra(url) {
     case "context":
     case "norinuri":
     case "smullyan":
-      /* act as "nuribou" type */
+      /* base on "nuribou" type */
 
       pu = new Puzzle_square(cols, rows, size);
       setupProblem(pu, "surface");
@@ -69,6 +69,22 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("surface");
       pu.subcombimode("blpo");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
+
+    case "nothree":
+    case "nuriuzu":
+      /* base on "tentaisho" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      pu.mode_grid("nb_grid2"); // Dashed gridlines
+      setupProblem(pu, "surface");
+
+      info_edge = puzzlink_pu.decodeMidloop();
+      puzzlink_pu.drawMidloop(pu, info_edge);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("surface");
+      UserSettings.tab_settings = ["Surface"];
       break;
 
     default:
