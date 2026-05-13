@@ -70,9 +70,7 @@ function imp(penpa, example = false) {
 
   const puzzleTypeConverter = {
     arukone: "numlin",
-    chocona: "aqre",
     cityspace: "cave",
-    cocktail: "aqre",
     context: "nuribou",
     coral: "nonogram",
     circlesquare: "yinyang",
@@ -81,7 +79,6 @@ function imp(penpa, example = false) {
     fivecells: "nawabari",
     fourcells: "nawabari",
     heyablock: "heyawake",
-    hinge: "aqre",
     island: "kurotto",
     lither: "slitherlink",
     nibunnogo: "gokigen",
@@ -91,7 +88,6 @@ function imp(penpa, example = false) {
     numlin_bit: "numlin",
     nuriuzu: "tentaisho",
     oasis: "nurimisaki",
-    mannequin: "aqre",
     simplegako: "view",
     smullyan: "nuribou",
     squarejam: "shikaku",
@@ -155,6 +151,7 @@ function imp(penpa, example = false) {
       Swal.update({ hideClass: { popup: "", backdrop: "" } });
       Swal.close(); // close the popup window itself
       decode_puzzlink_extra(urlstring);
+      document.getElementById("modal-load").style.display = "none";
     } else redraw_grid();
   } catch (error) {
     clearInfo();
