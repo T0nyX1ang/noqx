@@ -39,22 +39,36 @@ function decode_puzzlink_extra(url) {
     case "mannequin":
       /* act as "aqre" type */
 
-      // Setup board
       pu = new Puzzle_square(cols, rows, size);
       setupProblem(pu, "surface");
 
-      // Decode URL
       info_edge = puzzlink_pu.decodeBorder();
       info_number = puzzlink_pu.decodeNumber16();
       info_number = puzzlink_pu.moveNumbersToRegionCorners(info_edge, info_number);
 
-      puzzlink_pu.drawBorder(pu, info_edge, 2); // 2 is for Black Style
-      puzzlink_pu.drawNumbers(pu, info_number, 1, "1"); // Black Style, Normal submode is 1
+      puzzlink_pu.drawBorder(pu, info_edge, 2);
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1");
 
-      // Change to Solution Tab
       pu.mode_qa("pu_a");
-      pu.mode_set("surface"); //include redraw
+      pu.mode_set("surface");
       UserSettings.tab_settings = ["Surface"];
+      break;
+
+    case "context":
+    case "norinuri":
+    case "smullyan":
+      /* act as "nuribou" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "surface");
+
+      info_number = puzzlink_pu.decodeNumber16();
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("surface");
+      pu.subcombimode("blpo");
+      UserSettings.tab_settings = ["Surface", "Composite"];
       break;
 
     default:
