@@ -61,12 +61,12 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
         os.makedirs("./penpa-edit/requires", exist_ok=True)
 
         # fetch penpa-edit repository resources for offline usage
-        with open("./penpa-edit/js/penpa_loader.js", encoding="utf-8", newline="\n") as f:
+        with open("./penpa-edit/js/loader.js", encoding="utf-8", newline="\n") as f:
             loader_content = f.read()
             penpa_hash_index = loader_content.find("penpa_edit_hash = ")
 
             if penpa_hash_index == -1:
-                logging.error("Failed to find the penpa-edit hash in penpa_loader.js.")
+                logging.error("Failed to find the penpa-edit hash in loader.js.")
                 sys.exit(1)
 
             from urllib.request import urlopen
@@ -95,7 +95,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
                 os.makedirs(f"./penpa-edit/requires/core/{penpa_edit_hash}", exist_ok=True)
                 penpa_css_index = loader_content.find("penpa_style_sources = ")
                 if penpa_css_index == -1:
-                    logging.error("Failed to find the penpa-edit style sources in penpa_loader.js.")
+                    logging.error("Failed to find the penpa-edit style sources in loader.js.")
                     sys.exit(1)
 
                 penpa_css_start = penpa_css_index + len("penpa_style_sources = ")
@@ -118,7 +118,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
 
                 penpa_js_index = loader_content.find("penpa_script_sources = ")
                 if penpa_js_index == -1:
-                    logging.error("Failed to find the penpa-edit script sources in penpa_loader.js.")
+                    logging.error("Failed to find the penpa-edit script sources in loader.js.")
                     sys.exit(1)
 
                 penpa_js_start = penpa_js_index + len("penpa_script_sources = ")
@@ -138,7 +138,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
             if args.deployment_mode:
                 pyscript_version_index = loader_content.find("pyscript_version = ")
                 if pyscript_version_index == -1:
-                    logging.error("Failed to find the PyScript version in penpa_loader.js.")
+                    logging.error("Failed to find the PyScript version in loader.js.")
                     sys.exit(1)
 
                 pyscript_version_start = pyscript_version_index + len("pyscript_version = ")
@@ -181,7 +181,7 @@ if __name__ == "main" or (__name__ == "__main__" and args.deployment_mode):
 
                 clingo_wasm_version_index = loader_content.find("clingo_wasm_version = ")
                 if clingo_wasm_version_index == -1:
-                    logging.error("Failed to find the Clingo WASM version in penpa_loader.js.")
+                    logging.error("Failed to find the Clingo WASM version in loader.js.")
                     sys.exit(1)
 
                 clingo_wasm_version_start = clingo_wasm_version_index + len("clingo_wasm_version = ")
