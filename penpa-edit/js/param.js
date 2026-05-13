@@ -65,7 +65,28 @@ const presetData = {
   },
 };
 
-function toggleParamBox() {
+function initParamBox() {
+  const parameterBox = document.getElementById("parameter_box");
+  const parameterButton = document.getElementById("param");
+  const puzzleType = document.getElementById("type").value;
+
+  parameterBox.style.display = "none"; // hide parameter box if no parameters
+  parameterButton.textContent = "Show Parameters";
+  parameterButton.disabled = true;
+  while (parameterBox.firstChild) {
+    parameterBox.removeChild(parameterBox.lastChild);
+  }
+
+  if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
+    parameterButton.disabled = false;
+    for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
+      const paramDiv = makeParam(k, v.type, v.name, v.default);
+      parameterBox.appendChild(paramDiv);
+    }
+  }
+}
+
+function toggleParamBox(onoff = null) {
   const parameterBox = document.getElementById("parameter_box");
   const parameterButton = document.getElementById("param");
 

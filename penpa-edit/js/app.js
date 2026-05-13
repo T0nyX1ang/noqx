@@ -353,8 +353,6 @@ $(window).on("load", function () {
   const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
-  const parameterBox = document.getElementById("parameter_box");
-  const parameterButton = document.getElementById("param");
 
   const categoryName = {
     shade: "- Shading -",
@@ -446,21 +444,7 @@ $(window).on("load", function () {
       resetBoardSize(puzzleType);
       create_newboard();
       advancecontrol_toggle();
-
-      parameterBox.style.display = "none"; // hide parameter box if no parameters
-      parameterButton.textContent = "Show Parameters";
-      parameterButton.disabled = true;
-      while (parameterBox.firstChild) {
-        parameterBox.removeChild(parameterBox.lastChild);
-      }
-
-      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
-        parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
-          const paramDiv = makeParam(k, v.type, v.name, v.default);
-          parameterBox.appendChild(paramDiv);
-        }
-      }
+      initParamBox();
 
       if (exampleSelect.value !== "" && !isPuzzleTypeChanged) return;
 
