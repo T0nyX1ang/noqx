@@ -103,7 +103,7 @@ for (let i = 0; i < penpa_script_sources.length; i++) {
   document.head.appendChild(script);
 }
 
-const noqx_script_sources = ["./js/app.js", "./js/param.js", "./js/solver_metadata.js"];
+const noqx_script_sources = ["./js/app.js", "./js/param.js", "./js/puzzlink_extra.js", "./js/solver_metadata.js"];
 for (let i = 0; i < noqx_script_sources.length; i++) {
   const script = document.createElement("script");
   script.type = "text/javascript";

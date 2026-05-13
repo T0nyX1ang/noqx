@@ -150,6 +150,11 @@ function imp(penpa, example = false) {
     if (importErrorDialog && importErrorDialog.textContent.startsWith("It currently does not support puzzle type")) {
       create_newboard();
       advancecontrol_toggle();
+
+      // interception for the error message of unsupported puzzle type from penpa+
+      Swal.update({ hideClass: { popup: "", backdrop: "" } });
+      Swal.close(); // close the popup window itself
+      decode_puzzlink_extra(urlstring);
     } else redraw_grid();
   } catch (error) {
     clearInfo();
