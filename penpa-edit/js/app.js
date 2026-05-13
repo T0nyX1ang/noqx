@@ -49,6 +49,7 @@ function hookExp() {
 function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
+  let puzzleTypeWithoutAlias = null;
   const puzzleVariants = [];
 
   // replace unsupported host to supported host
@@ -60,6 +61,7 @@ function imp(penpa, example = false) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
     puzzleType = urldata[0];
+    puzzleTypeWithoutAlias = puzzleType;
     for (let i = 1; i < urldata.length; i++) {
       if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
       else break;
@@ -79,7 +81,6 @@ function imp(penpa, example = false) {
     fourcells: "nawabari",
     heyablock: "heyawake",
     island: "kurotto",
-    lither: "slitherlink",
     nibunnogo: "gokigen",
     nothing: "moonsun",
     numlin_bit: "numlin",
@@ -88,10 +89,7 @@ function imp(penpa, example = false) {
     squarejam: "shikaku",
     statuepark: "yinyang",
     suguru: "cojun",
-    swslither: "slitherlink",
     tetrochain: "yajikazu",
-    tslither: "slitherlink",
-    vslither: "slitherlink",
   };
 
   if (puzzleType && puzzleType in puzzleTypeConverter) {
@@ -187,6 +185,12 @@ function imp(penpa, example = false) {
       // for the visit_all parameter
       const visitAllParam = document.getElementById("param_visit_all");
       if (visitAllParam) visitAllParam.checked = true;
+    }
+
+    // parse variant for defined maps
+    for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
+      const element = document.getElementById(paramId);
+      if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
     }
 
     // parse shapeset for statuepark from URL if available
@@ -322,6 +326,31 @@ function resetBoardSize(puzzleType) {
   return sizeFlag;
 }
 
+const categoryName = {
+  shade: "- Shading -",
+  route: "- Loop / Path -",
+  region: "- Area Division -",
+  num: "- Number -",
+  var: "- Variety -",
+  unk: "- Unknown -",
+};
+
+const variantMap = {
+  lits: { param_invlitso: "invlitso" },
+  slitherlink: {
+    param_tslither: "tslither",
+    param_vslither: "vslither",
+    param_swslither: "swslither",
+  },
+  ichimaga: {
+    param_ichimagam: "ichimagam",
+    param_ichimagax: "ichimagax",
+  },
+  pipelink: {
+    param_pipelinkr: "pipelinkr",
+  },
+};
+
 // detect the content change in page_settings button to avoid language check glitch
 const pageSettingsButton = document.getElementById("page_settings");
 if (pageSettingsButton) {
@@ -350,31 +379,6 @@ $(window).on("load", function () {
   const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
-
-  const categoryName = {
-    shade: "- Shading -",
-    route: "- Loop / Path -",
-    region: "- Area Division -",
-    num: "- Number -",
-    var: "- Variety -",
-    unk: "- Unknown -",
-  };
-
-  const variantMap = {
-    lits: { param_invlitso: "invlitso" },
-    slitherlink: {
-      param_tslither: "tslither",
-      param_vslither: "vslither",
-      param_swslither: "swslither",
-    },
-    ichimaga: {
-      param_ichimagam: "ichimagam",
-      param_ichimagax: "ichimagax",
-    },
-    pipelink: {
-      param_pipelinkr: "pipelinkr",
-    },
-  };
 
   const customMatcher = (params, data) => {
     if ($.trim(params.term) === "") return data;

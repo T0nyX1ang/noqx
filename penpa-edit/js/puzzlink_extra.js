@@ -71,6 +71,26 @@ function decode_puzzlink_extra(url) {
       UserSettings.tab_settings = ["Surface", "Composite"];
       break;
 
+    case "lither":
+    case "tslither":
+    case "vslither":
+      /* base on "slitherlink" type */
+      pu = new Puzzle_square(cols, rows, size);
+      // Draw grid dots only
+      pu.mode_grid("nb_grid3");
+      pu.mode_grid("nb_lat1");
+      pu.mode_grid("nb_out2");
+      setupProblem(pu, "combi");
+
+      info_number = puzzlink_pu.decodeNumber4();
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1");
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("edgex");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
+
     case "nothree":
     case "nuriuzu":
       /* base on "tentaisho" type */
