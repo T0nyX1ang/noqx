@@ -20,7 +20,7 @@ class SukoroSolver(Solver):
     category = "num"
     examples = [
         {
-            "data": "m=edit&p=7VRNb9pAEL37V0Rz3oPXuxjjG02hF+q0hSpClmUZ6goUkKnBVbSI/56ZsdVlIzikahpVqux9vPnY4Xn2Y/+jKepSSJ9eFQn8xUfLiEcQhTz87pmtD5syvhHD5rCqaiRC3I3H4nux2Zde2mVl3tEMYjMU5kOcggQBAQ4JmTCf46P5GJtEmCmGQEj0TdqkAOnI0nuOE7ttndJHnnQc6Rzpcl0vN2U+aT2f4tTMBND/vOPZRGFb/Syh00H2stou1uRYFAf8mP1qvesi++Zb9dB0uTI7CTN8JldbucrKJdrKJXZBLn0Fya0e89ErSB1kpxO2/AuKzeOUdH+1NLJ0Gh8Rk/gISuJUhevMqwJKoUnL3pkDx9RkBr/MHs210dB3SoWBE+3TXBuVfuTUkoFbTCqqdm6TsrP5qu/GdejW6z233U+RoT6LYzMkt2TOOGYMGGfYMWEU43tGn7HHOOGcEeM94y2jZgw5p089f9GqnMuBrhF2y4Am6dp6XklxqtobwH16/54v81JImu2irG+Sqt4WGzw601WxKwHvp5MHj8CDd5f+f2W9wZVF7fd/+4i8zYlNzVTgCTF3AnZNXuTLCvcV9o38Wl/2X8t/qf9a/cv++ZU686v5f8D/11cLLyzcWQ9VXUHmPQE=",
+            "data": "m=edit&p=7VRNT8JAEL33V5g576HbXUrpDRW8IH6AMaRpmoI1ECHFQg1Z0v/u7FAtS+CAUYmJKTu8eTM7fZ39WLzmcZYwbuuf8Bj+4yO5R8PxXBp2+fQny2nin7FmvhynGQLGbtpt9hxPF4kVlFmhtVYNXzWZuvID4MDAwcEhZOrOX6trX3WZ6mEIGEeus0lyELYq+EhxjS42JLcRd0uMcIBwNMlG0yTqbJhbP1B9Bvo95zRbQ5ilbwmUOrQ/SmfDiSaG8RI/ZjGezMvIIn9KX3L4eEXBVHNHrqzkikqu+JQr9st1SrnpKmr9gNRGWBTY8nsUG/mB1v1QQa+CPX9daE1rEBynClxnWhUQAl1euQ3Dldp1Pt0aN6KubZRyHSNabxhRbntGLe6Yxbiwd3xhzhd1My5ds15t1zc/hbtyK47N4NSSAdk2WYdsHzvGlCB7SdYmWyPboZwW2UeyF2QlWZdy6rrnR63KthwoG1FtGZBauqyYH1IciM0NYD61v8eFVgDdfDZMsrNums3iKR6d3jieJ4D3U2HBCmjQ7pL/V9YJrizdfvvLR+Q0JzZQPYYnRN0wmOdRHI1S3FfYN81LuZ8/lH8sf6j+fn5woM7gYP438L++WnhhhdY7",
         },
         {"url": "https://puzz.link/p?sukoro/11/11/p2324d14e3b2b3g3b1h31c13h2b3g1b2b1e23d1434p", "test": False},
     ]

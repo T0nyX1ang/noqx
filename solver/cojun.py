@@ -14,7 +14,10 @@ class CojunSolver(Solver):
     category = "num"
     examples = [
         {
-            "data": "m=edit&p=7ZVPb9NMEMbv+RTVnvfg/RN717dQUi4l/GlRVVlWlbaGBpI3kDQIOcp37zOzs6RFlRB6BfSALK+eXc9unvmNx1l/2UxXnQ64XNCFNrict3zbIvJdyHU6u5139YEebW5vlisIrV8dHen30/m6GzQS1Q62faz7ke5f1I0ySiuL26hW92/qbf+y7se6P8EjpQ3WjlOQhRzv5Rk/J3WYFk0BPRENeQ55NVtdzbuL47Tyum76U63od57xbpJqsfzaKfFB86vl4nJGC5fTWySzvpl9lifrzfXy00ZiTbvT/SjZnTxi1+3tkkx2ST1il7L4zXZju9sB+1sYvqgb8v5uL8NentRbjJN6q2yJrQ615sooZzCl0qepd5ja/XT44KkpLOZ+PzfFD3M6bXhv7u/thwHDNs55POLR8ngKl7p3PD7nseBxyOMxx4xh3pR4TyuYsDixxA9XyIZ0hfUg6xV+MCAP1sglwARrZB2QEGvsDbI3ICZKTMB6zOtIJFaiK+goOqA3kDjp6KElPg6hJT6W0EE04gkUa/QVQYLGPugUg33Q6XzuPSsxpoBOeVmDvrTJJ/Zp69KZiIVO+VrroFOOiIVO3qxDDNWWNc7xco6DBy8ePPwPk3+saVuK5zKCs2him/kTzyqzpVpktuCW60Jscy2IbeYfSujMNkALWzD8zj8S88yQvkeSb0H8hRXxyTwNcjT3WBnJl1hltobYZm7EVvYSw8yZGGbODjHUIpmhkxhimJk7Yp7jibnwJ7Yu8yT+spe+r7kWHvHUZJm/l3p5qkvei3eDa4QmOONWOOTR81hyi1TU5r/0Ifj/3fhTO41FlR9c9Gn4g/N20Kjx9YfuYLJcLaZzfEAnm8Vlt8pz/GPtBuqb4ps/iv7fn9hf+hOjEhRP7Q1+anbQU4D6cfOfagd3"
+            "data": "m=edit&p=7ZVdb9MwFIbv+ysmX/si/khs566MjptRPrYJTVE1dV1gFa0K/UAoVf8773GO64EmIYSAXaAo1nucY+f1c2Jn83k3XbfS4zJeFlLhMlbHWxch3gVfl/Ptoq1P5HC3vV+tIaR8dXYm308Xm3bQcNZksO9C3Q1l96JuhBJSaNxKTGT3pt53L+tuJLsLPBJSoe+8T9KQoyzfxeekTvtOVUCPWUNeQ87m69mivTnve17XTXcpBb3nWRxNUixXX1rBPiierZa3c+q4nW6xmM39/BM/2ezuVh93Ir3iILthb3f8iF2T7ZqjXfO4Xf3n7YbJ4QDsb2H4pm7I+1WWPsuLen8gX3uhKww1qHWsjDAKoTqG1iDUOSy/e6oKjdjmWBU/xDRb+SC2D8bDgIo2rmN7Flsd20u4lJ2J7fPYFrEtY3sec0Ywryp8pw4mNGas8GJX9dqh33O/wwu9YY21eMsaq/Yla4z1PNYjJ3COR39I/VhIcKwddGDtsTeKXgcLzfmhhOb8UEF71shXKR/7iiBBYxy0Z+2gA2vkaM5RBbRmjX2pLWvMafo5kQttWBvokjW8md6bNsixnGMwj+V5DDxY9mDhv3SsMX/FnqsAzkVmm/gTT2czT5fYlrkuxDbVgtgm/r6CdkeeyocjwyP/QMx95sbMwZXOpswn8VRYo3rASpnMKrFVxDZxKzJnYpg4E8PE2SDHqMzQ6MwwMTfEPOXbzJ/YmsST+PNYOl9TLSzybZn5W66XpbqksY5rdKDzhrbCaWxtbKu4RRxt8186CH5/N/7UTqOr+FfJV/l348mgEaO7D+3JeLVeThc4QMe75W27TjH+WIeB+CriHQ9F+/8n9o9+YlSC4ql9wU/NDvbUZPAN"
+        },
+        {
+            "url": "https://puzz.link/p?cojun/21/12/a5jqlrdnesrffdain5ldmiattp7mfoldndfu6mtmcqbll97afve4shdk14tnr3hbsrvv1bfsrajvmi5ucfra97rrstbnsb03j3zzl2i5zzs4zs5q4zzzj2l4zi",
         },
     ]
 

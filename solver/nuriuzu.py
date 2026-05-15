@@ -26,7 +26,7 @@ class NuriuzuSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VZRb5swEH7Pr5ju+R4wmAR4y7quL126jUxVhVDkULdBoyKDMFWO8t97PpiQViNNm7buoXL86eO7s/mwrXPab51qNIrQ/oIIPRTU5l7EXUT0TP1HW5eHSidvcNkddnVDBPFqhXeqavUsG5Ly2dHEiVmiuUgy8AG5C8jRfEqO5kNiUjQphQAlaZfEBKBP9Hyk1xy37KwXhUd8NXCiN0SLsikqvUnTXvqYZGaNYF/0lodbCg/1dw39OH4u6odtaYWtOtDHtLtyP0Ta7rb+2g25Ij+hWf7k1/oZ/AajX0t7v5Y5/Nphf+5X397rttu6zMb56USr/pnsbpLMOv8y0mikaXIkXDEKxpvkCKGkaQS9abRHjiEK3fLCKQsxd+uRN6G75/E9t5vAi536IhJum96E/ditx4H7vfHE/PHEPMIPoomAnAqE7k8Tge9aO9q197x3PuOathZNwPiO0WMMGS8555zxmvGMUTLOOWdhD8cvHh+QZEkiSFoV//lZ+kveMtmXpalGxes1+n9H81kGadfcqUJTBUt3aq+BborTDB6BexZQmny9PF7m8rA74P32FfIyJSmjtaXCYK4Q9t1GbYq6Avr7gayLZ/o/d091C9p92ajqXlXqsdQt5LMn",
+            "data": "m=edit&p=7VbLbtswELzrK4I974EPyZZ0cx7tJU3aykEQCIIhK0xtxIFcyyoKGvr3LtdOVSQUUBRt0kNAcTCa5WNEEks1X9tyY1BG7tExCpRURiLmKmPB9bFMl9uVSY9w0m4X9YYI4uUF3pWrxgT5oVER7GyS2gna92kOCpCrhALtp3RnP6Q2Q5tRCDAk7ZyYBFREz3p6zXHHTvaiFMQvDpzoDdFqualWZpZle+ljmtspgpvomLs7Cg/1NwP7fvxe1Q/zpRPm5ZY+plks14dI097W9y08ztGhnTzxq3q/uverf/rVfr/qr/g1t19M0859ZpOi62jVP5PdWZo751c9jXuapbvOuXIoGW/SHUQhDSPxV3vkGOLIL4+9spQjvx6LAd0/jhJ+N1okXn0cS79NMWA/8euJ9s+bDIyfDIwjlY4HAuFQIPJ/mtTKt3a0a+947xTjlLYWrWY8ZRSMEeM5tzljvGY8YQwZR9xm7A7Hbx4fCMlSiBDSqqjnZ+kfecvDfVoaKtFb9H+PFkEOWbu5KytDGSxblGsDdFN0AXwHrrmmZuHb5fE6l4fbAfHHV8jrpKSc1pYSg71EWLezclbVK6DfD2RdPtNf3D3lrSL4AQ==",
         },
         {"url": "https://puzz.link/p?nuriuzu/10/10/iaaeztepexewezwepexewezzseezzj", "test": False},
     ]

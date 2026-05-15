@@ -20,7 +20,7 @@ class SimplegakoSolver(Solver):
     category = "num"
     examples = [
         {
-            "data": "m=edit&p=7VNNb6MwEL3zKyKf54BtIIlv2TTpJaUfSRVFCEUkpQoqiC2EqjLiv2c80CJV28NW2m0O1WieHs9j/AYz5XMVFTF4GHIENnAM4XmU3HEo7S5WyTGN1QAm1fGQF0gArudzeIzSMraCriq0aj1WegL6UgWMM2ACk7MQ9K2q9ZXSPuglLjHgqC3aIoF01tM1rRs2bUVuI/c7jnSDdJ8U+zTeLlrlRgV6Bcyc84t2G8qy/CVmnQ/zvM+zXWKEXXTEZspD8rtbKauH/KnqannYgJ58blf2dg1t7Rr2B7umi39sdxw2DX72OzS8VYHxft/TUU+Xqkb0Vc2EZ7YO0Ut7N0yKt9Y7wZEfBNcxguwFzzWC0wtDeum7gEdxOnBDOCcUhCv0A1oSXhDahC7hgmpmhGvCKaFD6FHN0HT0Vz3/BzuBEDRAbbhf56EVML/KdnEx8PMii1KGY9VY7JVRBhKLnJ9J+6ZJM1dgn9u/d252cBpC6wQ=",
+            "data": "m=edit&p=7VNNT4NAEL3zK5o57wF2gbZ7q7X1UvGjNU1DSEMrpkQICsWYJfx3Zwcq0ehBE7UHM5mXx9vZzBtgiscyzCPmYogBM5mFwV2X0rJtSrONRbxPItljo3K/y3IkjF1Mp+wuTIrI8NuqwKjUUKoRU2fSBwsYcEwLAqauZKXOpfKYmuMRMAu1WVPEkU46uqRzzcaNaJnIvZYjXSHdxvk2idazRrmUvlow0H1O6LamkGZPEbQ+9PM2SzexFjbhHocpdvFDe1KUt9l9CYcWNVOjz+2Kzq54tSs+tst/3u4wqGt87ddoeC197f2mo4OOzmVVa18VcFdf7aOX5tuA4IfRW8EW7wTH1oLoBNfRgt0JffeNgK0sarginBJywgX6YUoQnhKahA7hjGomhEvCMaFN6FJNX0/0pZl/wY7POS1QE873eWD44JXpJsp7XpanYQK4VrUBz0DpCyyy/zftjzZNfwLz2P69Y7OD2xAYLw==",
         },
     ]
 

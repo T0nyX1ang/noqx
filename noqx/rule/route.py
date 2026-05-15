@@ -219,21 +219,23 @@ def route_segment(src_cell: Tuple[int, int]) -> str:
     return rule
 
 
-def route_straight(color: str = "white") -> str:
+def route_straight(color: str = "white", directed: bool = False) -> str:
     """A rule to define all the cells that the route goes straight at.
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
+        directed: Whether the route is directed.
 
     Success:
         This rule will generate a predicate named `straight(R, C)`.
-
-    Warning:
-        This rule only supports undirected routes.
     """
     rule = ""
     for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):
-        rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
+        if directed:
+            rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_in(R, C, "{d1}"), line_out(R, C, "{d2}").\n'
+            rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_in(R, C, "{d2}"), line_out(R, C, "{d1}").\n'
+        else:
+            rule += f'straight(R, C) :- grid(R, C), {color}(R, C), line_io(R, C, "{d1}"), line_io(R, C, "{d2}").\n'
     return rule.strip()
 
 
@@ -242,12 +244,10 @@ def route_turning(color: str = "white", directed: bool = False) -> str:
 
     Args:
         color: The color of the route. Should be aligned with the color defined in `noqx.rule.common.fill_line` rule.
+        directed: Whether the route is directed.
 
     Success:
         This rule will generate a predicate named `turning(R, C)`.
-
-    Warning:
-        This rule only supports undirected routes.
     """
     rule = ""
     for d1, d2 in ((Direction.TOP, Direction.BOTTOM), (Direction.LEFT, Direction.RIGHT)):

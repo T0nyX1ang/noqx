@@ -5,7 +5,7 @@ from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
-from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
+from noqx.rule.shape import all_shapes, count_shape, general_shape, parse_shapeset
 
 
 class BattleshipSolver(Solver):
@@ -15,9 +15,18 @@ class BattleshipSolver(Solver):
     category = "var"
     examples = [
         {
-            "data": "m=edit&p=7VTPb9s8DL37ryh05kH0r9i+DGnX7NK525KhCAwjcDp/SLAEzpJ4GBTkfy9Ju7XmGhh6WPcNGBwRL4+U9EhJPHyri30JiPzzItBACPwglIHoytDtN1sfN2VyAeP6uKr2BABuJxP4r9gcSidDma1z52TixIzBvEsyhQqUSwNVDuZjcjLvE5OCmZJLARJ30wS5BK87eCd+RlcNiZpw2mKCc4LL4kh6Dqv1bnHZsB+SzMxA8V6XsgJDta2+l6rVwv/vq+1yzUS3QOs51F+qr3Ubi/kZzLiRPB+Q7HWSGTaSGQ1I5kxeQXKcn89U/k8kepFkrP9zB6MOTpMT2TQ5Kc/jqW9IS3NGyvMf038kAiboDJ+IsE+MmNAWETHhW0Tcm+Lr3i4+MuFZhNufIrtYSsN+xEgirEVjibCEoZYQaw66EmNpxSYdaxkM+jth+CwmkpinBKi8KEWeU5EDjg7g+emrkGsZDnlQc828QZfLLnfQJaX3B10RH/Vo0BVz9Ul430X6J5KFK3ZGtweMJ/atWC02EHsjMddi78ReifXFhhIz4vv3ohtqF/I3ycn8SNrezx+1v7+Ny51MpfV2We4v0mq/LTbUI6arYlcqaspnR/1QMuhWUY//16f/cJ/mo9D/t7fwCzkZVZhei7kFtasXxeK+ojtG9Xsh/+pZ0SPPnQc=",
+            "data": "m=edit&p=7VRNj9owEL3nV6x89sFj5/tSsdully3bFqoViiIUtqlABYUCqSoj/ntnJlCCiVTtYbdbqQoePd6M7efxeDbf62JdSgD6mVgqiUj6QcgDQPNQh2803y7K9Er26u2sWiOQ8r7fl1+Lxab0MuDZKvd2NkltT9p3aSZASKFxgMil/Zju7PvUDqQdoktIQO6uCdIIb0/wgf2EbhoSFOLBASMcI5wWW9Szmc1Xk+uG/ZBmdiQF7XXNKxAUy+pHKQ5a6P9jtZzOxdkCB8+m/lJ9q8Vxm720vUbyuEOyOUk2vyWbbsn6ZSQn+X6P6f+EoidpRvo/n2B8gsN0tydtO2EMTX2DWpo7EsY/Hv9IBEToFhG6RESEahExEX6LSJwpvnJ28YEI0yK0OyVylIZuRBQ5iybaEQYqcuaA1o5WMO4yELg7QXgRE+uzA2B6gZM8xiQHFB3Iy9sXIeUy7PKAopyZTpcml+50cer9TldMVx11uhLKPly6UH+fT6HZjrB6pDVs37JVbAO2dxxzy/aB7Q1bn23IMRHV35MqtJ3IZ5KT+TG3vfMv/Pe43MvEoF5Oy/XVoFoviwX2iOGsWJUCm/LeEz8FD6wq7PH/+/Rf7tN0Feq1vYU/yMkww/ha7L0Uq3pSTB4rrDHM3xP5Fz8VPvLc+wU=",
+            "config": {"shapeset": "ship4"},
         },
     ]
+    parameters = {
+        "shapeset": {
+            "name": "Shape Set",
+            "type": "shapeset",
+            "default": [],
+            "presets": ["ship3", "ship4", "ship5", "pento"],
+        },
+    }
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
@@ -70,15 +79,12 @@ class BattleshipSolver(Solver):
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="x"))
         self.add_program_line(avoid_same_color_adjacent(color=fleet_name, adj_type="x"))
-        self.add_program_line(general_shape("battleship", 1, OMINOES[1]["."], color=fleet_name, adj_type=4))
-        self.add_program_line(general_shape("battleship", 2, OMINOES[2]["I"], color=fleet_name, adj_type=4))
-        self.add_program_line(general_shape("battleship", 3, OMINOES[3]["I"], color=fleet_name, adj_type=4))
-        self.add_program_line(general_shape("battleship", 4, OMINOES[4]["I"], color=fleet_name, adj_type=4))
         self.add_program_line(all_shapes("battleship", color=fleet_name))
-        self.add_program_line(count_shape(4, "battleship", 1, color=fleet_name))
-        self.add_program_line(count_shape(3, "battleship", 2, color=fleet_name))
-        self.add_program_line(count_shape(2, "battleship", 3, color=fleet_name))
-        self.add_program_line(count_shape(1, "battleship", 4, color=fleet_name))
+
+        shapeset = parse_shapeset(puzzle.param["shapeset"])
+        for i, (o_shape, o_count) in enumerate(shapeset.items()):
+            self.add_program_line(general_shape("battleship", i, o_shape, color=fleet_name, adj_type=4))
+            self.add_program_line(count_shape(o_count, name="battleship", _id=i, color=fleet_name))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)

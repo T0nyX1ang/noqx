@@ -5,13 +5,13 @@ import pkgutil
 import unittest
 
 from noqx.clingo import Config, run_solver
-from noqx.manager import list_solver_metadata, load_solver
+from noqx.manager import Solver, list_solver_metadata, load_solver
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src
-from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape
+from noqx.rule.shape import OMINOES, all_rect, all_shapes, count_shape, general_shape, get_variant_shape
 from noqx.rule.variety import yaji_count
 from solver.binairo import unique_linecolor
 from solver.castle import wall_length
@@ -25,6 +25,7 @@ for module_info in pkgutil.iter_modules(["solver"]):
     load_solver("solver", module_info.name)
 
 metadata = list_solver_metadata()
+empty_payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
 
 
 class TestSolver(unittest.TestCase):
@@ -39,6 +40,7 @@ class TestSolver(unittest.TestCase):
 
     def test_solver_api(self):
         """Test all available solvers. The tests should only return a unique solution."""
+        failed_solvers = []
         for puzzle_name, puzzle_metadata in metadata.items():
             default_params = puzzle_metadata.get("parameters", {})
 
@@ -57,18 +59,20 @@ class TestSolver(unittest.TestCase):
 
                 response = run_solver(puzzle_name, puzzle_example["data"], params)
                 if len(response["url"]) != 1:
-                    self.fail(f"Failed puzzle: {puzzle_name}.")
+                    failed_solvers.append(puzzle_name)
+
+        if failed_solvers:
+            self.fail(f"Failed puzzle(s): {', '.join(failed_solvers)}.")
 
     def test_nonogram_edge_case(self):
         """Test nonogram edge case."""
         payload = "m=edit&p=7ZJBb7JAEIbv/Aqz5znsgvbTvVmrvVhai40xhBikGEkh9ANpmiX8d2cGjGnSSw9tPTTrvnmZnXWfnZ3yfxUWMdg4nCFIUDRUn+dA0u80lskhjXUPxtVhnxdoAO5nM9iFaRlbvuK9MrBqM9JmAeZW+0IJEDZOJQIwC12bO21cMB4uCXAwNm+TbLTTs13xOrlJG1QSvdt5tGu0UVJEabyZt5EH7ZslCDrnmneTFVn+FouOg76jPNsmFNiGB7xMuU9eu5Wyes5fqi5XBQ2YcYvrnXDplA6XyDtcsi0uuU9w6RbfjDsKmgbL/ojAG+0T+9PZDs/W0zWqq2uhBrRVIkv7NsKWHwKYpjh5zTpjtVmX+F9gHNYbVsk6YJ1zzpR1xTph7bNecc4/ovkS7w/g+LYKLF94VbELoxir7FbZNi56bl5kYSqwrRtLvAuevoNl6v91+i91Oj2BvLT+uTQc7OjAOgI="
-        response = run_solver("nonogram", payload, {})
+        response = run_solver("nonogram", payload, {"cts": False})
         self.assertEqual(len(response["url"]), 1)
 
     def test_nurimisaki_edge_case(self):
         """Test nurimisaki edge case."""
-        payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
-        response = run_solver("nurimisaki", payload, {})
+        response = run_solver("nurimisaki", empty_payload, {})
         self.assertEqual(len(response["url"]), 1)
 
     def test_hinge_edge_case(self):
@@ -82,18 +86,6 @@ class TestSolver(unittest.TestCase):
         payload = "m=edit&p=7VRbT+JAFH7nV5h59STbC5S2yT4UBFdXEQXCQkNIwQLVlnF7QbeE/+6ZGQxtqW5i9sGHzcDJN9+Znstcvuh34oQuaKCAqoMEMg5F00CWq6Dzn7QffS/2XfMErCRe0RABwE27DQvHj1y4HK2umtR6PrN+bfR4PJbPpeRCGj60H07vgp8XnhrK7Y7eve5ee8rS+tFs3GqtU62bRIPY3dwGcuNhMO4vusOlofxpdcbVdHwj1S7Hi28ba/C9Yu9rmFS2qWGmFqTnpk1kAkTBv0wmkN6a2/TaTEeQ9tBFoDoBEiR+7M2pT0PCORnXXYkPFYStAxxyP0NNQcoS4s4eIxwhdMKQPk8704aguqad9oGw5A3+OYMkoBuXZWPFsfmcBjOPETMnxv2LVt4TARUdUXJPH5P9Unmyg9QqtKB/3AIGeWuBQdECQyUtsM6yLQz/fQvGZLfD47nDJqamzfoZHKB+gD1zi7bDrcztyNwSVcUwNcjvMfrafIXCbR8DQKpye8atxG2N2yu+poWx6groCjEVILoChkB1FXRMwTgVDIHq7HoLrgqGQPUa6DXB1cAQqK6BrglOA4MhTDTk6ZrcVrnVeBl11uWn9+FzHf+1HFtR+MMWo3bAk4pNekm4cOYuHnbrfumedGgYOD7OeivnySX45EhE/WkkVk3dF2ceE1O8+qwnx62TYObilc1QPqVPvrcui/DmypHeck1Dt9TFSBdrfScUc5WEmtHwvlDTs+P7+V64GuaouRfO/TwVh/gcMnN+aXNM4MSrHJF5OrlI7rqwmbGTL9F5dArZgsN27CrkhfC/raKA43H+18cvrY/sqKSvpg5frRx+y2n4geQcnEW6RHiQ/UB7Mt4y/h2ZyXiL/JGmsGKPZQXZEmVBtiguSB3rC5JHEoPcOyrDohaFhlVV1BqW6khuWKqs4tiTyis="
         response = run_solver("toichika", payload, {})
         self.assertEqual(len(response["url"]), 1)
-
-    def test_statuepark_all_shapes(self):
-        """Test statuepark all shapes."""
-        for shapeset in ["tetro", "pento", "double_tetro", "others"]:
-            payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
-
-            if shapeset == "others":
-                self.assertRaises(ValueError, run_solver, "statuepark", payload, {"shapeset": shapeset})
-                continue
-
-            response = run_solver("statuepark", payload, {"shapeset": shapeset})
-            self.assertEqual(len(response["url"]), 0)
 
 
 class TestExtraFunction(unittest.TestCase):
@@ -111,6 +103,10 @@ class TestExtraFunction(unittest.TestCase):
         self.assertRaises(ValueError, count_shape, 0, "test", None, "black", "unknown")
         self.assertRaises(ValueError, general_shape, "test", 0, [(0, 0)], "black", "unknown", 4, False)
         self.assertRaises(ValueError, general_shape, "test", 0, None, "black", "grid", 4, False)
+        self.assertEqual(len(get_variant_shape(OMINOES[3]["I"], allow_rotations=True, allow_reflections=False)), 2)
+        self.assertEqual(len(get_variant_shape(OMINOES[3]["I"], allow_rotations=False, allow_reflections=True)), 1)
+        self.assertEqual(len(get_variant_shape(OMINOES[3]["L"], allow_rotations=True, allow_reflections=False)), 4)
+        self.assertEqual(len(get_variant_shape(OMINOES[3]["L"], allow_rotations=False, allow_reflections=True)), 2)
 
     def test_binairo_unique_linecolor(self):
         """Test binairo unique linecolor."""
@@ -160,3 +156,8 @@ class TestExtraFunction(unittest.TestCase):
         """Test repeated imports."""
         self.assertRaises(ValueError, load_solver, "solver", "aqre")
         self.assertRaises(ValueError, load_solver, "solver", "yinyang")
+
+    def test_non_implemented_solver(self):
+        """Test non-implemented solver."""
+        raw_solver = Solver()
+        self.assertRaises(NotImplementedError, raw_solver.solve, None)

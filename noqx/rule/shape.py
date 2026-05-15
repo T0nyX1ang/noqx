@@ -1,9 +1,10 @@
 """Rules and constraints to detect certain shapes."""
 
-from typing import Dict, Iterable, Optional, Set, Tuple, Union
+from collections import deque
+from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
 
 from noqx.puzzle import Direction
-from noqx.rule.helper import tag_encode, target_encode, validate_type
+from noqx.rule.helper import fail_false, tag_encode, target_encode, validate_type
 
 OMINOES: Dict[int, Dict[str, Tuple[Tuple[int, int], ...]]] = {
     1: {
@@ -24,7 +25,7 @@ OMINOES: Dict[int, Dict[str, Tuple[Tuple[int, int], ...]]] = {
         "S": ((0, 0), (0, 1), (1, 1), (1, 2)),
     },
     5: {
-        "F": ((0, 0), (0, 1), (1, -1), (1, 0), (2, 0)),
+        "F": ((0, 0), (1, 0), (1, 1), (1, 2), (2, 1)),
         "I": ((0, 0), (1, 0), (2, 0), (3, 0), (4, 0)),
         "L": ((0, 0), (1, 0), (2, 0), (3, 0), (3, 1)),
         "N": ((0, 0), (0, 1), (1, 1), (1, 2), (1, 3)),
@@ -33,36 +34,30 @@ OMINOES: Dict[int, Dict[str, Tuple[Tuple[int, int], ...]]] = {
         "U": ((0, 0), (0, 2), (1, 0), (1, 1), (1, 2)),
         "V": ((0, 0), (1, 0), (2, 0), (2, 1), (2, 2)),
         "W": ((0, 0), (0, 1), (1, 1), (1, 2), (2, 2)),
-        "X": ((0, 0), (1, -1), (1, 0), (1, 1), (2, 0)),
-        "Y": ((0, 0), (1, -1), (1, 0), (1, 1), (1, 2)),
+        "X": ((0, 1), (1, 0), (1, 1), (2, 1), (1, 2)),
+        "Y": ((0, 0), (1, 0), (1, 1), (2, 0), (3, 0)),
         "Z": ((0, 0), (0, 1), (1, 1), (2, 1), (2, 2)),
     },
 }
 
 
-def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
-    """Convert a shape to its canonical representation.
+def normalize_shape(shape: Iterable[Tuple[int, int]]) -> Tuple[Tuple[int, int], ...]:
+    """Normalize a shape to its canonical representation.
 
-    * The representation of a shape containing all the cells that consist of the shape, and:
-        * the first element can be any coordinate,
-        * the other element represent the offsets of the other cells from the first one.
-
-    * The **canonical** representation of the shape is a sorted tuple, and:
-        * the first element is `(0, 0)`,
-        * the other elements represent the offsets of the other cells from the first one.
+    * The **canonical** representation of the shape is a sorted tuple representing the offsets from `(0, 0)`.
 
     Args:
         shape: the representation of a shape.
     """
     shape = sorted(shape)
-    root_r, root_c = shape[0]
-    dr, dc = -1 * root_r, -1 * root_c
-    return tuple((r + dr, c + dc) for r, c in shape)
+    min_r = min(r for r, _ in shape)
+    min_c = min(c for _, c in shape)
+    return tuple((r - min_r, c - min_c) for r, c in shape)
 
 
-def get_variants(
+def get_variant_shape(
     shape: Iterable[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
-) -> Set[Iterable[Tuple[int, int]]]:
+) -> Set[Tuple[Tuple[int, int], ...]]:
     """Generate the equivalent variants for a shape.
 
     Args:
@@ -70,25 +65,92 @@ def get_variants(
         allow_rotations: Whether the shapes can be rotated to build the variants.
         allow_reflections: Whether the shapes can be reflected to build the variants.
     """
-    functions = set()
-    if allow_rotations:
-        functions.add(lambda shape: canonicalize_shape((-c, r) for r, c in shape))
-    if allow_reflections:
-        functions.add(lambda shape: canonicalize_shape((-r, c) for r, c in shape))
+    shape = normalize_shape(shape)
+    result: Set[Tuple[Tuple[int, int], ...]] = {shape}
+    queue = deque([shape], 8)
+    while queue:
+        current_shape = queue.popleft()
+        new_shapes: Set[Tuple[Tuple[int, int], ...]] = set()
 
-    result = set()
-    result.add(canonicalize_shape(shape))
+        if allow_rotations:
+            new_shapes.add(normalize_shape((-c, r) for r, c in current_shape))
 
-    all_shapes_covered = False
-    while not all_shapes_covered:
-        new_shapes = set()
-        current_num_shapes = len(result)
-        for f in functions:
-            new_shapes.update(f(s) for s in result)
+        if allow_reflections:
+            new_shapes.add(normalize_shape((-r, c) for r, c in current_shape))
 
-        result = result.union(new_shapes)
-        all_shapes_covered = current_num_shapes == len(result)
+        for new_shape in new_shapes:
+            if new_shape not in result:
+                result.add(new_shape)
+                queue.append(new_shape)
+
     return result
+
+
+def parse_shape(shape_str: str) -> Tuple[Tuple[int, int], ...]:
+    """Parse a shape string into a tuple of coordinates.
+
+    * The shape string is a string where `1` represents a shaded cell and `0` represents an unshaded cell, and the `|` character is used to separate rows.
+
+    * The coordinates are represented and normalized as (row, column) tuples, where the top-left cell is (0, 0).
+
+    Args:
+        shape_str: The shape string to be parsed.
+    """
+
+    rows = shape_str.split("|")
+    coord: List[Tuple[int, int]] = []
+    col_length = len(rows[0])
+
+    for r, row in enumerate(rows):
+        fail_false(len(row) == col_length, "Invalid shape size.")
+        for c, cell in enumerate(row):
+            fail_false(cell in ("0", "1"), "Invalid shape expression.")
+            if cell == "1":
+                coord.append((r, c))
+
+    return normalize_shape(coord)
+
+
+def parse_shapeset(shapeset: Union[str, List[Dict[str, Union[int, str]]]]) -> Dict[Tuple[Tuple[int, int], ...], int]:
+    """Parse a shapeset argument into a dictionary of shape coordinates with their counts.
+
+    * The shape set is a list of dictionaries, where each dictionary has a "shape" key whose value is a shape string, and a "count" key whose value is the number of shapes of that type.
+
+    * The rotations and reflections of the shape are **automatically** considered as the same.
+
+    Args:
+        shapeset: The shape set argument to be parsed.
+    """
+    if isinstance(shapeset, str):
+        result_data = {
+            "tetro": dict.fromkeys(OMINOES[4].values(), 1),
+            "double_tetro": dict.fromkeys(OMINOES[4].values(), 2),
+            "pento": dict.fromkeys(OMINOES[5].values(), 1),
+            "ship3": {OMINOES[3]["I"]: 1, OMINOES[2]["I"]: 2, OMINOES[1]["."]: 3},
+            "ship4": {OMINOES[4]["I"]: 1, OMINOES[3]["I"]: 2, OMINOES[2]["I"]: 3, OMINOES[1]["."]: 4},
+            "ship5": {OMINOES[5]["I"]: 1, OMINOES[4]["I"]: 2, OMINOES[3]["I"]: 3, OMINOES[2]["I"]: 4, OMINOES[1]["."]: 5},
+        }
+        fail_false(shapeset in result_data, f"Invalid shapeset preset: {shapeset}.")
+        return result_data[shapeset]
+    else:
+        result: Dict[Tuple[Tuple[int, int], ...], int] = {}
+        result_equivalent: Dict[Tuple[Tuple[int, int], ...], Set[Tuple[Tuple[int, int], ...]]] = {}
+        for shape_dict in shapeset:
+            shape = parse_shape(str(shape_dict["shape"]))
+            count = int(shape_dict["count"])
+            fail_false(count > 0, "Shape count must be positive.")
+
+            for eq_shape, eq_variant in result_equivalent.items():
+                if shape in eq_variant:
+                    result[eq_shape] += (
+                        count  # add the count to the existing shape if the new shape is equivalent to an existing shape
+                    )
+                    break
+            else:
+                result[shape] = count  # add the new shape if it is not equivalent to any existing shape
+                result_equivalent[shape] = get_variant_shape(shape, allow_rotations=True, allow_reflections=True)
+
+        return result
 
 
 def general_shape(
@@ -102,9 +164,9 @@ def general_shape(
 ) -> str:
     """A rule to define general shapes in a grid or an area.
 
-    * Two predicates will be generated, `shape` and `belong_to_shape`. The `shape` predicate
-    defines the shape pattern, while the `belong_to_shape` predicate defines whether a cell
-    belongs to a certain shape instance.
+    * Two predicates will be generated, `shape` and `belong_to_shape`. The `shape` predicate defines the shape pattern, while the `belong_to_shape` predicate defines whether a cell belongs to a certain shape instance.
+
+    * The rotations and reflections of the shape are **automatically** considered as the same.
 
     Args:
         name: The name of the shape.
@@ -140,7 +202,7 @@ def general_shape(
     tag_be = tag_encode("belong_to_shape", name, color)
     data = ""
 
-    variants = get_variants(deltas, allow_rotations=True, allow_reflections=True)
+    variants = get_variant_shape(deltas, allow_rotations=True, allow_reflections=True)
     for i, variant in enumerate(variants):
         valid, belongs_to = set(), set()
         for dr, dc in variant:
@@ -172,10 +234,10 @@ def general_shape(
                         )
 
         if _type == "grid":
-            data += f"{tag}(R, C, {_id}, {i}) :- grid(R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            data += f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
         if _type == "area":
-            data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            data += f"{tag}(A, R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
     return data
 

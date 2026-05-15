@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import defined, display, fill_line, grid, shade_c
+from noqx.rule.common import defined, display, fill_line, grid, shade_c, shade_cc
 from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -26,20 +26,25 @@ class MasyuSolver(Solver):
     aliases = ["mashu"]
     examples = [
         {
-            "data": "m=edit&p=7VVNb9pAEL37V0R7nsOO1xjbN5qGXlzSllQRsizkUFdYNTXFuEoX8d8zO7ZKqkykfgmpUmV2eLxZ8JvHzLr90hW7ElC7l4mA3ukKMOLlRyEvPVw31b4ukwuYdPt1syMAcD2dwseibksvG3bl3sHGiZ2AfZVkylfAC1UO9m1ysK8TuwA7p5QCJC4lhAp8glcneMt5hy57EjXh2YAJLgiuqt2qLpdpz7xJMnsDyt3nBX/bQbVpvpaq/xp/XjWbu8oRd8WeimnX1XbItN2H5lM37MX8CHbSy00FueYk18FerkOCXFfFH8utq8/lvaQ0zo9HcvwdaV0mmZP9/gSjE5wnB4ozjshxkRxUMKafQbrPY20qiCR2hCLri2wssaER2UBixyORDUVWvFukRVasOBIrjsWKY7Fi1GJxqMXqUIsyUIs6EEUzEEU3EEU70Bf9QCMWiUau0jjd/hM6kIsP5OLlrkOp7ahPp9ytPscbamawhuNLjprjiGPKe6443nK85BhwDHnP2I3Dbw/Mr8qhoSEL4oh6FMl+B9A3wDYaZ2f4CI8I0z/qsI6B9hH+yXoy05/cP170g/8al3uZSumsu5g1u01R04k3XxfbUtFT5eipe8UrIwch+P+gOf+DxrmvzzY9f2eYMzL2+9SBvQa17ZbFctVQd5F7fXoYxGfT/Ww+lx7GVU7T5MsJOhueJM7uHZ0dalO03zqVew8=",
+            "data": "m=edit&p=7VVRa9swEH7Pryh6vgedZTu237Ku2YvXbktGCcYEN/OImTNnSTyKgv/7TmevWekVtlECg6Ho8vk72fruuJP239piVwJq9zMR0D8NHyOeXhTy1MOYV4e6TC5g0h7WzY4AwM10Cp+Lel+OsmFVPjraOLETsG+STHkKeKLKwb5PjvZtYhdgZ+RSgMSlhFCBR/DqBG/Z79BlT6ImfD1ggguCq2q3qstl2jPvkszOQbl9XvHbDqpN871U/Wv8vGo2d5Uj7ooDBbNfV9vBs28/NV9a9XOLDuykl5sKcs1JrnmQa2S53kvIrauv5b2kNM67jjL+gbQuk8zJ/niC0QnOkmPnJDmLbBfJUflj+gzCY23KjyQ2QJH1RDaW2NCIrC+x40BkQ5EVd4u0yIoRR2LEsRhxLEaMWgwOtRgdalEGalEHopgMRDEbiGI60BPzgUYMEo0cpXG6vSe0Lwfvy8HLVYdS2VGdTrlaPbZzKmawhu1rtpptwDblNVdsb9lesvXZhrxm7NrhrxvmT+VQ01AK4ohqFHUP0DPAaTQuneEvOCAc9ljHQOsI/2Y8melP7scj+Pe4fJSplM66i+tmtylqOvFm62JbKrpVupG6Vzwz4y6p/xfN+S8al319tu55mWbOKLEPXQf2BtS2XRbLVUPVRdnr3UMjPuvue/M599Cusps6X3bQ2fDEcfbc0dmRj34A",
+        },
+        {
+            "data": "m=edit&p=7VNNb4JAEL3zK8yc5wALfnRv1mov1H5oYwwhBi2NpFAsSGPW8N87O2hJGw6NaRMPzWZeHm9nd+ZlmfytCLIQO7TsHppo0RKdDoflOBzmYU2jbRzKFvaL7TrNiCDejkb4HMR5iIZ3SPONvbqQqo/qWnogADks8FHdy726kWqOakJbgJaPkBTxNlqlcZrBUVMuMQtQEB3WdMb7mg0q0TKJjw+c6JzoKspWcbhwK+VOemqKoGtf8mlNIUnfQ6iO8fcqTZaRFpbBlhzm62gDaNNGXjylLwUcK5So+pUD94cO7NqB/enAbnYgfsNBHL2Gu4bmL/yypHd5oPYX0tNOHmvaq+lE7kvdkUaLcS73IBy6xsKvrYFjN6pdUsV3td14Q7dBpZIjLiwYp9QXKpvxitFkbDO6nDNknDEOGB3GDud0tbOTvf9RO54QPGrVap/OfcMDlx69NU6zJIjpf5isg00INIWlATvg8GwUOvV/MM9zMPUbmef2i55bOzQ0vvEB",
+            "config": {"visit_all": True},
         },
         {
             "url": "https://puzz.link/p?masyu/21/15/000a0l2943300030l00200i10j0063c60091000670303010606j3600133013ia16l0110000600306b2063000300020960ai301030",
             "test": False,
         },
     ]
+    parameters = {"visit_all": {"name": "Visit all cells", "type": "checkbox", "default": False}}
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(defined(item="black_clue"))
         self.add_program_line(defined(item="white_clue"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(shade_cc(["white"]) if puzzle.param["visit_all"] else shade_c(color="white"))
         self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(grid_color_connected(color="white", adj_type="line"))

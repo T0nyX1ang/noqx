@@ -37,7 +37,7 @@ class YinyangSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VVda9tAEHzXryj7vAWtTifL9+a6cV+c9CMuIQgRHFdtRO2o9UfbnNF/995K4IAXCqWloRR5h/Hcenck7+k2X3fzdYVE4WNyjJEZpjaTIEok4v6a1dtl5Z7haLe9a9ZMEF9PJvhxvtxUUdFnldHeD50foX/lCiBASDgISvRv3d6fO1g0q9sa0F/yOiDxwrTLTJieHemVrAc27kSKmV/0nOk100W9Xiyrm2mnvHGFnyGEZi/k14HCqvlWQW8mfO8MsHC7/H7Xa5vdh+bzrs+iskU/+olbc3QbaOc2MMVtuIlHbs9/q9th2bb80N+x3xtXBOvvjzQ/0ku3Z7wQJMFrtwcz4DIJt3lsDWyiqpmmZqmqqnWzoabmsaqq3YZqBYrVdhTnuqwXIdJl9WEQWV1WbRPpBpOQTSey0Q2mRs1O9ZZWN2h1Jza0PK090G9+EGqfZudKbR60iYxbIjjjaURvBF8KxoJWcCo5Z4JXgmPBVDCTnEGY51+e+D9kpzD8slQu+++qZVTAuFl9aTb1tgJ+8bcR/ACJwoRz5P9Z8FfOgvAHxE9tfzw1O7xj4aG+f/4wv/8EZXQA",
+            "data": "m=edit&p=7ZVPb9NAEMXv/hRoznPw7Hode28hNFzSQmmqqLKsqg1GjUhkmj9QbeTvzuzEJSqMhIRAVAg5+/TydjL7i722N/e7m3WDRPFjC0yRHWYul0FkZKT9MV1sl41/gcPd9q5ds0F8Mx7jh5vlpkmqvqpO9qH0YYjhta+AAMHwIKgxnPt9OPUwb1e3C8BwwfOAxBOTQ6Vhe3K0M5mPbnQIKWV/1nu2V2zni/V82VxPDslbX4UpQlzspfw6Wli1nxvoYeL3AwAHt8svd3222b1vP+7gsXmHYfgTWnuktd9orU5rntKe/lbasu46PunvmPfaVxH98miLo73w+y4SRSXRK78HO+A2Bp+igTNqmmtpnqmp2jcvtbRI1VRdrVQ7UKouR2mhx3oTIj1WTwaR02MVm0gHNLGafoitDphZtTrTl3Q6oNNJXKn2Huh/fuDU6kLpzRttLNvNiE55N2Kwoq9EU1EnOpGaE9GZ6Eg0E82lZhD38y/v+D+EU1kjD8/vD/fvpnVSwahdfWo3i20D/ODvEngAGZWN75H/74K/8i6IFyB9bvfHc8PhO7ZOvgI=",
         },
         {
             "url": "https://puzz.link/p?yinyang/22/18/00000000000000030190030000900003000000900130020006000l0000090000i0020009400030200060000002empf01900001009901030130900031009a00009000",

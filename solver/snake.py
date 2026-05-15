@@ -18,7 +18,7 @@ class SnakeSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VXPj9o8EL3zV6x89iG2E/LjUtHt0gvNtg2fVihCKKRZgTY0NCFVZcT/vjPjbMNuLPVbVeW0MhnNex7bz2N7aH60WV1w4eJPBdzhAprnO/S5/pg+p2vz7aEsois+aQ+bqgaH89vplN9nZVOMUhwJbTk66jDSE64/RikTjDMJn2BLrr9ER/0p0guuE+hiPABuZoIkuDe9e0f96F0bUjjgx50P7gLcfFvnZbGaGeZzlOo5Z7jOexqNLttVPwvW6UCcV7v1Fol1doDNNJvtvutp2m/VQ9vFiuWJ64mRm1jkql4uukYueha5uIu/l1vuK5vQcHk6QcK/gtRVlKLq/3o36N0kOoKNoyNTIQ59ByrMqTBXAOH1UAEMeugClD0cA4Tb8gQDgOo39JznEIPPl/JxMrwlBgqB8f1aYoz9/ezSwf4zrHDCJzGwH0G7WsCuPJ96nieZhbiXASsEpgAmeUGTeguNkwzpAFcc0NKRVlrao5V1Senaoz1vSMP+p5QFSXYOx821IvuBrEPWIzujmBuyd2SvybpkxxTj44X5n1eK0h7AuYIwae7X+an8I22p55tSM2hvfFeCU5a09X2WF1Az4na3LuqruKp3WQk42WT7gkGZPo3YL0YfvVn3rXJfvHJj8p1X1e8LvK8/yEkhr/AC9S1n+3aVrfIKbhVkDXnfs/MqfA0fI09/HFC7qfLbAl4OvHiaoBKx5nv2gI/pEQ==",
+            "data": "m=edit&p=7VVNj9owEL3zK1Y+++DPfF0qul16oWzbsFqhCKGQZgVqUGggVWWU/97xJCUbaqldqeW0Mh7Nex7Hz2N7OHyr0yqnXNmfDCijHJr2GXble9hZ1+bbY5FHN3RcHzdlBQ6l95MJfUqLQz5KOM7ly9HJhJEZU/M+SggnlAjonCyp+RSdzIfILKiJYYjQALhpGyTAvevdRxy33m1Lcgb+rPPBXYCbbausyFfTlvkYJWZOiV3nLc62LtmV33PS6bA4K3frrSXW6RE2c9hs993Iof5Sfq3JryUaasat3NghV/Zy5VmudMsV/0RusS9dQsNl00DCP4PUVZRY1Q+9G/RuHJ0aq+hEZGinvgEV7akQxYHQPZQAgx4qgKKHHkDVwwCgPEPNhtC7WMq3H+NnyDkbrMU9Nfi6YGyIpfdMDOyH464WsCvt48gwySSULpbzEGVc0qjeQUsnHfguWjDhpIU7WjqXFModrfXvNOx/glkQaOdw3NRItO/QMrQa7RRj7tA+or1Fq9B6GOPbC/OXVwrTHsC5gjDR3q/np/KftCXap9zZXvmuBCckrqunNMuhZszq3TqvbmZltUsLwPEm3ecEynQzIj8Idnyz6rVyX71y2+SzF9XvK7yvP8hJIK/wAs09Jft6la6yEm4VZM3yvnbzMnwJP7M8/nGIrvK7Ai4nXj1NUImWo58=",
         },
         {"url": "https://puzz.link/p?snake/11/11/00000000000000000000000000000000000000000957664857598o9", "test": False},
         {

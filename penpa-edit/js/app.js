@@ -1,14 +1,56 @@
-function exp() {
+function parsePenpaParam(data) {
+  let param = data.split("&");
+  let paramArray = {};
+  for (let i = 0; i < param.length; i++) {
+    let paramItem = param[i].split("=");
+    paramArray[paramItem[0]] = paramItem[1];
+  }
+  return paramArray;
+}
+
+function exp(saveUndo = false) {
   clearInfo(); // clear every information created by penpa itself
+  const undoStatus = document.getElementById("save_undo").checked;
+
+  if (!saveUndo) {
+    document.getElementById("save_undo").checked = false;
+    const result = pu.maketext().split("#")[1]; // return the puzzle data without saving undo record
+    if (undoStatus) document.getElementById("save_undo").checked = true; // restore undo status
+    return result;
+  }
+
   document.getElementById("save_undo").checked = true;
   let result = pu.maketext().split("#")[1];
-  document.getElementById("save_undo").checked = false;
+  if (!undoStatus) document.getElementById("save_undo").checked = false; // restore undo status
   return result;
+}
+
+function hookExp() {
+  const baseUrl = pu.maketext_baseurl();
+  let result = exp(document.getElementById("save_undo").checked);
+  let paramArray = parsePenpaParam(result);
+  let rawData = decrypt_data(paramArray.p).split("\n");
+  rawData[0] = rawData[0]
+    .split(",")
+    .map((v, i) => (i === 21 ? "" : v))
+    .join(","); // clear puzzle background image
+  if (rawData[7]) rawData[7] = "{}"; // clear solution metadata
+  if (rawData[16]) rawData[16] = "{}"; // clear shared solution data
+  if (rawData[17]) rawData[17] = "[]"; // clear genre
+  if (rawData[18]) rawData[18] = ""; // clear solving comment
+
+  paramArray.p = encrypt_data(rawData.join("\n"));
+  const final = `${baseUrl}#${Object.keys(paramArray)
+    .map((key) => `${key}=${paramArray[key]}`)
+    .join("&")}`;
+  update_textarea(final);
 }
 
 function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
+  let puzzleTypeWithoutAlias = null;
+  const puzzleVariants = [];
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
@@ -19,6 +61,39 @@ function imp(penpa, example = false) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
     puzzleType = urldata[0];
+    puzzleTypeWithoutAlias = puzzleType;
+    for (let i = 1; i < urldata.length; i++) {
+      if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
+      else break;
+    }
+
+    for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
+  }
+
+  const puzzleTypeConverter = {
+    arukone: "numlin",
+    cityspace: "cave",
+    coral: "nonogram",
+    circlesquare: "yinyang",
+    creek: "gokigen",
+    dotchi2: "dotchi",
+    fivecells: "nawabari",
+    fourcells: "nawabari",
+    heyablock: "heyawake",
+    island: "kurotto",
+    nibunnogo: "gokigen",
+    nothing: "moonsun",
+    numlin_bit: "numlin",
+    oasis: "nurimisaki",
+    simplegako: "view",
+    squarejam: "shikaku",
+    statuepark: "yinyang",
+    suguru: "cojun",
+    tetrochain: "yajikazu",
+  };
+
+  if (puzzleType && puzzleType in puzzleTypeConverter) {
+    urlstring = urlstring.replace(puzzleType, puzzleTypeConverter[puzzleType]);
   }
 
   // normalize the puzzle type
@@ -31,46 +106,20 @@ function imp(penpa, example = false) {
     }
   }
 
-  if (puzzleType === "lither") urlstring = urlstring.replace("lither", "slitherlink"); // special case with lithersink
-
-  // replace unsupported solver to supported solvers
-  urlstring = urlstring.replace("arukone", "numlin");
-  urlstring = urlstring.replace("chocona", "aqre");
-  urlstring = urlstring.replace("cityspace", "cave");
-  urlstring = urlstring.replace("cocktail", "aqre");
-  urlstring = urlstring.replace("context", "nuribou");
-  urlstring = urlstring.replace("coral", "nonogram");
-  urlstring = urlstring.replace("circlesquare", "yinyang");
-  urlstring = urlstring.replace("creek", "gokigen");
-  urlstring = urlstring.replace("dotchi2", "dotchi");
-  urlstring = urlstring.replace("fivecells", "nawabari");
-  urlstring = urlstring.replace("fourcells", "nawabari");
-  urlstring = urlstring.replace("heyablock", "heyawake");
-  urlstring = urlstring.replace("hinge", "aqre");
-  urlstring = urlstring.replace("nibunnogo", "gokigen");
-  urlstring = urlstring.replace("norinuri", "nuribou");
-  urlstring = urlstring.replace("nothing", "moonsun");
-  urlstring = urlstring.replace("nothree", "tentaisho");
-  urlstring = urlstring.replace("numlin_bit", "numlin");
-  urlstring = urlstring.replace("nuriuzu", "tentaisho");
-  urlstring = urlstring.replace("mannequin", "aqre");
-  urlstring = urlstring.replace("simplegako", "view");
-  urlstring = urlstring.replace("smullyan", "nuribou");
-  urlstring = urlstring.replace("squarejam", "shikaku");
-  urlstring = urlstring.replace("statuepark", "yinyang");
-  urlstring = urlstring.replace("swslither", "slitherlink");
-  urlstring = urlstring.replace("tetrochain", "yajikazu");
-  urlstring = urlstring.replace("tslither", "slitherlink");
-  urlstring = urlstring.replace("vslither", "slitherlink");
-
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
-    Swal.fire({
-      icon: "error",
-      title: "Import error",
-      text: "SOLVER/CONTEST mode is not supported in noqx. Please export in EDIT mode.",
-    });
-    return;
+    let paramArray = parsePenpaParam(urlstring.split("#")[1]);
+    let rawData = decrypt_data(paramArray.p).split("\n");
+    rawData[2] = rawData[11];
+    rawData[4] = rawData[14];
+    rawData[15] = rawData[14];
+    paramArray.p = encrypt_data(rawData.join("\n"));
+    paramArray.m = "edit";
+
+    // reconstruct the URL for solver mode
+    urlstring = `${urlstring.split("#")[0]}#${Object.keys(paramArray)
+      .map((key) => `${key}=${paramArray[key]}`)
+      .join("&")}`;
   }
 
   try {
@@ -90,21 +139,28 @@ function imp(penpa, example = false) {
     if (importErrorDialog && importErrorDialog.textContent.startsWith("It currently does not support puzzle type")) {
       create_newboard();
       advancecontrol_toggle();
+
+      // interception for the error message of unsupported puzzle type from penpa+
+      Swal.update({ hideClass: { popup: "", backdrop: "" } });
+      Swal.close(); // close the popup window itself
+      decode_puzzlink_extra(urlstring);
+      document.getElementById("modal-load").style.display = "none";
     } else redraw_grid();
   } catch (error) {
-    if (puzzleType in solver_metadata) {
-      Swal.fire({
-        icon: "error",
-        title: "Import error",
-        text: "The URL may be invalid or corrupted.",
-      });
+    clearInfo();
+    let errorMessage = null;
+    if (!document.getElementById("type").value) {
+      errorMessage = "Please select type before importing Penpa+ links.";
+    } else if (puzzleType in solver_metadata || urlstring.includes("m=edit")) {
+      errorMessage = "The URL may be invalid or corrupted.";
     } else {
-      Swal.fire({
-        icon: "error",
-        title: "Import error",
-        text: `Unsupported puzzle type: ${puzzleType}.`,
-      });
+      errorMessage = `Unsupported puzzle type: ${puzzleType}.`;
     }
+    Swal.fire({
+      icon: "error",
+      title: "Import error",
+      text: errorMessage,
+    });
     return;
   }
 
@@ -118,9 +174,65 @@ function imp(penpa, example = false) {
 
   // manually set the puzzle type if pre-fetched
   if (puzzleType in solver_metadata) {
+    const previousParameterBoxStatus = document.getElementById("parameter_box").style.display;
     const typeSelect = document.getElementById("type");
     typeSelect.value = puzzleType;
     typeSelect.dispatchEvent(new Event("change"));
+    if (previousParameterBoxStatus === "inline-block") toggleParamBox();
+
+    // parse variant for specific puzzle types if available
+    if (puzzleVariants.includes("f")) {
+      // for the visit_all parameter
+      const visitAllParam = document.getElementById("param_visit_all");
+      if (visitAllParam) visitAllParam.checked = true;
+    }
+
+    // parse variant for defined maps
+    for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
+      const element = document.getElementById(paramId);
+      if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
+    }
+
+    // parse shapeset for statuepark from URL if available
+    if (puzzleType === "statuepark") {
+      const actionSelect = document.getElementById("shapeset_action_shapeset");
+      const convertDict = { "//p": "pento", "//d": "double_tetro", "//t": "tetro" };
+      if (actionSelect) {
+        let flag = true;
+        for (const [key, value] of Object.entries(convertDict)) {
+          if (urlstring.endsWith(key)) {
+            actionSelect.value = value;
+            actionSelect.dispatchEvent(new Event("change"));
+            flag = false;
+            break;
+          }
+        }
+        if (flag) {
+          const puzzlinkSegment = urlstring.split("/");
+          const shapes = [];
+          if (puzzlinkSegment[7] && puzzlinkSegment.length >= 8 + parseInt(puzzlinkSegment[7])) {
+            for (let i = 0; i < parseInt(puzzlinkSegment[7]); i++) {
+              const shapeStr = puzzlinkSegment[8 + i];
+              const shapeColNumber = parseInt(shapeStr[0]);
+              const shapeRowNumber = parseInt(shapeStr[1]);
+
+              let shapeFullStr = "";
+              for (let ch of shapeStr.slice(2)) shapeFullStr += parseInt(ch, 36).toString(2).padStart(5, "0");
+              shapeFullStr = shapeFullStr.padEnd(shapeRowNumber * shapeColNumber, "0");
+
+              let reshapedStr = "";
+              for (let r = 0; r < shapeRowNumber; r++) {
+                reshapedStr += shapeFullStr.slice(r * shapeColNumber, (r + 1) * shapeColNumber) + "|";
+              }
+              reshapedStr = reshapedStr.slice(0, -1);
+              shapes.push({ shape: reshapedStr, count: 1 });
+            }
+            const paramInput = document.getElementById("param_shapeset");
+            if (paramInput) paramInput.value = shapes;
+          }
+        }
+      }
+    }
   }
 
   hookLoad(currentContent);
@@ -144,55 +256,6 @@ function hookUpdateDisplay() {
 function hookLoad(data) {
   load(data);
   clearInfo();
-}
-
-function invokeParamBox() {
-  const parameterBox = document.getElementById("parameter_box");
-  const parameterButton = document.getElementById("param");
-
-  if (parameterBox.style.display === "none") {
-    parameterBox.style.display = "inline-block";
-    parameterButton.textContent = "Hide parameters";
-  } else {
-    parameterBox.style.display = "none";
-    parameterButton.textContent = "Show parameters";
-  }
-}
-
-function makeParam(id, type, name, value) {
-  let paramDiv = document.createElement("div");
-  paramDiv.className = "parameter_div";
-
-  let paramLabel = document.createElement("label");
-  paramLabel.for = `param_${name}`;
-  paramLabel.innerHTML = `&nbsp;&nbsp;&nbsp;&nbsp;${name}&nbsp;`;
-
-  let paramInput = null;
-  if (type !== "select") {
-    paramInput = document.createElement("input");
-    paramInput.type = type;
-    paramInput.className = "param_input";
-    paramInput.id = `param_${id}`;
-
-    if (type === "number") {
-      paramInput.min = 0;
-    }
-    if (type === "checkbox") paramInput.checked = value;
-    else paramInput.value = value;
-  } else {
-    paramInput = document.createElement("select");
-    paramInput.id = `param_${id}`;
-    for (const [k, v] of Object.entries(value)) {
-      let option = document.createElement("option");
-      option.value = k;
-      option.text = v;
-      paramInput.appendChild(option);
-    }
-  }
-
-  paramDiv.appendChild(paramLabel);
-  paramDiv.appendChild(paramInput);
-  return paramDiv;
 }
 
 function resetGridType(puzzleType) {
@@ -219,7 +282,7 @@ function resetGridMode(puzzleType) {
 
   if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
-  if (["hashi"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
+  if (["hashi", "keywest"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
   if (["mejilink"].includes(puzzleType)) modeFlag = ["2", "1", "2"];
 
@@ -249,7 +312,7 @@ function resetBoardSize(puzzleType) {
   )
     sizeFlag = [1, 1, 1, 1];
 
-  if (["coral", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
+  if (["coral", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
 
   if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
     document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
@@ -263,11 +326,45 @@ function resetBoardSize(puzzleType) {
   return sizeFlag;
 }
 
+const categoryName = {
+  shade: "- Shading -",
+  route: "- Loop / Path -",
+  region: "- Area Division -",
+  num: "- Number -",
+  var: "- Variety -",
+  unk: "- Unknown -",
+};
+
+const variantMap = {
+  lits: { param_invlitso: "invlitso" },
+  slitherlink: {
+    param_tslither: "tslither",
+    param_vslither: "vslither",
+    param_swslither: "swslither",
+  },
+  ichimaga: {
+    param_ichimagam: "ichimagam",
+    param_ichimagax: "ichimagax",
+  },
+  pipelink: {
+    param_pipelinkr: "pipelinkr",
+  },
+};
+
+// detect the content change in page_settings button to avoid language check glitch
+const pageSettingsButton = document.getElementById("page_settings");
+if (pageSettingsButton) {
+  const observer = new MutationObserver(() => {
+    if (UserSettings.app_language === "EN" && pageSettingsButton.textContent !== "Settings")
+      pageSettingsButton.textContent = "Settings";
+  });
+  observer.observe(pageSettingsButton, { childList: true, characterData: true, subtree: true });
+}
+
 $(window).on("load", function () {
-  const CLINGO_WASM_URL = `https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.wasm`;
-  if (ENABLE_DEPLOYMENT) {
-    clingo.init(CLINGO_WASM_URL);
-  }
+  const CLINGO_WASM_URL =
+    (OFFLINE_MODE ? window.location.href + local_clingo_prefix : remote_clingo_prefix) + `./clingo.wasm`;
+  if (DEPLOYMENT_MODE) clingo.init(CLINGO_WASM_URL);
 
   // Update the exact Penpa+ link according to the hash
   const penpaLink = document.getElementById("penpa-link");
@@ -282,51 +379,41 @@ $(window).on("load", function () {
   const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
-  const parameterBox = document.getElementById("parameter_box");
-  const parameterButton = document.getElementById("param");
 
-  const categoryName = {
-    shade: "- Shading -",
-    route: "- Loop / Path -",
-    region: "- Area Division -",
-    num: "- Number -",
-    var: "- Variety -",
-    unk: "- Unknown -",
+  const customMatcher = (params, data) => {
+    if ($.trim(params.term) === "") return data;
+    if (typeof data.text === "undefined") return null;
+
+    const term = params.term.toLowerCase().replace(/\s+/g, "");
+    const stripper = (str) => str.toLowerCase().replace(/\s+/g, "");
+
+    let isMatch = false;
+    if (stripper(data.text).indexOf(term) > -1) isMatch = true;
+    if (data.id && stripper(data.id).indexOf(term) > -1) isMatch = true;
+    if (data.aliases && data.aliases.some((a) => stripper(a).indexOf(term) > -1)) isMatch = true;
+
+    if (isMatch) return data;
+
+    if (data.children && data.children.length > 0) {
+      const match = $.extend(true, {}, data);
+      for (let c = data.children.length - 1; c >= 0; c--) {
+        const child = data.children[c];
+        let childMatched = false;
+        if (stripper(child.text).indexOf(term) > -1) childMatched = true;
+        if (child.id && stripper(child.id).indexOf(term) > -1) childMatched = true;
+        if (child.aliases && child.aliases.some((a) => stripper(a).indexOf(term) > -1)) childMatched = true;
+
+        if (!childMatched) match.children.splice(c, 1);
+      }
+      if (match.children.length > 0) return match;
+    }
+    return null;
   };
 
-  const variantMap = {
-    lits: { param_invlitso: "invlitso" },
-    slitherlink: {
-      param_tslither: "tslither",
-      param_vslither: "vslither",
-      param_swslither: "swslither",
-    },
-    ichimaga: {
-      param_ichimagam: "ichimagam",
-      param_ichimagax: "ichimagax",
-    },
-    pipelink: {
-      param_pipelinkr: "pipelinkr",
-    },
-  };
-
-  const choicesType = new Choices(typeSelect, {
-    itemSelectText: "",
-    searchFields: ["label", "value", "customProperties.aliases"],
-    searchResultLimit: 5,
-    searchPlaceholderValue: "Type to search",
-    shouldSort: false,
-  });
   let puzzleTypeDict = {};
   for (const [k, v] of Object.entries(categoryName)) {
-    puzzleTypeDict[k] = { label: v, choices: [] };
+    puzzleTypeDict[k] = { text: v, children: [] };
   }
-
-  const choicesExample = new Choices(exampleSelect, {
-    itemSelectText: "",
-    searchEnabled: false,
-    noChoicesText: "No examples found",
-  });
 
   let puzzleType = null;
   let puzzleContent = null;
@@ -334,67 +421,47 @@ $(window).on("load", function () {
   let solutionPointer = -1;
   let puzzleParameters = {};
 
-  let puzzleSearchBoxInput = document.querySelector(".choices__input.choices__input--cloned");
-  puzzleSearchBoxInput.id = "select2_search"; // spoof penpa+ to type words in the search box
-
   // solver_metadata is defined in solver_metadata.js
   for (const [ptype, pvalue] of Object.entries(solver_metadata)) {
-    typeOption = {
-      value: ptype,
-      label: pvalue.name,
-      customProperties: { aliases: pvalue.aliases },
-    };
-    puzzleTypeDict[pvalue.category].choices.push(typeOption);
+    const typeOption = { id: ptype, text: pvalue.name, aliases: pvalue.aliases };
+    puzzleTypeDict[pvalue.category].children.push(typeOption);
   }
 
   for (const [k, _] of Object.entries(categoryName)) {
-    if (puzzleTypeDict[k].choices.length === 0) delete puzzleTypeDict[k]; // remove empty category
+    if (puzzleTypeDict[k].children.length === 0) delete puzzleTypeDict[k]; // remove empty category
   }
 
-  choicesType.setChoices(Object.values(puzzleTypeDict));
-
-  typeSelect.addEventListener("change", () => {
+  $(typeSelect).select2({ data: Object.values(puzzleTypeDict), placeholder: "Type to search", matcher: customMatcher });
+  $(exampleSelect).select2({ minimumResultsForSearch: Infinity });
+  $(typeSelect).on("change", () => {
     const isPuzzleTypeChanged = puzzleType !== typeSelect.value;
-    if (isPuzzleTypeChanged) choicesType.setChoiceByValue(typeSelect.value);
+    if (isPuzzleTypeChanged) $(typeSelect).val(typeSelect.value).trigger("change.select2");
     ruleButton.disabled = false;
     puzzleType = typeSelect.value;
+    puzzleParameters = {};
     if (puzzleType !== "") {
       resetGridType(puzzleType);
       resetGridMode(puzzleType);
       resetBoardSize(puzzleType);
       create_newboard();
       advancecontrol_toggle();
-
-      parameterBox.style.display = "none"; // hide parameter box if no parameters
-      parameterButton.textContent = "Show parameters";
-      parameterButton.disabled = true;
-      while (parameterBox.firstChild) {
-        parameterBox.removeChild(parameterBox.lastChild);
-      }
-
-      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
-        parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
-          const paramDiv = makeParam(k, v.type, v.name, v.default);
-          parameterBox.appendChild(paramDiv);
-        }
-      }
+      initParamBox();
 
       if (exampleSelect.value !== "" && !isPuzzleTypeChanged) return;
 
-      choicesExample.clearStore();
-      let exampleList = [{ value: "", label: "Choose Example", selected: true }];
+      $(exampleSelect).empty();
+      let exampleList = [{ id: "", text: "Choose Example", selected: true }];
       exampleList.push(
         ...solver_metadata[puzzleType].examples.map((_, i) => ({
-          value: i,
-          label: `Example #${i + 1}`,
+          id: String(i),
+          text: `Example #${i + 1}`,
         }))
       );
-      choicesExample.setChoices(exampleList);
+      $(exampleSelect).select2({ data: exampleList, minimumResultsForSearch: Infinity });
     }
   });
 
-  exampleSelect.addEventListener("change", () => {
+  $(exampleSelect).on("change", () => {
     solveButton.disabled = false;
     solveButton.textContent = "Solve";
     if (exampleSelect.value !== "") {
@@ -409,7 +476,11 @@ $(window).on("load", function () {
           const config = solver_metadata[puzzleType].examples[exampleSelect.value].config;
           const value = config && config[k] !== undefined ? config[k] : v.default;
           const paramInput = document.getElementById(`param_${k}`);
-          if (paramInput.type === "checkbox") paramInput.checked = value;
+          if (k === "shapeset") {
+            if (value && Array.isArray(value)) paramInput.value = value;
+            else if (presetData[value]) paramInput.value = presetData[value].config;
+            else paramInput.value = [];
+          } else if (paramInput.type === "checkbox") paramInput.checked = value;
           else paramInput.value = value;
         }
       }
@@ -417,6 +488,7 @@ $(window).on("load", function () {
       resetBoardSize(puzzleType); // reset the board when puzzle type changes
       create_newboard();
       advancecontrol_toggle();
+      resetParamBox();
     }
   });
 
@@ -426,6 +498,8 @@ $(window).on("load", function () {
       puzzleType !== "yajilin_regions" ? puzzleType : "yajilin-regions"
     }`;
     if (puzzleType === "fillpix") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7fpix.htm";
+    if (puzzleType === "shingoki") urlPuzzleType = "https://www.puzzle-shingoki.com";
+    if (puzzleType === "yajikabe") urlPuzzleType = "https://www.cross-plus-a.com/html/cros7yajk.htm";
 
     if (variantMap[puzzleType]) {
       for (const [paramId, variant] of Object.entries(variantMap[puzzleType])) {
@@ -451,11 +525,17 @@ $(window).on("load", function () {
     puzzleType = typeSelect.value;
 
     if (solutionPointer === -1) {
-      puzzleContent = exp();
-      choicesType.disable();
-      choicesType.containerOuter.element.setAttribute("title", "Reset the puzzle to change puzzle type.");
-      choicesExample.disable();
-      choicesExample.containerOuter.element.setAttribute("title", "Reset the puzzle to change example.");
+      puzzleContent = exp(true);
+      $(typeSelect).prop("disabled", true);
+      $(typeSelect)
+        .next(".select2-container")
+        .find(".select2-selection__rendered")
+        .attr("title", "Reset the puzzle to change puzzle type.");
+      $(exampleSelect).prop("disabled", true);
+      $(exampleSelect)
+        .next(".select2-container")
+        .find(".select2-selection__rendered")
+        .attr("title", "Reset the puzzle to change example.");
       solveButton.textContent = "Solving...";
       solveButton.disabled = true;
 
@@ -469,7 +549,7 @@ $(window).on("load", function () {
         puzzleParameters = {}; // reset parameters
       }
 
-      if (ENABLE_DEPLOYMENT) {
+      if (DEPLOYMENT_MODE) {
         try {
           const puzzle = prepare_puzzle(puzzleType, puzzleContent, puzzleParameters);
           if (!puzzle["success"]) {
@@ -481,7 +561,7 @@ $(window).on("load", function () {
             throw new Error(program["result"]);
           }
 
-          const options = "--sat-prepro --trans-ext=dynamic --eq=1 --models=10";
+          const options = "--trans-ext=dynamic --eq=1 --models=10";
           const result = await clingo.run(program["result"], options);
 
           if (result.Result === "ERROR") {
@@ -600,18 +680,19 @@ $(window).on("load", function () {
 
   resetButton.addEventListener("click", async () => {
     if (puzzleContent !== null) {
-      if (ENABLE_DEPLOYMENT && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
+      if (DEPLOYMENT_MODE && solveButton.textContent === "Solving..." && solveButton.disabled === true) {
         await clingo.restart(CLINGO_WASM_URL); // reinitialize clingo-wasm
       }
       hookLoad(puzzleContent);
-      choicesType.enable();
-      choicesType.containerOuter.element.removeAttribute("title");
-      choicesExample.enable();
-      choicesExample.containerOuter.element.removeAttribute("title");
+      $(typeSelect).prop("disabled", false);
+      $(typeSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
+      $(exampleSelect).prop("disabled", false);
+      $(exampleSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
     } else {
       create_newboard();
       advancecontrol_toggle();
-      choicesExample.setChoiceByValue("");
+      resetParamBox();
+      $(exampleSelect).val("").trigger("change.select2");
     }
     puzzleContent = null;
     solutionList = [];
@@ -623,25 +704,22 @@ $(window).on("load", function () {
   const undoButton = document.getElementById("tb_undo");
   if (undoButton) {
     const updateChoicesType = () => {
-      const choicesContainer = choicesType.containerOuter.element;
-      const choicesExampleContainer = choicesExample.containerOuter.element;
-      if (undoButton.disabled) {
-        if (!solutionList || solutionList.length === 0) {
-          choicesType.enable();
-          choicesContainer.removeAttribute("title");
-          choicesExample.enable();
-          choicesExampleContainer.removeAttribute("title");
-        } else {
-          choicesType.disable();
-          choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
-          choicesExample.disable();
-          choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
-        }
+      if (undoButton.disabled && (!solutionList || solutionList.length === 0)) {
+        $(typeSelect).prop("disabled", false);
+        $(typeSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
+        $(exampleSelect).prop("disabled", false);
+        $(exampleSelect).next(".select2-container").find(".select2-selection__rendered").removeAttr("title");
       } else {
-        choicesType.disable();
-        choicesContainer.setAttribute("title", "Reset the puzzle to change puzzle type.");
-        choicesExample.disable();
-        choicesExampleContainer.setAttribute("title", "Reset the puzzle to change example.");
+        $(typeSelect).prop("disabled", true);
+        $(typeSelect)
+          .next(".select2-container")
+          .find(".select2-selection__rendered")
+          .attr("title", "Reset the puzzle to change puzzle type.");
+        $(exampleSelect).prop("disabled", true);
+        $(exampleSelect)
+          .next(".select2-container")
+          .find(".select2-selection__rendered")
+          .attr("title", "Reset the puzzle to change example.");
       }
     };
 

@@ -14,7 +14,7 @@ class SkyscrapersSolver(Solver):
     aliases = ["building", "skyscraper"]
     examples = [
         {
-            "data": "m=edit&p=7VRNb5tAEL3zK6I5z4GFBeO9uWnci0s/4iqKEIowpQoKiBRM1K7l/56ZgQYjtYce2vpQrffpvZkB3s6ut/vaZ22BSvHPj9BFYqiDUKZSnkx3HNtyXxXmAlf9/r5piSC+W6/xS1Z1hZPwkzRS52CXxq7QvjEJKEDwaCpI0X4wB/vW2BjtNaWAatFuhiKP6NVEbyTP7HIIKpd4PHKit0Tzss2r4m4zRN6bxG4R+Duv5GmmUDdPBYw+WOdNvSs5sMv2tJjuvnwcM13/uXnox1qVHtGufm3Xn+wyHewy+4ldXsUftrtMj0dq+0cyfGcS9v5potFEr82BMDYH8DU9qmm/ZGfAD0kuJhmRDF6kdueSs7CgdYyB0KOA/yKjxexlS87SQRqlUpyOJu1x/kRrzp/UB5ynw/hDR8HMupLPTe5UtDz5PC1XyaJvBdeCnuCWeoLWF3wt6AoGghupuRK8EbwU1IKh1Cy4q7/V979gJ9Hcy/ngbpxRJHUSiPt6V7QXcdPWWQV0aRwd+AYy5Sjp//fIP7pHeAvcczvV52aH/mfQPXzv8jZ7LNoOUucZ"
+            "data": "m=edit&p=7VRNT8JAEL33V5A5z6G7/aQ3RPCC+AGGkKYhgDUQIdWWGrNN/7uzA7bU6MGDysG0+/LezGz37Uc3e87naYxC6Nfy0URiaDsuNyEkN/PwjNe7TRy0sJPvVklKBPGq38eH+SaLjVBwXxEZhWoHqoPqIghBAIKkJiBCdRMU6jJQQ1QjSgHVohrsiyTRXk0nnNesuw8Kk/jwwIlOiS7X6XITzwb7yHUQqjGCHueMe2sK2+QlhoMPrZfJdrHWgcV8R5PJVuunQybL75PHHN6HKFF1vrZr1Xatyq71uV3583bbUVnSst+S4VkQau93NfVrOgqKUvsqwLKpq037xTsDlkvSq6VP0qmkbTalzoIHVcCVFLAq6XuNj7V1VlZSCJ32ay1lU9tes97RebfWvtOwLng450i3j4an6Qqe9JSxzygZx7QmqCzGc0aT0WEccE2PccLYZbQZXa7x9Kp+a91/wU5o+yg+PN5pRSIjhGG+XcRpa5ik2/kG6NIoDXgFbnyU7P975I/uEb0F5qmd6lOzQ/9ZZLwB"
         },
     ]
 

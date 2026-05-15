@@ -16,11 +16,11 @@ class DominionSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7VRNj5swEL3zKyqf54BtPn3LsqGXNO02qVYrhFYsZbWoidjyUVVG+e8ZD2hBKJce2uawsvz0eDO2n8dimp9dVhfAJXAfZAA2cByuFOAFDmoBTXsc+7I9FOoDrLr2paqRAHyOY3jODk1hJWNWavU6VPoO9EeVMM6ACZycpaDvVK8/Kb0FvcMQA47aZkgSSNcTvae4YdEgchv5duRIH5DmZZ0fisfNoHxRid4DM+fc0GpD2bH6VbDRh/nOq+NTaYSnrMXLNC/l6xhpuu/Vj27M5ekJ9Gqwu7tgV052DR3sGnbBrrnFX7YbpqcTlv0rGn5UifH+baLBRHeqR9yqnjncLI3Qy/A2zJVGuJ0EzzXCzST4lLGaCeEig9v+UuG0aHYO9+jk2TY8FItVQi7dCYdyZvaEHxglnimBt1RC2mc9KZLTPm8KVoNTTR4IY0JBuMeSgZaEt4Q2oUu4oZw14T1hROgQepTjm6L/0bP8AzuJ9OgfvzTc98g1R1IrYbuufs7yAptAVB1fq6ZsC4Yd92Sx34xmgq0cnPcm/J+asHkC+9r++Wuzg10otc4=",
+            "data": "m=edit&p=7VQ9T8MwEN3zK5DnG2I731sJLUsplBZVKIpQWoKIaBVIGoRc5b9zvgQCURcGoENl+enl3dl+OctXvlRJkQKXwF2QHpjAcdhSgONZqHk0zXbMs+06DU5gUG0f8wIJwOVoBA/JukyNqM2KjZ3yAzUFdR5EjDNgAidnMahpsFMXgZqAmmGIAUdt3CQJpMOOLiiuWdiI3EQ+aTnSW6SrrFit07txo1wFkZoD0+ec0mpN2SZ/TVnrQ3+v8s0y08Iy2eLPlI/Zcxspq/v8qWIfR9SgBo3d2R67srMrP+3K/XbF79v147rGsl+j4bsg0t5vOup1dBbsau1rxyyul4bopbkbZkstnHWCY2vhtBNcyhh8EfxeBjfdvsJl7xzu8N423Be9VUL23QlL9OwJ19PK6IviOX3Fp32GnSK5+KZgNTjV5JZwRCgI51gyUJLwjNAktAnHlDMkXBCGhBahQzmuLvqPruUP7ETSoTe+b9jHyCFHYiNis6p4SFYpNoEw3zznZbZNGXbc2mBvjGaErRysYxP+pyasr8A8tDd/aHawC8XGOw==",
             "test": False,
         },
         {
-            "data": "m=edit&p=7ZRfb9owFMXf8ymq++wHOw4U/DIFSrYHlv0JU1VZURWyVI0GyhZINRnx3XvvdbSkUx/2sq2TJuPD4eeLOXawD9+6oq2EkvTSM4Hv2CI14x7Optxl3zb1cVeZCxF3x/umRSPEuyQRd8XuUAW2r8qDk5sbFwv32lhQICDEriAX7oM5ubfGpcJlOAQiQrb2RSHa1WCveZzc0kMl0ae9R3uDtqzbclfdrj15b6zbCKDfWfC3ycK+eaigz0Gfy2a/rQlsiyMu5nBff+1HDt3n5kvX16r8LFzs42bPxNVDXLI+Lrln4tIqfnPceX4+47Z/xMC3xlL2T4OdDTYzJ9ASTCRAKzAhopSQpnmuMJh/UKDnP4FpSGA5gEsGbwYwx/ksxANQkktGkygZEVmMiGKSjEjI86xGJOJ045oJ17waEZ/vCeGZfxBcqTIn1BvWhDVk3eDeCKdZr1gl64R1zTUr1mvWJWvEOuWaS9rdX9x/v+V/II7V/jA/bZN/j+WBhaxr74qywv9+2u23VXuRNu2+2AFeNucAvgN3q+nu+n///KX7hx6BfGmn4KXFwXOZB48=",
+            "data": "m=edit&p=7ZRdT8IwFIbv9yvIue7F2g6E3hhA0AvEj2GIWRYycEYiZDqYMSX7755zNh0QLrzxKzGjLy9PD927du3qOYvSWEiXProp8BsvTza5qWaDm1teo/l6EZuaaGfrhyRFI8RFvy/uo8UqdoKyKnQ2tmVsW9hTE4AEAQqbhFDYK7Ox58YOhfWxC4SHbFAUKbS9yo65n1y3gNJFPyw92lu0s3k6W8STQUEuTWBHAug+Hf43WVgmLzGUOej3LFlO5wSm0RofZvUwfyp7Vtld8pjB+y1yYdtFXP9AXF3F1R9x9eG46uvjtsI8x2m/xsATE1D2m8o2K+ubDWgXjCdASzAqp5CINI1zgsGKhQLd2gMNRaBbgSMGZxVoSQLtCkhX7Q0iXY9IZ4tIJv0tonic3hbx9H5NnWuOt0iRb4d4OwSfVJpNTitB2mdVrCOcG2E16wmry1pnHXBNj3XM2mX1WBtcc0Sz+8n5L6b8G+IEutjMu1f977HQCcDP0vtoFuO7P8yW0zitDZN0GS0AD5vcgVfgFmg6u/7Pnx86f2gJ3N+2C35bHNyXofMG",
         },
     ]
 

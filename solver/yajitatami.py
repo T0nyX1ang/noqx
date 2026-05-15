@@ -49,7 +49,7 @@ class YajitatamiSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VRNj9MwEL33V6x8noM/0ubjVpaWS+kCu2i1iqKo7Qa2olWWtkHIVf/7vhmnBNSVEALKBVmePD+Px2/Gsbefm9mmogTNJaTJoLnISrc6la7bdrPcrarsgobN7qHeABBdjcf0YbbaVr289Sp6e59mfkj+VZYrq0i6UQX5t9nev878lPw1phQZcBMgo8gCjjp4K/OMLgNpNPA0BORld4CL5WaxqspJYN5kub8hxfu8kNUM1br+UqkQQsaLej1fMjGf7ZDM9mH52M5sm/v6U9P6muJAfhjkjp6R6zq5DINcRs/I5Sz+sty0OBxQ9ncQXGY5a3/fwaSD19kedprtlY15qSu5nHxCiNjXgXIdNeifeMWDE6+4jfU9lQRKd1RyumOanlBG28BxEY+caWV845CEkVTuxI7FWrE3yJS8E/tSrBbbFzsRnxEKYGJHJkFgiw2SPjASEzwAhlbGMfNHHBHGLcbaOGr9E/ggkRZbjTIC40vWIBnGBnfJuIBtRNaGOIJd2BdfshHKxjhCnIhjQuytSL4UG4kdSCoxH+kvHfofqJozyDpNfiort6jiDw2VPOe46OVqdP+xupjWm/VshUszbdbzanMc45U69NRXJT3HcVL0/+H6Rw8XH4E+85/8uxcrR3VxGchfkXpsylm5qPGT6eLsMnHXit4T",
+            "data": "m=edit&p=7VTLbtswELzrKwKe98CXJEo3N7VzcZy2cVAEgiDIjtoYsaFEtoqChv69y6UaBVWAomjrXgqCy+FwuZzla//Ulk0FBosywEFgUVpSlTyhyvuy3By2VXoGk/ZwXzcIAK5mM/hUbvdVkPVeeXC0SWonYC/SjEkGVAXLwb5Pj/YytQuw1zjEQCA3RyQYSITTAX6kcYfOPSk44oUP6KbdIlxvmvW2KuaeeZdmdgnMrfOGZjvIdvWXivkQ1F/Xu9XGEavygMns7zeP/ci+vasf2t5X5B3YiZc7fUWuGuSqZ7nqdbny78tN8q7Dbf+Agos0c9pvBmgGeJ0eO6fryGTspqrCbac7IYwYck+pgYrCkVccjbzieEwZT/GBMuMVk2RECS49J15wIvyBwyQEpXJLdkZWkl1ipmAV2bdkOdmQ7Jx8prgBIlYgDAaWuIAJEUc9jhDHHsfhC6wB+z3GubHu/Q36JM9Yck4YW5BCeizwLQnlsdQgZThg5dfFFqQ2HmuMo13Mzt0tJ/mcrCYbUSqxO9JfOvQ/sGtKYNaJ+amsTEb0kwwlPG0/DzI2vftcnS3qZldu8dEs2t2qar738ZfqAvaVUc3wOEH//7j+0cfljoCf+Cb/7sPKcHfxMYC9AvbYFmWxrvGS8fzkMvGt5cE3",
         },
     ]
 

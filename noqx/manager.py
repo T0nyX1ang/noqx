@@ -112,9 +112,6 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
         elif _type.startswith("number"):
             solution.text[Point(r, c, Direction.CENTER, "normal")] = int(data[2])
 
-        elif _type.startswith("content"):
-            solution.text[Point(r, c, Direction.CENTER, "normal")] = str(data[2]).replace('"', "")
-
         elif _type == "triangle":
             shaka_dict = {
                 f'"{Direction.TOP_LEFT}"': "1",
@@ -152,17 +149,22 @@ class Solver:
         aliases (List[str] = []): A list of alternative names for the solver.
         examples (List[Dict[str, Any]] = []): A list of examples of the solver, each example can be created in two conflicting ways, `data` and `url`:
 
-            * `data`: directly draw the board in noqx and get the data URL by using `Share → Editing URL → Copy`. The URL are suggested to be generated with the following conditions:
+            * `data`: directly draw the board in noqx and get the data URL by using `Share → 🔗 → Copy`. The URL are suggested to be generated with the following conditions:
                 * contains **all** the required `modes` in this puzzle.
                 * contains the required `sub-types` in this puzzle.
                 * contains necessary initial conditions to pass the coverage tests.
                 * set `edit mode` to `solution mode` instead of `problem mode`.
             * `url`: draw the board in [puzz.link](https://puzz.link/list.html) and use `File → Export URL` to get the board URL.
-            * `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys.
+            * `config` (Optional): the configuration of the solver, which will be passed to the solver when it is created, and the keys of `config` are the same as `parameters` keys, the values of `config` will override the default values in `parameters`.
             * `test` (Optional): whether the example is used as test case, the default value is `True`, and cannot be used together with `url` way.
             * **Lots of** examples can be found at [pzplus](https://pzplus.tck.mn/db).
 
-        parameters: A dictionary of parameters of the solver, which will be passed to the solver when it is created.
+        parameters: A dictionary of parameters of the solver, which will be passed to the solver when it is created. The keys of `parameters` are the parameter unique ID, and the values are dictionaries containing the following ingredients:
+
+            * `name`: The name of the parameter, which will be displayed in the UI.
+            * `type`: The type of the parameter, which can be `checkbox`, `int`, and `shapeset`. The type will determine the input method in the UI.
+            * `default`: The default value of the parameter, which will be used when the parameter is not provided in the example config.
+            * `presets` (Optional): A list of shape presets for the parameter, which can be `tetro`, `double_tetro`, and `pento`. These presets are displayed in the UI as a dropdown menu. Only applicable when the type is set to `shapeset`.
 
     Warning:
         When you directly draw the board in noqx, make sure to set the puzzle type first. Currently, the puzzle type selection is **locked** if the user starts drawing the board.

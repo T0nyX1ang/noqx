@@ -8,93 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Noqx: extended logic puzzle solver." />
 
-  <!-- styles -->
-  <script src="./js/penpa_const.js"></script>
-  <script>
-    let style_sources = [
-      "./css/light_theme.css",
-      "./css/base-structure.css",
-      "./css/vanillaSelectBox.css",
-      "./css/spectrum.css",
-      "./css/select2.css"
-    ];
-    let style_sources_ids = [
-      "color_theme",
-      "base_structure",
-      "tab_setting_css",
-      "custom_color_css",
-      "constraints_settings_css"
-    ];
-    for (let i = 0; i < style_sources.length; i++) {
-      let style = document.createElement('link');
-      style.rel = "stylesheet";
-      style.type = "text/css";
-      style.id = style_sources_ids[i];
-      if (i === 0)
-        style.href = style_sources[i];
-      else
-        style.href = penpa_edit_prefix + style_sources[i];
-      style.async = false;
-      document.head.appendChild(style);
-      style_tag_cache[style_sources_ids[i]] = style;
-    }
-  </script>
-  <link rel="stylesheet" type="text/css" href="./css/style.css">
-  <link rel="stylesheet" type="text/css" href="./css/choices.alter.css">
-
-  <!-- Online libs -->
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/clingo-wasm@0.3.2/dist/clingo.web.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-
-  <script type="text/javascript">
-    let script_sources = [
-      "./js/libs/md5.min.js",
-      "./js/libs/sweetalert2@11.js",
-      "./js/libs/purify.min.js",
-      "./js/libs/CanvasRenderingContext2D.ext.js",
-      "./js/libs/encoding.js",
-      "./js/libs/vanillaSelectBox.js",
-      "./js/libs/zlib.js",
-      "./js/libs/spectrum.js",
-      "./js/libs/canvas2svg.js",
-      "./js/libs/select2.full.js",
-      "./js/libs/gif.js",
-      "./js/libs/easytimer.min.js",
-      "./js/settings.js",
-      "./js/interface.js",
-      "./js/conflicts.js",
-      "./js/puzzlink.js",
-      "./js/modes.js",
-      "./js/genre_tags.js",
-      "./js/constraints.js",
-      "./js/main.js",
-      "./js/class_p.js",
-      "./js/class_square.js",
-      "./js/class_hex.js",
-      "./js/class_tri.js",
-      "./js/class_pyramid.js",
-      "./js/class_uniform.js",
-      "./js/class_panel.js",
-      "./js/style.js",
-      "./js/general.js",
-      "./js/customcolor.js",
-      "./js/translate.js",
-      "./js/timer.js",
-      "./js/conversion.js",
-    ];
-
-    for (let i = 0; i < script_sources.length; i++) {
-      let script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = penpa_edit_prefix + script_sources[i];
-      script.async = false;
-      document.head.appendChild(script);
-    }
-  </script>
-
-  <script src="./js/prepare_deployment.js"></script>
-  <script src="./js/solver_metadata.js"></script>
+  <!-- style and script loader -->
+  <script src="./js/config.js"></script>
+  <script src="./js/loader.js"></script>
 </head>
 
 <body>
@@ -104,8 +20,6 @@
       Penpa+ (<a id="penpa-link" href="https://github.com/swaroopg92/penpa-edit" target="_blank">...</a>)
       <button id="page_help">Help</button> </span>
   </header>
-
-  <script src="./js/app.js"></script>
 
   <div id="app-container">
     <div id="tool-container">
@@ -121,7 +35,7 @@
           <button id="edit_bg_image">Edit Background</button>
           <button id="input_sudoku">I/O Sudoku</button>
           <button id="input_url">Load</button>
-          <button id="page_settings" style="font-size: 11.5px;">⚙️</button>
+          <button id="page_settings">Settings</button>
         </div>
         <div id="solver_button">
           <select id="type">
@@ -131,7 +45,7 @@
           <select id="example">
             <option value="" selected>Choose Example</option>
           </select>
-          <button id="param" disabled onclick="invokeParamBox();">Show Parameters</button>
+          <button id="param" disabled onclick="toggleParamBox();">Show Parameters</button>
           <button id="solve">Solve</button>
           <button id="solver_reset">Reset</button>
           <br>
@@ -215,6 +129,8 @@
               <label for="sub_lineE2" class="labelL" id="sub_lineE2_lb">Diagonal</label>
               <input type="radio" name="mode_lineE" value="3" id="sub_lineE3">
               <label for="sub_lineE3" class="labelL" id="sub_lineE3_lb">Free</label>
+              <input type="radio" name="mode_lineE" value="6" id="sub_lineE6">
+              <label for="sub_lineE6" class="labelL" id="sub_lineE6_lb">Middle</label>
               <input type="radio" name="mode_lineE" value="4" id="sub_lineE4">
               <label for="sub_lineE4" class="labelL" id="sub_lineE4_lb">Helper (x)</label>
               <input type="radio" name="mode_lineE" value="5" id="sub_lineE5">
@@ -693,6 +609,27 @@
               <input type="text" name="style_special" id="colorpicker_special" />
             </span>
           </div>
+          <div id="orientation_button" style="display:none;">
+            <span>
+              <label class="label_mode tooltip" id="style_txt_rot">Orientation:</label>
+            </span>
+            <input type="radio" name="orientation_button" value="R" id="rot_R" checked="checked">
+            <label for="rot_R" class="labelL" id="rot_R_lb">A</label>
+            <input type="radio" name="orientation_button" value="UR" id="rot_UR">
+            <label for="rot_UR" class="labelL" id="rot_UR_lb"><span class="rotate rotate_up_r">A</span></label>
+            <input type="radio" name="orientation_button" value="U" id="rot_U">
+            <label for="rot_U" class="labelL" id="rot_U_lb"><span class="rotate rotate_up">A</span></label>
+            <input type="radio" name="orientation_button" value="UL" id="rot_UL">
+            <label for="rot_UL" class="labelL" id="rot_UL_lb"><span class="rotate rotate_up_l">A</span></label>
+            <input type="radio" name="orientation_button" value="L" id="rot_L">
+            <label for="rot_L" class="labelL" id="rot_L_lb"><span class="rotate rotate_left">A</span></label>
+            <input type="radio" name="orientation_button" value="DL" id="rot_DL">
+            <label for="rot_DL" class="labelL" id="rot_DL_lb"><span class="rotate rotate_down_l">A</span></label>
+            <input type="radio" name="orientation_button" value="D" id="rot_D">
+            <label for="rot_D" class="labelL" id="rot_D_lb"><span class="rotate rotate_down">A</span></label>
+            <input type="radio" name="orientation_button" value="DR" id="rot_DR">
+            <label for="rot_DR" class="labelL" id="rot_DR_lb"><span class="rotate rotate_down_r">A</span></label>
+          </div>
         </div>
       </div>
       <div id="ruletext"></div>
@@ -933,7 +870,7 @@
             <td colspan="2"><label id='bg_image_url_lb'>Image URL:</label></td>
           </tr>
           <tr>
-            <td colspan="2"><input type="text" id="bg_image_url" /> </td>
+            <td colspan="2"><input type="text" id="bg_image_url" /></td>
           </tr>
           <tr>
             <td><label id="bg_image_x_lb">X position:</label></td>
@@ -1058,6 +995,10 @@
           <button class="addbottom" id="rt_addbottom">+ &#9660;</button>
           <button class="subbottom" id="rt_subbottom">&ndash; &#9650;</button>
         </div>
+        <p>
+          <span id="resize_whitespace_button0" class="label_mode">Adjust only whitespace:</span>
+          <span id="resize_whitespace_button" class="label toggle_btn">OFF</span>
+        </p>
       </div>
       <br>
       <div class="nb_button">
@@ -1095,7 +1036,8 @@
         <input type="checkbox" name="auto_shorten_chk" id="auto_shorten_chk" />
       </div>
       <div class="nb_button">
-        <input type="button" id="address_edit" value="Editing URL" />
+        <input type="button" id="noqx_shorten" value="🔗" onclick="hookExp();" />
+        <input type="button" id="address_edit" value="Editing URL" style="display: none;" />
         <input type="button" id="address_solve" value="Solving URL" style="display: none;" />
         <input type="button" id="address_clone" value="Clone URL" style="display: none;" />
         <!-- Disable Competitive Solving -->
@@ -1504,6 +1446,7 @@
                 <select name="language" id="language_opt">
                   <option value="EN" selected="selected">English</option>
                   <option value="JP">日本語</option>
+                  <option value="ZH">中文</option>
                 </select>
               </td>
             </tr>
@@ -1550,8 +1493,8 @@
               </td>
               <td>
                 <select name="outline_text" id="outline_text_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1681,7 +1624,7 @@
               <td>
                 <select name="mousemiddle" id="mousemiddle_settings_opt">
                   <option value="1" selected="selected" class="lb_generic_no">No</option>
-                  <option value="2" class="lb_generic_yess">Yes</option>
+                  <option value="2" class="lb_generic_yes">Yes</option>
                 </select>
               </td>
             </tr>
@@ -1714,8 +1657,8 @@
               </td>
               <td>
                 <select name="check_pencil_marks" id="check_pencil_marks_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1730,8 +1673,8 @@
               </td>
               <td>
                 <select name="ignore_line_style" id="ignore_line_style_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1763,8 +1706,8 @@
               </td>
               <td>
                 <select name="auto_save_history" id="auto_save_history_opt">
-                  <option value="1">ON</option>
-                  <option value="0" selected="selected">OFF</option>
+                  <option value="1" class="lb_generic_on">ON</option>
+                  <option value="0" selected="selected" class="lb_generic_off">OFF</option>
                 </select>
               </td>
             </tr>
@@ -1837,7 +1780,8 @@
           <p class="modal-footnote">* These can be disabled from Settings.</p>
           <h5 class="modal-subheader">In Surface Mode</h5>
           <p>Use number keys <kbd>0</kbd> - <kbd>9</kbd> to quickly switch between styles. For styles 11 and 12, press
-            <kbd>1</kbd> and the second digit in quick succession.</p>
+            <kbd>1</kbd> and the second digit in quick succession.
+          </p>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ class PentominousSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VRRb9owEH7nV1T3fA9xHIKTN9bBNInRbtAxZkUo0HRFA6ULzTQZ8d97Pocmk4jWqVqnSVPw+fN3Z/L5nLvdtzItMhSe/UmFNNMTCMXDVyEPr3qm6/tNFp9hv7y/zQsCiBfDId6km13W0VVU0tmbKDZ9NG9iDT4gDwEJmvfx3ryLzQTNhFyAAXEjQgLQJzio4Yz9Fp07UniExxUmOCe4WherTbYYOeYy1maKYN/zindbCNv8ewZuG69X+Xa5tsQyvafD7G7Xd5VnV17nX8sqViQHNH0nd3BCrqzlWujkWnRCrj3FH5YbJYcDpf0DCV7E2mq/qqGq4STeQy+EOEBQyk0RT5HHk/ACmilwTIHSt/8+Jrnu+kBKS8waBP2VhssG0bPEx5pQHDGsiahribc1ITx6tYZ5kyFNGqYNpktiNVw1GY753GBClmuz+8iw3k9Hho4l4j3ZOdshW5/tlNKDRrJ9zdZj22U74pgB2xnbc7YB25BjejbBT7wCl9/ny4GwR1mIFEKoKIkOiCOgdFjgK0E1TAtJWATo+5RLxlTf9ootjjz0I9pJWAYBSptvxtQUuvRJyF+eXEvXOn5+uv8el3Q0TMriJl1lVGmD6y/Z2TgvtumGVuNyu8yK45oa3aEDP4CHlrZv/u99f6n32SvwXrj8ntsNNGX3sTzRXCDclYt0scrpU6MUOndVsa1uV8Rt7qquW9zHUm91u+o/7Q57wW86grBth/LbHKLN4bW9PHr6y1/8e6A2mXQeAA==",
+            "data": "m=edit&p=7VTfb9owEH7nr6j8fA/+kQQnb6yDaRKj3aBjXYRQoOmKBkoXyDQZ5X/v+Zw0mUS0TtU6TZqCz5+/s/Hns+/234okT0Fw+1MasMfPE5qa1AE1Xn2zzWGbRmcwKA53WY4A4GI0gttku097cTVr0TuaMDIDMG+imEkG1ARbgHkfHc27yEzBTNHFwENujEgwkAiHDZyT36JzRwqOeFJhhNcI15t8vU2XY8dcRrGZAbP7vKLVFrJd9j1lbhmN19lutbHEKjngYfZ3m/vKsy9usq8Fq7cowQyc3OEJuaqRqx7lqtNy5Z+XGy7KEsP+AQUvo9hqv2qgbuA0OrJ+wCIPmNauC6kLOXWCe9iXVvqRKWn/fYJy3fUxpSwxbxGBJS5bRN8SHxtC04xRQ4S+Jd42hODcMtdtJrTMrMX42jJXbYbmfG4xAckdtxnS+6lm8FgiOpb2MqwdkZVkZxgeMIrsa7KcrE92THOGZOdkz8l6ZAOa07cBfuIVuPg+Xw4L+hiFUAMLNK+BqIF0QGqBOYwDhVh4IKWuMOa3qviQgwwFYeV5oHxdYSwKPj4J9cuTx8qVjp8//9/jFr2YTYv8NlmnmGnDmy/p2STLd8kWR5Nit0rzeoyFruyxH4xarGzd/F/7/lLts1fAXzj9nlsNYozuY3qCuQB2XyyT5TrDp4YhdO4qYzvdLom73FVed7jrVO90u+w/7Q763m86vKBrhZZdDtHl4F2bh0/f/MXfA5bJRe8B",
         },
     ]
 

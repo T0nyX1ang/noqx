@@ -1,9 +1,9 @@
 """The Tatamibari solver."""
 
-from typing import Tuple
+from typing import List, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, reverse_op, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -23,6 +23,21 @@ def tatamibari_cell_constraint(op: str, src_cell: Tuple[int, int]) -> str:
     return f":- {count_r}, {count_c}, CR {rop} CC."
 
 
+def encode_symbol_to_text(puzzle: Puzzle) -> None:
+    """Encode the symbol clues to text clues for tatamibari."""
+    for (r, c, d, label), symbol_name in puzzle.symbol.items():
+        validate_direction(r, c, d)
+        validate_type(label, "normal")
+        if symbol_name == "line__1":
+            puzzle.text[Point(r, c, d, label)] = "-"
+
+        if symbol_name == "line__2":
+            puzzle.text[Point(r, c, d, label)] = "|"
+
+        if symbol_name == "line__5":
+            puzzle.text[Point(r, c, d, label)] = "+"
+
+
 class TamamibariSolver(Solver):
     """The Tatamibari solver."""
 
@@ -30,12 +45,13 @@ class TamamibariSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VRRb9MwEH7Pr5j8yiHZcdo6fkFltLyUDGjRNEVRlXaBVbTKSBqEXPLfdz6H1YQihCYGD8jNpy/fne0v557rT01eFRDjkAo4CBxScXpUZH+8G4vNflvoMxg3+5uyQgJwMZ3C+3xbF0HaZWXBwcTajMG81CkLGdAjWAbmjT6YV9okYOYYYiBQmyETDEKkkyO9pLhl504UHHnScaRXSNebar0tljOnvNapWQCz+zyn2ZayXfm5YG4ava/L3WpjhVW+x4+pbza3XaRursuPTZcrshbM2NmdnLArj3YtdXYt+1N2i+sPRd2sTnmNs7bFmr9Ft0udWuPvjlQd6VwfEBN9YKGyU7+iEXcwTHIrPPWE0ArPPCGywhNPGPbWGPQzhrSGl6FoF29R1Z+iyJiXITht46UI0Z8knNnvFMrxthbOrr+y7BdBROTvfh0slqCSXRFOCUPCBVYUjCR8QcgJB4QzypkQXhKeE0aEQ8oZ2TP5rVN7uB08M6xCrPDwRlggSwR2t4hHTEvksYCQY0D+0ncaKrom/DH4t5QsSNkEm+YsKatdvsXGSZrdqqi+veM11QbsC6MnlTgl+n9z/Y2by9afP3InPLQxUyztfe+AuQB22yzz5brE/xnWz4W7djodxlb8SWAU/RB49K/HDs+COw==",
+            "data": "m=edit&p=7VVLb9NAEL77V1RznsOu13FsX1AoSS8hBRJURVYUOa0hEbYc/EBoo/x3ZseWHyWAKFLVA1rv6JvHjr6Z1ayLr1WUx+jTUh4KlLSUJ3h7jvlEs1aHMomDK5xU5T7LCSDezmb4KUqKGK2wCdtYJ+0HeoL6JgjBBuQtYYP6fXDSbwO9Rr0kF6Ak25yQBLQJTjt4x36DrmujFIQXDSa4DkI9Z/SO0ArB5H/NpwyENPsWQx3O+n2W7g7GsItKqqLYH46Np6gesi8VtKkhrZLycJ8lWQ4NyzPqSU19eoG66qirlrr6LXVIo3K/vYGnFBA/fI6LaneJvX+Z/Zlu5APx3wahKeVjB70OLoPT2dA8gbLNyVd0tL428MRjg/fIIJU7sFAmyfnWlM820TbW1wXKJJOt5pA2ajW3Hzka+Fy77/MGPincgSqHXi6opzr9TFIN6ElHdMFUwIzLsFmuqFOoFcs3LAXLEcs5x0xZ3rG8ZumwdDlmbHr9V7fR7+TT6FBXqTu+R+0dOzWQNNTSH0OgCPsSbUEO9Ufeoe3x69Bfo5dl2VghTGlArhZZnkYJDcmiSndx3unLfXSMgR6pswXfgXeo6Kjz/916ee+WuR3xzPPyr+MbUrPbCUN9i3CsttGWSgP6OWLtbobuspsG9heOsfOT49mrp3dgY/0A",
         },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        encode_symbol_to_text(puzzle)
         fail_false(len(puzzle.text) > 0, "No clues found.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(edge(puzzle.row, puzzle.col))
@@ -44,7 +60,7 @@ class TamamibariSolver(Solver):
         self.add_program_line(avoid_edge_crossover())
         self.add_program_line(count_rect(len(puzzle.text)))
 
-        all_src = []
+        all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
