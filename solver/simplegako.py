@@ -30,9 +30,9 @@ class SimplegakoSolver(Solver):
         self.add_program_line(fill_num(_range=range(1, puzzle.row + puzzle.col)))
         self.add_program_line(simplegako_fill_constraint())
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f"number({r}, {c}, {num}).")
 

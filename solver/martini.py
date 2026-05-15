@@ -11,11 +11,7 @@ from noqx.rule.reachable import area_color_connected, grid_color_connected, grid
 
 
 def count_reachable_src_white_circle(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
-    """
-    Generate a constraint to count the reachable white circles starting from a source.
-
-    A grid_src_color_connected should be defined first.
-    """
+    """Generate a constraint to count the reachable white circles starting from a source."""
 
     src_r, src_c = src_cell
 
@@ -49,8 +45,8 @@ class MartiniSolver(Solver):
         self.add_program_line(area_color_connected(color="gray", adj_type=4))
         self.add_program_line(grid_color_connected(color="gray", adj_type=8))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
@@ -63,9 +59,9 @@ class MartiniSolver(Solver):
             if symbol_name == "circle_L__2":
                 self.add_program_line(f"gray({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(grid_src_color_connected((r, c), color="not gray", adj_type=4))
                 self.add_program_line(count_reachable_src_white_circle(num, src_cell=(r, c), color="not gray"))
@@ -78,10 +74,7 @@ class MartiniSolver(Solver):
                 self.add_program_line(f":- gray({r}, {c}), gray({r}, {c - 1}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

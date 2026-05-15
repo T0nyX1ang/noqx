@@ -2,18 +2,18 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
-from noqx.rule.helper import fail_false, full_bfs
-from noqx.rule.loop import count_area_pass, single_loop
+from noqx.rule.common import defined, display, fill_line, grid
+from noqx.rule.helper import fail_false, full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import count_area_pass, single_route
 
 
 class DoubleBackSolver(Solver):
     """The Double Back solver."""
 
     name = "Double Back"
-    category = "loop"
+    category = "route"
     examples = [
         {
             "data": "m=edit&p=7VRRb9owEH7nVyA/3wOxEw/yxjrYC6PbylRVUYRCSFfUsHRApsqI/97Pl0t5STVplXiaLH/6cvfFdz6fvf9dZ7uCLIYZ0oACDG0tzyAMeQ5kLDaHsoj7NK4PD9UOhOh6OqX7rNwXvURUae/oRrEbk/scJ0or4hmolNy3+Oi+xG5C7gYuRQFsM7BAkQadnOkt+z27aozBAHwuHPQONN/s8rJYzhrL1zhxC1I+zkf+21O1rf4UqvmNv/Nqu9p4wyo7YDP7h82TePb1unqsRRukJ3LjJt1ZR7rmnK6nTbqedaTrd/HudMvNr+K5K9NRejqh4t+R6zJOfNo/znR4pjfxEThnDBjvGKeMmnEBKTnD+IlxwBgxzlgziY8q0JoCo1WscbAafWJsww3sodiNATfCI/BIuO8r0YfQR6IPoY9EH0IfiT6EPhJ9BL0VfQS7FbvPR8u/GuvoUDj6V7dxYTdij3yslkPTxrJ+fVnHQmNFY6GxrQa5cVwU45ZLcsUYMlou1Qdf84uditJ+76MhKeMPxRMUxFPDzHtNc3R/zTnxpXwd2Oq/8rSXqJt6d5/lBdp2hvbtz6vdNivxNVn/fP3Cc3HqqWfFM0HNKfz/glz+BfHVH1z4HXnvBUpQWOl0cteknupltswrdBhq1zrR/N1OXJpuBy7RW8sZON+M1e28eM1wh9W6qldl0V9l+aNKey8=",
@@ -29,39 +29,38 @@ class DoubleBackSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line("doubleback(R, C) :- grid(R, C), not black(R, C).")
-        self.add_program_line(fill_path(color="doubleback"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="doubleback", adj_type="loop"))
-        self.add_program_line(single_loop(color="doubleback"))
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="grid", adj_type="line"))
+        self.add_program_line(single_route(color="grid"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
-            # enforce the black cells to have edges on all sides
+            # enforce the black cells (holes) to have edges on all sides
             puzzle.edge[Point(r, c, Direction.TOP)] = True
             puzzle.edge[Point(r, c, Direction.LEFT)] = True
             puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
             puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             arb = tuple(
                 filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar)
             )
             if len(arb) == 0:
-                continue  # drop black cells
+                continue  # drop holes
 
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(2, _id=i))
 
-        for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

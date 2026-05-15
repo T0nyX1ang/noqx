@@ -34,21 +34,18 @@ class PaintareaSolver(Solver):
         self.add_program_line(avoid_rect(2, 2, color="not gray"))
         self.add_program_line(area_same_color(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent(num, (r, c), color="gray"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

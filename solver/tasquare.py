@@ -36,9 +36,9 @@ class TasquareSolver(Solver):
         self.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(all_rect(color="black", square=True))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             if isinstance(num, int):
                 self.add_program_line(grid_src_color_connected((r, c), color="black"))
@@ -47,10 +47,7 @@ class TasquareSolver(Solver):
                 self.add_program_line(count_adjacent(("gt", 0), (r, c), color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display(item="black"))
 

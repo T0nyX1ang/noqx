@@ -1,25 +1,29 @@
 """Test all solvers in Noqx."""
 
 import logging
+import pkgutil
 import unittest
 
 from noqx.clingo import Config, run_solver
-from noqx.manager import list_solver_metadata, load_solvers
+from noqx.manager import list_solver_metadata, load_solver
 from noqx.puzzle import Direction
 from noqx.rule.common import count, fill_num, unique_num
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import count_reachable_src
-from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape, get_neighbor
+from noqx.rule.shape import all_rect, all_shapes, count_shape, general_shape
 from noqx.rule.variety import yaji_count
 from solver.binairo import unique_linecolor
 from solver.castle import wall_length
+from solver.compass import compass_constraint
 from solver.heyawake import limit_border
 from solver.nagare import nagare_wind
 
 logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.CRITICAL)
 
-load_solvers("solver")
+for module_info in pkgutil.iter_modules(["solver"]):
+    load_solver("solver", module_info.name)
+
 metadata = list_solver_metadata()
 
 
@@ -52,7 +56,8 @@ class TestSolver(unittest.TestCase):
                         params[k] = v_str
 
                 response = run_solver(puzzle_name, puzzle_example["data"], params)
-                self.assertEqual(len(response["url"]), 1)
+                if len(response["url"]) != 1:
+                    self.fail(f"Failed puzzle: {puzzle_name}.")
 
     def test_nonogram_edge_case(self):
         """Test nonogram edge case."""
@@ -64,6 +69,18 @@ class TestSolver(unittest.TestCase):
         """Test nurimisaki edge case."""
         payload = "m=edit&p=7ZLNb7JAEIfv/BVmznNgwfqxN2u1F0s/sDFmQwzyYiRCsSBNs4b/3dmBhIvprW96MMCTx5kx/NhM+VmFRYyCLneENstwYG7hmNtur2VySmPZw0l12ucFCeLzfI67MC1jS7VTgXXWY6knqB+lAgEIDj0CAtSv8qyfpPZQ+9QC7FNt0Qw5pLNOV9w3Nm2Kwib3Gh+QrkmjpIjSeLOgLlVepNJLBPOee/63UcjyrxjaHOZ3lGfbxBS24Yk+ptwnx7ZTVv/yQ9XOiqBGPWni+lfiul1co01cY78WNz3m14KOg7qmA3+jqBupTOr3Tked+vJM9JiCuWbOmQ5zSaOoXeYD02beMRc8M2OumFNmnzngmaF52V+Lo4QTWAr8qtiFUUyH6FXZNi56Xl5kYQq0r7UF38CPcmn1+7cV/u8rbA7fvi3yz3Fol+GjKpIsKcNDAoF1AQ=="
         response = run_solver("nurimisaki", payload, {})
+        self.assertEqual(len(response["url"]), 1)
+
+    def test_hinge_edge_case(self):
+        """Test hinge edge case."""
+        payload = "m=edit&p=7VRhb6JAEP3ur7js125yLCpVkvtArfbas9a2Gk8JMatFpQW3XcD21vjfO7toBKTeJZdL+uFCmDzeLLPz2OGFLzHlLi5jA5drWMNEXlUd64aBySlguLXt1fMi3zW/YCuOFowDwPim1cIz6ocuvhou2g1mvZ5bP1e1aDQiF1p8qQ0eW48nd8GPS6/MSatT6153rz19bn1vnN0azROjG4f9yF3dBuTssT/qzbqDeV3/1eyMKmJ0o1WvRrOvK6v/rWRve3BKa1E3hYXFhWkjgjDS4SbIweLWXItrU9xjcQ8phHUHoyD2I2/KfMaR4gisaycvQlo093Cwe0c0EpJogDtbDHAIcOrxqe+O2wnTNW3Rw0jufabelhAFbOXKzWRv8nnKgokniQmN4POFC+8Z4TIkwviBPcXbpcTZYGElCpo7BZXjCqDIToGEiQKJChRIYf9WQd3ZbOBw7kDD2LSlnP4e1vbw3lwjvYJMHXAHMDFkgRo0pM4RWGKuIQ5VbKmoq9iDAliUVTxXUVOxqmJbrWlCxXodpGuwAxTUYKI1ssUwzZqe7DxQqxsqVlQ0VJVT2eQfykgE/H3Dv23HJvAvwlU9Fp2SDT8HCpk/DmM+o1N37L7RaYTM5P9MZzLcMg4mLkxXivIZe/a9ZVGFXSpDevMl425hSpLuw/yjUjJVUGrC+EOup1fq+1ktyrkyVDLdGSriMLqpZ8o5e80wAY0WGSI15plK7jL3MSOabZE+0dxuwf5zbEroDanbLmNdntd/J/vETiYPSvtsRvDZ2lEzzvgRw9kn83SB7QB7xHlS2SL+A5NJZfP8gaPIZg9NBdgCXwE2by1AHboLkAcGA9wHHiOr5m1GdpV3GrnVgdnIrdJ+YyP6Alqc0js="
+        response = run_solver("hinge", payload, {})
+        self.assertEqual(len(response["url"]), 1)
+
+    def test_toichika_edge_case(self):
+        """Test toichika edge case."""
+        payload = "m=edit&p=7VRbT+JAFH7nV5h59STbC5S2yT4UBFdXEQXCQkNIwQLVlnF7QbeE/+6ZGQxtqW5i9sGHzcDJN9+Znstcvuh34oQuaKCAqoMEMg5F00CWq6Dzn7QffS/2XfMErCRe0RABwE27DQvHj1y4HK2umtR6PrN+bfR4PJbPpeRCGj60H07vgp8XnhrK7Y7eve5ee8rS+tFs3GqtU62bRIPY3dwGcuNhMO4vusOlofxpdcbVdHwj1S7Hi28ba/C9Yu9rmFS2qWGmFqTnpk1kAkTBv0wmkN6a2/TaTEeQ9tBFoDoBEiR+7M2pT0PCORnXXYkPFYStAxxyP0NNQcoS4s4eIxwhdMKQPk8704aguqad9oGw5A3+OYMkoBuXZWPFsfmcBjOPETMnxv2LVt4TARUdUXJPH5P9Unmyg9QqtKB/3AIGeWuBQdECQyUtsM6yLQz/fQvGZLfD47nDJqamzfoZHKB+gD1zi7bDrcztyNwSVcUwNcjvMfrafIXCbR8DQKpye8atxG2N2yu+poWx6groCjEVILoChkB1FXRMwTgVDIHq7HoLrgqGQPUa6DXB1cAQqK6BrglOA4MhTDTk6ZrcVrnVeBl11uWn9+FzHf+1HFtR+MMWo3bAk4pNekm4cOYuHnbrfumedGgYOD7OeivnySX45EhE/WkkVk3dF2ceE1O8+qwnx62TYObilc1QPqVPvrcui/DmypHeck1Dt9TFSBdrfScUc5WEmtHwvlDTs+P7+V64GuaouRfO/TwVh/gcMnN+aXNM4MSrHJF5OrlI7rqwmbGTL9F5dArZgsN27CrkhfC/raKA43H+18cvrY/sqKSvpg5frRx+y2n4geQcnEW6RHiQ/UB7Mt4y/h2ZyXiL/JGmsGKPZQXZEmVBtiguSB3rC5JHEoPcOyrDohaFhlVV1BqW6khuWKqs4tiTyis="
+        response = run_solver("toichika", payload, {})
         self.assertEqual(len(response["url"]), 1)
 
     def test_statuepark_all_shapes(self):
@@ -94,8 +111,6 @@ class TestExtraFunction(unittest.TestCase):
         self.assertRaises(ValueError, count_shape, 0, "test", None, "black", "unknown")
         self.assertRaises(ValueError, general_shape, "test", 0, [(0, 0)], "black", "unknown", 4, False)
         self.assertRaises(ValueError, general_shape, "test", 0, None, "black", "grid", 4, False)
-        self.assertRaises(ValueError, get_neighbor, 0, 0, "unknown")
-        self.assertRaises(ValueError, get_neighbor, 0, 0, 1000)
 
     def test_binairo_unique_linecolor(self):
         """Test binairo unique linecolor."""
@@ -118,6 +133,10 @@ class TestExtraFunction(unittest.TestCase):
         """Test nagare wind."""
         self.assertRaises(ValueError, nagare_wind, 0, 0, "unknown", None)
 
+    def test_compass_constraint(self):
+        """Test compass constraint."""
+        self.assertEqual(compass_constraint(0, 0, "unknown", 0), "")
+
     def test_validation(self):
         """Test validation functions in helper."""
         self.assertRaises(ValueError, validate_direction, 0, 0, Direction.LEFT)
@@ -136,3 +155,8 @@ class TestExtraFunction(unittest.TestCase):
     def test_reachable_rules(self):
         """Test reachable rules."""
         self.assertRaises(ValueError, count_reachable_src, 0, (0, 0), "unknown")
+
+    def test_repeated_imports(self):
+        """Test repeated imports."""
+        self.assertRaises(ValueError, load_solver, "solver", "aqre")
+        self.assertRaises(ValueError, load_solver, "solver", "yinyang")

@@ -16,7 +16,7 @@ def area_product_aggregate(_id: int, src_cells: Iterable[Tuple[int, int]]) -> st
             rule += f"area_product({_id}, {i}, N) :- number({r}, {c}, N).\n"
         else:
             rule += f"area_product({_id}, {i}, N1 * N2) :- area_product({_id}, {i - 1}, N1), number({r}, {c}, N2).\n"
-    return rule.strip()
+    return rule
 
 
 def number_exclusion(target: int, grid_size: int, _id: int) -> str:
@@ -25,7 +25,7 @@ def number_exclusion(target: int, grid_size: int, _id: int) -> str:
     for num in range(1, grid_size + 1):
         if target % num != 0:  # exclusion for non-factorable numbers
             rule += f":- area({_id}, R, C), number(R, C, {num}).\n"
-    return rule.strip()
+    return rule
 
 
 class FactorsSolver(Solver):
@@ -53,14 +53,14 @@ class FactorsSolver(Solver):
         self.add_program_line(unique_num(_type="row", color="grid"))
         self.add_program_line(unique_num(_type="col", color="grid"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_product_aggregate(_id=i, src_cells=ar))
 
             for r, c in ar:
-                if Point(r, c, Direction.CENTER, "sudoku_0") in puzzle.text:
-                    num = puzzle.text[Point(r, c, Direction.CENTER, "sudoku_0")]
+                if Point(r, c, Direction.CENTER, f"corner_{Direction.TOP_LEFT}") in puzzle.text:
+                    num = puzzle.text[Point(r, c, Direction.CENTER, f"corner_{Direction.TOP_LEFT}")]
                     fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be integer.")
                     self.add_program_line(f":- not area_product({i}, {len(ar) - 1}, {num}).")
                     self.add_program_line(number_exclusion(int(num), grid_size=n, _id=i))

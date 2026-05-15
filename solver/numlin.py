@@ -4,38 +4,28 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import direction, display, fill_path, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
-from noqx.rule.loop import single_loop
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import avoid_unknown_src_bit, clue_bit, grid_bit_color_connected, num_binary_range
+from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
+from noqx.rule.route import single_route
 
 
-def no_2x2_path_bit() -> str:
-    """
-    Generate a rule that no 2x2 path (bit version) is allowed.
+def no_2x2_path() -> str:
+    """Generate a rule that no 2x2 path is allowed."""
 
-    A reachable path rule should be defined first.
-    """
     points = ((0, 0), (0, 1), (1, 0), (1, 1))
-    tag = tag_encode("reachable", "grid", "bit", "adj", "loop")
-    rule = f"bit_same(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'{tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    rule += (
-        f"bit_no(R, C, B) :- grid(R, C), bit_range(B), { ', '.join(f'not {tag}(R + {r}, C + {c}, B)' for r, c in points) }.\n"
-    )
-    rule += "bit_same(R, C, B) :- bit_no(R, C, B).\n"
-    rule += "no_2x2(R, C) :- grid(R, C), bit_range(B), not bit_same(R, C, B).\n"
-    rule += "no_empty(R, C) :- grid(R, C), bit_range(B), not bit_no(R, C, B).\n"
-    rule += ":- grid(R, C), no_empty(R, C), not no_2x2(R, C).\n"
-    return rule.strip()
+    tag = tag_encode("reachable", "grid", "src", "adj", "line", "white")
+    cells = [f"{tag}(R0, C0, R + {r}, C + {c})" for r, c in points]
+    return f":- grid(R, C), grid(R + 1, C + 1), clue(R0, C0), {', '.join(cells)}.\n"
 
 
 class NumlinSolver(Solver):
     """The Numberlink solver."""
 
     name = "Numberlink"
-    category = "loop"
-    aliases = ["numberlink"]
+    category = "route"
+    aliases = ["numberlink", "arukone", "flowfree"]
     examples = [
         {
             "data": "m=edit&p=7VPBbptAEL3zFdae58Cy2Ia9EcfuhZK2cRVFK4SwSxVUXFJsqmgt/3tmBizcyJVSJfKpWvP09s0svB3PbH+1eVPAFJcKwAWJS7k+PxOXfse1LHdVoUcQtbuHukECcLNYwPe82haO6bNSZ29DbSOwH7QRUoDw8JEiBftZ7+1HbROwtxgSIFGLuyQP6XygdxwnNutE6SJPeo70Hum6bNZVkcWd8kkbuwRB37ni00TFpv5diN4H7df1ZlWSsMp3eJntQ/nYR7btt/pH2+fK9AA26uzGZ+yqwS7Rzi6xM3bpFm+2W5U/i6dzTsP0cMCKf0GvmTZk++tAg4He6j1iovfCm9LRCG10f4tQExKuBsF3SZifCAEJ14Mw4YzZIExZOMkI5It3hJxx8tnQe/GOUP3hA+1KNn3PuGD0GJd4J7CK8ZrRZRwzxpwzZ7xjnDH6jBPOmVJV/qlub7Ej/DHeLQywTiFQIdQrDRrP53k8rvH771LHiBi7a5TUzSavsMeSdrMqmuMe5/ngiCfBj1F4xP8/4pcfcaq+e7GGfZ/5MVjYvuPB3oB4bLM8W9fYY1g7CuJY/C3gvz5w8VvjXKbOMw==",
@@ -48,6 +38,11 @@ class NumlinSolver(Solver):
             "url": "https://puzz.link/p?numlin/26/26/zz-15gdx-12nfs-16j8x4v-11zxes9kfs8zg4lbm6k5ubv2r-14n1q-10z5v7zeq3n3r1v-13u9k-11mdl6zgas2k-10sczxav-16x7jcs-15n-13x-14g-12zz",
             "test": False,
         },
+        {
+            "url": "https://puzz.link/p?arukone/14/9/zh-15h6heh3fe6-15-1354g4ci7g9u2zg3g9g-1351ch2i7g1j8of8n",
+            "test": False,
+            "config": {"visit_all": True, "no_2x2": False},
+        },
     ]
     parameters = {
         "visit_all": {"name": "Visit all cells", "type": "checkbox", "default": True},
@@ -56,49 +51,61 @@ class NumlinSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+
+        all_src = []
         locations: Dict[Union[int, str], List[Tuple[int, int]]] = {}
-        for (r, c, d, pos), clue in puzzle.text.items():
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             locations.setdefault(clue, [])
             locations[clue].append((r, c))
+            all_src.append((r, c))
 
         fail_false(len(locations) > 0, "No clues found.")
         for n, pair in locations.items():
             fail_false(len(pair) == 2, f"Element {n} is unmatched.")
 
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-
-        rule, nbit = num_binary_range(len(locations.items()))
-        self.add_program_line(rule)
 
         if puzzle.param["visit_all"]:
-            self.add_program_line("numlin(R, C) :- grid(R, C).")
+            self.add_program_line("white(R, C) :- grid(R, C).")
         else:
-            self.add_program_line(shade_c(color="numlin"))
+            self.add_program_line(shade_c(color="white"))
 
-        if puzzle.param["no_2x2"]:
-            self.add_program_line(no_2x2_path_bit())
+        self.add_program_line(fill_line(color="white"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(single_route(color="white", path=True))
 
-        self.add_program_line(fill_path(color="numlin"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(single_loop(color="numlin", path=True))
-
-        for _id, (n, pair) in enumerate(locations.items()):
+        for n, pair in locations.items():
             r0, c0 = pair[0]
             r1, c1 = pair[1]
-            self.add_program_line(clue_bit(r0, c0, _id + 1, nbit))
-            self.add_program_line(clue_bit(r1, c1, _id + 1, nbit))
 
-        self.add_program_line("numlin(R, C) :- clue(R, C).")
-        self.add_program_line("dead_end(R, C) :- clue(R, C).")
-        self.add_program_line(grid_bit_color_connected(adj_type="loop", color="numlin"))
-        self.add_program_line(avoid_unknown_src_bit(adj_type="loop", color="numlin"))
+            excluded = []
+            for n1, pair1 in locations.items():
+                if n1 != n:
+                    excluded.append(pair1[0])
+                    excluded.append(pair1[1])
 
-        for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f"clue({r0}, {c0}).")
+            self.add_program_line(f"dead_end({r0}, {c0}).")
+            self.add_program_line(f"dead_end({r1}, {c1}).")
+            self.add_program_line(f"white({r0}, {c0}).")
+            self.add_program_line(f"white({r1}, {c1}).")
+            self.add_program_line(
+                grid_src_color_connected(
+                    src_cell=(r0, c0), include_cells=[(r1, c1)], exclude_cells=excluded, adj_type="line", color="white"
+                )
+            )
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(avoid_unknown_src(color="white", adj_type="line"))
+
+        if puzzle.param["no_2x2"]:
+            self.add_program_line(no_2x2_path())
+
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
+
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

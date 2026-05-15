@@ -6,7 +6,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -14,7 +14,8 @@ def count_sight(src_cell: Tuple[int, int], distance: int, color: str = "black") 
     """Generate a rule to count the number of color cells in the distance of sight."""
     r, c = src_cell
     cells = ((r + distance, c), (r - distance, c), (r, c + distance), (r, c - distance))
-    return f":- {{ {';'.join(f'{color}({r0}, {c0})' for r0, c0 in cells)} }} != 1."
+    cell_str = ";".join(f"{color}({r0}, {c0})" for r0, c0 in cells)
+    return f":- {{ {cell_str} }} != 1."
 
 
 class KurochuteSolver(Solver):
@@ -33,21 +34,18 @@ class KurochuteSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c())
         self.add_program_line(adjacent())
-        self.add_program_line(avoid_adjacent_color(color="black"))
+        self.add_program_line(avoid_same_color_adjacent(color="black"))
         self.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             if isinstance(num, int):
                 self.add_program_line(count_sight((r, c), num))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display())
 

@@ -1,17 +1,17 @@
 """The Uso-tatami solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
-from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover, count_rect
 
 
 def rect_constraint() -> str:
     """Generate a cell relevant constraint for rectangles with the width/height of 1."""
-    return ":- upleft(R, C), left(R + 1, C), up(R, C + 1)."
+    return f':- rect(R, C, "{Direction.TOP_LEFT}"), rect(R + 1, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.TOP}").'
 
 
 class UsotatamiSolver(Solver):
@@ -34,24 +34,28 @@ class UsotatamiSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
         self.add_program_line(rect_constraint())
-        self.add_program_line(avoid_region_border_crossover())
-        self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(avoid_edge_crossover())
+        self.add_program_line(count_rect(len(puzzle.text)))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        all_src = []
+        tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
-            self.add_program_line(f"clue({r}, {c}).")
+            validate_type(label, "normal")
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
+
+            for r1, c1 in all_src:
+                self.add_program_line(f":- {tag}({r}, {c}, {r}, {c1}), {tag}({r1}, {c1}, {r}, {c1}).")
+                self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if isinstance(num, int):
                 self.add_program_line(count_reachable_src(("ne", num), (r, c), main_type="bulb", color=None, adj_type="edge"))
 
-        for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            all_src.append((r, c))
 
-        tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-        self.add_program_line(f":- clue(R, C), clue(R1, C1), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        for (r, c, d, _), draw in puzzle.edge.items():
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
+
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

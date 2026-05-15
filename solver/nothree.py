@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import fail_false
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -36,7 +36,7 @@ class NoThreeSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
         self.add_program_line(adjacent())
-        self.add_program_line(avoid_adjacent_color(color="black"))
+        self.add_program_line(avoid_same_color_adjacent(color="black"))
         self.add_program_line(grid_color_connected(color="not black", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(no_consecutive_same_distance(color="black"))
 
@@ -58,10 +58,7 @@ class NoThreeSolver(Solver):
                 )
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display(item="black"))
 

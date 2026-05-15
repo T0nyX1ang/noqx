@@ -26,9 +26,9 @@ class KakuroSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         sums: List[Tuple[int, List[Tuple[int, int]]]] = []
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            if pos == "sudoku_1" and isinstance(num, int):
+            if label == f"corner_{Direction.TOP_RIGHT}" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = c + 1
                 while cur < puzzle.col and not puzzle.symbol.get(Point(r, cur, Direction.CENTER)):
@@ -38,7 +38,7 @@ class KakuroSolver(Solver):
                 fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if pos == "sudoku_2" and isinstance(num, int):
+            if label == f"corner_{Direction.BOTTOM_LEFT}" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = r + 1
                 while cur < puzzle.row and not puzzle.symbol.get(Point(cur, c, Direction.CENTER)):
@@ -48,19 +48,17 @@ class KakuroSolver(Solver):
                 fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if pos == "normal" and isinstance(num, int):
+            if label == "normal" and isinstance(num, int):
                 self.add_program_line(f"number({r}, {c}, {num}).")  # initial conditions
 
         self.add_program_line(defined(item="area", size=3))
         self.add_program_line(defined(item="number", size=3))
         self.add_program_line(grid(puzzle.row, puzzle.col))
 
-        area_id = 0
-        for sum_clue, coord_list in sums:
+        for area_id, (sum_clue, coord_list) in enumerate(sums):
             self.add_program_line(area(_id=area_id, src_cells=coord_list))
             self.add_program_line(fill_num(_range=range(1, 10), _type="area", _id=area_id))
             self.add_program_line(f":- #sum {{ N, R, C: area({area_id}, R, C), number(R, C, N) }} != {sum_clue}.")
-            area_id += 1
 
         self.add_program_line(unique_num(_type="area", color="grid"))
         self.add_program_line(display(item="number", size=3))

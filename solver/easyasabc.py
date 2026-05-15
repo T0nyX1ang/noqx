@@ -32,10 +32,10 @@ class EasyAsABCSolver(Solver):
         self.add_program_line(unique_num(_type="col", color="grid"))
         self.add_program_line(count(n - len(letters), _type="col", color="white"))
 
-        for (r, c, d, pos), letter in puzzle.text.items():
+        for (r, c, d, label), letter in puzzle.text.items():
             letter = str(letter)
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(len(letter) == 1, f"Clue at ({r}, {c}) should be a letter.")
 
             if r == -1 and 0 <= c < puzzle.col:
@@ -68,5 +68,5 @@ class EasyAsABCSolver(Solver):
     def refine(self, solution: Puzzle) -> None:
         """Refine the solution."""
         letters: str = solution.param["letters"]
-        for (r, c, d, pos), letter in solution.text.items():
-            solution.text[Point(r, c, d, pos)] = letters[int(letter) - 1]
+        for (r, c, d, label), letter in solution.text.items():
+            solution.text[Point(r, c, d, label)] = letters[int(letter) - 1]

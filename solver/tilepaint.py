@@ -1,7 +1,7 @@
 """The Tilepaint solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import area, count, display, grid, shade_c
 from noqx.rule.helper import full_bfs, validate_direction, validate_type
 from noqx.rule.neighbor import area_same_color
@@ -24,26 +24,23 @@ class TilepaintSolver(Solver):
         self.add_program_line(shade_c(color="gray"))
         self.add_program_line(area_same_color(color="gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
-                validate_type(pos, "sudoku_2")
+                validate_type(label, f"corner_{Direction.BOTTOM_LEFT}")
                 self.add_program_line(count(num, color="gray", _type="col", _id=c))
 
             if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
-                validate_type(pos, "sudoku_1")
+                validate_type(label, f"corner_{Direction.TOP_RIGHT}")
                 self.add_program_line(count(num, color="gray", _type="row", _id=r))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

@@ -4,22 +4,18 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import defined, display, fill_num, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.neighbor import adjacent, avoid_num_adjacent
+from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
 
 
 def numrope_constraint() -> str:
-    """
-    Generate a constraint for the number rope.
-
-    An adj_loop rule should be defined first.
-    """
-    rule = "adj_count(R, C, N) :- grid(R, C), N = #count { R1, C1 : adj_loop(R, C, R1, C1) }.\n"
+    """Generate a constraint for the number rope."""
+    rule = "adj_count(R, C, N) :- grid(R, C), N = #count { R1, C1 : adj_line(R, C, R1, C1) }.\n"
     rule += ":- adj_count(R, C, N), N > 2.\n"
-    rule += ":- adj_count(R, C, 1), number(R, C, N), number(R1, C1, N1), adj_loop(R, C, R1, C1), |N - N1| != 1.\n"
+    rule += ":- adj_count(R, C, 1), number(R, C, N), number(R1, C1, N1), adj_line(R, C, R1, C1), |N - N1| != 1.\n"
     rule += (
-        ":- adj_count(R, C, 2), number(R, C, N), N * 2 != #sum { N1, R1, C1 : number(R1, C1, N1), adj_loop(R, C, R1, C1) }.\n"
+        ":- adj_count(R, C, 2), number(R, C, N), N * 2 != #sum { N1, R1, C1 : number(R1, C1, N1), adj_line(R, C, R1, C1) }.\n"
     )
-    return rule.strip()
+    return rule
 
 
 class NumRopeSolver(Solver):
@@ -39,21 +35,21 @@ class NumRopeSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
         self.add_program_line(fill_num(_range=range(1, 10)))
         self.add_program_line(adjacent(_type=4))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(avoid_num_adjacent(adj_type=4))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(avoid_same_number_adjacent(adj_type=4))
         self.add_program_line(numrope_constraint())
 
-        for (r, c, _, d), draw in puzzle.line.items():
+        for (r, c, d, _), draw in puzzle.line.items():
             fail_false(draw, f"Line must be drawn at ({r}, {c}).")
-            self.add_program_line(f'grid_direction({r}, {c}, "{d}").')
+            self.add_program_line(f'line_io({r}, {c}, "{d}").')
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"hole({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
             if Point(r, c) in puzzle.surface:

@@ -11,7 +11,7 @@ def jousan_constraint():
     # black for horizontal, not black for vertical
     rule = ":- grid(R, C), grid(R + 2, C), black(R, C), black(R + 1, C), black(R + 2, C).\n"
     rule += ":- grid(R, C), grid(R, C + 2), not black(R, C), not black(R, C + 1), not black(R, C + 2).\n"
-    rule += 'content(R, C, "——") :- grid(R, C), black(R, C).\n'
+    rule += 'content(R, C, "--") :- grid(R, C), black(R, C).\n'
     rule += 'content(R, C, "|") :- grid(R, C), not black(R, C).'
     return rule
 
@@ -44,11 +44,11 @@ class JuosanSolver(Solver):
         self.add_program_line(shade_c())
         self.add_program_line(jousan_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             if rc:
-                num = puzzle.text.get(Point(*rc, Direction.CENTER, "sudoku_0"))
+                num = puzzle.text.get(Point(*rc, Direction.CENTER, f"corner_{Direction.TOP_LEFT}"))
                 if isinstance(num, int):
                     self.add_program_line(count_lines(i, num, len(ar) - num))
 

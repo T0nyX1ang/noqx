@@ -1,11 +1,11 @@
 """Rules and constraints to detect certain shapes."""
 
-import itertools
-from typing import Iterable, Optional, Set, Tuple, Union
+from typing import Dict, Iterable, Optional, Set, Tuple, Union
 
+from noqx.puzzle import Direction
 from noqx.rule.helper import tag_encode, target_encode, validate_type
 
-OMINOES = {
+OMINOES: Dict[int, Dict[str, Tuple[Tuple[int, int], ...]]] = {
     1: {
         ".": ((0, 0),),
     },
@@ -40,31 +40,19 @@ OMINOES = {
 }
 
 
-def get_neighbor(r: int, c: int, _type: Union[int, str] = 4) -> Iterable[Tuple[int, int]]:
-    """Get the neighbors of a cell."""
-    shape_4 = ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
-    shape_x = ((r - 1, c - 1), (r - 1, c + 1), (r + 1, c - 1), (r + 1, c + 1))
-
-    if _type == 4:
-        return shape_4
-
-    if _type == "x":
-        return shape_x
-
-    if _type == 8:
-        return shape_4 + shape_x
-
-    raise ValueError("Invalid type, must be one of 4, 8, 'x'.")
-
-
 def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, int]]:
-    """
-    Given a (possibly non-canonical) shape representation,
+    """Convert a shape to its canonical representation.
 
-    Return the canonical representation of the shape, a tuple:
-        - in sorted order
-        - whose first element is (0, 0)
-        - whose other elements represent the offsets of the other cells from the first one
+    * The representation of a shape containing all the cells that consist of the shape, and:
+        * the first element can be any coordinate,
+        * the other element represent the offsets of the other cells from the first one.
+
+    * The **canonical** representation of the shape is a sorted tuple, and:
+        * the first element is `(0, 0)`,
+        * the other elements represent the offsets of the other cells from the first one.
+
+    Args:
+        shape: the representation of a shape.
     """
     shape = sorted(shape)
     root_r, root_c = shape[0]
@@ -75,31 +63,29 @@ def canonicalize_shape(shape: Iterable[Tuple[int, int]]) -> Iterable[Tuple[int, 
 def get_variants(
     shape: Iterable[Tuple[int, int]], allow_rotations: bool, allow_reflections: bool
 ) -> Set[Iterable[Tuple[int, int]]]:
-    """
-    Get a set of canonical shape representations for a (possibly non-canonical) shape representation.
+    """Generate the equivalent variants for a shape.
 
-    allow_rotations = True iff shapes can be rotated
-    allow_reflections = True iff shapes can be reflected
+    Args:
+        shape: the representation of a shape.
+        allow_rotations: Whether the shapes can be rotated to build the variants.
+        allow_reflections: Whether the shapes can be reflected to build the variants.
     """
-    # build a set of functions that transform shapes
-    # in the desired ways
     functions = set()
     if allow_rotations:
         functions.add(lambda shape: canonicalize_shape((-c, r) for r, c in shape))
     if allow_reflections:
         functions.add(lambda shape: canonicalize_shape((-r, c) for r, c in shape))
 
-    # make a set of currently found shapes
     result = set()
     result.add(canonicalize_shape(shape))
 
-    # apply our functions to the items in this set
     all_shapes_covered = False
     while not all_shapes_covered:
         new_shapes = set()
         current_num_shapes = len(result)
-        for f, s in itertools.product(functions, result):
-            new_shapes.add(f(s))
+        for f in functions:
+            new_shapes.update(f(s) for s in result)
+
         result = result.union(new_shapes)
         all_shapes_covered = current_num_shapes == len(result)
     return result
@@ -114,19 +100,44 @@ def general_shape(
     adj_type: Union[int, str] = 4,
     simple: bool = False,
 ) -> str:
-    """
-    Generates a rule for general shapes (using bruteforce technique).
-    The deltas are the relative coordinates of the shape cells.
+    """A rule to define general shapes in a grid or an area.
 
-    A grid rule and an adjacent rule should be defined first.
+    * Two predicates will be generated, `shape` and `belong_to_shape`. The `shape` predicate
+    defines the shape pattern, while the `belong_to_shape` predicate defines whether a cell
+    belongs to a certain shape instance.
+
+    Args:
+        name: The name of the shape.
+        _id: The ID of the shape, needs to be unique.
+        deltas: The relative coordinates of the shape cells.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
+        simple: Whether to skip the adjacency re-checking.
+
+    Success:
+        * If `_type` is set to "grid", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(R, C, I, V)`.
+
+        * If `_type` is set to "area", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(A, R, C, I, V)`.
+
+    Warning:
+        Although the shape representation does not require the connectivity of the shape, it is recommended to ensure that the provided shape is connected. Some derived rules may behave weird if the shape is not connected.
+
+    Warning:
+        The `simple` option is more efficient, but the use-case is limited. It is only recommended to use in the `area` type, and every area only contains **one piece** of the shape.
+
     """
+
+    def get_neighbor(r: int, c: int) -> Iterable[Tuple[int, int]]:
+        """Get the 4-directional neighbors of a cell."""
+        return ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1))
+
     validate_type(_type, ("grid", "area"))
     if not deltas:
         raise ValueError("Shape coordinates must be provided.")
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
-    neighbor_type = adj_type if adj_type in [4, 8, "x"] else 4
     data = ""
 
     variants = get_variants(deltas, allow_rotations=True, allow_reflections=True)
@@ -147,7 +158,7 @@ def general_shape(
                     f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
                 )
 
-            for nr, nc in get_neighbor(dr, dc, _type=neighbor_type):
+            for nr, nc in get_neighbor(dr, dc):
                 if (nr, nc) in variant:
                     if adj_type not in [4, 8, "x"] and (dr, dc) < (nr, nc):
                         valid.add(f"adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
@@ -166,14 +177,19 @@ def general_shape(
         if _type == "area":
             data += f"{tag}(A, R, C, {_id}, {i}) :- area(A, R, C), {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
-    return data.strip()
+    return data
 
 
 def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
-    """
-    Generate a constraint to force all {color} cells are in defined shapes.
+    """A rule to ensure all the color cells belong to defined shapes in a grid or an area.
 
-    A grid rule and a shape/belong_to_shape rule should be defined first.
+    Args:
+        name: The name of the shape.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
+
+    Warning:
+        The generated tags of the shapes are without the adjacency type and ID.
     """
     validate_type(_type, ("grid", "area"))
     tag = tag_encode("belong_to_shape", name, color)
@@ -195,10 +211,17 @@ def count_shape(
     color: str = "black",
     _type: str = "grid",
 ) -> str:
-    """
-    Generates a constraint to count the number of a shape.
+    """A rule to compare the number of certain shapes to a specified target.
 
-    A grid rule and a shape rule should be defined first.
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        name: The name of the shape.
+        _id: The ID of the shape. If not provided, all the shapes with different IDs will be counted.
+        color: The color to be checked.
+        _type: The type of the shape rule (accepted types: "grid" or "area").
+
+    Warning:
+        The generated tags of the shapes are without the adjacency type and ID.
     """
     validate_type(_type, ("grid", "area"))
     tag = tag_encode("shape", name, color)
@@ -210,88 +233,163 @@ def count_shape(
         rule = f":- {{ {tag}(R, C, {_id}, _) }} {rop} {num}."
 
     if _type == "area":
-        rule = f":- area(A, _, _), {{ {tag}(A, R, C, _, {_id}) }} {rop} {num}."
+        rule = f":- area(A, _, _), {{ {tag}(A, R, C, {_id}, _) }} {rop} {num}."
 
     return rule
 
 
-def all_rect(color: str = "black", square: bool = False) -> str:
-    """
-    Generate a constraint to force rectangles.
+def avoid_same_omino_adjacent(
+    omino_num: int, color: str = "black", adj_type: Union[int, str] = 4, allow_isometry: bool = True
+) -> str:
+    """A rule to avoid adjacent ominos with the same shape.
 
-    A grid rule should be defined first.
+    Args:
+        omino_num: The number of cells in the omino.
+        color: The color to be checked.
+        adj_type: The type of adjacency (accepted values: `4`, `8`, `x`, `edge`).
+        allow_isometry: Whether to consider reflection/rotation as the same type.
+
+    Warning:
+        This rule only deals with `grid-based` ominos currently and cannot deal with `area-based` ominos.
     """
+    validate_type(adj_type, (4, 8, "x", "edge"))
+    t_be = tag_encode("belong_to_shape", "omino", omino_num, color)
+    itag = "_" if allow_isometry else "V"
+
     rule = ""
+    if adj_type == 4:  # only checkerboard adjacent ominos are allowed
+        rule = f":- not {color}(R, C + 1), not {color}(R + 1, C), {t_be}(R, C, T, {itag}), {t_be}(R + 1, C + 1, T, {itag}).\n"
+        rule += f":- not {color}(R, C), not {color}(R + 1, C + 1), {t_be}(R + 1, C, T, {itag}), {t_be}(R, C + 1, T, {itag})."
+
+    if adj_type in (8, "x"):  # all adjacent ominos are not allowed
+        rule += f":- adj_{adj_type}(R, C, R1, C1), {t_be}(R, C, T, {itag}), {t_be}(R1, C1, T1, {itag}), T != T1."
+
+    if adj_type == "edge":
+        rule += f':- grid(R, C), grid(R, C + 1), {t_be}(R, C, T, {itag}), {t_be}(R, C + 1, T, {itag}), edge(R, C + 1, "{Direction.LEFT}").\n'
+        rule += f':- grid(R, C), grid(R + 1, C), {t_be}(R, C, T, {itag}), {t_be}(R + 1, C, T, {itag}), edge(R + 1, C, "{Direction.TOP}").'
+    return rule
+
+
+def all_rect(color: str = "black", square: bool = False) -> str:
+    """A rule to ensure that all the shapes (recognized by colors) in the grid are rectangles.
+
+    * The main concept of this rule is to define the `rect` predicate with four directions: `top-left`, `left`, `top`, and `bottom-right`, and categorize all the cells into these directions:
+        * `top-left`: the **top-left** corner of a rectangle.
+        * `left`: the **left** edge of a rectangle (excluding the **top-left** corner).
+        * `top`: the **top** edge of a rectangle (excluding the **top-left** corner).
+        * `bottom-right`: all the *remaining* cells inside the rectangle.
+
+    * If some cells are not categorized into the `rect` predicate, the shape is not rectangular.
+
+    * Due to technical reasons with edges, the color cannot start with `not`, please use the `noqx.rule.common.invert_c` rule for assistance.
+
+    Args:
+        color: The color to be checked.
+        square: Whether to force the rectangles to be squares.
+
+    Raises:
+        ValueError: If the color starts with 'not'.
+
+    Success:
+        This rule will generate a predicate named `rect(R, C, D)`.
+
+    Warning:
+        This rule is available with only *one* color, since the helper predicates are not relevant to colors.
+
+    Warning:
+        This rule conflicts with `all_rect_region`. Please use either one of them.
+    """
     if color.startswith("not"):
-        raise ValueError("Unsupported color prefix 'not', please define the color explicitly.")
+        raise ValueError("Unsupported color prefix 'not', please define the color explicitly by `invert_c`.")
 
-    upleft = f"upleft(R, C) :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left = f"left(R, C) :- grid(R, C), {color}(R, C), upleft(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    left += f"left(R, C) :- grid(R, C), {color}(R, C), left(R - 1, C), {color}(R - 1, C), not {color}(R, C - 1).\n"
-    up = f"up(R, C) :- grid(R, C), {color}(R, C), upleft(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    up += f"up(R, C) :- grid(R, C), {color}(R, C), up(R, C - 1), {color}(R, C - 1), not {color}(R - 1, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
-
-    constraint = f":- grid(R, C), {color}(R, C), not upleft(R, C), not left(R, C), not up(R, C), not remain(R, C).\n"
-    constraint += f":- grid(R, C), remain(R, C), not {color}(R, C).\n"
+    rule = f'rect(R, C, "{Direction.TOP_LEFT}") :- grid(R, C), {color}(R, C), not {color}(R - 1, C), not {color}(R, C - 1).\n'
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), {color}(R, C), rect(R - 1, C, "{Direction.TOP_LEFT}"), {color}(R - 1, C), not {color}(R, C - 1).\n'
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), {color}(R, C), rect(R - 1, C, "{Direction.LEFT}"), {color}(R - 1, C), not {color}(R, C - 1).\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), {color}(R, C), rect(R, C - 1, "{Direction.TOP_LEFT}"), {color}(R, C - 1), not {color}(R - 1, C).\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), {color}(R, C), rect(R, C - 1, "{Direction.TOP}"), {color}(R, C - 1), not {color}(R - 1, C).\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f':- grid(R, C), {color}(R, C), not rect(R, C, "{Direction.TOP_LEFT}"), not rect(R, C, "{Direction.LEFT}"), not rect(R, C, "{Direction.TOP}"), not rect(R, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), not {color}(R, C).\n'
 
     if square:
         c_min = f"#min {{ C0: grid(R, C0 - 1), not {color}(R, C0), C0 > C }}"
         r_min = f"#min {{ R0: grid(R0 - 1, C), not {color}(R0, C), R0 > R }}"
-        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
-        constraint += ":- upleft(R, C), left(R + 1, C), not up(R, C + 1).\n"
-        constraint += ":- upleft(R, C), not left(R + 1, C), up(R, C + 1).\n"
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n'
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), rect(R + 1, C, "{Direction.LEFT}"), not rect(R, C + 1, "{Direction.TOP}").\n'
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), not rect(R + 1, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.TOP}").\n'
 
-    data = rule + upleft + left + up + remain + constraint
-    return data.strip()
+    return rule.strip()
 
 
 def all_rect_region(square: bool = False) -> str:
-    """
-    Generate a constraint to force rectangles.
+    """A rule to ensure that all the shapes (recognized by edges) in the grid are rectangles.
 
-    A grid rule and an edge rule should be defined first.
-    """
-    upleft = "upleft(R, C) :- grid(R, C), edge_left(R, C), edge_top(R, C).\n"
-    left = "left(R, C) :- grid(R, C), upleft(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
-    left += "left(R, C) :- grid(R, C), left(R - 1, C), edge_left(R, C), not edge_top(R, C).\n"
-    up = "up(R, C) :- grid(R, C), upleft(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
-    up += "up(R, C) :- grid(R, C), up(R, C - 1), edge_top(R, C), not edge_left(R, C).\n"
-    remain = "remain(R, C) :- grid(R, C), left(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), left(R, C - 1), remain(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), up(R - 1, C).\n"
-    remain += "remain(R, C) :- grid(R, C), remain(R, C - 1), remain(R - 1, C).\n"
+    Args:
+        square: Whether to force the rectangles to be squares.
 
-    constraint = ":- grid(R, C), { upleft(R, C); left(R, C); up(R, C); remain(R, C) } != 1.\n"
-    constraint += ":- grid(R, C), remain(R, C), left(R, C + 1), not edge_left(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), up(R + 1, C), not edge_top(R + 1, C).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R, C + 1), not edge_left(R, C + 1).\n"
-    constraint += ":- grid(R, C), remain(R, C), upleft(R + 1, C), not edge_top(R + 1, C).\n"
+    Success:
+        This rule will generate a predicate named `rect(R, C, D)`.
+
+    Warning:
+        This rule conflicts with `all_rect`. Please use either one of them.
+    """
+    rule = (
+        f'rect(R, C, "{Direction.TOP_LEFT}") :- grid(R, C), edge(R, C, "{Direction.LEFT}"), edge(R, C, "{Direction.TOP}").\n'
+    )
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), rect(R - 1, C, "{Direction.TOP_LEFT}"), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.LEFT}") :- grid(R, C), rect(R - 1, C, "{Direction.LEFT}"), edge(R, C, "{Direction.LEFT}"), not edge(R, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), rect(R, C - 1, "{Direction.TOP_LEFT}"), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'rect(R, C, "{Direction.TOP}") :- grid(R, C), rect(R, C - 1, "{Direction.TOP}"), edge(R, C, "{Direction.TOP}"), not edge(R, C, "{Direction.LEFT}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.LEFT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.TOP}").\n'
+    rule += f'rect(R, C, "{Direction.BOTTOM_RIGHT}") :- grid(R, C), rect(R, C - 1, "{Direction.BOTTOM_RIGHT}"), rect(R - 1, C, "{Direction.BOTTOM_RIGHT}").\n'
+
+    rule += f':- grid(R, C), {{ rect(R, C, "{Direction.TOP_LEFT}"); rect(R, C, "{Direction.LEFT}"); rect(R, C, "{Direction.TOP}"); rect(R, C, "{Direction.BOTTOM_RIGHT}") }} != 1.\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R, C + 1, "{Direction.LEFT}"), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R + 1, C, "{Direction.TOP}"), not edge(R + 1, C, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R, C + 1, "{Direction.TOP_LEFT}"), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R + 1, C, "{Direction.TOP_LEFT}"), not edge(R + 1, C, "{Direction.TOP}").\n'
+
+    rule += f':- grid(R, C), rect(R, C, "{Direction.LEFT}"), rect(R, C + 1, "{Direction.BOTTOM_RIGHT}"), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R, C + 1, "{Direction.BOTTOM_RIGHT}"), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.TOP}"), rect(R + 1, C, "{Direction.BOTTOM_RIGHT}"), edge(R + 1, C, "{Direction.TOP}").\n'
+    rule += f':- grid(R, C), rect(R, C, "{Direction.BOTTOM_RIGHT}"), rect(R + 1, C, "{Direction.BOTTOM_RIGHT}"), edge(R + 1, C, "{Direction.TOP}").\n'
 
     if square:
-        c_min = "#min { C0: grid(R, C0 - 1), edge_left(R, C0), C0 > C }"
-        r_min = "#min { R0: grid(R0 - 1, C), edge_top(R0, C), R0 > R }"
-        constraint += f":- upleft(R, C), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n"
+        c_min = f'#min {{ C0: grid(R, C0 - 1), edge(R, C0, "{Direction.LEFT}"), C0 > C }}'
+        r_min = f'#min {{ R0: grid(R0 - 1, C), edge(R0, C, "{Direction.TOP}"), R0 > R }}'
+        rule += f':- rect(R, C, "{Direction.TOP_LEFT}"), MR = {r_min}, MC = {c_min}, MR - R != MC - C.\n'
 
-    rect = ":- grid(R, C), left(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
-    rect += ":- grid(R, C), remain(R, C), remain(R, C + 1), edge_left(R, C + 1).\n"
-    rect += ":- grid(R, C), up(R, C), remain(R + 1, C), edge_top(R + 1, C).\n"
-    rect += ":- grid(R, C), remain(R, C), remain(R + 1, C), edge_top(R + 1, C)."
+    return rule.strip()
 
-    data = upleft + left + up + remain + constraint + rect
-    return data
+
+def count_rect(target: Union[int, Tuple[str, int]]):
+    """A rule to compare the number of rectangles in a grid with a specified target.
+
+    * Since the top-left side of any rectangle is unique, the number of rectangles can be counted by the `rect` predicate.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+    """
+
+    rop, num = target_encode(target)
+    return f':- {{ rect(R, C, "{Direction.TOP_LEFT}") }} {rop} {num}.'
 
 
 def avoid_rect(
     rect_r: int, rect_c: int, color: str = "black", corner: Tuple[Optional[int], Optional[int]] = (None, None)
 ) -> str:
-    """
-    Generates a constraint to avoid rectangular patterned {color} cells.
+    """A rule to avoid rectangular shapes of specified size in a grid.
 
-    A grid fact should be defined first.
+    Args:
+        rect_r: The height (rows) of the rectangle.
+        rect_c: The width (columns) of the rectangle.
+        color: The color to be checked.
+        corner: The corner of the rectangle in (`row`, `col`), set to `None` to check for any rows or cols.
     """
     corner_r, corner_c = corner
     corner_r = corner_r if corner_r is not None else "R"
@@ -308,10 +406,15 @@ def avoid_rect(
 
 
 def no_rect(color: str = "black") -> str:
-    """
-    Generate a constraint to avoid all-shaped rectangles.
+    """A rule to avoid rectangular shapes of any size in a grid.
 
-    A grid rule should be defined first.
+    * The main concept of this rule is to detect `L-shape` and ensure that all the color cells are reachable through `L-shape`.
+
+    Args:
+        color: The color to be checked.
+
+    Success:
+        This rule will generate a predicate named `reachable_Lshape_adj_4_{color}(R, C)`.
     """
     tag = tag_encode("reachable", "Lshape", "adj", 4, color)
 
@@ -327,13 +430,57 @@ def no_rect(color: str = "black") -> str:
     return initial + propagation + constraint
 
 
-def avoid_region_border_crossover() -> str:
-    """Avoid the crossover of the region border."""
+def count_rect_size(
+    target: Union[int, Tuple[str, int]],
+    src_cell: Tuple[int, int],
+    color: Optional[str] = None,
+    adj_type: Union[int, str] = 4,
+) -> str:
+    """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
+
+    * A `noqx.rule.reachable.bulb_src_color_connected` rule should be applied first.
+
+    Args:
+        target: The target number or a tuple of (`operator`, `number`) for comparison.
+        src_cell: The source cell of the rectangle.
+        color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
+        adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
+    """
+    if color is None:
+        validate_type(adj_type, ("edge",))
+
+    tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
+    rop, num = target_encode(target)
+
+    src_r, src_c = src_cell
+    count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
+    count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
+
+    return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
+
+
+def avoid_edge_crossover() -> str:
+    """A rule to avoid the crossover shape of edges.
+
+    * This rule is useful in tatami-like puzzles.
+    """
     no_rect_adjacent_by_point = [
-        "edge_left(R, C + 1)",
-        "edge_left(R + 1, C + 1)",
-        "edge_top(R + 1, C)",
-        "edge_top(R + 1, C + 1)",
+        f'edge(R, C + 1, "{Direction.LEFT}")',
+        f'edge(R + 1, C + 1, "{Direction.LEFT}")',
+        f'edge(R + 1, C, "{Direction.TOP}")',
+        f'edge(R + 1, C + 1, "{Direction.TOP}")',
     ]
     rule = f":- grid(R, C), {', '.join(no_rect_adjacent_by_point)}."
+    return rule
+
+
+def avoid_checkerboard(color: str) -> str:
+    """A rule to avoid the checkerboard shape.
+
+    Args:
+        color: The color to be checked.
+    """
+
+    rule = f":- {color}(R, C), not {color}(R, C + 1), not {color}(R + 1, C), {color}(R + 1, C + 1).\n"
+    rule += f":- not {color}(R, C), {color}(R, C + 1), {color}(R + 1, C), not {color}(R + 1, C + 1)."
     return rule

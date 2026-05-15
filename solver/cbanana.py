@@ -11,11 +11,7 @@ from noqx.rule.shape import all_rect, no_rect
 
 
 def grid_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to check the reachability of same color cells starting from a source.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of same color cells starting from a source."""
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
     tag_ls = tag_encode("reachable", "Lshape", "adj", adj_type, color)
@@ -23,15 +19,11 @@ def grid_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
     r, c = src_cell
     initial = f"{tag}({r}, {c}, {r}, {c}).\n"
     propagation = f"{tag}({r}, {c}, R, C) :- {tag_ls}({r}, {c}), {tag}({r}, {c}, R1, C1), grid(R, C), {tag_ls}(R, C), adj_{adj_type}(R, C, R1, C1).\n"
-    return initial + propagation.strip()
+    return initial + propagation
 
 
 def bulb_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to check the reachability of {color} cells starting from a bulb.
-
-    An adjacent rule and a grid fact should be defined first.
-    """
+    """Generate a constraint to check the reachability of {color} cells starting from a bulb."""
 
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
@@ -42,12 +34,8 @@ def bulb_src_same_color_connected(src_cell: Tuple[int, int], color: str = "black
     return initial + "\n" + propagation
 
 
-def count_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
-    """
-    Generate a constraint to count the reachable cells starting from a source.
-
-    A grid_src_same_color_connected should be defined first.
-    """
+def count_same_color_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
+    """Generate a constraint to count the reachable cells starting from a source."""
     src_r, src_c = src_cell
 
     tag = tag_encode("reachable", "grid", "src", "adj", adj_type, color)
@@ -56,12 +44,8 @@ def count_reachable_src(target: int, src_cell: Tuple[int, int], color: str = "bl
     return f":- {color}({src_r}, {src_c}), {{ {tag}({src_r}, {src_c}, R, C) }} {rop} {num}."
 
 
-def count_rect_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a cell-relevant constraint for shikaku.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
+def count_same_color_rect_src(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4) -> str:
+    """Generate a cell-relevant constraint for choco banana."""
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
     src_r, src_c = src_cell
@@ -95,20 +79,17 @@ class CBananaSolver(Solver):
         self.add_program_line(all_rect(color="gray"))
         self.add_program_line(no_rect(color="white"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(grid_src_same_color_connected(src_cell=(r, c), color="white"))
-                self.add_program_line(count_reachable_src(num, src_cell=(r, c), color="white"))
+                self.add_program_line(count_same_color_reachable_src(num, src_cell=(r, c), color="white"))
                 self.add_program_line(bulb_src_same_color_connected(src_cell=(r, c), color="gray"))
-                self.add_program_line(count_rect_src(num, src_cell=(r, c), color="gray"))
+                self.add_program_line(count_same_color_rect_src(num, src_cell=(r, c), color="gray"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

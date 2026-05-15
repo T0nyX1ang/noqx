@@ -14,7 +14,7 @@ def magnet_constraint() -> str:
     constraint += ":- math_G__2(R, C), area(A, R, C), not math_G__3(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
     constraint += ":- math_G__3(R, C), area(A, R, C), not math_G__2(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
     constraint += ":- gray(R, C), area(A, R, C), not gray(R1, C1), area(A, R1, C1), adj_4(R, C, R1, C1).\n"
-    return constraint.strip()
+    return constraint
 
 
 class MagnetsSolver(Solver):
@@ -35,14 +35,14 @@ class MagnetsSolver(Solver):
         self.add_program_line(adjacent())
         self.add_program_line(magnet_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             fail_false(len(ar) == 2, "All regions must be of size 2.")
             self.add_program_line(area(_id=i, src_cells=ar))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
             if r == -1 and 0 <= c < puzzle.col:

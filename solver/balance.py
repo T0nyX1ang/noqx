@@ -4,42 +4,38 @@ from typing import Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import validate_direction
-from noqx.rule.loop import loop_segment, loop_sign, single_loop
+from noqx.rule.common import defined, display, fill_line, grid, shade_c
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import route_segment, route_sign, single_route
 
 
 def balance_rule() -> str:
     """Generate a balance rule."""
-    rule = ':- black(R, C), segment(R, C, N1, N2, "T"), |R - N1| = |C - N2|.\n'
-    rule += ':- black(R, C), segment(R, C, N1, N2, "V"), |R - N1| = |R - N2|.\n'
-    rule += ':- black(R, C), segment(R, C, N1, N2, "H"), |C - N1| = |C - N2|.\n'
-    rule += ':- white(R, C), segment(R, C, N1, N2, "T"), |R - N1| != |C - N2|.\n'
-    rule += ':- white(R, C), segment(R, C, N1, N2, "V"), |R - N1| != |R - N2|.\n'
-    rule += ':- white(R, C), segment(R, C, N1, N2, "H"), |C - N1| != |C - N2|.\n'
-    return rule.strip()
+    rule = ':- black_clue(R, C), segment(R, C, N1, N2, "T"), |R - N1| = |C - N2|.\n'
+    rule += ':- black_clue(R, C), segment(R, C, N1, N2, "V"), |R - N1| = |R - N2|.\n'
+    rule += ':- black_clue(R, C), segment(R, C, N1, N2, "H"), |C - N1| = |C - N2|.\n'
+    rule += ':- white_clue(R, C), segment(R, C, N1, N2, "T"), |R - N1| != |C - N2|.\n'
+    rule += ':- white_clue(R, C), segment(R, C, N1, N2, "V"), |R - N1| != |R - N2|.\n'
+    rule += ':- white_clue(R, C), segment(R, C, N1, N2, "H"), |C - N1| != |C - N2|.\n'
+    return rule
 
 
 def count_balance(target: int, src_cell: Tuple[int, int]) -> str:
-    """
-    Generate a constraint to count the length of "2-way" straight lines.
-
-    A balance loop rule should be defined first.
-    """
+    """Generate a constraint to count the length of "2-way" straight lines."""
     r, c = src_cell
     rule = f':- segment({r}, {c}, N1, N2, "T"), |{r} - N1| + |{c} - N2| != {target}.\n'
     rule += f':- segment({r}, {c}, N1, N2, "V"), |{r} - N1| + |{r} - N2| != {target}.\n'
     rule += f':- segment({r}, {c}, N1, N2, "H"), |{c} - N1| + |{c} - N2| != {target}.\n'
-    return rule.strip()
+    return rule
 
 
 class BalanceSolver(Solver):
     """The Balance Loop solver."""
 
     name = "Balance Loop"
-    category = "loop"
+    category = "route"
     aliases = ["balanceloop"]
     examples = [
         {
@@ -51,39 +47,39 @@ class BalanceSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(defined(item="white"))
+        self.add_program_line(defined(item="black_clue"))
+        self.add_program_line(defined(item="white_clue"))
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="balance"))
-        self.add_program_line(fill_path(color="balance"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="balance", adj_type="loop"))
-        self.add_program_line(single_loop(color="balance"))
-        self.add_program_line(loop_sign(color="balance"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
+        self.add_program_line(route_sign(color="white"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
-            self.add_program_line(f"balance({r}, {c}).")
-            self.add_program_line(loop_segment((r, c)))
+            self.add_program_line(f"white({r}, {c}).")
+            self.add_program_line(route_segment((r, c)))
 
             if symbol_name == "circle_L__1":
-                self.add_program_line(f"white({r}, {c}).")
+                self.add_program_line(f"white_clue({r}, {c}).")
                 num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
                 if isinstance(num, int):
                     self.add_program_line(count_balance(num, (r, c)))
 
             if symbol_name == "circle_L__2":
-                self.add_program_line(f"black({r}, {c}).")
+                self.add_program_line(f"black_clue({r}, {c}).")
                 num = puzzle.text.get(Point(r, c, Direction.CENTER, "normal"))
                 if isinstance(num, int):
                     self.add_program_line(count_balance(num, (r, c)))
 
         self.add_program_line(balance_rule())
 
-        for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

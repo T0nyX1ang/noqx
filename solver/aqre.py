@@ -43,8 +43,8 @@ class AqreSolver(Solver):
         self.add_program_line(avoid_rect(4, 1, color="not gray"))
         self.add_program_line(avoid_rect(1, 4, color="not gray"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             if rc:
                 num = puzzle.text.get(Point(*rc, Direction.CENTER, "normal"))
@@ -52,10 +52,7 @@ class AqreSolver(Solver):
                     self.add_program_line(count(num, color="gray", _type="area", _id=i))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         self.add_program_line(display(item="gray"))
 

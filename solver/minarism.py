@@ -44,8 +44,8 @@ class MinarismSolver(Solver):
             if d == Direction.TOP and r > 0 and symbol_name == "inequality__4":
                 self.add_program_line(f":- number({r}, {c}, N), number({r - 1}, {c}, N1), N > N1.")
 
-        for (r, c, d, pos), num in puzzle.text.items():
-            validate_type(pos, "normal")
+        for (r, c, d, label), num in puzzle.text.items():
+            validate_type(label, "normal")
 
             if d == Direction.CENTER:
                 fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")

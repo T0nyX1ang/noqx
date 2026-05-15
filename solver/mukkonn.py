@@ -1,79 +1,72 @@
 """The Mukkonn Enn solver."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import defined, direction, display, fill_path, grid
+from noqx.puzzle import Color, Direction, Puzzle
+from noqx.rule.common import defined, display, fill_line, grid
 from noqx.rule.helper import fail_false, validate_direction, validate_type
-from noqx.rule.loop import loop_turning, single_loop
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import route_turning, single_route
 
 
-def mukkonn_constraint(r: int, c: int, pos: str, num: int) -> str:
-    """
-    Generate a mukkonn constraint.
-
-    A loop_straight rule, a loop_turning rule, and an adjacent rule should be defined first.
-    """
+def mukkonn_constraint(r: int, c: int, label: str, num: int) -> str:
+    """Generate a grid constraint."""
 
     rule = ""
-    if pos == "sudoku_4":
+    if label == f"corner_{Direction.TOP}":
         max_u = f"#max {{ R0: grid(R0, {c}), turning(R0, {c}), R0 < {r} }}"
-        rule += f':- grid_direction({r}, {c}, "u"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
+        rule += f':- line_io({r}, {c}, "{Direction.TOP}"), R = {max_u}, grid(R, _), {r} - R != {num}.\n'
 
-    if pos == "sudoku_5":
+    if label == f"corner_{Direction.RIGHT}":
         min_r = f"#min {{ C0: grid({r}, C0), turning({r}, C0), C0 > {c} }}"
-        rule += f':- grid_direction({r}, {c}, "r"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
+        rule += f':- line_io({r}, {c}, "{Direction.RIGHT}"), C = {min_r}, grid(_, C), C - {c} != {num}.\n'
 
-    if pos == "sudoku_6":
+    if label == f"corner_{Direction.LEFT}":
         max_l = f"#max {{ C0: grid({r}, C0), turning({r}, C0), C0 < {c} }}"
-        rule += f':- grid_direction({r}, {c}, "l"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
+        rule += f':- line_io({r}, {c}, "{Direction.LEFT}"), C = {max_l}, grid(_, C), {c} - C != {num}.\n'
 
-    if pos == "sudoku_7":
+    if label == f"corner_{Direction.BOTTOM}":
         min_d = f"#min {{ R0: grid(R0, {c}), turning(R0, {c}), R0 > {r} }}"
-        rule += f':- grid_direction({r}, {c}, "d"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
+        rule += f':- line_io({r}, {c}, "{Direction.BOTTOM}"), R = {min_d}, grid(R, _), R - {r} != {num}.\n'
 
-    return rule.strip()
+    return rule
 
 
 class MukkonnSolver(Solver):
     """The Mukkonn Enn solver."""
 
     name = "Mukkonn Enn"
-    category = "loop"
+    category = "route"
     aliases = ["mukkonnenn"]
     examples = [
         {
-            "data": "m=edit&p=7VZbT+NIE33Pr0D9Oi19vl3alvYhMGR2ZkMIA4glEYqcYEgYB+fzBWaN+O9TVU5il21Gs9rVaB5WTlpVp7q6T5Xdx07/nwdJKD24TCU1qcNlKo3+ysKftr0uVlkU+geyn2fLOAFDytPBQN4FURrKT9fL4VHcf37f//NJZZOJ/kHLP2pXD4OHd5/Xf3xcmYk+GKnxyfhkZdz3fz86PHOO3znjPL3MwqeztX74cDm5uBtf3XvGX8ejiVVMTjX70+Tuf0/9y9960y2Hm95L4flFXxYf/KnQhRQG/HVxI4sz/6U48YtrWZxDSEgLsGE5yQDzuDKvKI7WUQnqGtgjsD2wwbwGcxGvN0GalsDYnxYXUuA2h5SMpljHT6HY0kAfUuYrBOZBBp1Kl6vNNpLmt/GXfDsXFhTrPMpWiziKEwQRe5VFv6xg2FGBWVWAZlkBWh0VYGH/tILw9j5M83kXfa+b/ivcmc9QwMyfYi2Xlakq89x/EcoSvgX2yH+BUQdEt5SG6xyUvQFX564BrrFzzMqxXYzsJ9ouxsydA/vUYzZzPYe7LncVd71qT8dkmY6JmfsY5u0dzKomEtddjJjWYoyrw7k62LF9pmrEOBtVZ6M4AY812fGod3B8ti6tu3Ndjd0CV2ONdjVG39WI/j6Xd8jlfXAtWnk/2WI0lME6r0zGWZmMlTKJhrlzbcZK2aypymaNUzaRtHaux3M9nls2p3Ipl/aFR/gaHmETq9DpAO3PnKAdm6CDJTRBtwukQ9ECkWcL7NpIYSebID3nTVA3unbSDayyhdLN5Sj0YECH2aDxAs66LEwa39Oo0WjTOKQ5xzRe0XhEo0WjQ3NcVIsf1JO6kpQ34+/SETbW5Cl4lyiJT6dJlgGPrfmDVKcwH9+b9cv+tZCb3lSc58ldsAhB1Yerx/BgFCfrIAJvlK/nYVL558tgEwp414o0jmZpmTULvwaLTPjl674eYdgjrcWgKI43EWzYscIuxMDV/WOchJ0hBPHd9MZSGOpYah4ntw1Oz0EU8VroM4hBi1WyiDiUJfB6rPlBksTPDFkH2ZIBtY8BtlL42GhmFnCKwZegsdu6asdrT3wV9McXnrT/+zD6dT+M8C5pP03O/h11nUK3t3ooi1MpNvksmEFhAr7B5S4IEtkdBEVtBX56gXRk4uQ7+lUFm3CHigH6HSGrRbvwNzSrFm3iLYFCsm2NArRDpgBtKhVAbbECsKVXgL0hWbhqU7WQVVO4cKuWduFWdfmqjuFN7xs=",
+            "data": "m=edit&p=7VZbT+NIE33Pr0D9Oi2tb5e2pX0IDJmd+UIIA4glEYqcYEgYB2d9gVkj/vtUlZPYZZvRrHY1modPTlpVp1zdp8ru007/yoMklB5cppKa1OEylUZ/ZeFP214XqywK/QPZz7NlnIAh5elgIO+CKA3lp+vl8CjuP7/v//mksslE/6DlH7Wrh8HDu8/r/31cmYk+GKnxyfhkZdz3/zg6PHOO3znjPL3MwqeztX74cDm5uBtf3XvG38ejiVVMTjX70+Tut6f+5e+96ZbDTe+l8PyiL4sP/lQYQtJfFzeyOPNfihO/uJbFOYSEtAAbgqULaYB5XJlXFEfrqAR1DewR2B7YYF6DuYjXmyBNS2DsT4sLKXCZQ0pGU6zjp1CUM5APKfMVAvMgg06ly9VmG0nz2/hLvr0XJhTrPMpWiziKEwQRe5VFv6xg2FGBWVWAZlkBWh0VYGH/toLw9j5M83kXfa+b/is8mc9QwMyfYi2Xlakq89x/EcoSvgX2yH+BUQdEt5SG8xyUvQFX564BrrFzzMqxXYzsb7RdjJk7B9apx2zmeg53Xe4q7nrVmo7JMh0TM/cxzNs7mFXdSFx3MWJaizGuDufqYMf2maoR42xUnY3iBDzWZMej3sH22bo07851NfYIXI012tUYfVcj+vtc3iGX98G1aOb9zRajoQzWeWUyzspkrJRJNMydazNWymZNVTZrnLKJpLVzPZ7r8dyyOZVLubQuvMLX8AqbWIVOG2i/5wSt2AQdLKEJul0gbYoWiDxbYNdCCjvZBOk9b4K60bWSbmCVLZQeLkehBwPazAaNF7DXZWHS+J5GjUabxiHdc0zjFY1HNFo0OnSPi2rxg3pSV5LyYfxTOsLGmjwFZ4mS+HaaZBnw2po/SHUK9+O5Wb/sXwu56U3FeZ7cBYsQVH24egwPRnGyDiLwRvl6HiaVf74MNqGAs1akcTRLy6xZ+DVYZMIvj/t6hGGPNBeDojjeRLBgxwy7EANX949xEnaGEMSz6Y2pMNQx1TxObhucnoMo4rXQZxCDFqtkEXEoS+B4rPlBksTPDFkH2ZIBtY8BNlP42GhmFnCKwZegsdq6asdrT3wV9McDT9r//zD6dT+M8ClpP03O/ht1nUK3t3ooi1MpNvksmEFhAr7B5S4IEtkdBEVtBX56gbRl4uQ7+lUFm3CHigH6HSGrRbvwNzSrFm3iLYFCsm2NArRDpgBtKhVAbbECsKVXgL0hWThrU7WQVVO4cKmWduFSdfmqtuFN7xs=",
         }
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        self.add_program_line(defined(item="black"))
-        self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line("mukkonn(R, C) :- grid(R, C), not black(R, C).")
+        self.add_program_line(defined(item="hole"))
+        self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
+        self.add_program_line(fill_line(color="grid"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="grid", adj_type="line"))
+        self.add_program_line(single_route(color="grid"))
+        self.add_program_line(route_turning(color="grid"))
 
-        self.add_program_line(fill_path(color="mukkonn"))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="mukkonn", adj_type="loop"))
-        self.add_program_line(single_loop(color="mukkonn"))
-        self.add_program_line(loop_turning(color="mukkonn"))
-
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, ("sudoku_4", "sudoku_5", "sudoku_6", "sudoku_7"))
-            if pos and isinstance(num, int) and num > 0:
-                self.add_program_line(mukkonn_constraint(r, c, pos, num))
+            if label and isinstance(num, int) and num > 0:
+                self.add_program_line(mukkonn_constraint(r, c, label, num))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            self.add_program_line(f"hole({r}, {c}).")
 
-        for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

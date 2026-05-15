@@ -5,7 +5,7 @@ from noqx.puzzle import Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.shape import OMINOES, all_shapes, avoid_region_border_crossover, general_shape
+from noqx.rule.shape import OMINOES, all_shapes, avoid_edge_crossover, general_shape
 
 
 class FillmatSolver(Solver):
@@ -34,22 +34,21 @@ class FillmatSolver(Solver):
         self.add_program_line(general_shape("fillmat", 3, OMINOES[3]["I"], color="grid", adj_type="edge"))
         self.add_program_line(general_shape("fillmat", 4, OMINOES[4]["I"], color="grid", adj_type="edge"))
         self.add_program_line(all_shapes("fillmat", color="grid"))
-        self.add_program_line(avoid_region_border_crossover())
+        self.add_program_line(avoid_edge_crossover())
 
         tag_be = tag_encode("belong_to_shape", "fillmat", "grid")
         self.add_program_line(
             f":- grid(R, C), grid(R1, C1), adj_4(R, C, R1, C1), not adj_edge(R, C, R1, C1), {tag_be}(R, C, N, _), {tag_be}(R1, C1, N, _)."
         )
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(f":- not {tag_be}({r}, {c}, {num}, _).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

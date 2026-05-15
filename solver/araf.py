@@ -52,9 +52,9 @@ class ArafSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
-        for (r, c, d, tp), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(tp, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
 
             exclude = []
@@ -74,9 +74,8 @@ class ArafSolver(Solver):
             self.add_program_line(araf_region_count((r, c)))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

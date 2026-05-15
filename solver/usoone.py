@@ -4,7 +4,7 @@ from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, grid, shade_c
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
-from noqx.rule.neighbor import adjacent, avoid_adjacent_color
+from noqx.rule.neighbor import adjacent, avoid_same_color_adjacent
 from noqx.rule.reachable import grid_color_connected
 
 
@@ -15,7 +15,7 @@ def uso_one_constraints(adj_type: int = 4, color: str = "black") -> str:
     rule += ":- clue(A, _, _, _), { wrong_clue(A, R, C) } != 1.\n"
     rule += f":- clue(A, R, C, N), not wrong_clue(A, R, C), {count_adj} != N.\n"
     rule += f":- clue(A, R, C, N), wrong_clue(A, R, C), {count_adj} = N.\n"
-    return rule.strip()
+    return rule
 
 
 class UsooneSolver(Solver):
@@ -39,14 +39,14 @@ class UsooneSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
         self.add_program_line(adjacent())
-        self.add_program_line(avoid_adjacent_color(color="gray"))
+        self.add_program_line(avoid_same_color_adjacent(color="gray"))
         self.add_program_line(grid_color_connected(color="not gray", grid_size=(puzzle.row, puzzle.col)))
         self.add_program_line(uso_one_constraints(color="gray"))
         self.add_program_line("ox_E__1(R, C) :- grid(R, C), clue(_, R, C, _), not wrong_clue(_, R, C).")
         self.add_program_line("ox_E__7(R, C) :- grid(R, C), clue(_, R, C, _), wrong_clue(_, R, C).")
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, ar in enumerate(areas):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, ar in enumerate(rooms):
             for r, c in ar:
                 if Point(r, c, Direction.CENTER, "normal") in puzzle.text:
                     num = puzzle.text[Point(r, c, Direction.CENTER, "normal")]
@@ -55,10 +55,7 @@ class UsooneSolver(Solver):
                     self.add_program_line(f"clue({i}, {r}, {c}, {num}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"gray({r}, {c}).")
-            else:
-                self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} gray({r}, {c}).")
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)

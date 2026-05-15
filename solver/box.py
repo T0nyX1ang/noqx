@@ -32,9 +32,9 @@ class BoxSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c())
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             num = int(num)
 
@@ -51,10 +51,7 @@ class BoxSolver(Solver):
                 self.add_program_line(f"box_col({r}, {num}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display())
 

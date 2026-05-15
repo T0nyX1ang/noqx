@@ -9,11 +9,7 @@ from noqx.rule.reachable import grid_branch_color_connected
 
 
 def count_reachable_edge(target: int) -> str:
-    """
-    Generates a constraint for counting grids in a region divided by edges.
-
-    An edge rule and a grid_branch_color_connected rule should be defined first.
-    """
+    """Generates a constraint for counting grids in a region divided by edges."""
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
 
     return f":- grid(R0, C0), #count {{ R, C: {tag}(R0, C0, R, C) }} != {target}."
@@ -42,16 +38,15 @@ class NCellsSolver(Solver):
         self.add_program_line(grid_branch_color_connected(color=None, adj_type="edge"))
         self.add_program_line(count_reachable_edge(size))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             if isinstance(num, int):
                 self.add_program_line(count_adjacent_edges(num, (r, c)))
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

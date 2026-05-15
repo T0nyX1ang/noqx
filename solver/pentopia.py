@@ -3,21 +3,11 @@
 from typing import List
 
 from noqx.manager import Solver
-from noqx.puzzle import Color, Puzzle
+from noqx.puzzle import Color, Direction, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import tag_encode, validate_direction, validate_type
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.shape import OMINOES, all_shapes, count_shape, general_shape
-
-
-def avoid_adjacent_omino(num: int = 5, color: str = "black") -> str:
-    """
-    Generates a constraint to avoid adjacent ominos.
-
-    An adjacent rule, an omino rule should be defined first.
-    """
-    tag = tag_encode("belong_to_shape", "omino", num, color)
-    return f":- adj_x(R, C, R1, C1), {tag}(R, C, T, _), {tag}(R1, C1, T1, _), T != T1."
+from noqx.rule.shape import OMINOES, all_shapes, avoid_same_omino_adjacent, count_shape, general_shape
 
 
 def opia_constraint(r: int, c: int, mask: List[bool], lmt: int, color: str = "black") -> str:
@@ -25,22 +15,18 @@ def opia_constraint(r: int, c: int, mask: List[bool], lmt: int, color: str = "bl
     m_t, m_l, m_b, m_r = mask
     cmp = f"N {'=' if m_t else '<'} N1, N {'=' if m_b else '<'} N2, N {'=' if m_l else '<'} N3, N {'=' if m_r else '<'} N4"
 
-    top = f"top({r}, {c}, {r} - Mt) :- Mt = #max {{ R: grid(R, {c}), {color}(R, {c}), R <= {r} }}, grid(Mt, _).\n"
-    top += f"top({r}, {c}, {lmt}) :- Mt = #max {{ R: grid(R, {c}), {color}(R, {c}), R <= {r} }}, not grid(Mt, _).\n"
+    rule = f'opia({r}, {c}, {r} - Mt, "{Direction.TOP}") :- Mt = #max {{ R: grid(R, {c}), {color}(R, {c}), R <= {r} }}, grid(Mt, _).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.TOP}") :- Mt = #max {{ R: grid(R, {c}), {color}(R, {c}), R <= {r} }}, not grid(Mt, _).\n'
+    rule += f'opia({r}, {c}, Mb - {r}, "{Direction.BOTTOM}") :- Mb = #min {{ R: grid(R, {c}), {color}(R, {c}), R >= {r} }}, grid(Mb, _).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.BOTTOM}") :- Mb = #min {{ R: grid(R, {c}), {color}(R, {c}), R >= {r} }}, not grid(Mb, _).\n'
+    rule += f'opia({r}, {c}, {c} - Ml, "{Direction.LEFT}") :- Ml = #max {{ C: grid({r}, C), {color}({r}, C), C <= {c} }}, grid(_, Ml).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.LEFT}") :- Ml = #max {{ C: grid({r}, C), {color}({r}, C), C <= {c} }}, not grid(_, Ml).\n'
+    rule += f'opia({r}, {c}, Mr - {c}, "{Direction.RIGHT}") :- Mr = #min {{ C: grid({r}, C), {color}({r}, C), C >= {c} }}, grid(_, Mr).\n'
+    rule += f'opia({r}, {c}, {lmt}, "{Direction.RIGHT}") :- Mr = #min {{ C: grid({r}, C), {color}({r}, C), C >= {c} }}, not grid(_, Mr).\n'
 
-    bottom = f"bottom({r}, {c}, Mb - {r}) :- Mb = #min {{ R: grid(R, {c}), {color}(R, {c}), R >= {r} }}, grid(Mb, _).\n"
-    bottom += f"bottom({r}, {c}, {lmt}) :- Mb = #min {{ R: grid(R, {c}), {color}(R, {c}), R >= {r} }}, not grid(Mb, _).\n"
-
-    left = f"left({r}, {c}, {c} - Ml) :- Ml = #max {{ C: grid({r}, C), {color}({r}, C), C <= {c} }}, grid(_, Ml).\n"
-    left += f"left({r}, {c}, {lmt}) :- Ml = #max {{ C: grid({r}, C), {color}({r}, C), C <= {c} }}, not grid(_, Ml).\n"
-
-    right = f"right({r}, {c}, Mr - {c}) :- Mr = #min {{ C: grid({r}, C), {color}({r}, C), C >= {c} }}, grid(_, Mr).\n"
-    right += f"right({r}, {c}, {lmt}) :- Mr = #min {{ C: grid({r}, C), {color}({r}, C), C >= {c} }}, not grid(_, Mr).\n"
-
-    rule = top + bottom + left + right
-    rule += f"opia({r}, {c}) :- top({r}, {c}, N1), bottom({r}, {c}, N2), left({r}, {c}, N3), right({r}, {c}, N4), {cmp}.\n"
-    rule += f":- not opia({r}, {c}).\n"
-    return rule.strip()
+    rule += f'opia_all({r}, {c}) :- opia({r}, {c}, N1, "{Direction.TOP}"), opia({r}, {c}, N2, "{Direction.BOTTOM}"), opia({r}, {c}, N3, "{Direction.LEFT}"), opia({r}, {c}, N4, "{Direction.RIGHT}"), {cmp}.\n'
+    rule += f":- not opia_all({r}, {c}).\n"
+    return rule
 
 
 class PentopiaSolver(Solver):
@@ -60,16 +46,16 @@ class PentopiaSolver(Solver):
         self.add_program_line(shade_c(color="black"))
         self.add_program_line(adjacent(_type=4))
         self.add_program_line(adjacent(_type="x"))
-        self.add_program_line(avoid_adjacent_omino(num=5, color="black"))
+        self.add_program_line(avoid_same_omino_adjacent(5, color="black", adj_type="x"))
 
         self.add_program_line(all_shapes("omino_5", color="black"))
         for i, o_shape in enumerate(OMINOES[5].values()):
             self.add_program_line(general_shape("omino_5", i, o_shape, color="black", adj_type=4))
             self.add_program_line(count_shape(("le", 1), name="omino_5", _id=i, color="black"))
 
-        for (r, c, d, pos), symbol_name in puzzle.symbol.items():
+        for (r, c, d, label), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
-            validate_type(pos, "multiple")
+            validate_type(label, "multiple")
             symbol, style = symbol_name.split("__")
             style = int(style)
             validate_type(symbol, "arrow_cross")
@@ -80,10 +66,7 @@ class PentopiaSolver(Solver):
             self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display(item="black"))
 

@@ -1,19 +1,17 @@
 [project]
 name = "noqx"
-version = "0.6.0"
+version = "0.8.1"
 description = "Extended logic puzzle solver of Noq."
 authors = [
-  {name = "Yaoyu Zhu"},
   {name = "Tony Xiang"},
+  {name = "Yaoyu Zhu"},
 ]
 readme = "README.md"
-license = {text = "Apache-2.0 OR GPL-3.0-or-later"}
+license = "Apache-2.0 OR GPL-3.0-or-later"
 keywords = ["solver", "clingo", "logic puzzle"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
@@ -24,7 +22,9 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "clingo>=5.8,<6",
+  "clingo>=5.6",
+  "cffi>=1.15.0; python_version<'3.9'",
+  "cffi>=1.17.0; python_version>='3.9'",
 ]
 requires-python = ">=3.7"
 
@@ -35,32 +35,41 @@ issues = "https://github.com/T0nyX1ang/noqx/issues"
 
 [project.optional-dependencies]
 web = [
-  "starlette<0.30.0; python_version<'3.8'",
-  "starlette<1,>=0.30.0; python_version>='3.8'",
-  "uvicorn<0.23.0; python_version<'3.8'",
-  "uvicorn<1,>=0.23.0,!=0.29.0; python_version>='3.8'",
+  "starlette<0.49.1; python_version<'3.9'",
+  "starlette<1,>=0.49.1; python_version>='3.9'",
+  "uvicorn<0.23.0; python_version<'3.9'",
+  "uvicorn<1,>=0.23.0,!=0.29.0; python_version>='3.9'",
+]
+
+docs = [
+  "mkdocs<2,>=1.5.0",
+  "mkdocs-material<10,>=9.2.0",
+  "mkdocstrings-python<2,>=1.12.0; python_version>='3.9'",
+  "mkdocstrings-python>=1.0.0,<1.12.0; python_version<'3.9'",
+]
+
+[dependency-groups]
+dev = [
+  "conventional-pre-commit<4.3.0; python_version<'3.9'",
+  "conventional-pre-commit>=4.3.0; python_version>='3.9'",
+  "coverage[toml]>=7.0.0",
+  "pre-commit<2.22.0; python_version<'3.9'",
+  "pre-commit>=2.22.0; python_version>='3.9'",
+  "ruff>=0.14.10",
+  "python-minifier>=2.11.0",
 ]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-packages = ["noqx", "noqx.puzzle", "noqx.rule"]
-
-[tool.black]
-line-length = 127
-target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
+requires = ["uv_build<0.10.0,>=0.8.3"]
+build-backend = "uv_build"
 
 [tool.ruff]
 line-length = 127
 target-version = "py37"
 
 [tool.ruff.lint]
-select = ["I"]
-
-[tool.pylint]
-disable = ["invalid-unary-operand-type", "invalid-name", "unspecified-encoding", "logging-fstring-interpolation", "line-too-long"]
+select = ["E", "F", "W", "UP", "B", "SIM", "I", "ASYNC", "C4"]
+ignore = ["E501"]
 
 [tool.pyright]
 pythonVersion = "3.7"
@@ -68,18 +77,17 @@ pythonPlatform = "All"
 typeCheckingMode = "basic"
 reportAttributeAccessIssue = false
 
+[tool.coverage.run]
+branch = true
+omit = [
+  "tests/*",
+  "main.py",
+  "main_deploy.py",
+]
+
 [tool.uv]
 package = false
-dev-dependencies = [
-  "black<23.7.0; python_version<'3.8'",
-  "black>=23.7.0; python_version>='3.8'",
-  "conventional-pre-commit<2.5.0; python_version<'3.8'",
-  "conventional-pre-commit>=2.5.0; python_version>='3.8'",
-  "coverage>=7.0.0",
-  "pre-commit<2.22.0; python_version<'3.8'",
-  "pre-commit>=2.22.0; python_version>='3.8'",
-  "pyinstaller>=5.5,<6",
-  "pylint<2.14.0; python_version<'3.8'",
-  "pylint>=2.14.0; python_version>='3.8'",
-  "ruff>=0.6.8",
-]
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "noqx"

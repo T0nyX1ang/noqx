@@ -6,6 +6,7 @@ from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
+from noqx.rule.variety import nori_adjacent
 
 
 class DominionSolver(Solver):
@@ -28,13 +29,13 @@ class DominionSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="black"))
         self.add_program_line(adjacent())
-        self.add_program_line(":- grid(R, C), black(R, C), #count{ (R1, C1): adj_4(R, C, R1, C1), black(R1, C1) } != 1.")
+        self.add_program_line(nori_adjacent(color="black"))
         self.add_program_line(avoid_unknown_src(adj_type=4, color="not black"))
 
         tag = tag_encode("reachable", "grid", "src", "adj", 4, "not black")
-        for (r, c, d, pos), letter in puzzle.text.items():
+        for (r, c, d, label), letter in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             if letter != "?":
                 self.add_program_line(grid_src_color_connected((r, c), color="not black"))
@@ -48,10 +49,7 @@ class DominionSolver(Solver):
                     self.add_program_line(f":- {tag}({r}, {c}, {r1}, {c1}).")
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display())
 

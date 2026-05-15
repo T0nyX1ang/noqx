@@ -2,18 +2,18 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import area, count, direction, display, fill_path, grid, shade_c
-from noqx.rule.helper import full_bfs
-from noqx.rule.loop import count_area_pass, single_loop
+from noqx.rule.common import area, count, display, fill_line, grid, shade_c
+from noqx.rule.helper import full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border
 from noqx.rule.reachable import grid_color_connected
+from noqx.rule.route import count_area_pass, single_route
 
 
 class CountrySolver(Solver):
     """The Country Road solver."""
 
     name = "Country Road"
-    category = "loop"
+    category = "route"
     aliases = ["countryroad"]
     examples = [
         {
@@ -29,34 +29,34 @@ class CountrySolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-        self.add_program_line(direction("lurd"))
-        self.add_program_line(shade_c(color="country_road"))
-        self.add_program_line(fill_path(color="country_road"))
+        self.add_program_line(shade_c(color="white"))
+        self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type=4))
-        self.add_program_line(adjacent(_type="loop"))
-        self.add_program_line(grid_color_connected(color="country_road", adj_type="loop"))
-        self.add_program_line(single_loop(color="country_road"))
+        self.add_program_line(adjacent(_type="line"))
+        self.add_program_line(grid_color_connected(color="white", adj_type="line"))
+        self.add_program_line(single_route(color="white"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
-        for i, (ar, rc) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, puzzle.text)
+        for i, (ar, rc) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(1, _id=i))
             if rc:
                 num = puzzle.text[Point(*rc, Direction.CENTER, "normal")]
                 if isinstance(num, int):
-                    self.add_program_line(count(num, color="country_road", _type="area", _id=i))
+                    self.add_program_line(count(num, color="white", _type="area", _id=i))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             if d == Direction.TOP and r > 0 and draw:
-                self.add_program_line(f":- not country_road({r}, {c}), not country_road({r - 1}, {c}).")
+                self.add_program_line(f":- not white({r}, {c}), not white({r - 1}, {c}).")
 
             if d == Direction.LEFT and c > 0 and draw:
-                self.add_program_line(f":- not country_road({r}, {c}), not country_road({r}, {c - 1}).")
+                self.add_program_line(f":- not white({r}, {c}), not white({r}, {c - 1}).")
 
-        for (r, c, _, d), draw in puzzle.line.items():
-            self.add_program_line(f':-{" not" * draw} grid_direction({r}, {c}, "{d}").')
+        for (r, c, d, label), draw in puzzle.line.items():
+            validate_type(label, "normal")
+            self.add_program_line(f':-{" not" * draw} line_io({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="grid_direction", size=3))
+        self.add_program_line(display(item="line_io", size=3))
 
         return self.program

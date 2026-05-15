@@ -36,8 +36,8 @@ class SukoroRoomSolver(Solver):
         self.add_program_line(unique_num(color="black", _type="area"))
         self.add_program_line(area_same_color(color="black"))
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
@@ -47,9 +47,9 @@ class SukoroRoomSolver(Solver):
             if symbol_name in ("ox_E__4", "ox_E__7"):
                 self.add_program_line(f"white({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f"number({r}, {c}, {num}).")
 

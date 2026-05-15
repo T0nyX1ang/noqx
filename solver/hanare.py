@@ -12,7 +12,7 @@ def hanare_constraint(color: str = "white") -> str:
     rule += ":- row_pair(R, R1, C), number(R, C, N), number(R1, C, N1), |N - N1| != R1 - R - 1.\n"
     rule += f"col_pair(R, C, C1) :- number(R, C, _), number(R, C1, _), C1 > C, C1 - C - 1 = #count {{ C2: {color}(R, C2), C2 >= C, C2 <= C1 }}.\n"
     rule += ":- col_pair(R, C, C1), number(R, C, N), number(R, C1, N1), |N - N1| != C1 - C - 1.\n"
-    return rule.strip()
+    return rule
 
 
 class HanareSolver(Solver):
@@ -33,19 +33,19 @@ class HanareSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(hanare_constraint())
 
-        areas = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
-        for i, (ar, _) in enumerate(areas.items()):
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        for i, (ar, _) in enumerate(rooms.items()):
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(len(ar), len(ar) + 1), _type="area", _id=i, color="white"))
             self.add_program_line(count(1, _type="area", _id=i, color="not white"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            fail_false(color == Color.GREEN, f"Invalid color at ({r}, {c}).")
+            fail_false(color == Color.WHITE, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"white({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f"number({r}, {c}, {num}).")
             self.add_program_line(f"not white({r}, {c}).")

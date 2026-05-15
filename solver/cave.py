@@ -16,11 +16,7 @@ from noqx.rule.reachable import (
 
 
 def cave_product_rule(target: int, src_cell: Tuple[int, int], color: str = "black", adj_type: int = 4):
-    """
-    Product rule for cave.
-
-    A bulb_src_color_connected rule should be defined first.
-    """
+    """Product rule for cave."""
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
 
     src_r, src_c = src_cell
@@ -34,7 +30,7 @@ class CaveSolver(Solver):
 
     name = "Cave"
     category = "shade"
-    aliases = ["corral", "bag"]
+    aliases = ["bag", "corral", "correl"]
     examples = [
         {
             "data": "m=edit&p=7VRNb9swDL37VwQ682D560O3rGt2Sb2PZCgKwygcz0WDOXDnxMOgIP+9JG1PUZHLMKAohiHRwyNFUs+ipP2PvuxqkJL+fgIuIIMgjHhI6fFwx996e2hqNYN5f3hsOyQAHxcLeCibfe3kY1ThHHWq9Bz0B5ULT8A4CtCf1VHfKJ2BXuGUAIm+JTIpwEN6begtzxO7GpzSRZ6NHOkd0mrbVU19vxw8n1Su1yBonXecTVTs2p+1GNLYrtrdZkuOTXnAj9k/bp/GmX3/rf3ej7GyOIGeD3JXk9zAyPWNXKKDXGIX5NJX/L3c5qm9JDQtTifc8C8o9V7lpPqroYmhK3VEzNRR+B6mpthlTMdqfoBm/NsMXDSx85NJwaExEys4jKzZyA6OqLIpFVNlkxtTsJlNqdSZaS+Eh9ASLT07XHov4kNbigxJy5kdkRhJp31y2HJkRAXpWkyOmFb0jZ28SEhohcTYqf25Mj2Px1ZIbsgd44LRY1xjv0D7jO8ZXcaQcckx14y3jFeMAWPEMTF1/I/OxCvIyX18Si78qCf/qLdwcrHqu4eyqvHmZv1uU3ezrO12ZSPwkTw54pfgwccq+P9uvvq7SZvvvrWb8tbk4N0VVYnbWzjP"
@@ -57,9 +53,9 @@ class CaveSolver(Solver):
         self.add_program_line(grid_color_connected(color="not black"))
         self.add_program_line(border_color_connected(puzzle.row, puzzle.col, color="black"))
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             self.add_program_line(bulb_src_color_connected((r, c), color="not black"))
 
@@ -70,10 +66,7 @@ class CaveSolver(Solver):
                     self.add_program_line(count_reachable_src(num, (r, c), main_type="bulb", color="not black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display())
 

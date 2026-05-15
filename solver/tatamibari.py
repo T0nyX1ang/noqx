@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, reverse_op, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, avoid_region_border_crossover
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover, count_rect
 
 
 def tatamibari_cell_constraint(op: str, src_cell: Tuple[int, int]) -> str:
@@ -41,13 +41,19 @@ class TamamibariSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(f":- {{ upleft(R, C) }} != {len(puzzle.text)}.")
+        self.add_program_line(avoid_edge_crossover())
+        self.add_program_line(count_rect(len(puzzle.text)))
 
-        for (r, c, d, pos), clue in puzzle.text.items():
+        all_src = []
+        tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+        for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
-            self.add_program_line(f"clue({r}, {c}).")
+            validate_type(label, "normal")
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
+
+            for r1, c1 in all_src:
+                self.add_program_line(f":- {tag}({r}, {c}, {r}, {c1}), {tag}({r1}, {c1}, {r}, {c1}).")
+                self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if clue == "+":
                 self.add_program_line(tatamibari_cell_constraint("eq", (r, c)))
@@ -56,13 +62,11 @@ class TamamibariSolver(Solver):
             elif clue == "|":
                 self.add_program_line(tatamibari_cell_constraint("gt", (r, c)))
 
-        for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            all_src.append((r, c))
 
-        tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-        self.add_program_line(f":- clue(R, C), clue(R, C), (R, C) != (R1, C1), {tag}(R, C, R, C1), {tag}(R1, C1, R, C1).")
-        self.add_program_line(avoid_region_border_crossover())
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        for (r, c, d, _), draw in puzzle.edge.items():
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
+
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program

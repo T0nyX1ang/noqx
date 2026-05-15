@@ -19,7 +19,7 @@ def kropki_constraint() -> str:
     rule += f":- grid(R, C), not white_v(R, C), not black_v(R, C), number(R, C - 1, N1), number(R, C, N2), {empty_rule}.\n"
     rule += f":- grid(R, C), not white_h(R, C), not black_h(R, C), number(R - 1, C, N1), number(R, C, N2), {empty_rule}.\n"
 
-    return rule.strip()
+    return rule
 
 
 class KropkiSolver(Solver):
@@ -64,9 +64,9 @@ class KropkiSolver(Solver):
                 self.add_program_line(f"black_{tag_d}({r}, {c}).")
                 self.add_program_line(f"not white_{tag_d}({r}, {c}).")
 
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) must be an integer.")
             self.add_program_line(f"number({r}, {c}, {num}).")
 

@@ -16,11 +16,7 @@ from noqx.rule.shape import avoid_rect
 
 
 def avoid_unknown_misaki(known_cells: List[Tuple[int, int]], color: str = "black", adj_type: int = 4) -> str:
-    """
-    Generate a constraint to avoid dead ends that does not have a record.
-
-    A grid rule and an adjacent rule should be defined first.
-    """
+    """Generate a constraint to avoid dead ends that does not have a record."""
 
     included = ", ".join(f"|R - {src_r}| + |C - {src_c}| != 0" for src_r, src_c in known_cells)
     main = f":- grid(R, C), {color}(R, C), #count {{ R1, C1: {color}(R1, C1), adj_{adj_type}(R, C, R1, C1) }} = 1"
@@ -60,9 +56,9 @@ class NurimisakiSolver(Solver):
         self.add_program_line(count(("gt", 0), color="black", _type="grid"))
 
         all_src: List[Tuple[int, int]] = []
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            validate_type(pos, "normal")
+            validate_type(label, "normal")
             self.add_program_line(f"not black({r}, {c}).")
             self.add_program_line(count_adjacent(1, (r, c), color="not black"))
             all_src.append((r, c))
@@ -74,10 +70,7 @@ class NurimisakiSolver(Solver):
         self.add_program_line(avoid_unknown_misaki(all_src, color="not black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
-            if color in Color.DARK:
-                self.add_program_line(f"black({r}, {c}).")
-            else:
-                self.add_program_line(f"not black({r}, {c}).")
+            self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")
 
         self.add_program_line(display())
 

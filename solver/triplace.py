@@ -17,7 +17,7 @@ class TriplaceSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VbRb5s+EH7PX1H5+R4wxmB4y6/L9pLRbe1UVQhFJGVLlER0pEwTUf733hmUxPSmSf1pnTRNhMvddyb+7uNsZ/etKeoSpKSPMuABehDo0N5S+vb2+utm9bgpkwsYN4/LqkYH4CqFL8VmV46yflA+2rdx0o6hfZdkwhdgbylyaD8m+/Z90qbQXmNKgERsip4U4KM7Obm3Nk/eZQdKD/0UfdU9dofuulg3ddXFH5KsvQFBs/xnnyVXbKvvpeh+wMaLajtfETAvHrGS3XL10Gd2zX21bvqxMj9AO+7IThiy6kSW3I4seUOyfTVEdrGqF5tyNv0NdOP8cEDRPyHhWZIR988n15zc62SPNrVWJnshvTA8VoyvSMrICSPvPPS92Al93wkD6YZuNgqcMFZu6GRVqN3QIalih2TgktQuSe07rLRLUp+RREnuUBJFiILz1hKKyA4xYjzEiPYQI+5DjAoYYobBqJQBFlC1Q4yKGmJMHQEzr2bqCJlnQ+bZiMEMw88wusTMHLYphhiji/SYibF5OZCRHzuXAxkhsDEZkHt9ktMbe5MBNTdSMxLJkNFSci9CRoxy0nATmWeCYOO/tTuCb+0NbhXQKmvfWOtZq62d2jETa2+tvbQ2sDa0YyLabF6wHXUr8GV0hJYoQWzwrNEGfNIDi8Rv8A12EPnGgPII/yX1TOGhx1z670XzUSYm91/Li7Sqt8UGD5m02c7L+hRfL4uHUuDZfhiJH8Le2Ef4T+Hfcf9Hjnt6Ad4rr7L/u+gzVPe4QKG9AvHQzIrZosIGQwkpjeuYTxwX88/S/fp+ln51DXADyUdP",
+            "data": "m=edit&p=7VbvT+NGEP2ev+K0X1m13rWd2Jb6IXDhfhRMOECURCgywRCDzVLHDlcj/vebWacX72a4Slf11EqVk83MG2c8b3b9dpe/10mZcuHgxw04/MLl+cFP3noMHS6DPgTa6zSr8jR6w4d1tVAlGJwfxfwmyZcp/3ixONhTw6e3w99WQTWZiHdO/cE5v9u/2/lU/Pohc0uxHwfjw/FhJm+H7/d2j/ujnf64Xp5V6eq4ELt3Z5PTm/H5bSj/GMUTr5kcOf7Hyc3Pq+HZL73puoTL3nMTRs2QN++iKZOM669gl7w5jp6bw6iJeXMCIcYFYAdgCcYlmKONea7jaO21oHDAjsF2279dgHmf3Nelav1xNG1OOcOn7Or/oskKtUpZm0D7c1VcZQhcJRX0abnIHteRZX2t7uv1vZCQFXVeZXOVqxJBxF54M2wJjAgC7oYAmi0BtGwCa4ZIYJ6V8zydHfwDFEKawgtMzicgMYumyOdsYwYb8yR6hjHWo4ieWRDITmNCGXa9QdDxhCNcw5V9w/V80zWjA89wQzNVaERFX5hut0Qhgm6NQvpGkdLM7DpGVa603E2R0I8L6IfAG1zeXX9M4F02NiAwrMTGsFgLkw6BIWUbQ942hvRsDLtnYwQPPbkW5hLcPOIZHsHNJ3rQJ7j1iVoGBN8BwXdAPCMg8ulFYWF6VdkYcR+sbAqkZl2/AlsgNe/URAlJrRqXaJlwqXXoUXV6VE6f+ru/xR0W/b6WAqnHU9AI3rh6fKtHR4++Hg/0PSM9nutxT4+eHvv6ngGqzHfoUPv2fV85sF5hqsIAXyLJJb7TQBJ+ufSgtWh7sJH6sBrcvyx96rbbsHn5/z3ssjdlo+vb9E2syiLJYR+J6+IqLTf+ySJ5TBls6Wyp8tmyLm+SeTpLPyfzikXtqaIbMbAHncuAcqUe8+yByvBnyACz2wdVpmQIwRRqfyUVhohUV6q8tmp6SvLc5KLPXAbUbtQGVJWwC3f8pCzVk4EUSbUwgM6ObWRKH6xmVolZYnKfWE8rNu146bHPTH/hvYWz4f/nr3/1+QsnyvnB6vd3xXgKHf8qnLw54uyxniUzoMbgvM8xDPpKB76K7Gvhte5uhX94D/SLpcpvqNwmaMOE1gH6DbnrRCn8FWXrRG18S8aw2G0lA5QQM0BtPQNoW9IA3FI1wF4RNsxqaxtWZcsbPmpL4fBRXZGbXva+AA==",
         },
     ]
 
@@ -25,26 +25,26 @@ class TriplaceSolver(Solver):
         self.reset()
         fail_false((puzzle.row * puzzle.col - len(puzzle.symbol)) % 3 == 0, "The grid cannot be divided into 3-ominoes!")
         sums: List[Tuple[int, List[Tuple[int, int]]]] = []
-        for (r, c, d, pos), num in puzzle.text.items():
+        for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
-            if pos == "sudoku_1" and isinstance(num, int):
+            if label == f"corner_{Direction.TOP_RIGHT}" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = c + 1
                 while cur < puzzle.col and not puzzle.symbol.get(Point(r, cur, Direction.CENTER)):
                     area_points.append((r, cur))
                     cur += 1
 
-                fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
+                fail_false(len(area_points) > 0, f"Invalid tri-place clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
-            if pos == "sudoku_2" and isinstance(num, int):
+            if label == f"corner_{Direction.BOTTOM_LEFT}" and isinstance(num, int):
                 area_points: List[Tuple[int, int]] = []
                 cur = r + 1
                 while cur < puzzle.row and not puzzle.symbol.get(Point(cur, c, Direction.CENTER)):
                     area_points.append((cur, c))
                     cur += 1
 
-                fail_false(len(area_points) > 0, f"Invalid kakuro clue at ({r}, {c}).")
+                fail_false(len(area_points) > 0, f"Invalid tri-place clue at ({r}, {c}).")
                 sums.append((num, area_points))
 
         self.add_program_line(defined(item="hole"))
@@ -56,32 +56,35 @@ class TriplaceSolver(Solver):
         for i, o_shape in enumerate(OMINOES[3].values()):
             self.add_program_line(general_shape("omino_3", i, o_shape, color="grid", adj_type="edge"))
 
-        for (r, c, d, pos), symbol_name in puzzle.symbol.items():
+        for (r, c, d, label), symbol_name in puzzle.symbol.items():
             validate_direction(r, c, d)
             fail_false(symbol_name.startswith("kakuro"), f"Invalid symbol at ({r}, {c}).")
-            self.add_program_line(f"hole({r}, {c}).")
 
-            for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
-                prefix = "not " if (Point(r1, c1, d, pos), symbol_name) in puzzle.symbol.items() else ""
-                direc = "left" if c1 != c else "top"
-                self.add_program_line(f"{prefix}edge_{direc}({r2}, {c2}).")
+            if r >= 0 and c >= 0:
+                self.add_program_line(f"hole({r}, {c}).")
+                for r1, c1, r2, c2 in ((r, c - 1, r, c), (r, c + 1, r, c + 1), (r - 1, c, r, c), (r + 1, c, r + 1, c)):
+                    prefix = (
+                        "not "
+                        if (Point(r1, c1, d, label), symbol_name) in puzzle.symbol.items() and r1 >= 0 and c1 >= 0
+                        else ""
+                    )
+                    d = Direction.LEFT if c1 != c else Direction.TOP
+                    self.add_program_line(f'{prefix}edge({r2}, {c2}, "{d}").')
 
         t_be = tag_encode("belong_to_shape", "omino", 3, "grid")
-        area_id = 0
-        for num, coord_list in sums:
+        for area_id, (num, coord_list) in enumerate(sums):
             self.add_program_line(area(_id=area_id, src_cells=coord_list))
 
-            edge_tag = "edge_top(R + 1, C)"
+            edge_tag = f'edge(R + 1, C, "{Direction.TOP}")'
             if len(coord_list) > 1 and coord_list[0][0] == coord_list[1][0]:  # the rule is in order
-                edge_tag = "edge_left(R, C + 1)"
+                edge_tag = f'edge(R, C + 1, "{Direction.LEFT}")'
 
             self.add_program_line(f":- #count {{ R, C: area({area_id}, R, C), {t_be}(R, C, 0, _), {edge_tag} }} != {num}.")
             area_id += 1
 
         for (r, c, d, _), draw in puzzle.edge.items():
-            self.add_program_line(f":-{' not' * draw} edge_{d.value}({r}, {c}).")
+            self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
 
-        self.add_program_line(display(item="edge_left", size=2))
-        self.add_program_line(display(item="edge_top", size=2))
+        self.add_program_line(display(item="edge", size=3))
 
         return self.program
