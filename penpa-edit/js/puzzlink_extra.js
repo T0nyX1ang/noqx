@@ -148,6 +148,37 @@ function decode_puzzlink_extra(url) {
       UserSettings.tab_settings = ["Surface"];
       break;
 
+    case "creek":
+    case "nibunnogo":
+      /* base on "gokigen" type */
+      // Outside padding
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space2").value = 1;
+      document.getElementById("nb_space3").value = 1;
+      document.getElementById("nb_space4").value = 1;
+
+      pu = new Puzzle_square(cols + 2, rows + 2, size);
+
+      pu.mode_grid("nb_grid2"); // Dashed gridlines
+      pu.mode_grid("nb_out2"); // No grid frame
+      setupProblem(pu, "lineE");
+
+      info_number = puzzlink_pu.decodeNumber4();
+
+      for (var i in info_number) {
+        row_ind = 2 + parseInt(i / (cols + 1));
+        col_ind = 2 + (i % (cols + 1));
+        cell = pu.nx0 * pu.ny0 + pu.nx0 * row_ind + col_ind;
+        value = info_number[i] === "?" ? " " : info_number[i];
+        pu["pu_q"].number[cell] = [value, 6, "1"];
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("lineE");
+      pu.submode_check("sub_lineE2");
+      UserSettings.tab_settings = ["Edge Diagonal"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;

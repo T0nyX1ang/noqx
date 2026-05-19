@@ -74,11 +74,9 @@ function imp(penpa, example = false) {
     arukone: "numlin",
     cityspace: "cave",
     coral: "nonogram",
-    creek: "gokigen",
     dotchi2: "dotchi",
     heyablock: "heyawake",
     island: "kurotto",
-    nibunnogo: "gokigen",
     nothing: "moonsun",
     numlin_bit: "numlin",
     oasis: "nurimisaki",
@@ -269,6 +267,7 @@ function resetGridType(puzzleType) {
   }
 }
 
+// prettier-ignore
 function resetGridMode(puzzleType) {
   const puzzleCategory = solver_metadata[puzzleType].category;
   const oldModeFlag = pu.mode.grid;
@@ -278,7 +277,7 @@ function resetGridMode(puzzleType) {
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 
-  if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+  if (["cave", "cityspace", "creek", "firefly", "gokigen", "ichimaga", "nibunnogo"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
   if (["hashi", "keywest"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
@@ -289,6 +288,7 @@ function resetGridMode(puzzleType) {
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
 }
 
+// prettier-ignore
 function resetBoardSize(puzzleType) {
   const oldSizeFlag = [
     document.getElementById("nb_space1").value, // top space
@@ -304,9 +304,7 @@ function resetBoardSize(puzzleType) {
     sizeFlag = [1, 0, 1, 0];
 
   if (
-    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "magnets", "skyscrapers", "starbattle"].includes(
-      puzzleType
-    )
+    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "nibunnogo", "magnets", "skyscrapers", "starbattle"].includes(puzzleType)
   )
     sizeFlag = [1, 1, 1, 1];
 
