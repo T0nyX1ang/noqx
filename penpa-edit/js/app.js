@@ -188,9 +188,11 @@ function imp(penpa, example = false) {
     }
 
     // parse variant for defined maps
-    for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
-      const element = document.getElementById(paramId);
-      if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
+    if (variantMap[puzzleType]) {
+      for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
+        const element = document.getElementById(paramId);
+        if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
+      }
     }
 
     // parse shapeset for statuepark from URL if available
