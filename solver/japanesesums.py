@@ -98,6 +98,11 @@ class JapaneseSumsSolver(Solver):
             "data": "m=edit&p=7ZVRb5swEMff8ykqP98DxkAcXqasa/aS0W3JVFUIRYRRFY2IjoRpcpTv3rsDGo9k2iZtVR8mwuXy42z/z2cu269NWucgHfooDfiNlyc1364O+Ha6a1nsyjy8gGmzu69qdACuZzO4S8ttDqNYYQjeyWhvJqGZgnkbxkIKEC7eUiRgPoR78y40EZgFPhLgJSA2TbkrsqqsasFMYty8Heiie3V0b/g5eZctlA76Ueeje4tuVtRZma/mLXkfxmYJgtZ+zaPJFZvqW06LkTb6nVWbdUFgne4ww+198SBA4YNt87n60nShMjmAmbYZLH4zA5ykz4DcNgPyzmRAif3bDCbJ4YDF+Yg5rMKY0vl0dPXRXYR7tFG4F0rRUB+ltBUUyiPwygIBAXUE3rjfrx5oBjaZDMb4DoHAAnIwie8OIgKOsJQFHGEpC1i7tUrA2scW8Ang6XwCnIw9aZuMRcY8q2eB4Y5oHmNJ1bwB1jLSYfHWGOmweulYSPLE1jwSdQwJC7aJN8xaejyPTfy2Ik+KsNiSS37LdsbWZbvEEwFGsX3D1mHrs51zzBXbG7aXbD22AceM6Uz90al7Bjnx2OdO11/67/9KRrFYNPVdmuX4kkbNZp3XF1FVb9JSYIs8jMR3wTf2TZfC/3fNF9w1qVDOSzvFv5AT45FRCrjRuN27/9Cs0hXuusD/aegCzPUJXwC+ID9y3OizHPeL5kHObfEnC+HAYDAQ60Rc6/MLnXBeCPlkwPEwdQLOJBKdxnd6Tnif4FCnSp69rtigktEj",
             "config": {"max_number": 6},
         },
+        {
+            "url": "https://pzplus.tck.mn/p.html?japanesesums/6/6/5/.6g3h96g7h7.g6h13g..g74g5h58g..1",
+            "config": {"max_number": 5},
+            "test": False,
+        },
     ]
     parameters = {"max_number": {"name": "Max number", "type": "number", "default": 5}}
 

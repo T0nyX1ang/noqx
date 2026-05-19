@@ -236,6 +236,11 @@ function imp(penpa, example = false) {
         }
       }
     }
+
+    // add extra number parameter for specific puzzle types if available
+    if (puzzleType === "starbattle") document.getElementById("param_stars").value = puzzleExtraNumbers[0];
+
+    if (puzzleType === "japanesesums") document.getElementById("param_max_number").value = puzzleExtraNumbers[0];
   }
 
   hookLoad(currentContent);
