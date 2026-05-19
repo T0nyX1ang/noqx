@@ -34,6 +34,10 @@ class CoralSolver(Solver):
         {
             "data": "m=edit&p=7VZdayM3FH33r1j0fB/0cTWj67d0u+lL6m2blLIYExzXy4Y6OHXiUib4v/dIuhNHaWB3aQkUyjDSOfOhe+85kmbuft8vd2tykVygkMiSw9HZRDF4cp0rp9Xj4vp+s56+oZP9/aftDoDo/ekpfVxu7taTecATkexi8jDIdDih4bvp3DhDxuN0ZkHDj9OH4fvpMKPhHLcMMa6d1Yc84Lsj/KXcz+htvegs8Ewx4AfA1fVutVlfntUrP0znwwWZHOeb8naG5mb7x9poHpmvtjdX1/nC1fIexdx9ur7VO3f7X7e/7c0Y4kDDSU33/IV0wzHd8JhueDld/6+ku7ndvpSoLA4HCP4TUr2cznPWPx9hOsLz6cMhZ/RgWPBqdrl4YqJvaMctjaD+SLuWpob2DjQ80hSaoRI3D6d25NQ374ptaR6Zj7RvRpbU0rZAZ+0z7prITtqSncRnvGty8UUxfsJDy/s2ni+yPOVP34cprljzobSnpfWlvYBzNITSfltaW9pY2rPyzDsYGjhR6CCJJ4Mey7irOHXENhaMnthzxZ6JOVTMgbjzFXeeOLmKk6OYhQNGT9FJxU6wM6SKsV/EWOOip9jXuOgpSo0bIraVXDC2FwNAIVtZiDhiZysBQHqixAvyS0pQHOfiCkF1nKsrBOXFXF4mABRzfYWgwJgLLAQVxk4zAKCYNAMA7HSaQYgQsVcRe4goKqJARKciYpvkoCIGiBhVRBTJvYqIGllURJQYnYqICqNXEVFgZBUR9UU1Dz2yUxFRXfdoHtSxOqaFbFZjWcSymoNFDlZzs9wabzvFeUL0iiGlTYqhsRXFUm3x6orTuC7bpXEd4jqNC/HYaVzHR60EcWW0Kosoo4mCyDLaKwgto/EiddJVRyGYHa2yeTqOJqLsaEd7UXe0o/EovJ0SthtJniz9SKCzTSOBAVZGItWxQgQZqJUxWyleMeJLUIzwwor5cd6jB1YrJa8HtRjFR1HrUXsUnRIovdP1hh7YKc5z1Cv2wEFxAGbFrFPlkL9EeVt4W1oubVe2iz5/Br7wQ4EtEhEZ+5N3ddRZGekfblSfzW6OuOX/49lh/7sXF5O5Od/vPi5Xa3y9Z/ubq/XuzWy7u1luDH6UDhPzpyln+cDw//9Or/7vlMW3X/UH9Qor4TPpzKFrXivDezK3+8vl5Wq7MfjzpnLDu7/dePX8sZgXk78A",
         },
+        {
+            "url": "https://puzz.link/p?coral/10/10/81i31n221h321h321h2111l1111g81i81i3111l1111g421h321h211m11i81i",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

@@ -11,7 +11,7 @@ function decode_puzzlink_extra(url) {
     return;
   }
 
-  const bstr = urldata[3];
+  const bstr = isNaN(urldata[3]) ? urldata[3] : urldata[4]; // intercept for extra number in some puzzle types
   const puzzlink_pu = new Puzzlink(cols, rows, bstr);
 
   // Set border whitespace to 0 for consistency
@@ -211,6 +211,84 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
+
+    case "coral":
+    case "cts":
+    case "japanesesums":
+      /* base on "nonogram" type */
+
+      var max_cols_offset = Math.ceil(cols / 2);
+      var max_rows_offset = Math.ceil(rows / 2);
+
+      info_number = puzzlink_pu.decodeNumber16();
+      var cols_offset = 0,
+        rows_offset = 0;
+
+      for (var i in info_number) {
+        if (i < max_rows_offset * cols) {
+          rows_offset = Math.max(rows_offset, parseInt(i % max_rows_offset) + 1);
+        } else {
+          cols_offset = Math.max(cols_offset, parseInt((i - max_rows_offset * cols) % max_cols_offset) + 1);
+        }
+      }
+
+      document.getElementById("nb_space1").value = rows_offset;
+      document.getElementById("nb_space3").value = cols_offset;
+
+      pu = new Puzzle_square(cols + cols_offset, rows + rows_offset, size);
+      setupProblem(pu, "combi");
+
+      // Draw numbers
+      for (i in info_number) {
+        if (i < max_rows_offset * cols) {
+          // Top section
+          row_ind = rows_offset - (i % max_rows_offset) - 1;
+          col_ind = cols_offset + parseInt(i / max_rows_offset);
+        } else {
+          // Left section
+          row_ind = rows_offset + parseInt((i - max_rows_offset * cols) / max_cols_offset);
+          col_ind = cols_offset - ((i - max_rows_offset * cols) % max_cols_offset) - 1;
+        }
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        pu["pu_q"].number[cell] = [info_number[i] === 0 && type === "cts" ? "*" : info_number[i], 1, "1"];
+      }
+
+      // Draw vertical edges
+      for (i = cols_offset - 1; i < cols + cols_offset + 5; i += 5) {
+        col_ind = Math.min(cols + cols_offset - 1, i);
+        var edge_style = 13; // Fat dots
+        if (col_ind === cols_offset - 1 || col_ind === cols + cols_offset - 1) {
+          edge_style = 2; // Black normal
+        }
+        for (row_ind = 0; row_ind < rows + rows_offset; row_ind++) {
+          var edgex = pu.nx0 * pu.ny0 + pu.nx0 * (1 + row_ind) + 1 + col_ind + 1;
+          var edgey = edgex + pu.nx0;
+          var key = edgex.toString() + "," + edgey.toString();
+          pu["pu_q"]["lineE"][key] = edge_style;
+        }
+      }
+
+      // Draw horizontal edges
+      for (var i = rows_offset - 1; i < rows + rows_offset + 5; i += 5) {
+        row_ind = Math.min(rows + rows_offset - 1, i);
+        var edge_style = 13; // Fat dots
+        if (row_ind === rows_offset - 1 || row_ind === rows + rows_offset - 1) {
+          edge_style = 2; // Black normal
+        }
+        for (col_ind = 0; col_ind < cols + cols_offset; col_ind++) {
+          var edgex = pu.nx0 * pu.ny0 + pu.nx0 * (2 + row_ind) + 1 + col_ind;
+          var edgey = edgex + 1;
+          var key = edgex.toString() + "," + edgey.toString();
+          pu["pu_q"]["lineE"][key] = edge_style;
+        }
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("blpo");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+
       break;
 
     default:
