@@ -55,11 +55,17 @@ function decode_puzzlink_extra(url) {
       break;
 
     case "context":
+    case "cityspace":
     case "norinuri":
     case "smullyan":
       /* base on "nuribou" type */
 
       pu = new Puzzle_square(cols, rows, size);
+      if (type === "cityspace") {
+        pu.mode_grid("nb_grid2"); // Dashed gridlines
+        pu.mode_grid("nb_out2"); // No outside frame
+      }
+
       setupProblem(pu, "surface");
 
       info_number = puzzlink_pu.decodeNumber16();

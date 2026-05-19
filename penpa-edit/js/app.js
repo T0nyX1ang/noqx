@@ -71,7 +71,6 @@ function imp(penpa, example = false) {
   }
 
   const puzzleTypeConverter = {
-    cityspace: "cave",
     coral: "nonogram",
     dotchi2: "dotchi",
     heyablock: "heyawake",
