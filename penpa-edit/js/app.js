@@ -50,6 +50,7 @@ function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
   let puzzleTypeWithoutAlias = null;
+  const puzzleExtraNumbers = [];
   const puzzleVariants = [];
 
   // replace unsupported host to supported host
@@ -60,10 +61,20 @@ function imp(penpa, example = false) {
   if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
+    let extraIndexStart = null;
+
     puzzleType = urldata[0];
     puzzleTypeWithoutAlias = puzzleType;
     for (let i = 1; i < urldata.length; i++) {
       if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
+      else {
+        extraIndexStart = i + 2;
+        break;
+      }
+    }
+
+    for (let i = extraIndexStart; i < urldata.length; i++) {
+      if (urldata[i] && !isNaN(urldata[i])) puzzleExtraNumbers.push(parseInt(urldata[i]));
       else break;
     }
 
@@ -71,7 +82,6 @@ function imp(penpa, example = false) {
   }
 
   const puzzleTypeConverter = {
-    coral: "nonogram",
     dotchi2: "dotchi",
     heyablock: "heyawake",
     island: "kurotto",
@@ -305,7 +315,7 @@ function resetBoardSize(puzzleType) {
   )
     sizeFlag = [1, 1, 1, 1];
 
-  if (["coral", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
+  if (["coral", "cts", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
 
   if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
     document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
@@ -330,6 +340,7 @@ const categoryName = {
 
 const variantMap = {
   lits: { param_invlitso: "invlitso" },
+  nonogram: { param_cts: "cts" },
   slitherlink: {
     param_tslither: "tslither",
     param_vslither: "vslither",
