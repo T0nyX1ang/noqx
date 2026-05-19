@@ -107,6 +107,47 @@ function decode_puzzlink_extra(url) {
       UserSettings.tab_settings = ["Surface"];
       break;
 
+    case "fivecells":
+    case "fourcells":
+      /* base on "nawabari" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      pu.mode_grid("nb_grid2"); // Dashed grid lines
+      setupProblem(pu, "combi");
+
+      info_number = puzzlink_pu.decodeNumber10();
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("edgesub");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
+
+    case "circlesquare":
+    case "statuepark":
+      /* base on "yinyang" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "combi");
+
+      info_number = puzzlink_pu.decodeNumber3();
+      // Draw the circles
+      for (i in info_number) {
+        if (info_number[i] === 0) {
+          continue;
+        }
+        // Determine which row and column
+        row_ind = parseInt(i / cols);
+        col_ind = i % cols;
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        pu["pu_q"].symbol[cell] = [info_number[i], "circle_M", 1];
+      }
+
+      pu.mode_qa("pu_a");
+      UserSettings.tab_settings = ["Surface"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;
