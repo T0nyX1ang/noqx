@@ -179,6 +179,34 @@ function decode_puzzlink_extra(url) {
       UserSettings.tab_settings = ["Edge Diagonal"];
       break;
 
+    case "arukone":
+    case "numlin_bit":
+      /* base on "numlin" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "combi");
+
+      info_number = puzzlink_pu.decodeNumber16();
+      if (type === "arukone") {
+        var row_ind, col_ind, cell, number;
+
+        // Add numbers to grid
+        for (var i in info_number) {
+          // Determine which row and column
+          row_ind = parseInt(i / cols);
+          col_ind = i % cols;
+          cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+          number = String.fromCharCode(64 + parseInt(info_number[i])); // convert to letters
+          pu["pu_q"].number[cell] = [number, 1, "1"];
+        }
+      } else puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("linex");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;

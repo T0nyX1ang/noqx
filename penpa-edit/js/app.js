@@ -71,14 +71,12 @@ function imp(penpa, example = false) {
   }
 
   const puzzleTypeConverter = {
-    arukone: "numlin",
     cityspace: "cave",
     coral: "nonogram",
     dotchi2: "dotchi",
     heyablock: "heyawake",
     island: "kurotto",
     nothing: "moonsun",
-    numlin_bit: "numlin",
     oasis: "nurimisaki",
     simplegako: "view",
     squarejam: "shikaku",
