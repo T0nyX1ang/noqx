@@ -23,7 +23,7 @@ class MasyuSolver(Solver):
 
     name = "Masyu"
     category = "route"
-    aliases = ["mashu"]
+    aliases = ["mashu", "pearl"]
     examples = [
         {
             "data": "m=edit&p=7VVRa9swEH7Pryh6vgedZTu237Ku2YvXbktGCcYEN/OImTNnSTyKgv/7TmevWekVtlECg6Ho8vk72fruuJP239piVwJq9zMR0D8NHyOeXhTy1MOYV4e6TC5g0h7WzY4AwM10Cp+Lel+OsmFVPjraOLETsG+STHkKeKLKwb5PjvZtYhdgZ+RSgMSlhFCBR/DqBG/Z79BlT6ImfD1ggguCq2q3qstl2jPvkszOQbl9XvHbDqpN871U/Wv8vGo2d5Uj7ooDBbNfV9vBs28/NV9a9XOLDuykl5sKcs1JrnmQa2S53kvIrauv5b2kNM67jjL+gbQuk8zJ/niC0QnOkmPnJDmLbBfJUflj+gzCY23KjyQ2QJH1RDaW2NCIrC+x40BkQ5EVd4u0yIoRR2LEsRhxLEaMWgwOtRgdalEGalEHopgMRDEbiGI60BPzgUYMEo0cpXG6vSe0Lwfvy8HLVYdS2VGdTrlaPbZzKmawhu1rtpptwDblNVdsb9lesvXZhrxm7NrhrxvmT+VQ01AK4ohqFHUP0DPAaTQuneEvOCAc9ljHQOsI/2Y8melP7scj+Pe4fJSplM66i+tmtylqOvFm62JbKrpVupG6Vzwz4y6p/xfN+S8al319tu55mWbOKLEPXQf2BtS2XRbLVUPVRdnr3UMjPuvue/M599Cusps6X3bQ2fDEcfbc0dmRj34A",

@@ -339,6 +339,8 @@ function decode_puzzlink_extra(url) {
       break;
 
     case "dotchi2":
+      /* base on "dotchi" type */
+
       pu = new Puzzle_square(cols, rows, size);
       pu.mode_grid("nb_grid2"); // Dashed gridlines
       setupProblem(pu, "combi");
@@ -358,6 +360,22 @@ function decode_puzzlink_extra(url) {
         cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
         pu["pu_q"].symbol[cell] = [info_number[i], "circle_L", 1];
       }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("linex");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
+
+    case "nothing":
+      /* base on "moonsun" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      pu.mode_grid("nb_grid2"); // Dashed gridlines
+      setupProblem(pu, "combi");
+
+      info_edge = puzzlink_pu.decodeBorder();
+      puzzlink_pu.drawBorder(pu, info_edge, 2);
 
       pu.mode_qa("pu_a");
       pu.mode_set("combi");
