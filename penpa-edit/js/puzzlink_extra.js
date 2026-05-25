@@ -94,6 +94,23 @@ function decode_puzzlink_extra(url) {
       UserSettings.tab_settings = ["Surface", "Composite"];
       break;
 
+    case "island":
+    case "oasis":
+      /* base on "nurimisaki" and "kurotto" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "combi");
+
+      info_number = puzzlink_pu.decodeNumber16();
+      puzzlink_pu.drawNumbers(pu, info_number, 6, "1");
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("blpo"); // Black square and Point
+      UserSettings.tab_settings = ["Surface", "Composite"];
+
+      break;
+
     case "lither":
     case "tslither":
     case "vslither":
