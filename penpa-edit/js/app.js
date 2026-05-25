@@ -82,7 +82,6 @@ function imp(penpa, example = false) {
   }
 
   const puzzleTypeConverter = {
-    dotchi2: "dotchi",
     heyablock: "heyawake",
     nothing: "moonsun",
     tetrochain: "yajikazu",
