@@ -52,6 +52,7 @@ function decode_puzzlink_extra(url) {
 
     case "chocona":
     case "cocktail":
+    case "heyablock":
     case "hinge":
     case "mannequin":
       /* base on "aqre" type */

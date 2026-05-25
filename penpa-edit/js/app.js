@@ -81,14 +81,6 @@ function imp(penpa, example = false) {
     for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
   }
 
-  const puzzleTypeConverter = {
-    heyablock: "heyawake",
-  };
-
-  if (puzzleType && puzzleType in puzzleTypeConverter) {
-    urlstring = urlstring.replace(puzzleType, puzzleTypeConverter[puzzleType]);
-  }
-
   // normalize the puzzle type
   if (puzzleType && !(puzzleType in solver_metadata)) {
     for (const [pid, data] of Object.entries(solver_metadata)) {
