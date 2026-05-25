@@ -383,6 +383,46 @@ function decode_puzzlink_extra(url) {
       UserSettings.tab_settings = ["Surface", "Composite"];
       break;
 
+    case "tetrochain":
+      /* base on "yajikazu" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "combi");
+
+      var arrows = puzzlink_pu.decodeYajilinArrows(false);
+
+      for (var i in arrows) {
+        row_ind = parseInt(i / cols);
+        col_ind = i % cols;
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        var number = arrows[i][1] || "?";
+
+        // Not all numbers have arrows
+        if (arrows[i][0] !== 0 && number) {
+          switch (arrows[i][0]) {
+            case 1: // up
+              number += "_" + 0;
+              break;
+            case 2: // down
+              number += "_" + 3;
+              break;
+            case 3: // left
+              number += "_" + 1;
+              break;
+            case 4: // right
+              number += "_" + 2;
+              break;
+          }
+        }
+
+        pu["pu_q"].number[cell] = [number, 1, "2"];
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("surface");
+      UserSettings.tab_settings = ["Surface"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;

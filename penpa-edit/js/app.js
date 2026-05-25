@@ -83,7 +83,6 @@ function imp(penpa, example = false) {
 
   const puzzleTypeConverter = {
     heyablock: "heyawake",
-    tetrochain: "yajikazu",
   };
 
   if (puzzleType && puzzleType in puzzleTypeConverter) {
