@@ -87,7 +87,6 @@ function imp(penpa, example = false) {
     island: "kurotto",
     nothing: "moonsun",
     oasis: "nurimisaki",
-    suguru: "cojun",
     tetrochain: "yajikazu",
   };
 

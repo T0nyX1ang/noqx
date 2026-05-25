@@ -33,6 +33,23 @@ function decode_puzzlink_extra(url) {
       number_style, map_genre_tag;
 
   switch (type) {
+    case "suguru":
+      /* base on "cojun" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "number");
+
+      info_edge = puzzlink_pu.decodeBorder();
+      info_number = puzzlink_pu.decodeNumber16();
+
+      puzzlink_pu.drawBorder(pu, info_edge, 2); // 2 is for Black Style
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1");
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("number");
+      UserSettings.tab_settings = ["Surface", "Number Normal", "Sudoku Normal"];
+      break;
+
     case "chocona":
     case "cocktail":
     case "hinge":
