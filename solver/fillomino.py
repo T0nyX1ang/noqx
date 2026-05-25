@@ -69,6 +69,7 @@ class FillominoSolver(Solver):
 
     name = "Fillomino"
     category = "num"
+    aliases = ["fillomino01"]
     examples = [
         {
             "data": "m=edit&p=7VNdT4MwFH3nVyx97gO0fGy8zbn5MvFjM8tCyMI2dEQICsOYEv67txc2bKIPmqh7MM09Oae9Tc9te4vnMswjasPgfapTAwazbQzDNDH0dszjfRK5PTos97ssB0Lp1WRC78OkiDS/zQq0SgxcMaTiwvUJIxTDIAEVN24lLl3hUTGDJUINmJsCMwhlQMcdXeC6ZKNm0tCBey0HugS6ifNNEq2mzcy164s5JfKcM9wtKUmzl4g021BvsnQdy4l1uIdiil381K4U5TZ7LMnhiJqK4ed2eWeXH+3yj+2yn7c7COoarv0WDK9cX3q/62i/ozO3qqWvijAGW+Vb48sQZoJknbSVVc5B9jtpgXSO0jSVZNNRpKUeZFmKtOVe3klbkQ5Xkh1LMem8PwjKMrC4JeIEkSHOoXYqOOI5oo5oIU4xZ4y4QBwhmog25jjy9r50v79gx2cMm7UZ1vd5oPlkvH2Iel6Wp2EC/8sr03WUHzQ0dK2RV4KBr2P+9/gf9bh8Av3UfuKp2YHeCLQ3",

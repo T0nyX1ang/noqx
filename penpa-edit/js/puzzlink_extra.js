@@ -288,7 +288,20 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("blpo");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      break;
 
+    case "simplegako":
+      /* base on "view" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "number");
+
+      info_number = puzzlink_pu.decodeNumber16();
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("number");
+      UserSettings.tab_settings = ["Surface", "Edge Normal", "Number Normal"];
       break;
 
     default:
