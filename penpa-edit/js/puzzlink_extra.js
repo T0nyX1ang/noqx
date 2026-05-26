@@ -1,3 +1,34 @@
+penpa_tags["options"]["puzzlink"].push("suguru (capsules)");
+penpa_tags["options"]["puzzlink"].push("chocona");
+penpa_tags["options"]["puzzlink"].push("cocktail lamp");
+penpa_tags["options"]["puzzlink"].push("heyablock");
+penpa_tags["options"]["puzzlink"].push("hinge");
+penpa_tags["options"]["puzzlink"].push("mannequin gate");
+penpa_tags["options"]["puzzlink"].push("context");
+penpa_tags["options"]["puzzlink"].push("cityspace");
+penpa_tags["options"]["puzzlink"].push("norinuri");
+penpa_tags["options"]["puzzlink"].push("smullyan (smullyanic dynasty)");
+penpa_tags["options"]["puzzlink"].push("Inaba's island");
+penpa_tags["options"]["puzzlink"].push("oasis");
+penpa_tags["options"]["puzzlink"].push("lither (lithersink)");
+penpa_tags["options"]["puzzlink"].push("tslither (touch slitherlink)");
+penpa_tags["options"]["puzzlink"].push("vslither (vertex slitherlink)");
+penpa_tags["options"]["puzzlink"].push("nothree");
+penpa_tags["options"]["puzzlink"].push("nuriuzu");
+penpa_tags["options"]["puzzlink"].push("fivecells");
+penpa_tags["options"]["puzzlink"].push("fourcells");
+penpa_tags["options"]["puzzlink"].push("circlesquare");
+penpa_tags["options"]["puzzlink"].push("creek");
+penpa_tags["options"]["puzzlink"].push("nibunnogo");
+penpa_tags["options"]["puzzlink"].push("arukone");
+penpa_tags["options"]["puzzlink"].push("coral");
+penpa_tags["options"]["puzzlink"].push("cross the streams");
+penpa_tags["options"]["puzzlink"].push("japanesesums");
+penpa_tags["options"]["puzzlink"].push("simplegako");
+penpa_tags["options"]["puzzlink"].push("dotchi-dotchi loop");
+penpa_tags["options"]["puzzlink"].push("all or nothing");
+penpa_tags["options"]["puzzlink"].push("tetrochain-Y");
+
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
   const urldata = parts[1].split("/");
@@ -48,6 +79,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_qa("pu_a");
       pu.mode_set("number");
       UserSettings.tab_settings = ["Surface", "Number Normal", "Sudoku Normal"];
+      pu.user_tags = ["suguru (capsules)"];
       break;
 
     case "chocona":
@@ -70,6 +102,9 @@ function decode_puzzlink_extra(url) {
       pu.mode_qa("pu_a");
       pu.mode_set("surface");
       UserSettings.tab_settings = ["Surface"];
+      if (type === "cocktail") pu.user_tags = ["cocktail lamp"];
+      else if (type === "mannequin") pu.user_tags = ["mannequin gate"];
+      else pu.user_tags = [type];
       break;
 
     case "context":
@@ -93,6 +128,8 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("surface");
       pu.subcombimode("blpo");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      if (type === "smullyan") pu.user_tags = ["smullyan (smullyanic dynasty)"];
+      else pu.user_tags = [type];
       break;
 
     case "island":
@@ -109,7 +146,8 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("blpo"); // Black square and Point
       UserSettings.tab_settings = ["Surface", "Composite"];
-
+      if (type === "island") pu.user_tags = ["Inaba's island"];
+      else pu.user_tags = ["oasis"];
       break;
 
     case "lither":
@@ -130,6 +168,18 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("edgex");
       UserSettings.tab_settings = ["Surface", "Composite"];
+
+      switch (type) {
+        case "lither":
+          pu.user_tags = ["lither (lithersink)"];
+          break;
+        case "tslither":
+          pu.user_tags = ["tslither (touch slitherlink)"];
+          break;
+        case "vslither":
+          pu.user_tags = ["vslither (vertex slitherlink)"];
+          break;
+      }
       break;
 
     case "nothree":
@@ -146,6 +196,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_qa("pu_a");
       pu.mode_set("surface");
       UserSettings.tab_settings = ["Surface"];
+      pu.user_tags = [type];
       break;
 
     case "fivecells":
@@ -163,6 +214,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("edgesub");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = [type];
       break;
 
     case "circlesquare":
@@ -187,6 +239,7 @@ function decode_puzzlink_extra(url) {
 
       pu.mode_qa("pu_a");
       UserSettings.tab_settings = ["Surface"];
+      pu.user_tags = [type];
       break;
 
     case "creek":
@@ -218,6 +271,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("lineE");
       pu.submode_check("sub_lineE2");
       UserSettings.tab_settings = ["Edge Diagonal"];
+      pu.user_tags = [type];
       break;
 
     case "arukone":
@@ -246,6 +300,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      if (type === "arukone") pu.user_tags = ["arukone"];
       break;
 
     case "coral":
@@ -325,6 +380,8 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("blpo");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      if (type === "cts") pu.user_tags = ["cross the streams"];
+      else pu.user_tags = [type];
       break;
 
     case "simplegako":
@@ -339,6 +396,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_qa("pu_a");
       pu.mode_set("number");
       UserSettings.tab_settings = ["Surface", "Edge Normal", "Number Normal"];
+      pu.user_tags = [type];
       break;
 
     case "dotchi2":
@@ -368,6 +426,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["dotchi-dotchi loop"];
       break;
 
     case "nothing":
@@ -384,6 +443,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("combi");
       pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["all or nothing"];
       break;
 
     case "tetrochain":
@@ -424,6 +484,7 @@ function decode_puzzlink_extra(url) {
       pu.mode_qa("pu_a");
       pu.mode_set("surface");
       UserSettings.tab_settings = ["Surface"];
+      pu.user_tags = ["tetrochain-Y"];
       break;
 
     default:
@@ -459,4 +520,10 @@ function decode_puzzlink_extra(url) {
 
   // Redraw the grid
   pu.redraw();
+
+  // Set the Source
+  document.getElementById("saveinfosource").value = url;
+
+  // Set the tags
+  set_genre_tags(pu.user_tags);
 }

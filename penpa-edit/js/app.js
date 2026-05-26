@@ -108,6 +108,7 @@ function imp(penpa, example = false) {
 
   try {
     import_url(urlstring);
+    clearInfo();
     const importErrorDialog = document.getElementById("swal2-html-container");
     if (puzzleType in solver_metadata) {
       resetGridType(puzzleType);
@@ -714,6 +715,7 @@ $(window).on("load", function () {
       mutations.forEach((mutation) => {
         if (mutation.type === "attributes" && mutation.attributeName === "disabled") {
           updateChoicesType();
+          clearInfo();
         }
       });
     });
