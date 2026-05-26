@@ -1,4 +1,4 @@
-const penpa_edit_hash = "7785887bbc7f985a387199989e2c7d76efec4dab";
+const penpa_edit_hash = "aabb797ddd7a05bde93eba774522964c77132dcf";
 const remote_penpa_prefix = `https://cdn.jsdelivr.net/gh/swaroopg92/penpa-edit@${penpa_edit_hash}/docs/`;
 const local_penpa_prefix = `./requires/core/${penpa_edit_hash}/`;
 
