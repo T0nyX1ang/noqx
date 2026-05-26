@@ -16,6 +16,11 @@ class EasyAsABCSolver(Solver):
             "data": "m=edit&p=7ZTBTttAEIbvfgq05zl4do299i0FwiUN0AQhZFmRk7oiqiNTJ0ZoI797ZyemhjUS6qHAoXJ29OfbHfv3znq2v5q8LgDR/pQGH0hBcBzyQJQ8/O6ar3dlkRzBqNndVTUJgIvxGH7k5bbwUuRczLy9iRMzAnOepAIFCEkDRQbmKtmbr4mZgpnRlICA2OSwSJI86+UNz1t1coDok552muQtydW6XpXFYnIgl0lq5iDsc75wtpViUz0UovNh/6+qzXJtwTLf0cts79b33cy2+V79bMTTI1owI8eu7O2q3q76Y1e9blf+e7tx1ra07d/I8CJJrffrXupezpJ9a33thQps6oi8HGojVGjB9TMQuUBbMOtB4FswfwbQBZELtAMid4WOHGOxtOC8B+i7OYiuV5SDLOXeGINBVjggOhiQ0NkGHFhGrQckdv3EvnvnGF9kUaWQ63XLccxRcpxTOcEojqccfY7HHCe85ozjDccTjgHHkNdE9kD81ZF5BztpoAGdK/pcJPNSMW02y6I+mlb1Ji8F9bvWE4+CR6ps+/zfAj+oBdoS+J/tVL9hJ6XdpXPPDU12reC+WeSLVVUKoE3sFpiLl/zdX4O+z8z7DQ==",
             "config": {"letters": "AUGST"},
         },
+        {
+            "url": "https://puzz.link/p?easyasabc/8/8/6/g432313h123456h625154h351632g",
+            "config": {"letters": "ABCDEF"},
+            "test": False,
+        },
     ]
     parameters = {"letters": {"name": "Letters", "type": "text", "default": "ABC"}}
 
@@ -36,7 +41,7 @@ class EasyAsABCSolver(Solver):
             letter = str(letter)
             validate_direction(r, c, d)
             validate_type(label, "normal")
-            fail_false(len(letter) == 1, f"Clue at ({r}, {c}) should be a letter.")
+            fail_false(len(letter) == 1 or r < -1, f"Clue at ({r}, {c}) should be a letter.")
 
             if r == -1 and 0 <= c < puzzle.col:
                 self.add_program_line(

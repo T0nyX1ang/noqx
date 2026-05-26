@@ -16,6 +16,10 @@ class SkyscrapersSolver(Solver):
         {
             "data": "m=edit&p=7VRNT8JAEL33V5A5z6G7/aQ3RPCC+AGGkKYhgDUQIdWWGrNN/7uzA7bU6MGDysG0+/LezGz37Uc3e87naYxC6Nfy0URiaDsuNyEkN/PwjNe7TRy0sJPvVklKBPGq38eH+SaLjVBwXxEZhWoHqoPqIghBAIKkJiBCdRMU6jJQQ1QjSgHVohrsiyTRXk0nnNesuw8Kk/jwwIlOiS7X6XITzwb7yHUQqjGCHueMe2sK2+QlhoMPrZfJdrHWgcV8R5PJVuunQybL75PHHN6HKFF1vrZr1Xatyq71uV3583bbUVnSst+S4VkQau93NfVrOgqKUvsqwLKpq037xTsDlkvSq6VP0qmkbTalzoIHVcCVFLAq6XuNj7V1VlZSCJ32ay1lU9tes97RebfWvtOwLng450i3j4an6Qqe9JSxzygZx7QmqCzGc0aT0WEccE2PccLYZbQZXa7x9Kp+a91/wU5o+yg+PN5pRSIjhGG+XcRpa5ik2/kG6NIoDXgFbnyU7P975I/uEb0F5qmd6lOzQ/9ZZLwB"
         },
+        {
+            "url": "https://puzz.link/p?skyscrapers/7/7/h3g6i6g3j6g4g6i2g2h",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
