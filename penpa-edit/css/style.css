@@ -52,6 +52,10 @@ body {
   text-align: center;
 }
 
+ul.nav ul::before {
+  display: none;
+}
+
 #type + .select2-container,
 #example + .select2-container {
   min-width: 166px;
