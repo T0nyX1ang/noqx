@@ -11,8 +11,8 @@ function decode_puzzlink_extra(url) {
     return;
   }
 
-  const bstr = isNaN(urldata[3]) ? urldata[3] : urldata[4]; // intercept for extra number in some puzzle types
-  const puzzlink_pu = new Puzzlink(cols, rows, bstr);
+  const bstr = urldata[3];
+  let puzzlink_pu = new Puzzlink(cols, rows, bstr);
 
   // Set border whitespace to 0 for consistency
   document.getElementById("nb_space1").value = 0;
@@ -252,6 +252,8 @@ function decode_puzzlink_extra(url) {
     case "cts":
     case "japanesesums":
       /* base on "nonogram" type */
+
+      if (type === "japanesesums") puzzlink_pu = new Puzzlink(cols, rows, urldata[4]); // intercept for extra number
 
       var max_cols_offset = Math.ceil(cols / 2);
       var max_rows_offset = Math.ceil(rows / 2);

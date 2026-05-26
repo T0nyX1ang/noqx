@@ -50,7 +50,6 @@ function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
   let puzzleTypeWithoutAlias = null;
-  const puzzleExtraNumbers = [];
   const puzzleVariants = [];
 
   // replace unsupported host to supported host
@@ -61,24 +60,24 @@ function imp(penpa, example = false) {
   if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
-    let extraIndexStart = null;
+    let extraIndex = null;
 
     puzzleType = urldata[0];
     puzzleTypeWithoutAlias = puzzleType;
     for (let i = 1; i < urldata.length; i++) {
       if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
       else {
-        extraIndexStart = i + 2;
+        extraIndex = i + 2;
         break;
       }
     }
 
-    for (let i = extraIndexStart; i < urldata.length; i++) {
-      if (urldata[i] && !isNaN(urldata[i])) puzzleExtraNumbers.push(parseInt(urldata[i]));
-      else break;
-    }
-
     for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
+
+    // add extra number parameter for specific puzzle types if available
+    if (puzzleType === "starbattle") document.getElementById("param_stars").value = urldata[extraIndex];
+
+    if (puzzleType === "japanesesums") document.getElementById("param_max_number").value = urldata[extraIndex];
   }
 
   // normalize the puzzle type
@@ -220,11 +219,6 @@ function imp(penpa, example = false) {
         }
       }
     }
-
-    // add extra number parameter for specific puzzle types if available
-    if (puzzleType === "starbattle") document.getElementById("param_stars").value = puzzleExtraNumbers[0];
-
-    if (puzzleType === "japanesesums") document.getElementById("param_max_number").value = puzzleExtraNumbers[0];
   }
 
   hookLoad(currentContent);
