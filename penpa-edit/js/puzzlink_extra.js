@@ -28,6 +28,7 @@ penpa_tags["options"]["puzzlink"].push("simplegako");
 penpa_tags["options"]["puzzlink"].push("dotchi-dotchi loop");
 penpa_tags["options"]["puzzlink"].push("all or nothing");
 penpa_tags["options"]["puzzlink"].push("tetrochain-Y");
+penpa_tags["options"]["puzzlink"].push("box");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -487,6 +488,26 @@ function decode_puzzlink_extra(url) {
       pu.user_tags = ["tetrochain-Y"];
       break;
 
+    case "box":
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space2").value = 1;
+      document.getElementById("nb_space3").value = 1;
+      document.getElementById("nb_space4").value = 1;
+
+      pu = new Puzzle_square(cols + 2, rows + 2, size);
+      setupProblem(pu, "sudoku");
+
+      [info_number1, info_number2] = decodeBox(puzzlink_pu);
+      puzzlink_pu.drawNumbersExCell(pu, info_number1, 1, "1", false);
+      puzzlink_pu.drawNumbersExCell(pu, info_number2, 6, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("number"); //include redraw
+      UserSettings.tab_settings = ["Surface", "Number Normal"];
+
+      pu.user_tags = ["box"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;
@@ -526,4 +547,42 @@ function decode_puzzlink_extra(url) {
 
   // Set the tags
   set_genre_tags(pu.user_tags);
+}
+
+function decodeBox(puzzlink_pu) {
+  var number_list1 = {};
+  var number_list2 = {};
+  var ec = 0,
+    i = 0;
+  var skipped_bottom = false;
+
+  for (var i = 0; i < puzzlink_pu.gridurl.length; i++) {
+    var ca = puzzlink_pu.gridurl.charAt(i);
+    if (ca === "-") {
+      number_list1[ec] = parseInt(puzzlink_pu.gridurl.substr(i + 1, 2), 32);
+      i += 2;
+    } else {
+      number_list1[ec] = parseInt(ca, 32);
+    }
+
+    ec++;
+    if (!skipped_bottom && ec >= puzzlink_pu.cols) {
+      skipped_bottom = true;
+      // append numbers for bottom row
+      for (var j = 0; j < puzzlink_pu.cols; j++) number_list2[ec + j] = j + 1;
+      ec += puzzlink_pu.cols;
+    }
+
+    if (ec >= 2 * puzzlink_pu.cols + puzzlink_pu.rows) {
+      // append numbers for rightmost column
+      for (var j = 0; j < puzzlink_pu.rows; j++) number_list2[ec + j] = j + 1;
+      ec += puzzlink_pu.rows;
+    }
+
+    if (ec >= this.rows * 2 + this.cols * 2) {
+      break; // Finished all four sides
+    }
+  }
+
+  return [number_list1, number_list2];
 }

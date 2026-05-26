@@ -21,9 +21,14 @@ class BoxSolver(Solver):
 
     name = "Box"
     category = "shade"
+    aliases = ["kakurasu"]
     examples = [
         {
             "data": "m=edit&p=7VVBb5swFL7nV1Q++8CzDRhuWdfskqXbkqqqEIpIRtVoiehImCZH+e97fiY1gx66w9odJvDT4/Nn830P2+y/N0VdcgB7S80DjhlXYUQNQFAL2muxOWzL9IKPm8NDVWPC+fVkwu+L7b4cZUBjIR8dTZKaMTcf0owB40xgA5Zz8zk9mo+pmXEzxy7GJWJTRxKYXvn0lvptdulACDCftTmmd5iuN/V6Wy6nDvmUZmbBmX3POxptU7arfpSs1WGf19VutbHAqjigmf3D5rHt2Tdfq28NO7/ixM3YyZ2f5SovV3q58kmufF6u+Ptyk/x0wrJ/QcHLNLPab3yqfTpPjyer68ikpKEhinEfh0llESE7SGgRGXSQaMCJB4gmpDtz0ueoYIAAIVEHoZkBPBLGrd2oBSJBgPKUmBDhKXHc96kJkZ6SuFmEp0BAkPIcCAZqAAgKOyRBwzoeQJ6RJ44rmOySnNO4QwrFgOS86g4pGs7k3CYdkpa9moFWvRKBDnsVAR31/euBWa371nTS95EEfdEJ/KYQVyPQmryjOKEoKC5wyXIjKb6nGFAMKU6Jc0XxluIlRUUxIk5sF/0LtwVTaEfgqkMPyu2RV9CWKc2hd8X/FpKPMjZv6vtiXeLJM2t2q7K+mFX1rtgyPOpPI/aTUcuk/XP8P/3f6PS3nyD4o3/A2++9DKurEm6uOXtslsVyXW0Zx9oRrgf4q6vHDZqPfgE=",
+        },
+        {
+            "url": "https://puzz.link/p?box/10/10/98opg-14f789mmmm-1n66999",
+            "test": False,
         },
     ]
 
