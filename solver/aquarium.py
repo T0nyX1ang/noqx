@@ -27,6 +27,10 @@ class AquariumSolver(Solver):
         {
             "data": "m=edit&p=7VZdb9owFH3nV1R+9oM/44S3rqN76eg2Ok1VhBBl6YoGogMyTan47zt2bkgDpO06rerDBHEOx/den2tf26x+5ONlxqXwXx1zvPExMg6PiqPwCPpcTNezrHvEj/P1zWIJwPn56Sm/Hs9WGe+kMriLYeeuSLrFMS/edVMmGWcKj2RDXnzs3hXvu0WPFwN0MS7BnZVGCrBXwy+h36OTkpQCuE8Y8BJwMl1OZtnorGQ+dNPigjM/zpvg7SGbL35mjHT435PF/GrqiavxGtmsbqa31LPKvy6+52w7BJvns/V0spgtlozUbnhxXKYwqFKwdQq6TkFvU9CHU1D/PoXkcAobLM8nJDHqpj6fzzWMazjo3m281jumpffUcC3XkGnliegeoT1h7xGxJ8w9ItlxMWaHkNLs+EgVN2wgRwZRl6E9Da0K7QU080KH9m1oRWhtaM+CTQ+pKOW4MshHoSSNqLG1XEVJiaMEJa9LHKsae96JEjv4OvJ1EjaW7E0TJ3GJE2ylhOInCdeyjIk318qVWEU1lgo4Iixhrwhjj0pZ25tSD95cW0O8g29MOAZOCGNcTfYa9obsjQG2xMsaS8TRsuZ1pSGusYZOQzqN1+PqcQ3ZGNnEluIb5G5dPQ+S9AjRxII0CD8PlTYLTOMK1cSiWrukgVVSrV3UxM6RjfVHHfGqiR3FcRp8ZY9aiml9nWliRzUQySaOFGHEjKq68rVkqA6hMyJtFjVjqWYsxrIU30IzzZsyiGOjGhuKibXeYqzv1tdjWl+8gclXqybW5KuRr6nG8nunigNtpqorrIUmrJNtTarE1bUqUGPS+278qei340loTWijsE2dP3ieeDQxSsJCpy3Pqb8/Hh7VlmLK5M4nel3MsJOyQb68Hk8y3Ai9r9+yo/5iOR/P8Kufz6+yZfUbl/Smw36x8KRYZ+/8/95+1fe2XyrxR7f3C+yKR+SkmHEcO8U5Z7f5aDxCTmHKDvLK8z2+vah3ukXVTXf3M7sfCD7g8rCoAQ6wJ/La8/19Xmz58D9H0f+cQwZPVCZNa49t7Ylaexz14N/BTqaitUe2zppq7dHPmVBUiz1sv8e32ZsW3j4c37bo2eMre71n/+J7EpfVsPMb",
         },
+        {
+            "url": "https://puzz.link/p?aquarium/10/10/ljan8t4r28r4n2tapl085tni1udmfg9tnk20/4g4g7h7g77g4g747h4",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

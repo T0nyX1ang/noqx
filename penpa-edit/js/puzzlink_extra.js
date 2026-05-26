@@ -28,6 +28,7 @@ penpa_tags["options"]["puzzlink"].push("simplegako");
 penpa_tags["options"]["puzzlink"].push("dotchi-dotchi loop");
 penpa_tags["options"]["puzzlink"].push("all or nothing");
 penpa_tags["options"]["puzzlink"].push("tetrochain-Y");
+penpa_tags["options"]["puzzlink"].push("aquarium");
 penpa_tags["options"]["puzzlink"].push("box");
 
 function decode_puzzlink_extra(url) {
@@ -488,6 +489,27 @@ function decode_puzzlink_extra(url) {
       pu.user_tags = ["tetrochain-Y"];
       break;
 
+    case "aquarium":
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space3").value = 1;
+
+      pu = new Puzzle_square(cols + 1, rows + 1, size);
+      setupProblem(pu, "combi");
+
+      info_edge = puzzlink_pu.decodeBorder();
+      drawBorderEx(puzzlink_pu, pu, info_edge, 2, [1, 1]);
+
+      puzzlink_nb = new Puzzlink(cols, rows, urldata[4]);
+      info_number = puzzlink_nb.decodeNumber16ExCell(true);
+      puzzlink_nb.drawNumbersExCell(pu, info_number, 1, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("blpo");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["aquarium"];
+      break;
+
     case "box":
       document.getElementById("nb_space1").value = 1;
       document.getElementById("nb_space2").value = 1;
@@ -585,4 +607,37 @@ function decodeBox(puzzlink_pu) {
   }
 
   return [number_list1, number_list2];
+}
+
+function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style, offset = [0, 0]) {
+  /* this part will handle the drawing of borders with an offset
+     mergable with the original drawBorder function in the future
+  */
+
+  var row_ind, col_ind, edgex, edgey;
+  var row_offset = offset[0];
+  var col_offset = offset[1];
+
+  // Add edges to grid
+  for (var i in info_edge) {
+    if (info_edge[i] === 1) {
+      // Determine Vertical Border or Horizontal
+      if (i < (puzzlink_pu.cols - 1) * puzzlink_pu.rows) {
+        row_ind = parseInt(i / (puzzlink_pu.cols - 1)) + row_offset;
+        col_ind = (i % (puzzlink_pu.cols - 1)) + col_offset;
+        // plus 1 at end because the 0 reference is from column 1 due to inside border
+        edgex = pu.nx0 * pu.ny0 + pu.nx0 * (1 + row_ind) + 1 + col_ind + 1;
+        edgey = edgex + pu.nx0;
+      } else {
+        i -= (puzzlink_pu.cols - 1) * puzzlink_pu.rows; //offset to 0
+        row_ind = parseInt(i / puzzlink_pu.cols) + row_offset;
+        col_ind = (i % puzzlink_pu.cols) + col_offset;
+        // 2 + row_ind, as 1st horizontal is the 0 reference
+        edgex = pu.nx0 * pu.ny0 + pu.nx0 * (2 + row_ind) + 1 + col_ind;
+        edgey = edgex + 1;
+      }
+      var key = edgex.toString() + "," + edgey.toString();
+      pu["pu_q"]["lineE"][key] = edge_style;
+    }
+  }
 }
