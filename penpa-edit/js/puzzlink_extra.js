@@ -30,6 +30,9 @@ penpa_tags["options"]["puzzlink"].push("all or nothing");
 penpa_tags["options"]["puzzlink"].push("tetrochain-Y");
 penpa_tags["options"]["puzzlink"].push("aquarium");
 penpa_tags["options"]["puzzlink"].push("box");
+penpa_tags["options"]["puzzlink"].push("alternation");
+penpa_tags["options"]["puzzlink"].push("hakoiri (Hakoiri-masashi)");
+penpa_tags["options"]["puzzlink"].push("tontonbeya");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -517,17 +520,51 @@ function decode_puzzlink_extra(url) {
       document.getElementById("nb_space4").value = 1;
 
       pu = new Puzzle_square(cols + 2, rows + 2, size);
-      setupProblem(pu, "sudoku");
+      setupProblem(pu, "number");
 
       [info_number1, info_number2] = decodeBox(puzzlink_pu);
       puzzlink_pu.drawNumbersExCell(pu, info_number1, 1, "1", false);
       puzzlink_pu.drawNumbersExCell(pu, info_number2, 6, "1", false);
 
       pu.mode_qa("pu_a");
-      pu.mode_set("number"); //include redraw
+      pu.mode_set("number");
       UserSettings.tab_settings = ["Surface", "Number Normal"];
-
       pu.user_tags = ["box"];
+      break;
+
+    case "alter":
+    case "hakoiri":
+    case "tontonbeya":
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "symbol");
+
+      info_edge = puzzlink_pu.decodeBorder();
+      puzzlink_pu.drawBorder(pu, info_edge, 2);
+
+      info_number = puzzlink_pu.decodeNumber10();
+      for (i in info_number) {
+        if (![1, 2, 3].includes(info_number[i])) continue;
+        row_ind = parseInt(i / cols);
+        col_ind = i % cols;
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        pu["pu_q"].symbol[cell] = [info_number[i], "ox_B", 1];
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("symbol");
+      UserSettings.tab_settings = ["Surface", "Shape"];
+
+      switch (type) {
+        case "alter":
+          pu.user_tags = ["alternation"];
+          break;
+        case "hakoiri":
+          pu.user_tags = ["hakoiri (Hakoiri-masashi)"];
+          break;
+        case "tontonbeya":
+          pu.user_tags = ["tontonbeya"];
+          break;
+      }
       break;
 
     default:

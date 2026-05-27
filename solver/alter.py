@@ -43,6 +43,10 @@ class AlterSolver(Solver):
         {
             "data": "m=edit&p=7ZZdb9sgFIbv8ysqrrkADmDsu7ZLd9N1H+00VVFUpWu2RkvkLh9T5Sj/fS/4OMTVpE3VLjppcgwPx3DOywETr75vJsup1Cr+KEjUuKwO6TbBp1vxdTVbz6fVkTzerO/rJUDKt2dn8stkvprKwYi7jQfbpqyaY9m8rkZCCykMbi3GsnlfbZs3VTOUzSUeCanHUiw28/Xscz2vl6KzNeftQAMcZvyUnkc6bY1agS+YgdfA+vHmpG29q0bNlRQx7kkaGVEs6h9Twbpi+3O9uJ1Fw+1kjdmt7mcPQhIerDZ39beN6LzvZHPcqr/+Q/WU1dNePf1avcnqh39ffTne7bAoH6D/phrFqXzMGDJeVttdlBRLncrraiushxsjc2aFM08tpX5q0aRg0n1T9ETZhABnKYxJ5RVUyIZS+SqVKpUuleepzxCCDJXSWLhHQNRg3bIpMmuSaGe7CczY1tbwWAMmZvR33N+hv+P+1vbZupZJHzA0UKcB2oi1aYe4JY8Fx0ym/iZzfM2I9Tiw4/4Ofjz78fDv2b8tMhM0W9asY1zKfWynOc63zLlylv3HebF+B22e+3j4CewnmD6XrLn0knSrjVSZ2ZAkY5ktuPVPWvdZ83zLcMDQXLLmgHmVBftxkqjVhlqSo8y2i+v7bLqxBextrlCDDbOBH896wJp9Ys+QZv066g/sJ+zHmmAPdIID5zC4eFQyQ4Pq8qP6PnWXB8xLswZl9mwCYqkuFnISwt4n2i0XWMfQrSPshcq838NY94L9FCZri3up4LGF3ftHfOSZNWM/k2XN2PPE+xw18tathc72yLyHUYO7fIZsV3HuHEshz4o1BKyjoj2bkudS+ANGbgufNRecc2+yPbKPfnbxqI1HxWkqbSp9OkKKeMw9+yB83mn1Wzkjav90+5f792zjwUgM775Ojy7q5WIyxz/U5f3kYSrwPbAbiEeRbhz/5v8nwgv9RIgLpF7a+/HS5OCNHQ9+Ag==",
         },
+        {
+            "url": "https://puzz.link/p?alter/9/9/43koipp4cpkqs8g8se1f71s73kpad0d1r1e3f1g2f3e2r3d",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
