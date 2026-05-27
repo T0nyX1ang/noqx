@@ -33,6 +33,7 @@ penpa_tags["options"]["puzzlink"].push("box");
 penpa_tags["options"]["puzzlink"].push("alternation");
 penpa_tags["options"]["puzzlink"].push("hakoiri (Hakoiri-masashi)");
 penpa_tags["options"]["puzzlink"].push("tontonbeya");
+penpa_tags["options"]["puzzlink"].push("anglers");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -567,6 +568,38 @@ function decode_puzzlink_extra(url) {
       }
       break;
 
+    case "anglers":
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space2").value = 1;
+      document.getElementById("nb_space3").value = 1;
+      document.getElementById("nb_space4").value = 1;
+
+      pu = new Puzzle_square(cols + 2, rows + 2, size);
+      pu.mode_grid("nb_grid2"); // Dashed gridlines
+      setupProblem(pu, "combi");
+
+      [info_number1, info_number2, info_extra] = decodeAnglers(puzzlink_pu);
+      puzzlink_pu.drawNumbersExCell(pu, info_number1, 1, "1", false);
+      drawNumbersEx(puzzlink_pu, pu, info_number2, 1, "1", false);
+
+      for (var i in info_extra) {
+        row_ind = parseInt(i / cols) + 1; // top offset
+        col_ind = (i % cols) + 1; // left offset
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        if (info_extra[i] === 0) {
+          pu["pu_q"].symbol[cell] = [3, "tents", 1]; // fish symbol
+        } else {
+          pu["pu_q"].surface[cell] = 4; // shaded cell
+        }
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("linex");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["anglers"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;
@@ -646,8 +679,50 @@ function decodeBox(puzzlink_pu) {
   return [number_list1, number_list2];
 }
 
-function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style, offset = [0, 0]) {
-  /* this part will handle the drawing of borders with an offset
+function decodeAnglers(puzzlink_pu) {
+  /* a variant of decodeNumber16 / decodeNumber16ExCell */
+
+  var number_list1 = {};
+  var number_list2 = {};
+  var extra_list = {};
+  var i = 0;
+  var c = 0;
+  const clen = puzzlink_pu.cols * puzzlink_pu.rows;
+
+  while (i < puzzlink_pu.gridurl.length) {
+    var ca = puzzlink_pu.gridurl.charAt(i);
+    var res = puzzlink_pu.readNumber16(ca, i);
+    if (res[0] !== -1) {
+      var val = res[0] === 0 ? -3 : res[0] > 0 ? res[0] - 1 : res[0];
+
+      if (val === 0 || val === -3) {
+        extra_list[c] = val; // fish or shaded cells must be inside of the grid
+      } else {
+        if (c >= clen) {
+          number_list1[c - clen] = val; // numbers outside of the grid
+        } else {
+          number_list2[c] = val; // numbers inside the grid
+        }
+      }
+
+      i += res[1];
+      c++;
+    } else if (ca >= "g" && ca <= "z") {
+      c += parseInt(ca, 36) - 15;
+      i++;
+    } else {
+      i++;
+    }
+  }
+
+  // Remove what was parsed so the next function call reads what is left
+  puzzlink_pu.gridurl = puzzlink_pu.gridurl.substr(i);
+
+  return [number_list1, number_list2, extra_list];
+}
+
+function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style) {
+  /* handles the drawing of borders with an offset
      mergable with the original drawBorder function in the future
   */
 
@@ -676,5 +751,25 @@ function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style, offset = [0, 0]) {
       var key = edgex.toString() + "," + edgey.toString();
       pu["pu_q"]["lineE"][key] = edge_style;
     }
+  }
+}
+
+function drawNumbersEx(puzzlink_pu, pu, info_number, style, sub_mode, hide_ques = true) {
+  /* handles the drawing of borders with an offset
+     mergable with the original drawNumber function in the future
+  */
+
+  var row_ind, col_ind, cell, number;
+  var row_offset = pu.space[0];
+  var col_offset = pu.space[2];
+
+  // Add numbers to grid
+  for (var i in info_number) {
+    // Determine which row and column
+    row_ind = parseInt(i / puzzlink_pu.cols) + row_offset;
+    col_ind = (i % puzzlink_pu.cols) + col_offset;
+    cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+    number = hide_ques && info_number[i] === "?" ? " " : info_number[i];
+    pu["pu_q"].number[cell] = [number, style, sub_mode];
   }
 }
