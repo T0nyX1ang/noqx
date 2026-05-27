@@ -500,7 +500,7 @@ function decode_puzzlink_extra(url) {
       setupProblem(pu, "combi");
 
       info_edge = puzzlink_pu.decodeBorder();
-      drawBorderEx(puzzlink_pu, pu, info_edge, 2, [1, 1]);
+      drawBorderEx(puzzlink_pu, pu, info_edge, 2);
 
       puzzlink_nb = new Puzzlink(cols, rows, urldata[4]);
       info_number = puzzlink_nb.decodeNumber16ExCell(true);
@@ -638,7 +638,7 @@ function decodeBox(puzzlink_pu) {
       ec += puzzlink_pu.rows;
     }
 
-    if (ec >= this.rows * 2 + this.cols * 2) {
+    if (ec >= puzzlink_pu.rows * 2 + puzzlink_pu.cols * 2) {
       break; // Finished all four sides
     }
   }
@@ -652,8 +652,8 @@ function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style, offset = [0, 0]) {
   */
 
   var row_ind, col_ind, edgex, edgey;
-  var row_offset = offset[0];
-  var col_offset = offset[1];
+  var row_offset = pu.space[0];
+  var col_offset = pu.space[2];
 
   // Add edges to grid
   for (var i in info_edge) {
