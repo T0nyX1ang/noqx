@@ -34,6 +34,7 @@ penpa_tags["options"]["puzzlink"].push("alternation");
 penpa_tags["options"]["puzzlink"].push("hakoiri (Hakoiri-masashi)");
 penpa_tags["options"]["puzzlink"].push("tontonbeya");
 penpa_tags["options"]["puzzlink"].push("anglers");
+penpa_tags["options"]["puzzlink"].push("doppelblock");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -598,6 +599,24 @@ function decode_puzzlink_extra(url) {
       pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
       pu.user_tags = ["anglers"];
+      break;
+
+    case "doppelblock":
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space3").value = 1;
+
+      pu = new Puzzle_square(cols + 1, rows + 1, size);
+      setupProblem(pu, "number");
+
+      info_number1 = puzzlink_pu.decodeNumber16ExCell(true);
+      info_number2 = puzzlink_pu.decodeNumber16();
+      puzzlink_pu.drawNumbersExCell(pu, info_number1, 1, "1");
+      drawNumbersEx(puzzlink_pu, pu, info_number2, 1, "1");
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("number");
+      UserSettings.tab_settings = ["Surface", "Number Normal"];
+      pu.user_tags = ["doppelblock"];
       break;
 
     default:

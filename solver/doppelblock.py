@@ -15,6 +15,10 @@ class DoppelblockSolver(Solver):
         {
             "data": "m=edit&p=7VXBbtpAEL37K6I5z2HXuxjbN5qGXAhpCxGKLAsZxwgUIycGV9Ui/3tnxxRbtImSQ8klWvbp+e0M+2bMLtvnKikzDGgoHwVKGsoXPH1tP+IwputdnoUXOKh2q6Ikgng7HOIyybeZE0nOFbGzN0FoBmiuwwgkILg0JcRovod7cxOaMZoJLQFq0kZNkEv0qqUzXrfsshGlID4+cKL3RNN1mebZfNQo38LITBHsPl8421LYFD8zOPiwz2mxWaytsEh2VMx2tX46rGyrh+Kxgj9b1GgGL9tVrV11tKv+bdf9/3aDuK6p7T/I8DyMrPe7lvotnYT72vragxI21ScvzbsBJfm73I6ireKKjtI7VXST5XUU1yqqFXr6RPD6J4LPXmTQKoFiRbeKFB5L/Y5EGSR1gxRvfqyBapVc8T3jkNFlnFJD0CjGr4yCscc44pgrxhnjJaNm9Dimb1v6xqaDpoJ00/ozmIq0y6e4Hd55n2MngklVLpM0o5/ruNossvJiXJSbJAe6H2oHfgHPSFG4/rwyPujKsK9AvOvi+PgjFZkJKoHmFuGpmifztMiB/nXwNV2rv/SzV0XHMnZ+Aw==",
         },
+        {
+            "url": "https://puzz.link/p?doppelblock/8/8/48acg5fc00000000w4h6k5p1k3v2i",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
