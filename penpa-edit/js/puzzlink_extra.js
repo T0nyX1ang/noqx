@@ -38,6 +38,7 @@ penpa_tags["options"]["puzzlink"].push("doppelblock");
 penpa_tags["options"]["puzzlink"].push("aquapelago");
 penpa_tags["options"]["puzzlink"].push("barns");
 penpa_tags["options"]["puzzlink"].push("battenberg painting");
+penpa_tags["options"]["puzzlink"].push("border block");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -698,6 +699,32 @@ function decode_puzzlink_extra(url) {
       pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
       pu.user_tags = ["battenberg painting"];
+      break;
+
+    case "bdblock":
+      pu = new Puzzle_square(cols, rows, size);
+      pu.mode_grid("nb_grid2"); // Dashed gridlines
+      setupProblem(pu, "combi");
+
+      info_crossmark = decodeCrossMark(puzzlink_pu, true);
+      for (i in info_crossmark) {
+        row_ind = parseInt(i / (cols + 1)) - 1; // border expand
+        col_ind = (i % (cols + 1)) - 1; // border expand
+        cell = pu.nx0 * pu.ny0 + pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        if (info_crossmark[i] === 1) {
+          pu["pu_q"].symbol[cell] = [2, "circle_SS", 2];
+        }
+      }
+
+      puzzlink_nb = new Puzzlink(cols, rows, urldata[4]);
+      info_number = puzzlink_nb.decodeNumber16();
+      puzzlink_nb.drawNumbers(pu, info_number, 1, "1");
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("edgesub");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["border block"];
       break;
 
     default:
