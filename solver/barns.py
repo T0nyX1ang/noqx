@@ -18,6 +18,7 @@ class BarnsSolver(Solver):
         {
             "data": "m=edit&p=7VXdb9MwEH/vXzH5+R78GTt5K6PlpWxAi9AURVXWZSwiJSNtEHKV/53zR1ekUTYNMSGELN/9fF/2nePL5ktfdhUwDoyCMECB4ZCpBMkMCK79pHEs6m1TZScw7rc3bYcA4Hw6heuy2VQwyqNZMdrZNLNjsK+ynHACfjJSgH2b7ezrzM7BzlFFQBVA1n2zrVdt03bEyxjazRAxAhzh5AA/eL1Dp0HIKOKziBFeIFzV3aqplrMgeZPldgHE7f3CeztI1u3XigQ3v16168vaCS7LLWa4ualvCQhUbPqr9lNP9jsMYMchg9k+A/brDMQhA3GXgfh5BvyPZ5AWw4CX8w5zWGa5S+f9AZoDnGc7ohjJFBDFA1OBGc8SHVhY6WCpgwmjNPK4ZpHzEImJPZeRhyhMhqBMRf94ABa3ZioJPIl+OtrF7Zl2cQdXzR1S5umFp1NPuacLzBCs8PSlp9RT5enM20wwfS4V8ARDc/x8tQaeCo8FVSBoEjBHLIONkPQHLBDLgHUCIuVRjs8piXEEByEC5inK2QHz1ASsKJ7B7TW4T8cd7dRT6Wnij6zdlT3yUn+/OsSolGSpwXobA8zgQrjai4hD9R48bi6kbzT3h/o35cUoJ/O+uy5XFb7YWf25Ojlru3XZ4Gpy9fFuhb1zGJFvxM9cAHeu/9vpX9xO3UXRZ3t/j3xfDxwnx4JjNwJstWDPgdz2y3KJFSf484a9UqinKo+HZUZjozBPU2PrOeoXetExdWxP99TPfi3Y+YrRdw==",
         },
+        {"url": "https://puzz.link/p?barns/10/10/000o98010082129404000g801g4080g000002800014g00io00010200", "test": False},
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

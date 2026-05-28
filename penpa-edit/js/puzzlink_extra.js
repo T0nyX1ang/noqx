@@ -36,6 +36,7 @@ penpa_tags["options"]["puzzlink"].push("tontonbeya");
 penpa_tags["options"]["puzzlink"].push("anglers");
 penpa_tags["options"]["puzzlink"].push("doppelblock");
 penpa_tags["options"]["puzzlink"].push("aquapelago");
+penpa_tags["options"]["puzzlink"].push("barns");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -642,6 +643,33 @@ function decode_puzzlink_extra(url) {
       pu.subcombimode("blpo");
       UserSettings.tab_settings = ["Surface", "Composite"];
       pu.user_tags = ["aquapelago"];
+      break;
+
+    case "barns":
+      pu = new Puzzle_square(cols, rows, size);
+      pu.mode_grid("nb_grid2"); // Dashed gridlines
+      setupProblem(pu, "combi");
+
+      // Draw icy cells
+      info_number = puzzlink_pu.decodeNumber2Binary(puzzlink_pu.rows * puzzlink_pu.cols);
+      for (i in info_number) {
+        if (info_number[i] === 0) {
+          continue;
+        }
+        row_ind = parseInt(i / cols);
+        col_ind = i % cols;
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        pu["pu_q"].surface[cell] = 5;
+      }
+
+      info_edge = puzzlink_pu.decodeBorder();
+      puzzlink_pu.drawBorder(pu, info_edge, 2); // 2 is for Black Style
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("linex");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["barns"];
       break;
 
     default:
