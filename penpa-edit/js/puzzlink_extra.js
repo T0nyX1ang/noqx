@@ -35,6 +35,7 @@ penpa_tags["options"]["puzzlink"].push("hakoiri (Hakoiri-masashi)");
 penpa_tags["options"]["puzzlink"].push("tontonbeya");
 penpa_tags["options"]["puzzlink"].push("anglers");
 penpa_tags["options"]["puzzlink"].push("doppelblock");
+penpa_tags["options"]["puzzlink"].push("aquapelago");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -617,6 +618,30 @@ function decode_puzzlink_extra(url) {
       pu.mode_set("number");
       UserSettings.tab_settings = ["Surface", "Number Normal"];
       pu.user_tags = ["doppelblock"];
+      break;
+
+    case "aquapelago":
+      /* base on "akari" type */
+      info_number = puzzlink_pu.decodeNumber16();
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "combi");
+      puzzlink_pu.drawNumbers(pu, info_number, 7, "1");
+
+      // Draw black behind numbers
+      for (i in info_number) {
+        // Determine which row and column
+        row_ind = parseInt(i / cols);
+        col_ind = i % cols;
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        pu["pu_q"].surface[cell] = 4;
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("blpo");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["aquapelago"];
       break;
 
     default:
