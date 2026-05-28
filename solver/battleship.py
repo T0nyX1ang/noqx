@@ -18,6 +18,12 @@ class BattleshipSolver(Solver):
             "data": "m=edit&p=7VRNj9owEL3nV6x89sFj5/tSsdully3bFqoViiIUtqlABYUCqSoj/ntnJlCCiVTtYbdbqQoePd6M7efxeDbf62JdSgD6mVgqiUj6QcgDQPNQh2803y7K9Er26u2sWiOQ8r7fl1+Lxab0MuDZKvd2NkltT9p3aSZASKFxgMil/Zju7PvUDqQdoktIQO6uCdIIb0/wgf2EbhoSFOLBASMcI5wWW9Szmc1Xk+uG/ZBmdiQF7XXNKxAUy+pHKQ5a6P9jtZzOxdkCB8+m/lJ9q8Vxm720vUbyuEOyOUk2vyWbbsn6ZSQn+X6P6f+EoidpRvo/n2B8gsN0tydtO2EMTX2DWpo7EsY/Hv9IBEToFhG6RESEahExEX6LSJwpvnJ28YEI0yK0OyVylIZuRBQ5iybaEQYqcuaA1o5WMO4yELg7QXgRE+uzA2B6gZM8xiQHFB3Iy9sXIeUy7PKAopyZTpcml+50cer9TldMVx11uhLKPly6UH+fT6HZjrB6pDVs37JVbAO2dxxzy/aB7Q1bn23IMRHV35MqtJ3IZ5KT+TG3vfMv/Pe43MvEoF5Oy/XVoFoviwX2iOGsWJUCm/LeEz8FD6wq7PH/+/Rf7tN0Feq1vYU/yMkww/ha7L0Uq3pSTB4rrDHM3xP5Fz8VPvLc+wU=",
             "config": {"shapeset": "ship4"},
         },
+        {
+            "url": "https://puzz.link/p?battleship/10/10/13h44i121h44i2zw6m0n0m5zw//d",
+            "config": {"shapeset": "ship4"},
+            "test": False,
+        },
+        {"url": "https://puzz.link/p?battleship/9/9/h6j35h43h44gzzzzg//e", "config": {"shapeset": "ship5"}, "test": False},
     ]
     parameters = {
         "shapeset": {

@@ -249,7 +249,9 @@ function decode_puzzlink_extra(url) {
       }
 
       pu.mode_qa("pu_a");
-      UserSettings.tab_settings = ["Surface"];
+      pu.mode_set("combi");
+      pu.subcombimode("blpo");
+      UserSettings.tab_settings = ["Surface", "Composite"];
       pu.user_tags = [type];
       break;
 
@@ -725,6 +727,33 @@ function decode_puzzlink_extra(url) {
       pu.subcombimode("edgesub");
       UserSettings.tab_settings = ["Surface", "Composite"];
       pu.user_tags = ["border block"];
+      break;
+
+    case "battleship":
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space3").value = 1;
+
+      pu = new Puzzle_square(cols + 1, rows + 1, size);
+      setupProblem(pu, "combi");
+
+      info_exnumber = puzzlink_pu.decodeNumber16ExCell(true);
+      puzzlink_pu.drawNumbersExCell(pu, info_exnumber, 1, "1", true);
+
+      info_number = puzzlink_pu.decodeNumber16();
+      const ship_map = [7, 4, 6, 3, 5, 2, 1];
+
+      for (i in info_number) {
+        row_ind = parseInt(i / cols) + 1; // row offset
+        col_ind = (i % cols) + 1; // column offset
+        cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        pu["pu_q"].symbol[cell] = [ship_map[info_number[i]], "battleship_B", 1];
+      }
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("battleship");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["battleship"];
       break;
 
     default:

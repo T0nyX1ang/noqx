@@ -175,10 +175,22 @@ function imp(penpa, example = false) {
       }
     }
 
-    // parse shapeset for statuepark from URL if available
-    if (puzzleType === "statuepark") {
+    // parse shapeset for statuepark/battleship from URL if available
+    if (puzzleType === "statuepark" || puzzleType === "battleship") {
       const actionSelect = document.getElementById("shapeset_action_shapeset");
-      const convertDict = { "//p": "pento", "//d": "double_tetro", "//t": "tetro" };
+      const convertDict = {};
+
+      if (puzzleType === "statuepark") {
+        convertDict["//p"] = "pento";
+        convertDict["//d"] = "double_tetro";
+        convertDict["//t"] = "tetro";
+      } else if (puzzleType === "battleship") {
+        convertDict["//c"] = "ship3";
+        convertDict["//d"] = "ship4";
+        convertDict["//e"] = "ship5";
+        convertDict["//p"] = "pento";
+      }
+
       if (actionSelect) {
         let flag = true;
         for (const [key, value] of Object.entries(convertDict)) {
