@@ -37,6 +37,7 @@ penpa_tags["options"]["puzzlink"].push("anglers");
 penpa_tags["options"]["puzzlink"].push("doppelblock");
 penpa_tags["options"]["puzzlink"].push("aquapelago");
 penpa_tags["options"]["puzzlink"].push("barns");
+penpa_tags["options"]["puzzlink"].push("battenberg painting");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -672,6 +673,33 @@ function decode_puzzlink_extra(url) {
       pu.user_tags = ["barns"];
       break;
 
+    case "batten":
+      document.getElementById("nb_space1").value = 1;
+      document.getElementById("nb_space3").value = 1;
+
+      pu = new Puzzle_square(cols + 1, rows + 1, size);
+      setupProblem(pu, "combi");
+
+      info_crossmark = decodeCrossMark(puzzlink_pu);
+      for (i in info_crossmark) {
+        row_ind = parseInt(i / cols) + 1;
+        col_ind = (i % cols) + 1;
+        cell = pu.nx0 * pu.ny0 + pu.nx0 * (2 + row_ind) + 2 + col_ind;
+        if (info_crossmark[i] === 1) {
+          pu["pu_q"].symbol[cell] = [1, "sudokuetc", 2];
+        }
+      }
+
+      info_number = puzzlink_pu.decodeNumber16ExCell(true);
+      puzzlink_pu.drawNumbersExCell(pu, info_number, 1, "1");
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+      pu.subcombimode("linex");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = ["battenberg painting"];
+      break;
+
     default:
       errorMsg(PenpaText.get("puzzlink_not_supported", type));
       break;
@@ -791,6 +819,49 @@ function decodeAnglers(puzzlink_pu) {
   puzzlink_pu.gridurl = puzzlink_pu.gridurl.substr(i);
 
   return [number_list1, number_list2, extra_list];
+}
+
+function decodeCrossMark(puzzlink_pu, hascross = true) {
+  var cc = 0,
+    i = 0,
+    crossmark_list = {};
+  var cp = hascross ? 1 : 0,
+    cp2 = cp << 1;
+  var rows = puzzlink_pu.rows - 1 + cp2,
+    cols = puzzlink_pu.cols - 1 + cp2;
+
+  for (i = 0; i < puzzlink_pu.gridurl.length; i++) {
+    var ca = puzzlink_pu.gridurl.charAt(i);
+
+    if (puzzlink_pu.include(ca, "0", "9") || puzzlink_pu.include(ca, "a", "z")) {
+      cc += parseInt(ca, 36);
+      var bx = ((cc % cols) + (1 - cp)) << 1;
+      var by = (((cc / cols) | 0) + (1 - cp)) << 1;
+
+      // puzz.link shrinks the coordinates on the crossmarks, need to normalize it
+      const row_ind = parseInt(cc / (puzzlink_pu.cols - cp));
+      const col_ind = cc % (puzzlink_pu.cols - cp);
+      const norm_cc = row_ind * puzzlink_pu.cols + col_ind;
+      crossmark_list[norm_cc] = 1;
+
+      if (by > puzzlink_pu.rows - 2 * (1 - cp)) {
+        i++;
+        break;
+      }
+    } else if (ca === ".") {
+      cc += 35;
+    }
+
+    cc++;
+    if (cc >= cols * rows) {
+      i++;
+      break;
+    }
+  }
+
+  // Remove what was parsed so the next function call reads what is left
+  puzzlink_pu.gridurl = puzzlink_pu.gridurl.substr(i);
+  return crossmark_list;
 }
 
 function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style) {
