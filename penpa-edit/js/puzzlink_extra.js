@@ -680,10 +680,10 @@ function decode_puzzlink_extra(url) {
       pu = new Puzzle_square(cols + 1, rows + 1, size);
       setupProblem(pu, "combi");
 
-      info_crossmark = decodeCrossMark(puzzlink_pu);
+      info_crossmark = decodeCrossMark(puzzlink_pu, false);
       for (i in info_crossmark) {
-        row_ind = parseInt(i / cols) + 1;
-        col_ind = (i % cols) + 1;
+        row_ind = parseInt(i / (cols - 1)) + 1; // border shrink + offset
+        col_ind = (i % (cols - 1)) + 1; // border shrink + offset
         cell = pu.nx0 * pu.ny0 + pu.nx0 * (2 + row_ind) + 2 + col_ind;
         if (info_crossmark[i] === 1) {
           pu["pu_q"].symbol[cell] = [1, "sudokuetc", 2];
@@ -821,11 +821,11 @@ function decodeAnglers(puzzlink_pu) {
   return [number_list1, number_list2, extra_list];
 }
 
-function decodeCrossMark(puzzlink_pu, hascross = true) {
+function decodeCrossMark(puzzlink_pu, hasborder = true) {
   var cc = 0,
     i = 0,
     crossmark_list = {};
-  var cp = hascross ? 1 : 0,
+  var cp = hasborder ? 1 : 0,
     cp2 = cp << 1;
   var rows = puzzlink_pu.rows - 1 + cp2,
     cols = puzzlink_pu.cols - 1 + cp2;
@@ -835,19 +835,11 @@ function decodeCrossMark(puzzlink_pu, hascross = true) {
 
     if (puzzlink_pu.include(ca, "0", "9") || puzzlink_pu.include(ca, "a", "z")) {
       cc += parseInt(ca, 36);
-      var bx = ((cc % cols) + (1 - cp)) << 1;
-      var by = (((cc / cols) | 0) + (1 - cp)) << 1;
-
-      // puzz.link shrinks the coordinates on the crossmarks, need to normalize it
-      const row_ind = parseInt(cc / (puzzlink_pu.cols - cp));
-      const col_ind = cc % (puzzlink_pu.cols - cp);
-      const norm_cc = row_ind * puzzlink_pu.cols + col_ind;
-      crossmark_list[norm_cc] = 1;
-
-      if (by > puzzlink_pu.rows - 2 * (1 - cp)) {
+      if (cc >= cols * rows) {
         i++;
         break;
       }
+      crossmark_list[cc] = 1;
     } else if (ca === ".") {
       cc += 35;
     }
