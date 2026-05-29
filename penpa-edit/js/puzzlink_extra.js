@@ -291,31 +291,25 @@ function decode_puzzlink_extra(url) {
     case "arukone":
     case "dominion":
     case "numlin_bit":
-      /* base on "numlin" type */
+      /* base on "numlin" and "easyasabc" type */
 
       pu = new Puzzle_square(cols, rows, size);
       setupProblem(pu, "combi");
 
       info_number = puzzlink_pu.decodeNumber16();
-      if (type === "arukone" || type === "dominion") {
-        var row_ind, col_ind, cell, number;
-
-        // Add numbers to grid
+      if (type !== "numlin_bit") {
+        const string_map = "0ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         for (var i in info_number) {
-          // Determine which row and column
-          row_ind = parseInt(i / cols);
-          col_ind = i % cols;
-          cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
-          number = info_number[i] === "?" ? "?" : String.fromCharCode(64 + parseInt(info_number[i])); // convert to letters
-          pu["pu_q"].number[cell] = [number, 1, "1"];
+          info_number[i] = string_map[info_number[i]] || info_number[i];
         }
-      } else puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+      }
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
 
       pu.mode_qa("pu_a");
       pu.mode_set("combi");
       pu.subcombimode(type === "dominion" ? "blpo" : "linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
-      if (type === "arukone" || type === "dominion") pu.user_tags = [type];
+      if (type !== "numlin_bit") pu.user_tags = [type];
       break;
 
     case "coral":
