@@ -40,6 +40,7 @@ penpa_tags["options"]["puzzlink"].push("barns");
 penpa_tags["options"]["puzzlink"].push("battenberg painting");
 penpa_tags["options"]["puzzlink"].push("border block");
 penpa_tags["options"]["puzzlink"].push("dominion");
+penpa_tags["options"]["puzzlink"].push("nikoji");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -290,6 +291,7 @@ function decode_puzzlink_extra(url) {
 
     case "arukone":
     case "dominion":
+    case "nikoji":
     case "numlin_bit":
       /* base on "numlin" and "easyasabc" type */
 
@@ -307,7 +309,11 @@ function decode_puzzlink_extra(url) {
 
       pu.mode_qa("pu_a");
       pu.mode_set("combi");
-      pu.subcombimode(type === "dominion" ? "blpo" : "linex");
+
+      if (type === "dominion") pu.subcombimode("blpo");
+      else if (type === "nikoji") pu.subcombimode("edgesub");
+      else if (["arukone", "numlin_bit"].includes(type)) pu.subcombimode("linex");
+
       UserSettings.tab_settings = ["Surface", "Composite"];
       if (type !== "numlin_bit") pu.user_tags = [type];
       break;
