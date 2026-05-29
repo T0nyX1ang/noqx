@@ -41,6 +41,7 @@ penpa_tags["options"]["puzzlink"].push("battenberg painting");
 penpa_tags["options"]["puzzlink"].push("border block");
 penpa_tags["options"]["puzzlink"].push("dominion");
 penpa_tags["options"]["puzzlink"].push("nikoji");
+penpa_tags["options"]["puzzlink"].push("tetrominous");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -306,6 +307,45 @@ function decode_puzzlink_extra(url) {
         }
       }
       puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+
+      pu.mode_qa("pu_a");
+      pu.mode_set("combi");
+
+      if (type === "dominion") pu.subcombimode("blpo");
+      else if (type === "nikoji") pu.subcombimode("edgesub");
+      else if (["arukone", "numlin_bit"].includes(type)) pu.subcombimode("linex");
+
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      if (type !== "numlin_bit") pu.user_tags = [type];
+      break;
+
+    case "pentominous":
+    case "tetrominous":
+      /* base on "easyasabc" type */
+
+      pu = new Puzzle_square(cols, rows, size);
+      setupProblem(pu, "combi");
+
+      // Penpa+ has wrong logic with decoding numbers with cell number bounds
+      // we have to predetermine how many numbers to be decoded manually
+
+      info_number = decodeNumber16MaxLength(puzzlink_pu, puzzlink_pu.rows * puzzlink_pu.cols);
+      const string_map = type === "pentominous" ? "FILNPTUVWXYZ" : "ILOST";
+      for (var i in info_number) {
+        if (info_number[i] === string_map.length) {
+          row_ind = parseInt(i / cols);
+          col_ind = i % cols;
+          cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
+          pu["pu_q"].surface[cell] = 4;
+          delete info_number[i]; // remove the key for shaded cells
+          continue;
+        }
+        info_number[i] = string_map[info_number[i]] || info_number[i];
+      }
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
+
+      info_edge = puzzlink_pu.decodeBorder();
+      puzzlink_pu.drawBorder(pu, info_edge, 2);
 
       pu.mode_qa("pu_a");
       pu.mode_set("combi");
@@ -912,6 +952,36 @@ function decodeCrossMark(puzzlink_pu, hasborder = true) {
   // Remove what was parsed so the next function call reads what is left
   puzzlink_pu.gridurl = puzzlink_pu.gridurl.substr(i);
   return crossmark_list;
+}
+
+function decodeNumber16MaxLength(puzzlink_pu, max_length = Infinity) {
+  var number_list = {};
+  var i = 0;
+  var c = 0;
+
+  while (i < puzzlink_pu.gridurl.length) {
+    var ca = puzzlink_pu.gridurl.charAt(i);
+    var res = puzzlink_pu.readNumber16(ca, i);
+    if (res[0] !== -1) {
+      number_list[c] = res[0];
+      i += res[1];
+      c++;
+    } else if (ca >= "g" && ca <= "z") {
+      c += parseInt(ca, 36) - 15;
+      i++;
+    } else {
+      i++;
+    }
+
+    if (c >= max_length) {
+      break;
+    }
+  }
+
+  // Remove what was parsed so the next function call reads what is left
+  puzzlink_pu.gridurl = puzzlink_pu.gridurl.substr(i);
+
+  return number_list;
 }
 
 function drawBorderEx(puzzlink_pu, pu, info_edge, edge_style) {

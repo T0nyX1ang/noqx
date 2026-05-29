@@ -19,6 +19,8 @@ class PentominousSolver(Solver):
         {
             "data": "m=edit&p=7VTfb9owEH7nr6j8fA/+kQQnb6yDaRKj3aBjXYRQoOmKBkoXyDQZ5X/v+Zw0mUS0TtU6TZqCz5+/s/Hns+/234okT0Fw+1MasMfPE5qa1AE1Xn2zzWGbRmcwKA53WY4A4GI0gttku097cTVr0TuaMDIDMG+imEkG1ARbgHkfHc27yEzBTNHFwENujEgwkAiHDZyT36JzRwqOeFJhhNcI15t8vU2XY8dcRrGZAbP7vKLVFrJd9j1lbhmN19lutbHEKjngYfZ3m/vKsy9usq8Fq7cowQyc3OEJuaqRqx7lqtNy5Z+XGy7KEsP+AQUvo9hqv2qgbuA0OrJ+wCIPmNauC6kLOXWCe9iXVvqRKWn/fYJy3fUxpSwxbxGBJS5bRN8SHxtC04xRQ4S+Jd42hODcMtdtJrTMrMX42jJXbYbmfG4xAckdtxnS+6lm8FgiOpb2MqwdkZVkZxgeMIrsa7KcrE92THOGZOdkz8l6ZAOa07cBfuIVuPg+Xw4L+hiFUAMLNK+BqIF0QGqBOYwDhVh4IKWuMOa3qviQgwwFYeV5oHxdYSwKPj4J9cuTx8qVjp8//9/jFr2YTYv8NlmnmGnDmy/p2STLd8kWR5Nit0rzeoyFruyxH4xarGzd/F/7/lLts1fAXzj9nlsNYozuY3qCuQB2XyyT5TrDp4YhdO4qYzvdLom73FVed7jrVO90u+w/7Q763m86vKBrhZZdDtHl4F2bh0/f/MXfA5bJRe8B",
         },
+        {"url": "https://puzz.link/p?pentominous/8/8/i0gcu9gcbt2cg0ucg2i", "test": False},
+        {"url": "https://puzz.link/p?pentominous/10/10/zzzzz080gi14o1g000000000c006o03o00030o06c", "test": False},
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
