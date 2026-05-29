@@ -39,6 +39,7 @@ penpa_tags["options"]["puzzlink"].push("aquapelago");
 penpa_tags["options"]["puzzlink"].push("barns");
 penpa_tags["options"]["puzzlink"].push("battenberg painting");
 penpa_tags["options"]["puzzlink"].push("border block");
+penpa_tags["options"]["puzzlink"].push("dominion");
 
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
@@ -288,6 +289,7 @@ function decode_puzzlink_extra(url) {
       break;
 
     case "arukone":
+    case "dominion":
     case "numlin_bit":
       /* base on "numlin" type */
 
@@ -295,7 +297,7 @@ function decode_puzzlink_extra(url) {
       setupProblem(pu, "combi");
 
       info_number = puzzlink_pu.decodeNumber16();
-      if (type === "arukone") {
+      if (type === "arukone" || type === "dominion") {
         var row_ind, col_ind, cell, number;
 
         // Add numbers to grid
@@ -304,16 +306,16 @@ function decode_puzzlink_extra(url) {
           row_ind = parseInt(i / cols);
           col_ind = i % cols;
           cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
-          number = String.fromCharCode(64 + parseInt(info_number[i])); // convert to letters
+          number = info_number[i] === "?" ? "?" : String.fromCharCode(64 + parseInt(info_number[i])); // convert to letters
           pu["pu_q"].number[cell] = [number, 1, "1"];
         }
       } else puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
 
       pu.mode_qa("pu_a");
       pu.mode_set("combi");
-      pu.subcombimode("linex");
+      pu.subcombimode(type === "dominion" ? "blpo" : "linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
-      if (type === "arukone") pu.user_tags = ["arukone"];
+      if (type === "arukone" || type === "dominion") pu.user_tags = [type];
       break;
 
     case "coral":
