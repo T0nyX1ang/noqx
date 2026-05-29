@@ -201,7 +201,6 @@ function decode_puzzlink_extra(url) {
       /* base on "tentaisho" type */
 
       pu = new Puzzle_square(cols, rows, size);
-      pu.mode_grid("nb_grid2"); // Dashed gridlines
       setupProblem(pu, "surface");
 
       info_edge = puzzlink_pu.decodeMidloop();
