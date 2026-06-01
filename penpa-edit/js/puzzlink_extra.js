@@ -781,13 +781,18 @@ function decode_puzzlink_extra(url) {
       puzzlink_pu.drawNumbersExCell(pu, info_exnumber, 1, "1", true);
 
       info_number = puzzlink_pu.decodeNumber16();
-      const ship_map = [7, 4, 6, 3, 5, 2, 1];
+      const battleship_map = [7, 4, 6, 3, 5, 2, 1];
+      const battleship_map_plus = [2, 3, 1, 4];
 
       for (i in info_number) {
         row_ind = parseInt(i / cols) + 1; // row offset
         col_ind = (i % cols) + 1; // column offset
         cell = pu.nx0 * (2 + row_ind) + 2 + col_ind;
-        pu["pu_q"].symbol[cell] = [ship_map[info_number[i]], "battleship_B", 1];
+        if (info_number[i] >= 0 && info_number[i] < 7) {
+          pu["pu_q"].symbol[cell] = [battleship_map[info_number[i]], "battleship_B", 1];
+        } else if (info_number[i] >= 7 && info_number[i] < 11) {
+          pu["pu_q"].symbol[cell] = [battleship_map_plus[info_number[i] - 7], "battleship_B+", 1];
+        }
       }
 
       pu.mode_qa("pu_a");
