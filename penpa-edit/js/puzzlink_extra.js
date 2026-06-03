@@ -61,23 +61,13 @@ function decode_puzzlink_extra(url) {
       setupProblem(pu, "combi");
 
       info_number = puzzlink_pu.decodeNumber16();
-      if (type !== "numlin_bit") {
-        const string_map = "0ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        for (var i in info_number) {
-          info_number[i] = string_map[info_number[i]] || info_number[i];
-        }
-      }
       puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
 
       pu.mode_qa("pu_a");
       pu.mode_set("combi");
-
-      if (type === "dominion") pu.subcombimode("blpo");
-      else if (type === "nikoji") pu.subcombimode("edgesub");
-      else if (["arukone", "numlin_bit"].includes(type)) pu.subcombimode("linex");
-
+      pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
-      if (type !== "numlin_bit") pu.user_tags = [type];
+      pu.user_tags = ["numberlink"];
       break;
 
     default:
