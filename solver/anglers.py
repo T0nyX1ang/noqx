@@ -20,10 +20,6 @@ class AnglersSolver(Solver):
             "data": "m=edit&p=7VRNj9MwEL33V6zmPIc4TpqPCyrLlkvoAu1qtYqqKg1ZNSLZlHwg5Kr/nfEkbSpSxFLBigOyPHp+E8dvZuypvjRRmaBLQ7pooKAhLZOnaXg8jW4s0jpL/CucNPWmKAkg3k6n+BhlVYKjUPBmsRztlOerCaq3fggmIE8BS1Qf/J1656sHVHNyAVrEBYQEoEnwpof37NfouiWFQXjWYYIPBOvkqa7a5Xs/VAsEfchr3qoh5MXXBNo9vI6LfJ1Cv5PJqvlUfG7g+GvIm6xO4yIrSuBfieUe1aSVHhyki066BSh76fIoXZ6XbnbS47SMs2QVXKR+HdVUiGqTbs+F4J0PYU9l+UhBrPxQx3PXQ7eHc38HtgW+tdeKCYtDXtoKwtiCtqgHwnE0IXvCM6BNy4EQhtSMfcKIsWZeHRg6TPi7vc7MDqRHPoknxQVbDqjxkHLsIeUOKNf5gaJjp3y4yXZBiUAl2b5ha7C12Qb8zQ3be7bXbC22Y/7G0al8ZrLbNJ/G/7tyQJoUkeciWK7sgGe3wBao8ySfKTmUHorjcC7Hy1EI86Z8jOKELmiQPiVXs6LMo4xWsyZfJ2W/nm+ibQLUM/Yj+AY8qTyCWsP/NvJvthFdIuPF7vefeW4hZZw6C1I/Q3WLsG1W0YoCA6Sk/trZPqRLnH/nTHrz5x3UA37i8OyB48VrRC1mOfoO",
         },
         {
-            "url": "https://puzz.link/p?anglers/6/6/1k2g10h13j1g41h1h5l6r.r",
-            "test": False,
-        },
-        {
             "url": "https://puzz.link/p?anglers/10/10/t1zw1p1s1h1g1h1u-19l-19s7ocgecic",
             "test": False,
         },
