@@ -1,7 +1,9 @@
 """The Suguru solver."""
 
+from typing import Set, Tuple
+
 from noqx.manager import Solver
-from noqx.puzzle import Color, Direction, Point, Puzzle
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import area, defined, display, fill_num, grid, unique_num
 from noqx.rule.helper import fail_false, full_bfs, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, avoid_same_number_adjacent
@@ -31,24 +33,14 @@ class SuguruSolver(Solver):
         self.add_program_line(unique_num(_type="area", color="grid"))
         self.add_program_line(avoid_same_number_adjacent(adj_type=8))
 
+        exclude: Set[Tuple[int, int]] = set()
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"hole({r}, {c}).")
+            exclude.add((r, c))
 
-            # enforce the black cells (holes) to have edges on all sides
-            puzzle.edge[Point(r, c, Direction.TOP)] = True
-            puzzle.edge[Point(r, c, Direction.LEFT)] = True
-            puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
-            puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
-
-        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, exclude=exclude)
         for i, ar in enumerate(rooms):
-            arb = tuple(
-                filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar)
-            )
-            if len(arb) == 0:
-                continue  # drop holes
-
             self.add_program_line(area(_id=i, src_cells=ar))
             self.add_program_line(fill_num(_range=range(1, len(ar) + 1), _type="area", _id=i))
 

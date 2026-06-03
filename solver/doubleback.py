@@ -1,7 +1,9 @@
 """The Double Back solver."""
 
+from typing import Set, Tuple
+
 from noqx.manager import Solver
-from noqx.puzzle import Color, Direction, Point, Puzzle
+from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import defined, display, fill_line, grid
 from noqx.rule.helper import fail_false, full_bfs, validate_type
 from noqx.rule.neighbor import adjacent, area_border
@@ -36,24 +38,14 @@ class DoubleBackSolver(Solver):
         self.add_program_line(grid_color_connected(color="grid", adj_type="line"))
         self.add_program_line(single_route(color="grid"))
 
+        exclude: Set[Tuple[int, int]] = set()
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             self.add_program_line(f"hole({r}, {c}).")
+            exclude.add((r, c))
 
-            # enforce the black cells (holes) to have edges on all sides
-            puzzle.edge[Point(r, c, Direction.TOP)] = True
-            puzzle.edge[Point(r, c, Direction.LEFT)] = True
-            puzzle.edge[Point(r + 1, c, Direction.TOP)] = True
-            puzzle.edge[Point(r, c + 1, Direction.LEFT)] = True
-
-        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge)
+        rooms = full_bfs(puzzle.row, puzzle.col, puzzle.edge, exclude=exclude)
         for i, ar in enumerate(rooms):
-            arb = tuple(
-                filter(lambda x: puzzle.surface.get(Point(*x)) is None or puzzle.surface[Point(*x)] not in Color.DARK, ar)
-            )
-            if len(arb) == 0:
-                continue  # drop holes
-
             self.add_program_line(area_border(_id=i, src_cells=ar, edge=puzzle.edge))
             self.add_program_line(count_area_pass(2, _id=i))
 
