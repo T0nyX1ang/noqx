@@ -3,12 +3,23 @@
 from typing import List, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, count_rect, count_rect_size
+from noqx.rule.shape import all_rect_region, count_rect_size
+
+
+def all_shikaku_rect_has_clue(src_cells: List[Tuple[int, int]]) -> str:
+    """Ensure every edge-bounded rectangle contains at least one clue."""
+    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+    rules = [
+        f'shikaku_clue_topleft(TR, TC) :- rect(TR, TC, "{Direction.TOP_LEFT}"), {tag}({src_r}, {src_c}, TR, {src_c}), {tag}({src_r}, {src_c}, {src_r}, TC).'
+        for src_r, src_c in src_cells
+    ]
+    rules.append(f':- rect(TR, TC, "{Direction.TOP_LEFT}"), not shikaku_clue_topleft(TR, TC).')
+    return "\n".join(rules)
 
 
 class ShikakuSolver(Solver):
@@ -33,9 +44,9 @@ class ShikakuSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(count_rect(len(puzzle.text)))
 
         all_src: List[Tuple[int, int]] = []
+        area_rules: List[str] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -47,9 +58,13 @@ class ShikakuSolver(Solver):
                 self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if isinstance(num, int):
-                self.add_program_line(count_rect_size(num, (r, c), adj_type="edge"))
+                area_rules.append(count_rect_size(num, (r, c), adj_type="edge"))
 
             all_src.append((r, c))
+
+        self.add_program_line(all_shikaku_rect_has_clue(all_src))
+        for rule in area_rules:
+            self.add_program_line(rule)
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
