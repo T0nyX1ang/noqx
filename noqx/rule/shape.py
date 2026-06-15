@@ -528,12 +528,10 @@ def avoid_unknown_rect() -> str:
     * This rule is often used together with `bulb_src_color_connected` and `all_rect_region`.
 
     Success:
-        This rule will generate three predicates named `clue_link_top(SR, SC, TR)`, `clue_link_left(SR, SC, TC)`, and `clue_link_topleft(TR, TC)`.
+        This rule will generate a predicate named `clue_link_topleft(TR, TC)`.
     """
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-    rule = f"clue_link_top(SR, SC, TR) :- {tag}(SR, SC, TR, SC), not {tag}(SR, SC, TR - 1, SC).\n"
-    rule += f"clue_link_left(SR, SC, TC) :- {tag}(SR, SC, SR, TC), not {tag}(SR, SC, SR, TC - 1).\n"
-    rule += "clue_link_topleft(TR, TC) :- clue_link_top(SR, SC, TR), clue_link_left(SR, SC, TC).\n"
+    rule = f"clue_link_topleft(TR, TC) :- {tag}(SR, SC, SR, SC), TR = #min {{ R: {tag}(SR, SC, R, SC) }}, TC = #min {{ C: {tag}(SR, SC, SR, C) }}.\n"
     rule += f':- rect(TR, TC, "{Direction.TOP_LEFT}"), not clue_link_topleft(TR, TC).'
     return rule
 

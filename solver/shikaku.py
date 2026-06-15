@@ -24,6 +24,10 @@ class ShikakuSolver(Solver):
             "url": "https://puzz.link/p?shikaku/24/14/h5x6i.j8g6lag4j.l9i8j6i4l3z9g6i4i4h56h6i4i6j8h4n3h6zn4j4r6j4g6j8i8hci6j8q6h2r8k5l8k8j.l9j4l.lataock36kck",
             "test": False,
         },
+        {
+            "url": "https://puzz.link/p?shikaku/30/30/-12zn-18zzg-24t-30k-30zzp-18y-10z-30u8zzt6g-10x-10zw-12zr-12o-24p8h8zzh-18scp-24zcp4s-24zzh4h2p-18oczr3zw-30x8gczzt-18u-12z-30y-18zzp-18k6t-48zzg-1bzn-18",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
