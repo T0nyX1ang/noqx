@@ -58,6 +58,7 @@ class TamamibariSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
         self.add_program_line(avoid_edge_crossover())
+        self.add_program_line(avoid_unknown_rect())
 
         all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
@@ -78,8 +79,6 @@ class TamamibariSolver(Solver):
                 self.add_program_line(tatamibari_cell_constraint("gt", (r, c)))
 
             all_src.append((r, c))
-
-        self.add_program_line(avoid_unknown_rect(all_src))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')

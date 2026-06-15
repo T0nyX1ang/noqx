@@ -522,22 +522,18 @@ def count_rect_size(
     return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
 
 
-def avoid_unknown_rect(src_cells: Iterable[Tuple[int, int]]) -> str:
+def avoid_unknown_rect() -> str:
     """A rule to avoid any cell being unreachable to any edge-bounded rectangle.
 
     * This rule is often used together with `bulb_src_color_connected` and `all_rect_region`.
 
-    Args:
-        src_cells: A list of source cells.
-
     Success:
-        This rule will generate a predicate named `clue_link_topleft(TR, TC)`.
+        This rule will generate three predicates named `clue_link_top(SR, SC, TR)`, `clue_link_left(SR, SC, TC)`, and `clue_link_topleft(TR, TC)`.
     """
     tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
-    rule = ""
-    for r, c in src_cells:
-        rule += f'clue_link_topleft(TR, TC) :- rect(TR, TC, "{Direction.TOP_LEFT}"), {tag}({r}, {c}, TR, {c}), {tag}({r}, {c}, {r}, TC).\n'
-
+    rule = f"clue_link_top(SR, SC, TR) :- {tag}(SR, SC, TR, SC), not {tag}(SR, SC, TR - 1, SC).\n"
+    rule += f"clue_link_left(SR, SC, TC) :- {tag}(SR, SC, SR, TC), not {tag}(SR, SC, SR, TC - 1).\n"
+    rule += "clue_link_topleft(TR, TC) :- clue_link_top(SR, SC, TR), clue_link_left(SR, SC, TC).\n"
     rule += f':- rect(TR, TC, "{Direction.TOP_LEFT}"), not clue_link_topleft(TR, TC).'
     return rule
 

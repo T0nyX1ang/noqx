@@ -33,6 +33,7 @@ class ShikakuSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
+        self.add_program_line(avoid_unknown_rect())
 
         all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
@@ -49,8 +50,6 @@ class ShikakuSolver(Solver):
                 self.add_program_line(count_rect_size(num, (r, c), adj_type="edge"))
 
             all_src.append((r, c))
-
-        self.add_program_line(avoid_unknown_rect(all_src))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
