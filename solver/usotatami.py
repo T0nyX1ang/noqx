@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
-from noqx.rule.shape import all_rect_region, avoid_edge_crossover, count_rect
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover, avoid_unknown_rect
 
 
 def rect_constraint() -> str:
@@ -37,7 +37,6 @@ class UsotatamiSolver(Solver):
         self.add_program_line(all_rect_region())
         self.add_program_line(rect_constraint())
         self.add_program_line(avoid_edge_crossover())
-        self.add_program_line(count_rect(len(puzzle.text)))
 
         all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
@@ -54,6 +53,8 @@ class UsotatamiSolver(Solver):
                 self.add_program_line(count_reachable_src(("ne", num), (r, c), main_type="bulb", color=None, adj_type="edge"))
 
             all_src.append((r, c))
+
+        self.add_program_line(avoid_unknown_rect(all_src))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')

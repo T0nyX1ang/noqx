@@ -443,19 +443,6 @@ def all_rect_region(square: bool = False) -> str:
     return rule.strip()
 
 
-def count_rect(target: Union[int, Tuple[str, int]]):
-    """A rule to compare the number of rectangles in a grid with a specified target.
-
-    * Since the top-left side of any rectangle is unique, the number of rectangles can be counted by the `rect` predicate.
-
-    Args:
-        target: The target number or a tuple of (`operator`, `number`) for comparison.
-    """
-
-    rop, num = target_encode(target)
-    return f':- {{ rect(R, C, "{Direction.TOP_LEFT}") }} {rop} {num}.'
-
-
 def avoid_rect(
     rect_r: int, rect_c: int, color: str = "black", corner: Tuple[Optional[int], Optional[int]] = (None, None)
 ) -> str:
@@ -533,6 +520,26 @@ def count_rect_size(
     count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
 
     return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
+
+
+def avoid_unknown_rect(src_cells: Iterable[Tuple[int, int]]) -> str:
+    """A rule to avoid any cell being unreachable to any edge-bounded rectangle.
+
+    * This rule is often used together with `bulb_src_color_connected` and `all_rect_region`.
+
+    Args:
+        src_cells: A list of source cells.
+
+    Success:
+        This rule will generate a predicate named `clue_link_topleft(TR, TC)`.
+    """
+    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+    rule = ""
+    for r, c in src_cells:
+        rule += f'clue_link_topleft(TR, TC) :- rect(TR, TC, "{Direction.TOP_LEFT}"), {tag}({r}, {c}, TR, {c}), {tag}({r}, {c}, {r}, TC).\n'
+
+    rule += f':- rect(TR, TC, "{Direction.TOP_LEFT}"), not clue_link_topleft(TR, TC).'
+    return rule
 
 
 def avoid_edge_crossover() -> str:

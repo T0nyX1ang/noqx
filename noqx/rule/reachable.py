@@ -216,7 +216,7 @@ def count_reachable_src(
 
 
 def avoid_unknown_src(color: Optional[str] = "black", main_type: str = "grid", adj_type: Union[int, str] = 4) -> str:
-    """A rule to avoid all the cells being unreachable to any source cell.
+    """A rule to avoid any cell being unreachable to the source cell.
 
     * This rule is often used together with `grid_src_color_connected` or `bulb_src_color_connected`.
 

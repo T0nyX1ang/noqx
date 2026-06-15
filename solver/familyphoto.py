@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, count_rect
+from noqx.rule.shape import all_rect_region, avoid_unknown_rect
 
 
 def count_family_photo_size(num: int, src_cell: Tuple[int, int], adj_type: Union[int, str] = "edge") -> str:
@@ -40,7 +40,6 @@ class FamilyPhotoSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(count_rect(len(puzzle.text)))
 
         for (r, c, d, label), _ in puzzle.symbol.items():
             validate_direction(r, c, d)
@@ -68,6 +67,8 @@ class FamilyPhotoSolver(Solver):
                 self.add_program_line(count_family_photo_size(num, (r, c), adj_type="edge"))
 
             all_src.append((r, c))
+
+        self.add_program_line(avoid_unknown_rect(all_src))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
