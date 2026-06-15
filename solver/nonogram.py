@@ -37,21 +37,21 @@ def _expand_star(clue: Tuple[Union[int, str], ...], line_length: int) -> List[Tu
 
 
 def _line_base(_type: str, color: str) -> List[str]:
-    """Generates base rule for counting consecutive shaded cells in rows or columns."""
+    """Generates base rule for tracking clue block indices in rows or columns."""
     base = []
     if _type == "row":
-        prefix = "row_count(R, C, N, V) :- grid(R, C), row_count_value_range(R, N, V)"
-        base.append("row_count(R, -1, -1, 0) :- grid(R, _).")
-        base.append(f"{prefix}, not {color}(R, C), row_count(R, C - 1, N, _), V = 0.")
-        base.append(f"{prefix}, {color}(R, C), not {color}(R, C - 1), row_count(R, C - 1, N - 1, _), V = 1.")
-        base.append(f"{prefix}, {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N, V - 1).")
+        prefix = "row_count(R, C, N) :- grid(R, C), row_count_index_range(R, N)"
+        base.append("row_count(R, -1, -1) :- grid(R, _).")
+        base.append(f"{prefix}, not {color}(R, C), row_count(R, C - 1, N).")
+        base.append(f"{prefix}, {color}(R, C), not {color}(R, C - 1), row_count(R, C - 1, N - 1).")
+        base.append(f"{prefix}, {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N).")
 
     if _type == "col":
-        prefix = "col_count(R, C, N, V) :- grid(R, C), col_count_value_range(C, N, V)"
-        base.append("col_count(-1, C, -1, 0) :- grid(_, C).")
-        base.append(f"{prefix}, not {color}(R, C), col_count(R - 1, C, N, _), V = 0.")
-        base.append(f"{prefix}, {color}(R, C), not {color}(R - 1, C), col_count(R - 1, C, N - 1, _), V = 1.")
-        base.append(f"{prefix}, {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N, V - 1).")
+        prefix = "col_count(R, C, N) :- grid(R, C), col_count_index_range(C, N)"
+        base.append("col_count(-1, C, -1) :- grid(_, C).")
+        base.append(f"{prefix}, not {color}(R, C), col_count(R - 1, C, N).")
+        base.append(f"{prefix}, {color}(R, C), not {color}(R - 1, C), col_count(R - 1, C, N - 1).")
+        base.append(f"{prefix}, {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N).")
 
     return base
 
@@ -61,37 +61,58 @@ def _line_clue(
 ) -> List[str]:
     """Generates rules for a specific clue in a row or column, with optional asterisk variant handling."""
     guard = f"{_type}_variant({_id}, {variant})" if variant is not None else ""
+    guard_prefix = f"{guard}," if guard else ""
+    guard_body = f" :- {guard}" if guard else ""
 
-    rule = [f"{_type}_count_value_range({_id}, -1, 0){' :- ' + guard if guard else ''}."]
+    rule = [f"{_type}_count_index_range({_id}, -1){guard_body}."]
     if len(clue) == 0 or clue == (0,):
         if _type == "row":
-            rule.append(f":-{guard + ',' if guard else ''} grid({_id}, C), not row_count({_id}, C, -1, 0).")
+            rule.append(f":-{guard_prefix} grid({_id}, C), not row_count({_id}, C, -1).")
 
         if _type == "col":
-            rule.append(f":-{guard + ',' if guard else ''} grid(R, {_id}), not col_count(R, {_id}, -1, 0).")
+            rule.append(f":-{guard_prefix} grid(R, {_id}), not col_count(R, {_id}, -1).")
 
         return rule
 
+    rule.append(f"{_type}_count_index_range({_id}, 0..{len(clue) - 1}){guard_body}.")
+
     if _type == "row":
-        rule.append(f":-{guard + ',' if guard else ''} not row_count({_id}, {size - 1}, {len(clue) - 1}, _).")
+        rule.append(f":-{guard_prefix} not row_count({_id}, {size - 1}, {len(clue) - 1}).")
 
     if _type == "col":
-        rule.append(f":-{guard + ',' if guard else ''} not col_count({size - 1}, {_id}, {len(clue) - 1}, _).")
+        rule.append(f":-{guard_prefix} not col_count({size - 1}, {_id}, {len(clue) - 1}).")
 
     for clue_index, token in enumerate(clue):
         if token == "?":
-            upper = size + 2 - 2 * len(clue)
-            rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{upper}){(' :- ' + guard if guard else '')}.")
             continue
 
-        rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{token}){(' :- ' + guard if guard else '')}.")
         if _type == "row":
-            slope = f"grid({_id}, C), {color}({_id}, C), {_type}_count({_id}, C, {clue_index}, V)"
-            rule.append(f":-{guard + ',' if guard else ''} {slope}, not {color}({_id}, C + 1),  V != {token}.")
+            rule.append(
+                f":-{guard_prefix} {color}({_id}, C), row_count({_id}, C, {clue_index}), "
+                f"row_count({_id}, C - {token}, {clue_index})."
+            )
+
+            end = f"grid({_id}, C), not {color}({_id}, C), {color}({_id}, C - 1), row_count({_id}, C - 1, {clue_index})"
+            rule.append(f":-{guard_prefix} {end}, not row_count({_id}, C - {token}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {end}, not row_count({_id}, C - {token} - 1, {clue_index - 1}).")
+
+            line_end = f"{color}({_id}, {size - 1}), row_count({_id}, {size - 1}, {clue_index})"
+            rule.append(f":-{guard_prefix} {line_end}, not row_count({_id}, {size} - {token}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {line_end}, not row_count({_id}, {size} - {token} - 1, {clue_index - 1}).")
 
         if _type == "col":
-            slope = f"grid(R, {_id}), {color}(R, {_id}), {_type}_count(R, {_id}, {clue_index}, V)"
-            rule.append(f":-{guard + ',' if guard else ''} {slope}, not {color}(R + 1, {_id}), V != {token}.")
+            rule.append(
+                f":-{guard_prefix} {color}(R, {_id}), col_count(R, {_id}, {clue_index}), "
+                f"col_count(R - {token}, {_id}, {clue_index})."
+            )
+
+            end = f"grid(R, {_id}), not {color}(R, {_id}), {color}(R - 1, {_id}), col_count(R - 1, {_id}, {clue_index})"
+            rule.append(f":-{guard_prefix} {end}, not col_count(R - {token}, {_id}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {end}, not col_count(R - {token} - 1, {_id}, {clue_index - 1}).")
+
+            line_end = f"{color}({size - 1}, {_id}), col_count({size - 1}, {_id}, {clue_index})"
+            rule.append(f":-{guard_prefix} {line_end}, not col_count({size} - {token}, {_id}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {line_end}, not col_count({size} - {token} - 1, {_id}, {clue_index - 1}).")
 
     return rule
 
