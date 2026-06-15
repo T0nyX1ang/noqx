@@ -161,6 +161,7 @@ def general_shape(
     _type: str = "grid",
     adj_type: Union[int, str] = 4,
     simple: bool = False,
+    add_origin_map: bool = False,
 ) -> str:
     """A rule to define general shapes in a grid or an area.
 
@@ -176,11 +177,14 @@ def general_shape(
         _type: The type of the shape rule (accepted types: "grid" or "area").
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         simple: Whether to skip the adjacency re-checking.
+        add_origin_map: Whether to add a predicate to represent the relationship between the origin of the shape and its cells.
 
     Success:
         * If `_type` is set to "grid", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(R, C, I, V)`.
 
         * If `_type` is set to "area", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(A, R, C, I, V)`.
+
+        * If `add_origin_map` is set to `True`, this rule will generate an additional predicate named `shape_origin_map_{name}_{color}(R, C, OR, OC)` or `shape_origin_map_{name}_{color}(A, R, C, OR, OC)` to represent the relationship between the origin of the shape and its cells.
 
     Warning:
         Although the shape representation does not require the connectivity of the shape, it is recommended to ensure that the provided shape is connected. Some derived rules may behave weird if the shape is not connected.
@@ -200,11 +204,12 @@ def general_shape(
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
+    tag_om = tag_encode("shape_origin_map", name, color)
     data = ""
 
     variants = get_variant_shape(deltas, allow_rotations=True, allow_reflections=True)
     for i, variant in enumerate(variants):
-        valid, belongs_to = set(), set()
+        valid, belongs_to, origins_to = set(), set(), set()
         for dr, dc in variant:
             if _type == "grid":
                 valid.add(f"grid(R + {dr}, C + {dc})")
@@ -212,6 +217,8 @@ def general_shape(
                 belongs_to.add(
                     f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
                 )
+                if add_origin_map:
+                    origins_to.add(f"{tag_om}(R + {dr}, C + {dc}, R, C) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i}).")
 
             if _type == "area":
                 valid.add(f"area(A, R + {dr}, C + {dc})")
@@ -219,6 +226,10 @@ def general_shape(
                 belongs_to.add(
                     f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
                 )
+                if add_origin_map:  # pragma: no cover
+                    origins_to.add(
+                        f"{tag_om}(A, R + {dr}, C + {dc}, R, C) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
+                    )
 
             for nr, nc in get_neighbor(dr, dc):
                 if (nr, nc) in variant:
@@ -239,7 +250,10 @@ def general_shape(
         if _type == "area":
             data += f"{tag}(A, R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
 
-    return data
+        if add_origin_map:
+            data += "\n".join(origins_to) + "\n"
+
+    return data.strip()
 
 
 def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:

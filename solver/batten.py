@@ -26,6 +26,10 @@ class BattenbergPaintingSolver(Solver):
         {
             "data": "m=edit&p=7VTBjpswEL3zFas5zwFskhhu6XbbS5ptm1SrCKGIUFZBBZESqCpH/HvHAy1bBOpWaqMeKsPo+c3Ynuexff5cR2WCHjWp0EaHmlQ2/8o1n921bVpliX+Dy7o6FiUBxPs1PkbZOUErcHisHVoX7fl6ifq1H4ADCIJ+B0LU7/yLfuPrHeoNuQBViJDXWZXGRVaUwJxDcat2oCB418MH9ht025KOTXjdYYI7guf6Y/GpTqq4pd76gd4imMVf8HADIS++JNAlZ/pxkR9SQxyiihSej+kJUJKjnQ2+L9GgXrYSNs+UIHsJ8ocEOS5BdBLitIyzZL/68wq8sGmoOu9Jw94PjJwPPVQ93PiXxqR1AeGZoTNKpS0hSNsQ8gnhDCPEMEIOI9xhxGwQ4TqDCMXLLnrCkz9FULoOJ70zSQuzgIODw0D8fIJX4zyLHeEXE/MsJuZRE/MoMcKTiFcsRbDdUklQS7Yv2dpsZ2xXHHPH9oHtLVuX7ZxjFqaozyw7uJSSogLQ9or2DDzd2r+UW+AKfnX6Nr9uP7QC2NTlYxQndKHWdX5Iypt1UeZRRv3NMTolQO9aY8FX4D+QKMyw/0/dv/zUmUrZv/XgXeGw/yKdgDacroO+RzjV+2hPm02744Y47phNOETHywEvw6vrpfsdWt8A",
         },
+        {
+            "url": "https://pzplus.tck.mn/p.html?batten/10/5/4021434a0g2222h322g3g1",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

@@ -26,7 +26,8 @@ class BorderBlockSolver(Solver):
     examples = [
         {
             "data": "m=edit&p=7VTbjtowEH3nK1bzPA+xnftLxW5pXyjbFlarVRShwKYFNSg0kKoy4t87ngCBNNH2plUrVcbDyfH4cmbs2XwukyJFYZmf8pH+qdnC5y59l7t1aJPlNkvDK+yX20VeEEC8HeGHJNuk2IsOXnFvp4NQ91G/DiOQgNwFxKjfhTv9JtQj1GMaAhQxwqrMtst5nuUFHDk9JCQAJcFBDe953KCbihQW4dEBE3wgOF8W8yydjscV9TaM9ATBbH7N0w2EVf4lhWoef8/z1WxpiFmyJYWbxXINqGhgUz7mn0o4brFH3a8kDH5QgqolqJME1S5BXkoY/nkFQbzfU3bek4ZpGBk5dzX0azgOd3tzrB0ocRRfpRBsF6qsngi/4eHahlA14SlD2GeE05jieYZwaiKwDOHWhLCsxiJCeI1VhAgaZxNSGsY7Y5TT2ErYfLwX54xzwVAoBAfkgQIilXGX2LhoxAftvON38B3+nuzgnXbe7/D3O87pd6wTiFZeWW3rUDBecUgk2wldG9SK7Uu2FluH7ZB9Bmzv2d6wtdm67OOZi/dTV/M8K792HHAF5SbwOYjIAVNPHjFSVYm8bM6/x8W9CAaPH9OrUV6skozqyKhczdKi/h4vknUKVM73PfgK3COF8n+F/9srvMmU9cyP6XffdkQBp/eI+hZhXU6TKUUb6KqhGTg90O+Gn10FVYC49w0=",
-        }
+        },
+        {"url": "https://puzz.link/p?bdblock/10/10/51b20o7p66g51/k4g6h1g4s1g2h2g7zr3g2h6g5s5g6h7g3k", "test": False},
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

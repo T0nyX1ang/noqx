@@ -51,6 +51,7 @@ function imp(penpa, example = false) {
   let puzzleType = null;
   let puzzleTypeWithoutAlias = null;
   const puzzleVariants = [];
+  let puzzleExtraParam = null;
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
@@ -60,40 +61,18 @@ function imp(penpa, example = false) {
   if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
+
     puzzleType = urldata[0];
     puzzleTypeWithoutAlias = puzzleType;
     for (let i = 1; i < urldata.length; i++) {
       if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
-      else break;
+      else {
+        puzzleExtraParam = isNaN(urldata[i + 2]) ? null : urldata[i + 2];
+        break;
+      }
     }
 
     for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
-  }
-
-  const puzzleTypeConverter = {
-    arukone: "numlin",
-    cityspace: "cave",
-    coral: "nonogram",
-    circlesquare: "yinyang",
-    creek: "gokigen",
-    dotchi2: "dotchi",
-    fivecells: "nawabari",
-    fourcells: "nawabari",
-    heyablock: "heyawake",
-    island: "kurotto",
-    nibunnogo: "gokigen",
-    nothing: "moonsun",
-    numlin_bit: "numlin",
-    oasis: "nurimisaki",
-    simplegako: "view",
-    squarejam: "shikaku",
-    statuepark: "yinyang",
-    suguru: "cojun",
-    tetrochain: "yajikazu",
-  };
-
-  if (puzzleType && puzzleType in puzzleTypeConverter) {
-    urlstring = urlstring.replace(puzzleType, puzzleTypeConverter[puzzleType]);
   }
 
   // normalize the puzzle type
@@ -124,6 +103,7 @@ function imp(penpa, example = false) {
 
   try {
     import_url(urlstring);
+    clearInfo();
     const importErrorDialog = document.getElementById("swal2-html-container");
     if (puzzleType in solver_metadata) {
       resetGridType(puzzleType);
@@ -188,15 +168,29 @@ function imp(penpa, example = false) {
     }
 
     // parse variant for defined maps
-    for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
-      const element = document.getElementById(paramId);
-      if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
+    if (variantMap[puzzleType]) {
+      for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
+        const element = document.getElementById(paramId);
+        if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
+      }
     }
 
-    // parse shapeset for statuepark from URL if available
-    if (puzzleType === "statuepark") {
+    // parse shapeset for statuepark/battleship from URL if available
+    if (puzzleType === "statuepark" || puzzleType === "battleship") {
       const actionSelect = document.getElementById("shapeset_action_shapeset");
-      const convertDict = { "//p": "pento", "//d": "double_tetro", "//t": "tetro" };
+      const convertDict = {};
+
+      if (puzzleType === "statuepark") {
+        convertDict["//p"] = "pento";
+        convertDict["//d"] = "double_tetro";
+        convertDict["//t"] = "tetro";
+      } else if (puzzleType === "battleship") {
+        convertDict["//c"] = "ship3";
+        convertDict["//d"] = "ship4";
+        convertDict["//e"] = "ship5";
+        convertDict["//p"] = "pento";
+      }
+
       if (actionSelect) {
         let flag = true;
         for (const [key, value] of Object.entries(convertDict)) {
@@ -235,6 +229,16 @@ function imp(penpa, example = false) {
     }
   }
 
+  // add extra number parameter for specific puzzle types if available
+  if (puzzleType === "starbattle") document.getElementById("param_stars").value = puzzleExtraParam;
+
+  if (puzzleType === "japanesesums") document.getElementById("param_max_number").value = puzzleExtraParam;
+
+  if (puzzleType === "easyasabc") {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    document.getElementById("param_letters").value = letters.slice(0, puzzleExtraParam);
+  }
+
   hookLoad(currentContent);
 }
 
@@ -271,6 +275,7 @@ function resetGridType(puzzleType) {
   }
 }
 
+// prettier-ignore
 function resetGridMode(puzzleType) {
   const puzzleCategory = solver_metadata[puzzleType].category;
   const oldModeFlag = pu.mode.grid;
@@ -280,7 +285,7 @@ function resetGridMode(puzzleType) {
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 
-  if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+  if (["cave", "cityspace", "creek", "firefly", "gokigen", "ichimaga", "nibunnogo"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
   if (["hashi", "keywest"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
@@ -291,6 +296,7 @@ function resetGridMode(puzzleType) {
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
 }
 
+// prettier-ignore
 function resetBoardSize(puzzleType) {
   const oldSizeFlag = [
     document.getElementById("nb_space1").value, // top space
@@ -306,13 +312,11 @@ function resetBoardSize(puzzleType) {
     sizeFlag = [1, 0, 1, 0];
 
   if (
-    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "magnets", "skyscrapers", "starbattle"].includes(
-      puzzleType
-    )
+    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "nibunnogo", "magnets", "skyscrapers", "starbattle"].includes(puzzleType)
   )
     sizeFlag = [1, 1, 1, 1];
 
-  if (["coral", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
+  if (["coral", "cts", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
 
   if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
     document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
@@ -337,6 +341,7 @@ const categoryName = {
 
 const variantMap = {
   lits: { param_invlitso: "invlitso" },
+  nonogram: { param_cts: "cts" },
   slitherlink: {
     param_tslither: "tslither",
     param_vslither: "vslither",
@@ -727,6 +732,7 @@ $(window).on("load", function () {
       mutations.forEach((mutation) => {
         if (mutation.type === "attributes" && mutation.attributeName === "disabled") {
           updateChoicesType();
+          clearInfo();
         }
       });
     });

@@ -74,8 +74,8 @@ class NikojiSolver(Solver):
             "data": "m=edit&p=7VXbattAEH3XV4R9noe96P7mOHZacJ22cQlBCCM7aiMqoVS2Slmjf8/syLZckUtNqOlDWXY4OrPDzpllRqsfdVKl4ONSPnAQuJQtaUse0ObbNcvWeRqewaBe35cVAoCr8Ri+JvkqBSvaHoutjQ5CPQB9GUZMMqAtWAz6U7jRH0I9BX2NLgYiBlbU+TpblnlZsR2nJ4gEA4lw1MEb8hs0bEnBEU+3GOEtwmVWLfN0PmmZj2GkZ8DM3ecUbSAryp8pa8Poe1kWi8wQi2SNClf32QMDhY5VfVd+r9nuhgb0oFUw+kMFqlOg9grU0wrkX1cQxE2Dj/MZNczDyMj50kG/g9fhpjFpbZgKTOgAU2lfkNncEOcHhOoTtiGGHeGIPuEa4qIjXMcQ4wOCTlx2hOcZ4t0B4RvifUf4Xi/TQPZuCYJepoLzXozgfTWC/y4H6yKoOrdkx2Ql2RkWD7Qie0GWk3XITujMiOwN2SFZm6xLZzxT/qMe6O3pMCWw+oGP6jzsfR8LoAzGSeBjBdWr6UbSpaHRLee037EVsdHdt/RsWlZFkmNHTOtikVa7b5xHjcV+MdqRAmlC/o+of3hEmYfiJ+6Dt7ZlhAXftxDoK2AP9TyZY80Z/hLBuG1sqiMdgXukQ9niWIdwnnbsh8Bzbl++IPZ598kfDmdUbD0C",
         },
         {
-            "data": "m=edit&p=7ZTJTsMwEIbveQrk8xwSu0uSW+nCVsLSIlRFEWpLgIhEgbRByFXenZlJi3PgAAdQD8jyr9+f7XjGdrx6LedFDC4W5YINDhbVklyl7XG1t2WarNPYP4BeuX7KCzQAF6MRPMzTVQxWuB0WWRvt+boH+sgPhRTA1RER6Ct/o899HYCeYJcAJwKRlek6WeZpXogd02N0jgCJdmjsLfeT69fQsdEHW492hnaZFMs0vhvX5NIP9RQErX3Is8mKLH+LRT2N28s8WyQEFvM1Zrh6Sl4EKOxYlff5cyl2K1Sge3UGw29moEwG6jMD9XUG8tcz8KKqwsO5xhzu/JDSuTHWNXbibyoKayNkh6b2MJT6BIVyCBw2gEug3wAegYEBLZvAsAEUgZEBbf7oUQPwiOMGaBE4MaAjCZw2AMdxZkCXwdgAt0vgvAF4RGCAx+DCAMfmZS53BHfF4b2ZsY5YJesUtw60Yh2w2qxt1jGPGbLesvZZW6wdHtOlzf/R8fxBOKHs8JNgSvtv25GFd+f+MT4I8iKbp3jfgzJbxMWuja9NZYl3wTVUIGnK/wO0xw8QHZS9b/d838LBPy+yPgA=",
-            "test": False,
+            "url": "https://puzz.link/p?nikoji/14/13/1k2j3g4g5r67j8h9iaj4bicdh66en2kf-10m-11g9g5g1peq3hf-12g8n-13g7idi-14bhcieh-15o-14-11ejah-12k-10k-13-15h",
+            "test": False,  # slow case
         },
     ]
 

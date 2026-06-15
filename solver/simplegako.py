@@ -22,6 +22,10 @@ class SimplegakoSolver(Solver):
         {
             "data": "m=edit&p=7VNNT4NAEL3zK5o57wF2gbZ7q7X1UvGjNU1DSEMrpkQICsWYJfx3Zwcq0ehBE7UHM5mXx9vZzBtgiscyzCPmYogBM5mFwV2X0rJtSrONRbxPItljo3K/y3IkjF1Mp+wuTIrI8NuqwKjUUKoRU2fSBwsYcEwLAqauZKXOpfKYmuMRMAu1WVPEkU46uqRzzcaNaJnIvZYjXSHdxvk2idazRrmUvlow0H1O6LamkGZPEbQ+9PM2SzexFjbhHocpdvFDe1KUt9l9CYcWNVOjz+2Kzq54tSs+tst/3u4wqGt87ddoeC197f2mo4OOzmVVa18VcFdf7aOX5tuA4IfRW8EW7wTH1oLoBNfRgt0JffeNgK0sarginBJywgX6YUoQnhKahA7hjGomhEvCMaFN6FJNX0/0pZl/wY7POS1QE873eWD44JXpJsp7XpanYQK4VrUBz0DpCyyy/zftjzZNfwLz2P69Y7OD2xAYLw==",
         },
+        {
+            "url": "https://puzz.link/p?simplegako/7/7/7h432h65i11j3g7j2j4l2p",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

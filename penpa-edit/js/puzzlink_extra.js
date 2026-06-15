@@ -1,3 +1,6 @@
+penpa_tags["options"]["puzzlink"].push("fivecells");
+penpa_tags["options"]["puzzlink"].push("fourcells");
+
 function decode_puzzlink_extra(url) {
   const parts = url.split("?");
   const urldata = parts[1].split("/");
@@ -12,7 +15,7 @@ function decode_puzzlink_extra(url) {
   }
 
   const bstr = urldata[3];
-  const puzzlink_pu = new Puzzlink(cols, rows, bstr);
+  let puzzlink_pu = new Puzzlink(cols, rows, bstr);
 
   // Set border whitespace to 0 for consistency
   document.getElementById("nb_space1").value = 0;
@@ -33,78 +36,38 @@ function decode_puzzlink_extra(url) {
       number_style, map_genre_tag;
 
   switch (type) {
-    case "chocona":
-    case "cocktail":
-    case "hinge":
-    case "mannequin":
-      /* base on "aqre" type */
+    case "fivecells":
+    case "fourcells":
+      /* base on "nawabari" type */
 
       pu = new Puzzle_square(cols, rows, size);
-      setupProblem(pu, "surface");
+      pu.mode_grid("nb_grid2"); // Dashed grid lines
+      setupProblem(pu, "combi");
 
-      info_edge = puzzlink_pu.decodeBorder();
-      info_number = puzzlink_pu.decodeNumber16();
-      info_number = puzzlink_pu.moveNumbersToRegionCorners(info_edge, info_number);
-
-      puzzlink_pu.drawBorder(pu, info_edge, 2);
-      puzzlink_pu.drawNumbers(pu, info_number, 1, "1");
+      info_number = puzzlink_pu.decodeNumber10();
+      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
 
       pu.mode_qa("pu_a");
-      pu.mode_set("surface");
-      UserSettings.tab_settings = ["Surface"];
+      pu.mode_set("combi");
+      pu.subcombimode("edgesub");
+      UserSettings.tab_settings = ["Surface", "Composite"];
+      pu.user_tags = [type];
       break;
 
-    case "context":
-    case "norinuri":
-    case "smullyan":
-      /* base on "nuribou" type */
+    case "numlin_bit":
+      /* base on "numlin" and "easyasabc" type */
 
       pu = new Puzzle_square(cols, rows, size);
-      setupProblem(pu, "surface");
+      setupProblem(pu, "combi");
 
       info_number = puzzlink_pu.decodeNumber16();
       puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
 
       pu.mode_qa("pu_a");
-      pu.mode_set("surface");
-      pu.subcombimode("blpo");
-      UserSettings.tab_settings = ["Surface", "Composite"];
-      break;
-
-    case "lither":
-    case "tslither":
-    case "vslither":
-      /* base on "slitherlink" type */
-      pu = new Puzzle_square(cols, rows, size);
-      // Draw grid dots only
-      pu.mode_grid("nb_grid3");
-      pu.mode_grid("nb_lat1");
-      pu.mode_grid("nb_out2");
-      setupProblem(pu, "combi");
-
-      info_number = puzzlink_pu.decodeNumber4();
-      puzzlink_pu.drawNumbers(pu, info_number, 1, "1");
-
-      pu.mode_qa("pu_a");
       pu.mode_set("combi");
-      pu.subcombimode("edgex");
+      pu.subcombimode("linex");
       UserSettings.tab_settings = ["Surface", "Composite"];
-      break;
-
-    case "nothree":
-    case "nuriuzu":
-      /* base on "tentaisho" type */
-
-      pu = new Puzzle_square(cols, rows, size);
-      pu.mode_grid("nb_grid2"); // Dashed gridlines
-      setupProblem(pu, "surface");
-
-      info_edge = puzzlink_pu.decodeMidloop();
-      puzzlink_pu.drawMidloop(pu, info_edge);
-
-      pu.mode_qa("pu_a");
-      pu.mode_set("surface");
-      UserSettings.tab_settings = ["Surface"];
+      pu.user_tags = ["numberlink"];
       break;
 
     default:
@@ -140,4 +103,10 @@ function decode_puzzlink_extra(url) {
 
   // Redraw the grid
   pu.redraw();
+
+  // Set the Source
+  document.getElementById("saveinfosource").value = url;
+
+  // Set the tags
+  set_genre_tags(pu.user_tags);
 }

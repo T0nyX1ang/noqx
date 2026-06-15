@@ -4,7 +4,7 @@ from typing import Set, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
-from noqx.rule.common import area, count, display, grid, shade_cc
+from noqx.rule.common import area, count, defined, display, grid, shade_cc
 from noqx.rule.helper import fail_false, full_bfs, validate_direction
 
 
@@ -33,6 +33,7 @@ class DosuFuwaSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
+        self.add_program_line(defined(item="hole"))
         self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
         self.add_program_line(shade_cc(colors=["circle_M__1", "circle_M__2", "white"]))
         self.add_program_line(dosufuwa_gravity(float_color="circle_M__1", drown_color="circle_M__2"))

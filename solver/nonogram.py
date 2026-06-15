@@ -33,7 +33,7 @@ def _expand_star(clue: Tuple[Union[int, str], ...], line_length: int) -> List[Tu
                 next_variants.add(variant + (token,))
         variants = next_variants
 
-    return [variant for variant in sorted(variants, key=lambda item: (len(item), item)) if min_cells(variant) <= line_length]
+    return [v for v in sorted(variants, key=lambda item: (len(item), [str(x) for x in item])) if min_cells(v) <= line_length]
 
 
 def _line_base(_type: str, color: str) -> List[str]:
@@ -125,6 +125,7 @@ class NonogramSolver(Solver):
 
     name = "Nonogram"
     category = "shade"
+    aliases = ["cts", "crossthestreams"]
     examples = [
         {
             "data": "m=edit&p=7VVNT+MwEL3nV6A5zyG2kzbJZVU+updSWNoVQlFUpSGIalMF0gatXOW/M540BAwHOAAX5Pr19dljP4896ua+Tqsch9RUgC4Kasr1uA9c8+nafLUt8ugAR/X2tqyIIJ6Nx3iTFpvciRXNoJ44Ox1GeoT6dxSDAARJXUCC+k+006eRnqKe0RCgR9qknSSJnvT0kscNO2pF4RKf7jnRK6LZqsqKfDFplfMo1nMEs88hRxsK6/Ihh70P8zsr18uVEZbplg6zuV3d7Uc29XX5r4Zuiwb1qLU76+zK3q7q7aonu+ptu/Lz7YZJ01DaL8jwIoqN9789DXo6i3aN8bUDFZjQX+SlvRtQoSV4ri2ILjmdYIf4dohvh/jSCPKZYPvw7UWH9qKBay0a2LuEwgoJ5QuBciA4E1eMY0bJOKdEoVaMx4wuo8844TknjJeMR4we44DnDE2q33kZMKCzeHRGMizbm/kCb/GgLXKBwdvfiRPDrK5u0iyn1zat18u8OpiW1TotgMq7ceA/cKeaF1TFPxX/PRVvrsD9UN1//8uPKbv0/vQZwl29SBdZWQD9aSDr4mP68LX+5aelckqcRw==",
@@ -135,6 +136,11 @@ class NonogramSolver(Solver):
         },
         {
             "url": "https://puzz.link/p?nonogram/30/30/1121222n1331112n3111223n34133p8115q64113p5412312n411232o311323o21215p2112113n41243p32124p231112o2222q32121p22222p3225q52215p41524p4524q4221q422121o354r3132q51121p56sct43s1t411r422r4112q14211p19112p4811q22ar223711o5325q41113p334r2171q13333p15br2123111n222111o6272q431113o32111111m33112p2211111n122112o23711p733r74s77s3425q75sbt7t",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?cts/21/11/55j.20i02120g020i..j040i06j30j0321h02120g0k420i303i..j11.i02020g020i404i040i202i050i203030k02o302020k030403k03.n0336m5.50m04040l02320l302020k.605m",
+            "config": {"cts": True},
             "test": False,
         },
     ]

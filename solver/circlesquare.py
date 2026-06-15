@@ -22,6 +22,10 @@ class CircleSquareSolver(Solver):
         {
             "data": "m=edit&p=7ZRfS8MwFMXf+ynkPt+HJmm7Nm9zOl/m302GlCJzVhxuVLdVJaPf3Zu76kDuk6AoSNrD6Ul6+yNJs3qqJ8sSlcIMTYohKmpRnNBDiFnHX2HbRrP1vLR72K3X99WSDOJpv493k/mqDPJ2VBFsXGZdF92RzUEBgqZbQYHu3G7csYVptbiZAboh9QOm1DHYjtRkD3d2zP3e9bahCsmftJ7sFdnpbDmdl9eDbXJmczdC8B/b57e9hUX1XEIL45+3ABTczF/u22xV31YPNbwXb9B1mdYNBVCzAzUfoEYG1d8JmhVNQ/N9QajXNvfUlzub7uzQbhpP5FWxXtkNGENlFL6jHTMamFRKIy2mmZTGkZQm4teSWExFhjSU0kysm4lkSikx1mINpUU4pTtiLE+ciuTakVw7EQBpufq8aJp1RGuKzrAesIasMeuAxxyyjll7rBFrwmM6fld8ed98E05uNJ89n1v8t9IiyGFYL+8m05L+2F61eKxWs3UJdC42AbwC37nxh+z/UfnTR6Wf+/C3bfzfhkO/YhG8AQ==",
         },
+        {
+            "url": "https://puzz.link/p?circlesquare/15/15/000003000i3030319093030400300001900303000c300001990000330030300190900300003",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
