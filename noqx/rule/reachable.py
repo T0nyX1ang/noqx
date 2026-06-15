@@ -228,12 +228,11 @@ def avoid_unknown_src(color: Optional[str] = "black", main_type: str = "grid", a
     if color is None:
         validate_type(adj_type, ("edge",))
         tag = tag_encode("reachable", main_type, "src", "adj", adj_type)
-        return f":- grid(R, C), not {tag}(_, _, R, C)."
+        return f":- grid(R, C), #count {{ SR, SC: {tag}(SR, SC, R, C) }} = 0."
 
     validate_type(adj_type, (4, 8, "line", "line_directed"))
     tag = tag_encode("reachable", main_type, "src", "adj", adj_type, color)
-
-    return f":- grid(R, C), {color}(R, C), not {tag}(_, _, R, C)."
+    return f":- grid(R, C), {color}(R, C), #count {{ SR, SC: {tag}(SR, SC, R, C) }} = 0."
 
 
 def grid_branch_color_connected(color: Optional[str] = "black", adj_type: Union[int, str] = 4) -> str:
