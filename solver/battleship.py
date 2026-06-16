@@ -14,6 +14,74 @@ def avoid_battleship_adjacent(color: str = "black", adj_type: str = "x"):
     return f":- adj_{adj_type}(R, C, R1, C1), {t_om}(R, C, R2, C2), {t_om}(R1, C1, R3, C3), (R2, C2) != (R3, C3)."
 
 
+def line_fleet_counts(shapeset):
+    """Return ship counts by length if every fleet shape is a straight line."""
+    result = {}
+    for shape, shape_count in shapeset.items():
+        rows = {r for r, _ in shape}
+        cols = {c for _, c in shape}
+        if len(rows) == 1:
+            length = len(cols)
+            if cols != set(range(length)):
+                return None
+        elif len(cols) == 1:
+            length = len(rows)
+            if rows != set(range(length)):
+                return None
+        else:
+            return None
+
+        result[length] = result.get(length, 0) + shape_count
+
+    return result
+
+
+def line_fleet(fleet_name: str, fleet_counts):
+    """Generate direct run-count rules for straight battleship fleets."""
+    max_length = max(fleet_counts)
+    rule = ""
+
+    rule += f":- {fleet_name}(R, C), {fleet_name}(R + 1, C + 1).\n"
+    rule += f":- {fleet_name}(R + 1, C), {fleet_name}(R, C + 1).\n"
+    rule += f":- {', '.join(f'{fleet_name}(R, C + {i})' for i in range(max_length + 1))}.\n"
+    rule += f":- {', '.join(f'{fleet_name}(R + {i}, C)' for i in range(max_length + 1))}.\n"
+
+    rule += (
+        f"ship_run(1, R, C) :- {fleet_name}(R, C), not {fleet_name}(R - 1, C), not {fleet_name}(R + 1, C), "
+        f"not {fleet_name}(R, C - 1), not {fleet_name}(R, C + 1).\n"
+    )
+    for length in range(2, max_length + 1):
+        horizontal = [f"{fleet_name}(R, C)", f"not {fleet_name}(R, C - 1)", f"not {fleet_name}(R, C + {length})"]
+        horizontal.extend(f"{fleet_name}(R, C + {i})" for i in range(1, length))
+        vertical = [f"{fleet_name}(R, C)", f"not {fleet_name}(R - 1, C)", f"not {fleet_name}(R + {length}, C)"]
+        vertical.extend(f"{fleet_name}(R + {i}, C)" for i in range(1, length))
+
+        rule += f"ship_run({length}, R, C) :- {', '.join(horizontal)}.\n"
+        rule += f"ship_run({length}, R, C) :- {', '.join(vertical)}.\n"
+
+    for length in range(1, max_length + 1):
+        rule += f":- #count {{ R, C : ship_run({length}, R, C) }} != {fleet_counts.get(length, 0)}.\n"
+
+    return rule.strip()
+
+
+def remaining_ship_cells(fleet_name: str, puzzle: Puzzle, fleet_total: int, row_clues, col_clues):
+    """Generate redundant remaining-cell counts for unclued rows and columns."""
+    rules = []
+    open_rows = tuple(r for r in range(puzzle.row) if r not in row_clues)
+    open_cols = tuple(c for c in range(puzzle.col) if c not in col_clues)
+
+    if open_rows:
+        rules.append(f"open_row({';'.join(str(r) for r in open_rows)}).")
+        rules.append(f":- #count {{ R, C : {fleet_name}(R, C), open_row(R) }} != {fleet_total - sum(row_clues.values())}.")
+
+    if open_cols:
+        rules.append(f"open_col({';'.join(str(c) for c in open_cols)}).")
+        rules.append(f":- #count {{ R, C : {fleet_name}(R, C), open_col(C) }} != {fleet_total - sum(col_clues.values())}.")
+
+    return "\n".join(rules)
+
+
 class BattleshipSolver(Solver):
     """The Battleship solver."""
 
@@ -105,37 +173,50 @@ class BattleshipSolver(Solver):
                 self.add_program_line(f":- grid({r + 1}, {c}), {fleet_name}({r + 1}, {c}).")
                 self.add_program_line(f":- grid({r - 1}, {c}), not {fleet_name}({r - 1}, {c}).")
 
-        self.add_program_line(shade_c(color=fleet_name))
-        self.add_program_line(adjacent(_type=4))
-        self.add_program_line(adjacent(_type="x"))
-        self.add_program_line(avoid_battleship_adjacent(color=fleet_name, adj_type="x"))
-        self.add_program_line(all_shapes("battleship", color=fleet_name))
-        split_boundary = len(puzzle.symbol) > 0
-
         shapeset = parse_shapeset(puzzle.param["shapeset"])
-        for i, (o_shape, o_count) in enumerate(shapeset.items()):
-            self.add_program_line(
-                general_shape(
-                    "battleship",
-                    i,
-                    o_shape,
-                    color=fleet_name,
-                    adj_type=4,
-                    add_origin_map=True,
-                    split_boundary=split_boundary,
-                )
-            )
-            self.add_program_line(count_shape(o_count, name="battleship", _id=i, color=fleet_name))
+        fleet_counts = line_fleet_counts(shapeset)
+        use_line_fleet = fleet_counts is not None and len(puzzle.symbol) == 0
 
+        self.add_program_line(shade_c(color=fleet_name))
+        if use_line_fleet:
+            self.add_program_line(line_fleet(fleet_name, fleet_counts))
+        else:
+            self.add_program_line(adjacent(_type=4))
+            self.add_program_line(adjacent(_type="x"))
+            self.add_program_line(avoid_battleship_adjacent(color=fleet_name, adj_type="x"))
+            self.add_program_line(all_shapes("battleship", color=fleet_name))
+            split_boundary = len(puzzle.symbol) > 0
+
+            for i, (o_shape, o_count) in enumerate(shapeset.items()):
+                self.add_program_line(
+                    general_shape(
+                        "battleship",
+                        i,
+                        o_shape,
+                        color=fleet_name,
+                        adj_type=4,
+                        add_origin_map=True,
+                        split_boundary=split_boundary,
+                    )
+                )
+                self.add_program_line(count_shape(o_count, name="battleship", _id=i, color=fleet_name))
+
+        row_clues = {}
+        col_clues = {}
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
 
             if r == -1 and 0 <= c < puzzle.col and isinstance(num, int):
+                col_clues[c] = num
                 self.add_program_line(count(num, color=fleet_name, _type="col", _id=c))
 
             if c == -1 and 0 <= r < puzzle.row and isinstance(num, int):
+                row_clues[r] = num
                 self.add_program_line(count(num, color=fleet_name, _type="row", _id=r))
+
+        if use_line_fleet:
+            self.add_program_line(remaining_ship_cells(fleet_name, puzzle, sum(length * count for length, count in fleet_counts.items()), row_clues, col_clues))
 
         self.add_program_line(display(item=fleet_name))
 
