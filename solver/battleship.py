@@ -1,7 +1,7 @@
 """The Battleship self."""
 
 from noqx.manager import Solver
-from noqx.puzzle import Point, Puzzle
+from noqx.puzzle import Color, Point, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -78,6 +78,18 @@ def remaining_ship_cells(fleet_name: str, puzzle: Puzzle, fleet_total: int, row_
     if open_cols:
         rules.append(f"open_col({';'.join(str(c) for c in open_cols)}).")
         rules.append(f":- #count {{ R, C : {fleet_name}(R, C), open_col(C) }} != {fleet_total - sum(col_clues.values())}.")
+
+    return "\n".join(rules)
+
+
+def surface_constraints(fleet_name: str, puzzle: Puzzle):
+    """Generate fixed-cell constraints from prefilled surface colors."""
+    rules = []
+    for (r, c, _, _), color in puzzle.surface.items():
+        if color in Color.DARK:
+            rules.append(f"{fleet_name}({r}, {c}).")
+        else:
+            rules.append(f":- {fleet_name}({r}, {c}).")
 
     return "\n".join(rules)
 
@@ -175,9 +187,10 @@ class BattleshipSolver(Solver):
 
         shapeset = parse_shapeset(puzzle.param["shapeset"])
         fleet_counts = line_fleet_counts(shapeset)
-        use_line_fleet = fleet_counts is not None and len(puzzle.symbol) == 0 and len(puzzle.surface) == 0
+        use_line_fleet = fleet_counts is not None and len(puzzle.symbol) == 0
 
         self.add_program_line(shade_c(color=fleet_name))
+        self.add_program_line(surface_constraints(fleet_name, puzzle))
         if use_line_fleet:
             self.add_program_line(line_fleet(fleet_name, fleet_counts))
         else:
