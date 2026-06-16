@@ -110,10 +110,21 @@ class BattleshipSolver(Solver):
         self.add_program_line(adjacent(_type="x"))
         self.add_program_line(avoid_battleship_adjacent(color=fleet_name, adj_type="x"))
         self.add_program_line(all_shapes("battleship", color=fleet_name))
+        split_boundary = len(puzzle.symbol) > 0
 
         shapeset = parse_shapeset(puzzle.param["shapeset"])
         for i, (o_shape, o_count) in enumerate(shapeset.items()):
-            self.add_program_line(general_shape("battleship", i, o_shape, color=fleet_name, adj_type=4, add_origin_map=True))
+            self.add_program_line(
+                general_shape(
+                    "battleship",
+                    i,
+                    o_shape,
+                    color=fleet_name,
+                    adj_type=4,
+                    add_origin_map=True,
+                    split_boundary=split_boundary,
+                )
+            )
             self.add_program_line(count_shape(o_count, name="battleship", _id=i, color=fleet_name))
 
         for (r, c, d, label), num in puzzle.text.items():
