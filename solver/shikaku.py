@@ -3,12 +3,70 @@
 from typing import List, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, avoid_unknown_rect, count_rect_size
+from noqx.rule.shape import all_rect_region, avoid_unknown_rect
+
+
+def _has_other_clue(
+    top: int,
+    bottom: int,
+    left: int,
+    right: int,
+    src_cell: Tuple[int, int],
+    clue_cells: List[Tuple[int, int]],
+) -> bool:
+    src_r, src_c = src_cell
+    return any((r, c) != (src_r, src_c) and top <= r <= bottom and left <= c <= right for r, c in clue_cells)
+
+
+def count_shikaku_rect_size(
+    num: int,
+    src_cell: Tuple[int, int],
+    rows: int,
+    cols: int,
+    clue_cells: List[Tuple[int, int]],
+) -> str:
+    """Constrain a Shikaku clue to a same-area rectangle that contains no other clues."""
+    src_r, src_c = src_cell
+    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+    atom = f"shikaku_area_{src_r}_{src_c}"
+    rules: List[str] = []
+
+    for height in range(1, num + 1):
+        if num % height != 0:
+            continue
+
+        width = num // height
+        top_min = max(0, src_r - height + 1)
+        top_max = min(src_r, rows - height)
+        left_min = max(0, src_c - width + 1)
+        left_max = min(src_c, cols - width)
+
+        for top in range(top_min, top_max + 1):
+            bottom = top + height - 1
+            for left in range(left_min, left_max + 1):
+                right = left + width - 1
+                if _has_other_clue(top, bottom, left, right, src_cell, clue_cells):
+                    continue
+
+                conditions = [
+                    f"{tag}({src_r}, {src_c}, {top}, {src_c})",
+                    f"{tag}({src_r}, {src_c}, {bottom}, {src_c})",
+                    f"{tag}({src_r}, {src_c}, {src_r}, {left})",
+                    f"{tag}({src_r}, {src_c}, {src_r}, {right})",
+                    f'edge({top}, {src_c}, "{Direction.TOP}")',
+                    f'edge({bottom + 1}, {src_c}, "{Direction.TOP}")',
+                    f'edge({src_r}, {left}, "{Direction.LEFT}")',
+                    f'edge({src_r}, {right + 1}, "{Direction.LEFT}")',
+                ]
+                rules.append(f"{atom} :- {', '.join(conditions)}.")
+
+    rules.append(f":- not {atom}.")
+    return "\n".join(rules)
 
 
 class ShikakuSolver(Solver):
@@ -40,6 +98,7 @@ class ShikakuSolver(Solver):
         self.add_program_line(avoid_unknown_rect())
 
         all_src: List[Tuple[int, int]] = []
+        clue_cells = [(r, c) for r, c, _, _ in puzzle.text]
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -51,7 +110,7 @@ class ShikakuSolver(Solver):
                 self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if isinstance(num, int):
-                self.add_program_line(count_rect_size(num, (r, c), adj_type="edge"))
+                self.add_program_line(count_shikaku_rect_size(num, (r, c), puzzle.row, puzzle.col, clue_cells))
 
             all_src.append((r, c))
 
