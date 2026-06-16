@@ -187,11 +187,13 @@ class BattleshipSolver(Solver):
 
         shapeset = parse_shapeset(puzzle.param["shapeset"])
         fleet_counts = line_fleet_counts(shapeset)
-        use_line_fleet = fleet_counts is not None and len(puzzle.symbol) == 0
+        use_line_fleet = fleet_counts is not None
 
         self.add_program_line(shade_c(color=fleet_name))
         self.add_program_line(surface_constraints(fleet_name, puzzle))
         if use_line_fleet:
+            if puzzle.symbol:
+                self.add_program_line(adjacent(_type=4))
             self.add_program_line(line_fleet(fleet_name, fleet_counts))
         else:
             self.add_program_line(adjacent(_type=4))
