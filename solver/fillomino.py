@@ -5,7 +5,7 @@ from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import count_reachable_src, grid_src_color_connected
+from noqx.rule.reachable import count_reachable_src
 
 
 def fillomino_constraint() -> str:
@@ -39,6 +39,23 @@ def fillomino_constraint() -> str:
     return rule
 
 
+def fillomino_src_connected(r: int, c: int, num: int) -> str:
+    """Collect cells reachable from a clue, bounded by its possible region size."""
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+    rule = f"{tag}({r}, {c}, {r}, {c}).\n"
+    rule += (
+        f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), "
+        f"adj_edge(R, C, R1, C1), |R - {r}| + |C - {c}| < {num}.\n"
+    )
+    rule += (
+        f":- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), "
+        f"|R - {r}| + |C - {c}| >= {num}.\n"
+    )
+    rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").'
+    return rule
+
+
 def fillomino_filtered(fast: bool = True) -> str:
     """Generate the Fillomino filtered connection constraints."""
     tag = tag_encode("reachable", "grid", "branch", "adj", "edge")
@@ -54,6 +71,7 @@ def fillomino_filtered(fast: bool = True) -> str:
         rule += f":- numberx(R, C, N), #count{{ R1, C1: {tag}(R, C, R1, C1) }} != N.\n"
     else:
         rule += f"{{ numberx(R, C, N) }} = 1 :- grid(R, C), have_numberx(R, C), #count{{ R1, C1: {tag}(R, C, R1, C1) }} = N.\n"
+    rule += f":- numberx(R, C, N), {tag}(R, C, R1, C1), |R1 - R| + |C1 - C| >= N.\n"
     rule += ":- number(R, C, N), numberx(R1, C1, N), adj_4(R, C, R1, C1)."
 
     rule += f':- numberx(R, C, N), numberx(R, C + 1, N), edge(R, C + 1, "{Direction.LEFT}").\n'
@@ -62,6 +80,21 @@ def fillomino_filtered(fast: bool = True) -> str:
     rule += f':- have_numberx(R, C), have_numberx(R + 1, C), numberx(R, C, N), not numberx(R + 1, C, N), not edge(R + 1, C, "{Direction.TOP}").\n'
 
     return rule
+
+
+def force_unique_clue_regions(puzzle: Puzzle) -> str:
+    """Force same-valued clues together when distinct clue regions fill the board."""
+    clues = [((r, c), num) for (r, c, _, _), num in puzzle.text.items() if isinstance(num, int)]
+    if puzzle.row * puzzle.col != sum({num for _, num in clues}):
+        return ""
+
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+    rules = []
+    for index, ((r0, c0), num0) in enumerate(clues):
+        for (r1, c1), num1 in clues[index + 1 :]:
+            if num0 == num1:
+                rules.append(f":- not {tag}({r0}, {c0}, {r1}, {c1}).")
+    return "\n".join(rules)
 
 
 class FillominoSolver(Solver):
@@ -100,13 +133,14 @@ class FillominoSolver(Solver):
 
         numberx_ub = puzzle.row * puzzle.col - sum({num for _, num in puzzle.text.items() if isinstance(num, int)})
         self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_ub}.")
+        self.add_program_line(force_unique_clue_regions(puzzle))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
             fail_false(isinstance(num, int), f"Clue at ({r}, {c}) should be an integer.")
             self.add_program_line(f"number({r}, {c}, {num}).")
-            self.add_program_line(grid_src_color_connected(src_cell=(r, c), color=None, adj_type="edge"))
+            self.add_program_line(fillomino_src_connected(r, c, int(num)))
             self.add_program_line(count_reachable_src(target=int(num), src_cell=(r, c), color=None, adj_type="edge"))
 
             if num == 1:
