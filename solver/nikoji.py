@@ -1,6 +1,7 @@
 """The NIKOJI solver."""
 
-from typing import Dict, List, Tuple, Union
+from functools import lru_cache
+from typing import Dict, Iterable, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
@@ -8,6 +9,54 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src
+
+Shape = Tuple[Tuple[int, int], ...]
+
+
+def normalize_shape(cells: Iterable[Tuple[int, int]]) -> Shape:
+    """Normalize a shape to its top-left bounding box corner."""
+    cell_list = tuple(cells)
+    min_r = min(r for r, _ in cell_list)
+    min_c = min(c for _, c in cell_list)
+    return tuple(sorted((r - min_r, c - min_c) for r, c in cell_list))
+
+
+def transformed_shapes(cells: Shape) -> Tuple[Shape, ...]:
+    """Generate unique rotations/reflections of a shape."""
+    transforms = [
+        lambda r, c: (r, c),
+        lambda r, c: (-r, c),
+        lambda r, c: (r, -c),
+        lambda r, c: (-r, -c),
+        lambda r, c: (c, r),
+        lambda r, c: (-c, r),
+        lambda r, c: (c, -r),
+        lambda r, c: (-c, -r),
+    ]
+    return tuple(sorted({normalize_shape(transform(r, c) for r, c in cells) for transform in transforms}))
+
+
+def canonical_shape(cells: Iterable[Tuple[int, int]]) -> Shape:
+    """Pick a canonical representative for a free polyomino."""
+    return min(transformed_shapes(normalize_shape(cells)))
+
+
+@lru_cache(maxsize=None)
+def small_polyominoes(max_size: int) -> Tuple[Shape, ...]:
+    """Generate free polyominoes up to a given size."""
+    by_size = {1: {canonical_shape(((0, 0),))}}
+    for size in range(2, max_size + 1):
+        next_shapes = set()
+        for shape in by_size[size - 1]:
+            cells = set(shape)
+            for r, c in cells:
+                for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    candidate = (r + dr, c + dc)
+                    if candidate not in cells:
+                        next_shapes.add(canonical_shape(tuple(cells | {candidate})))
+        by_size[size] = next_shapes
+
+    return tuple(shape for size in range(1, max_size + 1) for shape in sorted(by_size[size]))
 
 
 def region_profile(src_cell: Tuple[int, int]) -> str:
@@ -38,16 +87,31 @@ def region_profile(src_cell: Tuple[int, int]) -> str:
     return rules.strip()
 
 
+def small_shape_templates(src_cells: List[Tuple[int, int]], max_size: int = 4) -> str:
+    """Generate template matches for small free polyominoes."""
+    shapes = small_polyominoes(max_size)
+    rules = []
+    for r, c in src_cells:
+        for shape_id, shape in enumerate(shapes):
+            size = len(shape)
+            for orientation in transformed_shapes(shape):
+                body = [f"region_size({r}, {c}, {size})"]
+                body.extend(f"t_offset({r}, {c}, {dr}, {dc}, 0)" for dr, dc in orientation)
+                rules.append(f"small_shape({r}, {c}, {shape_id}) :- {', '.join(body)}.")
+        rules.append(f"small_region({r}, {c}) :- small_shape({r}, {c}, _).")
+    return "\n".join(rules)
+
+
 def avoid_congruent_shape(src_cell: Tuple[int, int], dst_cell: Tuple[int, int]) -> str:
     """Generate a rule to forbid congruent bare shapes."""
     r0, c0 = src_cell
     r1, c1 = dst_cell
-    rule = f"same_size({r0}, {c0}, {r1}, {c1}) :- region_size({r0}, {c0}, N), region_size({r1}, {c1}, N).\n"
-    rule += f"mismatch({r0}, {c0}, {r1}, {c1}) :- not same_size({r0}, {c0}, {r1}, {c1}).\n"
-    rule += f"misshape_k({r0}, {c0}, {r1}, {c1}, K) :- same_size({r0}, {c0}, {r1}, {c1}), K = 0..7, t_offset({r0}, {c0}, DR, DC, 0), not t_offset({r1}, {c1}, DR, DC, K).\n"
-    rule += f"same_shape_k({r0}, {c0}, {r1}, {c1}, K) :- same_size({r0}, {c0}, {r1}, {c1}), K = 0..7, not misshape_k({r0}, {c0}, {r1}, {c1}, K).\n"
-    rule += f"mismatch({r0}, {c0}, {r1}, {c1}) :- same_size({r0}, {c0}, {r1}, {c1}), not same_shape_k({r0}, {c0}, {r1}, {c1}, _).\n"
-    rule += f":- not mismatch({r0}, {c0}, {r1}, {c1}).\n"
+    rule = f":- small_shape({r0}, {c0}, S), small_shape({r1}, {c1}, S).\n"
+    rule += f"compare_pair({r0}, {c0}, {r1}, {c1}) :- not small_region({r0}, {c0}).\n"
+    rule += f"compare_pair({r0}, {c0}, {r1}, {c1}) :- not small_region({r1}, {c1}).\n"
+    rule += f"same_size({r0}, {c0}, {r1}, {c1}) :- compare_pair({r0}, {c0}, {r1}, {c1}), region_size({r0}, {c0}, N), region_size({r1}, {c1}, N).\n"
+    rule += f"misshape_k({r0}, {c0}, {r1}, {c1}, K) :- compare_pair({r0}, {c0}, {r1}, {c1}), same_size({r0}, {c0}, {r1}, {c1}), K = 0..7, t_offset({r0}, {c0}, DR, DC, 0), not t_offset({r1}, {c1}, DR, DC, K).\n"
+    rule += f":- compare_pair({r0}, {c0}, {r1}, {c1}), same_size({r0}, {c0}, {r1}, {c1}), K = 0..7, not misshape_k({r0}, {c0}, {r1}, {c1}, K).\n"
     return rule
 
 
@@ -159,6 +223,7 @@ class NikojiSolver(Solver):
             locations[clue].append((r, c))
             all_src.append((r, c))
 
+        leader_cells = [cells[0] for cells in locations.values()]
         for cells in locations.values():
             self.add_program_line(restricted_src_connected(cells[0], cells[1:], all_src, puzzle.row, puzzle.col))
 
@@ -168,6 +233,8 @@ class NikojiSolver(Solver):
             self.add_program_line(region_profile(leader))
             for member in cells[1:]:
                 self.add_program_line(translate_identical_shape(leader, member, all_src))
+
+        self.add_program_line(small_shape_templates(leader_cells))
 
         location_keys = tuple(locations.keys())
         for i in range(len(locations)):
