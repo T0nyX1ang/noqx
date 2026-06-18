@@ -1,6 +1,5 @@
 """The NIKOJI solver."""
 
-from functools import lru_cache
 from typing import Dict, Iterable, List, Tuple, Union
 
 from noqx.manager import Solver
@@ -41,7 +40,6 @@ def canonical_shape(cells: Iterable[Tuple[int, int]]) -> Shape:
     return min(transformed_shapes(normalize_shape(cells)))
 
 
-@lru_cache(maxsize=None)
 def small_polyominoes(max_size: int) -> Tuple[Shape, ...]:
     """Generate free polyominoes up to a given size."""
     by_size = {1: {canonical_shape(((0, 0),))}}
@@ -87,32 +85,60 @@ def region_profile(src_cell: Tuple[int, int]) -> str:
     return rules.strip()
 
 
-def small_shape_templates(src_cells: List[Tuple[int, int]], max_size: int = 4) -> str:
+def small_shape_templates(src_cells: List[Tuple[int, int]], rows: int, cols: int, max_size: int = 4) -> str:
     """Generate template matches for small free polyominoes."""
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
     shapes = small_polyominoes(max_size)
-    rules = []
+    rules = [
+        f"bad_template(SR, SC, S, P) :- valid_template(SR, SC, S, P), template_in(S, P, DR, DC), not {tag}(SR, SC, SR + DR, SC + DC).",
+        f"bad_template(SR, SC, S, P) :- valid_template(SR, SC, S, P), template_out(S, P, DR, DC), grid(SR + DR, SC + DC), {tag}(SR, SC, SR + DR, SC + DC).",
+        "small_shape(SR, SC, S) :- valid_template(SR, SC, S, P), not bad_template(SR, SC, S, P).",
+    ]
+    placements = []
+    for shape_id, shape in enumerate(shapes):
+        placement_id = 0
+        for orientation in transformed_shapes(shape):
+            shape_cells = set(orientation)
+            boundary = set()
+            for dr, dc in orientation:
+                for nr, nc in ((dr - 1, dc), (dr + 1, dc), (dr, dc - 1), (dr, dc + 1)):
+                    if (nr, nc) not in shape_cells:
+                        boundary.add((nr, nc))
+
+            for anchor_r, anchor_c in orientation:
+                inside = tuple((dr - anchor_r, dc - anchor_c) for dr, dc in orientation)
+                placements.append((shape_id, placement_id, inside))
+                for dr, dc in orientation:
+                    rules.append(f"template_in({shape_id}, {placement_id}, {dr - anchor_r}, {dc - anchor_c}).")
+                for br, bc in sorted(boundary):
+                    rules.append(f"template_out({shape_id}, {placement_id}, {br - anchor_r}, {bc - anchor_c}).")
+                placement_id += 1
+
     for r, c in src_cells:
-        for shape_id, shape in enumerate(shapes):
-            size = len(shape)
-            for orientation in transformed_shapes(shape):
-                body = [f"region_size({r}, {c}, {size})"]
-                body.extend(f"t_offset({r}, {c}, {dr}, {dc}, 0)" for dr, dc in orientation)
-                rules.append(f"small_shape({r}, {c}, {shape_id}) :- {', '.join(body)}.")
+        for shape_id, placement_id, inside in placements:
+            if all(0 <= r + dr < rows and 0 <= c + dc < cols for dr, dc in inside):
+                rules.append(f"valid_template({r}, {c}, {shape_id}, {placement_id}).")
         rules.append(f"small_region({r}, {c}) :- small_shape({r}, {c}, _).")
     return "\n".join(rules)
 
 
-def avoid_congruent_shape(src_cell: Tuple[int, int], dst_cell: Tuple[int, int]) -> str:
-    """Generate a rule to forbid congruent bare shapes."""
-    r0, c0 = src_cell
-    r1, c1 = dst_cell
-    rule = f":- small_shape({r0}, {c0}, S), small_shape({r1}, {c1}, S).\n"
-    rule += f"compare_pair({r0}, {c0}, {r1}, {c1}) :- not small_region({r0}, {c0}).\n"
-    rule += f"compare_pair({r0}, {c0}, {r1}, {c1}) :- not small_region({r1}, {c1}).\n"
-    rule += f"same_size({r0}, {c0}, {r1}, {c1}) :- compare_pair({r0}, {c0}, {r1}, {c1}), region_size({r0}, {c0}, N), region_size({r1}, {c1}, N).\n"
-    rule += f"misshape_k({r0}, {c0}, {r1}, {c1}, K) :- compare_pair({r0}, {c0}, {r1}, {c1}), same_size({r0}, {c0}, {r1}, {c1}), K = 0..7, t_offset({r0}, {c0}, DR, DC, 0), not t_offset({r1}, {c1}, DR, DC, K).\n"
-    rule += f":- compare_pair({r0}, {c0}, {r1}, {c1}), same_size({r0}, {c0}, {r1}, {c1}), K = 0..7, not misshape_k({r0}, {c0}, {r1}, {c1}, K).\n"
-    return rule
+def avoid_congruent_shapes(src_pairs: List[Tuple[Tuple[int, int], Tuple[int, int]]]) -> str:
+    """Generate rules to forbid congruent bare shapes between leader pairs."""
+    rules = []
+    for (r0, c0), (r1, c1) in src_pairs:
+        rules.append(f"different_leader({r0}, {c0}, {r1}, {c1}).")
+
+    rules.append(":- different_leader(R0, C0, R1, C1), small_shape(R0, C0, S), small_shape(R1, C1, S).")
+    rules.append("compare_pair(R0, C0, R1, C1) :- different_leader(R0, C0, R1, C1), not small_region(R0, C0).")
+    rules.append("compare_pair(R0, C0, R1, C1) :- different_leader(R0, C0, R1, C1), not small_region(R1, C1).")
+    rules.append(
+        "same_size(R0, C0, R1, C1) :- compare_pair(R0, C0, R1, C1), region_size(R0, C0, N), region_size(R1, C1, N)."
+    )
+    rules.append(
+        "misshape_k(R0, C0, R1, C1, K) :- compare_pair(R0, C0, R1, C1), same_size(R0, C0, R1, C1), K = 0..7, t_offset(R0, C0, DR, DC, 0), not t_offset(R1, C1, DR, DC, K)."
+    )
+    rules.append(":- compare_pair(R0, C0, R1, C1), same_size(R0, C0, R1, C1), K = 0..7, not misshape_k(R0, C0, R1, C1, K).")
+    return "\n".join(rules)
 
 
 def translate_identical_shape(src_cell: Tuple[int, int], dst_cell: Tuple[int, int], clue_cells: List[Tuple[int, int]]) -> str:
@@ -173,22 +199,16 @@ def restricted_src_connected(
     return "\n".join(rules)
 
 
-def partition_src_regions() -> str:
+def partition_src_regions(src_cells: List[Tuple[int, int]]) -> str:
     """Require source reachability to describe an exact edge-separated partition."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
     rules = f":- grid(R, C), 2 <= #count {{ SR, SC : {tag}(SR, SC, R, C) }}.\n"
-    rules += (
-        f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R, C + 1), SR != SR1, not edge(R, C + 1, "{Direction.LEFT}").\n'
-    )
-    rules += (
-        f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R, C + 1), SC != SC1, not edge(R, C + 1, "{Direction.LEFT}").\n'
-    )
-    rules += (
-        f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R + 1, C), SR != SR1, not edge(R + 1, C, "{Direction.TOP}").\n'
-    )
-    rules += (
-        f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R + 1, C), SC != SC1, not edge(R + 1, C, "{Direction.TOP}").'
-    )
+    for r0, c0 in src_cells:
+        for r1, c1 in src_cells:
+            if (r0, c0) != (r1, c1):
+                rules += f"different_src({r0}, {c0}, {r1}, {c1}).\n"
+    rules += f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R, C + 1), different_src(SR, SC, SR1, SC1), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rules += f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R + 1, C), different_src(SR, SC, SR1, SC1), not edge(R + 1, C, "{Direction.TOP}").'
     return rules
 
 
@@ -234,16 +254,18 @@ class NikojiSolver(Solver):
             for member in cells[1:]:
                 self.add_program_line(translate_identical_shape(leader, member, all_src))
 
-        self.add_program_line(small_shape_templates(leader_cells))
+        self.add_program_line(small_shape_templates(leader_cells, puzzle.row, puzzle.col))
 
         location_keys = tuple(locations.keys())
+        leader_pairs = []
         for i in range(len(locations)):
             for j in range(i + 1, len(locations)):
                 leader1 = locations[location_keys[i]][0]
                 leader2 = locations[location_keys[j]][0]
-                self.add_program_line(avoid_congruent_shape(leader1, leader2))
+                leader_pairs.append((leader1, leader2))
+        self.add_program_line(avoid_congruent_shapes(leader_pairs))
 
-        self.add_program_line(partition_src_regions())
+        self.add_program_line(partition_src_regions(all_src))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
