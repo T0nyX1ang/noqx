@@ -1,0 +1,4 @@
+interface:
+  display_name: "Noqx Git Workflow"
+  short_description: "Commit and push rules for noqx"
+  default_prompt: "Use this skill when staging, committing, writing commit messages, or pushing changes in the noqx repository. Follow the repository's pre-commit hooks, Conventional Commits message rules, and selective staging practices."
