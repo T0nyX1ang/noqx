@@ -18,7 +18,7 @@ Do not judge an optimization from one lucky run or from a semantically weakened 
 
 - `tests/test_solver.py` runs the normal solver test suite against examples embedded in solver metadata.
 - Solver modules store collected examples in their `examples` lists. Examples may use either direct Penpa data (`data`) or puzz.link URLs (`url`).
-- `tools/puzzlink_to_direct.py` converts front-end supported puzz.link examples into stable `direct:` puzzle encodings.
+- `tests/puzzlink_to_direct.py` converts front-end supported puzz.link examples into stable `direct:` puzzle encodings.
 - `noqx/puzzle/direct.py` and the direct branch in `noqx/manager.py` let local tools and benchmarks bypass the browser/front-end once a case is converted.
 
 Use examples already collected in the solver metadata before inventing synthetic benchmark cases.
@@ -28,15 +28,15 @@ Use examples already collected in the solver metadata before inventing synthetic
 For puzz.link URL examples, convert them once into direct cases:
 
 ```powershell
-uv run --with playwright python tools\puzzlink_to_direct.py --solver <solver-name> -o <cases.json>
+uv run --with playwright python tests\puzzlink_to_direct.py --solver <solver-name> -o <cases.json>
 ```
 
 Useful variants:
 
 ```powershell
-uv run --with playwright python tools\puzzlink_to_direct.py --scan-examples -o all-direct-cases.json
-uv run --with playwright python tools\puzzlink_to_direct.py --cases-json input-cases.json -o converted-cases.json
-uv run --with playwright python tools\puzzlink_to_direct.py --puzzle-name <solver-name> --config key=value <puzz.link-url> -o case.json
+uv run --with playwright python tests\puzzlink_to_direct.py --scan-examples -o all-direct-cases.json
+uv run --with playwright python tests\puzzlink_to_direct.py --cases-json input-cases.json -o converted-cases.json
+uv run --with playwright python tests\puzzlink_to_direct.py --puzzle-name <solver-name> --config key=value <puzz.link-url> -o case.json
 ```
 
 The converter path is:
@@ -106,4 +106,4 @@ When testing multiple ideas, change one variable at a time:
 
 - Summarize benchmark data before commit or push, including baseline and candidate timings.
 - Use `skills/noqx-git-workflow/SKILL.md` for staging, commit message, commit, and push rules.
-- In prior work, `noqx/manager.py`, `noqx/puzzle/direct.py`, and `tools/` were local direct-testing support files; do not mix them into an unrelated solver commit unless explicitly requested.
+- In prior work, `noqx/manager.py`, `noqx/puzzle/direct.py`, and `tests/puzzlink_to_direct.py` were local direct-testing support files; do not mix them into an unrelated solver commit unless explicitly requested.

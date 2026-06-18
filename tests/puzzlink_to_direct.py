@@ -6,7 +6,7 @@ This tool intentionally reuses the browser-side import path:
 
 Run it with Playwright available, for example:
 
-    uv run --with playwright python tools/puzzlink_to_direct.py --solver battleship -o cases.json
+    uv run --with playwright python tests/puzzlink_to_direct.py --solver battleship -o cases.json
 """
 
 import argparse
@@ -116,7 +116,7 @@ def playwright_module():
     except ImportError as exc:
         raise RuntimeError(
             "Playwright is required for front-end URL conversion. "
-            "Run with: uv run --with playwright python tools/puzzlink_to_direct.py ..."
+            "Run with: uv run --with playwright python tests/puzzlink_to_direct.py ..."
         ) from exc
     return sync_playwright
 
