@@ -1,6 +1,6 @@
 ---
 name: noqx-git-workflow
-description: Project-specific git workflow for the noqx repository. Use when Codex stages files, writes commit messages, creates commits, runs pre-commit hooks, pushes to GitHub, or explains commit/push rules for noqx.
+description: Project-specific git workflow for the noqx repository. Use when the agent stages files, writes commit messages, creates commits, runs pre-commit hooks, pushes to GitHub, or explains commit/push rules for noqx.
 ---
 
 # Noqx Git Workflow
@@ -52,6 +52,7 @@ Common types for this repository:
 
 - `perf`: solver speedups or performance-oriented rewrites.
 - `fix`: correctness fixes or bug fixes.
+- `feat`: new solvers or new module-level features.
 - `test`: tests, benchmark cases, or coverage-only changes.
 - `docs`: documentation, comments, or project guidance.
 - `refactor`: behavior-preserving code restructuring.
@@ -60,7 +61,13 @@ Common types for this repository:
 Avoid bare summaries such as:
 
 ```text
-optimize nikoji shape matching
+update solvers
+```
+
+or
+
+```text
+add solver
 ```
 
 The `conventional-pre-commit` hook rejects that because it lacks a Conventional Commit type.
@@ -93,4 +100,3 @@ After a successful commit, report:
 - pushed branch and remote when pushed;
 - tests or checks that passed;
 - any unrelated dirty files still present.
-

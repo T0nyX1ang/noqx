@@ -1,6 +1,6 @@
 ---
 name: noqx-solver-testing
-description: Project-specific workflow for validating noqx solver changes and measuring speedups. Use when Codex writes, edits, optimizes, reviews, or prepares to commit any solver under `solver/`, especially when comparing correctness, ground/solve time, direct puzzle examples, or acceleration ratios from existing solver examples.
+description: Project-specific workflow for validating noqx solver changes and measuring speedups. Use when the agent writes, edits, optimizes, reviews, or prepares to commit any solver under `solver/`, especially when comparing correctness, ground/solve time, direct puzzle examples, or acceleration ratios from existing solver examples.
 ---
 
 # Noqx Solver Testing
@@ -17,15 +17,15 @@ Do not judge an optimization from one lucky run or from a semantically weakened 
 ## Existing Test Assets
 
 - `tests/test_solver.py` runs the normal solver test suite against examples embedded in solver metadata.
-- Solver modules store collected examples in their `examples` lists. Examples may use either direct Penpa data (`data`) or puzz.link URLs (`url`).
-- `tests/puzzlink_to_direct.py` converts front-end supported puzz.link examples into stable `direct:` puzzle encodings.
+- Solver modules store collected examples in their `examples` lists. Examples may use either direct `Penpa+` data (`data`) or `puzz.link` URLs (`url`).
+- `tests/puzzlink_to_direct.py` converts front-end supported `puzz.link` examples into stable `direct:` puzzle encodings.
 - `noqx/puzzle/direct.py` and the direct branch in `noqx/manager.py` let local tools and benchmarks bypass the browser/front-end once a case is converted.
 
 Use examples already collected in the solver metadata before inventing synthetic benchmark cases.
 
 ## Convert URL Examples
 
-For puzz.link URL examples, convert them once into direct cases:
+For `puzz.link` URL examples, convert them once into direct cases:
 
 ```powershell
 uv run --with playwright python tests\puzzlink_to_direct.py --solver <solver-name> -o <cases.json>
@@ -42,7 +42,7 @@ uv run --with playwright python tests\puzzlink_to_direct.py --puzzle-name <solve
 The converter path is:
 
 ```text
-puzz.link URL -> penpa-edit import/export -> Python Puzzle -> direct:
+`puzz.link` URL -> `Penpa+` import/export -> Python Puzzle -> direct:
 ```
 
 If Playwright is missing, run with `uv run --with playwright ...`. The tool tries to use local Chrome or Edge when available.
@@ -97,9 +97,9 @@ When testing multiple ideas, change one variable at a time:
 ## Interpreting Speedups
 
 - Prefer wall-clock total time for user-facing claims, but keep ground and solve split in the notes.
-- Be suspicious of speedups that come from weaker constraints. Fast invalid models are not wins.
+- Be suspicious of speedups that come from weaker constraints. Fast but invalid models are unacceptable.
 - If an optimization only improves program size or atom/rule counts but not solve time, describe it as a possible cleanup, not as the main performance fix.
-- If program text grows substantially, check that the solve-time win is large and repeatable enough to justify the grounding/text cost.
+- If program text grows substantially, check that the solve-time increase is large and repeatable enough to justify the grounding/text cost.
 - A safe optimization can still be rejected if it is not a stable win on the collected examples.
 
 ## Handoff To Git Workflow

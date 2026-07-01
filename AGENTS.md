@@ -1,10 +1,10 @@
 # AGENTS.md
 
-## Codex Project Notes
+## Project Notes
 
-- Codex's default project guidance file is `AGENTS.md` at the repository root.
+- The default project guidance file is `AGENTS.md` at the repository root.
 - For solver changes, read `skills/noqx-solver-testing/SKILL.md` before editing, optimizing, benchmarking, committing, or pushing files under `solver/`.
-- The solver testing skill records the project-specific workflow for using existing examples, converting puzz.link URLs to `direct:` cases, checking correctness, and reporting speedups.
+- The solver testing skill records the project-specific workflow for using existing examples, converting `puzz.link` URLs to `direct:` cases, checking correctness, and reporting speed-ups.
 - For Python code style and solver helper conventions, read `skills/noqx-python-style/SKILL.md` before editing Python files.
 - Before committing or pushing to GitHub, read `skills/noqx-push-meta/SKILL.md` as the top-level checklist.
 - For staging, committing, commit messages, and pushing to GitHub, read `skills/noqx-git-workflow/SKILL.md`.

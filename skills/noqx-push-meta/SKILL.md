@@ -1,6 +1,6 @@
 ---
 name: noqx-push-meta
-description: Meta workflow for preparing noqx changes for GitHub. Use when Codex is asked to push, commit and push, prepare a commit for sharing, or decide which project skills and checks apply before updating `origin`.
+description: Meta workflow for preparing noqx changes for GitHub. Use when the agent is asked to push, commit and push, prepare a commit for sharing, or decide which project skills and checks apply before updating `origin`.
 ---
 
 # Noqx Push Meta
@@ -24,13 +24,14 @@ Use this skill as the entry point before pushing changes to GitHub. It routes to
 
 ```powershell
 uv run --with ruff ruff check solver\<solver-name>.py
-python -m unittest tests.test_solver
+uv run coverage report -m
 ```
 
-5. Use a Conventional Commit message as described in `noqx-git-workflow`.
-6. After committing, confirm `git status --short --branch` shows only intended state.
-7. Push the current branch explicitly with `git push origin <branch>`.
-8. Report the commit hash, pushed branch, checks run, and any unrelated dirty files that remain.
+5. Make sure all tests pass and the new functions are covered with tests.
+6. Use a Conventional Commit message as described in `noqx-git-workflow`.
+7. After committing, confirm `git status --short --branch` shows only intended state.
+8. Push the current branch explicitly with `git push origin <branch>`.
+9. Report the commit hash, pushed branch, checks run, and any unrelated dirty files that remain.
 
 ## Safety Rules
 
@@ -38,3 +39,4 @@ python -m unittest tests.test_solver
 - Do not mix local tooling or generated helper files into a solver commit unless the user explicitly asks for them.
 - If hooks modify files during commit, inspect those changes before staging and committing again.
 - Treat a successful push as complete only after `git status --short --branch` confirms the local branch is aligned with its upstream.
+- If the test coverages are below 95% for a single file, inspect the coverage report.

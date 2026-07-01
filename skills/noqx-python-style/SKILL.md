@@ -1,13 +1,19 @@
 ---
 name: noqx-python-style
-description: Project-specific Python coding conventions for noqx. Use when Codex edits Python files, solver helper functions, benchmark utilities, or project guidance where local style, debuggability, cache behavior, or generated ASP code structure matters.
+description: Project-specific Python coding conventions for noqx. Use when the agent edits Python files, solver helper functions, benchmark utilities, or project guidance where local style, debuggability, cache behavior, or generated ASP code structure matters.
 ---
 
 # Noqx Python Style
 
 ## Solver Helper Code
 
-- Do not use `functools.lru_cache` in solver helper code. Prefer explicit local computation or project-visible constants so benchmark runs and solver hot edits do not depend on hidden process-local cache state.
+- Use `micropython` compatible syntaxes except for typing checks, some unsupported syntaxes as below:
+
+  - `async` / `await` which needs `asyncio` support
+  - `enum`, `typing.NamedTuple` and `typing.TypedDict` which needs metaclasses support
+  - `dataclasses`
+  - `functools.lru_cache`
+  - nested `f-strings` which computes strings at runtime
 
 ## Formatting
 
