@@ -29,7 +29,9 @@ Config.parallel_threads = args.parallel_threads
 
 # logging setup
 log_level = "DEBUG" if args.debug else "INFO"
-logging.basicConfig(format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level)
+logging.basicConfig(
+    format="%(asctime)s.%(msecs)03d | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=log_level
+)
 
 if not os.path.exists("./penpa-edit/js/config.js"):
     logging.info("Creating default configuration.")
