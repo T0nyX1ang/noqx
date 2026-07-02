@@ -12,7 +12,7 @@ Use this skill as the entry point before pushing changes to GitHub. It routes to
 ## Required Skill Routing
 
 - Read `skills/noqx-git-workflow/SKILL.md` before staging, committing, writing commit messages, or pushing.
-- Read `skills/noqx-solver-testing/SKILL.md` when changes touch `solver/`, solver examples, direct puzzle conversion helpers, or benchmark-related files.
+- Read `skills/noqx-solver-testing/SKILL.md` when changes touch `solver/`, solver examples, puzzle conversion helpers, or benchmark-related files.
 - Read `skills/noqx-python-style/SKILL.md` when changes touch Python files.
 
 ## Push Checklist

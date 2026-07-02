@@ -24,7 +24,7 @@ uv pre-commit install
 - Run `git status --short` before staging.
 - Inspect `git diff` for tracked changes and identify unrelated user work.
 - Stage only files that belong to the requested change.
-- Do not accidentally stage local benchmark helpers, generated caches, or unrelated direct-testing files.
+- Do not accidentally stage local benchmark helpers, generated caches, or unrelated testing files.
 - If unrelated dirty files exist, leave them alone and mention them in the final status.
 
 ## Commit Message Format
@@ -43,7 +43,7 @@ Good examples:
 ```text
 perf(nikoji): optimize small shape matching
 fix(statuepark): preserve white connectivity
-test(nikoji): add direct benchmark case
+test(nikoji): add benchmark case
 docs: document solver benchmark workflow
 chore: update pre-commit hooks
 ```
