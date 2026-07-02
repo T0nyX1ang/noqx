@@ -1,7 +1,6 @@
 """The [Clingo](https://potassco.org/clingo/) backend that generates solutions for the given ASP problem."""
 
 import logging
-import time
 from typing import Any, Dict, List
 
 from clingo.control import Control
@@ -53,6 +52,7 @@ class ClingoSolver:
         """Initialize a solver instance and a model container."""
         self.clingo_instance: Control = Control(logger=clingo_logging_handler)
         self.model: List[str] = []
+        self.statistics: Dict[str, Any] = {}
 
     def store_model(self, model: Model):  # pragma: no cover
         """A wrapper to store the model on solving and convert the `Model` object to `str`.
@@ -74,11 +74,20 @@ class ClingoSolver:
         self.clingo_instance.configuration.asp.eq = 1  # type: ignore
         self.clingo_instance.configuration.solve.parallel_mode = Config.parallel_threads  # type: ignore
         self.clingo_instance.configuration.solve.models = Config.max_solutions_to_find  # type: ignore
+
+        logging.debug(f"[Solver] Parameter: TIME_LIMIT -> {Config.time_limit}.")
+        logging.debug(f"[Solver] Parameter: MAX_SOLUTIONS_TO_FIND -> {Config.max_solutions_to_find}.")
+        logging.debug(f"[Solver] Parameter: PARALLEL_THREADS -> {Config.parallel_threads}.")
         self.clingo_instance.add(program=program)
+
         self.clingo_instance.ground()
+        logging.debug("[Solver] ASP Program grounded.")
+
         with self.clingo_instance.solve(on_model=self.store_model, async_=True) as handle:  # type: ignore
             handle.wait(Config.time_limit)
             handle.cancel()
+
+        self.statistics = self.clingo_instance.statistics  # add the statistics from the solver instance for further analysis
 
     def solution(self) -> List[str]:
         """Get the solutions from the model container."""
@@ -98,7 +107,6 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
     Raises:
         TimeoutError: If the solving process exceeds the time limit defined in `Config.time_limit`.
     """
-    start = time.perf_counter()  # start the counter
     puzzle = prepare_puzzle(puzzle_name, puzzle_content, param)
     logging.debug(f"[Solver] {str(puzzle_name).capitalize()} board unpacked.")
 
@@ -106,6 +114,7 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
 
     instance = ClingoSolver()
     instance.solve(program)
+    total_time = instance.statistics["summary"]["times"]["total"]
 
     solutions: List[str] = []
     for solution in instance.solution():
@@ -113,13 +122,11 @@ def run_solver(puzzle_name: str, puzzle_content: str, param: Dict[str, Any]) -> 
         solutions.append(solution.encode())
         logging.debug(f"[Solver] {str(puzzle_name).capitalize()} board packed.")
 
-    stop = time.perf_counter()  # stop the counter
-
-    if (stop - start) >= Config.time_limit:
+    if total_time >= Config.time_limit and len(solutions) == 0:
         logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
         raise TimeoutError("Time limit exceeded.")
 
     logging.info(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
-    logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {stop - start} seconds.")
+    logging.info(f"[Stats] {str(puzzle_name).capitalize()} solver took {total_time} seconds.")
 
     return {"url": solutions}
