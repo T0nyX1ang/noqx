@@ -3,7 +3,6 @@
 from typing import Any, Dict, List
 
 from noqx.puzzle import Color, Direction, Point, Puzzle
-from noqx.puzzle.direct import DIRECT_PREFIX, DirectPuzzle
 from noqx.puzzle.penpa import PenpaPuzzle
 
 modules: Dict[str, "Solver"] = {}
@@ -57,10 +56,7 @@ def prepare_puzzle(puzzle_name: str, puzzle_content: str, param: Dict[str, Any])
         puzzle_content: The puzzle content exported in [Penpa+](https://swaroopg92.github.io/penpa-edit/) format.
         param: Additional parameters for the puzzle.
     """
-    if puzzle_content.startswith(DIRECT_PREFIX):
-        puzzle = DirectPuzzle(puzzle_name, puzzle_content, param)
-    else:
-        puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
+    puzzle = PenpaPuzzle(puzzle_name, puzzle_content, param)
     puzzle.decode()
 
     return puzzle
@@ -92,10 +88,7 @@ def store_solution(puzzle: Puzzle, model_str: str) -> Puzzle:
     module = modules[puzzle.puzzle_name]
 
     solution_data = tuple(str(model_str).split())  # raw solution converted from clingo
-    if puzzle.content.startswith(DIRECT_PREFIX):
-        solution = DirectPuzzle(puzzle.puzzle_name, puzzle.content, puzzle.param)
-    else:
-        solution = PenpaPuzzle(puzzle.puzzle_name, puzzle.content, puzzle.param)
+    solution = PenpaPuzzle(puzzle.puzzle_name, puzzle.content, puzzle.param)
     solution.decode()
     solution.clear()
 

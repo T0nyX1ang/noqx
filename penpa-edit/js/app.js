@@ -125,6 +125,7 @@ function imp(penpa, example = false) {
       Swal.close(); // close the popup window itself
       decode_puzzlink_extra(urlstring);
       document.getElementById("modal-load").style.display = "none";
+      return false;
     } else redraw_grid();
   } catch (error) {
     clearInfo();
@@ -141,7 +142,7 @@ function imp(penpa, example = false) {
       title: "Import error",
       text: errorMessage,
     });
-    return;
+    return false;
   }
 
   if (!example) {
@@ -240,6 +241,7 @@ function imp(penpa, example = false) {
   }
 
   hookLoad(currentContent);
+  return true;
 }
 
 function clearInfo() {
