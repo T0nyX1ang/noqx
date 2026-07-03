@@ -4,7 +4,7 @@
 
 - Try it through this [portal](./penpa-edit/){:target="\_blank"} for 180+ puzzle types and enhanced efficiency.
 
-## How to Use
+## How to use (in browser)
 
 ### Select a puzzle type
 
@@ -42,9 +42,75 @@
 
 - Although the puzzle is reset, the style and size is cached for convenience.
 
+### Program parameters
+
+```text
+  usage: uv run main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-B] [-D]
+
+  options:
+    -h, --help            show this help message and exit
+    -H HOST, --host HOST  the host to run the server on.
+    -p PORT, --port PORT  the port to run the server on.
+    -d, --debug           whether to enable debug mode with auto-reloading.
+    -tl TIME_LIMIT, --time-limit TIME_LIMIT
+                          time limit in seconds.
+    -pt PARALLEL_THREADS, --parallel-threads PARALLEL_THREADS
+                          parallel threads.
+    -B, --build-document  build the documentation site.
+    -D, --deployment-mode enable deployment mode for static sites.
+    -O, --offline-mode    enable offline mode.
+```
+
+## How to use (in CLI)
+
+### Preparations (for CLI)
+
+- Make sure the Microsoft Visual C++ Redistributable (v14, 2015-2022) is installed on Windows.
+
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first.
+
+- Clone this project. You may switch to the `dev` branch if you want to test the new features.
+
+```bash
+    git clone https://github.com/T0nyX1ang/noqx.git
+    git checkout dev  # Optional
+```
+
+- Install basic dependencies with `uv`:
+
+```bash
+    uv sync
+```
+
+- Use the latest `Chromium`-family browsers. The puzzle conversion is based on Playwright.
+
+### Export the puzzle URL
+
+- If the puzzle is created by `Penpa+` (original version), you can click the `Share → Editing URL → Copy` buttons to export the puzzle or just click the `Clone` button and copy the URL in the next page.
+
+- If the puzzle is created by `puzz.link` or its equivalent alternatives, you can click the `File → Export URL` buttons to get the board URL.
+
+### Program Parameters
+
+```text
+  usage: uv run --with playwright run_single.py [-h] -n PUZZLE_NAME [-e EXAMPLE_NUMBER] [-l LINK] [-p PARAMETER] [--browser-path BROWSER_PATH]
+
+  options:
+    -h, --help            show this help message and exit
+    -n PUZZLE_NAME, --puzzle-name PUZZLE_NAME
+                          The puzzle name.
+    -e EXAMPLE_NUMBER, --example-number EXAMPLE_NUMBER
+                          Number of the example, starting from 0.
+    -l LINK, --link LINK  The puzzle link.
+    -p PARAMETER, --parameter PARAMETER
+                          The parameters to pass to the solver in JSON format.
+    --browser-path BROWSER_PATH
+                          The path to the browser executable for Playwright.
+```
+
 ## How to contribute
 
-### Preparations
+### Preparations (for contribution)
 
 - Make sure the Microsoft Visual C++ Redistributable (v14, 2015-2022) is installed on Windows.
 
@@ -67,25 +133,6 @@
 
 ```bash
     uv pre-commit install
-```
-
-### Program parameters
-
-```text
-  usage: uv run main.py [-h] [-H HOST] [-p PORT] [-d] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-B] [-D]
-
-  options:
-    -h, --help            show this help message and exit
-    -H HOST, --host HOST  the host to run the server on.
-    -p PORT, --port PORT  the port to run the server on.
-    -d, --debug           whether to enable debug mode with auto-reloading.
-    -tl TIME_LIMIT, --time-limit TIME_LIMIT
-                          time limit in seconds.
-    -pt PARALLEL_THREADS, --parallel-threads PARALLEL_THREADS
-                          parallel threads.
-    -B, --build-document  build the documentation site.
-    -D, --deployment-mode enable deployment mode for static sites.
-    -O, --offline-mode    enable offline mode.
 ```
 
 ### Write a new solver

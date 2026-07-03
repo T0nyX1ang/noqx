@@ -1,4 +1,8 @@
-"""Test a single case within a certain solver in Noqx. Useful for debugging a specific solver with performance improvements."""
+"""
+Test a single case within a certain solver in Noqx.
+
+Useful for debugging a specific solver with performance improvements.
+"""
 
 import argparse
 import json
@@ -9,22 +13,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
-
-try:
-    from noqx.clingo import ClingoSolver, Config
-    from noqx.manager import generate_program, list_solver_metadata, load_solver, prepare_puzzle, store_solution
-except ImportError:
-    logging.error("Error importing Noqx modules.")
-    sys.exit(1)
-
+from noqx.clingo import ClingoSolver, Config
+from noqx.manager import generate_program, list_solver_metadata, load_solver, prepare_puzzle, store_solution
 
 parser = argparse.ArgumentParser(description="Simple case test in Noqx.")
-parser.add_argument("-n", "--puzzle-name", required=True, type=str, help="The puzzle name to test.")
-parser.add_argument("-e", "--example-number", default=0, type=int, help="Number of the example to test, starting from 0.")
-parser.add_argument("-l", "--link", default="", type=str, help="The puzzle link to test.")
+parser.add_argument("-n", "--puzzle-name", required=True, type=str, help="The puzzle name.")
+parser.add_argument("-e", "--example-number", default=0, type=int, help="Number of the example, starting from 0.")
+parser.add_argument("-l", "--link", default="", type=str, help="The puzzle link.")
 parser.add_argument("-p", "--parameter", default="{}", type=str, help="The parameters to pass to the solver in JSON format.")
 parser.add_argument("--browser-path", default=None, type=str, help="The path to the browser executable for Playwright.")
 args = parser.parse_args()
@@ -67,7 +62,7 @@ def find_browser_executable(explicit_path: Optional[str] = None) -> Optional[str
 def load_puzzlink_content(link: str) -> str:
     """Convert a puzz.link URL into the Penpa+ payload."""
     sync_playwright = playwright_module()
-    frontend_path = os.path.join(ROOT_DIR, "penpa-edit", "index.html")
+    frontend_path = os.path.join(".", "penpa-edit", "index.html")
     frontend_uri = "file:///" + os.path.abspath(frontend_path).replace("\\", "/")
     browser_executable = find_browser_executable(args.browser_path)
 
@@ -138,23 +133,22 @@ if not params:
         sys.exit(1)
 
 puzzle = prepare_puzzle(puzzle_name, puzzle_content, params)
-logging.debug(f"[Solver] {str(puzzle_name).capitalize()} board unpacked.")
-
 program = generate_program(puzzle)
 
 instance = ClingoSolver()
 instance.solve(program)
 total_time = instance.statistics["summary"]["times"]["total"]
 
+logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
+
 solutions: List[str] = []
-for solution in instance.solution():
+URL_PREFIX = "https://swaroopg92.github.io/penpa-edit/#"
+for i, solution in enumerate(instance.solution()):
     solution = store_solution(puzzle, solution)
-    solutions.append(solution.encode())
-    logging.debug(f"[Solver] {str(puzzle_name).capitalize()} board packed.")
+    logging.debug(f"[Solver] Solution {i + 1} URL -> {URL_PREFIX}{solution.encode()}")
 
 if total_time >= Config.time_limit and len(solutions) == 0:
     logging.warning(f"[Solver] {str(puzzle_name).capitalize()} puzzle timed out.")
     raise TimeoutError("Time limit exceeded.")
 
-logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle solved.")
 logging.debug(f"[Solver] {str(puzzle_name).capitalize()} puzzle statistics: {instance.statistics}.")
