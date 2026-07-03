@@ -21,8 +21,12 @@ parser.add_argument("-n", "--puzzle-name", required=True, type=str, help="The pu
 parser.add_argument("-e", "--example-number", default=0, type=int, help="Number of the example, starting from 0.")
 parser.add_argument("-l", "--link", default="", type=str, help="The puzzle link.")
 parser.add_argument("-p", "--parameter", default="{}", type=str, help="The parameters to pass to the solver in JSON format.")
-parser.add_argument("--browser-path", default=None, type=str, help="The path to the browser executable for Playwright.")
+parser.add_argument("-tl", "--time-limit", default=Config.time_limit, type=int, help="time limit in seconds.")
+parser.add_argument("-pt", "--parallel-threads", default=Config.parallel_threads, type=int, help="parallel threads.")
+parser.add_argument("-bp", "--browser-path", default=None, type=str, help="The path to the browser executable for Playwright.")
 args = parser.parse_args()
+Config.time_limit = args.time_limit
+Config.parallel_threads = args.parallel_threads
 
 logging.basicConfig(
     format="%(asctime)s.%(msecs)03d | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.DEBUG

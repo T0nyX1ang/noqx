@@ -93,7 +93,7 @@
 ### Program Parameters
 
 ```text
-  usage: uv run --with playwright run_single.py [-h] -n PUZZLE_NAME [-e EXAMPLE_NUMBER] [-l LINK] [-p PARAMETER] [--browser-path BROWSER_PATH]
+  usage: uv run --with playwright run_single.py [-h] -n PUZZLE_NAME [-e EXAMPLE_NUMBER] [-l LINK] [-p PARAMETER] [-tl TIME_LIMIT] [-pt PARALLEL_THREADS] [-bp BROWSER_PATH]
 
   options:
     -h, --help            show this help message and exit
@@ -104,7 +104,11 @@
     -l LINK, --link LINK  The puzzle link.
     -p PARAMETER, --parameter PARAMETER
                           The parameters to pass to the solver in JSON format.
-    --browser-path BROWSER_PATH
+    -tl TIME_LIMIT, --time-limit TIME_LIMIT
+                          time limit in seconds.
+    -pt PARALLEL_THREADS, --parallel-threads PARALLEL_THREADS
+                          parallel threads.
+    -bp BROWSER_PATH, --browser-path BROWSER_PATH
                           The path to the browser executable for Playwright.
 ```
 

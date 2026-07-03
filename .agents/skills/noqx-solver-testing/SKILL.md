@@ -35,9 +35,10 @@ Please note that the count of the examples in the solver metadata is zero-based,
 Useful variants:
 
 ```powershell
-uv run --with playwright run_single.py -n <puzzle-name> -e <example-number> --browser-path <browser.exe>
+uv run --with playwright run_single.py -n <puzzle-name> -e <example-number> -bp <browser.exe>
 uv run --with playwright run_single.py -n <puzzle-name> -l <puzz.link-url>
 uv run --with playwright run_single.py -n <puzzle-name> -l <puzz.link-url> -p '{"key": true}'
+uv run --with playwright run_single.py -n <puzzle-name> -l <puzz.link-url> -tl <time-limit> -pt <parallel-threads>
 ```
 
 The single-case import path is:
