@@ -83,6 +83,7 @@ omit = [
   "tests/*",
   "main.py",
   "main_deploy.py",
+  "run_single.py",
 ]
 
 [tool.uv]
