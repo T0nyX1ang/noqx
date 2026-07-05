@@ -47,10 +47,7 @@ def fillomino_src_connected(r: int, c: int, num: int) -> str:
         f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), "
         f"adj_edge(R, C, R1, C1), |R - {r}| + |C - {c}| < {num}.\n"
     )
-    rule += (
-        f":- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), "
-        f"|R - {r}| + |C - {c}| >= {num}.\n"
-    )
+    rule += f":- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), |R - {r}| + |C - {c}| >= {num}.\n"
     rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
     rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").'
     return rule
@@ -82,21 +79,6 @@ def fillomino_filtered(fast: bool = True) -> str:
     return rule
 
 
-def force_unique_clue_regions(puzzle: Puzzle) -> str:
-    """Force same-valued clues together when distinct clue regions fill the board."""
-    clues = [((r, c), num) for (r, c, _, _), num in puzzle.text.items() if isinstance(num, int)]
-    if puzzle.row * puzzle.col != sum({num for _, num in clues}):
-        return ""
-
-    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    rules = []
-    for index, ((r0, c0), num0) in enumerate(clues):
-        for (r1, c1), num1 in clues[index + 1 :]:
-            if num0 == num1:
-                rules.append(f":- not {tag}({r0}, {c0}, {r1}, {c1}).")
-    return "\n".join(rules)
-
-
 class FillominoSolver(Solver):
     """The Fillomino solver."""
 
@@ -109,14 +91,10 @@ class FillominoSolver(Solver):
             "config": {"fast_mode": False},
         },
         {
-            "data": "m=edit&p=7VRNb9pAEL3zK6I9z2G//HmjKfRCSdtQRZGFEBC3QQU5BVxVi/zfOztecNfCitK0aQ/V2qM3+3bW49nZt/tazrc5JDhUDBwEDhVzemNtH+7GZLVf5+kF9Mv9fbFFAHA1HMKn+XqX9zK3ato7mCQ1fTBv0oxJBvQKNgXzPj2Yt6kZg7lGioHAuREiwUAiHDTwhniLLutJwRGPHUZ4i3C52i7X+WxUz7xLMzMBZr/ziqItZJviW87qMPKXxWaxshOL+R5/Zne/enDMrrwrvpTs+IkKTL87XdWkq07pqvPpyj+fbjKtKiz7B0x4lmY2948NjBt4nR4qm9eByRhDFZ40nQyTCbr65Crpu8p3Ay9Wxx4bSo8NI9/1F0fcYyM/NvK/G/nfTXw2CXw39Bf7/ys4b/nCixbcDxeS+3yrJKJVE6HCFu8XWOif98MzEXQyt2SHZCXZCR4cGEX2NVlONiA7ojUDsjdkL8lqsiGtiezRP6k5np8O07a+SYzNEcQ1CGwFLAh1WAOByiISbA+F/ScVSFszi0MB0naRxYHF2uEQceLWxyC1cFgCxtc4Qe3ibj3HPQk/Wp0MtxOtEfxbM9NexgZ3n/OLcbHdzNeoAuNys8i3Rx9lt+qx74xe6kT9X4n/khLbI+AvfOWeqwCZGTRXEswVsIdyNp8tC2w1LCHRx1vaRbuL20W7u9xJ19f7PI060kFwfp5AwTlPoAB1/l+tKl1x8onESY66aKdQv0g/srmTxd+c2ou3LarztPcD",
+            "data": "m=edit&p=7VVNj5tADL3zK1Y++zDDkGTglm6zvaRsu0m1ihCKCMt2UUFsSaiqifLf1x4I+WilfklRK1UTrPdsx8zzxJP15yapM/RpKY0CJS2lhX20xx/RrXm+KbLgCsfN5qmqCSDe3tzgY1KsM3SiLi12tsYPzBjNmyACCQguPRJiNO+DrXkbmBDNjEKAMkYom2KTp1VR1bD3mWn7RZfg5ADvbZzRdeuUgnDYYYQ7fsWCaJrXaZEtp22xd0Fk5ggcfGUrMISy+pLxC3l/zNOqXOXsWCUbUrl+yp8BFQXWzUP1qelSZbxDM25VTH5SBRXZq2DYqmD0HRXuRVT48W5Hh3RHOpZBxJI+HKA+wFmwJRsGW/A8+qrkX4Y9SPAGzP0DHxL3ejpgehQeijOuiY96OuLqg55qeZqtR6fc53TdUym4+vCIc/WjfCndM4fLjmOuzhOsXp6FzqFYkdtxaoq0rVlYO6duoVHWvrZWWDuwdmpzJtbeW3ttrWft0OaMuN+/dCK/twVQmpT6mkZSCHQlEfXDbUUu9/p08WH9RZ7YiWDW1I9JmtEgTB4+ZldhVZdJQSxsylVW7zldTjsHvoJ9IkUD5/2/r/6J+4oPTFxgRv50TCNqdD9eaG4RnptlsqReA/03IodpCr8JXGTnNMyx8wI=",
         },
         {
             "url": "https://puzz.link/p?fillomino/15/15/h1o5i8g2m6g3g7i3h4h1i1g6g4h2g3h4g2i5h2i4h3l4h1h5m4h2g2h6k7h3i3h7k7h2g2h3m2h1h5l3h4i3h3i-10g4h4g1h3g7g1i8h4h3i2g2g2m8g6i1o1h",
-            "test": False,
-        },
-        {
-            "url": "https://puzz.link/p?fillomino/9/9/rb-134k-13i-13i7k5h-13k-13h8k6i-13i-13k9-13am2j",
             "test": False,
         },
     ]
@@ -131,9 +109,9 @@ class FillominoSolver(Solver):
         self.add_program_line(fillomino_constraint())
         self.add_program_line(fillomino_filtered(fast=puzzle.param["fast_mode"]))
 
-        numberx_ub = puzzle.row * puzzle.col - sum({num for _, num in puzzle.text.items() if isinstance(num, int)})
+        distinct_sum = sum({num for _, num in puzzle.text.items() if isinstance(num, int)})
+        numberx_ub = puzzle.row * puzzle.col - distinct_sum
         self.add_program_line(f":- #count{{ R, C: grid(R, C), have_numberx(R, C) }} > {numberx_ub}.")
-        self.add_program_line(force_unique_clue_regions(puzzle))
 
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
@@ -148,6 +126,14 @@ class FillominoSolver(Solver):
                 self.add_program_line(f':- not edge({r}, {c}, "{Direction.TOP}").')
                 self.add_program_line(f':- not edge({r}, {c + 1}, "{Direction.LEFT}").')
                 self.add_program_line(f':- not edge({r + 1}, {c}, "{Direction.TOP}").')
+
+        # Force same-valued clues together when distinct clue regions fill the board
+        tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+        if puzzle.row * puzzle.col == distinct_sum:
+            for (r0, c0, _, _), num0 in puzzle.text.items():
+                for (r1, c1, _, _), num1 in puzzle.text.items():
+                    if (r0, c0) < (r1, c1) and num0 == num1:
+                        self.add_program_line(f":- not {tag}({r0}, {c0}, {r1}, {c1}).")
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')
