@@ -30,4 +30,5 @@ description: Project-specific Python coding conventions for noqx. Use when the a
 - Use type annotations on public functions and solver helpers when they improve readability or clarify the expected `Puzzle` data.
 - Keep solver logic easy to follow with straightforward loops and branches rather than clever one-liners or deeply nested expressions.
 - When building ASP output, prefer incremental `self.add_program_line(...)` calls so each generated rule stays readable and testable.
+- When writing a separate ASP rule, prefer string addition instead of string appending.
 - Write code so the same helper can be executed repeatedly in a clean process without depending on hidden global state or cached results.

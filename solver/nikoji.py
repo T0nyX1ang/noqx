@@ -1,6 +1,6 @@
 """The NIKOJI solver."""
 
-from typing import Dict, Iterable, List, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
@@ -8,53 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src
-
-Shape = Tuple[Tuple[int, int], ...]
-
-
-def normalize_shape(cells: Iterable[Tuple[int, int]]) -> Shape:
-    """Normalize a shape to its top-left bounding box corner."""
-    cell_list = tuple(cells)
-    min_r = min(r for r, _ in cell_list)
-    min_c = min(c for _, c in cell_list)
-    return tuple(sorted((r - min_r, c - min_c) for r, c in cell_list))
-
-
-def transformed_shapes(cells: Shape) -> Tuple[Shape, ...]:
-    """Generate unique rotations/reflections of a shape."""
-    transforms = [
-        lambda r, c: (r, c),
-        lambda r, c: (-r, c),
-        lambda r, c: (r, -c),
-        lambda r, c: (-r, -c),
-        lambda r, c: (c, r),
-        lambda r, c: (-c, r),
-        lambda r, c: (c, -r),
-        lambda r, c: (-c, -r),
-    ]
-    return tuple(sorted({normalize_shape(transform(r, c) for r, c in cells) for transform in transforms}))
-
-
-def canonical_shape(cells: Iterable[Tuple[int, int]]) -> Shape:
-    """Pick a canonical representative for a free polyomino."""
-    return min(transformed_shapes(normalize_shape(cells)))
-
-
-def small_polyominoes(max_size: int) -> Tuple[Shape, ...]:
-    """Generate free polyominoes up to a given size."""
-    by_size = {1: {canonical_shape(((0, 0),))}}
-    for size in range(2, max_size + 1):
-        next_shapes = set()
-        for shape in by_size[size - 1]:
-            cells = set(shape)
-            for r, c in cells:
-                for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    candidate = (r + dr, c + dc)
-                    if candidate not in cells:
-                        next_shapes.add(canonical_shape(tuple(cells | {candidate})))
-        by_size[size] = next_shapes
-
-    return tuple(shape for size in range(1, max_size + 1) for shape in sorted(by_size[size]))
+from noqx.rule.shape import get_variant_shape, normalize_shape
 
 
 def region_profile(src_cell: Tuple[int, int]) -> str:
@@ -85,6 +39,25 @@ def region_profile(src_cell: Tuple[int, int]) -> str:
     return rules.strip()
 
 
+def small_polyominoes(max_size: int) -> Tuple[Tuple[Tuple[int, int], ...], ...]:
+    """Generate free polyominoes up to a given size."""
+    by_size = {1: {normalize_shape(((0, 0),))}}
+    for size in range(2, max_size + 1):
+        next_shapes: Set[Tuple[Tuple[int, int], ...]] = set()
+        for shape in by_size[size - 1]:
+            cells = set(shape)
+            for r, c in cells:
+                for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    candidate = (r + dr, c + dc)
+                    if candidate not in cells:
+                        new_shape = normalize_shape(tuple(cells | {candidate}))
+                        next_shapes.add(min(get_variant_shape(new_shape, allow_rotations=True, allow_reflections=True)))
+
+        by_size[size] = next_shapes
+
+    return tuple({shape for size in range(1, max_size + 1) for shape in sorted(by_size[size])})
+
+
 def small_shape_templates(src_cells: List[Tuple[int, int]], rows: int, cols: int, max_size: int = 4) -> str:
     """Generate template matches for small free polyominoes."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
@@ -97,7 +70,7 @@ def small_shape_templates(src_cells: List[Tuple[int, int]], rows: int, cols: int
     placements = []
     for shape_id, shape in enumerate(shapes):
         placement_id = 0
-        for orientation in transformed_shapes(shape):
+        for orientation in get_variant_shape(shape, allow_rotations=True, allow_reflections=True):
             shape_cells = set(orientation)
             boundary = set()
             for dr, dc in orientation:
@@ -124,39 +97,32 @@ def small_shape_templates(src_cells: List[Tuple[int, int]], rows: int, cols: int
 
 def avoid_congruent_shapes(src_pairs: List[Tuple[Tuple[int, int], Tuple[int, int]]]) -> str:
     """Generate rules to forbid congruent bare shapes between leader pairs."""
-    rules = []
+    rules = ""
     for (r0, c0), (r1, c1) in src_pairs:
-        rules.append(f"different_leader({r0}, {c0}, {r1}, {c1}).")
+        rules += f"different_leader({r0}, {c0}, {r1}, {c1}).\n"
 
-    rules.append(":- different_leader(R0, C0, R1, C1), small_shape(R0, C0, S), small_shape(R1, C1, S).")
-    rules.append("compare_pair(R0, C0, R1, C1) :- different_leader(R0, C0, R1, C1), not small_region(R0, C0).")
-    rules.append("compare_pair(R0, C0, R1, C1) :- different_leader(R0, C0, R1, C1), not small_region(R1, C1).")
-    rules.append(
-        "same_size(R0, C0, R1, C1) :- compare_pair(R0, C0, R1, C1), region_size(R0, C0, N), region_size(R1, C1, N)."
-    )
-    rules.append(
-        "misshape_k(R0, C0, R1, C1, K) :- compare_pair(R0, C0, R1, C1), same_size(R0, C0, R1, C1), K = 0..7, t_offset(R0, C0, DR, DC, 0), not t_offset(R1, C1, DR, DC, K)."
-    )
-    rules.append(":- compare_pair(R0, C0, R1, C1), same_size(R0, C0, R1, C1), K = 0..7, not misshape_k(R0, C0, R1, C1, K).")
-    return "\n".join(rules)
+    rules += ":- different_leader(R0, C0, R1, C1), small_shape(R0, C0, S), small_shape(R1, C1, S).\n"
+    rules += "compare_pair(R0, C0, R1, C1) :- different_leader(R0, C0, R1, C1), not small_region(R0, C0).\n"
+    rules += "compare_pair(R0, C0, R1, C1) :- different_leader(R0, C0, R1, C1), not small_region(R1, C1).\n"
+    rules += "same_size(R0, C0, R1, C1) :- compare_pair(R0, C0, R1, C1), region_size(R0, C0, N), region_size(R1, C1, N).\n"
+    rules += "misshape_k(R0, C0, R1, C1, K) :- compare_pair(R0, C0, R1, C1), same_size(R0, C0, R1, C1), K = 0..7, t_offset(R0, C0, DR, DC, 0), not t_offset(R1, C1, DR, DC, K).\n"
+    rules += ":- compare_pair(R0, C0, R1, C1), same_size(R0, C0, R1, C1), K = 0..7, not misshape_k(R0, C0, R1, C1, K)."
+    return rules
 
 
-def translate_identical_shape(src_cell: Tuple[int, int], dst_cell: Tuple[int, int], clue_cells: List[Tuple[int, int]]) -> str:
-    """Generate a translated copy of a leader clue region for a same-letter clue."""
-    r0, c0 = src_cell
-    r1, c1 = dst_cell
+def partition_src_regions(src_cells: List[Tuple[int, int]]) -> str:
+    """Require source reachability to describe an exact edge-separated partition."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    dr, dc = r1 - r0, c1 - c0
+    rules = f":- grid(R, C), 2 <= #count {{ SR, SC : {tag}(SR, SC, R, C) }}.\n"
+    for r0, c0 in src_cells:
+        for r1, c1 in src_cells:
+            if (r0, c0) != (r1, c1):
+                rules += f"different_src({r0}, {c0}, {r1}, {c1}).\n"
+                rules += f"different_src({r1}, {c1}, {r0}, {c0}).\n"
 
-    rule = f"{tag}({r1}, {c1}, R + {dr}, C + {dc}) :- {tag}({r0}, {c0}, R, C), grid(R + {dr}, C + {dc}).\n"
-    rule += f":- {tag}({r0}, {c0}, R, C), not grid(R + {dr}, C + {dc}).\n"
-    for exc_r, exc_c in clue_cells:
-        if (exc_r, exc_c) != (r1, c1):
-            rule += f":- {tag}({r1}, {c1}, {exc_r}, {exc_c}).\n"
-    rule += f':- {tag}({r1}, {c1}, R, C), {tag}({r1}, {c1}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
-    rule += f':- {tag}({r1}, {c1}, R, C), {tag}({r1}, {c1}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
-    rule += f":- {tag}({r1}, {c1}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), not {tag}({r1}, {c1}, R, C).\n"
-    return rule
+    rules += f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R, C + 1), different_src(SR, SC, SR1, SC1), not edge(R, C + 1, "{Direction.LEFT}").\n'
+    rules += f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R + 1, C), different_src(SR, SC, SR1, SC1), not edge(R + 1, C, "{Direction.TOP}").'
+    return rules
 
 
 def restricted_src_connected(
@@ -170,46 +136,42 @@ def restricted_src_connected(
     r0, c0 = src_cell
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
     clue_set = set(clue_cells)
-    member_offsets = [(r - r0, c - c0, r, c) for r, c in member_cells]
+    offsets = [(r - r0, c - c0, r, c) for r, c in member_cells]
 
-    rules = []
-    for r in range(rows):
-        for c in range(cols):
-            allowed = (r, c) not in clue_set or (r, c) == src_cell
-            if allowed:
-                for dr, dc, member_r, member_c in member_offsets:
-                    shifted = (r + dr, c + dc)
-                    if not (0 <= shifted[0] < rows and 0 <= shifted[1] < cols):
-                        allowed = False
-                        break
-                    if shifted in clue_set and shifted != (member_r, member_c):
-                        allowed = False
-                        break
+    def _valid(r: int, c: int) -> bool:
+        if (r, c) in clue_set and (r, c) != src_cell:
+            return False
+        for dr, dc, mr, mc in offsets:
+            nr, nc = r + dr, c + dc
+            if not (0 <= nr < rows and 0 <= nc < cols):
+                return False
+            if (nr, nc) in clue_set and (nr, nc) != (mr, mc):
+                return False
+        return True
 
-            if allowed:
-                rules.append(f"allowed_src({r0}, {c0}, {r}, {c}).")
-
+    rules = [f"allowed_src({r0}, {c0}, {r}, {c})." for r in range(rows) for c in range(cols) if _valid(r, c)]
     rules.append(f"{tag}({r0}, {c0}, {r0}, {c0}).")
     rules.append(
         f"{tag}({r0}, {c0}, R, C) :- {tag}({r0}, {c0}, R1, C1), allowed_src({r0}, {c0}, R, C), adj_edge(R, C, R1, C1)."
     )
     rules.append(f':- {tag}({r0}, {c0}, R, C), {tag}({r0}, {c0}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").')
     rules.append(f':- {tag}({r0}, {c0}, R, C), {tag}({r0}, {c0}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").')
-
     return "\n".join(rules)
 
 
-def partition_src_regions(src_cells: List[Tuple[int, int]]) -> str:
-    """Require source reachability to describe an exact edge-separated partition."""
+def translate_identical_shape(src_cell: Tuple[int, int], dst_cell: Tuple[int, int]) -> str:
+    """Generate a translated copy of a leader clue region for a same-letter clue."""
+    r0, c0 = src_cell
+    r1, c1 = dst_cell
+    dr, dc = r1 - r0, c1 - c0
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
-    rules = f":- grid(R, C), 2 <= #count {{ SR, SC : {tag}(SR, SC, R, C) }}.\n"
-    for r0, c0 in src_cells:
-        for r1, c1 in src_cells:
-            if (r0, c0) != (r1, c1):
-                rules += f"different_src({r0}, {c0}, {r1}, {c1}).\n"
-    rules += f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R, C + 1), different_src(SR, SC, SR1, SC1), not edge(R, C + 1, "{Direction.LEFT}").\n'
-    rules += f':- {tag}(SR, SC, R, C), {tag}(SR1, SC1, R + 1, C), different_src(SR, SC, SR1, SC1), not edge(R + 1, C, "{Direction.TOP}").'
-    return rules
+
+    rule = f"{tag}({r1}, {c1}, R + {dr}, C + {dc}) :- {tag}({r0}, {c0}, R, C), grid(R + {dr}, C + {dc}).\n"
+    rule += f":- {tag}({r0}, {c0}, R, C), not grid(R + {dr}, C + {dc}).\n"
+    rule += f':- {tag}({r1}, {c1}, R, C), {tag}({r1}, {c1}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- {tag}({r1}, {c1}, R, C), {tag}({r1}, {c1}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").\n'
+    rule += f":- {tag}({r1}, {c1}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), not {tag}({r1}, {c1}, R, C)."
+    return rule
 
 
 class NikojiSolver(Solver):
@@ -223,7 +185,7 @@ class NikojiSolver(Solver):
         },
         {
             "url": "https://puzz.link/p?nikoji/14/13/1k2j3g4g5r67j8h9iaj4bicdh66en2kf-10m-11g9g5g1peq3hf-12g8n-13g7idi-14bhcieh-15o-14-11ejah-12k-10k-13-15h",
-            "test": False,  # slow case
+            "test": False,
         },
     ]
 
@@ -243,18 +205,15 @@ class NikojiSolver(Solver):
             locations[clue].append((r, c))
             all_src.append((r, c))
 
-        leader_cells = [cells[0] for cells in locations.values()]
         for cells in locations.values():
-            self.add_program_line(restricted_src_connected(cells[0], cells[1:], all_src, puzzle.row, puzzle.col))
-
-        for clue in locations:
-            cells = locations[clue]
             leader = cells[0]
             self.add_program_line(region_profile(leader))
+            self.add_program_line(restricted_src_connected(cells[0], cells[1:], all_src, puzzle.row, puzzle.col))
             for member in cells[1:]:
-                self.add_program_line(translate_identical_shape(leader, member, all_src))
+                self.add_program_line(translate_identical_shape(leader, member))
 
-        self.add_program_line(small_shape_templates(leader_cells, puzzle.row, puzzle.col))
+        leader_cells = [cells[0] for cells in locations.values()]
+        self.add_program_line(small_shape_templates(leader_cells, puzzle.row, puzzle.col, 2))
 
         location_keys = tuple(locations.keys())
         leader_pairs = []
@@ -264,7 +223,6 @@ class NikojiSolver(Solver):
                 leader2 = locations[location_keys[j]][0]
                 leader_pairs.append((leader1, leader2))
         self.add_program_line(avoid_congruent_shapes(leader_pairs))
-
         self.add_program_line(partition_src_regions(all_src))
 
         for (r, c, d, _), draw in puzzle.edge.items():
