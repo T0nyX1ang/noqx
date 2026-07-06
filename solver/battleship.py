@@ -1,7 +1,9 @@
 """The Battleship self."""
 
+from typing import Dict
+
 from noqx.manager import Solver
-from noqx.puzzle import Color, Point, Puzzle
+from noqx.puzzle import Point, Puzzle
 from noqx.rule.common import count, display, grid, shade_c
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
@@ -22,16 +24,13 @@ def line_fleet_counts(shapeset):
         cols = {c for _, c in shape}
         if len(rows) == 1:
             length = len(cols)
-            if cols != set(range(length)):
-                return None
         elif len(cols) == 1:
             length = len(rows)
-            if rows != set(range(length)):
-                return None
         else:
             return None
 
-        result[length] = result.get(length, 0) + shape_count
+        result.setdefault(length, 0)
+        result[length] += shape_count
 
     return result
 
@@ -65,33 +64,23 @@ def line_fleet(fleet_name: str, fleet_counts):
     return rule.strip()
 
 
-def remaining_ship_cells(fleet_name: str, puzzle: Puzzle, fleet_total: int, row_clues, col_clues):
+def remaining_ship_cells(
+    fleet_name: str, fleet_total: int, puzzle: Puzzle, row_clues: Dict[int, int], col_clues: Dict[int, int]
+):
     """Generate redundant remaining-cell counts for unclued rows and columns."""
-    rules = []
+    rules = ""
     open_rows = tuple(r for r in range(puzzle.row) if r not in row_clues)
     open_cols = tuple(c for c in range(puzzle.col) if c not in col_clues)
 
     if open_rows:
-        rules.append(f"open_row({';'.join(str(r) for r in open_rows)}).")
-        rules.append(f":- #count {{ R, C : {fleet_name}(R, C), open_row(R) }} != {fleet_total - sum(row_clues.values())}.")
+        rules += f"open_row({';'.join(str(r) for r in open_rows)}).\n"
+        rules += f":- #count {{ R, C : {fleet_name}(R, C), open_row(R) }} != {fleet_total - sum(row_clues.values())}.\n"
 
     if open_cols:
-        rules.append(f"open_col({';'.join(str(c) for c in open_cols)}).")
-        rules.append(f":- #count {{ R, C : {fleet_name}(R, C), open_col(C) }} != {fleet_total - sum(col_clues.values())}.")
+        rules += f"open_col({';'.join(str(c) for c in open_cols)}).\n"
+        rules += f":- #count {{ R, C : {fleet_name}(R, C), open_col(C) }} != {fleet_total - sum(col_clues.values())}.\n"
 
-    return "\n".join(rules)
-
-
-def surface_constraints(fleet_name: str, puzzle: Puzzle):
-    """Generate fixed-cell constraints from prefilled surface colors."""
-    rules = []
-    for (r, c, _, _), color in puzzle.surface.items():
-        if color in Color.DARK:
-            rules.append(f"{fleet_name}({r}, {c}).")
-        else:
-            rules.append(f":- {fleet_name}({r}, {c}).")
-
-    return "\n".join(rules)
+    return rules.strip()
 
 
 class BattleshipSolver(Solver):
@@ -101,7 +90,7 @@ class BattleshipSolver(Solver):
     category = "var"
     examples = [
         {
-            "data": "m=edit&p=7VRNj9owEL3nV6x89sFj5/tSsdully3bFqoViiIUtqlABYUCqSoj/ntnJlCCiVTtYbdbqQoePd6M7efxeDbf62JdSgD6mVgqiUj6QcgDQPNQh2803y7K9Er26u2sWiOQ8r7fl1+Lxab0MuDZKvd2NkltT9p3aSZASKFxgMil/Zju7PvUDqQdoktIQO6uCdIIb0/wgf2EbhoSFOLBASMcI5wWW9Szmc1Xk+uG/ZBmdiQF7XXNKxAUy+pHKQ5a6P9jtZzOxdkCB8+m/lJ9q8Vxm720vUbyuEOyOUk2vyWbbsn6ZSQn+X6P6f+EoidpRvo/n2B8gsN0tydtO2EMTX2DWpo7EsY/Hv9IBEToFhG6RESEahExEX6LSJwpvnJ28YEI0yK0OyVylIZuRBQ5iybaEQYqcuaA1o5WMO4yELg7QXgRE+uzA2B6gZM8xiQHFB3Iy9sXIeUy7PKAopyZTpcml+50cer9TldMVx11uhLKPly6UH+fT6HZjrB6pDVs37JVbAO2dxxzy/aB7Q1bn23IMRHV35MqtJ3IZ5KT+TG3vfMv/Pe43MvEoF5Oy/XVoFoviwX2iOGsWJUCm/LeEz8FD6wq7PH/+/Rf7tN0Feq1vYU/yMkww/ha7L0Uq3pSTB4rrDHM3xP5Fz8VPvLc+wU=",
+            "data": "m=edit&p=7VbNattAEL77KcKe57CrXf1YNyeNe0mVNnYJRhgjpyo2lZArW6Ws8btnZqREqiIoKSRtoNg7jL75dnb+vPL+e5WUKShFXx2ABNTAuB4vpRxesvnMt4csDc9gUh02RYkKwPV0Cl+TbJ/CKFa8XS5HRzsO7QTs+zAWSoBwcCmxBPspPNoPoY3AztAkQCF2VZMcVC9b9ZbtpF3UoJKoR40O4obcLfBxnRwwqP1mu1ud1w4/hrGdgyDCOXshVeTFj1Q08dDzXZGvtwS0DhrLvvpSfKsaLjoUeZUdtndFVpQEEnYCO6lTWQykottUSK1TIW0gFef1UhkPp3LCdt1gMqswprw+t2rQqrPwiDIKj0Jr2qm5CdRToc1DqR4AlwDs+SPg9QGfANkBAgJMBxj3thjZO8WoXhzG6W/hUzpOvT7DZ0bH6ZgZncCUZEpnj3KY03Gr6nQ6bpTbP0l5TzgBcx4TwPIqLvICi+wS24WnEyE8qqU3ZFGSaqYHTQ6ZcNQGTFx6M2gKqNX+oGlM1cfA+yaMf8pZOCznOD1gNct3LCVLl+UVcy5Z3rK8YGlYeszxaf6eNaHdQr5QOLEJ+J789YP35VvDlqNYRFW+TsuzqCjzJMN7Y7ZJdqnAS/w0Ej8FL5wqfCn8v9ff2L1OrZP/2m/nN+HEWHn8ddlrELtqlawwJ4F/KeBPcK2fg0dg/L9zLuL8IsCZ4VfDEKG/8dXbhrfecnQP",
             "config": {"shapeset": "ship4"},
         },
         {
@@ -114,11 +103,14 @@ class BattleshipSolver(Solver):
             },
         },
         {
+            "data": "m=edit&p=7VRtT+JAEP7Or7jsVze5bluxNLkPFcHTQ0SBcJY0pOAC1Zblti16Jfx3Z7dqX6gmd4mJl1yWHZ55Zl9mdrtP+Ct2OcVEET/NwPAPTSeG7KpRl115bgMv8qn5BVtxtGQcAMaX7Taeu35I8fnNstNk1sOJ9XNjRLZNTpX4TBndte8OroMfZ57GSbtr9C56F566sL43j6/qrYN6Lw6HEd1cBeT4bmgP5r3RoqH+bnVtPbEvlcNze/51Yw2/1cZE5qY4tW3SMBMLJ6fmGBGEkQqdIAcnV+Y2uTDRjAVTD+GkD3GEiYNREPuRN2M+4+iFSzrpbBVgK4MjGReomZJEAdx9xgBvAM48PvPppJMyPXOcDDASCRzL2QKigG2o2EwkKPw0KSCmbgRnGC69NcIaBML4lt3Hz0OJs8OJ9RdlwEovZQiYliFQRRmiuo8to+HsdnBN11DIxByLmoYZNDLYN7dgu+YWaRpMrcP9yptEmgGulrkNcA9f3SMVXP3VNeqFwUQVk7Mw0fPDYT8id72RdgCJ4EST9kRaRdpDaTtyTEvakbRNaXVp63LMkSjlj4r9oBTGujihYhMn+okYpzZG/ZjP3RmF76m/dNfiv8mCNQu9iCJ42yhk/iRMx0zoozuLkJnKSz5S4FZxMKXwJHKUz9ja91ZVK7yECqS3WDFOK0OCpLeLt5YSoYqlpozflnJ6cH2/WIuU3gKVPskCFXF4bznf5Zw9FJjAjZYFIvc2CyvRVekwI7eYonvvlnYLsuPY1dAjkh0em4r1/0L8jwixuDLlMyjUZ0hBftWMvyMxWbBMVwgNsO9oTS5axb8hK7lomd/TEJHsvowAW6EkwJbFBKh9PQFyT1KAe0NVxKplYRFZlbVFbLUnL2KrvMIUPmen9gQ=",
+            "config": {"shapeset": "ship5"},
+        },
+        {
             "url": "https://puzz.link/p?battleship/10/10/13h44i121h44i2zw6m0n0m5zw//d",
             "config": {"shapeset": "ship4"},
             "test": False,
         },
-        {"url": "https://puzz.link/p?battleship/9/9/h6j35h43h44gzzzzg//e", "config": {"shapeset": "ship5"}, "test": False},
         {
             "url": "https://puzz.link/p?battleship/15/15/7i8g2i7h5529g21h5g1j7000j0j0000k000k00l0l0j0k0m000i000m0k0k0k0k0g000i000i000g0k0k0k0k0m000i000m0k0j0l0l00k000k0000j0j000//p",
             "config": {"shapeset": "pento"},
@@ -190,7 +182,6 @@ class BattleshipSolver(Solver):
         use_line_fleet = fleet_counts is not None
 
         self.add_program_line(shade_c(color=fleet_name))
-        self.add_program_line(surface_constraints(fleet_name, puzzle))
         if use_line_fleet:
             if puzzle.symbol:
                 self.add_program_line(adjacent(_type=4))
@@ -207,8 +198,8 @@ class BattleshipSolver(Solver):
                 )
                 self.add_program_line(count_shape(o_count, name="battleship", _id=i, color=fleet_name))
 
-        row_clues = {}
-        col_clues = {}
+        row_clues: Dict[int, int] = {}
+        col_clues: Dict[int, int] = {}
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
@@ -224,7 +215,7 @@ class BattleshipSolver(Solver):
         if use_line_fleet:
             self.add_program_line(
                 remaining_ship_cells(
-                    fleet_name, puzzle, sum(length * count for length, count in fleet_counts.items()), row_clues, col_clues
+                    fleet_name, sum(length * count for length, count in fleet_counts.items()), puzzle, row_clues, col_clues
                 )
             )
 
