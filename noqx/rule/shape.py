@@ -162,7 +162,6 @@ def general_shape(
     adj_type: Union[int, str] = 4,
     simple: bool = False,
     add_origin_map: bool = False,
-    split_boundary: Optional[bool] = None,
 ) -> str:
     """A rule to define general shapes in a grid or an area.
 
@@ -179,7 +178,6 @@ def general_shape(
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         simple: Whether to skip the adjacency re-checking.
         add_origin_map: Whether to add a predicate to represent the relationship between the origin of the shape and its cells.
-        split_boundary: Whether to split same-color boundary checks into helper predicates. If `None`, the rule chooses the faster default based on the color domain.
 
     Success:
         * If `_type` is set to "grid", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(R, C, I, V)`.
@@ -187,6 +185,8 @@ def general_shape(
         * If `_type` is set to "area", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(A, R, C, I, V)`.
 
         * If `add_origin_map` is set to `True`, this rule will generate an additional predicate named `shape_origin_map_{name}_{color}(R, C, OR, OC)` or `shape_origin_map_{name}_{color}(A, R, C, OR, OC)` to represent the relationship between the origin of the shape and its cells.
+
+        * If `color` is not set to `grid`, the rule chooses to split same-color boundary checks into a helper predicate named `outside_shape_{name}_{color}_{_id}_{i}(R, C)` for efficiency.
 
     Warning:
         Although the shape representation does not require the connectivity of the shape, it is recommended to ensure that the provided shape is connected. Some derived rules may behave weird if the shape is not connected.
@@ -203,8 +203,6 @@ def general_shape(
     validate_type(_type, ("grid", "area"))
     if not deltas:
         raise ValueError("Shape coordinates must be provided.")
-    if split_boundary is None:
-        split_boundary = color != "grid"
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
@@ -214,9 +212,8 @@ def general_shape(
     variants = get_variant_shape(deltas, allow_rotations=True, allow_reflections=True)
     for i, variant in enumerate(variants):
         valid, belongs_to, origins_to, boundary = set(), set(), set(), set()
-        tag_boundary = tag_encode("outside", "shape", name, color, _id, i)
-        boundary_args = "R, C" if _type == "grid" else "A, R, C"
-        boundary_atom = f"{tag_boundary}({boundary_args})"
+        tag_bd = tag_encode("outside", "shape", name, color, _id, i)
+        boundary_atom = f"{tag_bd}(R, C)" if _type == "grid" else f"{tag_bd}(A, R, C)"
         for dr, dc in variant:
             if _type == "grid":
                 valid.add(f"grid(R + {dr}, C + {dc})")
@@ -246,11 +243,7 @@ def general_shape(
                 elif not simple:  # Skip the adjacency re-check if it is simple
                     if color == "grid":  # Simplify the adjacency re-check if the color is set to 'grid'
                         valid.add(f"not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-                    elif not split_boundary:
-                        valid.add(
-                            f"{{ not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc}); not {color}(R + {nr}, C + {nc}) }} > 0"
-                        )
-                    else:
+                    else:  # split same-color boundary checks into helper predicates
                         boundary.add(
                             f"{boundary_atom} :- adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc}), {color}(R + {nr}, C + {nc})."
                         )
@@ -259,10 +252,18 @@ def general_shape(
             valid.add(f"not {boundary_atom}")
 
         if _type == "grid":
-            data += "\n".join(boundary) + "\n" + f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            data += (
+                "\n".join(boundary) + "\n" + f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            )
 
         if _type == "area":
-            data += "\n".join(boundary) + "\n" + f"{tag}(A, R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            data += (
+                "\n".join(boundary)
+                + "\n"
+                + f"{tag}(A, R, C, {_id}, {i}) :- {', '.join(valid)}.\n"
+                + "\n".join(belongs_to)
+                + "\n"
+            )
 
         if add_origin_map:
             data += "\n".join(origins_to) + "\n"

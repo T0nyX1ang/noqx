@@ -37,7 +37,7 @@ def line_fleet_counts(shapeset):
 
 
 def line_fleet(fleet_name: str, fleet_counts):
-    """Generate direct run-count rules for straight battleship fleets."""
+    """Generate explicit run-count rules for straight battleship fleets."""
     max_length = max(fleet_counts)
     rule = ""
 
@@ -200,19 +200,10 @@ class BattleshipSolver(Solver):
             self.add_program_line(adjacent(_type="x"))
             self.add_program_line(avoid_battleship_adjacent(color=fleet_name, adj_type="x"))
             self.add_program_line(all_shapes("battleship", color=fleet_name))
-            split_boundary = len(puzzle.symbol) > 0
 
             for i, (o_shape, o_count) in enumerate(shapeset.items()):
                 self.add_program_line(
-                    general_shape(
-                        "battleship",
-                        i,
-                        o_shape,
-                        color=fleet_name,
-                        adj_type=4,
-                        add_origin_map=True,
-                        split_boundary=split_boundary,
-                    )
+                    general_shape("battleship", i, o_shape, color=fleet_name, adj_type=4, add_origin_map=True)
                 )
                 self.add_program_line(count_shape(o_count, name="battleship", _id=i, color=fleet_name))
 
@@ -231,7 +222,11 @@ class BattleshipSolver(Solver):
                 self.add_program_line(count(num, color=fleet_name, _type="row", _id=r))
 
         if use_line_fleet:
-            self.add_program_line(remaining_ship_cells(fleet_name, puzzle, sum(length * count for length, count in fleet_counts.items()), row_clues, col_clues))
+            self.add_program_line(
+                remaining_ship_cells(
+                    fleet_name, puzzle, sum(length * count for length, count in fleet_counts.items()), row_clues, col_clues
+                )
+            )
 
         self.add_program_line(display(item=fleet_name))
 
