@@ -1,6 +1,6 @@
 """The Araf solver."""
 
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
@@ -10,13 +10,11 @@ from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import avoid_unknown_src
 
 
-def araf_src_connected(r: int, c: int, num: int, exclude_cells: Optional[List[Tuple[int, int]]] = None) -> str:
+def araf_src_connected(r: int, c: int, num: int, exclude_cells: List[Tuple[int, int]]) -> str:
     """Collect cells reachable from a clue, bounded by its possible region size."""
     tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
     rule = f"{tag}({r}, {c}, {r}, {c}).\n"
-    if exclude_cells:
-        rule += "\n".join(f"not {tag}({r}, {c}, {exc_r}, {exc_c})." for exc_r, exc_c in exclude_cells) + "\n"
-
+    rule += "\n".join(f"not {tag}({r}, {c}, {exc_r}, {exc_c})." for exc_r, exc_c in exclude_cells) + "\n"
     rule += f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), |R - {r}| + |C - {c}| < {num}.\n"
     rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
     rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").'

@@ -213,7 +213,7 @@ class NikojiSolver(Solver):
                 self.add_program_line(translate_identical_shape(leader, member))
 
         leader_cells = [cells[0] for cells in locations.values()]
-        self.add_program_line(small_shape_templates(leader_cells, puzzle.row, puzzle.col, 2))
+        self.add_program_line(small_shape_templates(leader_cells, puzzle.row, puzzle.col, 4))
 
         location_keys = tuple(locations.keys())
         leader_pairs = []
