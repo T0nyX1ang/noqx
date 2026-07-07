@@ -4,7 +4,7 @@ from typing import Dict, List, Set, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
-from noqx.rule.common import defined, display, fill_line, grid, shade_c
+from noqx.rule.common import defined, display, fill_line, grid, shade_c, shade_cc
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
@@ -87,12 +87,7 @@ class TapaloopSolver(Solver):
         self.reset()
         self.add_program_line(defined(item="hole"))
         self.add_program_line(grid(puzzle.row, puzzle.col, with_holes=True))
-
-        if puzzle.param["visit_all"]:
-            self.add_program_line("white(R, C) :- grid(R, C).")
-        else:
-            self.add_program_line(shade_c(color="white"))
-
+        self.add_program_line(shade_cc(["white"]) if puzzle.param["visit_all"] else shade_c(color="white"))
         self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(grid_color_connected(color="white", adj_type="line"))

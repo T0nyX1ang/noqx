@@ -1,0 +1,4 @@
+interface:
+  display_name: "Noqx Push Meta"
+  short_description: "Pre-push routing and checklist"
+  default_prompt: "Use this skill before committing or pushing changes in the noqx repository. Route to the relevant project skills, run the required checks, stage only intended files, and report the pushed commit."

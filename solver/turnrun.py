@@ -2,7 +2,7 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Point, Puzzle
-from noqx.rule.common import display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c, shade_cc
 from noqx.rule.helper import fail_false, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
@@ -29,12 +29,7 @@ class TurnRunSolver(Solver):
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
         self.add_program_line(grid(puzzle.row, puzzle.col))
-
-        if puzzle.param["visit_all"]:
-            self.add_program_line("white(R, C) :- grid(R, C).")
-        else:
-            self.add_program_line(shade_c(color="white"))
-
+        self.add_program_line(shade_cc(["white"]) if puzzle.param["visit_all"] else shade_c(color="white"))
         self.add_program_line(fill_line(color="white", directed=True))
         self.add_program_line(adjacent(_type="line_directed"))
         self.add_program_line(directed_route(color="white", crossing=True))

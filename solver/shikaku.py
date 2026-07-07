@@ -1,6 +1,6 @@
 """The Shikaku solver."""
 
-from typing import List, Tuple
+from typing import List, Set, Tuple
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
@@ -8,7 +8,29 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, count_rect, count_rect_size
+from noqx.rule.shape import all_rect_region, avoid_unknown_rect, count_rect_size
+
+
+def get_possible_rect(
+    src_cell: Tuple[int, int], grid_size: Tuple[int, int], clue_cells: List[Tuple[int, int]]
+) -> Set[Tuple[int, int, int, int]]:
+    """Get all possible rectangles that can be formed from a source cell within the grid."""
+    src_r, src_c = src_cell
+    rows, cols = grid_size
+    exclude = {c for c in clue_cells if c != src_cell}
+
+    possible_rects: Set[Tuple[int, int, int, int]] = set()
+    for h in range(1, rows + 1):
+        for top in range(max(0, src_r - h + 1), min(src_r, rows - h) + 1):
+            bottom = top + h - 1
+            for w in range(1, cols + 1):
+                for left in range(max(0, src_c - w + 1), min(src_c, cols - w) + 1):
+                    right = left + w - 1
+                    if any(top <= r <= bottom and left <= c <= right for r, c in exclude):
+                        continue
+                    possible_rects.add((top, left, bottom, right))
+
+    return possible_rects
 
 
 class ShikakuSolver(Solver):
@@ -24,6 +46,10 @@ class ShikakuSolver(Solver):
             "url": "https://puzz.link/p?shikaku/24/14/h5x6i.j8g6lag4j.l9i8j6i4l3z9g6i4i4h56h6i4i6j8h4n3h6zn4j4r6j4g6j8i8hci6j8q6h2r8k5l8k8j.l9j4l.lataock36kck",
             "test": False,
         },
+        {
+            "url": "https://puzz.link/p?shikaku/30/30/-12zn-18zzg-24t-30k-30zzp-18y-10z-30u8zzt6g-10x-10zw-12zr-12o-24p8h8zzh-18scp-24zcp4s-24zzh4h2p-18oczr3zw-30x8gczzt-18u-12z-30y-18zzp-18k6t-48zzg-1bzn-18",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:
@@ -33,10 +59,12 @@ class ShikakuSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(count_rect(len(puzzle.text)))
+        self.add_program_line(avoid_unknown_rect())
 
         all_src: List[Tuple[int, int]] = []
+        clue_cells = [(r, c) for r, c, _, _ in puzzle.text]
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
@@ -47,7 +75,8 @@ class ShikakuSolver(Solver):
                 self.add_program_line(f":- {tag}({r1}, {c1}, {r1}, {c}), {tag}({r}, {c}, {r1}, {c}).")
 
             if isinstance(num, int):
-                self.add_program_line(count_rect_size(num, (r, c), adj_type="edge"))
+                possible_rects = get_possible_rect((r, c), (puzzle.row, puzzle.col), clue_cells)
+                self.add_program_line(count_rect_size(num, (r, c), adj_type="edge", possible_rects=possible_rects))
 
             all_src.append((r, c))
 

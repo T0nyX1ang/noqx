@@ -1,4 +1,4 @@
-function parseParam(data) {
+function parsePenpaParam(data) {
   let param = data.split("&");
   let paramArray = {};
   for (let i = 0; i < param.length; i++) {
@@ -28,7 +28,7 @@ function exp(saveUndo = false) {
 function hookExp() {
   const baseUrl = pu.maketext_baseurl();
   let result = exp(document.getElementById("save_undo").checked);
-  let paramArray = parseParam(result);
+  let paramArray = parsePenpaParam(result);
   let rawData = decrypt_data(paramArray.p).split("\n");
   rawData[0] = rawData[0]
     .split(",")
@@ -49,6 +49,9 @@ function hookExp() {
 function imp(penpa, example = false) {
   let urlstring = penpa || document.getElementById("urlstring").value;
   let puzzleType = null;
+  let puzzleTypeWithoutAlias = null;
+  const puzzleVariants = [];
+  let puzzleExtraParam = null;
 
   // replace unsupported host to supported host
   urlstring = urlstring.replace("pzplus.tck.mn", "puzz.link");
@@ -58,7 +61,18 @@ function imp(penpa, example = false) {
   if (urlstring.match(/\/puzz.link\/p\?|pzprxs\.vercel\.app\/p\?|\/pzv\.jp\/p(\.html)?\?/)) {
     const parts = urlstring.split("?");
     const urldata = parts[1].split("/");
+
     puzzleType = urldata[0];
+    puzzleTypeWithoutAlias = puzzleType;
+    for (let i = 1; i < urldata.length; i++) {
+      if (urldata[i] && isNaN(urldata[i])) puzzleVariants.push(urldata[i]);
+      else {
+        puzzleExtraParam = isNaN(urldata[i + 2]) ? null : urldata[i + 2];
+        break;
+      }
+    }
+
+    for (const puzzleVariant of puzzleVariants) urlstring = urlstring.replace(`/${puzzleVariant}/`, "/");
   }
 
   // normalize the puzzle type
@@ -71,44 +85,9 @@ function imp(penpa, example = false) {
     }
   }
 
-  if (puzzleType === "lither") urlstring = urlstring.replace("lither", "slitherlink"); // special case with lithersink
-
-  // replace unsupported solver to supported solvers
-  urlstring = urlstring.replace("arukone", "numlin");
-  urlstring = urlstring.replace("chocona", "aqre");
-  urlstring = urlstring.replace("cityspace", "cave");
-  urlstring = urlstring.replace("cocktail", "aqre");
-  urlstring = urlstring.replace("context", "nuribou");
-  urlstring = urlstring.replace("coral", "nonogram");
-  urlstring = urlstring.replace("circlesquare", "yinyang");
-  urlstring = urlstring.replace("creek", "gokigen");
-  urlstring = urlstring.replace("dotchi2", "dotchi");
-  urlstring = urlstring.replace("fivecells", "nawabari");
-  urlstring = urlstring.replace("fourcells", "nawabari");
-  urlstring = urlstring.replace("heyablock", "heyawake");
-  urlstring = urlstring.replace("hinge", "aqre");
-  urlstring = urlstring.replace("island", "kurotto");
-  urlstring = urlstring.replace("nibunnogo", "gokigen");
-  urlstring = urlstring.replace("norinuri", "nuribou");
-  urlstring = urlstring.replace("nothing", "moonsun");
-  urlstring = urlstring.replace("nothree", "tentaisho");
-  urlstring = urlstring.replace("numlin_bit", "numlin");
-  urlstring = urlstring.replace("nuriuzu", "tentaisho");
-  urlstring = urlstring.replace("oasis", "nurimisaki");
-  urlstring = urlstring.replace("mannequin", "aqre");
-  urlstring = urlstring.replace("simplegako", "view");
-  urlstring = urlstring.replace("smullyan", "nuribou");
-  urlstring = urlstring.replace("squarejam", "shikaku");
-  urlstring = urlstring.replace("statuepark", "yinyang");
-  urlstring = urlstring.replace("suguru", "cojun");
-  urlstring = urlstring.replace("swslither", "slitherlink");
-  urlstring = urlstring.replace("tetrochain", "yajikazu");
-  urlstring = urlstring.replace("tslither", "slitherlink");
-  urlstring = urlstring.replace("vslither", "slitherlink");
-
   // interception for solver mode
   if (urlstring && urlstring.includes("m=solve")) {
-    let paramArray = parseParam(urlstring.split("#")[1]);
+    let paramArray = parsePenpaParam(urlstring.split("#")[1]);
     let rawData = decrypt_data(paramArray.p).split("\n");
     rawData[2] = rawData[11];
     rawData[4] = rawData[14];
@@ -124,6 +103,7 @@ function imp(penpa, example = false) {
 
   try {
     import_url(urlstring);
+    clearInfo();
     const importErrorDialog = document.getElementById("swal2-html-container");
     if (puzzleType in solver_metadata) {
       resetGridType(puzzleType);
@@ -139,6 +119,13 @@ function imp(penpa, example = false) {
     if (importErrorDialog && importErrorDialog.textContent.startsWith("It currently does not support puzzle type")) {
       create_newboard();
       advancecontrol_toggle();
+
+      // interception for the error message of unsupported puzzle type from penpa+
+      Swal.update({ hideClass: { popup: "", backdrop: "" } });
+      Swal.close(); // close the popup window itself
+      decode_puzzlink_extra(urlstring);
+      document.getElementById("modal-load").style.display = "none";
+      return false;
     } else redraw_grid();
   } catch (error) {
     clearInfo();
@@ -155,7 +142,7 @@ function imp(penpa, example = false) {
       title: "Import error",
       text: errorMessage,
     });
-    return;
+    return false;
   }
 
   if (!example) {
@@ -172,12 +159,39 @@ function imp(penpa, example = false) {
     const typeSelect = document.getElementById("type");
     typeSelect.value = puzzleType;
     typeSelect.dispatchEvent(new Event("change"));
-    if (previousParameterBoxStatus === "inline-block") invokeParamBox();
+    if (previousParameterBoxStatus === "inline-block") toggleParamBox();
 
-    // parse shapeset for statuepark from URL if available
-    if (puzzleType === "statuepark") {
+    // parse variant for specific puzzle types if available
+    if (puzzleVariants.includes("f")) {
+      // for the visit_all parameter
+      const visitAllParam = document.getElementById("param_visit_all");
+      if (visitAllParam) visitAllParam.checked = true;
+    }
+
+    // parse variant for defined maps
+    if (variantMap[puzzleType]) {
+      for (const [paramId, variantType] of Object.entries(variantMap[puzzleType])) {
+        const element = document.getElementById(paramId);
+        if (element && variantType === puzzleTypeWithoutAlias) element.checked = true;
+      }
+    }
+
+    // parse shapeset for statuepark/battleship from URL if available
+    if (puzzleType === "statuepark" || puzzleType === "battleship") {
       const actionSelect = document.getElementById("shapeset_action_shapeset");
-      const convertDict = { "//p": "pento", "//d": "double_tetro", "//t": "tetro" };
+      const convertDict = {};
+
+      if (puzzleType === "statuepark") {
+        convertDict["//p"] = "pento";
+        convertDict["//d"] = "double_tetro";
+        convertDict["//t"] = "tetro";
+      } else if (puzzleType === "battleship") {
+        convertDict["//c"] = "ship3";
+        convertDict["//d"] = "ship4";
+        convertDict["//e"] = "ship5";
+        convertDict["//p"] = "pento";
+      }
+
       if (actionSelect) {
         let flag = true;
         for (const [key, value] of Object.entries(convertDict)) {
@@ -216,7 +230,18 @@ function imp(penpa, example = false) {
     }
   }
 
+  // add extra number parameter for specific puzzle types if available
+  if (puzzleType === "starbattle") document.getElementById("param_stars").value = puzzleExtraParam;
+
+  if (puzzleType === "japanesesums") document.getElementById("param_max_number").value = puzzleExtraParam;
+
+  if (puzzleType === "easyasabc") {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    document.getElementById("param_letters").value = letters.slice(0, puzzleExtraParam);
+  }
+
   hookLoad(currentContent);
+  return true;
 }
 
 function clearInfo() {
@@ -239,199 +264,6 @@ function hookLoad(data) {
   clearInfo();
 }
 
-function invokeParamBox() {
-  const parameterBox = document.getElementById("parameter_box");
-  const parameterButton = document.getElementById("param");
-
-  if (parameterBox.style.display === "none") {
-    parameterBox.style.display = "inline-block";
-    parameterButton.textContent = "Hide Parameters";
-  } else {
-    parameterBox.style.display = "none";
-    parameterButton.textContent = "Show Parameters";
-  }
-}
-
-function resetParamBox() {
-  const puzzleType = document.getElementById("type").value;
-  if (puzzleType && Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
-    for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
-      const paramInput = document.getElementById(`param_${k}`);
-      if (paramInput.type === "checkbox") paramInput.checked = v.default;
-      else paramInput.value = v.default;
-    }
-  }
-}
-
-function makeParam(id, type, name, value) {
-  const paramDiv = document.createElement("div");
-  paramDiv.className = "parameter_div";
-
-  const paramLabel = document.createElement("label");
-  paramLabel.htmlFor = `param_${id}`;
-  paramLabel.innerHTML = `&nbsp;&nbsp;&nbsp;&nbsp;${name}&nbsp;`;
-
-  let paramInput = null;
-  if (type === "shapeset") {
-    const puzzleType = document.getElementById("type").value;
-    const config = solver_metadata[puzzleType].parameters[id];
-
-    paramInput = document.createElement("div");
-    paramInput.id = `param_${id}`;
-    paramInput.style.display = "inline-flex";
-    paramInput.style.alignItems = "flex-start";
-
-    const actionSelect = document.createElement("select");
-    actionSelect.id = `shapeset_action_${id}`;
-    actionSelect.style.textAlign = "center";
-    actionSelect.style.width = "150px";
-
-    let optionsHTML = `<option value="" disabled selected>Choose an action</option>
-                       <option value="add">Add Single Shape</option>`;
-    if (config.presets) {
-      for (const presetKey of config.presets)
-        optionsHTML += `<option value="${presetKey}">${presetData[presetKey].name} Preset</option>`;
-    }
-    optionsHTML += `<option value="clear">Clear All</option>`;
-    actionSelect.innerHTML = optionsHTML;
-
-    actionSelect.addEventListener("change", (e) => {
-      if (e.target.value === "add") {
-        addShapeRow();
-      } else if (["clear", "tetro", "double_tetro", "pento", "ship3", "ship4", "ship5"].includes(e.target.value)) {
-        listDiv.innerHTML = "";
-        if (e.target.value !== "clear") {
-          const presetKey = e.target.value;
-          const presetConfig = presetData[presetKey].config;
-          for (const { shape, count } of presetConfig) addShapeRow(shape, count);
-        }
-        updateSummary();
-      }
-      e.target.value = "";
-    });
-    paramInput.appendChild(actionSelect);
-
-    const detailsBlock = document.createElement("details");
-    const summary = document.createElement("summary");
-    summary.style.minWidth = "180px";
-
-    const summaryText = document.createElement("span");
-    summaryText.textContent = "Shapes (0)";
-    summary.appendChild(summaryText);
-    detailsBlock.appendChild(summary);
-    paramInput.appendChild(detailsBlock);
-
-    const containerDiv = document.createElement("div");
-    containerDiv.style.padding = "4px";
-    containerDiv.style.marginTop = "4px";
-
-    const listDiv = document.createElement("div");
-    const addShapeRow = (shapeStr = "", qty = 1) => {
-      const shapeRow = document.createElement("div");
-      shapeRow.style.marginBottom = "2px";
-      shapeRow.innerHTML = `
-        <input type="text" class="shape_name" value="${shapeStr}" style="width: 80px;"> x
-        <input type="number" class="shape_qty" value="${qty}" min="1" style="width: 30px;">
-        <button type="button" class="shape_remove">&nbsp;&ndash;&nbsp;</button>
-      `;
-      listDiv.appendChild(shapeRow);
-      updateSummary();
-
-      const renderShapePreview = (shapeStr) => {
-        const rows = shapeStr.split("|").map((row) => row.split("").map(Number));
-        const cols = Math.max(...rows.map((row) => row.length));
-        const px_size = 20; // pixel size per cell
-        const canvas = document.createElement("canvas");
-        canvas.width = cols * px_size || px_size;
-        canvas.height = rows.length * px_size;
-
-        const ctx = canvas.getContext("2d");
-        rows.forEach((row, r) => {
-          row.forEach((cell, c) => {
-            if (cell == "1") {
-              ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--fgMain").trim() || "black";
-              ctx.fillRect(c * px_size, r * px_size, px_size, px_size);
-            }
-          });
-        });
-
-        return canvas;
-      };
-
-      const removeBtn = shapeRow.querySelector("button");
-      removeBtn.addEventListener("mouseover", (e) => {
-        const shapeStr = shapeRow.querySelector(".shape_name").value;
-        if (!shapeStr) return;
-
-        const canvas = renderShapePreview(shapeStr);
-        canvas.style.position = "fixed";
-        canvas.style.pointerEvents = "none";
-        canvas.style.backgroundColor = "opaque";
-        canvas.style.padding = "5px";
-        canvas.style.zIndex = "1000";
-
-        document.body.appendChild(canvas);
-        const rect = removeBtn.getBoundingClientRect();
-        canvas.style.left = rect.right + 10 + "px";
-        canvas.style.top = rect.top + "px";
-        canvas.dataset.preview = "true";
-      });
-
-      removeBtn.addEventListener("mouseout", () => {
-        document.querySelector("canvas[data-preview='true']")?.remove();
-      });
-
-      removeBtn.addEventListener("click", () => {
-        document.querySelector("canvas[data-preview='true']")?.remove();
-        removeBtn.parentElement.remove();
-      });
-    };
-    containerDiv.appendChild(listDiv);
-    detailsBlock.appendChild(containerDiv);
-
-    const updateSummary = () => {
-      const count = listDiv.querySelectorAll("div").length;
-      summaryText.textContent = `Shapes (${count})`;
-      if (count === 0) detailsBlock.removeAttribute("open");
-    };
-
-    Object.defineProperty(paramInput, "value", {
-      get: function () {
-        const shapes = [];
-        listDiv.querySelectorAll("div").forEach((row) => {
-          const name = row.querySelector(".shape_name").value;
-          const qty = parseInt(row.querySelector(".shape_qty").value, 10);
-          if (name) shapes.push({ shape: name, count: qty || 1 });
-        });
-        return shapes;
-      },
-      set: function (val) {
-        listDiv.innerHTML = ""; // clear list
-        if (Array.isArray(val)) val.forEach((v) => addShapeRow(v.shape, v.count));
-        updateSummary();
-      },
-    });
-
-    if (value && Array.isArray(value)) paramInput.value = value;
-    listDiv.addEventListener("click", (e) => {
-      if (e.target.tagName === "BUTTON") setTimeout(updateSummary, 0);
-    });
-  } else {
-    paramInput = document.createElement("input");
-    paramInput.type = type;
-    paramInput.className = "param_input";
-    paramInput.id = `param_${id}`;
-
-    if (type === "number") paramInput.min = 0;
-    if (type === "checkbox") paramInput.checked = value;
-    else paramInput.value = value;
-  }
-
-  paramDiv.appendChild(paramLabel);
-  paramDiv.appendChild(paramInput);
-  return paramDiv;
-}
-
 function resetGridType(puzzleType) {
   const oldTypeFlag = document.getElementById("gridtype").value;
   let typeFlag = "square";
@@ -445,6 +277,7 @@ function resetGridType(puzzleType) {
   }
 }
 
+// prettier-ignore
 function resetGridMode(puzzleType) {
   const puzzleCategory = solver_metadata[puzzleType].category;
   const oldModeFlag = pu.mode.grid;
@@ -454,7 +287,7 @@ function resetGridMode(puzzleType) {
 
   if (["juosan", "shakashaka", "walllogic"].includes(puzzleType)) modeFlag = ["2", "2", "1"];
 
-  if (["cave", "cityspace", "firefly", "gokigen", "ichimaga"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
+  if (["cave", "cityspace", "creek", "firefly", "gokigen", "ichimaga", "nibunnogo"].includes(puzzleType)) modeFlag = ["2", "2", "2"];
 
   if (["hashi", "keywest"].includes(puzzleType)) modeFlag = ["3", "2", "2"];
 
@@ -465,6 +298,7 @@ function resetGridMode(puzzleType) {
   if (modeFlag.join("_") !== oldModeFlag.join("_")) pu.mode.grid = modeFlag;
 }
 
+// prettier-ignore
 function resetBoardSize(puzzleType) {
   const oldSizeFlag = [
     document.getElementById("nb_space1").value, // top space
@@ -480,13 +314,11 @@ function resetBoardSize(puzzleType) {
     sizeFlag = [1, 0, 1, 0];
 
   if (
-    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "magnets", "skyscrapers", "starbattle"].includes(
-      puzzleType
-    )
+    ["anglers", "box", "creek", "easyasabc", "firefly", "gokigen", "nibunnogo", "magnets", "skyscrapers", "starbattle"].includes(puzzleType)
   )
     sizeFlag = [1, 1, 1, 1];
 
-  if (["coral", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
+  if (["coral", "cts", "japanesesums", "nonogram"].includes(puzzleType)) sizeFlag = [5, 0, 5, 0];
 
   if (sizeFlag.join("_") !== oldSizeFlag.join("_")) {
     document.getElementById("nb_size1").value = 10 + sizeFlag[0] + sizeFlag[1]; // columns
@@ -500,70 +332,29 @@ function resetBoardSize(puzzleType) {
   return sizeFlag;
 }
 
-const presetData = {
-  tetro: {
-    name: "Tetrominoes",
-    config: [
-      { shape: "10|11|10", count: 1 },
-      { shape: "11|11", count: 1 },
-      { shape: "1|1|1|1", count: 1 },
-      { shape: "10|10|11", count: 1 },
-      { shape: "10|11|01", count: 1 },
-    ],
+const categoryName = {
+  shade: "- Shading -",
+  route: "- Loop / Path -",
+  region: "- Area Division -",
+  num: "- Number -",
+  var: "- Variety -",
+  unk: "- Unknown -",
+};
+
+const variantMap = {
+  lits: { param_invlitso: "invlitso" },
+  nonogram: { param_cts: "cts" },
+  slitherlink: {
+    param_tslither: "tslither",
+    param_vslither: "vslither",
+    param_swslither: "swslither",
   },
-  double_tetro: {
-    name: "2x Tetrominoes",
-    config: [
-      { shape: "10|11|10", count: 2 },
-      { shape: "11|11", count: 2 },
-      { shape: "1|1|1|1", count: 2 },
-      { shape: "10|10|11", count: 2 },
-      { shape: "10|11|01", count: 2 },
-    ],
+  ichimaga: {
+    param_ichimagam: "ichimagam",
+    param_ichimagax: "ichimagax",
   },
-  pento: {
-    name: "Pentominoes",
-    config: [
-      { shape: "100|111|010", count: 1 },
-      { shape: "1|1|1|1|1", count: 1 },
-      { shape: "10|10|10|11", count: 1 },
-      { shape: "1100|0111", count: 1 },
-      { shape: "11|11|10", count: 1 },
-      { shape: "111|010|010", count: 1 },
-      { shape: "101|111", count: 1 },
-      { shape: "100|100|111", count: 1 },
-      { shape: "110|011|001", count: 1 },
-      { shape: "010|111|010", count: 1 },
-      { shape: "10|11|10|10", count: 1 },
-      { shape: "110|010|011", count: 1 },
-    ],
-  },
-  ship3: {
-    name: "Ships (size 3)",
-    config: [
-      { shape: "1", count: 3 },
-      { shape: "1|1", count: 2 },
-      { shape: "1|1|1", count: 1 },
-    ],
-  },
-  ship4: {
-    name: "Ships (size 4)",
-    config: [
-      { shape: "1", count: 4 },
-      { shape: "1|1", count: 3 },
-      { shape: "1|1|1", count: 2 },
-      { shape: "1|1|1|1", count: 1 },
-    ],
-  },
-  ship5: {
-    name: "Ships (size 5)",
-    config: [
-      { shape: "1", count: 5 },
-      { shape: "1|1", count: 4 },
-      { shape: "1|1|1", count: 3 },
-      { shape: "1|1|1|1", count: 2 },
-      { shape: "1|1|1|1|1", count: 1 },
-    ],
+  pipelink: {
+    param_pipelinkr: "pipelinkr",
   },
 };
 
@@ -595,33 +386,6 @@ $(window).on("load", function () {
   const ruleButton = document.getElementById("rules");
   const solveButton = document.getElementById("solve");
   const resetButton = document.getElementById("solver_reset");
-  const parameterBox = document.getElementById("parameter_box");
-  const parameterButton = document.getElementById("param");
-
-  const categoryName = {
-    shade: "- Shading -",
-    route: "- Loop / Path -",
-    region: "- Area Division -",
-    num: "- Number -",
-    var: "- Variety -",
-    unk: "- Unknown -",
-  };
-
-  const variantMap = {
-    lits: { param_invlitso: "invlitso" },
-    slitherlink: {
-      param_tslither: "tslither",
-      param_vslither: "vslither",
-      param_swslither: "swslither",
-    },
-    ichimaga: {
-      param_ichimagam: "ichimagam",
-      param_ichimagax: "ichimagax",
-    },
-    pipelink: {
-      param_pipelinkr: "pipelinkr",
-    },
-  };
 
   const customMatcher = (params, data) => {
     if ($.trim(params.term) === "") return data;
@@ -688,21 +452,7 @@ $(window).on("load", function () {
       resetBoardSize(puzzleType);
       create_newboard();
       advancecontrol_toggle();
-
-      parameterBox.style.display = "none"; // hide parameter box if no parameters
-      parameterButton.textContent = "Show Parameters";
-      parameterButton.disabled = true;
-      while (parameterBox.firstChild) {
-        parameterBox.removeChild(parameterBox.lastChild);
-      }
-
-      if (Object.keys(solver_metadata[puzzleType].parameters).length > 0) {
-        parameterButton.disabled = false;
-        for (const [k, v] of Object.entries(solver_metadata[puzzleType].parameters)) {
-          const paramDiv = makeParam(k, v.type, v.name, v.default);
-          parameterBox.appendChild(paramDiv);
-        }
-      }
+      initParamBox();
 
       if (exampleSelect.value !== "" && !isPuzzleTypeChanged) return;
 
@@ -984,6 +734,7 @@ $(window).on("load", function () {
       mutations.forEach((mutation) => {
         if (mutation.type === "attributes" && mutation.attributeName === "disabled") {
           updateChoicesType();
+          clearInfo();
         }
       });
     });

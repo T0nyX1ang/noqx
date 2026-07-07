@@ -1,0 +1,4 @@
+interface:
+  display_name: "Noqx Solver Testing"
+  short_description: "Validate and benchmark noqx solvers"
+  default_prompt: "Use this skill when changing, testing, or benchmarking noqx solver code. Follow the project workflow for existing examples, puzzle conversion, correctness checks, and speedup reporting."

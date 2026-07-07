@@ -41,6 +41,10 @@ class TontonbeyaSolver(Solver):
         {
             "data": "m=edit&p=7VRNb9swDL3nVxQ682BKtmX7lnbOLl27LR2GwgiCtPWWYAmc5WMoHOS/70lmo3UNUKBAhx4Gw/QzJZKPFKn1z+1kVRNHlJHJKCLGEzN+Yk06jv0byXM128zr4oT62820WQEQXQ4G9G0yX9fUq2TbqLdr86LtU/u+qBQrUhovqxG1n4pd+6FoS2qHWFKUQXfebdKAZYBf/bpDZ52SI+ALwYDXgM39+LT7+1hU7RUpF+PUWzqoFs2vWgkH93/bLG5mTnEz2SCT9XS2lJX19q75sVUH92qxnW9mt828WSnvj0d7avsd/esj9E2gbw70zXH6OtAvX4F+fpz+HsfyGQmMi8rl8iXALMBhsds7nk6yl9fFTpkIXphCvZVhaPQjjX6yJ/97D+vsicpYqExQIeTAB9ZeXoEXtcbLd15GXiZenvs9JShylhDniAjv+JJm4zG+pLXtsLZoZ+5wzKSTpMNJQjrtbHWKPWkmOPtDD5826rCNgMWPhR+rBWNkrMS1iGtjwRgjK7EsYmXiM8vJRCbwicWPH70HvXEjKNiNo/iJ4ScRP0ke4hoOexi5GA6YJS+Mt2axZdiaB1sXS2oVuzqIbcqBP6ewlT0MDpwGrMWnzgP/CLbc2XIGnxGHuFrqqVFP7fR7NznuSM+8jL1M/VFb16Avb2FXQmnPbuaUK5L0YvnQnubQi+XLe/HZJCrTXbOPn+Tt6Ea9SpV33+uTi2a1mMxxyQynk2WtcLPve+pe+ReF0v8v+zd72bsjil48L6/U+c/QqVBt3HHtJanldjwZIyeFFiOvT47rMbRPFv55WpjpUe83",
         },
+        {
+            "url": "https://puzz.link/p?tontonbeya/10/10/6odgr0o7dd2pgl1a240000snqn5o0mvn0o30k1b12b3n2b2z2b3n3b31b1k",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

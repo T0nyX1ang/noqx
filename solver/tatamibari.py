@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, reverse_op, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, avoid_edge_crossover, count_rect
+from noqx.rule.shape import all_rect_region, avoid_edge_crossover, avoid_unknown_rect
 
 
 def tatamibari_cell_constraint(op: str, src_cell: Tuple[int, int]) -> str:
@@ -58,7 +58,7 @@ class TamamibariSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
         self.add_program_line(avoid_edge_crossover())
-        self.add_program_line(count_rect(len(puzzle.text)))
+        self.add_program_line(avoid_unknown_rect())
 
         all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)

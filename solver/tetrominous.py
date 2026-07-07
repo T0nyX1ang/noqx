@@ -19,6 +19,7 @@ class TetrominousSolver(Solver):
         {
             "data": "m=edit&p=7VNNj9owEL3nV6x8nkNimwC+0S1UlSi0hWpVRREK2WwXFZRtIFVllP/e53HYVFpW/Vh1e6ksj5/f2Mmb8cz+S51VBcUYakAhRRgyjnlGWvMM27HcHLaFuaBRfbgtKwCi+WRCN9l2XwRJeyoNjnZo7IjsK5MIKYhnJFKy78zRvjF2RnYBlyANbgoUCZKA4w5esd+hS09GIfCsxYAfAfNNlW+L1dQzb01ilyTcf17wbQfFrvxaCH+N93m5W28csc4OCGZ/u7lrPfv6uvxci9MvGrIjL3d8Rq7q5Kp7ueq8XPn35Q7TpkHa30PwyiRO+4cODjq4MEchpTCahPKL9kvPLY2TjAPafXUOmf7ZhO474nVHxD1HLDqiz1emPxB8Ynki8OXIHBuXB2cnbCXbJZSRVWxfsg3Z9thO+cyY7RXbS7aabcxn+i62X4zeh/h0OUgSkjIcILoYPeLiVw4rwr7F4F2i1E+lJ1Jy2/nR+3OcBniVurrJ8gJVMr7+VFzMymqXbbGb1bt1UZ32aNImEN8EzwSqUdz/+/bf9K17gvCZ6/ep7ZQgu/elT3ZO4q5eZau8RKkhha3bd8Ojbt8g591Kx7/pQEc+cDx71tDMafAd",
         },
+        {"url": "https://puzz.link/p?tetrominous/4/4/1h1k3l", "test": False},
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

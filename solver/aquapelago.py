@@ -19,6 +19,7 @@ class AquapelagoSolver(Solver):
         {
             "data": "m=edit&p=7VZNj9owEL3zK1Zz9iH+SAi5VHS79ELZtlCtKitCgWa1qEGhgVSVUf57Z8YRIS1V91BxqFaOZyZvxs6bsWVn/63OqlzIiB4di0BIbJGJuIfxiHvQtsXmUOTJjRjXh6eyQkOI+8lEPGbFPh/YNiodHN0ocWPh3iYWJAhQ2CWkwn1Iju5d4mbCzdEFwiA29UEKzbvOfGA/WbcelAHaM2/TsM9orjfVusiXU/Qi8j6xbiGAvvOaR5MJ2/J7Di0Pel+X29WGgFV2wGT2T5td69nXX8qvdRsr00a4sac7v0BXd3T1ia6+TFf9E7rFrrxEdJQ2DRb8I1JdJpZYf+rMuDPnyRGMgsQIMENWYcgqNl5FrEaSlZQ+Rg59kBxp1irwYUr5USr2U+og9lr6OG28X4etP6T5GiqJp4HcaSH9vmBGfmVbgLj1AGJp4dUZEBFgOoCYWxh2AOfQm4SzsbQdTwjlhTFnEKfYp8fZ9sZx3hZ0h3AF+ojUv3yfq9Kbh+tjITxHhr15sGYyOTa0g0hOWCqWC1xZ4TTLNywDliHLKcfcsXxgecvSsIw4Zkh749m7B9NRAiJ9WskrcLNG8Yn05xa++P9nfzqwMK+rx2yd4/E3q7ervLqZldU2KwBvmmYAP4C71RhuXi6fq18+VPzgmYfI1c6Nv9CxWNdIC3cvYFcvs+W6LAD/XATh5nf86uzx4EsHPwE=",
         },
+        {"url": "https://puzz.link/p?aquapelago/20/20/5j.s9q4w5zzk2j2o.zzm3k5v3zp2m.g.t3zr5n4zu1zzq2s7h4m1la", "test": False},
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

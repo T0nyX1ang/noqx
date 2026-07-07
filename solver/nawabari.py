@@ -8,7 +8,7 @@ from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent, count_adjacent_edges
 from noqx.rule.reachable import bulb_src_color_connected
-from noqx.rule.shape import all_rect_region, count_rect
+from noqx.rule.shape import all_rect_region, avoid_unknown_rect
 
 
 class NawabariSolver(Solver):
@@ -30,7 +30,7 @@ class NawabariSolver(Solver):
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(all_rect_region())
-        self.add_program_line(count_rect(len(puzzle.text)))
+        self.add_program_line(avoid_unknown_rect())
 
         all_src: List[Tuple[int, int]] = []
         tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)

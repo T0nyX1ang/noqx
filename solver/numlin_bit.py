@@ -5,7 +5,7 @@ from typing import Dict, List, Tuple, Union
 
 from noqx.manager import Solver
 from noqx.puzzle import Puzzle
-from noqx.rule.common import display, fill_line, grid, shade_c
+from noqx.rule.common import display, fill_line, grid, shade_c, shade_cc
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.route import single_route
@@ -112,14 +112,10 @@ class NumlinVBitSolver(Solver):
         rule, nbit = num_binary_range(len(locations))
         self.add_program_line(rule)
 
-        if puzzle.param["visit_all"]:
-            self.add_program_line("white(R, C) :- grid(R, C).")
-        else:
-            self.add_program_line(shade_c(color="white"))
-
         if puzzle.param["no_2x2"]:
             self.add_program_line(no_2x2_path_bit())
 
+        self.add_program_line(shade_cc(["white"]) if puzzle.param["visit_all"] else shade_c(color="white"))
         self.add_program_line(fill_line(color="white"))
         self.add_program_line(adjacent(_type="line"))
         self.add_program_line(single_route(color="white", path=True))

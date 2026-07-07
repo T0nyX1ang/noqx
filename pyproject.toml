@@ -1,6 +1,6 @@
 [project]
 name = "noqx"
-version = "0.8.5"
+version = "0.9.0"
 description = "Extended logic puzzle solver of Noq."
 authors = [
   {name = "Tony Xiang"},
@@ -36,7 +36,7 @@ issues = "https://github.com/T0nyX1ang/noqx/issues"
 [project.optional-dependencies]
 web = [
   "starlette<0.49.1; python_version<'3.9'",
-  "starlette<1,>=0.49.1; python_version>='3.9'",
+  "starlette<2,>=0.49.1; python_version>='3.9'",
   "uvicorn<0.23.0; python_version<'3.9'",
   "uvicorn<1,>=0.23.0,!=0.29.0; python_version>='3.9'",
 ]
@@ -60,7 +60,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build<0.10.0,>=0.8.3"]
+requires = ["uv_build<1,>=0.8.3"]
 build-backend = "uv_build"
 
 [tool.ruff]
@@ -83,6 +83,7 @@ omit = [
   "tests/*",
   "main.py",
   "main_deploy.py",
+  "run_single.py",
 ]
 
 [tool.uv]

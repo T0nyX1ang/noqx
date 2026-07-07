@@ -67,6 +67,16 @@ class SlitherlinkSolver(Solver):
             "url": "http://pzv.jp/p.html?slither/25/15/i5di5di6bg3ad13dc13bd3cg5bi7ci7dhai6bi6ci7b02bd33cc23d8ci8ai6cibh6di6bi7dg1ca31ab10dc3dg6bi6ai6chai7ci7ci8d33dc33cc20d8bi7di7cidh8di5ci6cg3dd03cb02ad3dg6bi7ci6bg",
             "test": False,
         },
+        {
+            "url": "https://puzz.link/p?tslither/7/7/negdh42bmckaaci",
+            "config": {"tslither": True},
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?vslither/9/8/1239123em1239123em1239123em1239223em",
+            "config": {"vslither": True},
+            "test": False,
+        },
     ]
     parameters = {
         "swslither": {"name": "Sheep/Wolf Variant", "type": "checkbox", "default": False},

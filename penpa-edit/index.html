@@ -10,7 +10,7 @@
 
   <!-- style and script loader -->
   <script src="./js/config.js"></script>
-  <script src="./js/penpa_loader.js"></script>
+  <script src="./js/loader.js"></script>
 </head>
 
 <body>
@@ -45,7 +45,7 @@
           <select id="example">
             <option value="" selected>Choose Example</option>
           </select>
-          <button id="param" disabled onclick="invokeParamBox();">Show Parameters</button>
+          <button id="param" disabled onclick="toggleParamBox();">Show Parameters</button>
           <button id="solve">Solve</button>
           <button id="solver_reset">Reset</button>
           <br>
@@ -689,8 +689,8 @@
       <div id="float-key-menu">
         <ul class="panel_menu">
           <li id="panel_1_lbmenu"> 1</li>
-          <li id="panel_A_lbmenu">A</li>
-          <li id="panel_a_lbmenu">a</li>
+          <li id="panel_A_up_lbmenu">A</li>
+          <li id="panel_a_lo_lbmenu">a</li>
           <li id="panel_Text_lbmenu">Text</li>
           <li id="panel_select_lbmenu">▶</li>
         </ul>
@@ -1045,7 +1045,7 @@
         <input type="button" id="expansion_replay" value="Replay URL" style="display:none;" /> <br />
         <input type="button" id="expansion" value="URL with Answer Check / Advanced Options" style="display: none;" />
       </div>
-      <div id="modal-save-body">
+      <div id="modal-save-body1">
         <textarea class="text_area" readonly rows="1" cols="50" id="savetextarea"></textarea>
         <span class="DM">Filename:<input type="text" placeholder="sample.txt" id="savetextname"></span>
       </div>
@@ -1119,7 +1119,7 @@
             </tr>
             <tr class="solcheck_show_and">
               <td>
-                <span><label id="sol_loopline_exact_lb">Line - Match exact styles:</label></span>
+                <span><label id="sol_loopline_exact_and_lb">Line - Match exact styles:</label></span>
               </td>
               <td>
                 <input type="checkbox" name="solution" id="sol_loopline_exact" class="solcheck">
@@ -1143,7 +1143,7 @@
             </tr>
             <tr class="solcheck_show_or">
               <td>
-                <span><label id="sol_loopline_exact_lb">Line - Match exact styles:</label></span>
+                <span><label id="sol_loopline_exact_or_lb">Line - Match exact styles:</label></span>
               </td>
               <td>
                 <input type="checkbox" name="solution" id="sol_or_loopline_exact" class="solcheck_or">
@@ -1159,7 +1159,7 @@
             </tr>
             <tr class="solcheck_show_and">
               <td>
-                <span><label id="sol_loopedge_exact_lb">Edge - Match exact styles:</label></span>
+                <span><label id="sol_loopedge_exact_and_lb">Edge - Match exact styles:</label></span>
               </td>
               <td>
                 <input type="checkbox" name="solution" id="sol_loopedge_exact" class="solcheck">
@@ -1167,7 +1167,7 @@
             </tr>
             <tr class="solcheck_show_and">
               <td>
-                <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
+                <span><label id="sol_loopedge_and_lb">Edge - Green, Double:</label></span>
               </td>
               <td>
                 <input type="checkbox" name="solution" id="sol_loopedge" class="solcheck">
@@ -1183,7 +1183,7 @@
             </tr>
             <tr class="solcheck_show_or">
               <td>
-                <span><label id="sol_loopedge_exact_lb">Edge - Match exact styles:</label></span>
+                <span><label id="sol_loopedge_exact_or_lb">Edge - Match exact styles:</label></span>
               </td>
               <td>
                 <input type="checkbox" name="solution" id="sol_or_loopedge_exact" class="solcheck_or">
@@ -1191,7 +1191,7 @@
             </tr>
             <tr class="solcheck_show_or">
               <td>
-                <span><label id="sol_loopedge_lb">Edge - Green, Double:</label></span>
+                <span><label id="sol_loopedge_or_lb">Edge - Green, Double:</label></span>
               </td>
               <td>
                 <input type="checkbox" name="solution_or" id="sol_or_loopedge" class="solcheck_or">
@@ -1352,7 +1352,7 @@
   <div id="modal-input" class="modal">
     <div id="modal-input-content">
       <h3 class="modal-header" id="save4texttitle">Input/Output Sudoku String</h3>
-      <div id="modal-save-body">
+      <div id="modal-save-body2">
         <textarea class="text_area" rows="1" cols="81" id="iostring"></textarea>
       </div>
       <p id="modal-input-parameters-text">*Specify the location of the first cell of your sudoku grid and its
@@ -1393,7 +1393,7 @@
   <div id="modal-load" class="modal">
     <div id="modal-load-content">
       <h3 class="modal-header" id="save6texttitle">Load URL</h3>
-      <div id="modal-save-body">
+      <div id="modal-save-body3">
         <textarea class="text_area" rows="1" cols="81" id="urlstring" value=""></textarea>
       </div>
       <div class="nb_button">

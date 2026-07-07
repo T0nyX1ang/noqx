@@ -161,6 +161,7 @@ def general_shape(
     _type: str = "grid",
     adj_type: Union[int, str] = 4,
     simple: bool = False,
+    add_origin_map: bool = False,
 ) -> str:
     """A rule to define general shapes in a grid or an area.
 
@@ -176,11 +177,16 @@ def general_shape(
         _type: The type of the shape rule (accepted types: "grid" or "area").
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
         simple: Whether to skip the adjacency re-checking.
+        add_origin_map: Whether to add a predicate to represent the relationship between the origin of the shape and its cells.
 
     Success:
         * If `_type` is set to "grid", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(R, C, I, V)`.
 
         * If `_type` is set to "area", this rule will generate two predicates named `shape_{name}_{color}(R, C)` and `belong_to_shape_{name}_{color}(A, R, C, I, V)`.
+
+        * If `add_origin_map` is set to `True`, this rule will generate an additional predicate named `shape_origin_map_{name}_{color}(R, C, OR, OC)` or `shape_origin_map_{name}_{color}(A, R, C, OR, OC)` to represent the relationship between the origin of the shape and its cells.
+
+        * If `color` is not set to `grid`, the rule chooses to split same-color boundary checks into a helper predicate named `outside_shape_{name}_{color}_{_id}_{i}(R, C)` for efficiency.
 
     Warning:
         Although the shape representation does not require the connectivity of the shape, it is recommended to ensure that the provided shape is connected. Some derived rules may behave weird if the shape is not connected.
@@ -200,11 +206,14 @@ def general_shape(
 
     tag = tag_encode("shape", name, color)
     tag_be = tag_encode("belong_to_shape", name, color)
+    tag_om = tag_encode("shape_origin_map", name, color)
     data = ""
 
     variants = get_variant_shape(deltas, allow_rotations=True, allow_reflections=True)
     for i, variant in enumerate(variants):
-        valid, belongs_to = set(), set()
+        valid, belongs_to, origins_to, boundary = set(), set(), set(), set()
+        tag_bd = tag_encode("outside", "shape", name, color, _id, i)
+        boundary_atom = f"{tag_bd}(R, C)" if _type == "grid" else f"{tag_bd}(A, R, C)"
         for dr, dc in variant:
             if _type == "grid":
                 valid.add(f"grid(R + {dr}, C + {dc})")
@@ -212,6 +221,8 @@ def general_shape(
                 belongs_to.add(
                     f"{tag_be}(R + {dr}, C + {dc}, {_id}, {i}) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i})."
                 )
+                if add_origin_map:
+                    origins_to.add(f"{tag_om}(R + {dr}, C + {dc}, R, C) :- grid(R + {dr}, C + {dc}), {tag}(R, C, {_id}, {i}).")
 
             if _type == "area":
                 valid.add(f"area(A, R + {dr}, C + {dc})")
@@ -219,6 +230,10 @@ def general_shape(
                 belongs_to.add(
                     f"{tag_be}(A, R + {dr}, C + {dc}, {_id}, {i}) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
                 )
+                if add_origin_map:  # pragma: no cover
+                    origins_to.add(
+                        f"{tag_om}(A, R + {dr}, C + {dc}, R, C) :- area(A, R + {dr}, C + {dc}), {tag}(A, R, C, {_id}, {i})."
+                    )
 
             for nr, nc in get_neighbor(dr, dc):
                 if (nr, nc) in variant:
@@ -228,18 +243,32 @@ def general_shape(
                 elif not simple:  # Skip the adjacency re-check if it is simple
                     if color == "grid":  # Simplify the adjacency re-check if the color is set to 'grid'
                         valid.add(f"not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc})")
-                    else:
-                        valid.add(
-                            f"{{ not adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc}); not {color}(R + {nr}, C + {nc}) }} > 0"
+                    else:  # split same-color boundary checks into helper predicates
+                        boundary.add(
+                            f"{boundary_atom} :- adj_{adj_type}(R + {dr}, C + {dc}, R + {nr}, C + {nc}), {color}(R + {nr}, C + {nc})."
                         )
 
+        if boundary:
+            valid.add(f"not {boundary_atom}")
+
         if _type == "grid":
-            data += f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            data += (
+                "\n".join(boundary) + "\n" + f"{tag}(R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            )
 
         if _type == "area":
-            data += f"{tag}(A, R, C, {_id}, {i}) :- {', '.join(valid)}.\n" + "\n".join(belongs_to) + "\n"
+            data += (
+                "\n".join(boundary)
+                + "\n"
+                + f"{tag}(A, R, C, {_id}, {i}) :- {', '.join(valid)}.\n"
+                + "\n".join(belongs_to)
+                + "\n"
+            )
 
-    return data
+        if add_origin_map:
+            data += "\n".join(origins_to) + "\n"
+
+    return data.strip()
 
 
 def all_shapes(name: str, color: str = "black", _type: str = "grid") -> str:
@@ -429,19 +458,6 @@ def all_rect_region(square: bool = False) -> str:
     return rule.strip()
 
 
-def count_rect(target: Union[int, Tuple[str, int]]):
-    """A rule to compare the number of rectangles in a grid with a specified target.
-
-    * Since the top-left side of any rectangle is unique, the number of rectangles can be counted by the `rect` predicate.
-
-    Args:
-        target: The target number or a tuple of (`operator`, `number`) for comparison.
-    """
-
-    rop, num = target_encode(target)
-    return f':- {{ rect(R, C, "{Direction.TOP_LEFT}") }} {rop} {num}.'
-
-
 def avoid_rect(
     rect_r: int, rect_c: int, color: str = "black", corner: Tuple[Optional[int], Optional[int]] = (None, None)
 ) -> str:
@@ -497,28 +513,68 @@ def count_rect_size(
     src_cell: Tuple[int, int],
     color: Optional[str] = None,
     adj_type: Union[int, str] = 4,
+    possible_rects: Optional[Set[Tuple[int, int, int, int]]] = None,
 ) -> str:
     """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
 
     * A `noqx.rule.reachable.bulb_src_color_connected` rule should be applied first.
+
+    * If the parameter `possible_rects` is provided, the rule will only validate on these rectangles. Please note that this parameter is only valid when the `target` is a `!=` comparison.
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
         src_cell: The source cell of the rectangle.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
+        possible_rects: A set of possible rectangles defined by their bounds (top, left, bottom, right).
+
+    Success:
+        This rule will generate a helper predicate named `rect_area({src_r}, {src_c})` if the `possible_rects` parameter is provided and the `target` is a `!=` comparison.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
 
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
     rop, num = target_encode(target)
-
     src_r, src_c = src_cell
+
+    if possible_rects and rop == "!=":
+        rule = ""
+        for top, left, bottom, right in possible_rects:
+            if (bottom - top + 1) * (right - left + 1) == num:
+                rect_bounds = [
+                    f"{tag}({src_r}, {src_c}, {top}, {src_c})",
+                    f"{tag}({src_r}, {src_c}, {bottom}, {src_c})",
+                    f"{tag}({src_r}, {src_c}, {src_r}, {left})",
+                    f"{tag}({src_r}, {src_c}, {src_r}, {right})",
+                    f'edge({top}, {src_c}, "{Direction.TOP}")',
+                    f'edge({bottom + 1}, {src_c}, "{Direction.TOP}")',
+                    f'edge({src_r}, {left}, "{Direction.LEFT}")',
+                    f'edge({src_r}, {right + 1}, "{Direction.LEFT}")',
+                ]
+
+                rule += f"rect_area({src_r}, {src_c}) :- {', '.join(rect_bounds)}.\n"
+
+        rule += f":- not rect_area({src_r}, {src_c})."
+        return rule
+
     count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
     count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
-
     return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
+
+
+def avoid_unknown_rect() -> str:
+    """A rule to avoid any cell being unreachable to any edge-bounded rectangle.
+
+    * This rule is often used together with `bulb_src_color_connected` and `all_rect_region`.
+
+    Success:
+        This rule will generate a predicate named `clue_link_topleft(TR, TC)`.
+    """
+    tag = tag_encode("reachable", "bulb", "src", "adj", "edge", None)
+    rule = f"clue_link_topleft(TR, TC) :- {tag}(SR, SC, SR, SC), TR = #min {{ R: {tag}(SR, SC, R, SC) }}, TC = #min {{ C: {tag}(SR, SC, SR, C) }}.\n"
+    rule += f':- rect(TR, TC, "{Direction.TOP_LEFT}"), not clue_link_topleft(TR, TC).'
+    return rule
 
 
 def avoid_edge_crossover() -> str:

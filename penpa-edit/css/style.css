@@ -5,7 +5,7 @@ body {
 #solver_button {
   display: block;
   position: relative;
-  max-width: 700px;
+  max-width: 750px;
   text-align: center;
   margin: 0 auto;
   padding-bottom: 10px;
@@ -50,6 +50,10 @@ body {
 #param_letters {
   min-width: 100px;
   text-align: center;
+}
+
+ul.nav ul::before {
+  display: none;
 }
 
 #type + .select2-container,

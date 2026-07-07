@@ -1,0 +1,4 @@
+interface:
+  display_name: "Noqx Python Style"
+  short_description: "Python style rules for noqx"
+  default_prompt: "Use this skill when editing Python code in the noqx repository. Follow local conventions for solver helper code, debuggability, and formatting checks."

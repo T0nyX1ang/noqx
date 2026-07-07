@@ -33,25 +33,25 @@ def _expand_star(clue: Tuple[Union[int, str], ...], line_length: int) -> List[Tu
                 next_variants.add(variant + (token,))
         variants = next_variants
 
-    return [variant for variant in sorted(variants, key=lambda item: (len(item), item)) if min_cells(variant) <= line_length]
+    return [v for v in sorted(variants, key=lambda item: (len(item), [str(x) for x in item])) if min_cells(v) <= line_length]
 
 
 def _line_base(_type: str, color: str) -> List[str]:
-    """Generates base rule for counting consecutive shaded cells in rows or columns."""
+    """Generates base rule for tracking clue block indices in rows or columns."""
     base = []
     if _type == "row":
-        prefix = "row_count(R, C, N, V) :- grid(R, C), row_count_value_range(R, N, V)"
-        base.append("row_count(R, -1, -1, 0) :- grid(R, _).")
-        base.append(f"{prefix}, not {color}(R, C), row_count(R, C - 1, N, _), V = 0.")
-        base.append(f"{prefix}, {color}(R, C), not {color}(R, C - 1), row_count(R, C - 1, N - 1, _), V = 1.")
-        base.append(f"{prefix}, {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N, V - 1).")
+        prefix = "row_count(R, C, N) :- grid(R, C), row_count_index_range(R, N)"
+        base.append("row_count(R, -1, -1) :- grid(R, _).")
+        base.append(f"{prefix}, not {color}(R, C), row_count(R, C - 1, N).")
+        base.append(f"{prefix}, {color}(R, C), not {color}(R, C - 1), row_count(R, C - 1, N - 1).")
+        base.append(f"{prefix}, {color}(R, C), {color}(R, C - 1), row_count(R, C - 1, N).")
 
     if _type == "col":
-        prefix = "col_count(R, C, N, V) :- grid(R, C), col_count_value_range(C, N, V)"
-        base.append("col_count(-1, C, -1, 0) :- grid(_, C).")
-        base.append(f"{prefix}, not {color}(R, C), col_count(R - 1, C, N, _), V = 0.")
-        base.append(f"{prefix}, {color}(R, C), not {color}(R - 1, C), col_count(R - 1, C, N - 1, _), V = 1.")
-        base.append(f"{prefix}, {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N, V - 1).")
+        prefix = "col_count(R, C, N) :- grid(R, C), col_count_index_range(C, N)"
+        base.append("col_count(-1, C, -1) :- grid(_, C).")
+        base.append(f"{prefix}, not {color}(R, C), col_count(R - 1, C, N).")
+        base.append(f"{prefix}, {color}(R, C), not {color}(R - 1, C), col_count(R - 1, C, N - 1).")
+        base.append(f"{prefix}, {color}(R, C), {color}(R - 1, C), col_count(R - 1, C, N).")
 
     return base
 
@@ -61,37 +61,58 @@ def _line_clue(
 ) -> List[str]:
     """Generates rules for a specific clue in a row or column, with optional asterisk variant handling."""
     guard = f"{_type}_variant({_id}, {variant})" if variant is not None else ""
+    guard_prefix = f"{guard}," if guard else ""
+    guard_body = f" :- {guard}" if guard else ""
 
-    rule = [f"{_type}_count_value_range({_id}, -1, 0){' :- ' + guard if guard else ''}."]
+    rule = [f"{_type}_count_index_range({_id}, -1){guard_body}."]
     if len(clue) == 0 or clue == (0,):
         if _type == "row":
-            rule.append(f":-{guard + ',' if guard else ''} grid({_id}, C), not row_count({_id}, C, -1, 0).")
+            rule.append(f":-{guard_prefix} grid({_id}, C), not row_count({_id}, C, -1).")
 
         if _type == "col":
-            rule.append(f":-{guard + ',' if guard else ''} grid(R, {_id}), not col_count(R, {_id}, -1, 0).")
+            rule.append(f":-{guard_prefix} grid(R, {_id}), not col_count(R, {_id}, -1).")
 
         return rule
 
+    rule.append(f"{_type}_count_index_range({_id}, 0..{len(clue) - 1}){guard_body}.")
+
     if _type == "row":
-        rule.append(f":-{guard + ',' if guard else ''} not row_count({_id}, {size - 1}, {len(clue) - 1}, _).")
+        rule.append(f":-{guard_prefix} not row_count({_id}, {size - 1}, {len(clue) - 1}).")
 
     if _type == "col":
-        rule.append(f":-{guard + ',' if guard else ''} not col_count({size - 1}, {_id}, {len(clue) - 1}, _).")
+        rule.append(f":-{guard_prefix} not col_count({size - 1}, {_id}, {len(clue) - 1}).")
 
     for clue_index, token in enumerate(clue):
         if token == "?":
-            upper = size + 2 - 2 * len(clue)
-            rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{upper}){(' :- ' + guard if guard else '')}.")
             continue
 
-        rule.append(f"{_type}_count_value_range({_id}, {clue_index}, 0..{token}){(' :- ' + guard if guard else '')}.")
         if _type == "row":
-            slope = f"grid({_id}, C), {color}({_id}, C), {_type}_count({_id}, C, {clue_index}, V)"
-            rule.append(f":-{guard + ',' if guard else ''} {slope}, not {color}({_id}, C + 1),  V != {token}.")
+            rule.append(
+                f":-{guard_prefix} {color}({_id}, C), row_count({_id}, C, {clue_index}), "
+                f"row_count({_id}, C - {token}, {clue_index})."
+            )
+
+            end = f"grid({_id}, C), not {color}({_id}, C), {color}({_id}, C - 1), row_count({_id}, C - 1, {clue_index})"
+            rule.append(f":-{guard_prefix} {end}, not row_count({_id}, C - {token}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {end}, not row_count({_id}, C - {token} - 1, {clue_index - 1}).")
+
+            line_end = f"{color}({_id}, {size - 1}), row_count({_id}, {size - 1}, {clue_index})"
+            rule.append(f":-{guard_prefix} {line_end}, not row_count({_id}, {size} - {token}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {line_end}, not row_count({_id}, {size} - {token} - 1, {clue_index - 1}).")
 
         if _type == "col":
-            slope = f"grid(R, {_id}), {color}(R, {_id}), {_type}_count(R, {_id}, {clue_index}, V)"
-            rule.append(f":-{guard + ',' if guard else ''} {slope}, not {color}(R + 1, {_id}), V != {token}.")
+            rule.append(
+                f":-{guard_prefix} {color}(R, {_id}), col_count(R, {_id}, {clue_index}), "
+                f"col_count(R - {token}, {_id}, {clue_index})."
+            )
+
+            end = f"grid(R, {_id}), not {color}(R, {_id}), {color}(R - 1, {_id}), col_count(R - 1, {_id}, {clue_index})"
+            rule.append(f":-{guard_prefix} {end}, not col_count(R - {token}, {_id}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {end}, not col_count(R - {token} - 1, {_id}, {clue_index - 1}).")
+
+            line_end = f"{color}({size - 1}, {_id}), col_count({size - 1}, {_id}, {clue_index})"
+            rule.append(f":-{guard_prefix} {line_end}, not col_count({size} - {token}, {_id}, {clue_index}).")
+            rule.append(f":-{guard_prefix} {line_end}, not col_count({size} - {token} - 1, {_id}, {clue_index - 1}).")
 
     return rule
 
@@ -125,6 +146,7 @@ class NonogramSolver(Solver):
 
     name = "Nonogram"
     category = "shade"
+    aliases = ["cts", "crossthestreams"]
     examples = [
         {
             "data": "m=edit&p=7VVNT+MwEL3nV6A5zyG2kzbJZVU+updSWNoVQlFUpSGIalMF0gatXOW/M540BAwHOAAX5Pr19dljP4896ua+Tqsch9RUgC4Kasr1uA9c8+nafLUt8ugAR/X2tqyIIJ6Nx3iTFpvciRXNoJ44Ox1GeoT6dxSDAARJXUCC+k+006eRnqKe0RCgR9qknSSJnvT0kscNO2pF4RKf7jnRK6LZqsqKfDFplfMo1nMEs88hRxsK6/Ihh70P8zsr18uVEZbplg6zuV3d7Uc29XX5r4Zuiwb1qLU76+zK3q7q7aonu+ptu/Lz7YZJ01DaL8jwIoqN9789DXo6i3aN8bUDFZjQX+SlvRtQoSV4ri2ILjmdYIf4dohvh/jSCPKZYPvw7UWH9qKBay0a2LuEwgoJ5QuBciA4E1eMY0bJOKdEoVaMx4wuo8844TknjJeMR4we44DnDE2q33kZMKCzeHRGMizbm/kCb/GgLXKBwdvfiRPDrK5u0iyn1zat18u8OpiW1TotgMq7ceA/cKeaF1TFPxX/PRVvrsD9UN1//8uPKbv0/vQZwl29SBdZWQD9aSDr4mP68LX+5aelckqcRw==",
@@ -135,6 +157,11 @@ class NonogramSolver(Solver):
         },
         {
             "url": "https://puzz.link/p?nonogram/30/30/1121222n1331112n3111223n34133p8115q64113p5412312n411232o311323o21215p2112113n41243p32124p231112o2222q32121p22222p3225q52215p41524p4524q4221q422121o354r3132q51121p56sct43s1t411r422r4112q14211p19112p4811q22ar223711o5325q41113p334r2171q13333p15br2123111n222111o6272q431113o32111111m33112p2211111n122112o23711p733r74s77s3425q75sbt7t",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?cts/21/11/55j.20i02120g020i..j040i06j30j0321h02120g0k420i303i..j11.i02020g020i404i040i202i050i203030k02o302020k030403k03.n0336m5.50m04040l02320l302020k.605m",
+            "config": {"cts": True},
             "test": False,
         },
     ]

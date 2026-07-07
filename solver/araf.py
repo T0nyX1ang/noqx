@@ -1,13 +1,24 @@
 """The Araf solver."""
 
-from typing import Tuple
+from typing import List, Tuple
 
 from noqx.manager import Solver
-from noqx.puzzle import Puzzle
+from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
 from noqx.rule.helper import fail_false, tag_encode, validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
-from noqx.rule.reachable import avoid_unknown_src, grid_src_color_connected
+from noqx.rule.reachable import avoid_unknown_src
+
+
+def araf_src_connected(r: int, c: int, num: int, exclude_cells: List[Tuple[int, int]]) -> str:
+    """Collect cells reachable from a clue, bounded by its possible region size."""
+    tag = tag_encode("reachable", "grid", "src", "adj", "edge", None)
+    rule = f"{tag}({r}, {c}, {r}, {c}).\n"
+    rule += "\n".join(f"not {tag}({r}, {c}, {exc_r}, {exc_c})." for exc_r, exc_c in exclude_cells) + "\n"
+    rule += f"{tag}({r}, {c}, R, C) :- {tag}({r}, {c}, R1, C1), grid(R, C), adj_edge(R, C, R1, C1), |R - {r}| + |C - {c}| < {num}.\n"
+    rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R, C + 1), edge(R, C + 1, "{Direction.LEFT}").\n'
+    rule += f':- {tag}({r}, {c}, R, C), {tag}({r}, {c}, R + 1, C), edge(R + 1, C, "{Direction.TOP}").'
+    return rule
 
 
 def araf_region_clue_count(src_cell: Tuple[int, int]) -> str:
@@ -52,6 +63,8 @@ class ArafSolver(Solver):
         self.add_program_line(adjacent(_type="edge"))
         self.add_program_line(avoid_unknown_src(color=None, adj_type="edge"))
 
+        max_num = max(int(num) for num in puzzle.text.values() if isinstance(num, int))
+
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
@@ -69,7 +82,7 @@ class ArafSolver(Solver):
                     exclude.append((r1, c1))
 
             self.add_program_line(f"clue({r}, {c}, {int(num)}).")
-            self.add_program_line(grid_src_color_connected((r, c), exclude_cells=exclude, color=None, adj_type="edge"))
+            self.add_program_line(araf_src_connected(r, c, max_num, exclude_cells=exclude))
             self.add_program_line(araf_region_clue_count((r, c)))
             self.add_program_line(araf_region_count((r, c)))
 

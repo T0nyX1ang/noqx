@@ -10,7 +10,7 @@
   --blueLightMedium: #4795d4;
   --blueLightVery: #c0e0ff;
   --bluesky: #3085d6;
-  --blueskyMedium: #00BDFE;
+  --blueskyMedium: #00bdfe;
   --brownLight: #eecab1;
   --green: #208020;
   --greenLight: #4c9900;
@@ -126,13 +126,13 @@
   border: 1px solid var(--blueDark);
 }
 
-.nav>li:hover>span {
+.nav > li:hover > span {
   /*layer-1*/
   color: var(--black);
   background: var(--greyLight);
 }
 
-.nav>li li:hover>span {
+.nav > li li:hover > span {
   /*layer-2*/
   color: var(--black);
   background: var(--greyLight);
@@ -148,7 +148,7 @@
   border-left: 5px solid var(--white);
 }
 
-.nav>li.symbolmode_display:hover>span {
+.nav > li.symbolmode_display:hover > span {
   /*layer-1*/
   color: var(--white);
   background: none;
@@ -199,21 +199,21 @@ header,
 }
 
 #modal-save-content textarea,
-#modal-save-content input[type=text] {
+#modal-save-content input[type="text"] {
   border: 1px solid var(--greyDark);
   background: var(--greyDarkVery);
   color: var(--white);
 }
 
 #modal-save-content button,
-#modal-save-content input[type=button] {
+#modal-save-content input[type="button"] {
   border: 1px solid var(--greyDark);
   background: var(--black);
   color: var(--white);
 }
 
 #modal-save-content button:hover,
-#modal-save-content input[type=button]:hover {
+#modal-save-content input[type="button"]:hover {
   background: var(--greyDarkVery);
 }
 
