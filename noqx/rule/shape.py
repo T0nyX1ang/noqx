@@ -513,27 +513,53 @@ def count_rect_size(
     src_cell: Tuple[int, int],
     color: Optional[str] = None,
     adj_type: Union[int, str] = 4,
+    possible_rects: Optional[Set[Tuple[int, int, int, int]]] = None,
 ) -> str:
     """A rule to compare the the size of a rectangle (starting from a source) to a specified target.
 
     * A `noqx.rule.reachable.bulb_src_color_connected` rule should be applied first.
+
+    * If the parameter `possible_rects` is provided, the rule will only validate on these rectangles. Please note that this parameter is only valid when the `target` is a `!=` comparison.
 
     Args:
         target: The target number or a tuple of (`operator`, `number`) for comparison.
         src_cell: The source cell of the rectangle.
         color: The color to be checked. If it is `None`, only the `edge` adjacency is accepted.
         adj_type: The type of adjacency (accepted types: `4`, `8`, `x`, `line`, `line_directed`).
+        possible_rects: A set of possible rectangles defined by their bounds (top, left, bottom, right).
+
+    Success:
+        This rule will generate a helper predicate named `rect_area({src_r}, {src_c})` if the `possible_rects` parameter is provided and the `target` is a `!=` comparison.
     """
     if color is None:
         validate_type(adj_type, ("edge",))
 
     tag = tag_encode("reachable", "bulb", "src", "adj", adj_type, color)
     rop, num = target_encode(target)
-
     src_r, src_c = src_cell
+
+    if possible_rects and rop == "!=":
+        rule = ""
+        for top, left, bottom, right in possible_rects:
+            if (bottom - top + 1) * (right - left + 1) == num:
+                rect_bounds = [
+                    f"{tag}({src_r}, {src_c}, {top}, {src_c})",
+                    f"{tag}({src_r}, {src_c}, {bottom}, {src_c})",
+                    f"{tag}({src_r}, {src_c}, {src_r}, {left})",
+                    f"{tag}({src_r}, {src_c}, {src_r}, {right})",
+                    f'edge({top}, {src_c}, "{Direction.TOP}")',
+                    f'edge({bottom + 1}, {src_c}, "{Direction.TOP}")',
+                    f'edge({src_r}, {left}, "{Direction.LEFT}")',
+                    f'edge({src_r}, {right + 1}, "{Direction.LEFT}")',
+                ]
+
+                rule += f"rect_area({src_r}, {src_c}) :- {', '.join(rect_bounds)}.\n"
+
+        rule += f":- not rect_area({src_r}, {src_c})."
+        return rule
+
     count_r = f"#count {{ R: {tag}({src_r}, {src_c}, R, C) }} = CR"
     count_c = f"#count {{ C: {tag}({src_r}, {src_c}, R, C) }} = CC"
-
     return f":- {count_r}, {count_c}, CR * CC {rop} {num}."
 
 
