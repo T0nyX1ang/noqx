@@ -2,12 +2,16 @@
 
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Puzzle
-from noqx.rule.common import display, fill_line, grid, shade_c
+from noqx.rule.common import display, grid, shade_c
 from noqx.rule.helper import fail_false
 from noqx.rule.neighbor import adjacent, count_adjacent, count_covering
 from noqx.rule.reachable import grid_color_connected
-from noqx.rule.route import single_route
 from noqx.rule.shape import avoid_rect
+
+
+def avoid_violated_sansa_road(color: str = "gray") -> str:
+    """Generate a rule to avoid sansa road on normal cells without triangles."""
+    return f":- grid(R0, C0), {color}(R0, C0), not sansa(R0, C0), #count {{ R, C: {color}(R, C), adj_4(R, C, R0, C0) }} != 2."
 
 
 class SansaRoadSolver(Solver):
@@ -26,11 +30,9 @@ class SansaRoadSolver(Solver):
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(shade_c(color="gray"))
         self.add_program_line(adjacent(_type=4))
-        self.add_program_line(adjacent(_type="line"))
         self.add_program_line(avoid_rect(2, 2, color="not gray"))
-        self.add_program_line(fill_line(color="not gray"))
-        self.add_program_line(single_route(color="not gray"))
-        self.add_program_line(grid_color_connected(color="not gray", adj_type="line"))
+        self.add_program_line(grid_color_connected(color="not gray", adj_type=4, grid_size=(puzzle.row, puzzle.col)))
+        self.add_program_line(avoid_violated_sansa_road(color="not gray"))
 
         for (r, c, d, _), symbol_name in puzzle.symbol.items():
             fail_false(
@@ -55,7 +57,8 @@ class SansaRoadSolver(Solver):
                 self.add_program_line(count_covering(target, (r, c), d, color="gray"))
 
             if d == Direction.CENTER and symbol_name == "tridown_M__1":
-                self.add_program_line(f"pass_by_route({r}, {c}).")
+                self.add_program_line(f"sansa({r}, {c}).")
+                self.add_program_line(f"not gray({r}, {c}).")
                 self.add_program_line(count_adjacent(3, (r, c), color="not gray", adj_type=4))
 
         for (r, c, _, _), color in puzzle.surface.items():
