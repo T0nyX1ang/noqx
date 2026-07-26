@@ -16,7 +16,7 @@ class KoburinSolver(Solver):
     category = "route"
     examples = [
         {
-            "data": "m=edit&p=7VZNb5tAEL37V0R7ngP7YcBcKjeNe6FOW7uKImRZmBIFFRcXm6pay/+9swPULoEoqJUTVRXe0ds3u943s8yI7bcizGPg3PykCxYgAjW0aXAuaFjVM092aexdwLjY3Wc5AoDryQTuwnQbD4Jq1WKw1yNPj0G/9QLGGTCBg7MF6A/eXr/z9BT0DF0MFHJ+uUggvDrCG/IbdFmS3EI8rTDCW4RRkkdpvPRL5r0X6Dkwc85r2m0gW2ffY1bpMPMoW68SQ6zCHQazvU82lWdbfM6+FKw+4gB6XMr1W+TKo1z5S65slyv+itx0k7UJHS0OB0z4R5S69AKj+tMRukc48/YHo2jPpF3HWN4KU8IQr46ErQwhTwinsYVbtEecMJw313DZZMSDXUOnydiWYawTxhXN/3Hd39ZgYJzCuyU7ISvIzjF60JLsG7IW2SFZn9Zckb0he0lWkbVpjWPy98QMM4lSVZnnPxHFlIuXNHKBOXJUAuWAwqglMClrhJwtak7ipcknRhNIQXXefIb/LrsYBGxW5HdhFGMZ+cnX+GKa5eswxdm0WK/ivJ5j/zoM2A9GI5CmHf5vaWdvaSb5Vq/G9vxdINAzwMrS18A2xTJcRhm+XZi1APNdFXCHs6zp7p1Y5t07sfLbndg82hxdIpEf9uPtnnxXcpSr+jpGraE94nAs9yU62q/oMceLjKP/DT5zHJ3ZPUfa+x6OnwMPHGfvffjZsBj8BA==",
+            "data": "m=edit&p=7VZRb9o8FH3nV1R+vg9x7ISQl4l1sBdGvxWmqooQCjRdo4WFBTJNRvz3HjthYXxJC+rUoWkCXx2f62vuucY3WX3LwywizvVXeGQREEnHNYNz2wyr/IzjdRL5F9TN1w9pBkB01e/TfZisImoF5bJJa6M6vuqSeu8HjDNiNgZnE1If/Y364KshqRFcjDxwg2KRDdir4I3xa3RZkNwCHpaY2LXe7hbTeZzNk2g6AAvmPz9QY2La+dbsoCFbpN8jVuai5/N0MYs1MQvXULR6iJelZ5XfpV/yci02ZIs8WcfzNEkzTWpuS6pbyOjtZMhKhqhkaFjI0KhGhlb3cgnJMq1LvlOf/BaHc430p36glXyqoFfBkb9h0ma+BzwEFu6uIsU5GmfA3lSEKzUh9oj2QQi3TAz+Cj8Zzg/XcHHI2P+LcszO+4xracbaYzwTtb+P5/2yBsK4v4G9NbZvrG3sGDUgJYx9Z6xlrGPswKzpoSi2w8l2URkbf3DXBUZiNpw3ZsmlsdJY14S2dXGPLb+AAlmU/yW5Mukhw45HrC06BZBtkiiGICbEDoFz8YMFJ3CWohD5rJpAoEPUfJy/l520AjbKs/twHuHeDeKv0cUwzRZhglnv7vPebJgvZlG2m6MtblvsBzMjELrN/uuUZ90p9UFZR17Yl1/VI2/cM+kEakS4k+qK2DKfhlNoYngkU6AGu6vf4Cy6QXMkGkRzJHpGvRNtp87RlCR45zTePZFvKo705KmOTq20JxxtyztHR/0RPeU4Sx2nn+Af1tFY3dco+6k/jheJOkcPz6zyRajJXb4b/eboV++7eNmZtB4B",
         },
     ]
 
@@ -41,7 +41,11 @@ class KoburinSolver(Solver):
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
-            self.add_program_line(f"black({r}, {c}).")
+            if color == Color.BLACK:
+                self.add_program_line(f"black({r}, {c}).")
+
+            if color == Color.GRAY:
+                self.add_program_line(f"hole({r}, {c}).")
 
         for (r, c, d, label), draw in puzzle.line.items():
             validate_type(label, "normal")
