@@ -59,7 +59,7 @@ class MyopiaSolver(Solver):
             validate_type(symbol, "arrow_cross")
 
             # direction order: top, left, bottom, right
-            mask = [bool(style & 64), bool(style & 128), bool(style & 16), bool(style & 32)]
+            mask = [bool(style & 2), bool(style & 1), bool(style & 8), bool(style & 4)]
             self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1))
 
         for (r, c, d, _), draw in puzzle.edge.items():

@@ -62,7 +62,7 @@ class PentopiaSolver(Solver):
             self.add_program_line(f"not black({r}, {c}).")
 
             # direction order: top, left, bottom, right
-            mask = [bool(style & 64), bool(style & 128), bool(style & 16), bool(style & 32)]
+            mask = [bool(style & 2), bool(style & 1), bool(style & 8), bool(style & 4)]
             self.add_program_line(opia_constraint(r, c, mask, max(puzzle.row, puzzle.col) + 1, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():

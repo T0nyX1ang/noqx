@@ -65,10 +65,12 @@ def _style_convert(style: List[int]) -> int:
 
     * In [Penpa+](https://swaroopg92.github.io/penpa-edit/), there are basically two types of symbol styles: the **integer** style (for single symbols), and the **boolean list** style (for cascaded multiple symbols). To unify these styles, this function **binarized** the boolean list to a single integer.
 
+    * Since the bit of a number is read from its highest bit to lowest bit, and the boolean list is read from its lowest index to highest index (i.e., left to right), the boolean list is **reversed** before converting to integer.
+
     Args:
         style: The style list to be converted.
     """
-    return int("".join(map(str, style)), 2)
+    return int("".join(map(str, style))[::-1], 2)
 
 
 def _category_to_direction(r: int, c: int, category: int) -> Tuple[int, int, str]:
