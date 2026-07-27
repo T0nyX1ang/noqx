@@ -45,7 +45,6 @@ class PortalLoopSolver(Solver):
             else:
                 self.add_program_line(f":- not straight({r}, {c}).")
 
-        fail_false(len(locations) > 0, "No clues found.")
         for n, pair in locations.items():
             fail_false(len(pair) == 2, f"Portal {n} is unmatched.")
             r0, c0 = pair[0]
