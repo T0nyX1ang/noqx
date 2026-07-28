@@ -265,16 +265,16 @@ class PenpaPuzzle(Puzzle):
                     and self.text.get(Point(*_category_to_direction(r, c, category), "normal")) is not None
                 ):  # compatible with older Penpa+ versions
                     num = self.text.pop(Point(*_category_to_direction(r, c, category), "normal"))
-                    if cvt_style in [4, 16]:
+                    if cvt_style in [8, 32]:
                         self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.TOP}")] = num
 
-                    if cvt_style in [1, 64]:
+                    if cvt_style in [2, 128]:
                         self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.BOTTOM}")] = num
 
-                    if cvt_style in [8, 32]:
+                    if cvt_style in [4, 16]:
                         self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.LEFT}")] = num
 
-                    if cvt_style in [2, 128]:
+                    if cvt_style in [1, 64]:
                         self.text[Point(*_category_to_direction(r, c, category), f"arrow_{Direction.RIGHT}")] = num
             else:
                 symbol_name = f"{shape}__{style}"
