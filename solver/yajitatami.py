@@ -55,7 +55,6 @@ class YajitatamiSolver(Solver):
 
     def solve(self, puzzle: Puzzle) -> str:
         self.reset()
-        fail_false(len(puzzle.text) > 0, "No clues found.")
         self.add_program_line(grid(puzzle.row, puzzle.col))
         self.add_program_line(edge(puzzle.row, puzzle.col))
         self.add_program_line(adjacent(_type="edge"))
