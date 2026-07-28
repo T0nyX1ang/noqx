@@ -37,6 +37,14 @@ class RailPoolSolver(Solver):
         {
             "data": "m=edit&p=7VZdb9owFH3nV1R+9oO/4th5qbqu3QvrPug0TRFClKYrGpQOyDQF8d937FyajDC1UqWqD1OIdXJ9fO/xta/N6mc5Xhbc49GOCy7xaCfi60z4CXoup+tZkR3xk3J9u1gCcP7h/JzfjGergvdyog17m8pn1Qmv3mU5U4zHV7Ihrz5lm+p9Vg14NUAX4wa2PpBkXAGeNfBr7A/otDZKAXwBbIABvwFOpsvJrBj1a8vHLK8uOQtx3sTRAbL54lfBahfxe7KYX02D4a6c38zIuCqvFz9Koskwqpytp5PFbLFk0ZUcbnl1UqvvH1CvD6nXB9QT4dnqr8ZrrMXqdnp/aAr+8BS2WJnPmMQoy8N8vjTQNXCQbZgzLDPboHjDjNzlhSP3cGxMMBwftyy2Y/HR0his26ekgtXb48GgOpROJG/2xPhOaO/2Qksh9jlS+o5JdcJL1YkvVfq3CUmS2WYbVjS057FVsb1EPnmlY/s2tiK2SWz7kXOGBEtvufTwq+Dfp1xJEbESvsFKc6VtjbUFTsluWhicIDlgg7FW1dgqYF3jRDQ4cBLyn8JPmhBOuHKuxi5tcCIxlvxb8C3xE9XC4CQUN8VYT/494npJdtfC4KTkXyGuJoyTSGlPdtvC4ChLuQr5oVgSGiTNS4gHHDlil09ok6RfQr8kzUK1MDiCfCpoMzTWwKchzcq1MDhqlx/k39IaWWi2tC6JaWFwEtKQQpunWB4aPOl3osGB40hDgrlbimWhwVJOEtvC4CSkQWGsIf8G/g351KLBgaN3+Qk5IZ0y7EOKJZIWBkdQrhx8Ot1gT3YPfqhLtQ0nYdjmp7E1sbVx+6fhsHnicVQfRM+pNKZD/r0LQnlYOo3ilTwkR0ebQvp0XY+Pis7Bl3tP8rosw17OBuXyZjwpcD30p3fF0cViOR+H++7s+nvr66KcXxXL3Teu7m2P/WbxzTVcmf+3+eu9zcMqiRcroieWxyNycmScqpBXHzi7L0fjESbG8MeRx866MP/RWdfq4U4UeafjxWeP82HY+wM=",
         },
+        {
+            "url": "https://puzz.link/p?railpool/17/10/13t8r2q36zo45zm12q9p8u8t123n4zo1zzq3qg1gc2g003000a630302s0188g0480270o3g20p000b0g8o42690027gc0000080",
+            "test": False,
+        },
+        {
+            "url": "https://puzz.link/p?railpool/16/6/z20o2m20o26zn26k00q20n2r0n0zq2487st3s8ruvrev248srju1prgeo360tjm",
+            "test": False,
+        },
     ]
 
     def solve(self, puzzle: Puzzle) -> str:

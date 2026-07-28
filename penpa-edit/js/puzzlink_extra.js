@@ -36,24 +36,6 @@ function decode_puzzlink_extra(url) {
       number_style, map_genre_tag;
 
   switch (type) {
-    case "fivecells":
-    case "fourcells":
-      /* base on "nawabari" type */
-
-      pu = new Puzzle_square(cols, rows, size);
-      pu.mode_grid("nb_grid2"); // Dashed grid lines
-      setupProblem(pu, "combi");
-
-      info_number = puzzlink_pu.decodeNumber10();
-      puzzlink_pu.drawNumbers(pu, info_number, 1, "1", false);
-
-      pu.mode_qa("pu_a");
-      pu.mode_set("combi");
-      pu.subcombimode("edgesub");
-      UserSettings.tab_settings = ["Surface", "Composite"];
-      pu.user_tags = [type];
-      break;
-
     case "numlin_bit":
       /* base on "numlin" and "easyasabc" type */
 
