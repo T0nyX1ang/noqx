@@ -62,6 +62,8 @@ class MartiniSolver(Solver):
         for (r, c, d, label), num in puzzle.text.items():
             validate_direction(r, c, d)
             validate_type(label, "normal")
+            self.add_program_line(f"not gray({r}, {c}).")
+            self.add_program_line(f"white_circle({r}, {c}).")
             if isinstance(num, int):
                 self.add_program_line(grid_src_color_connected((r, c), color="not gray", adj_type=4))
                 self.add_program_line(count_reachable_src_white_circle(num, src_cell=(r, c), color="not gray"))
