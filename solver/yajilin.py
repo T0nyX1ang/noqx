@@ -49,13 +49,9 @@ class YajilinSolver(Solver):
             validate_direction(r, c, d)
             self.add_program_line(f"hole({r}, {c}).")
 
-            # empty clue or space or question mark clue (for compatibility)
-            if isinstance(clue, str) and (len(clue) == 0 or clue.isspace() or clue == "?"):
-                continue
-
-            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
-            arrow_direction = label.split("_")[1]
-            self.add_program_line(yaji_count(int(clue), (r, c), arrow_direction, color="black"))
+            if isinstance(clue, int) and label.startswith("arrow"):
+                arrow_direction = label.split("_")[1]
+                self.add_program_line(yaji_count(int(clue), (r, c), arrow_direction, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")

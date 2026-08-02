@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Puzzle
 from noqx.rule.common import display, grid, shade_c
-from noqx.rule.helper import fail_false, validate_direction
+from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.shape import avoid_rect
@@ -17,7 +17,7 @@ class YajiKabeSolver(Solver):
     category = "shade"
     examples = [
         {
-            "data": "m=edit&p=7ZRLb9swDIDv/hWFzjro5ect65pe0nRbUhSFYRiO66JGHbhz4mFQkP8+ijJmd0qB7bBuAwZHNPOJokiJ5u5zX3QV5cz8ZEThDY/iEQ4RBTjY8KzrfVMlZ3TW7x/bDhRKr+dz+lA0u4p66WCWeQcdJ3pG9WWSEk4oETA4yaj+mBz0VaKXVK9gilAFbGGNBKgXo3qL80Y7t5Az0JeggzMO6h2oZd2VTZUvLPmQpHpNidnnHa42Ktm2XyoyxGH+l+12UxuwKfaQze6xfh5mdv19+9QPttws7Zt9XbZN2xH0x7Mj1TObwupECnJMQX5PQZ5OQfz+FOLTKRzhej5BEnmSmnxuRjUa1VVyOJpYD0RKs1LmJn5zk+BUKgepyCIxIp9ZJEcUIOI5myB0L6a+At+iiVUoXRQ4C8PQup/sGDHHKoodxNngTE7Z4G2SEufKteOBsyvnsWXTPQR37cRwuGzKYpdJ4cYsQzcWNbBpzCp2mY8xsxdr7U2ocQ8oAI5lcIdyjlKgXEOVUC1RvkfJUPooF2hzgfIW5TlKhTJAm9DU2U9WIpFwiwqKDApD2LJ8g9hSaZvhy8f/91jmpWTVdw9FWUGbWPbbTdWdLdtuWzQEevXRI18JjlRSYcz/t++/un2bq2K/1MT//JecwonD96SvKXnu8yKHnPBsDVf+D1xZ7tj7r/DgFR5mb34K0DYy7xs=",
+            "data": "m=edit&p=7VTNbtswDL7nKQqddbB+7Di+DFnX7JKlW5OhKIzAcDIXDebAnRMPg4K8e0lKgKUlBbbDug0oHDH0J4rkJ9LcfevKtuIiwp9KOfzDo0VKS6YJrcg9i82+rrILPu72D00LCufXkwm/L+tdxQe5M1sODmaUmTE377OcCcaZhCXYkptP2cF8yMyMmzlsMa4Bm1ojCepVr97SPmqXFhQR6DPQwZng7Abd3cHretOu66qYAgrIxyw3C85w8y15QJVtm+8Vc7ng+7rZrjYIrMo9MNo9bB7dzq770nztnC04ZNuu3m/WTd20CCJ25GZsaczP0FA9DVQtDdTO0EB2f5jC6DyFI5ToBkgUWY58Pvdq2qvz7ABylh2YjPFkgeljMcGnUoioANKn0AihNz6kU2tlq0hQHFlI9VBCkCgiD6KI0veVUFrStxo6Kx9KTg4Oh9a9FzGliIFVStkHkIicM++kiJw3j5IQdBmhnaCzQVQhKIYIYkhxaifdfXu8hKSzIabkac6K8gtz0Q7zc9aOr4/FlHMUnLWV0H0M6BJBvXJHckJSklxAK3GjSL4jGZGMSU7J5orkLclLkppkQjZDbMZfbFemoIoamgwaQ9refYHccmWnZvjE/x+2HORs3rX35bqCWTLrtquqvZg17basGQz144D9YLRyxSWav875f37OY7mi35r2f/9rzuHG4Zsy15w9dkVZACe6W8R1/BMONTlrHz+DJ8/gw+WL3wKMjuXgCQ==",
         },
     ]
 
@@ -31,10 +31,11 @@ class YajiKabeSolver(Solver):
 
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
-            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
             self.add_program_line(f"not black({r}, {c}).")
-            arrow_direction = label.split("_")[1]
-            self.add_program_line(yaji_count(int(clue), (r, c), arrow_direction, color="black"))
+
+            if isinstance(clue, int) and label.startswith("arrow"):
+                arrow_direction = label.split("_")[1]
+                self.add_program_line(yaji_count(clue, (r, c), arrow_direction, color="black"))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"{'not' * (color not in Color.DARK)} black({r}, {c}).")

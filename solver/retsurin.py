@@ -51,10 +51,6 @@ class RetsurinSolver(Solver):
             if isinstance(clue, int):
                 self.add_program_line(count_row_col_xor(clue, (r, c), color="black"))
 
-            # empty clue or space or question mark clue (for compatibility)
-            if isinstance(clue, str) and (len(clue) == 0 or clue.isspace() or clue == "?"):
-                continue
-
         for (r, c, _, _), color in puzzle.surface.items():
             fail_false(color in Color.DARK, f"Invalid color at ({r}, {c}).")
             if color == Color.BLACK:

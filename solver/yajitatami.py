@@ -5,7 +5,7 @@ from typing import Tuple
 from noqx.manager import Solver
 from noqx.puzzle import Direction, Puzzle
 from noqx.rule.common import display, edge, grid
-from noqx.rule.helper import fail_false, validate_direction
+from noqx.rule.helper import validate_direction
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import bulb_src_color_connected, count_reachable_src
 from noqx.rule.shape import all_rect_region, avoid_edge_crossover
@@ -49,7 +49,7 @@ class YajitatamiSolver(Solver):
     category = "region"
     examples = [
         {
-            "data": "m=edit&p=7VTLbtswELzrKwKe98CXJEo3N7VzcZy2cVAEgiDIjtoYsaFEtoqChv69y6UaBVWAomjrXgqCy+FwuZzla//Ulk0FBosywEFgUVpSlTyhyvuy3By2VXoGk/ZwXzcIAK5mM/hUbvdVkPVeeXC0SWonYC/SjEkGVAXLwb5Pj/YytQuw1zjEQCA3RyQYSITTAX6kcYfOPSk44oUP6KbdIlxvmvW2KuaeeZdmdgnMrfOGZjvIdvWXivkQ1F/Xu9XGEavygMns7zeP/ci+vasf2t5X5B3YiZc7fUWuGuSqZ7nqdbny78tN8q7Dbf+Agos0c9pvBmgGeJ0eO6fryGTspqrCbac7IYwYck+pgYrCkVccjbzieEwZT/GBMuMVk2RECS49J15wIvyBwyQEpXJLdkZWkl1ipmAV2bdkOdmQ7Jx8prgBIlYgDAaWuIAJEUc9jhDHHsfhC6wB+z3GubHu/Q36JM9Yck4YW5BCeizwLQnlsdQgZThg5dfFFqQ2HmuMo13Mzt0tJ/mcrCYbUSqxO9JfOvQ/sGtKYNaJ+amsTEb0kwwlPG0/DzI2vftcnS3qZldu8dEs2t2qar738ZfqAvaVUc3wOEH//7j+0cfljoCf+Cb/7sPKcHfxMYC9AvbYFmWxrvGS8fzkMvGt5cE3",
+            "data": "m=edit&p=7VXNbxo/EL3zV0Q+z8EfC/txqWgKvaSkv4QqilYIAdk2qIs2XdiqWpT/PW/G5kcKkdJDi1Spsjx+fh7G88b2sv7WzOqCEjSXkCaD5iIr3epUug5tvNyURXZG/WZzX9UARJfDIX2eleuCOnlwm3S2bZq1fWrfZ7myiqQbNaH2v2zbfsjaEbXXWFLkwF0AGUUWcLCHN7LO6NyTRgOPfEBD6orD3WK6WNaLsphegAXzMcvbMSlefCsRGKpV9b1QPozMF9VqvmRiPttA0fp++RBW1s1d9bUJvgioVk25WS6qsqqZZO6R2r6XMdjJ4J2DDFYUZDD0Mhi9IIPV/WEJ6csSHnFEVxAxzXLW82kPkz28zrYqsipzpCInQzeWoZfKkHrS6C5G+I/gb+GRKzf1h2Q5Hwe3XL15TnW193J7qocgBz+Me0decQj/nEo8pfdUcpxEipQPKKOhjTk+lR1nQhr/c9Blsi3srdihWCt2jDJR68S+E6vFdsVeiM8ANTGxI5MgsMUGSRcYwgT3gJEr45j5HY4I84Dx2zgK/gl8ICRgq1FGYIxkDcQwNni1BhVnbCOy1scR7Py+GMlGKBvjCHEijolkbyTlc7GRJI5EOFkuBW+ijcccwCFZA8eeqI35yvzipfJX5TcU1hkUJk2OMz9IK7co9E8NxT7lfNLJ1eDuS3E2qurVrMRDHTWreVHv5vhiPnbUDyU9x4lT9O8j+hd8RPm49Ilv/au3/ZV0clQcD4faS1IPzXQ2hSiFP+2Tp4l3Oek8AQ==",
         },
     ]
 
@@ -65,10 +65,11 @@ class YajitatamiSolver(Solver):
         for (r, c, d, label), clue in puzzle.text.items():
             validate_direction(r, c, d)
             self.add_program_line(bulb_src_color_connected((r, c), color=None, adj_type="edge"))
-            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
-            arrow_direction = label.split("_")[1]
-            self.add_program_line(count_reachable_src(int(clue), (r, c), main_type="bulb", color=None, adj_type="edge"))
-            self.add_program_line(yaji_region_count(int(clue) + 1, (r, c), arrow_direction))
+
+            if isinstance(clue, int) and label.startswith("arrow"):
+                arrow_direction = label.split("_")[1]
+                self.add_program_line(count_reachable_src(clue, (r, c), main_type="bulb", color=None, adj_type="edge"))
+                self.add_program_line(yaji_region_count(clue + 1, (r, c), arrow_direction))
 
         for (r, c, d, _), draw in puzzle.edge.items():
             self.add_program_line(f':-{" not" * draw} edge({r}, {c}, "{d}").')

@@ -3,7 +3,7 @@
 from noqx.manager import Solver
 from noqx.puzzle import Color, Direction, Point, Puzzle
 from noqx.rule.common import defined, display, fill_line, grid, shade_c
-from noqx.rule.helper import fail_false, validate_direction, validate_type
+from noqx.rule.helper import validate_direction, validate_type
 from noqx.rule.neighbor import adjacent
 from noqx.rule.reachable import grid_color_connected
 from noqx.rule.route import separate_item_from_route, single_route
@@ -60,12 +60,9 @@ class CastleSolver(Solver):
                 self.add_program_line(f"white_clue({r}, {c}).")
                 self.add_program_line(f"not white({r}, {c}).")
 
-            if isinstance(clue, str) and (len(clue) == 0 or clue.isspace()):  # empty clue for compatibility
-                continue
-
-            fail_false(isinstance(clue, int) and label.startswith("arrow"), "Please set all NUMBER to arrow sub.")
-            arrow_direction = label.split("_")[1]
-            self.add_program_line(wall_length(r, c, arrow_direction, int(clue)))
+            if isinstance(clue, int) and label.startswith("arrow"):
+                arrow_direction = label.split("_")[1]
+                self.add_program_line(wall_length(r, c, arrow_direction, clue))
 
         for (r, c, _, _), color in puzzle.surface.items():
             self.add_program_line(f"not white({r}, {c}).")
