@@ -83,6 +83,12 @@ def load_puzzlink_content(link: str) -> str:
             "typeof imp === 'function' && typeof exp === 'function' && typeof solver_metadata !== 'undefined'",
             timeout=60000,
         )
+
+        selected = page.evaluate(f'$("#type").val("{puzzle_name}").trigger("change");')
+        if not selected:
+            logging.error(f"Failed to select puzzle type: {puzzle_name}. Please ensure the puzzle is supported in Penpa+.")
+            sys.exit(1)
+
         imported = page.evaluate("(url) => imp(url, true)", link)
         if not imported:
             logging.error("Failed to import URL. Please ensure the link is valid and the puzzle is supported in Penpa+.")
